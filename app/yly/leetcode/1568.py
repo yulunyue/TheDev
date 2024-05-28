@@ -24,10 +24,11 @@ class Graph:
         self.g=g
         self.n=len(g)
 
-    def tarjin(self,b):
+    def tarjan(self,b):
         low=defaultdict(int)
         vt=defaultdict(int)
         self.ct=1
+        edges=[]
         def dfs(n,p=None):
             vt[n]=low[n]=self.ct
             self.ct+=1
@@ -36,18 +37,27 @@ class Graph:
                     continue
                 if vt[nv]==0:
                     dfs(nv,n)
-                    # low[n]=min(low[n],vt[nv])
+                    low[n]=min(low[nv],low[n])
+                    if vt[n]<low[nv]:
+                        edges.append([n,nv])
                 else:
                     low[n]=min(low[n],vt[nv])
-    
         
         dfs(b,-1)
-        print(low,vt)
+        return edges,vt,low
 
 class Solution:
     def get_cases(self):
         return [
-            [[[0,1,1,0],[0,1,1,0],[0,0,0,0]],2]
+            [[[0,1,1],[1,1,1],[1,1,0]],1],
+            [[[0,0]],0],
+            [[[0,0,0],[0,1,0],[0,0,0]],1],
+            [[[1,1]],2],
+            [[[1,1],[1,0]],1],
+            [[[1,0,1,0]],0],
+            [[[1,1,1],[1,0,1],[1,1,1]],2],
+            [[[0,1,1,0],[0,1,1,0],[0,0,0,0]],2],
+            [[[1,1,0,1,1],[1,1,1,1,1],[1,1,0,1,1],[1,1,1,1,1]],2]
         ]
     
     def minDays(self, grid: List[List[int]]) -> int:
@@ -56,6 +66,14 @@ class Solution:
         ct=0
         dr=[[0,1],[0,-1],[-1,0],[1,0]]
         g=[[] for _ in range(n*m)]
+        s3=0
+        for gd in grid:
+            s3+=sum(gd)
+            self.log(gd)
+        if s3==1:
+            return 1
+        if s3==0:
+            return 0
         def dfs(y,x):
             grid[y][x]=2
             p=y*m+x
@@ -68,17 +86,32 @@ class Solution:
                     g[p].append(p1)
                 if grid[ny][nx]==1:
                     dfs(ny,nx)
-        
+        bt=0
         for i in range(n):
             for j in range(m):
                 if grid[i][j]!=1:
                     continue
-                dfs(i,j)
+                bt=i*m+j
+                dfs(i,j)     
                 ct+=1
                 if ct==2:
                     return 0
-                Graph(g).tarjin(i*m+j)
-
+        self.log(g)
+        egs,vt,mp=Graph(g).tarjan(bt)
+        self.log(egs,vt,mp)
+        if not egs:
+            return 2
+        
+        # ct2=defaultdict(int)
+        ct3=set(mp.values())
+        # for v in mp.values():
+        #     ct2[v]+=1
+        #     if ct2[v]>=2:
+        #         ct3.add(v)
+        # self.log(ct3)
+        if len(ct3)>2:
+            return 1
+        return 2
 
 
     def check(self,*args):
