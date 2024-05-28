@@ -19,27 +19,30 @@ class TreeNode:
         self.left = left
         self.right = right
 
-class Griph:
+class Graph:
     def __init__(self,g) -> None:
         self.g=g
         self.n=len(g)
 
     def tarjin(self,b):
-        low=[0]*self.n
-        vt=[0]*self.n
+        low=defaultdict(int)
+        vt=defaultdict(int)
         self.ct=1
-        def dfs(n):
-            print(n,self.ct)
+        def dfs(n,p=None):
             vt[n]=low[n]=self.ct
             self.ct+=1
-            
             for nv in self.g[n]:
-                if vt[nv]:
-                    low[nv]=min(low[nv],vt[nv])
+                if p==nv:
                     continue
-                dfs(nv)
-                
-        dfs(b)
+                if vt[nv]==0:
+                    dfs(nv,n)
+                    # low[n]=min(low[n],vt[nv])
+                else:
+                    low[n]=min(low[n],vt[nv])
+    
+        
+        dfs(b,-1)
+        print(low,vt)
 
 class Solution:
     def get_cases(self):
@@ -54,27 +57,27 @@ class Solution:
         dr=[[0,1],[0,-1],[-1,0],[1,0]]
         g=[[] for _ in range(n*m)]
         def dfs(y,x):
-            grid[y][x]=0
+            grid[y][x]=2
             p=y*m+x
             for dy,dx in dr:
                 ny,nx=y+dy,x+dx
                 if ny<0 or nx<0 or ny>=n or nx>=m:
                     continue
-                if grid[ny][nx]==1:
+                if grid[ny][nx]!=0:
                     p1=ny*m+nx
                     g[p].append(p1)
-                    g[p1].append(p)
+                if grid[ny][nx]==1:
                     dfs(ny,nx)
         
         for i in range(n):
             for j in range(m):
-                if grid[i][j]==0:
+                if grid[i][j]!=1:
                     continue
                 dfs(i,j)
                 ct+=1
                 if ct==2:
                     return 0
-                Griph(g).tarjin(i*m+j)
+                Graph(g).tarjin(i*m+j)
 
 
 
