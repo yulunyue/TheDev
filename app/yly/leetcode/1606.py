@@ -22,8 +22,24 @@ class TreeNode:
 class Solution:
     def get_cases(self):
         return [
+            [3, [1,2,3,4,5],[5,2,3,3,3] ,[1]]
         ]
+    def busiestServers(self, k: int, arrival: List[int], load: List[int]) -> List[int]:
+        last=[0]*k
+        id_count=[0]*k
+        max_id=0
+        for i,v in enumerate(arrival):
+            for j in range(k):
+                idx=(j+i)%k
+                if v>=last[idx]:
+                    last[idx]=v+load[i]
+                    id_count[idx]+=1
+                    max_id=max(id_count[idx],max_id)
+                    break
+        return [i for i in range(k) if id_count[i]==max_id]
 
+
+            
 
     def check(self,*args):
         pass
@@ -45,7 +61,6 @@ class Solution:
             self.logs=""
             try:
                 r=self.local_debug(*case[:-1])
-                self.log("finish")
             except Exception as e:
                 import traceback
                 traceback.print_exc()
@@ -55,7 +70,6 @@ class Solution:
                 print(case,r)
                 print(self.logs)
                 break
-            
     def diff(self,a,b):
         if isinstance(a,float) and isinstance(b,float):
             return "%.2f"%(a)=="%.2f"%(b)
