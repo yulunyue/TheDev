@@ -22,9 +22,28 @@ class TreeNode:
 class Solution:
     def get_cases(self):
         return [
+            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
+            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
+            [[5,1,3],[9,4,2,3,4],2],
+            
         ]
-
-
+    
+    def minOperations(self, target: List[int], arr: List[int]) -> int:
+        a_m=dict()
+        for i,a in enumerate(arr):
+            if a not in a_m:
+                a_m[a]=i
+        q=[]
+        ret=0
+        for w in target:
+            if w not in a_m:
+                continue
+            while q and q[-1]>a_m[w]:
+                q.pop()
+            q.append(a_m[w])
+            ret=max(len(q),ret)
+            self.log(w,a_m[w],q)
+        return len(target)-ret
     def check(self,*args):
         pass
 
