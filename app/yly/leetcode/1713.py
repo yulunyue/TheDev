@@ -29,18 +29,17 @@ class Solution:
         ]
     
     def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=dict()
+        a_m=defaultdict(list)
         for i,a in enumerate(arr):
-            if a not in a_m:
-                a_m[a]=i
+            a_m[a].append(i)
         q=[]
         ret=0
         for w in target:
-            if w not in a_m:
+            if not a_m[w]:
                 continue
-            while q and q[-1]>a_m[w]:
+            while q and q[-1]>a_m[w][0]:
                 q.pop()
-            q.append(a_m[w])
+            q.append(a_m[w][0])
             ret=max(len(q),ret)
             self.log(w,a_m[w],q)
         return len(target)-ret
