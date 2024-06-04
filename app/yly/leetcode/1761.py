@@ -14,11 +14,18 @@ false=False
 M=10**9 + 7
 
 
+    
+
+
 class Solution:
     def get_cases(self):
         return [
+            [7, [[1,3],[4,1],[4,3],[2,5],[5,6],[6,7],[7,5],[2,6],[7,8]],0],
+            [6, [[1,2],[1,3],[3,2],[4,1],[5,2],[3,6]],3]
         ]
-
+    
+    def minTrioDegree(self, n: int, edges: List[List[int]]) -> int:
+        pass
 
     def check(self,*args):
         pass

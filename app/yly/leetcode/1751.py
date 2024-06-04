@@ -27,7 +27,7 @@ class Solution:
     
     def maxValue(self, events: List[List[int]], k: int) -> int:
         pass
-    
+
     def check(self,*args):
         pass
 
@@ -35,6 +35,7 @@ class Solution:
         self.local_debug=getattr(self,sys.argv[-1],None)
         if self.local_debug is None:
             print(sys.argv[-1],"not find")
+            
     logs = ""
     def log(self, *s):
         if not self.local_debug or len(self.logs)>=2048:
