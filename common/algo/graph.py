@@ -42,14 +42,12 @@ class Graph:
                     c+=1
                     dfs(nv,n)
                     low[n]=min(low[nv],low[n])
-                    self.log('b1',n,nv,low[nv],low[n])
                     if vt[n]<=low[nv] and p !=-1:
                         points[n]=True
                     if vt[n]<low[nv]:
                         edges.append([n,nv])
                 else:
                     low[n]=min(low[n],vt[nv])
-                    self.log('b2',n,nv,vt[nv],low[n])
             if c>=2 and p == -1:
                 points[n]=True
         dfs(b,-1)

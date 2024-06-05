@@ -1,20 +1,32 @@
 import web_dom from "../../web/web_dom"
 export class Div {
-    node_type: string = "div"
     el: HTMLElement
+    div_el: HTMLElement
     constructor() {
+        this.div_el = web_dom.createElement("div")
+        this.init_node()
+        this.div_el.appendChild(this.el)
         this.init()
     }
+    static create_element(name: string) {
+        return web_dom.createElement(name)
+    }
+    init_node() {
+        this.el = Div.create_element("div")
+    }
     init() {
-        this.el = web_dom.createElement(this.node_type)
+
     }
     mount(el: HTMLElement) {
-        el.appendChild(this.el)
+        el.appendChild(this.div_el)
         return this
+    }
+    add_child(c: Div) {
+        c.mount(this.el)
     }
     set_childs(childs: Div[]) {
         for (var i = 0; i < childs.length; i++) {
-            childs[i].mount(this.el)
+            this.add_child(childs[i])
         }
         return this
     }
@@ -27,6 +39,7 @@ export class Div {
         return this
     }
 }
+
 export default function () {
     return new Div()
 }
