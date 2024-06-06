@@ -4,6 +4,6 @@ export class Select extends Div {
         this.el = Div.create_element("select")
     }
 }
-export default function () {
+export function select() {
     return new Select()
 }

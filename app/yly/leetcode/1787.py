@@ -17,32 +17,43 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]],
+            [[1,2,3,1,2,3,4],3,0.1],
+            [[1,2,4,1,2,5,1,2,6], 3,3],
+            [[1,2,0,3,0], 1,3],
+            [[23,27,14,0,14,3,7,10,14,23,5,5],1,11],
         ]
+    def minChanges(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        if k==1:
+            return len([v for v in nums if v])
+        ct=[defaultdict(int)  for _ in range(k)]
+        max_ct=[0]*k
+        for i,v in enumerate(nums):
+            ct[i%k][v]+=1
+            max_ct[i%k]=max(max_ct[i%k],ct[i%k][v])
+        ans = sum(sorted(max_ct)[-k+1:])
+        self.log(n,ans,ct)
+        @lru_cache(None)
+        def dfs(i,s):
+            if i>=k:
+                return 0 if s==0 else -inf
+            ret=-inf
+            for j,v in ct[i].items():
+                ret=max(
+                    ret,
+                    v+dfs(i+1,s+j),
+                    v+dfs(i+1,s-j)
+                )
+            return ret
+        ans=max(ans,dfs(0,0))
+        return n-ans
 
-    def test(self, cars_pos:List[List[int]]):
-        n=len(cars_pos)
-        cars_pos = sorted([[cars_pos[i][0],cars_pos[i][1],i] for i in range(n)])
-        ret = [-1]*n
-        while len(cars_pos):
-            min_time,min_idx=inf,None
-            for i in range(1,len(cars_pos)):
-                speed_c=cars_pos[i-1][1]-cars_pos[i][1]
-                if speed_c<=0:
-                    continue
-                user_time=(cars_pos[i][0]-cars_pos[i-1][1])/speed_c
-                if user_time<min_time:
-                    min_time=user_time
-                    min_idx=i
-            if min_idx is None:
-                break
-            ret[cars_pos[i][2]]=min_time
-            cars_pos.pop(min_idx)
-            break
-        return ret
 
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.minChanges(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)

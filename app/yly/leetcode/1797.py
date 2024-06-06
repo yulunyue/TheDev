@@ -12,37 +12,44 @@ null=None
 true=True
 false=False
 M=10**9 + 7
+'''
+1,4,3,
+7
+4,5
 
+'''
 
 class Solution:
     def get_cases(self):
         return [
-            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]],
+            [[1,4,3,7,4,5], 3,15],
         ]
-
-    def test(self, cars_pos:List[List[int]]):
-        n=len(cars_pos)
-        cars_pos = sorted([[cars_pos[i][0],cars_pos[i][1],i] for i in range(n)])
-        ret = [-1]*n
-        while len(cars_pos):
-            min_time,min_idx=inf,None
-            for i in range(1,len(cars_pos)):
-                speed_c=cars_pos[i-1][1]-cars_pos[i][1]
-                if speed_c<=0:
-                    continue
-                user_time=(cars_pos[i][0]-cars_pos[i-1][1])/speed_c
-                if user_time<min_time:
-                    min_time=user_time
-                    min_idx=i
-            if min_idx is None:
-                break
-            ret[cars_pos[i][2]]=min_time
-            cars_pos.pop(min_idx)
-            break
-        return ret
-
+    
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        n=len(nums)
+        ln,rn=[],[]
+        left_min=right_min=nums[k]
+        l,r=k-1,k+1
+        while l>=0:
+            if nums[l]<=left_min:
+                ln.append([k-l-1,left_min])
+                left_min=nums[l]
+            l-=1
+        ln.append([k-l-1,left_min])
+        while r<n:
+            if nums[r]<=right_min:
+                rn.append([r-k-1,right_min])
+                right_min=nums[r]
+            r+=1
+        rn.append([r-k-1,right_min])
+        self.log(ln)
+        self.log(rn)
+        
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.maximumScore(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)

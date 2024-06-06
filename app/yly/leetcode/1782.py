@@ -17,32 +17,36 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]],
+            [5, [[1,5],[1,5],[3,4],[2,5],[1,3],[5,1],[2,3],[2,5]],[1,2,3,4,5],[10,10,9,8,6]],
+            [4, [[1,2],[2,4],[1,3],[2,3],[2,1]], [2,3],[6,5]]
         ]
 
-    def test(self, cars_pos:List[List[int]]):
-        n=len(cars_pos)
-        cars_pos = sorted([[cars_pos[i][0],cars_pos[i][1],i] for i in range(n)])
-        ret = [-1]*n
-        while len(cars_pos):
-            min_time,min_idx=inf,None
-            for i in range(1,len(cars_pos)):
-                speed_c=cars_pos[i-1][1]-cars_pos[i][1]
-                if speed_c<=0:
-                    continue
-                user_time=(cars_pos[i][0]-cars_pos[i-1][1])/speed_c
-                if user_time<min_time:
-                    min_time=user_time
-                    min_idx=i
-            if min_idx is None:
-                break
-            ret[cars_pos[i][2]]=min_time
-            cars_pos.pop(min_idx)
-            break
-        return ret
 
     def check(self,*args):
         pass
+
+    def countPairs(self, n: int, edges: List[List[int]], queries: List[int]) -> List[int]:
+        n=len(edges)
+        cont_e=defaultdict(int)
+        ct_n=[0]*(len(edges)+1)
+        for e1,e2 in edges:
+            if e1>e2:
+                e1,e2=e2,e1
+            self.log(e1,e2)
+            cont_e[e1]+=1
+            cont_e[e2]+=1
+            cont_e[e1,e2]+=1
+        for i in range(1,n):
+            for j in range(i+1,n):
+                c=cont_e[i]+cont_e[j]-cont_e[i,j]
+                self.log(i,j,c)
+                ct_n[c]+=1
+        ct_n1=list(accumulate(ct_n))
+        # self.log(ct_n,ct_n1)
+        ret=[]
+        for q in queries:
+            ret.append(ct_n1[-1]-ct_n1[q])
+        return ret
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)

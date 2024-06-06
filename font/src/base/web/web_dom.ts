@@ -1,3 +1,4 @@
+import { Style } from "./cls"
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
     HTTP_POST_METHOD: string = "POST"
@@ -7,6 +8,11 @@ class WebDom {
 
     get_body() {
         return document.body
+    }
+    set_el_style(el: any, style: Style) {
+        for (var key in style) {
+            el.style[key] = style[key]
+        }
     }
     createElement(node_type: string) {
         return document.createElement(node_type)

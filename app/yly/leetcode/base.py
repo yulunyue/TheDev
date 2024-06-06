@@ -22,6 +22,9 @@ class Solution:
 
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.xx(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
