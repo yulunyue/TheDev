@@ -13,36 +13,20 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+
+    
+
 
 class Solution:
     def get_cases(self):
         return [
-            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
-            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
-            [[5,1,3],[9,4,2,3,4],2],
-            
+            [7, [[1,3],[4,1],[4,3],[2,5],[5,6],[6,7],[7,5],[2,6],[7,8]],0],
+            [6, [[1,2],[1,3],[3,2],[4,1],[5,2],[3,6]],3]
         ]
     
-    def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=defaultdict(list)
-        for i,a in enumerate(arr):
-            a_m[a].append(i)
-        q=[]
-        ret=0
-        for w in target:
-            if not a_m[w]:
-                continue
-            while q and q[-1]>a_m[w][0]:
-                q.pop()
-            q.append(a_m[w][0])
-            ret=max(len(q),ret)
-            self.log(w,a_m[w],q)
-        return len(target)-ret
+    def minTrioDegree(self, n: int, edges: List[List[int]]) -> int:
+        pass
+
     def check(self,*args):
         pass
 

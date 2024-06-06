@@ -13,36 +13,32 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 class Solution:
     def get_cases(self):
         return [
-            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
-            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
-            [[5,1,3],[9,4,2,3,4],2],
-            
+            [[2,3],1,'HHHVV'],
+            [[2,3],2,'HHVHV'],
         ]
-    
-    def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=defaultdict(list)
-        for i,a in enumerate(arr):
-            a_m[a].append(i)
-        q=[]
-        ret=0
-        for w in target:
-            if not a_m[w]:
-                continue
-            while q and q[-1]>a_m[w][0]:
-                q.pop()
-            q.append(a_m[w][0])
-            ret=max(len(q),ret)
-            self.log(w,a_m[w],q)
-        return len(target)-ret
+
+    def test(self,destion,k):
+        vc,hc=destion
+        k-=1
+        ans=''
+        while hc and vc and k:
+            c=math.comb(hc+vc-1,hc-1)
+            # self.log(hc+vc-1,vc-1,c,k)
+            if c<=k:
+                vc-=1
+                k-=c
+                ans+='V'
+            else:
+                hc-=1
+                ans+='H'
+        # self.log(ans,hc,vc)
+        return ans+'H'*hc+'V'*vc
+        
+
     def check(self,*args):
         pass
 

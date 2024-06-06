@@ -1,4 +1,4 @@
-from common.tool.test import TestBase
+from common.util.test import TestBase
 from common.algo.util import *
 import math
 class TestAlgo(TestBase):

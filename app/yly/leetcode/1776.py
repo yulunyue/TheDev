@@ -13,36 +13,34 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 class Solution:
     def get_cases(self):
         return [
-            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
-            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
-            [[5,1,3],[9,4,2,3,4],2],
-            
+            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]],
         ]
-    
-    def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=defaultdict(list)
-        for i,a in enumerate(arr):
-            a_m[a].append(i)
-        q=[]
-        ret=0
-        for w in target:
-            if not a_m[w]:
-                continue
-            while q and q[-1]>a_m[w][0]:
-                q.pop()
-            q.append(a_m[w][0])
-            ret=max(len(q),ret)
-            self.log(w,a_m[w],q)
-        return len(target)-ret
+
+    def test(self, cars_pos:List[List[int]]):
+        n=len(cars_pos)
+        cars_pos = sorted([[cars_pos[i][0],cars_pos[i][1],i] for i in range(n)])
+        ret = [-1]*n
+        while len(cars_pos):
+            min_time,min_idx=inf,None
+            for i in range(1,len(cars_pos)):
+                speed_c=cars_pos[i-1][1]-cars_pos[i][1]
+                if speed_c<=0:
+                    continue
+                user_time=(cars_pos[i][0]-cars_pos[i-1][1])/speed_c
+                if user_time<min_time:
+                    min_time=user_time
+                    min_idx=i
+            if min_idx is None:
+                break
+            ret[cars_pos[i][2]]=min_time
+            cars_pos.pop(min_idx)
+            break
+        return ret
+
     def check(self,*args):
         pass
 

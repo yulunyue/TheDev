@@ -22,27 +22,12 @@ class TreeNode:
 class Solution:
     def get_cases(self):
         return [
-            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
-            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
-            [[5,1,3],[9,4,2,3,4],2],
-            
+            [[[1,2,4],[3,4,3],[2,3,1]], 2,7]
         ]
     
-    def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=defaultdict(list)
-        for i,a in enumerate(arr):
-            a_m[a].append(i)
-        q=[]
-        ret=0
-        for w in target:
-            if not a_m[w]:
-                continue
-            while q and q[-1]>a_m[w][0]:
-                q.pop()
-            q.append(a_m[w][0])
-            ret=max(len(q),ret)
-            self.log(w,a_m[w],q)
-        return len(target)-ret
+    def maxValue(self, events: List[List[int]], k: int) -> int:
+        pass
+
     def check(self,*args):
         pass
 
@@ -50,6 +35,7 @@ class Solution:
         self.local_debug=getattr(self,sys.argv[-1],None)
         if self.local_debug is None:
             print(sys.argv[-1],"not find")
+            
     logs = ""
     def log(self, *s):
         if not self.local_debug or len(self.logs)>=2048:

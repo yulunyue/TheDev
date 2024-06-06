@@ -13,38 +13,47 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 class Solution:
     def get_cases(self):
         return [
-            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
-            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
-            [[5,1,3],[9,4,2,3,4],2],
-            
+            [[1,2,3,1,2,3,4],3,0.1],
+            [[1,2,4,1,2,5,1,2,6], 3,3],
+            [[1,2,0,3,0], 1,3],
+            [[23,27,14,0,14,3,7,10,14,23,5,5],1,11],
         ]
-    
-    def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=defaultdict(list)
-        for i,a in enumerate(arr):
-            a_m[a].append(i)
-        q=[]
-        ret=0
-        for w in target:
-            if not a_m[w]:
-                continue
-            while q and q[-1]>a_m[w][0]:
-                q.pop()
-            q.append(a_m[w][0])
-            ret=max(len(q),ret)
-            self.log(w,a_m[w],q)
-        return len(target)-ret
+    def minChanges(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        if k==1:
+            return len([v for v in nums if v])
+        ct=[defaultdict(int)  for _ in range(k)]
+        max_ct=[0]*k
+        for i,v in enumerate(nums):
+            ct[i%k][v]+=1
+            max_ct[i%k]=max(max_ct[i%k],ct[i%k][v])
+        ans = sum(sorted(max_ct)[-k+1:])
+        self.log(n,ans,ct)
+        @lru_cache(None)
+        def dfs(i,s):
+            if i>=k:
+                return 0 if s==0 else -inf
+            ret=-inf
+            for j,v in ct[i].items():
+                ret=max(
+                    ret,
+                    v+dfs(i+1,s+j),
+                    v+dfs(i+1,s-j)
+                )
+            return ret
+        ans=max(ans,dfs(0,0))
+        return n-ans
+
+
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.minChanges(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)

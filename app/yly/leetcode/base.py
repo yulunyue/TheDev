@@ -12,11 +12,6 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 class Solution:
     def get_cases(self):
@@ -26,6 +21,9 @@ class Solution:
 
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.xx(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)

@@ -12,39 +12,44 @@ null=None
 true=True
 false=False
 M=10**9 + 7
+'''
+1,4,3,
+7
+4,5
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+'''
 
 class Solution:
     def get_cases(self):
         return [
-            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
-            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
-            [[5,1,3],[9,4,2,3,4],2],
-            
+            [[1,4,3,7,4,5], 3,15],
         ]
     
-    def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=defaultdict(list)
-        for i,a in enumerate(arr):
-            a_m[a].append(i)
-        q=[]
-        ret=0
-        for w in target:
-            if not a_m[w]:
-                continue
-            while q and q[-1]>a_m[w][0]:
-                q.pop()
-            q.append(a_m[w][0])
-            ret=max(len(q),ret)
-            self.log(w,a_m[w],q)
-        return len(target)-ret
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        n=len(nums)
+        ln,rn=[],[]
+        left_min=right_min=nums[k]
+        l,r=k-1,k+1
+        while l>=0:
+            if nums[l]<=left_min:
+                ln.append([k-l-1,left_min])
+                left_min=nums[l]
+            l-=1
+        ln.append([k-l-1,left_min])
+        while r<n:
+            if nums[r]<=right_min:
+                rn.append([r-k-1,right_min])
+                right_min=nums[r]
+            r+=1
+        rn.append([r-k-1,right_min])
+        self.log(ln)
+        self.log(rn)
+        
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.maximumScore(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)

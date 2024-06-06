@@ -13,38 +13,40 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 class Solution:
     def get_cases(self):
         return [
-            [[16,7,20,11,15,13,10,14,6,8],[11,14,15,7,5,5,6,10,11,6],6],
-            [[6,4,8,1,3,2],[4,7,6,2,3,8,6,1],3],
-            [[5,1,3],[9,4,2,3,4],2],
-            
+            [5, [[1,5],[1,5],[3,4],[2,5],[1,3],[5,1],[2,3],[2,5]],[1,2,3,4,5],[10,10,9,8,6]],
+            [4, [[1,2],[2,4],[1,3],[2,3],[2,1]], [2,3],[6,5]]
         ]
-    
-    def minOperations(self, target: List[int], arr: List[int]) -> int:
-        a_m=defaultdict(list)
-        for i,a in enumerate(arr):
-            a_m[a].append(i)
-        q=[]
-        ret=0
-        for w in target:
-            if not a_m[w]:
-                continue
-            while q and q[-1]>a_m[w][0]:
-                q.pop()
-            q.append(a_m[w][0])
-            ret=max(len(q),ret)
-            self.log(w,a_m[w],q)
-        return len(target)-ret
+
+
     def check(self,*args):
         pass
+
+    def countPairs(self, n: int, edges: List[List[int]], queries: List[int]) -> List[int]:
+        n=len(edges)
+        cont_e=defaultdict(int)
+        ct_n=[0]*(len(edges)+1)
+        for e1,e2 in edges:
+            if e1>e2:
+                e1,e2=e2,e1
+            self.log(e1,e2)
+            cont_e[e1]+=1
+            cont_e[e2]+=1
+            cont_e[e1,e2]+=1
+        for i in range(1,n):
+            for j in range(i+1,n):
+                c=cont_e[i]+cont_e[j]-cont_e[i,j]
+                self.log(i,j,c)
+                ct_n[c]+=1
+        ct_n1=list(accumulate(ct_n))
+        # self.log(ct_n,ct_n1)
+        ret=[]
+        for q in queries:
+            ret.append(ct_n1[-1]-ct_n1[q])
+        return ret
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
