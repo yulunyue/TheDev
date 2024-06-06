@@ -21,8 +21,36 @@ class TreeNode:
 class Solution:
     def get_cases(self):
         return [
+            [["####F","#C...","M...."], 1, 2,true]
         ]
 
+    def canMouseWin(self, grid: List[str], catJump: int, mouseJump: int) -> bool:
+        n = len(grid)
+        m = len(grid[0])
+        cat=[0,0]
+        mouse=[0,0]
+        take=[0,0]
+        for i in range(n):
+            self.log(grid[i])
+            for j in range(m):
+                if grid[i][j]=='C':
+                    cat=[i,j]
+                elif grid[i][j]=='M':
+                    mouse=[i,j]
+                elif grid[i][j]=='F':
+                    take=[i,j]
+        vt=dict()
+        start_state=mouse[0],mouse[1],cat[0],cat[1]
+        vt[start_state]=0
+        q=[start_state]
+        while q:
+            p=q
+            q=[]
+            for my,mx,cy,cx in p:
+                pass
+
+        return False
+        
 
     def check(self,*args):
         pass

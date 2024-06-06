@@ -3,7 +3,7 @@ class UniFind:
         self.p=dict()
         self.size=dict()
         for v in r:
-            self.p[r]=v
+            self.p[v]=v
             self.size[v]=1
 
     def merge(self,f,t):
