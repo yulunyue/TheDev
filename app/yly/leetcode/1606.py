@@ -1,4 +1,3 @@
-from sortedcontainers import SortedList
 from typing import List,Dict,Optional
 from collections import defaultdict, deque,Counter
 from itertools import accumulate,product
@@ -25,20 +24,28 @@ class Solution:
             [3, [1,2,3,4,5],[5,2,3,3,3] ,[1]]
         ]
     def busiestServers(self, k: int, arrival: List[int], load: List[int]) -> List[int]:
-        last=[0]*k
+        avaliable=list(range(k))
+        busy=[]
         id_count=[0]*k
-        max_id=0
         for i,v in enumerate(arrival):
-            for j in range(k):
-                idx=(j+i)%k
-                if v>=last[idx]:
-                    last[idx]=v+load[i]
-                    id_count[idx]+=1
-                    max_id=max(id_count[idx],max_id)
-                    break
+            while busy and busy[0][0]<=v:
+                _,n_id=heapq.heappop(busy)
+                avaliable.insert(bisect.bisect_left(avaliable,n_id),n_id)
+                self.log(avaliable)
+            if not avaliable:
+                continue
+            j=bisect.bisect_left(avaliable,i%k)
+            if j==len(avaliable):
+                j=0
+            idx=avaliable[j]
+            heapq.heappush(busy,(v+load[i],idx))
+            id_count[idx]+=1
+            avaliable.pop(j)
+        max_id=max(id_count)
         return [i for i in range(k) if id_count[i]==max_id]
 
-
+    def test(self,*args):
+        return self.busiestServers(*args)
             
 
     def check(self,*args):
