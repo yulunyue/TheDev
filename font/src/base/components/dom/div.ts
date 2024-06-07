@@ -11,6 +11,10 @@ export class Div {
         this.div_el.appendChild(this.el)
         this.init()
     }
+    set_attr(key: string, value: any) {
+        this.el.setAttribute?.(key, value)
+        return this
+    }
     set_size(w: number, h: number) {
         this.set_div_style({ width: w, height: h })
         return this

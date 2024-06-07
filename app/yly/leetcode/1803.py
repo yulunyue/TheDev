@@ -12,44 +12,31 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 class Solution:
     def get_cases(self):
         return [
-            [3, [1,2,3,4,5],[5,2,3,3,3] ,[1]]
+            [[1,4,2,7], 2, 6,6]
         ]
-    def busiestServers(self, k: int, arrival: List[int], load: List[int]) -> List[int]:
-        avaliable=list(range(k))
-        busy=[]
-        id_count=[0]*k
-        for i,v in enumerate(arrival):
-            while busy and busy[0][0]<=v:
-                _,n_id=heapq.heappop(busy)
-                avaliable.insert(bisect.bisect_left(avaliable,n_id),n_id)
-                self.log(avaliable)
-            if not avaliable:
-                continue
-            j=bisect.bisect_left(avaliable,i%k)
-            if j==len(avaliable):
-                j=0
-            idx=avaliable[j]
-            heapq.heappush(busy,(v+load[i],idx))
-            id_count[idx]+=1
-            avaliable.pop(j)
-        max_id=max(id_count)
-        return [i for i in range(k) if id_count[i]==max_id]
 
-    def test(self,*args):
-        return self.busiestServers(*args)
-            
+    def countPairs(self, nums: List[int], low: int, high: int) -> int:
+        nums.sort()
+        def find(v:int):
+            ret=0
+            v_m=(1<<v.bit_length())-1
+            while v>0:
+                i = bisect.bisect_right(nums,v_m)
+                self.log(i,v_m,v)
+                v_m=v_m>>1
+                v=v&v_m
+            return 0
+        return find(high)-find(low-1)
 
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.countPairs(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
@@ -68,6 +55,7 @@ class Solution:
             self.logs=""
             try:
                 r=self.local_debug(*case[:-1])
+                self.log("finish")
             except Exception as e:
                 import traceback
                 traceback.print_exc()
@@ -77,6 +65,7 @@ class Solution:
                 print(case,r)
                 print(self.logs)
                 break
+            
     def diff(self,a,b):
         if isinstance(a,float) and isinstance(b,float):
             return "%.2f"%(a)=="%.2f"%(b)
