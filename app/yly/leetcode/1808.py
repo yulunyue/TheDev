@@ -1,4 +1,3 @@
-from sortedcontainers import SortedList
 from typing import List,Dict,Optional
 from collections import defaultdict, deque,Counter
 from itertools import accumulate,product
@@ -17,30 +16,15 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[2,3],1,'HHHVV'],
-            [[2,3],2,'HHVHV'],
+            [5,6],
         ]
 
-    def test(self,destion,k):
-        vc,hc=destion
-        k-=1
-        ans=''
-        while hc and vc and k:
-            c=math.comb(hc+vc-1,hc-1)
-            # self.log(hc+vc-1,vc-1,c,k)
-            if c<=k:
-                vc-=1
-                k-=c
-                ans+='V'
-            else:
-                hc-=1
-                ans+='H'
-        # self.log(ans,hc,vc)
-        return ans+'H'*hc+'V'*vc
-        
 
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.xx(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
