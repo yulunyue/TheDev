@@ -21,25 +21,14 @@ class Solution:
         ]
 
     def getMaxGridHappiness(self, m: int, n: int, introvertsCount: int, extrovertsCount: int) -> int:
-        grid=[[0]*m for _ in range(n)]
-        def dfs(ic,ec):
-            if ic==0 and ec==0:
-                # self.log(grid)
+
+        @lru_cache(None)
+        def dfs(pos,s,ic,ec):
+            if pos==n*m-1 or (ic==0 and ec==0):
                 return 0
-            res= 0
-            for i in range(n):
-                for j in range(m):
-                    if grid[i][j]!=0:
-                        continue
-                    if ic>0:
-                        grid[i][j]=1
-                        res=max(dfs(ic-1,ec),res)
-                    if ec>0:
-                        grid[i][j]=2
-                        res=max(dfs(ic,ec-1),res)
-                    grid[i][j]=0
+            res=dfs(pos+1,s,ic,ec)
             return res
-        return dfs(introvertsCount,extrovertsCount)
+        return dfs(0,0,introvertsCount,extrovertsCount)
     
     def check(self,*args):
         pass
