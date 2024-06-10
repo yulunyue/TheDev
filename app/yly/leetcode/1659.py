@@ -16,35 +16,43 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[6,10,3],5],# 2*3,2*5,3  1,2,3,6,10
-            [[5,15,40,5,6],7.1],#5,3*5,2*3,2*2*2*5    5,15,40,6,2,3,1
+            [5,5,6,6,0],
+            [2, 3, 1,2,240],
         ]
 
-    def countDifferentSubsequenceGCDs(self, nums: List[int]) -> int:
-        nms=set(nums)
-        nms.add(1)
-        q=list([-v for v in nms])
-        heapq.heapify(q)
-        while q:
-            a1=-heapq.heappop(q)
-            for v in q:
-                a3=math.gcd(a1,-v)
-                self.log(a1,-v,a3)
-                if a3 in nms:
-                    continue
-                nms.add(a3)
-                heapq.heappush(q,-a3)
-        self.log(nms)
-        return len(nms)
-
+    def getMaxGridHappiness(self, m: int, n: int, introvertsCount: int, extrovertsCount: int) -> int:
+        grid=[[0]*m for _ in range(n)]
+        def dfs(ic,ec):
+            if ic==0 and ec==0:
+                # self.log(grid)
+                return 0
+            res= 0
+            for i in range(n):
+                for j in range(m):
+                    if grid[i][j]!=0:
+                        continue
+                    if ic>0:
+                        grid[i][j]=1
+                        res=max(dfs(ic-1,ec),res)
+                    if ec>0:
+                        grid[i][j]=2
+                        res=max(dfs(ic,ec-1),res)
+                    grid[i][j]=0
+            return res
+        return dfs(introvertsCount,extrovertsCount)
+    
     def check(self,*args):
         pass
     
     def test(self,*args):
-        return self.countDifferentSubsequenceGCDs(*args)
+        return self.xx(*args)
 
-    def __init__(self) -> None:
+    def init(self,*args):
+        pass
+
+    def __init__(self,*args) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
+        self.init(*args)
         if self.local_debug is None:
             print(sys.argv[-1],"not find")
     logs = ""
