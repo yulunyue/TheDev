@@ -16,36 +16,39 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [5,5,6,6,0],
-            [2, 3, 1,2,240],
+            [[[1,4],[2,3],[3,5],[4,1],[5,2]],  [[2,3],[2,4],[2,5]],[2,1,3]],
         ]
 
-    def getMaxGridHappiness(self, m: int, n: int, introvertsCount: int, extrovertsCount: int) -> int:
-        grid=[[0]*m for _ in range(n)]
-        def dfs(ic,ec):
-            if ic==0 and ec==0:
-                # self.log(grid)
-                return 0
-            res= 0
-            for i in range(n):
-                for j in range(m):
-                    if grid[i][j]!=0:
-                        continue
-                    if ic>0:
-                        grid[i][j]=1
-                        res=max(dfs(ic-1,ec),res)
-                    if ec>0:
-                        grid[i][j]=2
-                        res=max(dfs(ic,ec-1),res)
-                    grid[i][j]=0
-            return res
-        return dfs(introvertsCount,extrovertsCount)
-    
+    def closestRoom(self, rooms: List[List[int]], queries: List[List[int]]) -> List[int]:
+        rooms=sorted([[v[1],v[0]] for i,v in enumerate(rooms)])
+        ret=[-1]*len(queries)
+        queries=sorted([[v[1],v[0],i] for i,v in enumerate(queries)])
+        l=0
+        sort_id=sorted([v[1] for v in rooms])
+        self.log(rooms)
+        self.log(queries)
+        self.log(sort_id)
+        for min_size,index,idx in queries:
+            l1=bisect.bisect_left(rooms,[min_size,0],lo=l)
+            if l>=len(rooms):
+                break
+            for i in range(l,l1):
+                remove_id=bisect.bisect_left(sort_id,rooms[i][0])
+                sort_id.pop(remove_id)
+            self.log(sort_id,min_size,l1,index)
+            li=bisect.bisect_left(sort_id,index)
+            ri=bisect.bisect_right(sort_id,index)
+            if ri>=len(sort_id) or index-sort_id[li]<=sort_id[ri]-index:
+                ret[idx]=sort_id[li]
+            else:
+                ret[idx]=sort_id[ri]
+            l=l1
+        return ret
     def check(self,*args):
         pass
     
     def test(self,*args):
-        return self.xx(*args)
+        return self.closestRoom(*args)
 
     def init(self,*args):
         pass
