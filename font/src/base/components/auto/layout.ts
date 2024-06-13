@@ -4,7 +4,7 @@ export class Layout extends Div {
     static HORIZONTAL: number = 1
     direction: number
     constructor(direction: number) {
-        super()
+        super("div")
         this.direction = direction
     }
 }

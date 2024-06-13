@@ -2,7 +2,6 @@ export interface Style {
     color?: string
     left?: number
     right?: number
-    w?: number
     top?: number
     width?: number
     height?: number
@@ -11,6 +10,9 @@ export interface Style {
     minWidth?: number
     minHeight?: number
     flexWrap?: "wrap"
+    fill?: "none"
+    stroke?: string
+    strokeWidth?: string
     flexGrow?: number
     visibility?: "hidden" | "visible"
     margin?: number | string
