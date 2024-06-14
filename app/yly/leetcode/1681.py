@@ -23,8 +23,8 @@ class TreeNode:
 class Solution:
     def get_cases(self):
         return [
-            [[1,2,1,4],2,4.1],
-             [[6,3,8,1,3,1,2,2], 4,6.1],
+            [[1,2,1,4],2,4],
+             [[6,3,8,1,3,1,2,2], 4,6],
             [[12,5,16,7,13,4,3,14,4,11,8,6,6,1,15,12],4,0],
             [[5,3,3,6,3,3], 3,-1]
         ]
@@ -34,30 +34,24 @@ class Solution:
         m = n // k
         if m==1:
             return 0
-        nums.sort()
-        stacks=[[0,[]] for _ in range(k)]
-        # self.log(idx2)
-        # @lru_cache(None)
-        def dfs(i):
-            if i>=n:
-                self.log([v[1] for v in stacks])
-                return sum(max(v[1])-min(v[1]) for v in stacks)
-            res=inf
-            for j in range(k):
-                si=1<<nums[i]
-                if stacks[j][0]&si:
-                    continue
-                if len(stacks[j][1])>=m:
-                    continue
-                stacks[j][0]+=si
-                stacks[j][1].append(nums[i])
-                res=min(res,dfs(i+1))
-                stacks[j][0]-=si
-                stacks[j][1].pop()
-                # stacks.pop()
-            return res
-        ans=dfs(0)
-        return -1 if ans==inf else ans
+        nm=defaultdict(int)
+        for n in nums:
+            nm[n]+=1
+        keys=sorted(nm.keys())
+        ret=0
+        for _ in range(k):
+            j=0
+            s=[]
+            while j<m:
+                if nm[keys[j]]==0:
+                    keys.pop(j)
+                else:
+                    s.append(keys[j])
+                    nm[keys[j]]-=1
+                    j+=1
+            self.log(s)
+            ret+=s[-1]-s[0]
+        return ret
 
     def check(self,*args):
         pass
