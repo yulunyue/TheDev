@@ -5,8 +5,10 @@ export class Canva extends Div {
     el: HTMLCanvasElement
     context: CanvasRenderingContext2D
     nodes: CanvaNode[]
+    constructor() {
+        super("canvas")
+    }
     init_node(): void {
-        this.el = Div.create_element("canvas") as HTMLCanvasElement
         this.context = this.el.getContext("2d")
         this.nodes = []
     }

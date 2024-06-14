@@ -11,11 +11,22 @@ class WebDom {
     }
     set_el_style(el: any, style: Style) {
         for (var key in style) {
-            el.style[key] = style[key]
+            let v = style[key]
+            if (typeof (v) == 'number') {
+                if (0 < v && v <= 1) {
+                    v = v * 100 + "%"
+                } else {
+                    v = v + "px"
+                }
+            }
+            el.style[key] = v
         }
     }
     createElement(node_type: string) {
         return document.createElement(node_type)
+    }
+    createElementNS(node_type: string) {
+        return document.createElementNS("http://www.w3.org/2000/svg", node_type)
     }
     get_location() {
         return location.href

@@ -34,10 +34,15 @@ class Solution:
         if self.local_debug is None:
             print(sys.argv[-1],"not find")
     logs = ""
-    def log(self, *s):
+    def log(self, *s,tp:str=""):
         if not self.local_debug or len(self.logs)>=2048:
             return
+        if tp.startswith('bar'):
+            self.draw_bar(s[0],tp)
         self.logs += " ".join([str(v) for v in s])+"\n"
+    def draw_bar(self,s,tp):
+        from common.tool.draw import Draw
+        Draw().draw_bar_chart(s).save(f"data/log/{tp}.png")
     
     def run(self):
         if not self.local_debug:

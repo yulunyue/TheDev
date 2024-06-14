@@ -1,15 +1,32 @@
 import web_dom from "../../web/web_dom"
 import { Style } from "src/base/web/cls"
 export class Div {
-    el: HTMLElement
-    div_el: HTMLElement
-    constructor() {
-        this.div_el = web_dom.createElement("div")
+    el: HTMLElement | SVGElement
+    div_el: HTMLElement | SVGElement
+    node_type: string
+    childs: Div[]
+    constructor(node_type: string, parent_node_type: string = "div") {
+        this.childs = []
+        this.node_type = node_type
+        this.el = this.create_element(this.node_type)
+        if (parent_node_type) {
+            this.div_el = web_dom.createElement(parent_node_type)
+            this.div_el.appendChild(this.el)
+            this.init_default_div_style()
+        } else {
+            this.div_el = this.el
+        }
         this.init_node()
         this.init_style()
         this.init_event()
-        this.div_el.appendChild(this.el)
-        this.init()
+    }
+    render() {
+
+    }
+    init_default_div_style() {
+        this.set_div_style({
+            border: "1px solid #000"
+        })
     }
     set_attr(key: string, value: any) {
         this.el.setAttribute?.(key, value)
@@ -36,27 +53,30 @@ export class Div {
     init_event() {
 
     }
-    static create_element(name: string) {
+    create_element(name: string): HTMLElement | SVGElement {
         return web_dom.createElement(name)
     }
     init_node() {
-        this.el = Div.create_element("div")
-    }
-    init() {
 
     }
     mount(el: HTMLElement) {
         el.appendChild(this.div_el)
+        this.render()
         return this
     }
-    add_child(c: Div) {
+    add_child(c: any) {
         c.mount(this.el)
+        this.childs.push(c)
+        return this
     }
     set_childs(childs: Div[]) {
         for (var i = 0; i < childs.length; i++) {
             this.add_child(childs[i])
         }
         return this
+    }
+    add_childs(childs: Div[]) {
+        return this.set_childs(childs)
     }
     set_html(text: string) {
         this.el.innerHTML = text
@@ -68,6 +88,6 @@ export class Div {
     }
 }
 
-export function div() {
-    return new Div()
+export function div(node_type?: string) {
+    return new Div(node_type)
 }
