@@ -32,9 +32,7 @@ class Solution:
             l1=bisect.bisect_left(rooms,[min_size,0],lo=l)
             if l>=len(rooms):
                 break
-            for i in range(l,l1):
-                remove_id=bisect.bisect_left(sort_id,rooms[i][0])
-                sort_id.pop(remove_id)
+
             self.log(sort_id,min_size,l1,index)
             li=bisect.bisect_left(sort_id,index)
             ri=bisect.bisect_right(sort_id,index)
@@ -44,6 +42,7 @@ class Solution:
                 ret[idx]=sort_id[ri]
             l=l1
         return ret
+    
     def check(self,*args):
         pass
     
