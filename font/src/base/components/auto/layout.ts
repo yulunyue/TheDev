@@ -6,7 +6,7 @@ export class Layout extends Div {
     direction: number
     type: number
     constructor(direction?: number, type?: number) {
-        super("div", "")
+        super("div")
         this.direction = direction | Layout.VERTICAL
         this.type = type | Layout.FLEX_LAYOUT
 
@@ -23,8 +23,9 @@ export class Layout extends Div {
         return super.add_child(c)
     }
     render_flex() {
+        console.log(this.direction)
         this.set_div_style({
-            flexDirection: "row",
+            flexDirection: this.direction == Layout.HORIZONTAL ? "row" : "column",
             display: "flex"
         })
     }
