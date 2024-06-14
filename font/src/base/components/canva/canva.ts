@@ -36,7 +36,6 @@ export class Canva extends Div {
 export function canca_dev() {
     return new Canva().adds([
         text("xxx").set_pos(20, 20)
-
     ]).draw()
 }
 export function canca() {

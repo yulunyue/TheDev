@@ -4,19 +4,29 @@ export class Div {
     el: HTMLElement | SVGElement
     div_el: HTMLElement | SVGElement
     node_type: string
+    childs: Div[]
     constructor(node_type: string, parent_node_type: string = "div") {
+        this.childs = []
         this.node_type = node_type
         this.el = this.create_element(this.node_type)
         if (parent_node_type) {
-            this.div_el = this.create_element(parent_node_type)
+            this.div_el = web_dom.createElement(parent_node_type)
             this.div_el.appendChild(this.el)
+            this.init_default_div_style()
         } else {
             this.div_el = this.el
         }
         this.init_node()
         this.init_style()
         this.init_event()
-        this.init()
+    }
+    render() {
+
+    }
+    init_default_div_style() {
+        this.set_div_style({
+            border: "1px solid #000"
+        })
     }
     set_attr(key: string, value: any) {
         this.el.setAttribute?.(key, value)
@@ -49,15 +59,14 @@ export class Div {
     init_node() {
 
     }
-    init() {
-
-    }
     mount(el: HTMLElement) {
         el.appendChild(this.div_el)
+        this.render()
         return this
     }
     add_child(c: any) {
         c.mount(this.el)
+        this.childs.push(c)
         return this
     }
     set_childs(childs: Div[]) {

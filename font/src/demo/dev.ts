@@ -2,12 +2,13 @@ import web_dom from "../base/web/web_dom";
 import { Layout } from "../base/components/auto/layout";
 import { DEV_COMPONENT } from "../base/components/export"
 class Demo extends Layout {
-    init(): void {
+    init() {
         for (var key in DEV_COMPONENT) {
             this.add_child(DEV_COMPONENT[key]())
         }
+        return this
     }
 }
 export default function () {
-    new Demo(Layout.VERTICAL).mount(web_dom.get_body())
+    new Demo(Layout.VERTICAL).init().mount(web_dom.get_body())
 }
