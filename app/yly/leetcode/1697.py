@@ -19,43 +19,60 @@ class TreeNode:
         self.left = left
         self.right = right
 
+class UniFind:
+    def __init__(self,r) -> None:
+        self.p=dict()
+        self.size=dict()
+        for v in r:
+            self.p[v]=v
+            self.size[v]=1
+
+    def merge(self,f,t):
+        f1=self.find(f)
+        t1=self.find(t)
+        if f1==t1:
+            return False
+        self.p[f1]=t1
+        self.size[t1]+=self.size[f1]
+        self.size[f1]=0
+        return True
+    
+    def find(self,v):
+        if self.p[v]!=v:
+            self.p[v]=self.find(self.p[v])
+        return self.p[v]
+    
+    def update(self):
+        for k in self.p:
+            self.find(k)
+
+    def get_pkeys(self):
+        return set(list(self.p.values()))
+
 class Solution:
     def get_cases(self):
         return [
-             [3, [[0,1,2],[1,2,4],[2,0,8],[1,0,16]], [[0,1,2],[0,2,5]],[false,true]],
+            [3, [[0,1,2],[1,2,4],[2,0,8],[1,0,16]], [[0,1,2],[0,2,5]],[false,true]],
             [5, [[0,1,10],[1,2,5],[2,3,9],[3,4,13]],  [[0,4,14],[1,4,13]],[true,false]],
            
         ]
 
     def distanceLimitedPathsExist(self, n: int, edgeList: List[List[int]], queries: List[List[int]]) -> List[bool]:
-        g=[[None]*n for _ in range(n)]
-        for f,t,v in edgeList:
-            if g[f][t] is None or v<g[f][t]:
-                g[t][f]=g[f][t]=v
-        for g1 in g:
-            self.log(g1)
-        # @lru_cache(None)
-        # mp=dict()
-        def query(f,t,vt:set):
-            if f==t:
-                return 0
-            # if (f,t)  in mp:
-            #     return mp[f,t]
-            vt.add(f)
-            ret=inf
-            for i in range(n):
-                if g[f][i] is None or i in vt:
-                    continue
-                ret=min(ret,max(g[f][i],query(i,t,vt)))
-            # mp[f,t]=mp[t,f]=ret
-            self.log(f,t,ret)
-            vt.remove(f)
-            return ret
+        edgeList.sort(key=lambda v:v[2])
+        f=UniFind(range(n))
+        ans=[False]*len(queries)
+        queries=sorted(enumerate(queries),key=lambda a:a[1][2])
+        k=0
+        for i,(p,q,d) in queries:
+            while k<len(edgeList) and edgeList[k][2]<d:
+                f.merge(edgeList[k][0],edgeList[k][1])
+                k+=1
+            ans[i]=f.find(p)==f.find(q) 
+        return ans
 
 
-        return [query(f,t,set())<v for f,t,v in queries]
-
-
+    def test(self,*args):
+        return self.distanceLimitedPathsExist(*args)
     def check(self,*args):
         pass
 
