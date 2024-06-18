@@ -8,11 +8,11 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "app/yly/leetcode/1847.py",
+            "program": "app/yly/leetcode/1889.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
-                "closestRoom"
+                "test"
             ]
         }
     ]

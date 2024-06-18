@@ -16,16 +16,23 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(dist = [7,3,5,5], speed = 1, hoursBefore = 10, result=-1),
+            dict(dist = [7,3,5,5], speed = 2, hoursBefore = 10, result=2),
+            dict(dist = [1,3,2], speed = 4, hoursBefore = 2, result=1),
         ]
+    def minSkips(self, dist: List[int], speed: int, hoursBefore: int) -> int:
+        pass
 
     
-    def test(self,**kg):
-        return self.xx(**kg)
+    def test(self,**kw):
+        return self.minSkips(**kw)
 
+    def init(self,*args):
+        pass
 
     def __init__(self,*args) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
+        self.init(*args)
         if self.local_debug is None:
             print(sys.argv[-1],"not find")
     logs = ""
@@ -49,7 +56,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs=""
-            ep=case.pop("result")
+            ep=case.pop('result')
             try:
                 r=self.local_debug(**case)
                 self.log("finish")
@@ -58,7 +65,7 @@ class Solution:
                 traceback.print_exc()
                 r=None
             if not self.diff(r,ep):
-                print(case,r,ep)
+                print(case,f'r:{r},result:{ep}')
                 print(self.logs)
                 break
             
