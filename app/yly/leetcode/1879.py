@@ -1,7 +1,7 @@
 from typing import List,Dict,Optional
 from collections import defaultdict, deque,Counter
 from itertools import accumulate,product
-from functools import lru_cache,cache
+from functools import lru_cache
 import bisect
 import sys
 import math
@@ -16,11 +16,32 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
+            [[100,26,12,62,3,49,55,77,97],[98,0,89,57,34,92,29,75,13],200],
+            [[1,2],[2,3],2]
         ]
 
-    
+    def minimumXORSum(self, nums1: List[int], nums2: List[int]) -> int:
+        ret=[]
+        ans=[dict(),dict()]
+        result=0
+        for i in range(len(nums1)):
+            for j in range(len(nums2)):
+                tmp=nums1[i] ^ nums2[j]
+                ret.append([tmp-nums1[i],i,j])
+        ret.sort()
+        for v,i,j in ret:
+            if i in ans[0] or j in ans[1]:
+                continue
+            ans[0][i]=ans[1][j]=1
+            result+=v+nums1[i]
+        self.log(ret)
+        self.log(ans)
+        return result
+
+
+
     def test(self,*args):
-        return self.xx(*args)
+        return self.minimumXORSum(*args)
 
     def init(self,*args):
         pass
