@@ -1,7 +1,7 @@
 from typing import List,Dict,Optional
 from collections import defaultdict, deque,Counter
 from itertools import accumulate,product
-from functools import lru_cache
+from functools import lru_cache,cache
 import bisect
 import sys
 import math
