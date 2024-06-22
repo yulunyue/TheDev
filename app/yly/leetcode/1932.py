@@ -11,46 +11,72 @@ null=None
 true=True
 false=False
 M=10**9 + 7
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left:TreeNode = left
+        self.right:TreeNode = right
+class UniFind:
+    def __init__(self) -> None:
+        self.p=dict()
+        self.size=dict()
 
+
+    def merge(self,f,t):
+        f1=self.find(f)
+        t1=self.find(t)
+        if f1==t1:
+            return False
+        self.p[f1]=t1
+        self.size[t1]+=self.size[f1]
+        self.size[f1]=0
+        return True
+    
+    def find(self,v):
+        if v not in self.p:
+            self.p[v]=v
+            self.size[v]=1
+        if self.p[v]!=v:
+            self.p[v]=self.find(self.p[v])
+        return self.p[v]
+    
+    def update(self):
+        for k in self.p:
+            self.find(k)
+
+    def get_pkeys(self):
+        return set(list(self.p.values()))
+    
 
 class Solution:
     def get_cases(self):
         return [
-            dict(maxTime = 30, edges = [[0,1,10],[1,2,10],[2,5,10],[0,3,1],[3,4,10],[4,5,15]], passingFees = [5,1,2,20,20,3],result=11),
-            dict(maxTime = 30, edges = [[2,9,14],[1,8,25],[6,10,1],[8,0,4],[0,4,12],[7,11,30],[10,3,26],[9,8,8],[3,10,23],[11,5,19],[4,0,4],[5,4,12],[7,3,19],[10,9,5],[1,10,22],[0,2,6],[9,4,15],[10,5,25],[9,11,10],[9,1,21],[9,6,19],[10,8,28]],passingFees =[24,12,24,30,18,20,18,30,28,10,6,7],result=59)
+            dict(trees = [[2,1],[3,2,5],[5,4]],result=[3,2,5,1,null,4])
         ]
+    def canMerge(self, trees: List[TreeNode]) -> Optional[TreeNode]:
+        n = len(trees)
+        uf=UniFind()
+        res=dict()
+        for t in trees:
+            res[t.val]=t
+            if t.left:
+                uf.merge(t.left.val, t.val)
+            if t.right:
+                uf.merge(t.right.val,t.val)
 
-    def minCost(self, maxTime: int, edges: List[List[int]], passingFees: List[int]) -> int:
-        g=defaultdict(list)
-        n=len(passingFees)
-        for a,b,t in edges:
-            g[a].append([b,t])
-            g[b].append([a,t])
-        q=[[passingFees[0],0,0]]
-        vt=dict()
-        vt[0]=[passingFees[0],0]
-        while q:
-            use_money,use_time,idx=q.pop(0)
-            self.log(use_money,idx,use_time)
-            for nid,tm in g[idx]:
-                nt=use_time+tm
-                nm=use_money+passingFees[nid]
-                if use_time+tm>maxTime:
-                    continue
-                if nid in vt and (vt[nid][0]<=nm and vt[nid][1]<=nt):
-                    continue
-                if nid in vt:
-                    vt[nid]=[min(nm,vt[nid][0]),min(nt,vt[nid][1])]
-                else:
-                    vt[nid]=[nm,nt]
-                q.append([nm,nt]+[nid])
- 
-
-        return vt[n-1][0] if n-1 in vt else -1
+        s2=set()
+        for n in trees:
+            a=uf.find(n.val)
+            
+            s2.add()
+        if len(s2)==1:
+            return res[list(s2)[0]]
+        return None 
+        
 
     
     def test(self,**kg):
-        return self.minCost(**kg)
+        return self.canMerge(**kg)
 
 
     def __init__(self,*args) -> None:
