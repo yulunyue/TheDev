@@ -28,10 +28,9 @@ class Solution:
             '&':lambda a,b:a&b,
             '|':lambda a,b:a|b
         }
-        def util(s:str):
+        def util(ans,state,op,sss:str):
             stacks:List[list]=[]
-            ans,state,last_op2=[None,None],None,None
-            def set_state(state1,last_op,ans1):
+            def set_state(state1,ans1,last_op):
                 if last_op is None:
                     return ans1,state1
                 else:
@@ -40,30 +39,29 @@ class Solution:
                     else:
                         ans2=min(ans[0]+ans1[0],ans[0]+1,ans1[0]+1),min(ans[1],ans1[1])
                     self.log(state,ans,last_op,state1,ans1,ans2,stacks)
-                    return ans2,op_fn[last_op](state)
+                    return ans2,op_fn[last_op](state,state1)
                 
-            for si in s:
+            for si in sss:
                 if si=='(':
                     stacks.append([])
                 elif si==')':
+                    # while stacks and not stacks[-1]:
+                    #     stacks.pop()
                     s3="".join(stacks.pop())
-                    ans1,state1=util(s3)
-                    ans,state=set_state(state1,last_op2,ans1)
-                    if stacks:
-                        stacks[-1].append(str(state))    
+                    ans,state=set_state(ans1,state1,op,*util(ans,state,None,s3))
                 elif stacks:
                     stacks[-1].append(si)    
                 elif si not in op_fn:
                     state1=1 if si=='1' else 0
                     ans1=[1,0] if si=='1' else [0,1]
-                    ans,state=set_state(state1,last_op2,ans1)
+                    ans,state=set_state(ans1,state1,op)
                 else:
-                    last_op2=si
-
-            self.log(f'ep:[{s}]',ans,state)
+                    op=si
+                # self.log(si,ans,state,stacks)
+            self.log(f'ep:[{sss}] {ans} {state}')
             return ans,state
-        ret,s=util(expression)
-        return ret[1-s]
+        ret,a=util(None,[None,None],None,expression)
+        return ret[1-a]
     def test(self,**kg):
         return self.minOperationsToFlip(**kg)
 
@@ -121,4 +119,7 @@ if __name__ == '__main__':
     Solution().run()
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2dbcb9e9a146e1800034e90ccfec7af37298b9c6

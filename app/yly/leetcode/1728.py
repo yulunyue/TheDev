@@ -21,39 +21,66 @@ class TreeNode:
 class Solution:
     def get_cases(self):
         return [
-            [["####F","#C...","M...."], 1, 2,true]
+            [["####F","#C...","M...."], 1, 2,true],
+            [["M.C...F"],1,3,false],
+            
         ]
+
+    def retu(self,*args):
+        self.log(*args)
+        return args[-1]
 
     def canMouseWin(self, grid: List[str], catJump: int, mouseJump: int) -> bool:
         n = len(grid)
         m = len(grid[0])
-        cat=[0,0]
-        mouse=[0,0]
-        take=[0,0]
+        block=0
+        dr=[[0,1],[0,-1],[1,0],[-1,0]]
         for i in range(n):
-            self.log(grid[i])
             for j in range(m):
                 if grid[i][j]=='C':
-                    cat=[i,j]
+                    cat=(i,j)
                 elif grid[i][j]=='M':
-                    mouse=[i,j]
+                    mouse=(i,j)
                 elif grid[i][j]=='F':
-                    take=[i,j]
-        vt=dict()
-        start_state=mouse[0],mouse[1],cat[0],cat[1]
-        vt[start_state]=0
-        q=[start_state]
-        while q:
-            p=q
-            q=[]
-            for my,mx,cy,cx in p:
-                pass
+                    take=(i,j)
+                elif grid[i][j]=='#':
+                    block+=1
+        max_turn=(n*m-block-2)*2
+        
 
-        return False
+        @lru_cache(None)
+        def dfs(cat,mouse,t):
+            if t>max_turn or mouse==cat or cat==take:
+                return False
+            if mouse==take:
+                return True
+            y,x=mouse if t%2==0 else cat
+            jump=mouseJump if t%2==0 else catJump
+            for dy,dx in dr:
+                for step in range(jump+1):
+                    ny,nx=y+step*dy,x+step*dx
+                    if not step and t%2==0:
+                        continue
+                    if ny<0 or nx<0 or ny>=n or nx>=m or grid[ny][nx]=='#':
+                        break
+                    if t%2==0:
+                        mouse=(ny,nx)
+                    else:
+                        cat=(ny,nx)
+                    mouse_win = dfs(cat,mouse,t+1)
+                    if mouse_win and t%2==0:
+                        return True
+                    if not mouse_win and t%2==1:
+                        return False
+            return False if t%2==0 else True
+        return dfs(cat,mouse,0)
         
 
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.canMouseWin(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
@@ -61,7 +88,7 @@ class Solution:
             print(sys.argv[-1],"not find")
     logs = ""
     def log(self, *s):
-        if not self.local_debug or len(self.logs)>=2048:
+        if not self.local_debug or len(self.logs)>=20480:
             return
         self.logs += " ".join([str(v) for v in s])+"\n"
     

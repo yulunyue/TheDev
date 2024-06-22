@@ -7,7 +7,7 @@ export class Div {
     childs: Div[]
     constructor(node_type: string, parent_node_type: string = "div") {
         this.childs = []
-        this.node_type = node_type
+        this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         if (parent_node_type) {
             this.div_el = web_dom.createElement(parent_node_type)
@@ -25,7 +25,9 @@ export class Div {
     }
     init_default_div_style() {
         this.set_div_style({
-            border: "1px solid #000"
+            width: 1,
+            height: 1,
+            position: "absolute"
         })
     }
     set_attr(key: string, value: any) {

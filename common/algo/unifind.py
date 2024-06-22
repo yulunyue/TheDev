@@ -1,10 +1,8 @@
 class UniFind:
-    def __init__(self,r) -> None:
+    def __init__(self) -> None:
         self.p=dict()
         self.size=dict()
-        for v in r:
-            self.p[v]=v
-            self.size[v]=1
+
 
     def merge(self,f,t):
         f1=self.find(f)
@@ -17,6 +15,9 @@ class UniFind:
         return True
     
     def find(self,v):
+        if v not in self.p:
+            self.p[v]=v
+            self.size[v]=1
         if self.p[v]!=v:
             self.p[v]=self.find(self.p[v])
         return self.p[v]

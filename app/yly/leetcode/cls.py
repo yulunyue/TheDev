@@ -49,7 +49,6 @@ class MKAverage:
                 e=getattr(r,m[i])(*inp[i])       
                 
                 if not r.diff(e,es[i]):
-                    r.check(*case,e)
                     print(r.logs)
                     print(e,es[i])
                     flag=False
