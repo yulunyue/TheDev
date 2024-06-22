@@ -8,7 +8,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "app/yly/leetcode/1728.py",
+            "program": "app/yly/leetcode/3187.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [

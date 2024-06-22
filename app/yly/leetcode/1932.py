@@ -17,89 +17,73 @@ class TreeNode:
         self.left:TreeNode = left
         self.right:TreeNode = right
 
-    @staticmethod
-    def make_two_search(arr:List[int]):
-        root=TreeNode(arr[0])
-        pass
+def make_two_search(arr:List[int]):
+    root=TreeNode(arr[0])
+    for v in arr[1:]:
+        insert_seach_node(root,TreeNode(v))
+    return root
 
-class UniFind:
-    def __init__(self) -> None:
-        self.p=dict()
-        self.size=dict()
+def insert_seach_node(self:TreeNode,n:TreeNode):
+    if n.val<self.val:
+        if self.left is None:
+            self.left=n
+        elif self.left.val==n.val:
+            self.left=n
+        else:
+            insert_seach_node(self.left,n)
+    elif n.val>self.val:
+        if self.right is None:
+            self.right=n
+        elif self.right.val==n.val:
+            self.right=n
+        else:
+            insert_seach_node(self.right,n)
 
-
-    def merge(self,f,t):
-        f1=self.find(f)
-        t1=self.find(t)
-        if f1==t1:
-            return False
-        self.p[f1]=t1
-        self.size[t1]+=self.size[f1]
-        self.size[f1]=0
-        return True
-    
-    def find(self,v):
-        if v not in self.p:
-            self.p[v]=v
-            self.size[v]=1
-        if self.p[v]!=v:
-            self.p[v]=self.find(self.p[v])
-        return self.p[v]
-    
-    def update(self):
-        for k in self.p:
-            self.find(k)
-
-    def get_pkeys(self):
-        return set(list(self.p.values()))
+def tree_to_array(n:TreeNode):
+    ret=[]
+    stack=[n]
+    while stack:
+        c=stack.pop(0)
+        if c:
+            ret.append(c.val)
+            stack.append(c.left)
+            stack.append(c.right)
+    return ret
     
 
 class Solution:
     def get_cases(self):
         return [
+            dict(trees = [[5,3,8],[3,2,6]],result=[]),
             dict(trees = [[2,1],[3,2,5],[5,4]],result=[3,2,5,1,null,4])
         ]
     def canMerge(self, trees: List[TreeNode]) -> Optional[TreeNode]:
         n = len(trees)
-        uf=UniFind()
-        res=dict()
+        tree_p:dict[str,TreeNode]=dict()
+        tree_c:Dict[str,TreeNode]=dict()
         for t in trees:
-            res[t.val]=t
+            tree_p[t.val]=t
             if t.left:
-                uf.merge(t.left.val, t.val)
+                tree_c[t.left.val]=t
             if t.right:
-                uf.merge(t.right.val,t.val)
+                tree_c[t.right.val]=t
 
-        def replace(a:TreeNode,b:TreeNode):
-            if b.val<a.val:
-                if a.left.val==b.val:
-                    a.left=b
-                else:
-                    replace(a.left,b)
-            else:
-                if a.right.val==b.val:
-                    a.right=b
-                else:
-                    replace(a.right,b)
 
-        s2=set()
+        root=None
         for n in trees:
-            a=uf.find(n.val)
-            replace(res[a],n)
-            s2.add(a)
-        if len(s2)==1:
-            return res[list(s2)[0]]
-        return None 
+            if n.val not in tree_c:
+                if root is not None:
+                    return
+                root=n
+                continue
+            insert_seach_node(tree_c[n.val],n)
+
+        return root
         
 
     
     def test(self,trees: List[TreeNode]):
-        trs=[]
-        for arr in trees:
-            trs.append(TreeNode(arr[0]))
-            for v in trs[1:]:
-                trs.in
-        return self.canMerge(trees)
+        return tree_to_array(self.canMerge([make_two_search(t) for t in trees]))
 
 
     def __init__(self,*args) -> None:
