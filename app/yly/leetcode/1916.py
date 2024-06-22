@@ -16,38 +16,26 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(packages = [2,3,5], boxes = [[4,8],[2,8]], result=6),
-            dict(packages = [3,5,8,10,11,12],boxes=[[12],[11,9],[10,5,14]],result=9),
-            dict(packages = [2,3,5], boxes = [[1,4],[2,3],[3,4]],result=-1)
-            
+            dict(prevRoom = [-1,0,0,1,2],result=6)
         ]
 
-    def minWastedSpace(self, packages: List[int], boxes: List[List[int]]) -> int:
-        n = len(boxes)
+    def waysToBuildRooms(self, prevRoom: List[int]) -> int:
+        n=len(prevRoom)-1
+        g=defaultdict(list)
+        for i,v in enumerate(prevRoom):
+            g[v].append(i)
         
-        packages.sort()
-        ps=[0]+list(accumulate(packages))
-        for box in boxes:
-            box.sort()
-        ret=inf
-        for box in boxes:
-            i,j=len(box)-1,len(packages)-1
-            res = 0
-            while box[i]>=packages[j] and i>=0:
-                if i==0:
-                    j1=0
-                else:
-                    j1=bisect.bisect_left(packages,box[i-1])
-                res+=(j-j1+1)*box[i]-(ps[j+1]-ps[j1])
-                i-=1
-            if res!=0:
-                ret=min(res,ret)
-        return ret if ret!=inf else -1
-
+        def dfs(idx):
+            ct=1
+            for v in g[idx]:
+                ct+=dfs(v)
+            self.log(idx,ct)            
+            return ct
+        return dfs(0)
 
 
     def test(self,**kg):
-        return self.minWastedSpace(**kg)
+        return self.waysToBuildRooms(**kg)
 
 
     def __init__(self,*args) -> None:

@@ -34,6 +34,7 @@ class Solution:
             a_m[a].append(i)
         q=[]
         ret=0
+        bisect.bi
         for w in target:
             if not a_m[w]:
                 continue
@@ -43,6 +44,8 @@ class Solution:
             ret=max(len(q),ret)
             self.log(w,a_m[w],q)
         return len(target)-ret
+    def test(self,*args):
+        return self.minOperations(*args)
     def check(self,*args):
         pass
 
