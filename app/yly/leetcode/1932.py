@@ -16,6 +16,12 @@ class TreeNode:
         self.val = val
         self.left:TreeNode = left
         self.right:TreeNode = right
+
+    @staticmethod
+    def make_two_search(arr:List[int]):
+        root=TreeNode(arr[0])
+        pass
+
 class UniFind:
     def __init__(self) -> None:
         self.p=dict()
@@ -64,19 +70,36 @@ class Solution:
             if t.right:
                 uf.merge(t.right.val,t.val)
 
+        def replace(a:TreeNode,b:TreeNode):
+            if b.val<a.val:
+                if a.left.val==b.val:
+                    a.left=b
+                else:
+                    replace(a.left,b)
+            else:
+                if a.right.val==b.val:
+                    a.right=b
+                else:
+                    replace(a.right,b)
+
         s2=set()
         for n in trees:
             a=uf.find(n.val)
-            
-            s2.add()
+            replace(res[a],n)
+            s2.add(a)
         if len(s2)==1:
             return res[list(s2)[0]]
         return None 
         
 
     
-    def test(self,**kg):
-        return self.canMerge(**kg)
+    def test(self,trees: List[TreeNode]):
+        trs=[]
+        for arr in trees:
+            trs.append(TreeNode(arr[0]))
+            for v in trs[1:]:
+                trs.in
+        return self.canMerge(trees)
 
 
     def __init__(self,*args) -> None:
