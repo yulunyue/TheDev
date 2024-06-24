@@ -20,6 +20,7 @@ class TestAlgo(TestBase):
             list(permutations([1,2,3],2)),
             [(1,2),(1,3),(2,3)]
         )
-
+    def test_math(self):
+        self.expect(math.gcd(12),[])
 if __name__=="__main__":
     TestAlgo().run()
