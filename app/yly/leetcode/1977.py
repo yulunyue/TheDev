@@ -16,11 +16,26 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(num="327", result=2)
         ]
 
+    def numberOfCombinations(self, num: str) -> int:
+        n = len(num)
+        stacks = []
+
+        def dfs(a, s):
+            if a == n:
+                self.log(stacks+[s])
+                return
+            dfs(a+1, s+num[a])
+            stacks.append(s)
+            dfs(a+1, "")
+            stacks.pop()
+
+        dfs(1, num[0])
+
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.numberOfCombinations(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
