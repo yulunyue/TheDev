@@ -16,11 +16,33 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(nums = [5,-7,3,5], goal = 6,result=0)
         ]
-
+    def minAbsDifference(self, nums: List[int], goal: int) -> int:
+        n=len(nums)//2
+        def help(m):
+            mi=1<<len(m)
+            st=set()
+            for i in range(mi):
+                tmp=0
+                for j in range(i.bit_length()):
+                    if i>>j&1:
+                        tmp+=m[j]
+                st.add(tmp)
+            return sorted(list(st))
+        a1=help(nums[0:len(nums)//2])
+        a2=help(nums[len(nums)//2:])
+        ret=inf
+        self.log(a1,a2)
+        for v in a1:
+            idx=bisect.bisect_left(a2,goal-v)
+            if idx<len(a2):
+                ret=min(ret,abs(a2[idx]+v-goal))
+            if idx>0:
+                ret=min(ret,abs(a2[idx-1]+v-goal))
+        return ret
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.minAbsDifference(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -58,7 +80,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, r, ep)
+                print(case, 'result',r, 'except',ep)
                 print(self.logs)
                 break
 

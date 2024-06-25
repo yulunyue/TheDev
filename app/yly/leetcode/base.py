@@ -58,7 +58,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, r, ep)
+                print(case, 'result',r, 'except',ep)
                 print(self.logs)
                 break
 
