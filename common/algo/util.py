@@ -1,6 +1,6 @@
 import math
 import itertools
-
+from functools import lru_cache
 def combinations(array,n):
     return itertools.combinations(array,n)
 
@@ -27,3 +27,30 @@ def sin(v):
 
 def cos(v):
     return math.cos(pi_float(v))
+
+def decomposition_prime_factors(v):
+    ret=dict()
+    i=2
+    while i*i<=v:
+        while v%i==0:
+            if i not in ret:
+                ret[i]=0
+            ret[i]+=1
+            v=v//i
+        i+=1
+    if v>1:
+        ret[v]=1
+    return ret
+
+@lru_cache(None)
+def factorial(n):
+    if n<=2:
+        return n
+    return n*factorial(n-1)
+
+@lru_cache(None)
+def com_c(a,b):
+    if a==0 or b==0:
+        return 1
+    return factorial(a+b)//factorial(b)//factorial(a)
+
