@@ -16,11 +16,56 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+<<<<<<<< HEAD:app/yly/leetcode/1977.py
+            dict(num="327", result=2)
         ]
 
+    def numberOfCombinations(self, num: str) -> int:
+        n = len(num)
+        stacks = []
+
+        def dfs(a, s):
+            if a == n:
+                self.log(stacks+[s])
+                return
+            dfs(a+1, s+num[a])
+            stacks.append(s)
+            dfs(a+1, "")
+            stacks.pop()
+
+        dfs(1, num[0])
+
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.numberOfCombinations(**kg)
+========
+            dict(nums = [5,-7,3,5], goal = 6,result=0)
+        ]
+    def minAbsDifference(self, nums: List[int], goal: int) -> int:
+        n=len(nums)//2
+        def help(m):
+            mi=1<<len(m)
+            st=set()
+            for i in range(mi):
+                tmp=0
+                for j in range(i.bit_length()):
+                    if i>>j&1:
+                        tmp+=m[j]
+                st.add(tmp)
+            return sorted(list(st))
+        a1=help(nums[0:len(nums)//2])
+        a2=help(nums[len(nums)//2:])
+        ret=inf
+        self.log(a1,a2)
+        for v in a1:
+            idx=bisect.bisect_left(a2,goal-v)
+            if idx<len(a2):
+                ret=min(ret,abs(a2[idx]+v-goal))
+            if idx>0:
+                ret=min(ret,abs(a2[idx-1]+v-goal))
+        return ret
+    def test(self, **kg):
+        return self.minAbsDifference(**kg)
+>>>>>>>> ca4f1152af5752ed5c82d73f4d52777a8b2134fd:app/yly/leetcode/1755.py
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
