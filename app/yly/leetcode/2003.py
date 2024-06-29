@@ -16,33 +16,43 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums = [5,-7,3,5], goal = 6,result=0)
+            dict(parents =[-1,0,0,2],nums =[5,3,2,1],result=[4,1,3,2]),
+            dict(parents = [-1,0,0,2], nums = [1,2,3,4],result=[5,1,1,1]),
         ]
-    def minAbsDifference(self, nums: List[int], goal: int) -> int:
-        n=len(nums)//2
-        def help(m):
-            mi=1<<len(m)
-            st=set()
-            for i in range(mi):
-                tmp=0
-                for j in range(i.bit_length()):
-                    if i>>j&1:
-                        tmp+=m[j]
-                st.add(tmp)
-            return sorted(list(st))
-        a1=help(nums[0:len(nums)//2])
-        a2=help(nums[len(nums)//2:])
-        ret=inf
-        self.log(a1,a2)
-        for v in a1:
-            idx=bisect.bisect_left(a2,goal-v)
-            if idx<len(a2):
-                ret=min(ret,abs(a2[idx]+v-goal))
-            if idx>0:
-                ret=min(ret,abs(a2[idx-1]+v-goal))
-        return ret
+    def smallestMissingValueSubtree(self, parents: List[int], nums: List[int]) -> List[int]:
+        g=defaultdict(list)
+        for i in range(1,len(parents)):
+            g[parents[i]].append(i)
+        result=[0]*len(parents)
+        def dfs(i,p):
+            min_vi=max_vi=nums[i]
+            if not g[i]:
+                result[i]=1 if nums[i]!=1 else 2
+                return result[i],min_vi,max_vi,1
+            num=1
+            for j in g[i]:
+                if j==p:
+                    continue
+                _,min_vj,max_vj,num1=dfs(j,i)
+                min_vi=min(min_vj,min_vi)
+                max_vi=max(max_vi,max_vj)
+                num+=num1
+            if min_vi!=1:
+                result[i]=1
+            elif max_vi==num:
+                result[i]=num+1
+            self.log(i,num,min_vi,max_vi)
+            return result[i],min_vi,max_vi,num
+            
+
+        dfs(0,-1)
+        return result
+
+        
+
+
     def test(self, **kg):
-        return self.minAbsDifference(**kg)
+        return self.smallestMissingValueSubtree(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

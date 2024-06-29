@@ -30,17 +30,10 @@ class Solution:
         cont_e=defaultdict(int)
         ct_n=[0]*(len(edges)+1)
         for e1,e2 in edges:
-            if e1>e2:
-                e1,e2=e2,e1
-            self.log(e1,e2)
             cont_e[e1]+=1
             cont_e[e2]+=1
-            cont_e[e1,e2]+=1
-        for i in range(1,n):
-            for j in range(i+1,n):
-                c=cont_e[i]+cont_e[j]-cont_e[i,j]
-                self.log(i,j,c)
-                ct_n[c]+=1
+
+
         ct_n1=list(accumulate(ct_n))
         # self.log(ct_n,ct_n1)
         ret=[]
