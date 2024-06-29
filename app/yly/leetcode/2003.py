@@ -16,40 +16,48 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(parents =[-1,0,0,2],nums =[5,3,2,1],result=[4,1,3,2]),
-            dict(parents = [-1,0,0,2], nums = [1,2,3,4],result=[5,1,1,1]),
+            dict(
+                parents=[-1, 0, 1, 0, 3, 3],
+                nums=[5, 4, 6, 2, 1, 3],
+                result=[7, 1, 1, 4, 2, 1]
+            ),
+            dict(
+                parents=[-1, 0, 0, 2],
+                nums=[1, 2, 3, 4],
+                result=[5, 1, 1, 1]
+            ),
+            dict(parents=[-1, 0, 0, 2],
+                 nums=[1, 2, 3, 4], result=[5, 1, 1, 1]),
+
         ]
+
     def smallestMissingValueSubtree(self, parents: List[int], nums: List[int]) -> List[int]:
-        g=defaultdict(list)
-        for i in range(1,len(parents)):
+        g = defaultdict(list)
+        for i in range(1, len(parents)):
             g[parents[i]].append(i)
-        result=[0]*len(parents)
-        def dfs(i,p):
-            min_vi=max_vi=nums[i]
-            if not g[i]:
-                result[i]=1 if nums[i]!=1 else 2
-                return result[i],min_vi,max_vi,1
-            num=1
+        result = [1]*len(parents)
+        # flag = [0]*(len(parents)+1)
+
+        def dfs(i, p):
+            if nums[i] == 1:
+                result[i] = 2
+                return True, result[i]
+            ret = 1
+
             for j in g[i]:
-                if j==p:
+                if j == p:
                     continue
-                _,min_vj,max_vj,num1=dfs(j,i)
-                min_vi=min(min_vj,min_vi)
-                max_vi=max(max_vi,max_vj)
-                num+=num1
-            if min_vi!=1:
-                result[i]=1
-            elif max_vi==num:
-                result[i]=num+1
-            self.log(i,num,min_vi,max_vi)
-            return result[i],min_vi,max_vi,num
-            
+                flag, v = dfs(j, i)
+                if not flag:
+                    continue
+                result[j] = v
+                if nums[j] == v:
+                    result[j] = v+1
+                return flag, result[j]
+            return ret, 1
 
-        dfs(0,-1)
+        dfs(0, -1)
         return result
-
-        
-
 
     def test(self, **kg):
         return self.smallestMissingValueSubtree(**kg)
@@ -90,7 +98,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result',r, 'except',ep)
+                print(case, 'result', r, 'except', ep)
                 print(self.logs)
                 break
 

@@ -16,37 +16,41 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(num = '333',result=3),
-            dict(num = "9999999999999",result=101),
-            dict(num = "327",result=2),
-            dict(num = "094",result=0),
+            dict(num="1203", result=2),
+            dict(num="327", result=2),
+            dict(num="3333", result=5),
         ]
+
     def numberOfCombinations(self, num: str) -> int:
-        if num[0]=='0':
-            return 0
-        def small(a,b):
-            # self.log('small',a,b)
-            if len(a)<len(b):
+
+        n = len(num)
+
+        def small(a, b):
+            if len(a) < len(b):
                 return True
-            if len(a)>len(b):
+            if len(a) > len(b):
                 return False
-            return a<b
-        # @lru_cache(None)
-        stack=[]
-        def dfs(i,s):
-            if i>=len(num):
-                self.log(i,s,stack+[s])
+            return a < b
+        stacks = []
+
+        @lru_cache(None)
+        def dfs(a, s):
+            if s[0] == '0':
+                return 0
+            if a == n:
+                # self.log(stacks+[s])
                 return 1
-            
-            ret=dfs(i+1,s+num[i])
-            for j in range(i,len(num)):
-                if small(num[i:j+1],s):
-                    continue
-                stack.append(s)
-                ret+=dfs(j+1,num[i:j+1])
-                stack.pop()
-            return ret%M
-        return dfs(1,num[0])
+            ret = dfs(a+1, s+num[a]) % M
+            # stacks.append(s)
+            j = a+1
+            while j <= n and small(num[a:j], s):
+                j += 1
+            if j <= n:
+                ret += dfs(j, num[a:j])
+            # stacks.pop()
+            return ret % M
+        return dfs(1, num[0])
+
     def test(self, **kg):
         return self.numberOfCombinations(**kg)
 
@@ -86,7 +90,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result',r, 'except',ep)
+                print(case, r, ep)
                 print(self.logs)
                 break
 
