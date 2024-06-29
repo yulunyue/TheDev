@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,56 +17,38 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-<<<<<<<< HEAD:app/yly/leetcode/1977.py
-            dict(num="327", result=2)
+            dict(s="4+8*8+8*8+8*4+4*8+8*8+8", answers=[268, 936, 768, 776, 268, 34, 268, 936, 460, 268, 804, 268, 712, 750, 268, 1000, 729, 520, 268, 268, 868, 760, 800, 908, 664, 268, 492, 676, 800, 904, 268, 268, 900, 376, 714, 268, 318, 268, 656, 544, 268, 268, 359, 904, 832, 992, 268, 484, 913, 268, 268, 712, 736, 712, 268, 653, 800, 844, 268, 919, 268,
+                 664, 888, 900, 868, 772, 928, 968, 932, 936, 832, 268, 664, 936, 652, 268, 544, 563, 876, 520, 172, 855, 868, 355, 813, 268, 268, 7, 964, 319, 888, 940, 968, 740, 268, 268, 268, 268, 664, 268, 548, 268, 268, 680, 992, 268, 268, 442, 268, 575, 583, 572, 736, 960, 590, 880, 936, 268, 268, 680, 652, 159, 548, 800, 240, 960, 768, 268], result=318),
+            dict(s="7+3*1*2", answers=[20, 13, 42], result=7)
         ]
 
-    def numberOfCombinations(self, num: str) -> int:
-        n = len(num)
-        stacks = []
+    def scoreOfStudents(self, s: str, answers: List[int]) -> int:
+        op = []
+        nums = []
+        ret_map = defaultdict(int)
+        ret = 0
+        for v in s:
+            if v == '+' or v == '*':
+                op.append(v)
+            else:
+                nums.append(int(v))
 
-        def dfs(a, s):
-            if a == n:
-                self.log(stacks+[s])
-                return
-            dfs(a+1, s+num[a])
-            stacks.append(s)
-            dfs(a+1, "")
-            stacks.pop()
-
-        dfs(1, num[0])
-
-    def test(self, **kg):
-        return self.numberOfCombinations(**kg)
-========
-            dict(nums = [5,-7,3,5], goal = 6,result=0)
-        ]
-    def minAbsDifference(self, nums: List[int], goal: int) -> int:
-        n=len(nums)//2
-        def help(m):
-            mi=1<<len(m)
-            st=set()
-            for i in range(mi):
-                tmp=0
-                for j in range(i.bit_length()):
-                    if i>>j&1:
-                        tmp+=m[j]
-                st.add(tmp)
-            return sorted(list(st))
-        a1=help(nums[0:len(nums)//2])
-        a2=help(nums[len(nums)//2:])
-        ret=inf
-        self.log(a1,a2)
-        for v in a1:
-            idx=bisect.bisect_left(a2,goal-v)
-            if idx<len(a2):
-                ret=min(ret,abs(a2[idx]+v-goal))
-            if idx>0:
-                ret=min(ret,abs(a2[idx-1]+v-goal))
+        @lru_cache(None)
+        def dfs(ops, nums):
+            if not ops:
+                ret_map[nums[0]] = 2
+            for i in range(len(ops)):
+                v = nums[i] + nums[i+1] if ops[i] == '+' else nums[i]*nums[i+1]
+                if v <= 1000:
+                    dfs(ops[:i]+ops[i+1:], nums[:i]+(v,)+nums[i+2:])
+        dfs(tuple(op), tuple(nums))
+        ret_map[eval(s)] = 5
+        for a in answers:
+            ret += ret_map[a]
         return ret
+
     def test(self, **kg):
-        return self.minAbsDifference(**kg)
->>>>>>>> ca4f1152af5752ed5c82d73f4d52777a8b2134fd:app/yly/leetcode/1755.py
+        return self.scoreOfStudents(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -103,7 +86,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result',r, 'except',ep)
+                print(case, 'result', r, 'except', ep)
                 print(self.logs)
                 break
 

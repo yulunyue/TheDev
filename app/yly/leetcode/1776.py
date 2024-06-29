@@ -1,90 +1,113 @@
-from sortedcontainers import SortedList
-from typing import List,Dict,Optional
-from collections import defaultdict, deque,Counter
-from itertools import accumulate,product
+from typing import List, Dict, Optional
+from collections import defaultdict, deque, Counter
+from itertools import accumulate, product
 from functools import lru_cache
 import bisect
 import sys
 import math
 import heapq
-inf=float("inf")
-null=None
-true=True
-false=False
-M=10**9 + 7
+inf = float("inf")
+null = None
+true = True
+false = False
+M = 10**9 + 7
 
 
 class Solution:
     def get_cases(self):
         return [
-            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]],
+            dict(
+                parents=[-1, 0, 0, 2],
+                nums=[1, 2, 3, 4],
+                result=[5, 1, 1, 1]
+            ),
+            dict(parents=[-1, 0, 0, 2],
+                 nums=[1, 2, 3, 4], result=[5, 1, 1, 1]),
+
         ]
 
-    def test(self, cars_pos:List[List[int]]):
-        n=len(cars_pos)
-        cars_pos = sorted([[cars_pos[i][0],cars_pos[i][1],i] for i in range(n)])
-        ret = [-1]*n
-        while len(cars_pos):
-            min_time,min_idx=inf,None
-            for i in range(1,len(cars_pos)):
-                speed_c=cars_pos[i-1][1]-cars_pos[i][1]
-                if speed_c<=0:
+    def smallestMissingValueSubtree(self, parents: List[int], nums: List[int]) -> List[int]:
+        g = defaultdict(int)
+        for i in range(1, len(parents)):
+            g[parents[i]].append(i)
+        result = [0]*len(parents)
+        flag = [0]*len(parents)
+
+        def dfs(i, p):
+            flag[i] = 1
+            min_vi = max_vi = nums[i]
+            if not g[i]:
+                result[i] = 1 if nums[i] != 1 else 2
+                return result[i]
+            ret = 1
+            for j in g[i]:
+                if j == p:
                     continue
-                user_time=(cars_pos[i][0]-cars_pos[i-1][1])/speed_c
-                if user_time<min_time:
-                    min_time=user_time
-                    min_idx=i
-            if min_idx is None:
-                break
-            ret[cars_pos[i][2]]=min_time
-            cars_pos.pop(min_idx)
-            break
-        return ret
+                s = dfs(j, i)
+                if s == 1:
+                    continue
+                while s < len(parents) and flag[s] == 1:
+                    s += 1
+                ret = s
+            result[i] = ret
+            # if min_vi != 1:
+            #     result[i] = 1
+            # elif max_vi == num:
+            #     result[i] = num+1
+            # self.log(i, num, min_vi, max_vi)
+            return result[i]  # , min_vi, max_vi, num
 
-    def check(self,*args):
-        pass
+        dfs(0, -1)
+        return result
 
-    def __init__(self) -> None:
-        self.local_debug=getattr(self,sys.argv[-1],None)
+    def test(self, **kg):
+        return self.smallestMissingValueSubtree(**kg)
+
+    def __init__(self, *args) -> None:
+        self.local_debug = getattr(self, sys.argv[-1], None)
         if self.local_debug is None:
-            print(sys.argv[-1],"not find")
+            print(sys.argv[-1], "not find")
     logs = ""
-    def log(self, *s):
-        if not self.local_debug or len(self.logs)>=2048:
+
+    def log(self, *s, tp: str = ""):
+        if not self.local_debug or len(self.logs) >= 2048:
             return
+        if tp:
+            self.draw(s[0], tp)
         self.logs += " ".join([str(v) for v in s])+"\n"
-    
+
+    def draw(self, s, tp: str):
+        from common.tool.draw import Draw
+        d = Draw()
+        if tp.startswith('bar'):
+            d.draw_bar_chart(s)
+        elif tp.startswith('graph'):
+            d.draw_graph(s)
+        d.save(f"data/log/{tp}.png")
+
     def run(self):
         if not self.local_debug:
             return
         for case in self.get_cases():
-            self.logs=""
+            self.logs = ""
+            ep = case.pop("result")
             try:
-                r=self.local_debug(*case[:-1])
+                r = self.local_debug(**case)
                 self.log("finish")
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                r=None
-            if not self.diff(r,case[-1]):
-                self.check(*case,r)
-                print(case,r)
+                r = None
+            if not self.diff(r, ep):
+                print(case, 'result', r, 'except', ep)
                 print(self.logs)
                 break
-            
-    def diff(self,a,b):
-        if isinstance(a,float) and isinstance(b,float):
-            return "%.2f"%(a)=="%.2f"%(b)
-        return a==b
 
-    
+    def diff(self, a, b):
+        if isinstance(a, float) and isinstance(b, float):
+            return "%.2f" % (a) == "%.2f" % (b)
+        return a == b
 
-
-
-      
 
 if __name__ == '__main__':
     Solution().run()
-
-
-

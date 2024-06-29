@@ -16,23 +16,40 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(num="327", result=2)
+            dict(num="1203", result=2),
+            dict(num="327", result=2),
+            dict(num="3333", result=5),
         ]
 
     def numberOfCombinations(self, num: str) -> int:
+
         n = len(num)
+
+        def small(a, b):
+            if len(a) < len(b):
+                return True
+            if len(a) > len(b):
+                return False
+            return a < b
         stacks = []
 
+        @lru_cache(None)
         def dfs(a, s):
+            if s[0] == '0':
+                return 0
             if a == n:
-                self.log(stacks+[s])
-                return
-            dfs(a+1, s+num[a])
-            stacks.append(s)
-            dfs(a+1, "")
-            stacks.pop()
-
-        dfs(1, num[0])
+                # self.log(stacks+[s])
+                return 1
+            ret = dfs(a+1, s+num[a]) % M
+            # stacks.append(s)
+            j = a+1
+            while j <= n and small(num[a:j], s):
+                j += 1
+            if j <= n:
+                ret += dfs(j, num[a:j])
+            # stacks.pop()
+            return ret % M
+        return dfs(1, num[0])
 
     def test(self, **kg):
         return self.numberOfCombinations(**kg)
