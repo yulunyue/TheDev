@@ -17,29 +17,30 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]]
+            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]],
+            [[[3,4],[5,4],[6,3],[9,1]],[2.00000,1.00000,1.50000,-1.00000]],
+            
         ]
 
-    def test(self, cars_pos:List[List[int]]):
+    def getCollisionTimes(self, cars_pos:List[List[int]]):
         n=len(cars_pos)
         cars_pos = sorted([[cars_pos[i][0],cars_pos[i][1],i] for i in range(n)])
-        ret = [-1]*n
-        while len(cars_pos):
-            min_time,min_idx=inf,None
-            for i in range(1,len(cars_pos)):
-                speed_c=cars_pos[i-1][1]-cars_pos[i][1]
-                if speed_c<=0:
-                    continue
-                user_time=(cars_pos[i][0]-cars_pos[i-1][1])/speed_c
-                if user_time<min_time:
-                    min_time=user_time
-                    min_idx=i
-            if min_idx is None:
-                break
-            ret[cars_pos[i][2]]=min_time
-            cars_pos.pop(min_idx)
-            break
-        return ret
+        ret = [inf]*n
+        q=[]
+        while cars_pos:
+            p,s,j=cars_pos.pop()
+            # 
+            while q and q[-1][1]>=s:
+                q.pop()
+            while q and q[0][1]>=s:
+                q.pop(0)
+            self.log(p,s,j,q)
+            for p1,s1,_ in q:
+                ret[j]=min((p1-p)/(s-s1),ret[j])
+            q.append((p,s,j))
+  
+
+        return [-1 if v==inf else v for v in ret]
 
     def check(self,*args):
         pass
