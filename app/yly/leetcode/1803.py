@@ -1,9 +1,7 @@
-from sortedcontainers import SortedList
 from typing import List,Dict,Optional
 from collections import defaultdict, deque,Counter
 from itertools import accumulate,product
 from functools import lru_cache
-import itertools
 import bisect
 import sys
 import math
@@ -14,53 +12,58 @@ true=True
 false=False
 M=10**9 + 7
 
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 class Solution:
     def get_cases(self):
         return [
-            [[1,2,1,4],2,4.1],
-             [[6,3,8,1,3,1,2,2], 4,6.1],
-            [[12,5,16,7,13,4,3,14,4,11,8,6,6,1,15,12],4,0],
-            [[5,3,3,6,3,3], 3,-1]
+<<<<<<<< HEAD:app/yly/leetcode/1639.py
+            [["acca","bbbb","caca"], "aba",6],
+========
+            [[1,4,2,7], 2, 6,6]
+>>>>>>>> 57b3861507dde46c9739ba962f4befd30cdd8f14:app/yly/leetcode/1803.py
         ]
+    def numWays(self, words: List[str], target: str) -> int:
+        m=len(words[0])
+        k=len(target)
+        wc=[defaultdict(int) for _ in range(m)]
+        for word in words:
+            for i in range(m):
+                wc[i][word[i]]+=1
 
-    def minimumIncompatibility(self, nums: List[int], k: int) -> int:
-        n = len(nums)
-        m = n // k
-        if m==1:
-            return 0
+        @lru_cache(None)
+        def dfs(i,j):
+            if j>=k:
+                return 1
+            if i>=m:
+                return 0
+            res=dfs(i+1,j)
+            if wc[i][target[j]]:
+                res+=wc[i][target[j]]*dfs(i+1,j+1)
+            return res%M
+            
+        return dfs(0,0)
+
+<<<<<<<< HEAD:app/yly/leetcode/1639.py
+========
+    def countPairs(self, nums: List[int], low: int, high: int) -> int:
         nums.sort()
-        stacks=[[0,[]] for _ in range(k)]
-        # self.log(idx2)
-        # @lru_cache(None)
-        def dfs(i):
-            if i>=n:
-                self.log([v[1] for v in stacks])
-                return sum(max(v[1])-min(v[1]) for v in stacks)
-            res=inf
-            for j in range(k):
-                si=1<<nums[i]
-                if stacks[j][0]&si:
-                    continue
-                if len(stacks[j][1])>=m:
-                    continue
-                stacks[j][0]+=si
-                stacks[j][1].append(nums[i])
-                res=min(res,dfs(i+1))
-                stacks[j][0]-=si
-                stacks[j][1].pop()
-                # stacks.pop()
-            return res
-        ans=dfs(0)
-        return -1 if ans==inf else ans
+        def find(v:int):
+            ret=0
+            v_m=(1<<v.bit_length())-1
+            while v>0:
+                i = bisect.bisect_right(nums,v_m)
+                self.log(i,v_m,v)
+                v_m=v_m>>1
+                v=v&v_m
+            return 0
+        return find(high)-find(low-1)
+>>>>>>>> 57b3861507dde46c9739ba962f4befd30cdd8f14:app/yly/leetcode/1803.py
 
     def check(self,*args):
         pass
+    
+    def test(self,*args):
+        return self.countPairs(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
@@ -89,6 +92,7 @@ class Solution:
                 print(case,r)
                 print(self.logs)
                 break
+            
     def diff(self,a,b):
         if isinstance(a,float) and isinstance(b,float):
             return "%.2f"%(a)=="%.2f"%(b)

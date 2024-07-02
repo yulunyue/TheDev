@@ -1,11 +1,19 @@
+from typing import List
 class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
+    def __init__(self, val=0,*args,**kwargs):
         self.val = val
-        self.left = left
-        self.right = right
+        self.childs=[]
+    
+    @property
+    def left(self):
+        if len(self.childs):
+            return self.childs[0]
+    @property
+    def right(self):
+        if len(self.childs):
+            return self.childs[-1]
 
-    @staticmethod
-    def load_from_edges(self, nums, edges):
-        nodes=[TreeNode(n) for n in nums]
-        for p,n in enumerate(edges):
-            pass
+
+    
+
+    

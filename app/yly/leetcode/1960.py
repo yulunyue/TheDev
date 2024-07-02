@@ -1,7 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
-from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -12,16 +11,45 @@ null = None
 true = True
 false = False
 M = 10**9 + 7
+S1 = 'xwxlxktiyjapmuqiezqqhqaieceiceetfpytqopmwjmtlbkzysihppbdqgtupqcgwzhbjriwbuwnekgspidlyhholgwhjsdspyufffrutkgnmtyrnikueahyefjtljstoynlwdnsmvlsjnmexeritzdividztirexemnjslvmsndwlnyotsjltjfeyhaeukinrytmngkturfffuypsdsjhwglohhyldipsgkenwubwirjbhzwgcqputgqdbpphisyzkbltmjwmpoqtypfteecieceiaqhqqzeiqumpajyitkxlxwx'
 
 
 class Solution:
     def get_cases(self):
         return [
-
+            dict(s="wtbptdhbjqsrwkxccxkwrsqjbhdtpbtw", result=1),
+            dict(s=S1, result=1245),
+            dict(s="ababbb", result=9)
         ]
 
+    def maxProduct(self, s: str) -> int:
+
+        @lru_cache(None)
+        def dfs(a, b):
+            if a > b:
+                return False, 0
+            if a == b:
+                return True, 1
+            if s[a] == s[b]:
+                is_huiwen, num = dfs(a+1, b-1)
+                if is_huiwen:
+                    # self.log(a, b, s[a:b+1], 2+num)
+                    return is_huiwen, 2+num
+                return is_huiwen, num
+            _, rn = dfs(a+1, b)
+            _, ln = dfs(a, b-1)
+            return False, max(rn, ln)
+        ret = 1
+        for i in range(0, len(s)-1):
+            a = dfs(0, i)
+            b = dfs(i+1, len(s)-1)
+            if a[1]*b[1] > ret:
+                self.log(a, i, b)
+                ret = max(ret, a[1]*b[1])
+        return ret
+
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.maxProduct(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -30,7 +58,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 204800:
             return
         if tp:
             self.draw(s[0], tp)
@@ -59,7 +87,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+                print(case, r, ep)
                 print(self.logs)
                 break
 

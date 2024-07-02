@@ -5,14 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: Module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "common.service.test",
+            "justMyCode": false
+        },
+        {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "app/yly/leetcode/1707.py",
+            "program": "app/yly/leetcode/1751.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
-                "maximizeXor"
+                "test"
             ]
         }
     ]

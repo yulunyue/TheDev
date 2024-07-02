@@ -16,57 +16,41 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-<<<<<<<< HEAD:app/yly/leetcode/1639.py
-            [["acca","bbbb","caca"], "aba",6],
-========
-            [[1,4,2,7], 2, 6,6]
->>>>>>>> 57b3861507dde46c9739ba962f4befd30cdd8f14:app/yly/leetcode/1803.py
+            [[1,2,3], [6,5],0]
         ]
-    def numWays(self, words: List[str], target: str) -> int:
-        m=len(words[0])
-        k=len(target)
-        wc=[defaultdict(int) for _ in range(m)]
-        for word in words:
-            for i in range(m):
-                wc[i][word[i]]+=1
-
-        @lru_cache(None)
-        def dfs(i,j):
-            if j>=k:
-                return 1
-            if i>=m:
-                return 0
-            res=dfs(i+1,j)
-            if wc[i][target[j]]:
-                res+=wc[i][target[j]]*dfs(i+1,j+1)
-            return res%M
-            
-        return dfs(0,0)
-
-<<<<<<<< HEAD:app/yly/leetcode/1639.py
-========
-    def countPairs(self, nums: List[int], low: int, high: int) -> int:
-        nums.sort()
-        def find(v:int):
-            ret=0
-            v_m=(1<<v.bit_length())-1
-            while v>0:
-                i = bisect.bisect_right(nums,v_m)
-                self.log(i,v_m,v)
-                v_m=v_m>>1
-                v=v&v_m
-            return 0
-        return find(high)-find(low-1)
->>>>>>>> 57b3861507dde46c9739ba962f4befd30cdd8f14:app/yly/leetcode/1803.py
-
+    
+    def getXORSum(self, arr1: List[int], arr2: List[int]) -> int:
+        N=36
+        def ct(arr):
+            ret=[0]*N
+            for a in arr:
+                i=0
+                while a>0:
+                    if a%2==1:
+                        ret[i]+=1
+                    a=a//2
+                    i+=1
+            return ret
+        arr1=ct(arr1)
+        arr2=ct(arr2)
+        ret=0
+        for i in range(N):
+            if (arr1[i]*arr2[i])%2==1:
+                ret+=1<<i
+        self.log(arr1,arr2)
+        return ret
     def check(self,*args):
         pass
     
     def test(self,*args):
-        return self.countPairs(*args)
+        return self.getXORSum(*args)
 
-    def __init__(self) -> None:
+    def init(self,*args):
+        pass
+
+    def __init__(self,*args) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
+        self.init(*args)
         if self.local_debug is None:
             print(sys.argv[-1],"not find")
     logs = ""

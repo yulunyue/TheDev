@@ -1,4 +1,3 @@
-from sortedcontainers import SortedList
 from typing import List,Dict,Optional
 from collections import defaultdict, deque,Counter
 from itertools import accumulate,product
@@ -17,59 +16,71 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[[1,2],[2,1],[4,3],[7,2]],[1,-1,3,-1]],
-            [[[3,4],[5,4],[6,3],[9,1]],[2.00000,1.00000,1.50000,-1.00000]],
-            
+            dict(n = 5, paths = [[0,1,2,3,4],
+                     [2,3,4],
+                     [4,0,1,2,3]],result=2)
         ]
-
-    def getCollisionTimes(self, cars_pos:List[List[int]]):
-        n=len(cars_pos)
-        cars_pos = sorted([[cars_pos[i][0],cars_pos[i][1],i] for i in range(n)])
-        ret = [inf]*n
+    
+    def minOperations(self, target: List[int], arr: List[int]) -> int:
+        a_m=defaultdict(list)
+        for i,a in enumerate(arr):
+            a_m[a].append(i)
         q=[]
-        while cars_pos:
-            p,s,j=cars_pos.pop()
-            # 
-            while q and q[-1][1]>=s:
+        ret=0
+        bisect.bi
+        for w in target:
+            if not a_m[w]:
+                continue
+            while q and q[-1]>a_m[w][0]:
                 q.pop()
-            while q and q[0][1]>=s:
-                q.pop(0)
-            self.log(p,s,j,q)
-            for p1,s1,_ in q:
-                ret[j]=min((p1-p)/(s-s1),ret[j])
-            q.append((p,s,j))
-  
-
-        return [-1 if v==inf else v for v in ret]
-
+            q.append(a_m[w][0])
+            ret=max(len(q),ret)
+            self.log(w,a_m[w],q)
+        return len(target)-ret
+    def test(self,*args):
+        return self.minOperations(*args)
     def check(self,*args):
         pass
+    
+    def test(self,**kg):
+        return self.longestCommonSubpath(**kg)
 
-    def __init__(self) -> None:
+
+    def __init__(self,*args) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
         if self.local_debug is None:
             print(sys.argv[-1],"not find")
     logs = ""
-    def log(self, *s):
+    def log(self, *s,tp:str=""):
         if not self.local_debug or len(self.logs)>=2048:
             return
+        if tp:
+            self.draw(s[0],tp)
         self.logs += " ".join([str(v) for v in s])+"\n"
+    def draw(self,s,tp:str):
+        from common.tool.draw import Draw
+        d=Draw()
+        if tp.startswith('bar'):
+            d.draw_bar_chart(s)
+        elif tp.startswith('graph'):
+            d.draw_graph(s)
+        d.save(f"data/log/{tp}.png")
     
     def run(self):
         if not self.local_debug:
             return
         for case in self.get_cases():
             self.logs=""
+            ep=case.pop("result")
             try:
-                r=self.local_debug(*case[:-1])
+                r=self.local_debug(**case)
                 self.log("finish")
             except Exception as e:
                 import traceback
                 traceback.print_exc()
                 r=None
-            if not self.diff(r,case[-1]):
-                self.check(*case,r)
-                print(case,r)
+            if not self.diff(r,ep):
+                print(case,r,ep)
                 print(self.logs)
                 break
             

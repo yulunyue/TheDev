@@ -1,7 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
-from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -17,11 +16,51 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
+            dict(
+                parents=[-1, 0, 1, 0, 3, 3],
+                nums=[5, 4, 6, 2, 1, 3],
+                result=[7, 1, 1, 4, 2, 1]
+            ),
+            dict(
+                parents=[-1, 0, 0, 2],
+                nums=[1, 2, 3, 4],
+                result=[5, 1, 1, 1]
+            ),
+            dict(parents=[-1, 0, 0, 2],
+                 nums=[1, 2, 3, 4], result=[5, 1, 1, 1]),
 
         ]
 
+    def smallestMissingValueSubtree(self, parents: List[int], nums: List[int]) -> List[int]:
+        g = defaultdict(list)
+        for i in range(1, len(parents)):
+            g[parents[i]].append(i)
+        result = [1]*len(parents)
+        # flag = [0]*(len(parents)+1)
+
+        def dfs(i, p):
+            if nums[i] == 1:
+                result[i] = 2
+                return True, result[i]
+            ret = 1
+
+            for j in g[i]:
+                if j == p:
+                    continue
+                flag, v = dfs(j, i)
+                if not flag:
+                    continue
+                result[j] = v
+                if nums[j] == v:
+                    result[j] = v+1
+                return flag, result[j]
+            return ret, 1
+
+        dfs(0, -1)
+        return result
+
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.smallestMissingValueSubtree(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

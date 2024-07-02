@@ -1,9 +1,12 @@
 import { Div } from "./div";
 export class Select extends Div {
+    constructor() {
+        super("select")
+    }
     init_node() {
-        this.el = Div.create_element("select")
+
     }
 }
-export default function () {
+export function select() {
     return new Select()
 }

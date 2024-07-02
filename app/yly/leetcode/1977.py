@@ -1,7 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
-from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -17,11 +16,43 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(num="1203", result=2),
+            dict(num="327", result=2),
+            dict(num="3333", result=5),
         ]
 
+    def numberOfCombinations(self, num: str) -> int:
+
+        n = len(num)
+
+        def small(a, b):
+            if len(a) < len(b):
+                return True
+            if len(a) > len(b):
+                return False
+            return a < b
+        stacks = []
+
+        @lru_cache(None)
+        def dfs(a, s):
+            if s[0] == '0':
+                return 0
+            if a == n:
+                # self.log(stacks+[s])
+                return 1
+            ret = dfs(a+1, s+num[a]) % M
+            # stacks.append(s)
+            j = a+1
+            while j <= n and small(num[a:j], s):
+                j += 1
+            if j <= n:
+                ret += dfs(j, num[a:j])
+            # stacks.pop()
+            return ret % M
+        return dfs(1, num[0])
+
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.numberOfCombinations(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -59,7 +90,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+                print(case, r, ep)
                 print(self.logs)
                 break
 

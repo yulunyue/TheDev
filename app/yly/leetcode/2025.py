@@ -1,7 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
-from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -17,11 +16,14 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(nums = [2,-1,2], k = 3,result=1)
         ]
+    def waysToPartition(self, nums: List[int], k: int) -> int:
+        nums=list(accumulate(nums))
+        self.log(nums)
 
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.waysToPartition(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -59,7 +61,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+                print(case, 'result',r, 'except',ep)
                 print(self.logs)
                 break
 
