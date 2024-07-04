@@ -78,7 +78,10 @@ class Solution:
 
         return find(high)-find(low-1)
 
-    def check(self, *args):
+
+>>>>>>>> 57b3861507dde46c9739ba962f4befd30cdd8f14: app/yly/leetcode/1803.py
+
+   def check(self, *args):
         pass
 
     def test(self, *args):

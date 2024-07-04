@@ -1,7 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
-from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -17,32 +16,15 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-<<<<<<<< HEAD:app/yly/leetcode/2065.py
-            dict(values=[0, 32, 10, 43], edges=[[0, 1, 10], [
-                 1, 2, 15], [0, 3, 10]], maxTime=49, result=75)
+            dict(nums=[2, -1, 2], k=3, result=1)
         ]
 
-    def maximalPathQuality(self, values: List[int], edges: List[List[int]], maxTime: int) -> int:
-        g = defaultdict(list)
-        for f, t, tm in edges:
-            g[f].append([t, tm])
-            g[t].append([f, tm])
-
-        def dfs():
-            pass
-
-    def test(self, **kg):
-        return self.maximalPathQuality(**kg)
-========
-            dict(nums = [2,-1,2], k = 3,result=1)
-        ]
     def waysToPartition(self, nums: List[int], k: int) -> int:
-        nums=list(accumulate(nums))
+        nums = list(accumulate(nums))
         self.log(nums)
 
     def test(self, **kg):
         return self.waysToPartition(**kg)
->>>>>>>> af59d3a55a39efdf796a999707dfa84175f2a52e:app/yly/leetcode/2025.py
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -80,7 +62,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result',r, 'except',ep)
+                print(case, 'result', r, 'except', ep)
                 print(self.logs)
                 break
 
