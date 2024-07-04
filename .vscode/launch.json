@@ -15,7 +15,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "app/yly/leetcode/1751.py",
+            "program": "app/yly/leetcode/2071.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
