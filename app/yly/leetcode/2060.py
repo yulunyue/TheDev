@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,33 +17,48 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30827,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],k =0,result=33),
-            dict(nums = [2,-1,2], k = 3, result=1),
-
+            dict(s1 = "internationalization", s2 = "i18n",result=true),
+            dict(s1 = "112s", s2 = "g841",result=true),
+            
         ]
-    
-    def waysToPartition(self, nums: List[int], k: int) -> int:
-        n=len(nums)
-        nums2=[0]+list(accumulate(nums))
-        self.log(nums2)
-        cha=defaultdict(list)
-        ret=0
-        for i in range(1,n):
-            c=nums2[n]+nums2[0]-2*nums2[i]
-            ret+=c==0
-            cha[c].append(i-1)
-        
-        for i in range(n):
-            a=k-nums[i]
-            l=bisect.bisect_right(cha[a],i) if a in cha else 0
-            r=len(cha[-a])-bisect.bisect_left(cha[-a],i) if -a in cha else 0
-            self.log(i,l,r,a)
-            ret=max(ret,l+r)
-        self.log(cha,ret)
+    @lru_cache(None)
+    def comb(self,s):
+        s=[int(v) for v in s]
+        ret=[s[-1]]
+        chen=[1]
+        for i in range(len(s)-2,-1,-1):
+            chen.append(chen[-1]*10)
+            tmp=ret
+            ret=[]
+            for c in chen:
+                for d in tmp:
+                    ret.append(c*s[i]+d)
+            self.log(ret)
         return ret
+    def tointarray(self,s:str):
+        ret=[]
+        int_v=""
+        for v in s:
+            if v.isdigit():
+                int_v+=v
+                continue
+            if int_v:
+                ret.append(self.comb(int_v))
+                int_v=""
+            ret.append(v)
+        if int_v:
+            ret.append(self.comb(int_v))
+        return ret
+    def possiblyEquals(self, s1: str, s2: str) -> bool:
+        # s1=self.tointarray(s1)
+        # s2=self.tointarray(s2)
+        def dfs(i1,i2,cha):
+            pass
+        self.log(self.comb("123"))
+        return dfs(0,0,0)
 
     def test(self, **kg):
-        return self.waysToPartition(**kg)
+        return self.possiblyEquals(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -80,7 +96,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result',r, 'except',ep)
+                print(case, 'result', r, 'except', ep)
                 print(self.logs)
                 break
 

@@ -16,7 +16,8 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[1,2,3,1,2,3,4],3,0.1],
+            [[231,167,89,85,224,180,45,58,23,108,157,95,108,64,206,109,147,28,194,17,4,46,74,96,237,109,114,122,161,76,181,251,9,82,44,15,242,7,23,109,210,109,181,12,14,226,61,49,8,74,19,152,4,137,243,27,187,200,168,145,188,203,98,193,253,133,164,198,132,119,148,146,94,43,181,123,212,83,157],2,75],
+            [[1,2,3,1,2,3,4],3,1],
             [[1,2,4,1,2,5,1,2,6], 3,3],
             [[1,2,0,3,0], 1,3],
             [[23,27,14,0,14,3,7,10,14,23,5,5],1,11],
@@ -26,26 +27,22 @@ class Solution:
         if k==1:
             return len([v for v in nums if v])
         ct=[defaultdict(int)  for _ in range(k)]
-        max_ct=[0]*k
         for i,v in enumerate(nums):
             ct[i%k][v]+=1
-            max_ct[i%k]=max(max_ct[i%k],ct[i%k][v])
-        ans = sum(sorted(max_ct)[-k+1:])
-        self.log(n,ans,ct)
+        ans=[]
+        for i in range(k):
+            ans.append(max(ct[i].values()))
+        ret = n-sum(ans)
         @lru_cache(None)
         def dfs(i,s):
-            if i>=k:
-                return 0 if s==0 else -inf
-            ret=-inf
+            if i==k:
+                return 0 if s==0 else inf
+            r=0
             for j,v in ct[i].items():
-                ret=max(
-                    ret,
-                    v+dfs(i+1,s+j),
-                    v+dfs(i+1,s-j)
-                )
-            return ret
-        ans=max(ans,dfs(0,0))
-        return n-ans
+                r=min(r,dfs(i+1,s^j)-v)
+            return ans[i]+r
+        
+        return ret+dfs(0,0)
 
 
     def check(self,*args):
