@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,52 +17,21 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(
-                parents=[-1, 0, 0, 2],
-                nums=[1, 2, 3, 4],
-                result=[5, 1, 1, 1]
-            ),
-            dict(parents=[-1, 0, 0, 2],
-                 nums=[1, 2, 3, 4], result=[5, 1, 1, 1]),
-
+            dict(values=[0, 32, 10, 43], edges=[[0, 1, 10], [
+                 1, 2, 15], [0, 3, 10]], maxTime=49, result=75)
         ]
 
-    def smallestMissingValueSubtree(self, parents: List[int], nums: List[int]) -> List[int]:
-        g = defaultdict(int)
-        for i in range(1, len(parents)):
-            g[parents[i]].append(i)
-        result = [0]*len(parents)
-        flag = [0]*len(parents)
+    def maximalPathQuality(self, values: List[int], edges: List[List[int]], maxTime: int) -> int:
+        g = defaultdict(list)
+        for f, t, tm in edges:
+            g[f].append([t, tm])
+            g[t].append([f, tm])
 
-        def dfs(i, p):
-            flag[i] = 1
-            min_vi = max_vi = nums[i]
-            if not g[i]:
-                result[i] = 1 if nums[i] != 1 else 2
-                return result[i]
-            ret = 1
-            for j in g[i]:
-                if j == p:
-                    continue
-                s = dfs(j, i)
-                if s == 1:
-                    continue
-                while s < len(parents) and flag[s] == 1:
-                    s += 1
-                ret = s
-            result[i] = ret
-            # if min_vi != 1:
-            #     result[i] = 1
-            # elif max_vi == num:
-            #     result[i] = num+1
-            # self.log(i, num, min_vi, max_vi)
-            return result[i]  # , min_vi, max_vi, num
-
-        dfs(0, -1)
-        return result
+        def dfs():
+            pass
 
     def test(self, **kg):
-        return self.smallestMissingValueSubtree(**kg)
+        return self.maximalPathQuality(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
