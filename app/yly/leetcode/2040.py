@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,33 +17,33 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30827,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],k =0,result=33),
-            dict(nums = [2,-1,2], k = 3, result=1),
-
+            dict(nums1=[2, 5], nums2=[3, 4], k=2,
+                 result=8),
         ]
-    
-    def waysToPartition(self, nums: List[int], k: int) -> int:
-        n=len(nums)
-        nums2=[0]+list(accumulate(nums))
-        self.log(nums2)
-        cha=defaultdict(list)
-        ret=0
-        for i in range(1,n):
-            c=nums2[n]+nums2[0]-2*nums2[i]
-            ret+=c==0
-            cha[c].append(i-1)
-        
-        for i in range(n):
-            a=k-nums[i]
-            l=bisect.bisect_right(cha[a],i) if a in cha else 0
-            r=len(cha[-a])-bisect.bisect_left(cha[-a],i) if -a in cha else 0
-            self.log(i,l,r,a)
-            ret=max(ret,l+r)
-        self.log(cha,ret)
-        return ret
+
+    def kthSmallestProduct(self, nums1: List[int], nums2: List[int], k: int) -> int:
+        l1 = bisect.bisect_left(nums1, 0)
+        l2 = bisect.bisect_left(nums2, 0)
+        nums11, nums12 = nums1[:l1], nums1[l1:]
+        nums21, nums22 = nums2[:l2], nums2[l2:]
+        small_zero_num = len(nums11)*len(nums22)+len(nums12)*len(nums21)
+        self.log(small_zero_num, k)
+        if small_zero_num >= k:
+            pass
+        else:
+            k -= small_zero_num
+            min_value, max_value = inf, -inf
+            if nums12 and nums22:
+                min_value = min(min_value, nums12[0]*nums22[0])
+                max_value = max(max_value, nums12[-1]*nums22[-1])
+            if nums11 and nums21:
+                min_value = min(min_value, nums11[-1]*nums21[-1])
+                max_value = max(max_value, nums12[0]*nums22[0])
+            while k:
+                l = (min_value+max_value)//2
 
     def test(self, **kg):
-        return self.waysToPartition(**kg)
+        return self.kthSmallestProduct(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

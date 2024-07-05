@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,33 +17,32 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30827,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],k =0,result=33),
-            dict(nums = [2,-1,2], k = 3, result=1),
-
+<<<<<<<< HEAD:app/yly/leetcode/2065.py
+            dict(values=[0, 32, 10, 43], edges=[[0, 1, 10], [
+                 1, 2, 15], [0, 3, 10]], maxTime=49, result=75)
         ]
-    
+
+    def maximalPathQuality(self, values: List[int], edges: List[List[int]], maxTime: int) -> int:
+        g = defaultdict(list)
+        for f, t, tm in edges:
+            g[f].append([t, tm])
+            g[t].append([f, tm])
+
+        def dfs():
+            pass
+
+    def test(self, **kg):
+        return self.maximalPathQuality(**kg)
+========
+            dict(nums = [2,-1,2], k = 3,result=1)
+        ]
     def waysToPartition(self, nums: List[int], k: int) -> int:
-        n=len(nums)
-        nums2=[0]+list(accumulate(nums))
-        self.log(nums2)
-        cha=defaultdict(list)
-        ret=0
-        for i in range(1,n):
-            c=nums2[n]+nums2[0]-2*nums2[i]
-            ret+=c==0
-            cha[c].append(i-1)
-        
-        for i in range(n):
-            a=k-nums[i]
-            l=bisect.bisect_right(cha[a],i) if a in cha else 0
-            r=len(cha[-a])-bisect.bisect_left(cha[-a],i) if -a in cha else 0
-            self.log(i,l,r,a)
-            ret=max(ret,l+r)
-        self.log(cha,ret)
-        return ret
+        nums=list(accumulate(nums))
+        self.log(nums)
 
     def test(self, **kg):
         return self.waysToPartition(**kg)
+>>>>>>>> af59d3a55a39efdf796a999707dfa84175f2a52e:app/yly/leetcode/2025.py
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -80,7 +80,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+                print(case, 'result',r, 'except',ep)
                 print(self.logs)
                 break
 

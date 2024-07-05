@@ -13,6 +13,7 @@ class Logger(logging.Logger):
     def add_hander(self, h: logging.Handler, level):
         fm = logging.Formatter("[%("+')s] [%('.join([
             "asctime",
+            "levelname",
             "process)s:%(threadName",
             "pathname)s:%(lineno",
             "funcName",
@@ -30,3 +31,13 @@ def get_log(name="") -> Logger:
 
 
 log = get_log(Constant.APP_NAME)
+
+
+def test():
+    log.info("xx")
+    log.error("abc", stack_info=True)
+    # log.critical("aa", stack_info=True)
+
+
+if __name__ == "__main__":
+    test()

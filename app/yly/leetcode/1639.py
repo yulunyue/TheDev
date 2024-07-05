@@ -16,40 +16,54 @@ M=10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [[231,167,89,85,224,180,45,58,23,108,157,95,108,64,206,109,147,28,194,17,4,46,74,96,237,109,114,122,161,76,181,251,9,82,44,15,242,7,23,109,210,109,181,12,14,226,61,49,8,74,19,152,4,137,243,27,187,200,168,145,188,203,98,193,253,133,164,198,132,119,148,146,94,43,181,123,212,83,157],2,75],
-            [[1,2,3,1,2,3,4],3,1],
-            [[1,2,4,1,2,5,1,2,6], 3,3],
-            [[1,2,0,3,0], 1,3],
-            [[23,27,14,0,14,3,7,10,14,23,5,5],1,11],
+<<<<<<<< HEAD:app/yly/leetcode/1639.py
+            [["acca","bbbb","caca"], "aba",6],
+========
+            [[1,4,2,7], 2, 6,6]
+>>>>>>>> 57b3861507dde46c9739ba962f4befd30cdd8f14:app/yly/leetcode/1803.py
         ]
-    def minChanges(self, nums: List[int], k: int) -> int:
-        n = len(nums)
-        if k==1:
-            return len([v for v in nums if v])
-        ct=[defaultdict(int)  for _ in range(k)]
-        for i,v in enumerate(nums):
-            ct[i%k][v]+=1
-        ans=[]
-        for i in range(k):
-            ans.append(max(ct[i].values()))
-        ret = n-sum(ans)
-        @lru_cache(None)
-        def dfs(i,s):
-            if i==k:
-                return 0 if s==0 else inf
-            r=0
-            for j,v in ct[i].items():
-                r=min(r,dfs(i+1,s^j)-v)
-            return ans[i]+r
-        
-        return ret+dfs(0,0)
+    def numWays(self, words: List[str], target: str) -> int:
+        m=len(words[0])
+        k=len(target)
+        wc=[defaultdict(int) for _ in range(m)]
+        for word in words:
+            for i in range(m):
+                wc[i][word[i]]+=1
 
+        @lru_cache(None)
+        def dfs(i,j):
+            if j>=k:
+                return 1
+            if i>=m:
+                return 0
+            res=dfs(i+1,j)
+            if wc[i][target[j]]:
+                res+=wc[i][target[j]]*dfs(i+1,j+1)
+            return res%M
+            
+        return dfs(0,0)
+
+<<<<<<<< HEAD:app/yly/leetcode/1639.py
+========
+    def countPairs(self, nums: List[int], low: int, high: int) -> int:
+        nums.sort()
+        def find(v:int):
+            ret=0
+            v_m=(1<<v.bit_length())-1
+            while v>0:
+                i = bisect.bisect_right(nums,v_m)
+                self.log(i,v_m,v)
+                v_m=v_m>>1
+                v=v&v_m
+            return 0
+        return find(high)-find(low-1)
+>>>>>>>> 57b3861507dde46c9739ba962f4befd30cdd8f14:app/yly/leetcode/1803.py
 
     def check(self,*args):
         pass
     
     def test(self,*args):
-        return self.minChanges(*args)
+        return self.countPairs(*args)
 
     def __init__(self) -> None:
         self.local_debug=getattr(self,sys.argv[-1],None)
