@@ -17,25 +17,31 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
+            dict(tasks =[5,4],workers =[0,0,0],pills =1,strength =5,result=1),
+            dict(tasks =[5,9,8,5,9],workers =[1,6,4,2,6],pills=1,strength =5,result=3),
             dict(tasks =[10,15,30],workers =[0,10,10,10,10],pills =3,strength=10,result=2),
             dict(tasks = [3,2,1], workers = [0,3,3], pills = 1, strength = 1,result=3)
         ]
     def maxTaskAssign(self, tasks: List[int], workers: List[int], pills: int, strength: int) -> int:
         tasks.sort()
-        workers.sort()
-        # heapq.heapify([[v,0] for v in workers])
+        workers=[[v,0] for v in workers]
+        # workers.sort()
+        heapq.heapify(workers)
         ret=0
         while workers and tasks:
-            w=workers.pop(0)
+            # self.log(workers,tasks)
+            w,flag=heapq.heappop(workers)
+            if pills<=0 and flag==1:
+                continue
             if w>=tasks[0]:
+                if flag==1:
+                    pills-=1
                 ret+=1
                 tasks.pop(0)
                 continue
-            idx=bisect.bisect_right(tasks, w+strength)-1
-            if idx>=0 and pills:
-                tasks.pop(idx)
-                pills-=1
-                ret+=1
+            if flag==0:
+                heapq.heappush(workers,[w+strength,1])
+           
         return ret
             
 
