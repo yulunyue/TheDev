@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,33 +17,38 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30827,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],k =0,result=33),
-            dict(nums = [2,-1,2], k = 3, result=1),
-
+            dict(tasks =[5,4],workers =[0,0,0],pills =1,strength =5,result=1),
+            dict(tasks =[5,9,8,5,9],workers =[1,6,4,2,6],pills=1,strength =5,result=3),
+            dict(tasks =[10,15,30],workers =[0,10,10,10,10],pills =3,strength=10,result=2),
+            dict(tasks = [3,2,1], workers = [0,3,3], pills = 1, strength = 1,result=3)
         ]
-    
-    def waysToPartition(self, nums: List[int], k: int) -> int:
-        n=len(nums)
-        nums2=[0]+list(accumulate(nums))
-        self.log(nums2)
-        cha=defaultdict(list)
+    def maxTaskAssign(self, tasks: List[int], workers: List[int], pills: int, strength: int) -> int:
+        tasks.sort()
+        workers=[[v,0] for v in workers]
+        # workers.sort()
+        heapq.heapify(workers)
         ret=0
-        for i in range(1,n):
-            c=nums2[n]+nums2[0]-2*nums2[i]
-            ret+=c==0
-            cha[c].append(i-1)
-        
-        for i in range(n):
-            a=k-nums[i]
-            l=bisect.bisect_right(cha[a],i) if a in cha else 0
-            r=len(cha[-a])-bisect.bisect_left(cha[-a],i) if -a in cha else 0
-            self.log(i,l,r,a)
-            ret=max(ret,l+r)
-        self.log(cha,ret)
+        while workers and tasks:
+            # self.log(workers,tasks)
+            w,flag=heapq.heappop(workers)
+            if pills<=0 and flag==1:
+                continue
+            if w>=tasks[0]:
+                if flag==1:
+                    pills-=1
+                ret+=1
+                tasks.pop(0)
+                continue
+            if flag==0:
+                heapq.heappush(workers,[w+strength,1])
+           
         return ret
+            
+
+    
 
     def test(self, **kg):
-        return self.waysToPartition(**kg)
+        return self.maxTaskAssign(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
