@@ -1,4 +1,5 @@
-import { Style } from "./cls"
+import { Style, Fn1Void } from "./cls"
+
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
     HTTP_POST_METHOD: string = "POST"
@@ -59,7 +60,15 @@ class WebDom {
                 }
             }
         }
-
+    }
+    bind_click(dom: HTMLElement, call_back: any) {
+        dom.onclick = call_back
+    }
+    bind_mouseup(dom: HTMLElement, call_back: any) {
+        dom.onmouseup = call_back
+    }
+    bind_mousedown(dom: HTMLElement, call_back: any) {
+        dom.onmousedown = call_back
     }
 }
 export default new WebDom()

@@ -21,7 +21,11 @@ class Constant {
         this.web_port = parseInt(ip_ports[1])
         util.extend(this.data, util.url_to_json(hrefs[hrefs.length - 1].split('?').pop()))
     }
-    init_locaol() {
+    init_local() {
+
+    }
+    init_body(body: any) {
+
 
     }
 }

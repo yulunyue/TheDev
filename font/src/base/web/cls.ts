@@ -45,8 +45,11 @@ export interface Style {
     overflowX?: "hidden" | "auto"
     backgroundImage?: string
 }
-export interface FunVoid {
+export interface FnVoid {
     (): any
+}
+export interface Fn1Void<P> {
+    (p: P): any
 }
 export interface Fn<T> {
     (): T

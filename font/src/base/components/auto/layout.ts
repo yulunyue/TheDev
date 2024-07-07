@@ -35,7 +35,6 @@ export class Layout extends Div {
                 position: "absolute"
             })
         }
-        console.log(this.childs, this.direction)
     }
     add_child(c: any) {
         if (c instanceof Layout) {
