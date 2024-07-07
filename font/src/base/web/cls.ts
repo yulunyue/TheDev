@@ -2,6 +2,7 @@ export interface Style {
     color?: string
     left?: number
     right?: number
+    bottom?: number
     top?: number
     width?: number
     height?: number

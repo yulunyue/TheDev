@@ -64,6 +64,9 @@ class WebDom {
     bind_click(dom: HTMLElement, call_back: any) {
         dom.onclick = call_back
     }
+    bind_mousemove(dom: HTMLElement, call_back: any) {
+        dom.onmousemove = call_back
+    }
     bind_mouseup(dom: HTMLElement, call_back: any) {
         dom.onmouseup = call_back
     }

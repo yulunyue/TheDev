@@ -5,7 +5,7 @@ export class Div {
     div_el: HTMLElement | SVGElement
     node_type: string
     childs: Div[]
-    constructor(node_type: string, parent_node_type: string = "div") {
+    constructor(node_type: string = 'div', parent_node_type: string = "div") {
         this.childs = []
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)

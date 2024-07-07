@@ -1,5 +1,6 @@
 import web_dom from "../base/web/web_dom"
 import util from "../base/tool/util"
+import { Dialog } from "../base/tool/dialog"
 class Constant {
     web_host: string
     web_port: number
@@ -25,7 +26,14 @@ class Constant {
 
     }
     init_body(body: any) {
-
+        let dialog = new Dialog().set_html(
+            "xx"
+        ).mount(
+            web_dom.get_body()
+        ).move_rb()
+        web_dom.bind_mousemove(body, (e: any) => {
+            dialog.set_html(e.x + "xx" + e.y)
+        })
 
     }
 }
