@@ -50,7 +50,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs = ""
-            ep = case.pop("result")
+            self.ep = case.pop("result")
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
@@ -58,8 +58,8 @@ class Solution:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 
