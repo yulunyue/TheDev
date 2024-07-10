@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,56 +17,64 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            [5, 6],
-            [8, 18],
+            dict(n=5,
+                 meetings=[[1, 4, 3], [0, 4, 3]],
+                 firstPerson=3,
+                 result=[0, 1, 3, 4]),
+            dict(n=6, meetings=[[1, 2, 5], [2, 3, 8], [1, 5, 10]], firstPerson=1,
+                 result=[0, 1, 2, 3, 5])
         ]
 
-    def check(self, *args):
-        pass
+    def findAllPeople(self, n: int, meetings: List[List[int]], firstPerson: int) -> List[int]:
+        ret = [0]
+        p = [None]*n
+        p[0] = 0
 
-    def maxNiceDivisors(self, primeFactors: int) -> int:
-        @lru_cache(None)
-        def dfs(n):
-            if n <= 3:
-                return n-1
-            if n == 4:
-                return 3
-            ret = 2
-            for i in range(2, n-2):
-                ret = max(ret, i*dfs(n-i)) % M
-            self.log(n, ret)
-            return ret
-        return dfs(primeFactors)
+        tm = defaultdict(SortedList)
+        for x, y, t in meetings:
+            tm[x].add([t, y])
+        return ret
 
-    def test(self, *args):
-        return self.maxNiceDivisors(*args)
+    def test(self, **kg):
+        return self.findAllPeople(**kg)
 
-    def __init__(self) -> None:
+    def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
         if self.local_debug is None:
             print(sys.argv[-1], "not find")
     logs = ""
 
-    def log(self, *s):
+    def log(self, *s, tp: str = ""):
         if not self.local_debug or len(self.logs) >= 2048:
             return
+        if tp:
+            self.draw(s[0], tp)
         self.logs += " ".join([str(v) for v in s])+"\n"
+
+    def draw(self, s, tp: str):
+        from common.tool.draw import Draw
+        d = Draw()
+        if tp.startswith('bar'):
+            d.draw_bar_chart(s)
+        elif tp.startswith('graph'):
+            d.draw_graph(s)
+        d.save(f"data/log/{tp}.png")
 
     def run(self):
         if not self.local_debug:
             return
         for case in self.get_cases():
             self.logs = ""
+            self.ep = case.pop("result")
             try:
-                r = self.local_debug(*case[:-1])
+                r = self.local_debug(**case)
                 self.log("finish")
             except Exception as e:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, case[-1]):
-                self.check(*case, r)
-                print(case, r)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 

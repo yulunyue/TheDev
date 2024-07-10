@@ -22,6 +22,9 @@ export class Svg extends GNode {
             height: 1
         })
     }
+    set_backgroud_grid() {
+
+    }
 }
 export function svg_dev() {
     return new Svg().add_childs([
