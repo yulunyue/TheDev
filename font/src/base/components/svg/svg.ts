@@ -30,6 +30,7 @@ export function svg_dev() {
     return new Svg().add_childs([
         text().set_pos(20, 30).set_html("xxx"),
         line().set_d("M150 5 L75 200 L225 200 Z"),
+        line().mount_d([{ x: 0, y: 0 }, { x: 1, y: 1 }]),
         circle().set_pos(100, 100).set_r(10)
     ])
 }

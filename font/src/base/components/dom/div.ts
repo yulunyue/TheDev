@@ -5,8 +5,10 @@ export class Div {
     div_el: HTMLElement | SVGElement
     node_type: string
     childs: Div[]
+    on_mount_call: any
     constructor(node_type: string = 'div', parent_node_type: string = "div") {
         this.childs = []
+        this.on_mount_call = {}
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         if (parent_node_type) {
@@ -19,6 +21,19 @@ export class Div {
         this.init_node()
         this.init_style()
         this.init_event()
+    }
+    x(v: number) {
+        console.log(v, this.get_width())
+        return v
+    }
+    y(v: number) {
+        return v
+    }
+    get_width() {
+        return this.el.clientWidth
+    }
+    get_height() {
+        return this.el.clientHeight
     }
     render() {
 
@@ -66,6 +81,15 @@ export class Div {
         this.render()
         return this
     }
+    on_mount() {
+        for (var key in this.on_mount_call) {
+            this[key].apply(this, this.on_mount_call[key])
+        }
+        for (var i = 0; i < this.childs.length; i++) {
+            this.childs[i].on_mount()
+        }
+        return this
+    }
     add_child(c: any) {
         c.mount(this.el)
         this.childs.push(c)
@@ -88,6 +112,7 @@ export class Div {
         (this.el as any).value = value
         return this
     }
+
 }
 
 export function div(node_type?: string) {

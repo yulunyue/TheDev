@@ -8,7 +8,7 @@ export class GNode extends Div {
         return web_dom.createElementNS(name)
     }
     set_pos(x: number, y: number): this {
-        this.set_attr("x", x).set_attr("y", y)
+        this.set_attr("x", this.x(x)).set_attr("y", this.y(y))
         return this
     }
 }
