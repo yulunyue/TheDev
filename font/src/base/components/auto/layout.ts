@@ -1,16 +1,29 @@
 import { Div, div } from "../dom/div"
 export class Layout extends Div {
     static VERTICAL: number = 1
-    static HORIZONTAL: number = 0
+    static HORIZONTAL: number = 2
     static FLEX_LAYOUT: number = 1
     static RELATIVE_LAYOUT: number = 2
     direction: number
     type: number
     constructor(direction?: number, type?: number) {
         super("div")
-        this.direction = direction | Layout.VERTICAL
-        this.type = type | Layout.RELATIVE_LAYOUT
+        this.direction = direction === undefined ? Layout.VERTICAL : direction
+        this.type = type === undefined ? Layout.RELATIVE_LAYOUT : type
 
+    }
+    add_grid_childs(childs: any[]) {
+        let row = Math.ceil(Math.sqrt(childs.length))
+        let col = Math.ceil(childs.length / row)
+        for (var i = 0; i < row; i++) {
+
+            for (var j = 0; j < col; j += 1) {
+                if (i * col + j > childs.length) {
+                    break
+                }
+            }
+        }
+        console.log(row, col, childs.length)
     }
     render() {
         if (this.type == Layout.FLEX_LAYOUT) {
@@ -25,8 +38,8 @@ export class Layout extends Div {
             height: 1,
             position: "absolute"
         })
-
         for (var i = 0; i < this.childs.length; i++) {
+
             this.childs[i].set_div_style({
                 left: this.direction == Layout.VERTICAL ? i / this.childs.length : 0,
                 width: this.direction == Layout.VERTICAL ? 1 / this.childs.length : 1,
@@ -38,7 +51,8 @@ export class Layout extends Div {
     }
     add_child(c: any) {
         if (c instanceof Layout) {
-            c.direction = 1 - this.direction
+            c.direction = 3 - this.direction
+            c.type = this.type
         }
         return super.add_child(c)
     }

@@ -3,9 +3,11 @@ import { Layout } from "../base/components/auto/layout";
 import { DEV_COMPONENT } from "../base/components/export"
 class Demo extends Layout {
     init() {
+        let childs = []
         for (var key in DEV_COMPONENT) {
-            this.add_child(DEV_COMPONENT[key]())
+            childs.push(DEV_COMPONENT[key]())
         }
+        this.add_grid_childs(childs)
         return this
     }
 }
