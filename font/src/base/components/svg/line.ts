@@ -21,7 +21,7 @@ export class Line extends GNode {
                 if (i == 0) {
                     ds += `M ${this.x(pts[i].x)} ${this.y(pts[i].y)} `
                 } else {
-                    ds += `L ${pts[i].x} ${pts[i].y} `
+                    ds += `L ${this.x(pts[i].x)} ${this.y(pts[i].y)} `
                 }
             }
 

@@ -73,5 +73,30 @@ class WebDom {
     bind_mousedown(dom: HTMLElement, call_back: any) {
         dom.onmousedown = call_back
     }
+    loop_task = {}
+    loop_state = "stop"
+    loop_count = 0
+    run_all_task() {
+        for (var key in this.loop_task) {
+            if (this.loop_task[key][1] == 0) {
+                continue
+            }
+            if (this.loop_count % this.loop_task[key][1] == 0) {
+                this.loop_task[key][1] = this.loop_task[key][0]() | 0
+            }
+        }
+        if (this.loop_state == 'runing') {
+            this.loop_count = (this.loop_count + 1) % 3600
+            requestAnimationFrame(() => { this.run_all_task() })
+        }
+    }
+    add_task(name: string, func: any, loop_count: number) {
+        this.loop_task[name] = [func, loop_count]
+        if (this.loop_state == 'stop') {
+            this.loop_state = 'runing'
+            this.run_all_task()
+        }
+
+    }
 }
 export default new WebDom()

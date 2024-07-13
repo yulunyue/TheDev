@@ -8,9 +8,21 @@ export class GNode extends Div {
         return web_dom.createElementNS(name)
     }
     set_pos(x: number, y: number): this {
-        this.set_attr("x", this.x(x)).set_attr("y", this.y(y))
-        return this
+        return this.set_x(x).set_y(y)
     }
+    set_x(x: number) {
+        return this.set_attr("x", this.x(x))
+    }
+    set_y(y: number) {
+        return this.set_attr("y", this.y(y))
+    }
+    get_x() {
+        return parseFloat(this.get_attr("x"))
+    }
+    get_y() {
+        return parseFloat(this.get_attr("y"))
+    }
+
 }
 export function gnode() {
     return new GNode()
