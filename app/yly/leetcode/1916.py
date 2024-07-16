@@ -24,14 +24,15 @@ class Solution:
         g=defaultdict(list)
         for i,v in enumerate(prevRoom):
             g[v].append(i)
-        
+        @lru_cache(None)
         def dfs(idx):
-            ct=1
+            ans,num=1,0
             for v in g[idx]:
-                ct+=dfs(v)
-            self.log(idx,ct)            
-            return ct
-        return dfs(0)
+                v_ans,v_num=dfs(v)
+                num+=v_num
+                ans=ans*(v_ans*math.comb(num,v_num))%M
+            return ans%M,num+1
+        return dfs(0)[0]
 
 
     def test(self,**kg):
