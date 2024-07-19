@@ -42,6 +42,10 @@ class WebDom {
             localStorage.setItem(key, value)
         }
     }
+    prefix: string = ""
+    url(path: string) {
+        return this.prefix + path
+    }
     xml_http_request(method: string, path: string, data: any, call_back: any) {
         let req = new XMLHttpRequest()
         req.open(method, path)
@@ -96,6 +100,8 @@ class WebDom {
             this.loop_state = 'runing'
             this.run_all_task()
         }
+    }
+    post(url: string) {
 
     }
 }
