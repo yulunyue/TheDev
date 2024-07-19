@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,42 +17,32 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(n=11, firstPlayer=2, secondPlayer=4, result=[3, 4])
+            dict(s="1100101", result=5),
+            dict(s="111111101001", result=10)
         ]
 
-    def earliestAndLatest(self, n: int, firstPlayer: int, secondPlayer: int) -> List[int]:
-        firstPlayer -= 1
-        secondPlayer -= 1
-
-        @lru_cache(None)
-        def dfs(s):
-            p = [i for i in range(n) if s & (1 << i) == 0]
-            state = {s}
-            for i in range(len(p)//2):
-                cur = set()
-                j = len(p)-i-1
-                if p[i] == firstPlayer and p[j] == secondPlayer:
-                    return [1, 1]
-                for m in state:
-                    if p[i] != firstPlayer and p[i] != secondPlayer:
-                        cur.add(m | 1 << p[i])
-                    if p[j] != firstPlayer and p[j] != secondPlayer:
-                        cur.add(m | 1 << p[j])
-                state = cur
-
-            ansn, ansx = [n, -1]
-            for st in state:
-                mn, mx = dfs(st)
-                if ansn > 1+mn:
-                    ansn = 1+mn
-                if ansx < 1+mx:
-                    ansx = 1+mx
-            # self.log(s, ansn, ansx)
-            return ansn, ansx
-        return dfs(0)
+    def minimumTime(self, s: str) -> int:
+        '''
+        i+n-j+2*(pre[j]-pre[i]) i<j
+        '''
+        n = len(s)
+        one_count = [0]
+        for v in s:
+            one_count.append(one_count[-1]+int(v))
+        ans = mid = n//2
+        for i in range(mid):
+            if s[i] == '0':
+                continue
+            ans = min(ans, i+1+(one_count[mid]-one_count[i+1])*2)
+        ans1 = n-mid
+        for i in range(n-1, mid-1, -1):
+            if s[i] == '0':
+                continue
+            ans1 = min(ans1, n-i+(one_count[i]-one_count[mid])*2)
+        return ans+ans1
 
     def test(self, **kg):
-        return self.earliestAndLatest(**kg)
+        return self.minimumTime(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -80,7 +71,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs = ""
-            ep = case.pop("result")
+            self.ep = case.pop("result")
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
@@ -88,8 +79,8 @@ class Solution:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, ep):
-                print(case, r, ep)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 

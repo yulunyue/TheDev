@@ -58,3 +58,4 @@ export interface Fn<T> {
 export interface Fn1<P1, T> {
     (p1: P1): T
 }
+export type Dom = HTMLElement | SVGElement

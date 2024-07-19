@@ -1,5 +1,5 @@
 import { Style, Fn1Void } from "./cls"
-
+import { Dom } from "./cls"
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
     HTTP_POST_METHOD: string = "POST"
@@ -61,7 +61,7 @@ class WebDom {
             }
         }
     }
-    bind_click(dom: HTMLElement, call_back: any) {
+    bind_click(dom: Dom, call_back: any) {
         dom.onclick = call_back
     }
     bind_mousemove(dom: HTMLElement, call_back: any) {

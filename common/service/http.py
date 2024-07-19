@@ -11,6 +11,7 @@ import signal
 import sys
 import json
 import os
+from common.util.log import log
 from importlib import import_module
 HTML_CONTENT_TYPE = dict(
     jpg="image/jpeg",
@@ -122,21 +123,13 @@ def run(path: str = DEFAULT_CONF_PATH):
         (r'/ws', TornadaWebSocketConnectHandler),
         (r"/(.*)", MainHander)
     ])
-    app.listen(config['port'])
+    app.listen(config['port'], "0.0.0.0")
+    log.info(f"listen:{config['port']}")
     IOLoop.instance().start()
-
-
-def start(f):
-    def util():
-        f()
-    c = PeriodicCallback(util, 1)
-    c.start()
-    run()
 
 
 def stop():
     IOLoop.instance().stop()
-    exit()
 
 
 if __name__ == "__main__":
