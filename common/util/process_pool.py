@@ -1,31 +1,32 @@
 
 from datetime import datetime
 from threading import Thread
-from multiprocessing import Process,Queue,set_start_method
+from multiprocessing import Process, Queue, set_start_method
 import os
 import time
 import json
 from typing import List
 
-class ThreadExec:
-    process:List[Process] = []        
+
+class ProcessExec:
+    process: List[Process] = []
 
     def load(self, process_num, thread_num, loop_num):
         # set_start_method("fork")
         self.process_num = process_num
         self.thread_num = thread_num
         self.loop_num = loop_num
-        self.q=Queue()
+        self.q = Queue()
         self.call_back = None
-        self.on_process_start=None
+        self.on_process_start = None
         for i in range(process_num):
             self.process.append(self.get_process(i))
         return self
 
     def get_process(self, i):
-        return Process(target=self.process_run, args=(self.q,i,))
+        return Process(target=self.process_run, args=(self.q, i,))
 
-    def process_run(self, q:Queue,index):
+    def process_run(self, q: Queue, index):
         pid = os.getpid()
         mp = dict()
         threads: list[Thread] = []
@@ -44,10 +45,9 @@ class ThreadExec:
             n.join()
         q.put(mp)
 
-
     def loop(self, mp, process_index, thread_index):
         for i in range(self.loop_num):
-            result = self.call_back(process_index,thread_index,i, *self.args)
+            result = self.call_back(process_index, thread_index, i, *self.args)
             if result not in mp:
                 mp[result] = 0
             mp[result] += 1
@@ -59,17 +59,17 @@ class ThreadExec:
         for n in self.process:
             ret.append(self.q.get())
         return ret
-    
-    def on_start(self,fun):
-        self.on_process_start=fun
+
+    def on_start(self, fun):
+        self.on_process_start = fun
         return self
-    
-    def execute(self, callback, *args, hander_data=None): 
+
+    def execute(self, callback, *args, hander_data=None):
         self.call_back = callback
         self.args = args
         ret = dict()
         start_time = time.time()
-        datas:List[dict] = self.run()
+        datas: List[dict] = self.run()
         ret = self.get_result()
         ret["use_time"] = "%.3f" % (time.time()-start_time)
         for data in datas:
@@ -92,12 +92,15 @@ class ThreadExec:
             fail_num=0,
             result=dict()
         )
-    
+
+
 def _on_start():
-    print(os.getpid(),"on_start")
+    print(os.getpid(), "on_start")
+
 
 def _test(*args):
-    print(os.getpid(),*args)
-    
-if __name__=="__main__":
-    print(ThreadExec().load(2,2,2).on_start(_on_start).execute(_test))
+    print(os.getpid(), *args)
+
+
+if __name__ == "__main__":
+    print(ThreadExec().load(2, 2, 2).on_start(_on_start).execute(_test))
