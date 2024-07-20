@@ -6,6 +6,9 @@ TEST_FN_PREFIX = 'test_'
 
 class TestBase:
     def __init__(self) -> None:
+        self.prepare()
+
+    def prepare(self):
         pass
 
     def run(self):
@@ -29,6 +32,7 @@ class TestBase:
             self.run()
         except Exception as e:
             log.error(e)
+            self.exit()
 
     def exit(self):
         pass

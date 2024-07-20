@@ -13,5 +13,21 @@ export class Util {
             a[key] = b[key]
         }
     }
+    object_to_get_param(oj: any, rt?: string) {
+        if (rt == undefined) {
+            rt = "";
+        }
+        let flag = true;
+        for (var key in oj) {
+            if (flag == true) {
+                flag = false;
+                rt += "?";
+            } else {
+                rt += "&";
+            }
+            rt = rt + key + "=" + oj[key];
+        }
+        return rt;
+    }
 }
 export default new Util()

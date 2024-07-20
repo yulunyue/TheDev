@@ -1,5 +1,5 @@
 import { Style, Fn1Void } from "./cls"
-
+import { Dom } from "./cls"
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
     HTTP_POST_METHOD: string = "POST"
@@ -42,6 +42,10 @@ class WebDom {
             localStorage.setItem(key, value)
         }
     }
+    prefix: string = ""
+    url(path: string) {
+        return this.prefix + path
+    }
     xml_http_request(method: string, path: string, data: any, call_back: any) {
         let req = new XMLHttpRequest()
         req.open(method, path)
@@ -61,7 +65,7 @@ class WebDom {
             }
         }
     }
-    bind_click(dom: HTMLElement, call_back: any) {
+    bind_click(dom: Dom, call_back: any) {
         dom.onclick = call_back
     }
     bind_mousemove(dom: HTMLElement, call_back: any) {
@@ -96,6 +100,8 @@ class WebDom {
             this.loop_state = 'runing'
             this.run_all_task()
         }
+    }
+    post(url: string) {
 
     }
 }

@@ -1,8 +1,9 @@
 import web_dom from "../../web/web_dom"
 import { Style } from "src/base/web/cls"
+import { Dom } from "../../web/cls"
 export class Div {
-    el: HTMLElement | SVGElement
-    div_el: HTMLElement | SVGElement
+    el: Dom
+    div_el: Dom
     node_type: string
     childs: Div[]
     parent: Div
