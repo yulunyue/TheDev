@@ -59,3 +59,25 @@ export interface Fn1<P1, T> {
     (p1: P1): T
 }
 export type Dom = HTMLElement | SVGElement
+
+export class Node {
+    code: number = 0
+    type: string = ""
+    key: string = ""
+    title: string = ""
+    value: any = null
+    option: any = null
+    parent: Node = null
+    childs: Node[]
+    constructor() {
+        this.childs = []
+    }
+    set_title(title: string = "") {
+        this.title = title
+        return this
+    }
+    set_value(value: any) {
+        this.value = value
+        return this
+    }
+}

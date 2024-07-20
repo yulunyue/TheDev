@@ -1,5 +1,6 @@
-import { Style, Fn1Void } from "./cls"
-import { Dom } from "./cls"
+import { Style, Fn1Void, Dom, Node } from "./cls"
+import Ut from "../tool/util"
+import Ct from "./constant"
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
     HTTP_POST_METHOD: string = "POST"
@@ -46,24 +47,45 @@ class WebDom {
     url(path: string) {
         return this.prefix + path
     }
-    xml_http_request(method: string, path: string, data: any, call_back: any) {
+    headers = {}
+    xml_http_request(method: string, path: string, data: any, call_back?: Fn1Void<Node>) {
+        let url = this.url(path)
+        let mock_data = Ct.get_mock_data(url)
+        if (mock_data) {
+            return call_back(mock_data)
+        }
         let req = new XMLHttpRequest()
-        req.open(method, path)
-        if (method == this.HTTP_POST_METHOD) {
-
+        req.open(method, url)
+        if (method == this.HTTP_GET_METHOD) {
+            req.open(method, Ut.object_to_get_param(data, path));
+            req.send();
         } else if (method == this.HTTP_POST_METHOD) {
             req.setRequestHeader(this.HTTP_CONTENT_TYPE_KEY, this.HTTP_CONTENT_TYPE_JSON)
+            req.open(method, path);
+            for (var key in this.headers) {
+                if (this.headers[key]) {
+                    req.setRequestHeader(key, this.headers[key]);
+                }
+            }
+            req.send(JSON.stringify(data))
         }
-        req.send(data)
         req.onreadystatechange = (ev: any) => {
             if (req.readyState == this.HTTP_STATE_FINISH) {
-                if (req.getResponseHeader(this.HTTP_CONTENT_TYPE_JSON).includes(this.HTTP_CONTENT_TYPE_JSON)) {
-                    call_back(JSON.parse(req.responseText))
-                } else {
-                    call_back(req.responseText)
+                let data = this.hander_res(JSON.parse(req.responseText))
+                if (data) {
+                    call_back(data)
                 }
             }
         }
+    }
+    hander_res(node: Node) {
+        return node
+    }
+    post(url: string, data: any, call_back?: Fn1Void<Node>) {
+        this.xml_http_request(this.HTTP_POST_METHOD, url, data, call_back)
+    }
+    get(url: string, data: any, call_back?: Fn1Void<Node>) {
+        this.xml_http_request(this.HTTP_GET_METHOD, url, data, call_back)
     }
     bind_click(dom: Dom, call_back: any) {
         dom.onclick = call_back
@@ -101,8 +123,6 @@ class WebDom {
             this.run_all_task()
         }
     }
-    post(url: string) {
 
-    }
 }
 export default new WebDom()

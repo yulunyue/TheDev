@@ -25,6 +25,9 @@ export class Div {
         this.init_style()
         this.init_event()
     }
+    get_value(): any {
+        return this.el.innerHTML
+    }
     x(v: number) {
         if (0 <= v && v <= 1) {
             return this.parent.get_width() * v
