@@ -16,14 +16,16 @@ export class Layout extends Div {
         let row = Math.ceil(Math.sqrt(childs.length))
         let col = Math.ceil(childs.length / row)
         for (var i = 0; i < row; i++) {
-
+            let tmp_layout = new Layout(3 - this.direction)
             for (var j = 0; j < col; j += 1) {
-                if (i * col + j > childs.length) {
+                let idx = i * col + j
+                if (idx >= childs.length) {
                     break
                 }
+                tmp_layout.add_child(childs[idx])
             }
+            this.add_child(tmp_layout)
         }
-        console.log(row, col, childs.length)
     }
     render() {
         if (this.type == Layout.FLEX_LAYOUT) {
@@ -51,7 +53,9 @@ export class Layout extends Div {
     }
     add_child(c: any) {
         if (c instanceof Layout) {
-            c.direction = 3 - this.direction
+            if (c.direction != 3 - this.direction) {
+                c.direction = 3 - this.direction
+            }
             c.type = this.type
         }
         return super.add_child(c)
@@ -69,7 +73,10 @@ export function layout(direction?: number) {
 }
 export function layout_dev() {
     return layout().add_childs([
-        div().set_html("div1"),
-        div().set_html("div1")
+        layout().add_childs([
+            div().set_html("div1"),
+            div().set_html("div2"),
+        ]),
+        div().set_html("div3")
     ])
 }

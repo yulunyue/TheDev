@@ -30,12 +30,12 @@ def get_log(name="") -> Logger:
     return LOG_MAP[name]
 
 
-log = get_log(Constant.APP_NAME)
+logger = get_log(Constant.APP_NAME)
 
 
 def test():
-    log.info("xx")
-    log.error("abc", stack_info=True)
+    logger.info("xx")
+    logger.error("abc", stack_info=True)
     # log.critical("aa", stack_info=True)
 
 

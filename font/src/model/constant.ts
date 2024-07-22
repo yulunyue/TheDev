@@ -1,6 +1,6 @@
 import web_dom from "../base/web/web_dom"
 import util from "../base/tool/util"
-import { Dialog } from "../base/tool/dialog"
+import { div } from "../base/components/dom/div"
 class Constant {
     web_host: string
     web_port: number
@@ -26,11 +26,15 @@ class Constant {
 
     }
     init_body(body: any) {
-        let dialog = new Dialog().set_html(
+        let dialog = div().set_html(
             "xx"
-        ).mount(
+        ).set_div_style({
+            position: "fixed",
+            right: 0,
+            bottom: 0
+        }).mount(
             web_dom.get_body()
-        ).move_rb()
+        )
         web_dom.bind_mousemove(body, (e: any) => {
             dialog.set_html(e.x + "xx" + e.y)
         })

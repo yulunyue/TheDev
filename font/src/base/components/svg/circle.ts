@@ -8,9 +8,17 @@ export class Circle extends GNode {
         this.set_attr("r", radius + "")
         return this
     }
-    set_pos(x: number, y: number): this {
-        this.set_attr("cx", x).set_attr("cy", y)
-        return this
+    set_x(x: number) {
+        return this.set_attr("cx", this.x(x))
+    }
+    set_y(y: number) {
+        return this.set_attr("cy", this.y(y))
+    }
+    get_x() {
+        return parseFloat(this.get_attr("cx"))
+    }
+    get_y() {
+        return parseFloat(this.get_attr("cy"))
     }
 }
 export function circle() {

@@ -1,11 +1,14 @@
 import sys
 import time
-from common.util.log import log
+from common.util.log import logger
 TEST_FN_PREFIX = 'test_'
 
 
 class TestBase:
     def __init__(self) -> None:
+        self.prepare()
+
+    def prepare(self):
         pass
 
     def run(self):
@@ -16,11 +19,11 @@ class TestBase:
             fns = [getattr(self, TEST_FN_PREFIX+k) for k in sys.argv[1:]]
         for f in fns:
             start_time = time.time()*1000
-            log.info(f'---Test Begin {f.__name__}------')
+            logger.info(f'---Test Begin {f.__name__}------')
             self.ep_cont = 0
             f()
             end_time = time.time()*1000
-            log.info(
+            logger.info(
                 f'---Test End {f.__name__} [ut:{end_time-start_time} ms] [ep:{self.ep_cont}]---')
         self.exit()
 
@@ -28,7 +31,8 @@ class TestBase:
         try:
             self.run()
         except Exception as e:
-            log.error(e)
+            logger.error(e)
+            self.exit()
 
     def exit(self):
         pass

@@ -1,3 +1,4 @@
+export type color = "red" | "blue" | "green" | "white" | "black" | "gray"
 export interface Style {
     color?: string
     left?: number
@@ -45,6 +46,7 @@ export interface Style {
     overflowY?: "hidden" | "auto"
     overflowX?: "hidden" | "auto"
     backgroundImage?: string
+    backgroundColor?: color
 }
 export interface FnVoid {
     (): any
@@ -57,4 +59,37 @@ export interface Fn<T> {
 }
 export interface Fn1<P1, T> {
     (p1: P1): T
+}
+export type Dom = HTMLElement | SVGElement
+
+export class Node {
+    code: number = 0
+    type: string = ""
+    key: string = ""
+    title: string = ""
+    value: any = null
+    option: any = null
+    parent: Node = null
+    childs: Node[]
+    constructor() {
+        this.childs = []
+    }
+    set_title(title: string = "") {
+        this.title = title
+        return this
+    }
+    set_value(value: any) {
+        this.value = value
+        return this
+    }
+    set_childs(childs: Node[]) {
+        this.childs = childs
+        return this
+    }
+    filter(key: string) {
+        let ret = new Node().set_childs(this.childs.filter(v => {
+            return v.title.indexOf(key) != -1
+        }))
+        return ret
+    }
 }

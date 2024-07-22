@@ -1,5 +1,9 @@
 import os
 from typing import List
+import json
+from common.util.log import logger
+
+
 def os_system(s: str):
     ret = os.system(s)
     if ret != 0:
@@ -18,6 +22,8 @@ def make_dir_if_not_exist(paths: List[str]):
 
 def write_file(path: str, data: str, encoding='utf-8'):
     write_dir = path.split("/")[:-1]
+    if isinstance(data, dict):
+        data = json.dumps(data, indent=4, ensure_ascii=False)
     make_dir_if_not_exist(write_dir)
     if isinstance(data, bytes):
         with open(path, 'wb') as f:
