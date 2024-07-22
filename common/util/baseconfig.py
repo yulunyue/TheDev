@@ -1,13 +1,15 @@
 import json
 import os
 
-from .model import StrModel, BaseModel, EnableModel, EncroyModel
-from hcso_tool.utils.tool import write_file,log
+from common.util.model import StrModel, BaseModel, EnableModel, EncroyModel, DictModel
+from common.util.tool import write_file
+CONFIG_SETTING_DIR = 'data/setting'
 
 
 class ConfigBase:
-    def __init__(self) -> None:
-        self._save_path = f'config/setting/{self.__class__.__name__}.json'
+    def __init__(self, name="") -> None:
+        self.config_name = name or self.__class__.__name__
+        self._save_path = f'{CONFIG_SETTING_DIR}/{self.config_name}.json'
         self._mtime = 0
         self.init()
 
@@ -17,16 +19,16 @@ class ConfigBase:
             cls._instance = cls(*args, **kwargs)
         return cls._instance
 
-    def save(self, data):
+    def save(self):
         write_file(self._save_path, json.dumps(
-            data, indent=4
+            self.config, indent=4
         ))
 
     def get_config(self) -> dict:
         config = dict()
         if not os.path.exists(self._save_path):
             return config
-        with open(self._save_path, 'r',encoding='utf-8') as f:
+        with open(self._save_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
         return config
 
@@ -40,7 +42,7 @@ class ConfigBase:
             if not isinstance(v, BaseModel):
                 continue
             if v.data_source is not None:
-                log(f"repeat init {v.key} {self}")
+                raise Exception(v.data_source)
             v.key = key
             v.data_source = self
             if key in config_default:
@@ -48,8 +50,9 @@ class ConfigBase:
             else:
                 write_flag = True
                 config_default[key] = v.value
+        self.config = config_default
         if write_flag:
-            self.save(config_default)
+            self.save()
 
     def get_key_value(self, key):
         if not os.path.exists(self._save_path):

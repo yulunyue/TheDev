@@ -1,5 +1,5 @@
 import requests
-from common.util.log import log
+from common.util.log import logger
 
 
 class Api:
@@ -82,7 +82,7 @@ class Api:
         return self.hander_error(method, uri, res, data or param)
 
     def hander_error(self, method, uri, res: requests.Response, data):
-        log.error(f'{method}:{uri}:{res.status_code}:{res.content}:{data}')
+        logger.error(f'{method}:{uri}:{res.status_code}:{res.content}:{data}')
 
     def parse(self, value):
         return value

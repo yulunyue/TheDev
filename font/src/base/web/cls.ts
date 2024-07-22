@@ -1,3 +1,4 @@
+export type color = "red" | "blue" | "green" | "white" | "black" | "gray"
 export interface Style {
     color?: string
     left?: number
@@ -45,6 +46,7 @@ export interface Style {
     overflowY?: "hidden" | "auto"
     overflowX?: "hidden" | "auto"
     backgroundImage?: string
+    backgroundColor?: color
 }
 export interface FnVoid {
     (): any
@@ -79,5 +81,15 @@ export class Node {
     set_value(value: any) {
         this.value = value
         return this
+    }
+    set_childs(childs: Node[]) {
+        this.childs = childs
+        return this
+    }
+    filter(key: string) {
+        let ret = new Node().set_childs(this.childs.filter(v => {
+            return v.title.indexOf(key) != -1
+        }))
+        return ret
     }
 }

@@ -88,15 +88,27 @@ class WebDom {
         this.xml_http_request(this.HTTP_GET_METHOD, url, data, call_back)
     }
     bind_click(dom: Dom, call_back: any) {
-        dom.onclick = call_back
+        dom.onclick = (e) => {
+            e.stopPropagation()
+            call_back()
+        }
     }
-    bind_mousemove(dom: HTMLElement, call_back: any) {
+    bind_input(dom: Dom, call_back: any) {
+        dom.oninput = call_back
+    }
+    bind_mousemove(dom: Dom, call_back: any) {
         dom.onmousemove = call_back
     }
-    bind_mouseup(dom: HTMLElement, call_back: any) {
+    bind_mouseenter(dom: Dom, call_back: any) {
+        dom.onmouseenter = call_back
+    }
+    bind_mouseleave(dom: Dom, call_back: any) {
+        dom.onmouseleave = call_back
+    }
+    bind_mouseup(dom: Dom, call_back: any) {
         dom.onmouseup = call_back
     }
-    bind_mousedown(dom: HTMLElement, call_back: any) {
+    bind_mousedown(dom: Dom, call_back: any) {
         dom.onmousedown = call_back
     }
     loop_task = {}
@@ -121,6 +133,11 @@ class WebDom {
         if (this.loop_state == 'stop') {
             this.loop_state = 'runing'
             this.run_all_task()
+        }
+    }
+    body_click(call_back: any) {
+        this.get_body().onclick = () => {
+            call_back()
         }
     }
 

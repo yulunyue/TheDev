@@ -11,8 +11,8 @@ import signal
 import sys
 import json
 import os
-from common.util.log import log
-from importlib import import_module
+from common.util.log import logger
+from common.util.module import Module
 HTML_CONTENT_TYPE = dict(
     jpg="image/jpeg",
     png="image/png",
@@ -41,13 +41,11 @@ class ApiCall:
     def load_module(self, key: str, modules: List[str]):
         if key and not os.path.isdir(key):
             raise Exception(key)
-        if key not in sys.path:
-            sys.path += [key]
         if modules == '*':
             modules = os.listdir(key)
         path_key = key if key.startswith('/') else '/'+key
         for moudule_name in modules:
-            m = getattr(import_module(moudule_name), 'Route')()
+            m = getattr(Module().load_module(moudule_name, key), 'Route')()
             moudule_name_key = moudule_name.replace('.', '/')
             for fun_name in dir(m):
                 if fun_name.startswith('_'):
@@ -114,8 +112,11 @@ DEFAULT_CONF_PATH = "data/setting/http.json"
 
 def run(path: str = DEFAULT_CONF_PATH):
     config = dict()
-    with open(path, 'r') as f:
-        config.update(json.loads(f.read()))
+    if isinstance(path, str):
+        with open(path, 'r') as f:
+            config.update(json.loads(f.read()))
+    else:
+        config.update(path)
     if 'py_modules' in config:
         MainHander.POST_API.load_modules(config['py_modules'])
 
@@ -124,7 +125,7 @@ def run(path: str = DEFAULT_CONF_PATH):
         (r"/(.*)", MainHander)
     ])
     app.listen(config['port'], "0.0.0.0")
-    log.info(f"listen:{config['port']}")
+    logger.info(f"listen:{config['port']}")
     IOLoop.instance().start()
 
 
