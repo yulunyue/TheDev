@@ -16,9 +16,12 @@ function fack_data(depth: number, len: number) {
 }
 class Constant {
     MOCK_KEY = "MOCK_KEY"
-    MOCK_DATA = { MOCK_KEY: fack_data(3, 20) }
+    MOCK_NODE_3_20 = fack_data(3, 20)
+    MOCK_NODE_3_5 = fack_data(3, 5)
     get_mock_data(s: string) {
-        return this.MOCK_DATA[s]
+        if (s == this.MOCK_KEY) {
+            return this.MOCK_NODE_3_20
+        }
     }
 }
 export default new Constant()

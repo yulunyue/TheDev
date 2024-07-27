@@ -1,7 +1,4 @@
 import { Div } from "./div";
-import web from "../../web/web_dom"
-import Ct from "../../web/constant"
-import { Node } from "../../web/cls";
 export class Input extends Div {
     el: HTMLInputElement
     constructor() {

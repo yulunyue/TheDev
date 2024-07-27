@@ -8,3 +8,17 @@
 p {
     cursor: default;
 }
+
+table tbody {
+    display: block;
+    overflow: auto;
+}
+
+table thead,
+tbody tr,
+tfoot tr,
+thead tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
