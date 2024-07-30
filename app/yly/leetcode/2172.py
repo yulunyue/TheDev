@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, NamedTuple, Tuple
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
 from sortedcontainers import SortedList
@@ -12,6 +12,8 @@ null = None
 true = True
 false = False
 M = 10**9 + 7
+
+
 class MCFGraph:
     class Edge(NamedTuple):
         src: int
@@ -131,6 +133,7 @@ class MCFGraph:
             prev_cost_per_flow = c
         return result
 
+
 class Solution:
     def maximumANDSum(self, nums: List[int], numSlots: int) -> int:
         n, m = len(nums), numSlots
@@ -142,43 +145,44 @@ class Solution:
             g.add_edge(s, i, 1, 0)
         for i in range(n, s):
             g.add_edge(i, t, 2, 0)
-        
+
         for i in range(n):
             for j in range(n, s):
                 g.add_edge(i, j, inf, -(nums[i] & j - n + 1))
 
         return -g.flow(s, t)[1]
 
-
     def get_cases(self):
         return [
-            dict(nums = [1,2,3,4,5,6], numSlots = 3,result=9),
-            dict(nums = [1,3,10,4,7,1], numSlots = 9,result=24)
+            dict(nums=[1, 2, 3, 4, 5, 6], numSlots=3, result=9),
+            dict(nums=[1, 3, 10, 4, 7, 1], numSlots=9, result=24)
         ]
+
     def maximumANDSum1(self, nums: List[int], numSlots: int) -> int:
-        n=len(nums)
-        sc=[3**i for i in range(numSlots)]
+        n = len(nums)
+        sc = [3**i for i in range(numSlots)]
+
         @lru_cache(None)
-        def dfs(slos,num,rest):
-            numn=[i for i in range(n) if num&(1<<i)==0]
-            if slos*2<len(numn):
+        def dfs(slos, num, rest):
+            numn = [i for i in range(n) if num & (1 << i) == 0]
+            if slos*2 < len(numn):
                 return -inf
-            if slos==0:
+            if slos == 0:
                 return 0
             # ret = dfs(slos-1,num,rest)
-            ret=0
+            ret = 0
             for i in numn:
-                nm=num|(1<<i)
-                tmp=(nums[i]&slos)
-                if rest==1:
-                    tmp+=dfs(slos-1,nm,2)
+                nm = num | (1 << i)
+                tmp = (nums[i] & slos)
+                if rest == 1:
+                    tmp += dfs(slos-1, nm, 2)
                 else:
-                    tmp+=dfs(slos,nm,rest-1)
-                ret =max(tmp,ret)
+                    tmp += dfs(slos, nm, rest-1)
+                ret = max(tmp, ret)
             # self.log(slos,[nums[i] for i in numn],rest,ret)
-            return max(ret,dfs(slos-1,num,2))
+            return max(ret, dfs(slos-1, num, 2))
 
-        return dfs(numSlots,0,2)
+        return dfs(numSlots, 0, 2)
 
     def test(self, **kg):
         return self.maximumANDSum(**kg)
