@@ -17,11 +17,16 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(nums1=[2, 0, 1, 3], nums2=[0, 1, 2, 3],
+                 result=1),
+            dict(nums1=[4, 0, 1, 3, 2], nums2=[4, 1, 0, 2, 3], result=4),
         ]
 
     def goodTriplets(self, nums1: List[int], nums2: List[int]) -> int:
-        pass
+        nums = sorted([[v, i] for i, v in enumerate(nums2)], reverse=True)
+        num3 = [nums1[i] for v, i in nums]
+        ret = 0
+        self.log(num3)
 
     def test(self, **kg):
         return self.goodTriplets(**kg)
