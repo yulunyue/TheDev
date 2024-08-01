@@ -17,19 +17,31 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums1=[2, 0, 1, 3], nums2=[0, 1, 2, 3],
-                 result=1),
-            dict(nums1=[4, 0, 1, 3, 2], nums2=[4, 1, 0, 2, 3], result=4),
+            dict(tires=[[2, 3], [3, 4]], changeTime=5, numLaps=4,
+                 result=1)
         ]
 
-    def goodTriplets(self, nums1: List[int], nums2: List[int]) -> int:
-        nums = sorted([[v, i] for i, v in enumerate(nums2)], reverse=True)
-        num3 = [nums1[i] for v, i in nums]
-        ret = 0
-        self.log(num3)
+    def minimumFinishTime(self, tires: List[List[int]], changeTime: int, numLaps: int) -> int:
+        '''
+        numLaps = ni1+n2
+        ret = n
+        '''
+        n = len(tires)
+        tires.sort()
+        q = []
+        for i in range(n):
+            if q and tires[i][1] >= q[-1][1]:
+                continue
+            q.append(tires[i])
+        for k1 in q:
+            pass
+        ret = inf
+        for i in range(numLaps):
+            pass
+        return ret
 
     def test(self, **kg):
-        return self.goodTriplets(**kg)
+        return self.minimumFinishTime(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -38,7 +50,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
