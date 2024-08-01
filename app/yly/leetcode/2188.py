@@ -18,7 +18,7 @@ class Solution:
     def get_cases(self):
         return [
             dict(tires=[[2, 3], [3, 4]], changeTime=5, numLaps=4,
-                 result=1)
+                 result=21)
         ]
 
     def minimumFinishTime(self, tires: List[List[int]], changeTime: int, numLaps: int) -> int:
@@ -32,13 +32,16 @@ class Solution:
         for i in range(n):
             if q and tires[i][1] >= q[-1][1]:
                 continue
-            q.append(tires[i])
-        for k1 in q:
-            pass
-        ret = inf
+            q.append(tires[i]+[tires[i][1]])
+        step = []
         for i in range(numLaps):
-            pass
-        return ret
+            hp = []
+            for v in q:
+                v3 = v[0]*(v[2]-1)//(v[1]-1)
+                heapq.heappush(hp, v3)
+                v[2] *= v[1]
+            step.append(heapq.heappop(hp))
+        self.log(step)
 
     def test(self, **kg):
         return self.minimumFinishTime(**kg)
