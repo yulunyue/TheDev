@@ -30,7 +30,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
