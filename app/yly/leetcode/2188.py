@@ -40,7 +40,7 @@ class Solution:
                 v3 = v[0]*(v[2]-1)//(v[1]-1)
                 heapq.heappush(hp, v3)
                 v[2] *= v[1]
-            step.append(heapq.heappop(hp))
+            step.append(heapq.heappop(hp)+changeTime)
         self.log(step)
 
     def test(self, **kg):
