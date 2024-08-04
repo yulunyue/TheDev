@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -11,48 +12,56 @@ null = None
 true = True
 false = False
 M = 10**9 + 7
+# 定义函数
+
+
+def lcm(x, y):
+
+    #  获取最大的数
+    if x > y:
+        greater = x
+    else:
+        greater = y
+
+    while(True):
+        if((greater % x == 0) and (greater % y == 0)):
+            lcm = greater
+            break
+        greater += 1
+
+    return lcm
 
 
 class Solution:
     def get_cases(self):
         return [
-            dict(num="1203", result=2),
-            dict(num="327", result=2),
-            dict(num="3333", result=5),
+            dict(nums=[287, 41, 49, 287, 899, 23, 23,
+                 20677, 5, 825], result=[2009, 20677, 825]),
+            dict(nums=[6, 4, 3, 2, 7, 6, 2], result=[12, 7, 6])
         ]
 
-    def numberOfCombinations(self, num: str) -> int:
+    def replaceNonCoprimes(self, nums: List[int]) -> List[int]:
+        if len(nums) == 1:
+            return nums
+        ret = []
+        tmp = nums[0]
+        for i in range(1, len(nums)):
+            if math.gcd(nums[i], tmp) > 1:
+                tmp = lcm(tmp, nums[i])
+            else:
+                ret.append(tmp)
+                while len(ret) >= 2 and math.gcd(ret[-1], ret[-2]) > 1:
+                    ret.append(lcm(ret.pop(), ret.pop()))
+                tmp = nums[i]
+            if i == len(nums)-1:
+                ret.append(tmp)
+                while len(ret) >= 2 and math.gcd(ret[-1], ret[-2]) > 1:
+                    ret.append(lcm(ret.pop(), ret.pop()))
 
-        n = len(num)
-
-        def small(a, b):
-            if len(a) < len(b):
-                return True
-            if len(a) > len(b):
-                return False
-            return a < b
-        stacks = []
-
-        @lru_cache(None)
-        def dfs(a, s):
-            if s[0] == '0':
-                return 0
-            if a == n:
-                # self.log(stacks+[s])
-                return 1
-            ret = dfs(a+1, s+num[a]) % M
-            # stacks.append(s)
-            j = a+1
-            while j <= n and small(num[a:j], s):
-                j += 1
-            if j <= n:
-                ret += dfs(j, num[a:j])
-            # stacks.pop()
-            return ret % M
-        return dfs(1, num[0])
+        return ret
 
     def test(self, **kg):
-        return self.numberOfCombinations(**kg)
+        return self.replaceNonCoprimes(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -61,7 +70,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
@@ -81,7 +90,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs = ""
-            ep = case.pop("result")
+            self.ep = case.pop("result")
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
@@ -89,8 +98,8 @@ class Solution:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, ep):
-                print(case, r, ep)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 
