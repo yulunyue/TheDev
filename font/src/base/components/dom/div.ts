@@ -1,5 +1,5 @@
 import web_dom from "../../web/web_dom"
-import { Style, Node } from "src/base/web/cls"
+import { Style, Node, Fn1 } from "src/base/web/cls"
 import { Dom } from "../../web/cls"
 export class Div {
     el: Dom
@@ -159,6 +159,13 @@ export class Div {
         }
         return this
     }
+    mount_html(call: any) {
+        this.on_mount_call["set_html"] = [() => {
+            console.log("xx")
+            return call(this.el)
+        }]
+        return this
+    }
     add_child(c: any) {
         c.mount(this.el)
         c.parent = this
@@ -178,7 +185,11 @@ export class Div {
     add_childs(childs: Div[]) {
         return this.set_childs(childs)
     }
-    set_html(text: string) {
+    set_html(text: string | Fn1<any, string>) {
+        if (typeof text == 'function') {
+            text(this.el)
+            return this
+        }
         this.el.innerHTML = text
         return this
     }

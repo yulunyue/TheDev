@@ -9,8 +9,10 @@ import { layout_dev } from "./auto/layout"
 import { table } from "./dom/table"
 import { label_dev } from "./dom/label"
 import { listui, listdev } from "./dom/list"
+import { dagre_d3_dev } from "../../third/third_util"
 const DEV_COMPONENT = {
     input, search_dev, select, canca_dev, svg_dev,
-    button_dev, layout_dev, progress_dev, table, listdev, label_dev
+    button_dev, layout_dev, progress_dev, table, listdev, label_dev,
+    dagre_d3_dev
 }
 export { DEV_COMPONENT }

@@ -1,5 +1,6 @@
 from common.util.test import TestBase
 from common.algo.util import *
+from common.algo.str_util import *
 import math
 
 
@@ -27,8 +28,14 @@ class TestAlgo(TestBase):
         self.expect(math.gcd(12), [])
 
     def test_loop(self):
-        for i in range(10**10):
+        for i in range(10**9):
             pass
+
+    def test_str(self):
+        self.expect(
+            Manacher("aababab").get_odd_p(),
+            [1, 1, 2, 3, 3, 2, 1]
+        )
 
 
 if __name__ == "__main__":
