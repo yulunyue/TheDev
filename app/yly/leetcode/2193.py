@@ -49,14 +49,16 @@ class IntervalTree:
 class Solution:
     def get_cases(self):
         return [
-            dict(s="aabb", result=2)
+            dict(s="aabb", result=2),
+            dict(s="letelt", result=2)
         ]
 
     def minMovesToMakePalindrome(self, s: str) -> int:
         n = len(s)
         s = list(s)
         ct = defaultdict(list)
-        it = IntervalTree(n+1, 0)
+        # it = IntervalTree(n+1, 0)
+        it = [0]*n
         ret = 0
         for i, v in enumerate(s):
             ct[v].append(i)
@@ -68,13 +70,16 @@ class Solution:
                 continue
             l, r = ct[v].pop(0), ct[v].pop()
             s[l] = s[r] = ""
-            all_num = it.query_sum(n)
-            l1 = l-all_num+it.query_sum(l+1)
-            r1 = r-all_num+it.query_sum(r+1)
-            it.add_value(r+1, 1)
+            # all_num = it.query_sum(n)
+            # l1 = l-all_num+it.query_sum(l+1)
+            # r1 = r-all_num+it.query_sum(r+1)
+            # it.add_value(r+1, 1)
+            l1, r1 = l-it[l], r-it[r]
             r2 = n - l1 - 1
-            self.log(l, r1, r2, all_num)
-            ret += r1
+            for j in range(r1+1, r2+1):
+                it[j] += 1
+            self.log(l, r1, r2, it)
+            ret += r2-r1
         return ret
 
     def test(self, **kg):
