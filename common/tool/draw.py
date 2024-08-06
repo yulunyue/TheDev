@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import json
+import sys
 
 
 class Draw:
@@ -74,6 +75,13 @@ class Draw:
             "中": ["晚"]
         }, "data/tmp/test")
 
+    def draw_graph(self, path: str):
+        out_put = path.replace('.json', '')
+        data = {}
+        with open(path, 'r', encoding='utf-8') as f:
+            data.update(json.loads(f.read()))
+        self.draw_net_work2(data, out_put)
+
 
 if __name__ == '__main__':
-    Draw().test()
+    getattr(Draw(), sys.argv[1])(*sys.argv[2:])
