@@ -1,6 +1,7 @@
 from common.util.test import TestBase
 from common.algo.util import *
 from common.algo.str_util import *
+from common.algo.segtree import *
 import math
 
 
@@ -36,6 +37,13 @@ class TestAlgo(TestBase):
             Manacher("aababab").get_odd_p(),
             [1, 1, 2, 3, 3, 2, 1]
         )
+
+    def test_seg(self):
+        s = IntervalTree(10, 0)
+        s.add_value(3, 1)
+        s.add_value(5, 2)
+        self.expect(s.query_sum(6)-s.query_sum(2), 3)
+        self.expect(s.query_sum(6)-s.query_sum(4), 2)
 
 
 if __name__ == "__main__":
