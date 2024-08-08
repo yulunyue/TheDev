@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -16,51 +17,21 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(
-                parents=[-1, 0, 1, 0, 3, 3],
-                nums=[5, 4, 6, 2, 1, 3],
-                result=[7, 1, 1, 4, 2, 1]
-            ),
-            dict(
-                parents=[-1, 0, 0, 2],
-                nums=[1, 2, 3, 4],
-                result=[5, 1, 1, 1]
-            ),
-            dict(parents=[-1, 0, 0, 2],
-                 nums=[1, 2, 3, 4], result=[5, 1, 1, 1]),
-
+            dict(s="babacc", queryCharacters="bcb",
+                 queryIndices=[1, 3, 3], result=[3, 3, 4])
         ]
 
-    def smallestMissingValueSubtree(self, parents: List[int], nums: List[int]) -> List[int]:
-        g = defaultdict(list)
-        for i in range(1, len(parents)):
-            g[parents[i]].append(i)
-        result = [1]*len(parents)
-        # flag = [0]*(len(parents)+1)
-
-        def dfs(i, p):
-            if nums[i] == 1:
-                result[i] = 2
-                return True, result[i]
-            ret = 1
-
-            for j in g[i]:
-                if j == p:
-                    continue
-                flag, v = dfs(j, i)
-                if not flag:
-                    continue
-                result[j] = v
-                if nums[j] == v:
-                    result[j] = v+1
-                return flag, result[j]
-            return ret, 1
-
-        dfs(0, -1)
-        return result
+    def longestRepeating(self, s: str, queryCharacters: str, queryIndices: List[int]) -> List[int]:
+        uni = UniFind()
+        max_count = 0
+        for i in range(1, len(s)):
+            if s[i] == s[i-1]:
+                p = uni.merge(i-1, i)
+                max_count = max(max_count, uni.size[p])
+        for q in
 
     def test(self, **kg):
-        return self.smallestMissingValueSubtree(**kg)
+        return self.longestRepeating(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -69,7 +40,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
@@ -89,7 +60,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs = ""
-            ep = case.pop("result")
+            self.ep = case.pop("result")
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
@@ -97,8 +68,8 @@ class Solution:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 

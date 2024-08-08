@@ -35,26 +35,72 @@ class IntervalTree:
 
 
 class SegTree:
-    def __init__(self, size, default_value) -> None:
-        self.size = size*4
-        self.store = defaultdict(lambda: default_value)
+    '''
+                          1[0-6]
+            2[0-3]                      3[4-6]
+     4[0-1]        5[2-3]         6[4-5]         7[6-6]
+8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
+    '''
 
-    def update_min_dp(self, o, l, r, v, L, R):
-        if l == L and r == R:
-            self.store[o] = min(self.store[o], v)
+    def __init__(self, size, default_value=None) -> None:
+        self.size = size
+        self.default_value = float(
+            "inf") if default_value is None else default_value
+        self.store = [self.default_value]*(self.size*4)
+        self.lazy = [self.default_value]*(self.size*4)
+
+    def push_lazy(self, i, fun):
+        if self.lazy[i] != self.default_value:
+            self.lazy[i*2] = fun(self.lazy[i], self.lazy[i*2])
+            self.lazy[i*2+1] = fun(self.lazy[i], self.lazy[i*2+1])
+            self.store[i*2] = fun(self.lazy[i], self.store[i*2])
+            self.store[i*2+1] = fun(self.lazy[i], self.store[i*2+1])
+            self.lazy[i] = self.default_value
+
+    def update_min_dp(self, o, l, r, L, R, v):
+        if l <= L and R <= r:
+            self.lazy[o] = v
+            self.store[o] = v
+            return
+        mid = (L+R)//2
+        self.push_lazy(o, lambda a, b: min(a, b))
+        if l <= mid:
+            self.update_min_dp(o*2, l, r, L, mid, v)
+        if r >= mid+1:
+            self.update_min_dp(o*2+1, l, r, mid+1, R, v)
+        self.store[o] = max(self.store[o*2], self.store[o*2+1])
+
+    def info(self):
+        ret = dict(lazy=dict(), store=dict())
+        for key in ret.keys():
+            for i, v in enumerate(getattr(self, key)):
+                if v != self.default_value and v is not None:
+                    ret[key][i] = v
+        return ret
+
+    def query_min_dp(self, o, l, r, L, R):
+        if l <= L and R <= r:
             return self.store[o]
         mid = (L+R)//2
-        if r <= mid:
-            ret = self.update_min_dp(o*2, l, r, L, mid)
-        elif mid < l:
-            ret = self.update_min_dp(o*2+1, l, r, mid+1, R)
+        ret = float("inf")
+        self.push_lazy(o, lambda a, b: min(a, b))
+        if l <= mid:
+            ret = min(self.query_min_dp(o*2, l, r, L, mid), ret)
         else:
-            self.update_min_dp(o*2, l, mid, L, mid)
-            self.update_min_dp(o*2+1, mid+1, r, mid+1, R)
-        return self.store[o]
+            ret = min(self.query_min_dp(o * 2+1, l, r, mid+1, R), ret)
+        return ret
+
+    def query_min(self, l, r):
+        return self.query_min_dp(1, l, r, 0, self.size)
 
     def update_min(self, l, r, v):
-        self.update_min_dp(1, l, r, v, 0, self.size)
+        return self.update_min_dp(1, l, r, 0, self.size, v)
+
+    def update_max(self, l, r, v):
+        self.update_min(l, r, -v)
+
+    def query_max(self, l, r):
+        return -self.query_min(l, r)
 
     def update_sum_dq(self, o, l, r, L, R, v):
         if l <= L and R <= l:
