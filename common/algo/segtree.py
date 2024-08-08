@@ -86,7 +86,7 @@ class SegTree:
         self.push_lazy(o, lambda a, b: min(a, b))
         if l <= mid:
             ret = min(self.query_min_dp(o*2, l, r, L, mid), ret)
-        else:
+        if r >= mid+1:
             ret = min(self.query_min_dp(o * 2+1, l, r, mid+1, R), ret)
         return ret
 
