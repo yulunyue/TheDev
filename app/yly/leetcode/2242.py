@@ -17,33 +17,15 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(s='abcabcabc', result=18),
-            dict(s='a'*6, result=21.1),
-            dict(s="babab", result=9)
+            dict([5, 2, 9, 8, 4], edges=[[0, 1], [1, 2], [2, 3], [0, 2], [1, 3], [2, 4]],
+                 result=24)
         ]
 
-    def sumScores(self, s: str) -> int:
-        s += '?'
-        ct = []
-        for i, v in enumerate(s[1:]):
-            if v == s[0]:
-                ct.append(i+2)
-        k_id = 1
-        ret = len(ct)
-        while ct and k_id < len(s):
-            tmp = []
-            for idx in ct:
-                if s[k_id] == s[idx]:
-                    ret += 1
-                    tmp.append(idx+1)
-                    self.log(k_id, idx)
-            # self.log(s[k_id], ct, ret)
-            ct = tmp
-            k_id += 1
-        return len(s)+ret-1
+    def maximumScore(self, scores: List[int], edges: List[List[int]]) -> int:
+        pass
 
     def test(self, **kg):
-        return self.sumScores(**kg)
+        return self.maximumScore(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
