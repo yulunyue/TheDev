@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
-from itertools import accumulate, product
+from itertools import accumulate, product, permutations
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -11,45 +12,20 @@ null = None
 true = True
 false = False
 M = 10**9 + 7
-S1 = 'xwxlxktiyjapmuqiezqqhqaieceiceetfpytqopmwjmtlbkzysihppbdqgtupqcgwzhbjriwbuwnekgspidlyhholgwhjsdspyufffrutkgnmtyrnikueahyefjtljstoynlwdnsmvlsjnmexeritzdividztirexemnjslvmsndwlnyotsjltjfeyhaeukinrytmngkturfffuypsdsjhwglohhyldipsgkenwubwirjbhzwgcqputgqdbpphisyzkbltmjwmpoqtypfteecieceiaqhqqzeiqumpajyitkxlxwx'
 
 
 class Solution:
     def get_cases(self):
         return [
-            dict(s="wtbptdhbjqsrwkxccxkwrsqjbhdtpbtw", result=1),
-            dict(s=S1, result=1245),
-            dict(s="ababbb", result=9)
+            dict([5, 2, 9, 8, 4], edges=[[0, 1], [1, 2], [2, 3], [0, 2], [1, 3], [2, 4]],
+                 result=24)
         ]
 
-    def maxProduct(self, s: str) -> int:
-
-        @lru_cache(None)
-        def dfs(a, b):
-            if a > b:
-                return False, 0
-            if a == b:
-                return True, 1
-            if s[a] == s[b]:
-                is_huiwen, num = dfs(a+1, b-1)
-                if is_huiwen:
-                    # self.log(a, b, s[a:b+1], 2+num)
-                    return is_huiwen, 2+num
-                return is_huiwen, num
-            _, rn = dfs(a+1, b)
-            _, ln = dfs(a, b-1)
-            return False, max(rn, ln)
-        ret = 1
-        for i in range(0, len(s)-1):
-            a = dfs(0, i)
-            b = dfs(i+1, len(s)-1)
-            if a[1]*b[1] > ret:
-                self.log(a, i, b)
-                ret = max(ret, a[1]*b[1])
-        return ret
+    def maximumScore(self, scores: List[int], edges: List[List[int]]) -> int:
+        pass
 
     def test(self, **kg):
-        return self.maxProduct(**kg)
+        return self.maximumScore(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -58,7 +34,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 204800:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
@@ -78,7 +54,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs = ""
-            ep = case.pop("result")
+            self.ep = case.pop("result")
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
@@ -86,8 +62,8 @@ class Solution:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, ep):
-                print(case, r, ep)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 

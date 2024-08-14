@@ -22,25 +22,20 @@ class Solution:
         ]
 
     def kthSmallestProduct(self, nums1: List[int], nums2: List[int], k: int) -> int:
-        l1 = bisect.bisect_left(nums1, 0)
-        l2 = bisect.bisect_left(nums2, 0)
-        nums11, nums12 = nums1[:l1], nums1[l1:]
-        nums21, nums22 = nums2[:l2], nums2[l2:]
+        l1, l2 = bisect.bisect_left(nums1, 0), bisect.bisect_right(nums1, 0)
+        r1, r2 = bisect.bisect_left(nums2, 0), bisect.bisect_right(nums2, 0)
+        nums11, nums12 = [-v for v in nums1[:l1]], nums1[l2:]
+        nums21, nums22 = [-v for v in nums2[:r1]], nums2[r2:]
         small_zero_num = len(nums11)*len(nums22)+len(nums12)*len(nums21)
-        self.log(small_zero_num, k)
-        if small_zero_num >= k:
-            pass
-        else:
-            k -= small_zero_num
-            min_value, max_value = inf, -inf
-            if nums12 and nums22:
-                min_value = min(min_value, nums12[0]*nums22[0])
-                max_value = max(max_value, nums12[-1]*nums22[-1])
-            if nums11 and nums21:
-                min_value = min(min_value, nums11[-1]*nums21[-1])
-                max_value = max(max_value, nums12[0]*nums22[0])
-            while k:
-                l = (min_value+max_value)//2
+
+        def uitl(array1, array2, array3, array4, n):
+            self.log(array1, array2, array3, array4, n)
+            return 0
+        if k <= small_zero_num:
+            return -uitl(nums11, nums22, nums21, nums12, small_zero_num-k)
+        elif k <= small_zero_num+(l2-l1)*(r2-r1):
+            return 0
+        return uitl(nums11, nums21, nums12, nums22, k)
 
     def test(self, **kg):
         return self.kthSmallestProduct(**kg)

@@ -7,11 +7,11 @@ class UniFind:
         f1 = self.find(f)
         t1 = self.find(t)
         if f1 == t1:
-            return False
+            return None
         self.p[f1] = t1
         self.size[t1] += self.size[f1]
         self.size[f1] = 0
-        return True
+        return t1
 
     def find(self, v):
         if v not in self.p:
