@@ -78,9 +78,6 @@ export class Div {
         return this
     }
     x(v: number) {
-        if (0 <= v && v <= 1) {
-            return this.parent.get_width() * v
-        }
         return v
     }
     get_x() {
@@ -90,9 +87,6 @@ export class Div {
         return this.el.clientTop
     }
     y(v: number) {
-        if (0 <= v && v <= 1) {
-            return this.parent.get_height() * v
-        }
         return v
     }
     get_width() {
