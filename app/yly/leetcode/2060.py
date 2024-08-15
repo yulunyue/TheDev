@@ -17,45 +17,59 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
+            dict(s1 ="l123e",s2 ="44",result=True),
+            dict(s1='ab',s2='a2',result=false),
             dict(s1 = "internationalization", s2 = "i18n",result=true),
             dict(s1 = "112s", s2 = "g841",result=true),
             
+            
         ]
-    @lru_cache(None)
-    def comb(self,s):
-        s=[int(v) for v in s]
-        ret=[s[-1]]
-        chen=[1]
-        for i in range(len(s)-2,-1,-1):
-            chen.append(chen[-1]*10)
-            tmp=ret
-            ret=[]
-            for c in chen:
-                for d in tmp:
-                    ret.append(c*s[i]+d)
-            self.log(ret)
-        return ret
-    def tointarray(self,s:str):
-        ret=[]
-        int_v=""
-        for v in s:
-            if v.isdigit():
-                int_v+=v
-                continue
-            if int_v:
-                ret.append(self.comb(int_v))
-                int_v=""
-            ret.append(v)
-        if int_v:
-            ret.append(self.comb(int_v))
-        return ret
+  
     def possiblyEquals(self, s1: str, s2: str) -> bool:
-        # s1=self.tointarray(s1)
-        # s2=self.tointarray(s2)
-        def dfs(i1,i2,cha):
-            pass
-        self.log(self.comb("123"))
-        return dfs(0,0,0)
+        def c(s:str):
+            if len(s)>2 and s[2].isdigit() and s[1].isdigit() and s[0].isdigit():
+                a,b,c=int(s[0]),int(s[1]),int(s[2])
+                return [a,a*10+b,a*100+b*10+c]
+            if len(s)>1 and s[1].isdigit() and s[0].isdigit():
+                a,b=int(s[0]),int(s[1])
+                return [a,a*10+b]
+            if s[0].isdigit():
+                return [int(s[0])]
+            return []
+
+        def dfs(s1:str,s2:str):
+            if not s2:
+                return not s1
+            if not s1:
+                return False
+            a1=c(s1)
+            a2=c(s2)
+            self.log(s1,a1,'-',s2,a2)
+            if not a1 and not a2:
+                if s1[0]!=s2[0]:
+                    return False
+                return dfs(s1[1:],s2[1:])
+            if a1 and a2:
+                for i,a3 in enumerate(a1):
+                    for j,b3 in enumerate(a2):
+                        if a3<b3 and dfs(s1[i+1:],s2[j+1:]):
+                            return True
+                        elif a3>b3 and dfs(s1[i+1:],s2[j+1:]):
+                            return True
+                        elif dfs(s1[i+1:],s2[j+1:]):
+                            return True
+                return False
+            if a1:
+                a1,a2,s1,s2=a2,a1,s2,s1
+            l=0
+            while l<len(s1) and not s1[l].isdigit():
+                l+=1
+
+            for j,v in enumerate(a2):
+                if l<v and dfs(s1[l:],s2[j+1:]):
+                    return True
+            return False
+        return dfs(s1,s2)
 
     def test(self, **kg):
         return self.possiblyEquals(**kg)
