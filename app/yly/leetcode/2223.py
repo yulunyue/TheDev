@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product
+from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
@@ -11,38 +12,31 @@ null = None
 true = True
 false = False
 M = 10**9 + 7
+class StrUtil:
+    def __init__(self,s) -> None:
+        self.s=s
 
+    def z_kmp(self):
+        n=len(self.s)
+        z=[0]*n
+        l=r=0
+        for i in range(1,n):
+            z[i]=max(min(z[i-l],r-i+1),0)
+            while i+z[i]<n and self.s[z[i]]==self.s[z[i]+i]:
+                l,r=i,i+z[i]
+                z[i]+=1
+            
+        return z
 
 class Solution:
     def get_cases(self):
         return [
-            dict(nums =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30827,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],k =0,result=33),
-            dict(nums = [2,-1,2], k = 3, result=1),
 
         ]
-    
-    def waysToPartition(self, nums: List[int], k: int) -> int:
-        n=len(nums)
-        nums2=[0]+list(accumulate(nums))
-        self.log(nums2)
-        cha=defaultdict(list)
-        ret=0
-        for i in range(1,n):
-            c=nums2[n]+nums2[0]-2*nums2[i]
-            ret+=c==0
-            cha[c].append(i-1)
-        
-        for i in range(n):
-            a=k-nums[i]
-            l=bisect.bisect_right(cha[a],i) if a in cha else 0
-            r=len(cha[-a])-bisect.bisect_left(cha[-a],i) if -a in cha else 0
-            self.log(i,l,r,a)
-            ret=max(ret,l+r)
-        self.log(cha,ret)
-        return ret
-
+    def sumScores(self, s: str) -> int:
+        return sum(StrUtil(s).z_kmp())+len(s)
     def test(self, **kg):
-        return self.waysToPartition(**kg)
+        return self.sumScores(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -51,7 +45,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
@@ -71,7 +65,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs = ""
-            ep = case.pop("result")
+            self.ep = case.pop("result")
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
@@ -79,8 +73,8 @@ class Solution:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 

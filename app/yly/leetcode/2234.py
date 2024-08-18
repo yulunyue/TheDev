@@ -17,11 +17,51 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(flowers=[1, 3, 1, 1], newFlowers=7, target=6, full=12, partial=1,
+                 result=14),
+            dict(flowers=[2, 4, 5, 3],
+                 newFlowers=10,
+                 target=5,
+                 full=2,
+                 partial=6,
+                 result=30)
         ]
 
+    def maximumBeauty(self, flowers: List[int], newFlowers: int, target: int, full: int, partial: int) -> int:
+        n = len(flowers)
+        flowers.sort()
+        partial_need = [flowers[0]]
+        full_need = [target-flowers[-1]]
+        for i in range(1, n):
+            partial_need.append(partial_need[-1]+flowers[i])
+            full_need.append(full_need[-1]+target-flowers[-i-1])
+        self.log(partial_need)
+        self.log(full_need)
+        ret = 0
+        if n*target <= newFlowers+partial_need[-1]:
+            ret = n*full
+        flow_min = partial_need[0]
+        while flow_min < target:
+            if flow_min+n*target-target <= newFlowers+partial_need[-1]:
+                full_num = n-1
+            else:
+                partial_num = bisect.bisect_right(flowers, flow_min)
+                partial_use = partial_num*flow_min-partial_need[partial_num-1]
+                full_can_use = newFlowers-partial_use
+                if full_can_use < 0:
+                    break
+                full_num = bisect.bisect_right(full_need, full_can_use)
+                if partial_num+full_num > n:
+                    full_num = n-partial_num
+            tmp = flow_min*partial+full_num*full
+            ret = max(ret, tmp)
+            self.log(flow_min, full_num, ret)
+            flow_min += 1
+
+        return ret
+
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.maximumBeauty(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

@@ -17,45 +17,62 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(s1 = "internationalization", s2 = "i18n",result=true),
-            dict(s1 = "112s", s2 = "g841",result=true),
-            
+            dict(s1='l123e', s2='44', result=true),
+            dict(s1="internationalization", s2="i18n", result=true),
+            dict(s1="112s", s2="g841", result=true),
+
         ]
-    @lru_cache(None)
-    def comb(self,s):
-        s=[int(v) for v in s]
-        ret=[s[-1]]
-        chen=[1]
-        for i in range(len(s)-2,-1,-1):
-            chen.append(chen[-1]*10)
-            tmp=ret
-            ret=[]
-            for c in chen:
-                for d in tmp:
-                    ret.append(c*s[i]+d)
-            self.log(ret)
-        return ret
-    def tointarray(self,s:str):
-        ret=[]
-        int_v=""
-        for v in s:
-            if v.isdigit():
-                int_v+=v
-                continue
-            if int_v:
-                ret.append(self.comb(int_v))
-                int_v=""
-            ret.append(v)
-        if int_v:
-            ret.append(self.comb(int_v))
-        return ret
+
     def possiblyEquals(self, s1: str, s2: str) -> bool:
-        # s1=self.tointarray(s1)
-        # s2=self.tointarray(s2)
-        def dfs(i1,i2,cha):
-            pass
-        self.log(self.comb("123"))
-        return dfs(0,0,0)
+
+        def u(s: str):
+            if 2 < len(s) and s[2].isdigit() and s[1].isdigit() and s[0].isdigit():
+                a, b, c = int(s[0]), int(s[1]), int(s[2])
+                return 3, [a+b+c, a*10+b+c, a*100+b*10+c]
+            if 1 < len(s) and s[1].isdigit() and s[0].isdigit():
+                a, b = int(s[0]), int(s[1])
+                return 2, [a+b, a*10+b]
+            if s and s[0].isdigit():
+                return 1, [int(s[0])]
+            return 0, []
+
+        @lru_cache(None)
+        def dfs(i1, i2, cha):
+            if i1 >= len(s1) or i2 >= len(s2):
+                return i1 == len(s1) and i2 == len(s2)
+            a1, b1 = u(s1[i1:])
+            a2, b2 = u(s2[i2:])
+            i1 += a1
+            i2 += a2
+            self.log(s1[i1:], s2[i2:], b1, b2, a1, a2, cha)
+            if not b1 and not b2:
+                if s1[i1] != s2[i2]:
+                    return False
+                if cha > 0:
+                    return dfs(i1+1+cha, i2+1, 0)
+                return dfs(i1+1, i2+1+cha, 0)
+            elif not b1:
+                ct = 0
+                while not s1[i1+ct].isdigit():
+                    ct += 1
+                for n in b2:
+                    if dfs(i1+ct, i2, n-ct-cha):
+                        return True
+            elif not b2:
+                ct = 0
+                while not s1[i1+ct].isdigit():
+                    ct += 1
+                # for n in b2:
+                #     if dfs(i1+ct, i2, 0):
+                #         return True
+            else:
+                pass
+                # for c1 in b1:
+                #     for c2 in b2:
+                #         if dfs(i1, i2, c1-c2):
+                #             return True
+            return False
+        return dfs(0, 0, 0)
 
     def test(self, **kg):
         return self.possiblyEquals(**kg)

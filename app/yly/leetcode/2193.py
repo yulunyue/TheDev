@@ -17,33 +17,15 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums1=[2, 5], nums2=[3, 4], k=2,
-                 result=8),
+            dict(s = "aabb",result=2),
+            dict(s = "letelt",result=2)
         ]
-
-    def kthSmallestProduct(self, nums1: List[int], nums2: List[int], k: int) -> int:
-        l1 = bisect.bisect_left(nums1, 0)
-        l2 = bisect.bisect_left(nums2, 0)
-        nums11, nums12 = nums1[:l1], nums1[l1:]
-        nums21, nums22 = nums2[:l2], nums2[l2:]
-        small_zero_num = len(nums11)*len(nums22)+len(nums12)*len(nums21)
-        self.log(small_zero_num, k)
-        if small_zero_num >= k:
-            pass
-        else:
-            k -= small_zero_num
-            min_value, max_value = inf, -inf
-            if nums12 and nums22:
-                min_value = min(min_value, nums12[0]*nums22[0])
-                max_value = max(max_value, nums12[-1]*nums22[-1])
-            if nums11 and nums21:
-                min_value = min(min_value, nums11[-1]*nums21[-1])
-                max_value = max(max_value, nums12[0]*nums22[0])
-            while k:
-                l = (min_value+max_value)//2
-
+    def minMovesToMakePalindrome(self, s: str) -> int:
+        s2=defaultdict(list)
+        for i,v in s:
+            s2[v].append(i)
     def test(self, **kg):
-        return self.kthSmallestProduct(**kg)
+        return self.minMovesToMakePalindrome(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -52,7 +34,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
@@ -72,7 +54,7 @@ class Solution:
             return
         for case in self.get_cases():
             self.logs = ""
-            ep = case.pop("result")
+            self.ep = case.pop("result")
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
@@ -80,8 +62,8 @@ class Solution:
                 import traceback
                 traceback.print_exc()
                 r = None
-            if not self.diff(r, ep):
-                print(case, 'result', r, 'except', ep)
+            if not self.diff(r, self.ep):
+                print(case, 'result', r, 'except', self.ep)
                 print(self.logs)
                 break
 

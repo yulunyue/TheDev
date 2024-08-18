@@ -17,11 +17,15 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict([5, 2, 9, 8, 4], edges=[[0, 1], [1, 2], [2, 3], [0, 2], [1, 3], [2, 4]],
+                 result=24)
         ]
 
+    def maximumScore(self, scores: List[int], edges: List[List[int]]) -> int:
+        pass
+
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.maximumScore(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
