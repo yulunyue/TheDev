@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
-from itertools import accumulate, product
+from itertools import accumulate, product, permutations
 from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
@@ -17,26 +17,39 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(n=5,
-                 meetings=[[1, 4, 3], [0, 4, 3]],
-                 firstPerson=3,
-                 result=[0, 1, 3, 4]),
-            dict(n=6, meetings=[[1, 2, 5], [2, 3, 8], [1, 5, 10]], firstPerson=1,
-                 result=[0, 1, 2, 3, 5])
+            dict(left=2, right=11, result="399168e2")
         ]
 
-    def findAllPeople(self, n: int, meetings: List[List[int]], firstPerson: int) -> List[int]:
-        ret = [0]
-        p = [None]*n
-        p[0] = 0
+    def abbreviateProduct(self, left: int, right: int) -> str:
+        ans = 1, 1
 
-        tm = defaultdict(SortedList)
-        for x, y, t in meetings:
-            tm[x].add([t, y])
-        return ret
+        def chen(ans, v):
+            return int(str(ans[0]*v)[:20]), ans[1]*v % (10**5)
+        cnt5 = cnt10 = 0
+        lst = list(range(left, right+1))
+        n = len(lst)
+        for i in range(n):
+            while lst[i] and lst[i] % 10 == 0:
+                lst[i] //= 10
+                cnt10 += 1
+            while lst[i] and lst[i] % 5 == 0:
+                lst[i] //= 5
+                cnt5 += 1
+        self.log(cnt5, cnt10, lst)
+        for i in range(n):
+            while cnt5 > 0 and lst[i] % 2 == 0:
+                lst[i] = lst[i] // 2
+                cnt5 -= 1
+                cnt10 += 1
+            ans = chen(ans, lst[i])
+
+        ans = chen(ans, 5**cnt5)
+        if len(str(ans[0])) <= 10:
+            return str(ans[0])+'e'+str(cnt10)
+        return str(ans[0])[:5]+'...'+str(ans[1])+'e'+str(cnt10)
 
     def test(self, **kg):
-        return self.findAllPeople(**kg)
+        return self.abbreviateProduct(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -45,7 +58,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
