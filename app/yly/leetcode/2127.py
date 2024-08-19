@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
-from itertools import accumulate, product
+from itertools import accumulate, product, permutations
 from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
@@ -17,26 +17,42 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(n=5,
-                 meetings=[[1, 4, 3], [0, 4, 3]],
-                 firstPerson=3,
-                 result=[0, 1, 3, 4]),
-            dict(n=6, meetings=[[1, 2, 5], [2, 3, 8], [1, 5, 10]], firstPerson=1,
-                 result=[0, 1, 2, 3, 5])
+            dict(favorite=[1, 0, 1, 2, 0], result=4),
+            dict(favorite=[1, 2, 3, 0, 0], result=4)
         ]
 
-    def findAllPeople(self, n: int, meetings: List[List[int]], firstPerson: int) -> List[int]:
-        ret = [0]
-        p = [None]*n
-        p[0] = 0
-
-        tm = defaultdict(SortedList)
-        for x, y, t in meetings:
-            tm[x].add([t, y])
-        return ret
+    def xx(self, favorite: List[int]):
+        n = len(favorite)
+        in_degre = [0]*n
+        for v in favorite:
+            in_degre[v] += 1
+        f_max = [0]*n
+        q = [i for i, v in enumerate(in_degre) if v == 0]
+        while q:
+            idx = q.pop(0)
+            in_degre[favorite[idx]] -= 1
+            f_max[favorite[idx]] = f_max[idx]+1
+            if in_degre[favorite[idx]] == 0:
+                q.append(in_degre[favorite[idx]])
+        ans = 0
+        for i, v in enumerate(in_degre):
+            if v == 0:
+                continue
+            cnt = 0
+            max_n = f_max[i]
+            while i != favorite[i] and in_degre[i] != 0:
+                in_degre[i] = 0
+                cnt += 1
+                i = favorite[i]
+                max_n = max(max_n, f_max[i])
+            if cnt == 2:
+                ans = max(ans, 2+max_n)
+            else:
+                ans = max(ans, cnt)
+        return ans
 
     def test(self, **kg):
-        return self.findAllPeople(**kg)
+        return self.xx(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -45,7 +61,7 @@ class Solution:
     logs = ""
 
     def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 2048:
+        if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
             self.draw(s[0], tp)
