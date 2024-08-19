@@ -14,6 +14,56 @@ false = False
 M = 10**9 + 7
 
 
+class SegTree:
+    '''
+                          1[0-6]
+            2[0-3]                      3[4-6]
+     4[0-1]        5[2-3]         6[4-5]         7[6-6]
+8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
+    '''
+
+    def __init__(self, size, default_value=None) -> None:
+        self.size = size
+        self.default_value = float(
+            "inf") if default_value is None else default_value
+        self.init()
+
+    def init(self):
+        self.pre = [self.default_value]*(self.size*4)
+        self.suf = [self.default_value]*(self.size*4)
+        self.mux = [self.default_value]*(self.size*4)
+
+    def build(self, o, l, r, s):
+        if l == r:
+            self.pre[o] = self.suf[o] = self.mux[o] = 1
+            return
+        m = (l+r)//2
+        self.build(o*2, l, m, s)
+        self.build(o*2+1, m+1, r, s)
+        self.merge(o, m, s)
+
+    def update_one(self, o, l, r, i, s):
+        if l == r:
+            return
+        m = (l+r)//2
+        if i <= m:
+            self.update_one(o*2, l, m, i, s)
+        else:
+            self.update_one(o*2+1, m+1, r, i, s)
+        self.merge(o, m, s)
+
+    def merge(self, o, m, s):
+        self.pre[o] = self.pre[o*2]
+        self.suf[o] = self.suf[o*2+1]
+        self.mux[o] = max(self.mux[o*2], self.mux[o*2+1])
+        if s[m-1] == s[m]:
+            if self.pre[o*2] == self.suf[o*2]:
+                self.pre[o*2] += self.pre[o*2+1]
+            if self.pre[o*2+1] == self.suf[o*2+1]:
+                self.suf[o*2+1] += self.suf[o*2]
+            self.mux[o] = max(self.mux[o], self.suf[o*2]+self.pre[o*2+1])
+
+
 class Solution:
     def get_cases(self):
         return [
@@ -24,54 +74,15 @@ class Solution:
         ]
 
     def longestRepeating(self, s: str, queryCharacters: str, queryIndices: List[int]) -> List[int]:
-        s = list(s)+['?']
-        sl = SortedList()
-        pos = [0]
-        j = 0
-        for i in range(1, len(s)):
-            if s[i] != s[i-1]:
-                pos.append(i)
-                sl.add(i-j)
-                j = i
+        n = len(s)
+        s = list(s)
+        st = SegTree(n, default_value=0)
+        st.build(1, 1, n, s)
         ret = []
-        self.log("".join(s), pos, sl)
         for i, idx in enumerate(queryIndices):
-
-            if s[idx] != queryCharacters[i]:
-
-                flag1 = idx > 0 and queryCharacters[i] == s[idx-1]
-                flag2 = queryCharacters[i] == s[idx+1]
-                if flag1 and flag2:
-                    j = bisect.bisect_left(pos, idx)
-                    sl.remove(pos.pop(j+1)-pos[j])
-                    sl.remove(pos.pop(j)-pos[j-1])
-                    sl.add(pos[j]-pos[j-1])
-                elif flag2:
-                    j = bisect.bisect_left(pos, idx+1)
-                    sl.remove(pos.pop(j)-pos[j-1])
-                    sl.add(pos[j]-pos[j-1])
-
-                elif flag1:
-                    j = bisect.bisect_left(pos, idx)
-                    sl.remove(pos[j]-pos[j-1])
-                    if pos[j]+1 == pos[j+1]:
-                        pos.pop(j)
-                    else:
-                        pos[j] += 1
-                    sl.add(pos[j]-pos[j-1])
-                else:
-                    if idx == 0:
-                        idx = 1
-                    j = bisect.bisect_left(pos, idx)
-                    if pos[j] != idx:
-                        sl.remove(pos[j]-pos[j-1])
-                        pos.insert(j, idx)
-                        sl.add(pos[j]-pos[j-1])
-                        sl.add(pos[j+1]-pos[j])
-                s[idx] = queryCharacters[i]
-                self.log(idx, "".join(s), pos, sl, flag1, flag2)
-
-            ret.append(sl[-1])
+            s[idx] = queryCharacters[i]
+            st.update_one(1, 1, n, idx+1, s)
+            ret.append(st.mux[1])
         return ret
 
     def test(self, **kg):

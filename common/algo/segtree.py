@@ -42,10 +42,35 @@ class SegTree:
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
 
-    def __init__(self, size, default_value=None) -> None:
+    def __init__(self, size, *args, default_value=None) -> None:
         self.size = size
         self.default_value = float(
             "inf") if default_value is None else default_value
+        self.args = args
+        self.init()
+
+    def build(self, o=1, l=0, r=None):
+        if r is None:
+            r = self.size
+        m = (l+r)//2
+        self.build(o*2, l, m)
+        self.build(o*2+1, m+1, r)
+        self.merge(o)
+
+    def update_one(self, i, v=None, o=1, l=0, r=None):
+        if r is None:
+            r = self.size
+        m = (l+r)//2
+        if i <= m:
+            self.update_min(i, v, o*2, l, m)
+        else:
+            self.update_min(i, v, o*2+1, m+1, r)
+        self.merge(o)
+
+    def merge(self, o):
+        pass
+
+    def init(self):
         self.store = [self.default_value]*(self.size*4)
         self.lazy = [self.default_value]*(self.size*4)
 
@@ -101,35 +126,3 @@ class SegTree:
 
     def query_max(self, l, r):
         return -self.query_min(l, r)
-
-    def update_sum_dq(self, o, l, r, L, R, v):
-        if l <= L and R <= l:
-            self.store[o] += v
-            return
-        mid = (L+R)//2
-        if r <= mid:
-            self.update_sum_dq(o*2, l, r, L, mid, v)
-        elif mid < l:
-            self.update_sum_dq(o*2+1, l, r, mid+1, R, v)
-        else:
-            self.update_min_dp(o*2, l, mid, L, mid, v)
-            self.update_min_dp(o*2+1, mid+1, r, mid+1, R, v)
-        self.store[o] = self.store[o*2]+self.store[o*2+1]
-
-    def update_sum(self, l, value):
-        self.update_sum_dq(1, l, l, 0, self.size, value)
-
-    def query_sum_dq(self, o, l, r, L, R):
-        if l == L and r == R:
-            return self.store[o]
-        mid = (L+R)//2
-        if r <= mid:
-            return self.query_sum_dq(o*2, l, r, L, mid)
-        elif mid < l:
-            return self.query_sum_dq(o*2+1, l, r, mid+1, R)
-        return self.query_sum_dq(o*2, l, mid, L, mid)+self.query_sum_dq(o*2+1, mid+1, r, mid+1, R)
-
-    def query_sum(self, l, r):
-        if r < l:
-            return 0
-        return self.query_sum_dq(1, l, r, 0, self.size)
