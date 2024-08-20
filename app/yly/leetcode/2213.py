@@ -67,10 +67,11 @@ class SegTree:
 class Solution:
     def get_cases(self):
         return [
+            dict(s="babacc", queryCharacters="bcb",
+                 queryIndices=[1, 3, 3], result=[3, 3, 4]),
             dict(s="geuqjmt", queryCharacters="bgemoegklm", queryIndices=[3, 4, 2, 6, 5, 6, 5, 4, 3, 2],
                  result=[1, 1, 2, 2, 2, 2, 2, 2, 2, 1]),
-            dict(s="babacc", queryCharacters="bcb",
-                 queryIndices=[1, 3, 3], result=[3, 3, 4])
+
         ]
 
     def longestRepeating(self, s: str, queryCharacters: str, queryIndices: List[int]) -> List[int]:
