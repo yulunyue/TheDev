@@ -21,23 +21,22 @@ class Solution:
         ]
 
     def maxRunTime(self, n: int, batteries: List[int]) -> int:
-        batteries = [-v for v in batteries]
-        heapq.heapify(batteries)
-        ret = 0
-        while batteries:
-            a = max(-batteries[0]-1, 1)
-            tmp = []
-            for _ in range(n):
-                if not batteries:
-                    return ret
-                v = -heapq.heappop(batteries)-a
-                if v > 0:
-                    tmp.append(v)
-            for v in tmp:
-                heapq.heappush(batteries, -v)
-            ret += a
-            self.log(ret, tmp, batteries)
-        return ret
+        batteries.sort()
+        sv = [0]
+        for v in batteries:
+            sv.append(sv[-1]+v)
+        l, r = batteries[0], sv[-1]//n
+        ans = 0
+        while l <= r:
+            self.log(l, r, ans)
+            m = (l+r)//2
+            idx = bisect.bisect_left(batteries, m)
+            if (n-len(batteries)+idx)*m <= sv[idx]:
+                ans = m
+                l = m+1
+            else:
+                r = m-1
+        return ans
 
     def test(self, **kg):
         return self.maxRunTime(**kg)
