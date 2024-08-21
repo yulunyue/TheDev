@@ -17,15 +17,41 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict([5, 2, 9, 8, 4], edges=[[0, 1], [1, 2], [2, 3], [0, 2], [1, 3], [2, 4]],
-                 result=24)
+            dict(num1="1",
+                 num2="5",
+                 min_num=1,
+                 max_num=5,
+                 result=5),
+            dict(num1="1", num2="12", min_num=1, max_num=8, result=11),
         ]
 
-    def maximumScore(self, scores: List[int], edges: List[List[int]]) -> int:
-        pass
+    def count(self, num1: str, num2: str, min_num: int, max_num: int) -> int:
+        num1 = num1.zfill(len(num2))
+
+        @lru_cache(None)
+        def dfs(i, n, up_limit=True, down_limit=True):
+            if i == len(num1):
+                return 1
+            if n < 0:
+                return 0
+            ret = 0
+            if up_limit:
+                r = int(num2[i])+1
+                l = min(int(num1[i]), int(num2[i])) if down_limit else 0
+            else:
+                l, r = 0, 10
+            for v in range(l, r):
+                if v > n:
+                    continue
+                next_up_limit = up_limit if v == r-1 else False
+                next_down_limit = down_limit and not up_limit
+                ret += dfs(i+1, n-v, next_up_limit, next_down_limit)
+            self.log(i, n, l, r, up_limit, down_limit, ret)
+            return ret % M
+        return dfs(0, max_num)-dfs(0, min_num-1)
 
     def test(self, **kg):
-        return self.maximumScore(**kg)
+        return self.count(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
