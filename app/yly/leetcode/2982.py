@@ -17,41 +17,32 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(num1="1",
-                 num2="5",
-                 min_num=1,
-                 max_num=5,
-                 result=5),
-            dict(num1="1", num2="12", min_num=1, max_num=8, result=11),
+            dict(s="abcaba", result=1),
+            dict(s="aaaa", result=2),
+            dict(s='bbc', result=-1),
+
         ]
 
-    def count(self, num1: str, num2: str, min_num: int, max_num: int) -> int:
-        num1 = num1.zfill(len(num2))
-
-        @lru_cache(None)
-        def dfs(i, n, up_limit=True, down_limit=True):
-            if i == len(num1):
-                return 1
-            if n < 0:
-                return 0
-            ret = 0
-            if up_limit:
-                r = int(num2[i])+1
-                l = min(int(num1[i]), int(num2[i])) if down_limit else 0
-            else:
-                l, r = 0, 10
-            for v in range(l, r):
-                if v > n:
-                    continue
-                next_up_limit = up_limit if v == r-1 else False
-                next_down_limit = down_limit and not up_limit
-                ret += dfs(i+1, n-v, next_up_limit, next_down_limit)
-            self.log(i, n, l, r, up_limit, down_limit, ret)
-            return ret % M
-        return dfs(0, max_num)-dfs(0, min_num-1)
+    def maximumLength(self, s: str) -> int:
+        mp = defaultdict(list)
+        ct = 0
+        for i in range(len(s)):
+            if i > 0 and s[i] != s[i-1]:
+                mp[s[i-1]].append(ct)
+                ct = 0
+            ct += 1
+        if ct:
+            mp[s[-1]].append(ct)
+        self.log(mp)
+        ans = 0
+        for v in mp.values():
+            v.sort(reverse=True)
+            v.extend([0, 0])
+            ans = max(ans, v[0]-2, min(v[0]-1, v[1]), v[2])
+        return ans if ans else -1
 
     def test(self, **kg):
-        return self.count(**kg)
+        return self.maximumLength(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
