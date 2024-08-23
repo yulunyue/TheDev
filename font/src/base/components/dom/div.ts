@@ -28,8 +28,7 @@ export class Div {
         this.init_event()
     }
     full() {
-
-        this.set_div_style({
+        return this.set_div_style({
             position: "fixed",
             width: 1,
             height: 1

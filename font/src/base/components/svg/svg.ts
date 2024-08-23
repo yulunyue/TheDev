@@ -28,6 +28,9 @@ export class Svg extends GNode {
 
     }
 }
+export function svg() {
+    return new Svg()
+}
 export function svg_dev() {
     let c = circle().set_pos(10, 10).set_r(10)
     function loop() {
@@ -37,7 +40,7 @@ export function svg_dev() {
         return 0
     }
     web_dom.add_task("svg_dev", loop, 1)
-    return new Svg().add_childs([
+    return svg().add_childs([
         text().set_pos(4, 4).set_html("xxx"),
         // line().set_d("M0 5 L5 10 L30 0 Z"),
         line().mount_d([

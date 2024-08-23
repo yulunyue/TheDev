@@ -68,6 +68,7 @@ export class Node {
     key: string = ""
     title: string = ""
     value: any = null
+    data: any = null
     option: any = null
     parent: Node = null
     childs: Node[]
@@ -83,7 +84,12 @@ export class Node {
         return this
     }
     set_childs(childs: Node[]) {
-        this.childs = childs
+        this.childs = []
+        for (var i = 0; i < childs.length; i++) {
+            if (instanceof (childs[i]) == Node) {
+
+            }
+        }
         return this
     }
     filter(key: string) {
@@ -91,5 +97,11 @@ export class Node {
             return v.title.indexOf(key) != -1
         }))
         return ret
+    }
+    dfs(callback: any, depth: number, j: number) {
+        callback(this, depth, j)
+        for (var i = 0; i < this.childs.length; i++) {
+            this.childs[i].dfs(callback, depth + 1, i)
+        }
     }
 }
