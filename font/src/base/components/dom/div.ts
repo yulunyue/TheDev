@@ -27,6 +27,14 @@ export class Div {
         this.init_style()
         this.init_event()
     }
+    full() {
+
+        this.set_div_style({
+            position: "fixed",
+            width: 1,
+            height: 1
+        })
+    }
     get_dialog() {
         if (!this.dialog) {
             this.dialog = new Div("div", "").set_div_style(

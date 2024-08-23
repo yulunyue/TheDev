@@ -4,8 +4,9 @@ import { select } from "./dom/select"
 import { canca_dev } from "./canva/canva"
 import { Svg, svg_dev } from "./svg/svg"
 import { button_dev } from "./dom/button"
+import { div, Div } from "./dom/div"
 import { Progress, progress_dev } from "./dom/progress"
-import { layout_dev } from "./auto/layout"
+import { Layout, layout_dev, layout } from "./auto/layout"
 import { table } from "./dom/table"
 import { label_dev } from "./dom/label"
 import { listui, listdev } from "./dom/list"
@@ -15,4 +16,4 @@ const DEV_COMPONENT = {
     button_dev, layout_dev, progress_dev, table, listdev, label_dev,
     dagre_d3_dev
 }
-export { DEV_COMPONENT }
+export { DEV_COMPONENT, Layout, layout, Div, div }
