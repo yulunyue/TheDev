@@ -86,7 +86,7 @@ export class Node {
     set_childs(childs: Node[]) {
         this.childs = []
         for (var i = 0; i < childs.length; i++) {
-            if (instanceof (childs[i]) == Node) {
+            if (childs[i] instanceof Node) {
 
             }
         }
