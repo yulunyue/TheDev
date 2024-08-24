@@ -34,8 +34,8 @@ class Solution:
                 a,b=int(s[0]),int(s[1])
                 return [a,a*10+b]
             if s[0].isdigit():
-                return [int(s[0])]
-            return []
+                return ['*'*int(s[0])+s[1:]]
+            return [s]
 
         def dfs(s1:str,s2:str):
             if not s2:
