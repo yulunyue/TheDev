@@ -16,7 +16,7 @@ export class Div {
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         this.parent = null
-        if (parent_node_type) {
+        if (parent_node_type && parent_node_type != node_type) {
             this.div_el = web_dom.createElement(parent_node_type)
             this.div_el.appendChild(this.el)
             this.init_default_div_style()
@@ -151,14 +151,18 @@ export class Div {
         this.render()
         return this
     }
-    on_mount() {
+    emit_mount() {
         for (var key in this.on_mount_call) {
             this[key].apply(this, this.on_mount_call[key])
         }
         for (var i = 0; i < this.childs.length; i++) {
-            this.childs[i].on_mount()
+            this.childs[i].emit_mount()
         }
+        this.on_mount()
         return this
+    }
+    on_mount() {
+
     }
     mount_html(call: any) {
         this.on_mount_call["set_html"] = [() => {

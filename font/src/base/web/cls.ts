@@ -87,7 +87,8 @@ export class Node {
         this.childs = []
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Node) {
-
+                this.childs.push(childs[i])
+                childs[i].parent = this
             }
         }
         return this
