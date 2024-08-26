@@ -73,7 +73,7 @@ class SegTree:
             self.update_min_dp(o*2, l, r, L, mid, v)
         if r >= mid+1:
             self.update_min_dp(o*2+1, l, r, mid+1, R, v)
-        self.store[o] = min(self.store[o*2], self.store[o*2+1])
+        self.store[o] = max(self.store[o*2], self.store[o*2+1])
 
     def info(self):
         ret = dict(lazy=dict(), store=dict())
@@ -121,20 +121,21 @@ class Solution:
 
     def getResults(self, queries: List[List[int]]) -> List[bool]:
         max_id = 5*(10**4)+2
+        max_id = 20
         wall_ids = [0, max_id]
-        seg_tree = SegTree(max_id)
+        seg_tree = SegTree()
 
         def set_wall(x):
-            l = bisect.bisect_left(wall_ids, x)-1
-            seg_tree.update_max(x, x, x-wall_ids[l])
-            seg_tree.update_max(wall_ids[l+1], wall_ids[l+1], wall_ids[l]-x)
+            l = bisect.bisect_left(wall_ids, x)
+            seg_tree.update(x, wall_ids[l], wall_ids[l]-x)
+            seg_tree.update(wall_ids[l-1], x, x-wall_ids[l-1])
             wall_ids.insert(l, x)
 
         def query(x, w):
             if x < w:
                 return False
-            l = bisect.bisect_left(wall_ids, x)-1
-            return x-wall_ids[l] >= w or seg_tree.query_max(0, wall_ids[l]) >= w
+            l = bisect.bisect_left(wall_ids, x)
+            return x-wall_ids[l-1] >= w or seg_tree.query(1, wall_ids[l-1]) >= w
 
         ret = []
         for tp, *args in queries:
@@ -144,8 +145,8 @@ class Solution:
                 ret.append(query(*args))
         return ret
 
-    def test(self, *args):
-        return self.getResults(*args)
+    def check(self, *args):
+        pass
 
     def __init__(self) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
@@ -170,6 +171,7 @@ class Solution:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, case[-1]):
+                self.check(*case, r)
                 print(case, r)
                 print(self.logs)
                 break

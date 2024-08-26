@@ -1,4 +1,5 @@
 import { GNode } from "./gnode"
+import { Node } from "../../web/cls"
 export class Text extends GNode {
     constructor() {
         super("text")
@@ -11,6 +12,10 @@ export class Text extends GNode {
             fontSize: 20,
             cursor: "pointer",
         })
+    }
+    set_option(option: Node): this {
+        this.set_html(option.title)
+        return this
     }
 }
 export function text() {

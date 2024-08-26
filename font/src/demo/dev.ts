@@ -1,6 +1,5 @@
 import web_dom from "../base/web/web_dom";
-import { Layout } from "../base/components/auto/layout";
-import { DEV_COMPONENT } from "../base/components/export"
+import { DEV_COMPONENT, Layout } from "../base/components/export"
 class Demo extends Layout {
     init() {
         let childs = []
@@ -12,5 +11,5 @@ class Demo extends Layout {
     }
 }
 export default function () {
-    return new Demo(Layout.VERTICAL).init().mount(web_dom.get_body()).on_mount()
+    return new Demo(Layout.VERTICAL).init()
 }
