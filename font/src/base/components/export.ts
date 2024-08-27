@@ -5,6 +5,7 @@ import { canca_dev } from "./canva/canva"
 import { Svg, svg, svg_dev, svg_node_factory } from "./svg/svg"
 import { button_dev } from "./dom/button"
 import { div, Div } from "./dom/div"
+import { gnode,GNode } from "./svg/gnode"
 import { Progress, progress_dev } from "./dom/progress"
 import { Layout, layout_dev, layout } from "./auto/layout"
 import { table } from "./dom/table"
@@ -19,4 +20,6 @@ const DEV_COMPONENT = {
     button_dev, layout_dev, progress_dev, table, listdev, label_dev,
     dagre_d3_dev
 }
-export { DEV_COMPONENT, Layout, layout, Div, div, Svg, svg, Constant, Node, svg_node_factory, line }
+export { DEV_COMPONENT, Layout, layout, Div, div, Svg, svg, 
+    Constant, Node, svg_node_factory, line,gnode,GNode
+}

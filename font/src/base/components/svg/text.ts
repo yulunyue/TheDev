@@ -15,7 +15,7 @@ export class Text extends GNode {
     }
     set_option(option: Node): this {
         this.set_html(option.title)
-        return this
+        return super.set_option(option)
     }
 }
 export function text() {

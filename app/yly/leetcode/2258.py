@@ -17,43 +17,56 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(k = 2, n = 5,result=25),
-        ]   
-    def kMirror(self, k: int, n: int) -> int:
-        l,r=1,10
-        cnt=0
-        def check(v):
+            dict(grid = [[0,2,0,0,0,0,0],[0,0,0,2,2,1,0],[0,2,0,0,1,2,0],[0,0,2,2,2,0,2],[0,0,0,0,0,0,0]],result=3)
+        ]
+    def maximumMinutes(self, grid: List[List[int]]) -> int:
+        n=len(grid)
+        m=len(grid[0])
+        dr = [[0,1],[0,-1],[1,0],[-1,0]]
+        def get_next(y,x):
             ret=[]
-            ret1=[]
-            while v>0:
-                v,c=v//k,v%k
-                ret.append(c)
-                ret1.insert(0,c)
-            return ret==ret1
-        ans=0
-        while 1:
-            for op in [0,1]:
-                for v in range(l,r):
-                    b=1
-                    s=0
-                    if op==0:
-                        a=v//10
-                    else:
-                        a=v
-                    while v>0:
-                        v,c=v//10,v%10
-                        s=s*10+c
-                        b*=10
-                    if check(a*b+s):
-                        ans+=a*b+s
-                        cnt+=1      
-                        if cnt==n:
-                            return ans        
-            l,r=r,r*10
+            for ay,ax in dr:
+                ny,nx=y+ay,x+ax
+                if ny<0 or nx<0 or ny>=n or nx>=x:
+                    continue
+                ret.append([ny,nx])
+            return ret
+
+        fire_grass_time=dict()
+        fire=[]
+        for i,row in enumerate(grid):
+            for j,cell in enumerate(row):
+                if cell==1:
+                    fire.append([0,i,j])
+                    fire_grass_time[(i,j)]=0
+                if cell==2:
+                    fire_grass_time[(i,j)]=-1
+        while fire:
+            e_fire=fire
+            fire=[]
+            for t,i,j in e_fire:
+                for y,x in get_next(i,j):
+                    if (y,x) not in fire_grass_time:
+                        fire_grass_time[(y,x)]=t+1
+                        fire.append((t+1,y,x))
+        q=[[0,0]]
+        while q:
+            tmp=q
+            q=[]
+            step=0
+            for i,j in tmp:
+                i,j=q.pop(0)
+                if i==n and j==m:
+                    if (i,j) not in fire_grass_time:
+                        return 10**9
+                    return
+            step+=1 
+        self.log(fire_grass_time)
+        return -1
 
 
     def test(self, **kg):
-        return self.kMirror(**kg)
+        return self.maximumMinutes(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
