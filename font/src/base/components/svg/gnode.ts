@@ -1,5 +1,6 @@
 import web_dom from "../../web/web_dom"
 import { Div } from "../dom/div"
+import { Node } from "../../web/cls"
 export class GNode extends Div {
     constructor(name: string = "g", parent_type: string = "") {
         super(name, parent_type)
@@ -21,6 +22,15 @@ export class GNode extends Div {
     }
     get_y() {
         return parseFloat(this.get_attr("y"))
+    }
+    set_option(option: Node): this {
+        if (option.data.y != null) {
+            return this.set_y(option.data.y)
+        }
+        if (option.data.x != null) {
+            return this.set_x(option.data.x)
+        }
+        return this
     }
 
 }

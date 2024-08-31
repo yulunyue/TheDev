@@ -26,24 +26,20 @@ def log(*s):
     logs += " ".join([str(v) for v in s])+"\n"
 
 
-class Solution(Encrypter):
+class Solution():
     @classmethod
     def get_cases(cls):
-        return [[
-            ["Encrypter", "encrypt", "decrypt"],
-            [[['a', 'b', 'c', 'd'], ["ei", "zf", "ei", "am"],
-              ["abcd", "acbd", "adbc", "badc", "dacb", "cadb", "cbda", "abad"]],
-             ["abcd"], ["eizfeiam"]],
-            [null, "eizfeiam", 2]
-        ]]
+        return [
+        ]
 
     @classmethod
     def run(cls):
         global logs
         if not local_debug:
             return
-        logs = ""
+
         for case in cls.get_cases():
+            logs = ""
             m, inp, es = case
             r = cls(*inp[0])
             log(m[0], *inp[0])
