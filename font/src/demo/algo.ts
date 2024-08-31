@@ -1,20 +1,22 @@
-import { Div, Svg, svg, Constant, Node, svg_node_factory, line } from "../base/components/export";
+import { Div, Svg, svg, Constant, Node, 
+    svg_node_factory, line ,gnode,GNode
+} from "../base/components/export";
 
 class Algo extends Div {
-    svg_node: Svg
+    svg_node: GNode
     init_style(): void {
         this.full()
     }
     init() {
-        this.svg_node = svg().full()
+        this.svg_node = gnode()
+        
         return this.add_childs([
-            this.svg_node
+            svg().full().add_child(this.svg_node)
         ])
     }
     draw_tree_view(root: Node) {
         let w = this.get_width()
         let h = this.get_height()
-        console.log(w, h)
         this.svg_node.clear()
         let nodes: Node[] = []
         let store_tmp = {}

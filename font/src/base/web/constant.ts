@@ -1,7 +1,7 @@
 import { Node } from "./cls"
 
 function fack_data(depth: number, len: number) {
-    let ret = new Node()
+    let ret = new Node().set_title("root")
     if (depth == 0) {
         return ret
     }

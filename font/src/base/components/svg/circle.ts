@@ -25,11 +25,8 @@ export class Circle extends GNode {
         return parseFloat(this.get_attr("cy"))
     }
     set_option(option: Node): this {
-        if (option && option.data) {
-            this.set_r(option.data.r)
-        }
+        this.set_r(option.data.r)
         return super.set_option(option)
-
     }
 }
 export function circle() {
