@@ -42,15 +42,18 @@ class Solution(Encrypter):
         global logs
         if not local_debug:
             return
-        logs = ""
         for case in cls.get_cases():
+            logs = ""
             m, inp, es = case
             r = cls(*inp[0])
             log(m[0], *inp[0])
             flag = True
             for i in range(1, len(inp)):
                 log(m[i], inp[i], es[i])
-                e = getattr(r, m[i])(*inp[i])
+                try:
+                    e = getattr(r, m[i])(*inp[i])
+                except Exception as a:
+                    e=a
                 if not r.diff(e, es[i]):
                     print(logs, e, es[i])
                     flag = False

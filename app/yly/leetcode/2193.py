@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
-from itertools import accumulate, product, permutations
+from itertools import accumulate, product
 from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
@@ -17,35 +17,16 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(nums =[5,12,8,5,5,1,20,3,10,10,5,5,5,5,1],result=27),
-            dict(nums = [3,12,30,17,21],result=2)
+            dict(s = "aabb",result=2),
+            dict(s = "letelt",result=2)
         ]
-    def countPairs(self, nums: List[int]) -> int:
-        use_nums=[]
-        for v in nums:
-            tmp=set()
-            vs=str(v)
-            vt=len(vs)
-            for i in range(vt):
-                for j in range(i+1,vt):
-                    vc=int(vs[i])-int(vs[j])
-                    if vc==0:
-                        continue
-                    vi=vc*(10**(vt-i-1))
-                    vj=-vc*(10**(vt-j-1))
-                    tmp.add(v-vi-vj)
-            use_nums.append(tmp)
-        ret=0
-        n=len(nums)
-        for i in range(n):
-            for j in range(i+1,n):
-                if nums[i]==nums[j]:
-                    ret+=1
-                elif nums[i] in use_nums[j] or nums[j] in use_nums[i]:
-                    ret+=1
-        return ret
+    def minMovesToMakePalindrome(self, s: str) -> int:
+        s2=defaultdict(list)
+        for i,v in s:
+            s2[v].append(i)
+            
     def test(self, **kg):
-        return self.countPairs(**kg)
+        return self.minMovesToMakePalindrome(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

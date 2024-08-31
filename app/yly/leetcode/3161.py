@@ -14,103 +14,12 @@ false = False
 M = 10**9 + 7
 
 
-class SegTree:
-    '''
-                          1[0-6]
-            2[0-3]                      3[4-6]
-     4[0-1]        5[2-3]         6[4-5]         7[6-6]
-8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
-    '''
-
-    def __init__(self, size, *args, default_value=None) -> None:
-        self.size = size
-        self.default_value = float(
-            "inf") if default_value is None else default_value
-        self.args = args
-        self.init()
-
-    def build(self, o=1, l=0, r=None):
-        if r is None:
-            r = self.size
-        m = (l+r)//2
-        self.build(o*2, l, m)
-        self.build(o*2+1, m+1, r)
-        self.merge(o)
-
-    def update_one(self, i, v=None, o=1, l=0, r=None):
-        if r is None:
-            r = self.size
-        m = (l+r)//2
-        if i <= m:
-            self.update_min(i, v, o*2, l, m)
-        else:
-            self.update_min(i, v, o*2+1, m+1, r)
-        self.merge(o)
-
-    def merge(self, o):
-        pass
-
-    def init(self):
-        self.store = [self.default_value]*(self.size*4)
-        self.lazy = [self.default_value]*(self.size*4)
-
-    def push_lazy(self, i, fun):
-        if self.lazy[i] != self.default_value:
-            self.lazy[i*2] = fun(self.lazy[i], self.lazy[i*2])
-            self.lazy[i*2+1] = fun(self.lazy[i], self.lazy[i*2+1])
-            self.store[i*2] = fun(self.lazy[i], self.store[i*2])
-            self.store[i*2+1] = fun(self.lazy[i], self.store[i*2+1])
-            self.lazy[i] = self.default_value
-
-    def update_min_dp(self, o, l, r, L, R, v):
-        if l <= L and R <= r:
-            self.lazy[o] = v
-            self.store[o] = v
-            return
-        mid = (L+R)//2
-        self.push_lazy(o, lambda a, b: min(a, b))
-        if l <= mid:
-            self.update_min_dp(o*2, l, r, L, mid, v)
-        if r >= mid+1:
-            self.update_min_dp(o*2+1, l, r, mid+1, R, v)
-        self.store[o] = max(self.store[o*2], self.store[o*2+1])
-
-    def info(self):
-        ret = dict(lazy=dict(), store=dict())
-        for key in ret.keys():
-            for i, v in enumerate(getattr(self, key)):
-                if v != self.default_value and v is not None:
-                    ret[key][i] = v
-        return ret
-
-    def query_min_dp(self, o, l, r, L, R):
-        if l <= L and R <= r:
-            return self.store[o]
-        mid = (L+R)//2
-        ret = float("inf")
-        self.push_lazy(o, lambda a, b: min(a, b))
-        if l <= mid:
-            ret = min(self.query_min_dp(o*2, l, r, L, mid), ret)
-        if r >= mid+1:
-            ret = min(self.query_min_dp(o * 2+1, l, r, mid+1, R), ret)
-        return ret
-
-    def query_min(self, l, r):
-        return self.query_min_dp(1, l, r, 0, self.size)
-
-    def update_min(self, l, r, v):
-        return self.update_min_dp(1, l, r, 0, self.size, v)
-
-    def update_max(self, l, r, v):
-        self.update_min(l, r, -v)
-
-    def query_max(self, l, r):
-        return -self.query_min(l, r)
 
 
 class Solution:
     def get_cases(self):
         return [
+            [[[1,13],[1,1],[2,10,5],[1,9],[2,15,6]],[true,true]],
             [[[1, 6], [1, 1], [2, 7, 5]], [true]],
             [[[1, 7], [1, 6], [2, 4, 9], [1, 11], [2, 11, 5]], [false, true]],
             [[[1, 1], [1, 11], [1, 4], [1, 8], [2, 13, 7]], [False]],
@@ -120,31 +29,52 @@ class Solution:
         ]
 
     def getResults(self, queries: List[List[int]]) -> List[bool]:
-        max_id = 5*(10**4)+2
-        max_id = 20
+        max_id = max(v[1] for v in queries)+1
+        ol=[0]*(max_id*4)
         wall_ids = [0, max_id]
-        seg_tree = SegTree()
-
+        
+        def update(o,l,r,i,v):
+            if l==r:
+                ol[o]=v
+                return
+            m=(l+r)//2
+            if i<=m:
+                update(o*2,l,m,i,v)
+            else:
+                update(o*2+1,m+1,r,i,v)
+            ol[o]=max(ol[o*2],ol[o*2+1])
+        def query(o,l,r,i):
+            if r<=i:
+                return ol[o]
+            m=(l+r)//2
+            if i<=m:
+                return query(o*2,l,m,i)
+            return max(ol[o*2],query(o*2+1,m+1,r,i))
         def set_wall(x):
             l = bisect.bisect_left(wall_ids, x)
-            seg_tree.update(x, wall_ids[l], wall_ids[l]-x)
-            seg_tree.update(wall_ids[l-1], x, x-wall_ids[l-1])
+            self.log("update",wall_ids[l],wall_ids[l]-x)
+            self.log("update",x, x-wall_ids[l-1])
+            update(1,1, max_id, wall_ids[l],wall_ids[l]-x)
+            update(1,1, max_id, x, x-wall_ids[l-1])
             wall_ids.insert(l, x)
 
-        def query(x, w):
+        def query2(x, w):
             if x < w:
                 return False
+            
             l = bisect.bisect_left(wall_ids, x)
-            return x-wall_ids[l-1] >= w or seg_tree.query(1, wall_ids[l-1]) >= w
+            # self.log(wall_ids[l-1],ol,query(1, 1,max_id,wall_ids[l-1]))
+            return x-wall_ids[l-1] >= w or query(1, 1,max_id,wall_ids[l-1]) >= w
 
         ret = []
         for tp, *args in queries:
             if tp == 1:
                 set_wall(*args)
             else:
-                ret.append(query(*args))
+                ret.append(query2(*args))
         return ret
-
+    def test(self,*args,**kwargs):
+        return self.getResults(*args,**kwargs)
     def check(self, *args):
         pass
 

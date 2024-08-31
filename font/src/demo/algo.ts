@@ -1,7 +1,7 @@
 import { Div, Svg, svg, Constant, Node, 
     svg_node_factory, line ,gnode,GNode
 } from "../base/components/export";
-
+import { SegTree } from "../base/algo/seg_tree";
 class Algo extends Div {
     svg_node: GNode
     init_style(): void {
@@ -46,7 +46,7 @@ class Algo extends Div {
         }
     }
     test() {
-        this.draw_tree_view(Constant.MOCK_NODE_3_5)
+        this.draw_tree_view(new SegTree().build(1,0,31))
     }
     on_mount() {
         this.test()
