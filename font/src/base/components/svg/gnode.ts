@@ -11,8 +11,8 @@ export class GNode extends Div {
     set_pos(x: number, y: number): this {
         return this.set_x(x).set_y(y)
     }
-    set_color(colr:string){
-        return this.set_attr("color","colr")
+    set_color(colr: string) {
+        return this.set_attr("color", "colr")
     }
     set_x(x: number) {
         return this.set_attr("x", this.x(x))
@@ -35,6 +35,6 @@ export class GNode extends Div {
     }
 
 }
-export function gnode(name:string="g") {
+export function gnode(name: string = "g") {
     return new GNode(name)
 }
