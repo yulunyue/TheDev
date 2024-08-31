@@ -17,30 +17,36 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(strength=[1, 3, 1, 2], result=44)
+            dict(s = "fool3e7bar", sub = "leet", 
+                 mappings = [["e","3"],["t","7"],["t","8"]],result=true),
         ]
+    def matchReplacement(self, s: str, sub: str, mappings: List[List[str]]) -> bool:
+        mp2:List[str,set]=dict()
+        for f,t in mappings:
+            if f not in mp2:
+                mp2[f]={f}
+            mp2[f].add(t)
+        
+        def dfs(l,r):
+            if r>=len(sub):
+                return True
+            if l>=len(s):
+                return False
+            sr=mp2.get(sub[r],set({sub[r]}))
+            if s[l] in sr:
+                return dfs(l+1,r+1)
+            return False
 
-    def totalStrength(self, strength: List[int]) -> int:
-        n = len(strength)
-        ret = 0
-        left, right, q = [-1]*n, [n]*n, []
-        for i, v in enumerate(strength):
-            while q and strength[q[-1]] >= v:
-                right[q.pop()] = i
-            if q:
-                left[i] = q[-1]
-            q.append(i)
-        # self.log(left, right, q)
-        for i, v in enumerate(strength):
-            ans = 0
-            for l in range(left[i]+1, i+1):
-                for r in range(i+1, right[i]):
-                    ans += sum(strength[l:r+1])
-            ret += ans*v
-        return ret % M
+        for i,v in enumerate(s):
+            if v in mp2.get(sub[0],set({sub[0]})):
+                if dfs(i+1,1):
+                    return True
+        return False
+
+
 
     def test(self, **kg):
-        return self.totalStrength(**kg)
+        return self.matchReplacement(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
