@@ -17,14 +17,28 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(ideas = ["coffee","donuts","time","toffee"],result=6),
+            dict(nums = [1,5,5,4,11], edges = [[0,1],[1,2],[1,3],[3,4]],result=9)
         ]
-    def distinctNames(self, ideas: List[str]) -> int:
-        for v in ideas:
+    def minimumScore(self, nums: List[int], edges: List[List[int]]) -> int:
+        a=0
+        n=len(nums)
+        for v in nums:
+            a^=v
+        g=defaultdict(dict)
+        size=[0]*len(nums)
+        for f,t in g:
+            g[f][t]=1
+            g[t][f]=1
+            size[f]+=1
+            size[t]+=1
+        
+        q=[i for i,v in enumerate(size) if v==1]
+        def dfs(f):
             pass
-    def test(self, **kg):
-        return self.distinctNames(**kg)
+        dfs(0)
 
+    def test(self,**kg):
+        return self.minimumScore(kg)
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
         if self.local_debug is None:
