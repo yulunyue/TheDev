@@ -20,8 +20,7 @@ class Solution:
             dict(ideas=['a', 'b'], result=0),
             dict(ideas=["coffee", "donuts", "time", "toffee"], result=6)
         ]
-
-    def xx(self, ideas):
+    def distinctNames(self, ideas: List[str]) -> int:
         ct = defaultdict(int)
         bad = [[0]*26 for _ in range(26)]
         size = [0]*26
@@ -41,7 +40,7 @@ class Solution:
         return ans*2
 
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.distinctNames(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

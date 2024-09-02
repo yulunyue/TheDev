@@ -17,7 +17,6 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-<<<<<<<< HEAD:app/yly/leetcode/2321.py
             dict(nums1=[60, 60, 60], nums2=[10, 90, 10], result=210)
         ]
 
@@ -41,16 +40,11 @@ class Solution:
             # self.log(ret, sc, c)
         return max(s1+max_sc1, s2+max_sc2)
 
-    def test(self, **kg):
-        return self.xx(**kg)
-========
-            dict(s = "aabb",result=2),
-            dict(s = "letelt",result=2)
-        ]
+
 
     def test(self, **kg):
         return self.minMovesToMakePalindrome(**kg)
->>>>>>>> 5d3e63ef0bebeb78add34e5a98dae88cbdfb43f9:app/yly/leetcode/2193.py
+
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
