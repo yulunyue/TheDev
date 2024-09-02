@@ -17,33 +17,78 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(m=3, n=5, prices=[[1, 4, 2], [2, 2, 7], [2, 1, 3]], result=19)
+            dict(grid=[[0, 0, 0, 0, 0], [0, 2, 0, 2, 0], [0, 2, 0, 2, 0], [
+                 0, 2, 1, 2, 0], [0, 2, 2, 2, 0], [0, 0, 0, 0, 0]], result=1),
+            dict(grid=[[0, 2, 0, 0, 1], [0, 2, 0, 2, 2], [0, 2, 0, 0, 0], [
+                 0, 0, 2, 2, 0], [0, 0, 0, 0, 0]], result=0),
+            dict(grid=[[0, 2, 0, 0, 0, 0, 0], [0, 0, 0, 2, 2, 1, 0], [
+                 0, 2, 0, 0, 1, 2, 0], [0, 0, 2, 2, 2, 0, 2], [0, 0, 0, 0, 0, 0, 0]], result=3)
         ]
 
-    def xx(self, m, n, prices):
-        ct = defaultdict(dict)
-        for y, x, p in prices:
-            ct[y][x] = p
+    def maximumMinutes(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        m = len(grid[0])
+        dr = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
-        @lru_cache(None)
-        def dfs_col(i, j):
-            ret = 0
-            for k, v in ct[i].items():
-                if k <= j:
-                    ret = max(ret, v+dfs_col(i, j-k))
-            # self.log('col', i, j, ret)
+        def get_next(y, x):
+            ret = []
+            for ay, ax in dr:
+                ny, nx = y+ay, x+ax
+                if ny < 0 or nx < 0 or ny >= n or nx >= m:
+                    continue
+                if grid[ny][nx] == 2:
+                    continue
+                ret.append([ny, nx])
             return ret
 
-        @lru_cache(None)
-        def dfs_row(i):
-            ret = 0
-            for k in ct.keys():
-                if k <= i:
-                    ret = max(ret, dfs_col(k, n)+dfs_row(i-k))
-            # self.log('row', i, ret)
-            return ret
+        fire_grass_time = [[inf for _ in range(m)] for _ in range(n)]
+        fire = []
+        for i, row in enumerate(grid):
+            for j, cell in enumerate(row):
+                if cell == 1:
+                    fire.append([0, i, j])
+                    fire_grass_time[i][j] = 0
+        while fire:
+            e_fire = fire
+            fire = []
+            for t, i, j in e_fire:
+                for y, x in get_next(i, j):
+                    if fire_grass_time[y][x] == inf:
+                        fire_grass_time[y][x] = t+1
+                        fire.append((t+1, y, x))
+        # self.log(grid,tp="grid")
+        self.log(fire_grass_time, tp='grid')
+        p = dict()
 
-        return dfs_row(m)
+        def get_min(cur, step):
+            ret = fire_grass_time[cur[0]][cur[1]]-step
+            self.log('head', cur, fire_grass_time[cur[0]][cur[1]], step, ret)
+            while cur in p:
+                cur = p[cur]
+                ret = min(ret, fire_grass_time[cur[0]][cur[1]]-step)
+                self.log("get_p", cur, step,
+                         fire_grass_time[cur[0]][cur[1]], ret)
+                step -= 1
+
+            return 10**9 if ret == inf else ret
+        vt = [[-1 for _ in range(m)] for _ in range(n)]
+
+        def dfs(i, j, step, ret):
+            vt[i][j] = step
+            if i == n-1 and j == m-1:
+                return ret
+            for y, x in get_next(i, j):
+                if vt[y][x] != -1:
+                    continue
+                max_step = fire_grass_time[y][x]
+                if max_step <= step+1:
+                    continue
+                ret = min(dfs(y, x, step+1, ret), max_step-step-1)
+            return ret
+        ans = dfs(0, 0, 0, inf)
+        self.log("xx")
+        self.log(vt, tp='grid')
+        return ans
 
     def test(self, **kg):
         return self.xx(**kg)
@@ -58,10 +103,15 @@ class Solution:
         if not self.local_debug or len(self.logs) >= 102400:
             return
         if tp:
-            self.draw(s[0], tp)
-        self.logs += " ".join([str(v) for v in s])+"\n"
+            s2 = self.draw(s[0], tp)
+            if s2:
+                self.logs += str(s2)+"\n"
+        else:
+            self.logs += " ".join([str(v) for v in s])+"\n"
 
     def draw(self, s, tp: str):
+        if tp == 'grid':
+            return "\n".join([str(v) for v in s])
         from common.tool.draw import Draw
         d = Draw()
         if tp.startswith('bar'):

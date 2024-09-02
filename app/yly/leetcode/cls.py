@@ -46,7 +46,10 @@ class Solution():
             flag = True
             for i in range(1, len(inp)):
                 log(m[i], inp[i], es[i])
-                e = getattr(r, m[i])(*inp[i])
+                try:
+                    e = getattr(r, m[i])(*inp[i])
+                except Exception as a:
+                    e=a
                 if not r.diff(e, es[i]):
                     print(logs, e, es[i])
                     flag = False

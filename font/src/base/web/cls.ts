@@ -87,11 +87,14 @@ export class Node {
         this.childs = []
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Node) {
-                this.childs.push(childs[i])
-                childs[i].parent = this
+                this.add_child(childs[i])
             }
         }
         return this
+    }
+    add_child(v:any){
+        this.childs.push(v)
+        v.parent = this
     }
     filter(key: string) {
         let ret = new Node().set_childs(this.childs.filter(v => {
@@ -104,5 +107,8 @@ export class Node {
         for (var i = 0; i < this.childs.length; i++) {
             this.childs[i].dfs(callback, depth + 1, i)
         }
+    }
+    get_title(){
+        return this.title
     }
 }
