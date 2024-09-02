@@ -17,36 +17,11 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(s = "fool3e7bar", sub = "leet", 
-                 mappings = [["e","3"],["t","7"],["t","8"]],result=true),
+
         ]
-    def matchReplacement(self, s: str, sub: str, mappings: List[List[str]]) -> bool:
-        mp2:List[str,set]=dict()
-        for f,t in mappings:
-            if f not in mp2:
-                mp2[f]={f}
-            mp2[f].add(t)
-        
-        def dfs(l,r):
-            if r>=len(sub):
-                return True
-            if l>=len(s):
-                return False
-            sr=mp2.get(sub[r],set({sub[r]}))
-            if s[l] in sr:
-                return dfs(l+1,r+1)
-            return False
-
-        for i,v in enumerate(s):
-            if v in mp2.get(sub[0],set({sub[0]})):
-                if dfs(i+1,1):
-                    return True
-        return False
-
-
 
     def test(self, **kg):
-        return self.matchReplacement(**kg)
+        return self.xx(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

@@ -17,11 +17,13 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(ideas = ["coffee","donuts","time","toffee"],result=6),
         ]
-
+    def distinctNames(self, ideas: List[str]) -> int:
+        for v in ideas:
+            pass
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.distinctNames(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
