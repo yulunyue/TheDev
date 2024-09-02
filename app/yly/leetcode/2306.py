@@ -17,40 +17,31 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-<<<<<<<< HEAD:app/yly/leetcode/2321.py
-            dict(nums1=[60, 60, 60], nums2=[10, 90, 10], result=210)
+            dict(ideas=['a', 'b'], result=0),
+            dict(ideas=["coffee", "donuts", "time", "toffee"], result=6)
         ]
 
-    def xx(self, nums1, nums2):
-        s1 = sum(nums1)
-        s2 = sum(nums2)
-        max_sc1 = 0
-        max_sc2 = 0
-        sc1 = 0
-        sc2 = 0
-        for i in range(len(nums1)):
-            c = nums2[i]-nums1[i]
-            sc1 += c
-            sc2 -= c
-            if sc1 < 0:
-                sc1 = 0
-            if sc2 < 0:
-                sc2 = 0
-            max_sc1 = max(sc1, max_sc1)
-            max_sc2 = max(sc2, max_sc2)
-            # self.log(ret, sc, c)
-        return max(s1+max_sc1, s2+max_sc2)
+    def xx(self, ideas):
+        ct = defaultdict(int)
+        bad = [[0]*26 for _ in range(26)]
+        size = [0]*26
+        ans = 0
+        for v in ideas:
+            v0 = ord(v[0])-ord('a')
+            size[v0] += 1
+            mask = ct[v[1:]]
+            ct[v[1:]] |= 1 << v0
+            for j in range(26):
+                if mask >> j & 1:
+                    bad[v0][j] += 1
+                    bad[j][v0] += 1
+        for i, b in enumerate(bad):
+            for j, m in enumerate(b[:i]):
+                ans += (size[i]-m)*(size[j]-m)
+        return ans*2
 
     def test(self, **kg):
         return self.xx(**kg)
-========
-            dict(s = "aabb",result=2),
-            dict(s = "letelt",result=2)
-        ]
-
-    def test(self, **kg):
-        return self.minMovesToMakePalindrome(**kg)
->>>>>>>> 5d3e63ef0bebeb78add34e5a98dae88cbdfb43f9:app/yly/leetcode/2193.py
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

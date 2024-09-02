@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
-from itertools import accumulate, product, permutations
+from itertools import accumulate, product
 from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
@@ -47,7 +47,11 @@ class Solution:
             dict(s = "aabb",result=2),
             dict(s = "letelt",result=2)
         ]
-
+    def minMovesToMakePalindrome(self, s: str) -> int:
+        s2=defaultdict(list)
+        for i,v in s:
+            s2[v].append(i)
+            
     def test(self, **kg):
         return self.minMovesToMakePalindrome(**kg)
 >>>>>>>> 5d3e63ef0bebeb78add34e5a98dae88cbdfb43f9:app/yly/leetcode/2193.py
