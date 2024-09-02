@@ -17,56 +17,36 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(grid = [[0,2,0,0,0,0,0],[0,0,0,2,2,1,0],[0,2,0,0,1,2,0],[0,0,2,2,2,0,2],[0,0,0,0,0,0,0]],result=3)
+            dict(m=3, n=5, prices=[[1, 4, 2], [2, 2, 7], [2, 1, 3]], result=19)
         ]
-    def maximumMinutes(self, grid: List[List[int]]) -> int:
-        n=len(grid)
-        m=len(grid[0])
-        dr = [[0,1],[0,-1],[1,0],[-1,0]]
-        def get_next(y,x):
-            ret=[]
-            for ay,ax in dr:
-                ny,nx=y+ay,x+ax
-                if ny<0 or nx<0 or ny>=n or nx>=x:
-                    continue
-                ret.append([ny,nx])
+
+    def xx(self, m, n, prices):
+        ct = defaultdict(dict)
+        for y, x, p in prices:
+            ct[y][x] = p
+
+        @lru_cache(None)
+        def dfs_col(i, j):
+            ret = 0
+            for k, v in ct[i].items():
+                if k <= j:
+                    ret = max(ret, v+dfs_col(i, j-k))
+            # self.log('col', i, j, ret)
             return ret
 
-        fire_grass_time=dict()
-        fire=[]
-        for i,row in enumerate(grid):
-            for j,cell in enumerate(row):
-                if cell==1:
-                    fire.append([0,i,j])
-                    fire_grass_time[(i,j)]=0
-                if cell==2:
-                    fire_grass_time[(i,j)]=-1
-        while fire:
-            e_fire=fire
-            fire=[]
-            for t,i,j in e_fire:
-                for y,x in get_next(i,j):
-                    if (y,x) not in fire_grass_time:
-                        fire_grass_time[(y,x)]=t+1
-                        fire.append((t+1,y,x))
-        q=[[0,0]]
-        while q:
-            tmp=q
-            q=[]
-            step=0
-            for i,j in tmp:
-                i,j=q.pop(0)
-                if i==n and j==m:
-                    if (i,j) not in fire_grass_time:
-                        return 10**9
-                    return
-            step+=1 
-        self.log(fire_grass_time)
-        return -1
+        @lru_cache(None)
+        def dfs_row(i):
+            ret = 0
+            for k in ct.keys():
+                if k <= i:
+                    ret = max(ret, dfs_col(k, n)+dfs_row(i-k))
+            # self.log('row', i, ret)
+            return ret
 
+        return dfs_row(m)
 
     def test(self, **kg):
-        return self.maximumMinutes(**kg)
+        return self.xx(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

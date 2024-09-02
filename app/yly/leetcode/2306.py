@@ -17,30 +17,31 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            dict(strength=[1, 3, 1, 2], result=44)
+            dict(ideas=['a', 'b'], result=0),
+            dict(ideas=["coffee", "donuts", "time", "toffee"], result=6)
         ]
 
-    def totalStrength(self, strength: List[int]) -> int:
-        n = len(strength)
-        ret = 0
-        left, right, q = [-1]*n, [n]*n, []
-        for i, v in enumerate(strength):
-            while q and strength[q[-1]] >= v:
-                right[q.pop()] = i
-            if q:
-                left[i] = q[-1]
-            q.append(i)
-        # self.log(left, right, q)
-        for i, v in enumerate(strength):
-            ans = 0
-            for l in range(left[i]+1, i+1):
-                for r in range(i+1, right[i]):
-                    ans += sum(strength[l:r+1])
-            ret += ans*v
-        return ret % M
+    def xx(self, ideas):
+        ct = defaultdict(int)
+        bad = [[0]*26 for _ in range(26)]
+        size = [0]*26
+        ans = 0
+        for v in ideas:
+            v0 = ord(v[0])-ord('a')
+            size[v0] += 1
+            mask = ct[v[1:]]
+            ct[v[1:]] |= 1 << v0
+            for j in range(26):
+                if mask >> j & 1:
+                    bad[v0][j] += 1
+                    bad[j][v0] += 1
+        for i, b in enumerate(bad):
+            for j, m in enumerate(b[:i]):
+                ans += (size[i]-m)*(size[j]-m)
+        return ans*2
 
     def test(self, **kg):
-        return self.totalStrength(**kg)
+        return self.xx(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
