@@ -17,14 +17,19 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-
+            dict(array=[7, 4, 5, 1, 6, 3], result=[1, 3, 4, 5, 6, 7])
         ]
 
-    def xx(self):
-        RECORD_ENABLE = True
+    def sort(self, array: List[int]):
+        n = len(array)
+        for i in range(n):
+            for j in range(i+1, n):
+                if array[j] < array[i]:
+                    array[i], array[j] = array[j], array[i]
+        return array
 
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.sort(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)

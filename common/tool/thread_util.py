@@ -60,13 +60,13 @@ class ThreadUtil(threading.Thread):
         pass
 
 
-def run_watch_fun():
-    u = ThreadUtil(target=test_fun, kwargs=dict(n=4))
+def run_watch_fun(fun, **kg):
+    u = ThreadUtil(target=fun, kwargs=kg)
     return u.get_record()
 
 
 def test():
-    return run_watch_fun()
+    return run_watch_fun(test_fun, n=4)
 
 
 if __name__ == "__main__":
