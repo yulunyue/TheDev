@@ -37,8 +37,17 @@ class Solution:
             pass
         dfs(0)
 
+<<<<<<< HEAD
     def test(self,**kg):
         return self.minimumScore(kg)
+=======
+    def xx(self):
+        RECORD_ENABLE = True
+
+    def test(self, **kg):
+        return self.xx(**kg)
+
+>>>>>>> a89cc6032634c11500d3a8e7de6fc49c35a57459
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
         if self.local_debug is None:
@@ -53,7 +62,7 @@ class Solution:
         self.logs += " ".join([str(v) for v in s])+"\n"
 
     def draw(self, s, tp: str):
-        from common.tool.draw import Draw
+        from common.third_util.draw import Draw
         d = Draw()
         if tp.startswith('bar'):
             d.draw_bar_chart(s)
