@@ -37,7 +37,7 @@ class Solution:
         self.logs += " ".join([str(v) for v in s])+"\n"
 
     def draw(self, s, tp: str):
-        from common.tool.draw import Draw
+        from common.third_util.draw import Draw
         d = Draw()
         if tp.startswith('bar'):
             d.draw_bar_chart(s)
