@@ -17,14 +17,35 @@ M = 10**9 + 7
 class Solution:
     def get_cases(self):
         return [
-            
+            dict(
+                n =4,meetings =[[18,19],[3,12],[17,19],[2,13],[7,10]],result=0
+            ),
+            dict(n =3,
+meetings =[[1,20],[2,10],[3,5],[4,9],[6,8]],
+result=1),
+            dict(n = 2, meetings = [[0,10],[1,5],[2,7],[3,4]],result=0)
         ]
-    
-    def xx(self):
+
+
+    def mostBooked(self, n: int, meetings: List[List[int]]) -> int:
         RECORD_ENABLE = True
+        meetings.sort()
+        rooms=[[meetings[i][e],i] for i in range(n)]
+        room_num=[0]*n
+        for s,e in meetings:
+            cur_time,idx=heapq.heappop(rooms)
+            room_num[idx]+=1
+            heapq.heappush(rooms,[max(cur_time,s)+e-s,idx])
+            self.log(s,e,rooms)
+        min_num=max(room_num)
+        self.log(room_num)
+        for i in range(n):
+            if room_num[i]==min_num:
+                return i
+        # 
 
     def test(self, **kg):
-        return self.xx(**kg)
+        return self.mostBooked(**kg)
 
     def __init__(self, *args) -> None:
         self.local_debug = getattr(self, sys.argv[-1], None)
