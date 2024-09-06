@@ -29,6 +29,38 @@ class TornadaWebSocketConnectHandler(tornado.websocket.WebSocketHandler):
     pass
 
 
+class Node:
+    def __init__(self, code=0, type="", key="", title="", value=None, data=None, option=None) -> None:
+        self.code = code
+        self.type = type
+        self.key = key
+        self.title = title
+        self.value = value
+        self.data = data
+        self.option = option
+        self.parent = None
+        self.childs: List[Node] = []
+
+    def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None):
+        ret = Node(code, type, key, title,
+                   value, data, option)
+        self.childs.append(ret)
+        ret.parent = self
+        return ret
+
+    def to_json(self):
+        return dict(
+            code=self.code,
+            type=self.type,
+            key=self.key,
+            title=self.title,
+            value=self.value,
+            data=self.data,
+            option=self.option,
+            childs=[c.to_json() for c in self.childs]
+        )
+
+
 class ApiCall:
     def __init__(self) -> None:
         self.fun_map = dict()
@@ -36,7 +68,10 @@ class ApiCall:
     def call(self, path, params):
         if path not in self.fun_map:
             return dict(statu=404, path=path, data=list(self.fun_map.keys()))
-        return self.fun_map[path](**params)
+        ret = self.fun_map[path](**params)
+        if isinstance(ret, Node):
+            return ret.to_json()
+        return ret
 
     def load_module(self, key: str, modules: List[str]):
         if key and not os.path.isdir(key):
@@ -45,7 +80,7 @@ class ApiCall:
             modules = os.listdir(key)
         path_key = key if key.startswith('/') else '/'+key
         for moudule_name in modules:
-            m = getattr(Module().load_module(moudule_name, key), 'Route')()
+            m = Module().load_module(moudule_name, key, 'Route')()
             moudule_name_key = moudule_name.replace('.', '/')
             for fun_name in dir(m):
                 if fun_name.startswith('_'):

@@ -11,11 +11,7 @@ try:
     from app.yly.leetcode.manage import SolutionBase
 except:
     class SolutionBase:
-        def log(self, *args, **kwargs):
-            pass
-
-        def run(self):
-            pass
+        pass
 inf = float("inf")
 null = None
 true = True
@@ -26,14 +22,20 @@ M = 10**9 + 7
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-
+            dict(array=[7, 1, 3, 2, 5, 4, 6], result=[1, 2, 3, 4, 5, 6, 7])
         ]
 
-    def execute(self):
+    def execute(self, array: List[int], result=None):
         RECORD_ENABLE = True
+        n = len(array)
+        for i in range(n):
+            for j in range(i):
+                if array[i] > array[j]:
+                    array[i], array[j] = array[j], array[i]
+        return array
 
-    def test(self, **kg):
-        return self.execute(**kg)
+    def sort(self, *args, **kg):
+        return self.execute(*args, **kg)
 
 
 if __name__ == '__main__':

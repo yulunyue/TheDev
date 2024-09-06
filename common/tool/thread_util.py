@@ -17,11 +17,16 @@ class FmInfo:
     def __init__(self, frame) -> None:
         self.frame: FrameType = frame
 
-    def get_info_dict(self):
-        return dict(
-            f_lineno=self.frame.f_lineno,
-            f_locals=self.frame.f_locals
-        )
+    def get_locals(self):
+        locals_var = self.frame.f_locals
+        if not ThreadUtil.RECORD_ENABLE in locals_var:
+            return
+        ret = dict()
+        for k in locals_var:
+            if k == ThreadUtil.RECORD_ENABLE or k == 'self':
+                continue
+            ret[k] = locals_var[k]
+        return ret
 
 
 class ThreadUtil(threading.Thread):
@@ -43,9 +48,8 @@ class ThreadUtil(threading.Thread):
         return self.localtrace
 
     def localtrace(self, frame, event, arg):
-        info = FmInfo(frame).get_info_dict()
-        if info['f_locals'].get(self.RECORD_ENABLE):
-            # info['f_locals'].pop(self.RECORD_ENABLE)
+        info = FmInfo(frame).get_locals()
+        if info:
             self.records.append(info)
         return self.localtrace
 

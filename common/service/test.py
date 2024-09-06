@@ -20,7 +20,7 @@ class Test(TestBase):
         run(dict(
             port=9999,
             py_modules={
-                "app/tmp": ["a"]
+                "app/tmp": ["a"],
             }
         ))
 
