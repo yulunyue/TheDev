@@ -1,5 +1,5 @@
-import { GNode, gnode } from "./gnode";
-import { line } from "./line";
+import { GNode, gnode } from "../gnode";
+import { line } from "../line";
 export class Grid extends GNode {
     row: number
     col: number

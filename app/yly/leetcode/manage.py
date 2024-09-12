@@ -39,6 +39,8 @@ class SolutionBase:
         for case in self.get_cases():
             self.logs = ""
             self.ep = case.pop("result")
+            if 'info' in case:
+                case.pop('info')
             try:
                 r = self.local_debug(**case)
                 self.log("finish")
