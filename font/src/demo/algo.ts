@@ -1,8 +1,8 @@
 import { Div, Svg, svg, Constant, Node, 
-    svg_node_factory, line ,gnode,GNode
+    svg_node_factory, line ,gnode,GNode,Layout
 } from "../base/components/export";
 import { SegTree } from "../base/algo/seg_tree";
-class Algo extends Div {
+class Algo extends Layout {
     svg_node: GNode
     init_style(): void {
         this.full()
