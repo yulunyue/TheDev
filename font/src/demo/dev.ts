@@ -4,7 +4,12 @@ class Demo extends Layout {
     init() {
         let childs = []
         for (var key in DEV_COMPONENT) {
-            childs.push(DEV_COMPONENT[key]())
+            let child=DEV_COMPONENT[key]()
+            if(Array.isArray(child)){
+                childs=childs.concat(child)
+            }else{
+                childs.push(child)
+            }
         }
         this.add_grid_childs(childs)
         return this
