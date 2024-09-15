@@ -2,6 +2,26 @@ from collections import defaultdict
 import heapq
 
 
+def dijkstra(graph, start):
+    dist = defaultdict(lambda: float('inf'))
+    dist[start] = 0
+    used = set()
+    q = [(0, start)]
+    while q:
+        cost, u = heapq.heappop(q)
+        if u in used:
+            continue
+
+        used.add(u)
+        for v, weight in graph[u].items():
+            target = dist[u] + weight
+            if target < dist[v]:
+                dist[v] = target
+                heapq.heappush(q, (dist[v], v))
+
+    return dist
+
+
 class Graph:
     def __init__(self) -> None:
         pass
@@ -54,23 +74,3 @@ class Graph:
                 points[n] = True
         dfs(b, -1)
         return edges, points, low
-
-    def dijkstra(self, graph, start, n):
-        dist = [float('inf')] * n
-        dist[start] = 0
-        used = set()
-        q = [(0, start)]
-
-        while q:
-            u = heapq.heappop(q)[1]
-            if u in used:
-                continue
-
-            used.add(u)
-            for v, weight in graph[u].items():
-                target = dist[u] + weight
-                if target < dist[v]:
-                    dist[v] = target
-                    heapq.heappush(q, (dist[v], v))
-
-        return dist
