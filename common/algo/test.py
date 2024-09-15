@@ -1,5 +1,5 @@
 from common.util.test import TestBase
-from common.algo.util import *
+from common.algo.math_util import *
 from common.algo.str_util import *
 from common.algo.segtree import *
 import math

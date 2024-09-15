@@ -26,9 +26,10 @@ M = 10**9 + 7
 class Solution(SolutionBase):
     def get_cases(self):
         return [
+
         ]
 
-    def execute(self, targetX: int, targetY: int) -> bool:
+    def execute(self) -> int:
         RECORD_ENABLE = True
 
     def x(self, *args, **kg):
