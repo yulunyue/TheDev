@@ -1,5 +1,5 @@
 import { Div } from "./div";
-
+import { Style, Node, Fn1 } from "../../web/cls"
 export class Button extends Div {
     constructor() {
         super("button")
@@ -15,5 +15,8 @@ export function button() {
     return new Button()
 }
 export function button_dev() {
-    return new Button().set_html("button")
+    return [
+        button().set_html("button"),
+        button().set_option(new Node().set_type("edit"))
+    ]
 }

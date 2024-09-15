@@ -63,15 +63,15 @@ export interface Fn1<P1, T> {
 export type Dom = HTMLElement | SVGElement
 
 export class Node {
-    code: number = 0
-    type: string = ""
-    key: string = ""
-    title: string = ""
-    value: any = null
-    data: any = null
-    option: any = null
-    parent: Node = null
-    childs: Node[]
+    code?: number = 0
+    type?: string = ""
+    key?: string = ""
+    title?: string = ""
+    value?: any = null
+    data?: any = null
+    option?: any = null
+    parent?: Node = null
+    childs?: Node[] = null
     constructor() {
         this.childs = []
     }
@@ -107,6 +107,10 @@ export class Node {
         for (var i = 0; i < this.childs.length; i++) {
             this.childs[i].dfs(callback, depth + 1, i)
         }
+    }
+    set_type(type:string){
+        this.type=type
+        return this
     }
     get_title(){
         return this.title
