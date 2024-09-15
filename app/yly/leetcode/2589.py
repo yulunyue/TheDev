@@ -37,9 +37,12 @@ class SegTreeNode:
         self.r = r
         self.value = value
         self.lasy = 0
+        self.left: SegTreeNode = None
+        self.right: SegTreeNode = None
 
     def update(self, l, r, value):
-        pass
+        if l <= self.l and self.r <= r:
+            pass
 
 
 class Solution(SolutionBase):

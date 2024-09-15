@@ -48,6 +48,8 @@ class SegTreeNode:
         self.r = r
         self.value = value
         self.lasy = 0
+        self.left: SegTreeNode = None
+        self.right: SegTreeNode = None
 
     def update_value(self, l, r):
         pass
