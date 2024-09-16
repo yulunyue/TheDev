@@ -42,14 +42,49 @@ class SegTreeNode:
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
 
-    def __init__(self, idx, l, r, value) -> None:
+    def __init__(self, idx, l, r, default_value=0) -> None:
         self.idx = idx
         self.l = l
         self.r = r
-        self.value = value
-        self.lasy = 0
-        self.left: SegTreeNode = None
-        self.right: SegTreeNode = None
+        self.m = (l+r)//2
+        self.default_value = default_value
+        self.value = default_value
+        self.lasz = 0
+        self._left: SegTreeNode = None
+        self._right: SegTreeNode = None
 
-    def update_value(self, l, r):
-        pass
+    @property
+    def left(self):
+        if not self._left:
+            self._left = SegTreeNode(
+                self.idx*2, self.l, self.m, self.default_value)
+        return self._left
+
+    @property
+    def right(self):
+        if not self._right:
+            self._right = SegTreeNode(
+                self.idx*2+1, self.m+1, self.r, self.default_value)
+        return self._right
+
+    def query(self, l, r):
+        if l <= self.l and self.r <= r:
+            return self.value
+        if self.m >= r:
+            return self.left.query(l, r)
+        if self.m < l:
+            return self.right.query(l, r)
+        return self.left.query(l, r)+self.right.query(l, r)
+
+    def update_one(self, pos, value):
+        if self.l == pos and self.r == pos:
+            self.value = value
+            return
+        if pos <= self.m:
+            self.left.update_one(pos, value)
+        else:
+            self.right.update_one(pos, value)
+        self.up()
+
+    def up(self):
+        self.value = self.left.value+self.right.value

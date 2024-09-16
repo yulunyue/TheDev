@@ -6,6 +6,8 @@ import os
 
 
 class SolutionBase:
+    logs = ""
+
     def get_cases(self):
         return [
 
@@ -14,18 +16,16 @@ class SolutionBase:
     def execute(self):
         RECORD_ENABLE = True
 
-    def __init__(self, *args) -> None:
-        self.local_debug = getattr(self, "execute")
-    logs = ""
-
-    def log(self, *s, tp: str = ""):
-        if not self.local_debug or len(self.logs) >= 102400:
+    @classmethod
+    def log(cls, *s, tp: str = ""):
+        if len(SolutionBase.logs) >= 102400:
             return
         if tp:
-            self.draw(s[0], tp)
-        self.logs += " ".join([str(v) for v in s])+"\n"
+            SolutionBase.draw(s[0], tp)
+        SolutionBase.logs += " ".join([str(v) for v in s])+"\n"
 
-    def draw(self, s, tp: str):
+    @classmethod
+    def draw(cls, s, tp: str):
         from common.third_util.draw import Draw
         d = Draw()
         if tp.startswith('bar'):
@@ -37,12 +37,12 @@ class SolutionBase:
     def run(self):
 
         for case in self.get_cases():
-            self.logs = ""
+            SolutionBase.logs = ""
             self.ep = case.pop("result")
             if 'info' in case:
                 case.pop('info')
             try:
-                r = self.local_debug(**case)
+                r = self.execute(**case)
                 self.log("finish")
             except Exception as e:
                 import traceback
@@ -50,7 +50,29 @@ class SolutionBase:
                 r = None
             if not self.diff(r, self.ep):
                 print(case, 'result', r, 'except', self.ep)
-                print(self.logs)
+                print(SolutionBase.logs)
+                break
+
+    @classmethod
+    def cls_run(cls):
+
+        for case in cls.get_cases():
+            cls.logs = ""
+            m, inp, es = case
+            r = cls(*inp[0])
+            cls.log(m[0], *inp[0])
+            flag = True
+            for i in range(1, len(inp)):
+                cls.log(m[i], inp[i], es[i])
+                try:
+                    e = getattr(r, m[i])(*inp[i])
+                except Exception as a:
+                    e = a
+                if not r.diff(e, es[i]):
+                    print(cls.logs, e, es[i])
+                    flag = False
+                    break
+            if not flag:
                 break
 
     def diff(self, a, b):
