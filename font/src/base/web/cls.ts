@@ -92,7 +92,15 @@ export class Node {
         }
         return this
     }
-    add_child(v:any){
+    dump() {
+        return {
+            type: this.type,
+            value: this.value,
+            title: this.title,
+            data: this.data
+        }
+    }
+    add_child(v: any) {
         this.childs.push(v)
         v.parent = this
     }
@@ -108,11 +116,11 @@ export class Node {
             this.childs[i].dfs(callback, depth + 1, i)
         }
     }
-    set_type(type:string){
-        this.type=type
+    set_type(type: string) {
+        this.type = type
         return this
     }
-    get_title(){
+    get_title() {
         return this.title
     }
 }

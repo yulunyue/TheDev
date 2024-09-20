@@ -1,17 +1,31 @@
+
+def kmp_pi(s):
+    pi = [0]*len(s)
+    c = 0
+    for i in range(1, len(s)):
+        v = s[i]
+        while c == 0:
+            pass
+
+
+def kmp_search(s1, s2):
+    pass
+
+
 class StrUtil:
-    def __init__(self,s) -> None:
-        self.s=s
+    def __init__(self, s) -> None:
+        self.s = s
 
     def z_kmp(self):
-        n=len(self.s)
-        z=[0]*n
-        l=r=0
-        for i in range(1,n):
-            z[i]=max(min(z[i-l],r-i+1),0)
-            while i+z[i]<n and self.s[z[i]]==self.s[z[i]+i]:
-                l,r=i,i+z[i]
-                z[i]+=1
-        
+        n = len(self.s)
+        z = [0]*n
+        l = r = 0
+        for i in range(1, n):
+            z[i] = max(min(z[i-l], r-i+1), 0)
+            while i+z[i] < n and self.s[z[i]] == self.s[z[i]+i]:
+                l, r = i, i+z[i]
+                z[i] += 1
+
         return z
 
     def manacher_get_odd_p(self):

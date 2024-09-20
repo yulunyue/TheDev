@@ -9,11 +9,17 @@ import { Node } from "../../web/cls"
 import web_dom from "../../web/web_dom"
 export class Svg extends GNode {
     constructor() {
-        super("svg")
+        super("svg", "div")
     }
     set_size(w: number, h: number): this {
         this.set_attr("width", w).set_attr("height", h)
         return this
+    }
+    get_x() {
+        return this.el.clientLeft
+    }
+    get_y() {
+        return this.el.clientTop
     }
     init_node(): void {
         this.set_attr("shape-rendering", "geometricPrecision")

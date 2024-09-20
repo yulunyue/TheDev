@@ -27,6 +27,13 @@ export class Div {
         this.init_style()
         this.init_event()
     }
+    dump() {
+        return {
+            node_type: this.node_type,
+            option: this.option ? this.option.dump() : null,
+            rect: this.get_rect()
+        }
+    }
     full() {
         return this.set_div_style({
             position: "fixed",
@@ -62,10 +69,6 @@ export class Div {
     }
     get_rect() {
         return {
-            px: this.get_p_x(),
-            py: this.get_p_y(),
-            ax: this.get_a_x(),
-            ay: this.get_a_y(),
             left: this.get_x(),
             right: this.get_y(),
             width: this.get_width(),

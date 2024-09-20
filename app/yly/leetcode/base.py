@@ -30,7 +30,7 @@ class Solution(SolutionBase):
         ]
 
     def execute(self) -> int:
-        RECORD_ENABLE = True
+        pass
 
     def x(self, *args, **kg):
         return self.execute(*args, **kg)

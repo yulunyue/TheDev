@@ -41,14 +41,18 @@ export class Layout extends Div {
             position: "absolute"
         })
         for (var i = 0; i < this.childs.length; i++) {
-
+            // console.log(this.childs[i].div_el)
             this.childs[i].set_div_style({
                 left: this.direction == Layout.VERTICAL ? i / this.childs.length : 0,
                 width: this.direction == Layout.VERTICAL ? 1 / this.childs.length : 1,
                 height: this.direction == Layout.HORIZONTAL ? 1 / this.childs.length : 1,
                 top: this.direction == Layout.HORIZONTAL ? i / this.childs.length : 0,
-                position: "absolute"
+                position: "absolute",
+                border: "1px solid #000"
             })
+            let p = new Div().set_html(JSON.stringify(this.childs[i].dump()))
+            this.childs[i].div_el.appendChild(p.div_el)
+
         }
     }
     add_child(c: any) {
