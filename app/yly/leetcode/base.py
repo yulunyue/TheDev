@@ -26,19 +26,14 @@ M = 10**9 + 7
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-            dict(n = 5, edges = [[4,1,-1],[2,0,-1],[0,3,-1],[4,3,-1]], source = 0, destination = 1, target = 5,result=[[4,1,1],[2,0,1],[0,3,3],[4,3,1]])
+
         ]
 
-    def execute(self, n: int, edges: List[List[int]], source: int, destination: int, target: int) -> List[List[int]]:
-        RECORD_ENABLE = True
-        g=[[] for _ in range(n)]
-        dis=[[inf,inf] for _ in range(n)]
-        for i,(f,t) in enumerate(edges):
-            g[f].append([t,i])
-            g[t].append([f,i])
+    def execute(self):
+        pass
 
 
-    def modifiedGraphEdges(self, *args, **kg):
+    def x(self, *args, **kg):
         return self.execute(*args, **kg)
 
 

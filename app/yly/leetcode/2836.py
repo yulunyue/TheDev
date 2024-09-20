@@ -26,13 +26,30 @@ M = 10**9 + 7
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-
+            dict(receiver = [2,0,1], k = 4,result=6)
         ]
 
-    def execute(self) -> int:
-        RECORD_ENABLE = True
+    def execute(self, receiver: List[int], k: int) -> int:
+        m=k.bit_length()-1
+        pc=[[[p,p]]+[None]*m for p in receiver]
+        for i in range(m):
+            for x in range(len(receiver)):
+                p,s=pc[x][i]
+                pp,ss=pc[p][i]
+                pc[x][i+1]=[pp,s+ss]
+        ret=0
+        for j in range(len(receiver)):
+            tmp=x=j
+            for i in range(m+1):
+                if k&(1<<i):
+                    x,c=pc[x][i]
+                    tmp+=c
+            ret=max(ret,tmp)
+        return ret
 
-    def x(self, *args, **kg):
+
+
+    def getMaxFunctionValue(self, *args, **kg):
         return self.execute(*args, **kg)
 
 
