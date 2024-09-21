@@ -4,14 +4,16 @@ import heapq
 
 def dijkstra(graph, start):
     dist = defaultdict(lambda: float('inf'))
-    dist[start] = 0
+    dist[start]=0
     q = [(0, start)]
+    vt=set()
     while q:
         cost, u = heapq.heappop(q)
-        if dist[u] <= cost:
+        if u in vt:
             continue
+        vt.add(u)
         for v, weight in graph[u]:
-            target = dist[u] + weight
+            target = cost + weight
             if target < dist[v]:
                 dist[v] = target
                 heapq.heappush(q, (dist[v], v))
