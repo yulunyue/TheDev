@@ -4,14 +4,6 @@ from functools import lru_cache
 from collections import defaultdict, deque, Counter
 
 
-def combinations(array, n):
-    return itertools.combinations(array, n)
-
-
-def permutations(array, n):
-    return itertools.permutations(array, n)
-
-
 def pi_float(v):
     if isinstance(v, int):
         return v/180*math.pi
@@ -61,6 +53,17 @@ def decomposition_prime_factors(v):
         i += 1
     if v > 1:
         ret[v] = 1
+    return ret
+
+
+def prime_flags(max_v):
+    ret = [None]*max_v
+    for i in range(2, max_v):
+        if ret[i] == False:
+            continue
+        ret[i] = True
+        for j in range(i+i, max_v, i):
+            ret[j] = False
     return ret
 
 

@@ -1,15 +1,35 @@
 
-def kmp_pi(s):
-    pi = [0]*len(s)
+def kmp_next(l, s, pi, v):
+    while l and s[l] != v:
+        l = pi[l-1]
+    if s[l] == v:
+        l += 1
+    return l
+
+
+def kmp_array(s):
+    '''
+    ret[i]= max(j->[1,n] => s[:j]==s[-j:]))
+    '''
+    n = len(s)
+    pi = [0]*n
+    l = 0
+    for r in range(1, n):
+        l = kmp_next(l, s, pi, s[r])
+        pi[r] = l
+    return pi
+
+
+def kmp_search(src, target):
+    pi = kmp_array(target)
+    mathch_cnt = 0
     c = 0
-    for i in range(1, len(s)):
-        v = s[i]
-        while c == 0:
-            pass
-
-
-def kmp_search(s1, s2):
-    pass
+    for v in src:
+        c = kmp_next(c, target, pi, v)
+        if c == len(target):
+            mathch_cnt += 1
+            c = pi[c-1]
+    return mathch_cnt
 
 
 class StrUtil:
