@@ -26,22 +26,14 @@ M = 10**9 + 7
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-            dict(n = 4, edges = [[0,1],[0,2],[1,3],[2,3]],result=[[3,1],[2,0]])
+            
         ]
 
 
-    def execute(self, n: int, edges: List[List[int]]) -> List[List[int]]:
-        
-        g=[[] for _ in range(n)]
-        for f,t in edges:
-            g[f].append(t)
-            g[t].append(f)
-        inds=defaultdict(list)
-        for i in range(n):
-            inds[len(g[i])].append(i)
-        
+    def execute(self):
+        pass
 
-    def constructGridLayout(self, *args, **kg):
+    def x(self, *args, **kg):
         return self.execute(*args, **kg)
 
 
