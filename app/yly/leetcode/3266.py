@@ -31,7 +31,20 @@ class Solution(SolutionBase):
 
 
     def execute(self, nums: List[int], k: int, multiplier: int) -> List[int]:
-        pass
+        n=len(nums)
+        num2=sorted([[v,i] for i,v in enumerate(nums)])
+        min_num=num2[0][0]
+        num3=[0]*n
+        self.log(num2)
+        while k>0:
+            min_num*=multiplier
+            l=bisect.bisect_right(num2,[min_num,inf])
+            for i in range(min(l,k)):
+                num3[num2[i][1]]+=1
+            k-=l
+            # self.log(k,min_num,l,num3)
+        return [(v*pow(multiplier,num3[i],M))%M for i,v in enumerate(nums)]
+            
 
     def getFinalState(self, *args, **kg):
         return self.execute(*args, **kg)
