@@ -18,11 +18,11 @@ class SolutionBase:
 
     @classmethod
     def log(cls, *s, tp: str = ""):
-        if len(SolutionBase.logs) >= 102400:
+        if len(cls.logs) >= 102400:
             return
         if tp:
-            SolutionBase.draw(s[0], tp)
-        SolutionBase.logs += " ".join([str(v) for v in s])+"\n"
+            cls.draw(s[0], tp)
+        cls.logs += " ".join([str(v) for v in s])+"\n"
 
     @classmethod
     def draw(cls, s, tp: str):
@@ -37,7 +37,7 @@ class SolutionBase:
     def run(self):
 
         for case in self.get_cases():
-            SolutionBase.logs = ""
+            self.__class__.logs = ""
             self.ep = case.pop("result")
             if 'info' in case:
                 case.pop('info')
@@ -50,7 +50,7 @@ class SolutionBase:
                 r = None
             if not self.diff(r, self.ep):
                 print(case, 'result', r, 'except', self.ep)
-                print(SolutionBase.logs)
+                print(self.__class__.logs)
                 break
 
     @classmethod
@@ -69,7 +69,7 @@ class SolutionBase:
                 except Exception as a:
                     e = a
                 if not r.diff(e, es[i]):
-                    print(cls.logs, e, es[i])
+                    print(f'{cls.logs}, result:{e}, expect:{es[i]}')
                     flag = False
                     break
             if not flag:

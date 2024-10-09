@@ -26,10 +26,9 @@ M = 10**9 + 7
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-
         ]
 
-    def execute(self) -> int:
+    def execute(self):
         pass
 
     def x(self, *args, **kg):
