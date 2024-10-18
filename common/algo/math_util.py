@@ -66,16 +66,22 @@ def prime_flags(max_v):
             ret[j] = False
     return ret
 
+class Comb:
+    def __init__(self,mod,mx):
 
-@lru_cache(None)
-def factorial(n):
-    if n <= 2:
-        return n
-    return n*factorial(n-1)
+        self.mod = mod
+        self.mx = mx
+        # 组合数模板
+        self.fac = [0] * mx
+        self.fac[0] = 1
+        for i in range(1, mx):
+            self.fac[i] = self.fac[i - 1] * i % mod
 
+        self.inv_fac = [0] * mx
+        self.inv_fac[mx - 1] = pow(self.fac[mx - 1], -1, mod)
+        for i in range(mx - 1, 0, -1):
+            self.inv_fac[i - 1] = self.inv_fac[i] * i % mod
 
-@lru_cache(None)
-def com_c(a, b):
-    if a == 0 or b == 0:
-        return 1
-    return factorial(a+b)//factorial(b)//factorial(a)
+    def comb(self,n: int, k: int) -> int:
+        return self.fac[n] * self.inv_fac[k] % self.mod * self.inv_fac[n - k] % self.mod
+

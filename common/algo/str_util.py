@@ -22,14 +22,15 @@ def kmp_array(s):
 
 def kmp_search(src, target):
     pi = kmp_array(target)
-    mathch_cnt = 0
+    match_idx = []
+    m=len(target)
     c = 0
-    for v in src:
+    for i,v in enumerate(src):
         c = kmp_next(c, target, pi, v)
         if c == len(target):
-            mathch_cnt += 1
+            match_idx.append(i-m+1)
             c = pi[c-1]
-    return mathch_cnt
+    return match_idx
 
 
 def z_kmp(s):

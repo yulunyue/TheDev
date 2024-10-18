@@ -52,25 +52,12 @@ def tarjan(g, b, init_ct=0):
     return edges, points, low
 
 
-class Graph:
-    def __init__(self) -> None:
-        pass
+def floyd(dis, keys):
+    for k in keys:
+        for i in keys:
+            if dis[i]:
+                pass
+            for j in keys:
+                dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j])
+    return dis
 
-    def load_from_g(self, g):
-        self.g = g
-        self.keys = list(range(len(g)))
-        return self
-
-    def load_from_edge(self, edges):
-        self.g = defaultdict(lambda: defaultdict(int))
-        self.keys = []
-        for f, t in edges:
-            self.keys.append(f)
-            self.keys.append(t)
-            self.g[f][t] = 1
-            self.g[t][f] = 1
-        self.keys = list(set(self.keys))
-        return self
-
-    def log(self, *args):
-        pass
