@@ -11,27 +11,21 @@ class IntervalTreeNode:
  1 3 5 7 9 11 13  15 17  19  21
     '''
 
-    def __init__(self, size, default_value) -> None:
-        self.array = [default_value]*size
+    def __init__(self, size) -> None:
+        self.array = [0]*size
         self.size = size
 
-    def update_value(self, l, v):
+    def update(self, l, v):
         while l < self.size:
-            self.array[l] = v(self.array[l])
+            self.array[l] += v
             l += l & -l
 
-    def query_value(self, l, f, init_value):
-        ret = init_value
+    def query(self, l):
+        ret = 0
         while l > 0:
-            ret = f(ret, self.array[l])
+            ret += self.array[l]
             l -= l & -l
         return ret
-
-    def query_sum(self, l):
-        return self.query_value(l, lambda a, b: a+b, 0)
-
-    def add_value(self, l, v):
-        self.update_value(l, lambda a: a+v)
 
 
 class SegTreeNode:
@@ -42,7 +36,7 @@ class SegTreeNode:
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
 
-    def __init__(self, l, r,idx=1, default_value=0) -> None:
+    def __init__(self, l, r, idx=1, default_value=0) -> None:
         self.idx = idx
         self.l = l
         self.r = r
@@ -57,7 +51,7 @@ class SegTreeNode:
     def left(self):
         if not self._left:
             self._left = SegTreeNode(
-                 self.l, self.m, self.idx*2,self.default_value)
+                self.l, self.m, self.idx*2, self.default_value)
         return self._left
 
     @property
@@ -73,34 +67,34 @@ class SegTreeNode:
         self.down()
         res = 0
         if self.m < r:
-            res+=self.right.query(l, r)
+            res += self.right.query(l, r)
         if self.m >= l:
-            res+=self.left.query(l, r)
+            res += self.left.query(l, r)
         return res
-    
-    def update(self, l,r, value):
-        if l <=self.l and self.r<= r:
+
+    def update(self, l, r, value):
+        if l <= self.l and self.r <= r:
             self.do(value)
             return
         self.down()
         if self.m < r:
-            self.right.update(l, r,value)
+            self.right.update(l, r, value)
         if self.m >= l:
-            self.left.update(l, r,value)
+            self.left.update(l, r, value)
         self.up()
 
-    def do(self,v):
+    def do(self, v):
         self.do_sum(v)
 
-    def do_sum(self,v):
-        self.value +=(self.r-self.l+1)*v
+    def do_sum(self, v):
+        self.value += (self.r-self.l+1)*v
         self.todo += v
-        
+
     def down(self):
         if self.todo:
             self.left.do(self.todo)
             self.right.do(self.todo)
-            self.todo=0
+            self.todo = 0
 
     def up(self):
         self.value = self.left.value+self.right.value

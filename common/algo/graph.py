@@ -6,12 +6,10 @@ def dijkstra(g, start):
     dist = defaultdict(lambda: float('inf'))
     dist[start] = 0
     q = [(0, start)]
-    vt = set()
     while q:
         cost, u = heapq.heappop(q)
-        if u in vt:
+        if cost > dist[u]:
             continue
-        vt.add(u)
         for v, weight in g[u]:
             target = cost + weight
             if target < dist[v]:
@@ -50,27 +48,3 @@ def tarjan(g, b, init_ct=0):
             points[n] = True
     dfs(b, -1)
     return edges, points, low
-
-
-class Graph:
-    def __init__(self) -> None:
-        pass
-
-    def load_from_g(self, g):
-        self.g = g
-        self.keys = list(range(len(g)))
-        return self
-
-    def load_from_edge(self, edges):
-        self.g = defaultdict(lambda: defaultdict(int))
-        self.keys = []
-        for f, t in edges:
-            self.keys.append(f)
-            self.keys.append(t)
-            self.g[f][t] = 1
-            self.g[t][f] = 1
-        self.keys = list(set(self.keys))
-        return self
-
-    def log(self, *args):
-        pass
