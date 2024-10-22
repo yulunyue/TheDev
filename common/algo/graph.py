@@ -6,10 +6,12 @@ def dijkstra(g, start):
     dist = defaultdict(lambda: float('inf'))
     dist[start] = 0
     q = [(0, start)]
+    vt = set()
     while q:
         cost, u = heapq.heappop(q)
-        if cost > dist[u]:
+        if u in vt:
             continue
+        vt.add(u)
         for v, weight in g[u]:
             target = cost + weight
             if target < dist[v]:
@@ -48,3 +50,14 @@ def tarjan(g, b, init_ct=0):
             points[n] = True
     dfs(b, -1)
     return edges, points, low
+
+
+def floyd(dis, keys):
+    for k in keys:
+        for i in keys:
+            if dis[i]:
+                pass
+            for j in keys:
+                dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j])
+    return dis
+
