@@ -66,6 +66,18 @@ def prime_flags(max_v):
             ret[j] = False
     return ret
 
+@lru_cache(None)
+def stl_2(n,i):
+    '''
+    第二类斯特林数
+    n个人 放到i个房间, 不允许房间为空
+    '''
+    if n<i or i==0:
+        return 0
+    elif i==n or i==1:
+        return 1
+    return stl_2(n-1,i-1)+i*stl_2(n-1,i)
+
 class Comb:
     def __init__(self,mod,mx):
 
