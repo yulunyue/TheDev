@@ -82,7 +82,7 @@ class SolutionBase:
     def diff(self, a, b):
         if isinstance(a, float) and isinstance(b, float):
             return "%.2f" % (a) == "%.2f" % (b)
-        return a == b
+        return str(a) == str(b)
 
 
 PATH = 'app/yly/leetcode/view'

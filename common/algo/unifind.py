@@ -3,15 +3,15 @@ class UniFind:
         self.p = dict()
         self.size = dict()
 
-    def merge(self, f, t):
-        f1 = self.find(f)
-        t1 = self.find(t)
-        if f1 == t1:
-            return None
-        self.p[f1] = t1
-        self.size[t1] += self.size[f1]
-        self.size[f1] = 0
-        return t1
+    def merge(self, parent, child):
+        parent1 = self.find(parent)
+        child1 = self.find(child)
+        if parent1 == child1:
+            return parent1, False
+        self.p[child1] = parent1
+        self.size[parent1] += self.size[child1]
+        self.size[child1] = 0
+        return parent1, True
 
     def find(self, v):
         if v not in self.p:
