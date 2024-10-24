@@ -7,6 +7,7 @@ import os
 
 class SolutionBase:
     logs = ""
+    case_load = None
 
     def get_cases(self):
         return [
@@ -38,6 +39,9 @@ class SolutionBase:
 
         for case in self.get_cases():
             self.__class__.logs = ""
+            if isinstance(case, str):
+                case = SolutionBase.case_load(
+                    [v for v in case.split('\n') if v])
             self.ep = case.pop("result")
             if 'info' in case:
                 case.pop('info')

@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.leetcode.manage import SolutionBase
+    from app.yly.manage import SolutionBase
 except:
     class SolutionBase:
         pass

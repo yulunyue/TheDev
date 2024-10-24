@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.leetcode.manage import SolutionBase
+    from app.yly.manage import SolutionBase
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -26,7 +26,8 @@ M = 10**9 + 7
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-            dict(n = 6, edges = [[0,1],[1,2],[1,3],[3,4],[3,5]], price = [9,8,7,6,10,5],result=24.1),
+            dict(n=6, edges=[[0, 1], [1, 2], [1, 3], [3, 4], [
+                 3, 5]], price=[9, 8, 7, 6, 10, 5], result=24.1),
         ]
 
     def execute(self, n: int, edges: List[List[int]], price: List[int]) -> int:
@@ -46,7 +47,8 @@ class Solution(SolutionBase):
 
             for y in g[x]:
 
-                if y == fa: continue
+                if y == fa:
+                    continue
 
                 s1, s2 = dfs(y, x)
 
@@ -59,15 +61,15 @@ class Solution(SolutionBase):
                 max_s1 = max(max_s1, s1 + p)
 
                 max_s2 = max(max_s2, s2 + p)  # 这里加上 p 是因为 x 必然不是叶子
-            self.log(fa,x,max_s1,max_s2,ans)
+            self.log(fa, x, max_s1, max_s2, ans)
             return max_s1, max_s2
 
         dfs(0, -1)
 
         return ans
 
-    def maxOutput(self, *args,**kg):
-        return self.execute(*args,**kg)
+    def maxOutput(self, *args, **kg):
+        return self.execute(*args, **kg)
 
 
 if __name__ == '__main__':

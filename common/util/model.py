@@ -3,38 +3,12 @@ from typing import List
 import json
 
 
-class BaseField:
-    def __init__(self, **kwargs) -> None:
-        self._keys: List[str] = []
-        for k, v in kwargs.items():
-            self.set_data(k, v)
-        for key in dir(self):
-            if key.startswith('_'):
-                continue
-            value = getattr(self, key)
-            if callable(value):
-                continue
-            self._keys.append(key)
-
-    def to_json(self):
-        ret = dict()
-        for key in self._keys:
-            value = getattr(self, key)
-            if hasattr(value, 'to_json'):
-                value = value.to_json()
-            ret[key] = value
-        return ret
-
-    def set_data(self, key, value):
-        if key not in self._keys:
-            self._keys.append(key)
-        setattr(self, key, value)
-
-
 class BaseModel:
-    def __init__(self, value=None) -> None:
+    def __init__(self, data_source, value=None) -> None:
         self.value = value
-        self.data_source = None
+        self.data_source = data_source
+        if self.data_source:
+            self.data_source.add_param(self)
         self.key = ""
 
     def get_value(self) -> str:
@@ -44,20 +18,24 @@ class BaseModel:
                 self.value = ret
         return self.value
 
+    def set_value(self, value):
+        self.data_source.set_key_value(self.key, value)
+        return self
+
 
 class StrModel(BaseModel):
-    def __init__(self, value="") -> None:
-        super().__init__(value)
+    def __init__(self, data_source, value="") -> None:
+        super().__init__(data_source, value)
 
 
 class IntModel(BaseModel):
-    def __init__(self, value) -> None:
-        super().__init__(value)
+    def __init__(self, data_source, value) -> None:
+        super().__init__(data_source, value)
 
 
 class DictModel(BaseModel):
-    def __init__(self, value=None) -> None:
-        super().__init__(value or dict())
+    def __init__(self, data_source, value=None) -> None:
+        super().__init__(data_source, value or dict())
 
     def get(self, key, default_value=None) -> dict:
         if key in self.value:

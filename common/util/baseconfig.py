@@ -1,64 +1,50 @@
 import json
-import os
-
+from common.util.fp import File
+from typing import List
 from common.util.model import StrModel, BaseModel, EnableModel, EncroyModel, DictModel
-from common.util.tool import write_file
 CONFIG_SETTING_DIR = 'data/setting'
 
 
 class ConfigBase:
-    def __init__(self, name="") -> None:
-        self.config_name = name or self.__class__.__name__
-        self._save_path = f'{CONFIG_SETTING_DIR}/{self.config_name}.json'
+
+    def __init__(self, file_name) -> None:
+        self._config_name = self.__class__.__name__
+        self._fp = File(f'{CONFIG_SETTING_DIR}/{file_name}.json')
         self._mtime = 0
+        self._params: List[BaseModel] = []
+        self._config = dict()
+        self.init_param()
         self.init()
 
-    @classmethod
-    def instance(cls, *args, **kwargs):
-        if not hasattr(cls, "_instance"):
-            cls._instance = cls(*args, **kwargs)
-        return cls._instance
+    def add_param(self, param):
+        self._params.append(param)
+
+    def init_param(self):
+        pass
 
     def save(self):
-        write_file(self._save_path, json.dumps(
-            self.config, indent=4
-        ))
+        self._fp.write_file(self._config)
 
     def get_config(self) -> dict:
-        config = dict()
-        if not os.path.exists(self._save_path):
-            return config
-        with open(self._save_path, 'r', encoding='utf-8') as f:
-            config = json.load(f)
-        return config
+        if self._fp.exists():
+            self._config = self._fp.read_fast_file()
+        return self._config
 
     def init(self):
-        write_flag = False
-        config_default = self.get_config()
+        self._config = self.get_config()
         for key in dir(self):
             if key.startswith("_"):
                 continue
             v = getattr(self, key)
             if not isinstance(v, BaseModel):
                 continue
-            if v.data_source is not None:
-                raise Exception(v.data_source)
             v.key = key
-            v.data_source = self
-            if key in config_default:
-                v.value = config_default[key]
-            else:
-                write_flag = True
-                config_default[key] = v.value
-        self.config = config_default
-        if write_flag:
+
+    def set_key_value(self, key, value):
+        config = self._config.get(self._config_name, {})
+        if value != config.get(key):
+            config[key] = value
             self.save()
 
     def get_key_value(self, key):
-        if not os.path.exists(self._save_path):
-            return
-        m_time = os.path.getmtime(self._save_path)
-        if self._mtime == m_time:
-            return
-        self._mtime = m_time
-        return self.get_config().get(key)
+        return self._config.get(self._config_name, {}).get(key, self._config.get(key))

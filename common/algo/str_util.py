@@ -9,7 +9,8 @@ def kmp_next(l, s, pi, v):
 
 def kmp_array(s):
     '''
-    ret[i]= max(j->[1,n] => s[:j]==s[-j:]))
+    ret[i]=max(j)
+    s[:j+1]==s[i-j:i+1]))
     '''
     n = len(s)
     pi = [0]*n
@@ -23,9 +24,9 @@ def kmp_array(s):
 def kmp_search(src, target):
     pi = kmp_array(target)
     match_idx = []
-    m=len(target)
+    m = len(target)
     c = 0
-    for i,v in enumerate(src):
+    for i, v in enumerate(src):
         c = kmp_next(c, target, pi, v)
         if c == len(target):
             match_idx.append(i-m+1)
@@ -34,8 +35,12 @@ def kmp_search(src, target):
 
 
 def z_kmp(s):
-    n = len(s)
+    '''
+    z[i]=max(j) 
+    s[:j+1]==s[i:i+j+1]))
+    '''
     z = [0]*n
+    n = len(s)
     l = r = 0
     for i in range(1, n):
         z[i] = max(min(z[i-l], r-i+1), 0)
@@ -46,6 +51,10 @@ def z_kmp(s):
 
 
 def manacher_get_odd_p(s):
+    '''
+    ret[i]=max(k) 
+    all(s[i-k]==s[i+k])
+    '''
     n = len(s)
     ret = [0]*n
     l, r = 0, -1

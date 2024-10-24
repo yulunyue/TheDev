@@ -10,7 +10,8 @@ class Module:
         if path and path not in sys.path:
             sys.path.append(path)
         ret = import_module(modeule_name)
-        for attr in fun_name.split('.'):
-            ret = getattr(ret, attr)
+        if fun_name:
+            for attr in fun_name.split('.'):
+                ret = getattr(ret, attr)
         sys.path.pop()
         return ret

@@ -1,36 +1,44 @@
+
+
 from typing import List, Dict, Optional
 from collections import defaultdict, deque, Counter
 from itertools import accumulate, product, permutations
-from sortedcontainers import SortedList
 from functools import lru_cache
 import bisect
 import sys
 import math
 import heapq
 try:
-    from app.yly.leetcode.manage import SolutionBase
+    from app.yly.manage import SolutionBase
+
 except:
     class SolutionBase:
+        def input(self):
+            return input()
+
         def log(self, *args, **kwargs):
+            pass
+
+        def execute(self, *args, **kwargs):
             pass
 
         def run(self):
             pass
+
 inf = float("inf")
-null = None
-true = True
-false = False
-M = 10**9 + 7
 
 
 class Solution(SolutionBase):
+    uri = ""
+    gameid = ''
+
     def get_cases(self):
         return [
 
         ]
 
-    def x(self, *args, **kg):
-        return self.execute(*args, **kg)
+    def execute(self):
+        pass
 
 
 if __name__ == '__main__':

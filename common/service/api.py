@@ -1,16 +1,22 @@
 import requests
 from common.util.log import logger
+from common.util.baseconfig import ConfigBase, StrModel, DictModel
 
 
-class Api:
+class Api(ConfigBase):
     CONTENT_TYPE = 'content-type'
-    APPLICATION_JSON = 'application/json'
+    APPLICATION_JSON = 'application/json;charset=UTF-8'
 
-    def __init__(self, endpoint="http://127.0.0.1") -> None:
-        self._endpoint = endpoint
+    def __init__(self) -> None:
+        super().__init__("api")
+
+    def init_param(self):
+        self.endpoint = StrModel(self)
+        self.cookie = DictModel(self)
+        self.proxy = DictModel(self)
 
     def get_endpoint(self):
-        return self._endpoint
+        return self.endpoint.get_value()
 
     def url(self, path):
         if isinstance(path, list):
@@ -20,7 +26,7 @@ class Api:
         end_point = self.get_endpoint()
         if not path.startswith('/') and not end_point.endswith('/'):
             path = '/'+path
-        if not end_point.startswith('http:'):
+        if not end_point.startswith('http'):
             end_point = 'https://'+end_point
         return f'{end_point}{path}'
 
@@ -41,13 +47,13 @@ class Api:
         return ret
 
     def get_proxy(self):
-        pass
+        return self.proxy.get_value()
 
     def get_mock_data(self, key):
         pass
 
     def get_timeout(self):
-        return 3
+        return 10
 
     def http(self, method, path, data=None, headers=None, param=None):
         if headers is None:
@@ -70,6 +76,7 @@ class Api:
             url=uri,
             headers=headers,
             verify=False,
+            cookies=self.cookie.get_value() or {},
             timeout=self.get_timeout(),
             method=method,
             proxies=self.get_proxy(),
@@ -82,7 +89,8 @@ class Api:
         return self.hander_error(method, uri, res, data or param)
 
     def hander_error(self, method, uri, res: requests.Response, data):
-        logger.error(f'{method}:{uri}:{res.status_code}:{res.content}:{data}')
+        logger.error(
+            f'{method}:{uri}:{res.status_code}:{res.content[:300]}:{data}')
 
     def parse(self, value):
         return value
