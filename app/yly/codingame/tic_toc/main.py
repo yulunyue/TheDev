@@ -8,8 +8,10 @@ import bisect
 import sys
 import math
 import heapq
+import json
 inf = float("inf")
-
+import time
+import _thread
 
 try:
     from app.yly.manage import SolutionBase
@@ -19,7 +21,7 @@ except:
             return input()
 
         def log(self, *args, **kwargs):
-            pass
+            print(f"Debug messages...{args}", file=sys.stderr, flush=True)
 
         def execute(self, *args, **kwargs):
             pass
@@ -36,55 +38,123 @@ except:
                 print(self.execute(pre=[[opponent_row, opponent_col]]))
 LINES = [[] for _ in range(3)]
 G = [[[] for _ in range(3)] for _ in range(3)]
-
+WIN1=9+3+1
+WIN2=2*(9+3+1)
+SCORE_MAP={
+    4:[1+3,3+9,1+9],
+    100:[WIN1]
+}
 
 def init():
     for i in range(3):
         row = []
         for j in range(3):
             row.append([i, j])
-            LINES[j].append([j, i])
+            LINES[j].append([i, j])
         LINES.append(row)
     LINES.extend([
         [[0, 0], [1, 1], [2, 2]],
         [[0, 2], [1, 1], [2, 0]]
     ])
-    for i, v in enumerate(LINES):
-        G[v[0]][v[1]].append(i)
-
-
-init()
-
-
-class Grid:
-    def __init__(self, i, j) -> None:
-        self.i = i
-        self.j = j
-        self.gird = [[0]*3 for _ in range(3)]
-        self.line_state = [0]*len(LINES)
-        self.win = 0
-
-    def put(self, y, x, val):
-        self.gird[y][x] = val
-        for i in range(len(LINES)):
-            self.line_state[i] |= 3*val
-
-    def get_moves(self):
-        ret = []
-        for i, row in enumerate(self.gird):
-            for j, x in enumerate(row):
-                if x == -1:
-                    ret.append([self.i, i, self.j, j])
-        return ret
-
+    for i, v2 in enumerate(LINES):
+        for v1 in v2:
+            G[v1[0]][v1[1]].append(i)
 
 def pos1(i, j):
     return i//3, i % 3, j // 3, j % 3
 
-
 def pos2(i, y, j, x):
     return i*3+y, j*3+x
 
+init()
+
+class Nd:
+    def __init__(self):
+        self.win=0
+
+class Grid:
+    def __init__(self) -> None:
+        self.line_state = [0]*len(LINES)
+        self.win = 0
+        self.state_ct=[0]*27
+        self.state_ct[0]=len(LINES)
+
+    def init(self,i,j):
+        self.i = i
+        self.j = j
+        self.grid = [[Nd() for _ in range(3)] for _ in range(3)]
+
+    def put(self, y, x, val):
+        self.grid[y][x].win = val
+        self.update(y,x)
+
+    def update(self,y,x):
+        for i in G[y][x]:
+            s1,s2,s3=[self.grid[LINES[i][j][0]][LINES[i][j][1]].win for j in range(3)]
+            self.state_ct[self.line_state[i]]-=1
+            self.line_state[i] = s1*9+s2*3+s3
+            self.state_ct[self.line_state[i]]+=1
+        if self.state_ct[WIN1]:
+            self.win=1
+        elif self.state_ct[WIN2]:
+            self.win=2
+        else:
+            self.win=0
+    def get_score(self,val):
+        ans=0
+        for k in SCORE_MAP:
+            for v1 in SCORE_MAP[k]:
+                ans+=(self.state_ct[v1*2]-self.state_ct[v1])*k
+        return ans if val==2 else -ans
+    def get_moves(self):
+        ret = []
+        for i, row in enumerate(self.grid):
+            for j, x in enumerate(row):
+                if x.win == 0:
+                    ret.append([self.i, i, self.j, j])
+        return ret
+
+    def to_json(self):
+        return dict(
+            i=self.i,
+            j=self.j,
+            win=self.win,
+            score=self.get_score(2),
+            grid=",".join("".join(str(w1.win) for w1 in w) for w in self.grid)
+        )
+
+class Gd(Grid):
+    def __init__(self):
+        super().__init__()
+        self.load()
+
+    def load(self):
+        self.grid = []
+        self.nodes:List[Grid]=[]
+        for i in range(3):
+            self.grid.append([])
+            for j in range(3):
+                g=Grid()
+                g.init(i,j)
+                self.grid[-1].append(g)
+                self.nodes.append(g)
+            
+    def put(self,i,j,y,x,op):
+        c:Grid=self.grid[i][j]
+        c.put(y,x,op)
+        self.update(i,j)
+
+    def get_score(self, val):
+        return super().get_score(val)*100+sum(n.get_score(val) for n in self.nodes)
+    def get_moves(self,y,x):
+        if y is not None and self.grid[y][x].win==0:
+            return self.grid[y][x].get_moves()
+        ret=[]
+        for n in self.nodes:
+            if n.win:
+                continue
+            ret.extend(n.get_moves())
+        return ret
 
 class AlphaBate:
     '''
@@ -97,17 +167,17 @@ class AlphaBate:
 
     '''
 
-    def __init__(self, max_depth) -> None:
+    def __init__(self, max_depth,max_time) -> None:
         self.max_depth = max_depth
-        self.grids: List[List[Grid]] = [[Grid(i, j) for j in range(3)]
-                                        for i in range(3)]
+        self.max_time = max_time
+        self.grid = Gd()
         self.pos = []
 
     def evaluate(self):
-        return 0
+        return self.grid.get_score(1+(len(self.pos)%2))
 
     def put(self, i, j, y, x, op):
-        self.grids[i][j].put(y, x, op)
+        self.grid.put(i,j, y, x, op)
 
     def end_search(self, depth):
         return depth >= self.max_depth
@@ -121,22 +191,18 @@ class AlphaBate:
         self.pos.pop()
 
     def get_moves(self):
-        ret = []
         if not self.pos:
-            for row in self.grids:
-                for c in row:
-                    ret.extend(c.get_moves())
-            return ret
-        i, y, j, x = self.pos[-1]
-        return self.grids[y][x].get_moves()
+            return self.grid.get_moves(None,None)
+        _, y, _, x = self.pos[-1]
+        return self.grid.get_moves(y,x)
 
-    def search(self, depth=0, alpha=-inf, bate=inf) -> None:
-        if self.end_search(depth):
+    def search(self, depth, alpha=-inf, bate=inf) -> None:
+        if depth==0:
             return None, self.evaluate()
         best_mv = None
         for mv in self.get_moves():
             self.do(*mv)
-            _, val = self.search(depth=depth+1, alpha=-bate, bate=-alpha)
+            _, val = self.search(depth=depth-1, alpha=-bate, bate=-alpha)
             val = -val
             self.undo(*mv)
             if val >= bate:
@@ -147,6 +213,14 @@ class AlphaBate:
                 alpha = val
                 best_mv = mv
         return best_mv, alpha
+    def run(self):
+        start_time=time.time()
+        best_move,best_score=None,-inf
+        for i in range(self.max_depth):
+            if time.time()-start_time>=self.max_time:
+                break
+            best_move,best_score=self.search(i+1)
+        return best_move,best_score
 
 
 class Solution(SolutionBase):
@@ -155,11 +229,11 @@ class Solution(SolutionBase):
     game_type = 'pk'
 
     def __init__(self) -> None:
-        self.ai = AlphaBate(8)
+        self.ai = AlphaBate(6,0.09)
 
     def get_cases(self):
         return [
-            dict(result="0 1", pre=[[0, 1], [2, 4]])
+            dict(result="0 1", pre=[(0, 0), (2, 1), (6, 3), (2, 0)]),
         ]
 
     def draw(self):
@@ -175,11 +249,14 @@ class Solution(SolutionBase):
         for row, col in pre:
             if row >= 0 and col >= 0:
                 self.ai.do(*pos1(row, col))
-        mv, _ = self.ai.search()
+        mv, score = self.ai.run()
+        self.log(json.dumps(dict(
+            mv=mv, score=score,
+            pre=[pos2(*v) for v in self.ai.pos],
+            grid=[v.to_json() for v in self.ai.grid.nodes],
+        )))
         self.ai.do(*mv)
         mv = pos2(*mv)
-        # self.draw()
-        # self.log(self.ai.pos, mv, pre)
         return f'{mv[0]} {mv[1]}'
 
 

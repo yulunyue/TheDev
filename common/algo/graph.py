@@ -73,8 +73,9 @@ class AlphaBate:
 
     '''
 
-    def __init__(self, max_depth) -> None:
+    def __init__(self, max_depth, max_time=inf) -> None:
         self.max_depth = max_depth
+        self.max_time = max_time
 
     next_values = [8, 2, 7, 1, 3, 6, 9]
 
@@ -110,3 +111,8 @@ class AlphaBate:
                 alpha = val
                 best_mv = mv
         return best_mv, alpha
+    
+    def serach_limit_time(self):
+        best_mv,best_score=None,-inf
+        for i in range(self.max_depth):
+            pass
