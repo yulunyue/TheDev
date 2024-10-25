@@ -27,13 +27,6 @@ class TestBase:
                 f'---Test End {f.__name__} [ut:{end_time-start_time} ms] [ep:{self.ep_cont}]---')
         self.exit()
 
-    def run_with_error(self):
-        try:
-            self.run()
-        except Exception as e:
-            logger.error(e)
-            self.exit()
-
     def exit(self):
         pass
 

@@ -8,6 +8,7 @@ import bisect
 import sys
 import math
 import heapq
+inf = float("inf")
 try:
     from app.yly.manage import SolutionBase
 
@@ -25,11 +26,9 @@ except:
         def run(self):
             pass
 
-inf = float("inf")
-
 
 class Solution(SolutionBase):
-    uri = ""
+    uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
     gameid = ''
 
     def get_cases(self):

@@ -1,5 +1,7 @@
 from collections import defaultdict
 import heapq
+from typing import List
+inf = float("inf")
 
 
 def dijkstra(g, start):
@@ -55,9 +57,56 @@ def tarjan(g, b, init_ct=0):
 def floyd(dis, keys):
     for k in keys:
         for i in keys:
-            if dis[i]:
-                pass
             for j in keys:
                 dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j])
     return dis
 
+
+class AlphaBate:
+    '''
+                               0,3
+
+          1,2                  2,6               3,3
+
+    4,8   5,2   6,7       7,1  8,?  9,?     10,3  11,6   12,9   
+
+
+    '''
+
+    def __init__(self, max_depth) -> None:
+        self.max_depth = max_depth
+
+    next_values = [8, 2, 7, 1, 3, 6, 9]
+
+    def evaluate(self):
+        return self.next_values.pop(0)
+
+    def end_search(self, depth):
+        return depth >= self.max_depth
+
+    def do(self, *args):
+        pass
+
+    def undo(self, *args):
+        pass
+
+    def get_moves(self):
+        return [None]*3
+
+    def search(self, depth=0, alpha=-inf, bate=inf) -> None:
+        if self.end_search(depth):
+            return self.evaluate()
+        best_mv = None
+        for mv in self.get_moves():
+            self.do(*mv)
+            _, val = self.search(depth=depth+1, alpha=-bate, bate=-alpha)
+            val = -val
+            self.undo(*mv)
+            if val >= bate:
+                alpha = bate
+                best_mv = mv
+                break
+            if val > alpha:
+                alpha = val
+                best_mv = mv
+        return best_mv, alpha

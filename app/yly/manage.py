@@ -3,6 +3,7 @@ from common.service.http import Node
 from common.util.module import Module
 from common.util.log import logger
 import os
+import time
 
 
 class SolutionBase:
@@ -43,11 +44,12 @@ class SolutionBase:
                 case = SolutionBase.case_load(
                     [v for v in case.split('\n') if v])
             self.ep = case.pop("result")
+            a = time.time()
             if 'info' in case:
                 case.pop('info')
             try:
                 r = self.execute(**case)
-                self.log("finish")
+                self.log("finish", time.time()-a)
             except Exception as e:
                 import traceback
                 traceback.print_exc()
