@@ -22,7 +22,7 @@ class CodingGame(Api):
 
     def pk(self, file_path, game_id):
         return self.execute(file_path, game_id, "multi", dict(
-            agentsIds=[-1, -2],
+            agentsIds=[5604295, -1],
             gameOptions=None,
             isSoloLeague=False
         ))
@@ -33,6 +33,7 @@ class CodingGame(Api):
             info = self.pk(c.__file__, c.Solution.gameid)
         else:
             info = self.solve(c.__file__, c.Solution.gameid)
+        info.update(c.Solution.get_info(**info))
         File(f"data/log/codingame/{name}.json").write_file(info)
 
 

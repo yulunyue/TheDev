@@ -10,6 +10,14 @@ def pi_float(v):
     return v
 
 
+def setbit(x, n):
+    return x | 1 << n
+
+
+def clrbit(x, n):
+    return x & ~(1 << n)
+
+
 def calc_angle(y, x, y1, x1):
     '''
     0->2*pi
@@ -66,20 +74,22 @@ def prime_flags(max_v):
             ret[j] = False
     return ret
 
+
 @lru_cache(None)
-def stl_2(n,i):
+def stl_2(n, i):
     '''
     第二类斯特林数
     n个人 放到i个房间, 不允许房间为空
     '''
-    if n<i or i==0:
+    if n < i or i == 0:
         return 0
-    elif i==n or i==1:
+    elif i == n or i == 1:
         return 1
-    return stl_2(n-1,i-1)+i*stl_2(n-1,i)
+    return stl_2(n-1, i-1)+i*stl_2(n-1, i)
+
 
 class Comb:
-    def __init__(self,mod,mx):
+    def __init__(self, mod, mx):
 
         self.mod = mod
         self.mx = mx
@@ -94,6 +104,5 @@ class Comb:
         for i in range(mx - 1, 0, -1):
             self.inv_fac[i - 1] = self.inv_fac[i] * i % mod
 
-    def comb(self,n: int, k: int) -> int:
+    def comb(self, n: int, k: int) -> int:
         return self.fac[n] * self.inv_fac[k] % self.mod * self.inv_fac[n - k] % self.mod
-
