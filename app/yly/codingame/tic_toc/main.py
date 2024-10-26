@@ -10,6 +10,7 @@ import sys
 import math
 import heapq
 import json
+import json
 inf = float("inf")
 
 try:
@@ -20,6 +21,7 @@ except:
             return input()
 
         def log(self, *args, **kwargs):
+            print(f"Debug messages...{args}", file=sys.stderr, flush=True)
             print(f"Debug messages...{args}", file=sys.stderr, flush=True)
 
         def execute(self, *args, **kwargs):
@@ -233,13 +235,15 @@ class AlphaBate:
 
           1,2                  2,6               3,3
 
-    4,8   5,2   6,7       7,1  8,?  9,?     10,3  11,6   12,9   
+    4,8   5,2   6,7       7,1  8,?  9,?     10,3  11,6   12,9
 
 
     '''
 
     def __init__(self, max_depth, max_time) -> None:
         self.max_depth = max_depth
+        self.max_time = max_time
+        self.grid = Gd()
         self.max_time = max_time
         self.grid = Gd()
         self.pos = []
@@ -276,6 +280,7 @@ class AlphaBate:
         best_mv = None
         for mv in movs:
             self.do(*mv)
+            _, val = self.search(depth=depth-1, alpha=-bate, bate=-alpha)
             _, val = self.search(depth=depth-1, alpha=-bate, bate=-alpha)
             val = -val
             self.undo(*mv)
