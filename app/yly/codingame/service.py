@@ -16,7 +16,8 @@ class CodingGame(Api):
         ret = self.post(
             '/services/TestSession/play', player_data)
         return ret
-
+    def get_endpoint(self):
+        return 'www.codingame.com'
     def solve(self, file_path, game_id):
         return self.execute(file_path, game_id, "multipleLanguages", dict(testIndex=3))
 

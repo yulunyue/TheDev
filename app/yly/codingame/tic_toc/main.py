@@ -20,9 +20,8 @@ except:
         def input(self):
             return input()
 
-        def log(self, *args, **kwargs):
-            print(f"Debug messages...{args}", file=sys.stderr, flush=True)
-            print(f"Debug messages...{args}", file=sys.stderr, flush=True)
+        def log(self, info):
+            print(json.dumps(info), file=sys.stderr, flush=True)
 
         def execute(self, *args, **kwargs):
             pass
@@ -249,6 +248,7 @@ class AlphaBate:
         self.pos = []
 
     def evaluate(self):
+        self.vt_num+=1
         return self.grid.get_score(1+(len(self.pos) % 2))
 
     def put(self, *args):
@@ -301,6 +301,14 @@ class AlphaBate:
                 break
             best_move, best_score = self.search(i+1)
         return best_move, best_score
+    
+    def search2(self):
+        self.vt_num=0
+        mv=self.get_moves()
+        # Solution.log(mv)
+        if len(mv)>=8:
+            return self.search(3)
+        return self.search(4)
 
 
 class Solution(SolutionBase):
@@ -313,8 +321,8 @@ class Solution(SolutionBase):
 
     def get_cases(self):
         return [
-            dict(result="0 1", pre=[[4, 4], [5, 5], [8, 8], [8, 6], [8, 2], [6, 8], [2, 7], [8, 5], [8, 7], [8, 3], [8, 1], [6, 5], [2, 6], [6, 0], [2, 0], [7, 2], [5, 6], [7, 0], [4, 2], [3, 8], [2, 8], [6, 7], [1, 5], [3, 7], [1, 4], [4, 3], [
-                 4, 1], [4, 5], [4, 6], [4, 0], [3, 1], [1, 3], [5, 1], [7, 4], [3, 4], [2, 3], [7, 1], [5, 3], [8, 0], [0, 1], [0, 4], [2, 5], [7, 7], [3, 5], [2, 4], [1, 2], [4, 8], [5, 8], [7, 8], [3, 6], [2, 2], [7, 6], [6, 6], [2, 1], [1, 1]]),
+            # dict(result="0 1",pre=[[-1,-1]]),
+            dict(result="0 1", pre=[[4, 4], [5, 5], [8, 8]]),
         ]
 
     def draw(self, mv, score):
@@ -329,22 +337,30 @@ class Solution(SolutionBase):
     @staticmethod
     def get_info(frames, *args, **kwargs):
         pos = []
+        min_num,max_num,min_score,max_score=inf,-inf,inf,-inf
         for frame in frames:
             stdout = frame.get("stdout")
             if not stdout:
                 continue
+            if 'stderr' in frame:
+                jl=json.loads(frame['stderr'])
+                min_num,max_num=min(jl['vt_num'],min_num),max(jl['vt_num'],max_num)
+                min_score,max_score=min(jl['score'],min_score),max(jl['score'],max_score)
             pos.append([int(stdout[0]), int(stdout[2])])
         return dict(
-            pos=str(pos)
+            pos=str(pos),
+            nums=[min_num,max_num],
+            score=[min_score,max_score]
         )
 
     def execute(self, pre, **kg):
         for row, col in pre:
             if row >= 0 and col >= 0:
                 self.ai.do(*pos1(row, col))
-        mv, score = self.ai.search(0)
-        if len(pre) > 1:
-            self.draw(mv, score)
+        mv, score = self.ai.search2()
+        # if len(pre) > 1:
+        #     self.draw(mv, score)
+        self.log(dict(vt_num=self.ai.vt_num,score=score))
         if mv:
             self.ai.do(*mv)
             mv = pos2(*mv)

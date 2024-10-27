@@ -9,7 +9,6 @@ import sys
 import math
 import heapq
 inf = float("inf")
-MOD=(10**9)+7
 try:
     from app.yly.manage import SolutionBase
 
@@ -29,7 +28,7 @@ except:
 
 
 class Solution(SolutionBase):
-    uri = ""
+    uri = "https://codeforces.com/problemset/problem/1005/F"
     gameid = ''
 
     def get_cases(self):
