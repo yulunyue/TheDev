@@ -16,14 +16,16 @@ class CodingGame(Api):
         ret = self.post(
             '/services/TestSession/play', player_data)
         return ret
+
     def get_endpoint(self):
         return 'www.codingame.com'
+
     def solve(self, file_path, game_id):
         return self.execute(file_path, game_id, "multipleLanguages", dict(testIndex=3))
 
-    def pk(self, file_path, game_id):
+    def pk(self, file_path, game_id, agentsIds):
         return self.execute(file_path, game_id, "multi", dict(
-            agentsIds=[5604295, -1],
+            agentsIds=agentsIds,
             gameOptions=None,
             isSoloLeague=False
         ))
@@ -31,7 +33,7 @@ class CodingGame(Api):
     def run(self, name):
         c = Module().load_module(f'app.yly.codingame.{name}')
         if c.Solution.game_type == 'pk':
-            info = self.pk(c.__file__, c.Solution.gameid)
+            info = self.pk(c.__file__, c.Solution.gameid, c.Solution.agentsIds)
         else:
             info = self.solve(c.__file__, c.Solution.gameid)
         info.update(c.Solution.get_info(**info))
