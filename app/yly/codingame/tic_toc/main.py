@@ -16,7 +16,9 @@ inf = float("inf")
 try:
     from app.yly.manage import SolutionBase
     from pyinstrument import Profiler
+    DEV=True
 except:
+    DEV=False
     class SolutionBase:
         def input(self):
             return input()
@@ -113,7 +115,6 @@ init()
 
 
 class Grid:
-
     def __init__(self) -> None:
         self.line_state = [0]*len(LINES)
         self.state_ct = dict()
@@ -259,11 +260,10 @@ class AlphaBate:
         self.grid = Gd()
         self.max_time = max_time
         self.grid = Gd()
-        self.pos = []
+        self.play_id=1
 
-    def evaluate(self):
-        self.vt_num += 1
-        return self.grid.get_score(1+(len(self.pos) % 2))
+    def evaluate(self,depth):
+        return self.grid.get_score(self.play_id)
 
     def put(self, *args):
         self.grid.put(*args)
@@ -271,30 +271,29 @@ class AlphaBate:
     def end_search(self, depth):
         return depth >= self.max_depth
 
-    def do(self, pos, idx, score=None):
-        self.put(pos, idx, 1+(len(self.pos) % 2))
-        self.pos.append([pos, idx])
+    def do(self, pos, idx):
+        self.put(pos, idx, self.play_id)
+        self.play_id=3-self.play_id
 
-    def undo(self, pos, idx, score=None):
+    def undo(self, pos, idx):
         self.put(pos, idx, 0)
-        self.pos.pop()
+        self.play_id=3-self.play_id
 
-    def get_moves(self):
-        if not self.pos:
+    def get_moves(self,last_mv):
+        if not last_mv:
             return self.grid.get_moves(None)
-        pos = self.pos[-1]
-        return self.grid.get_moves(pos[1])
+        return self.grid.get_moves(last_mv)
 
-    def search(self, depth, alpha=-inf, bate=inf) -> None:
-        if depth == 0 or self.vt_num >= 5000:
-            return None, self.evaluate()
-        movs = self.get_moves()
+    def search(self, depth, last_mv=None,alpha=-inf, bate=inf) -> None:
+        if depth == 0:
+            return None, self.evaluate(depth)
+        movs = self.get_moves(last_mv)
         if not movs:
-            return None, self.evaluate()
+            return None, self.evaluate(depth)
         best_mv = None
         for mv in movs:
             self.do(*mv)
-            _, val = self.search(depth=depth-1, alpha=-bate, bate=-alpha)
+            _, val = self.search(depth=depth-1,last_mv=mv,alpha=-bate, bate=-alpha)
             val = -val
             self.undo(*mv)
             if val >= bate:
@@ -319,10 +318,11 @@ class AlphaBate:
         return 4+(len(self.pos)//100)
 
     def search2(self):
-        # self.visite = [False]*MASK_GRID
-        self.vt_num = 0
-        return self.search(self.get_depth())
+        depth=self.get_depth()
+        return self.search(depth)
 
+class AlphaBateDebug(AlphaBate):
+    pass
 
 class Solution(SolutionBase):
     uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
@@ -334,7 +334,7 @@ class Solution(SolutionBase):
     ]
 
     def __init__(self) -> None:
-        self.ai = AlphaBate(4, 0.05)
+        self.ai = AlphaBate() if not DEV else AlphaBateDebug()
 
     def get_cases(self):
         return [
@@ -351,7 +351,7 @@ class Solution(SolutionBase):
         self.log(info['infos'])
         self.log(f"----score:{score}")
 
-    @ staticmethod
+    @staticmethod
     def get_info(frames, *args, **kwargs):
         pos = []
         min_num, max_num, min_score, max_score = inf, -inf, inf, -inf
@@ -396,9 +396,6 @@ class Solution(SolutionBase):
         p.print()
 
 
+
 if __name__ == '__main__':
-    s2 = Solution()
-    if sys.argv[-1] == 'profile':
-        s2.profile()
-    else:
-        s2.run()
+    Solution().run()

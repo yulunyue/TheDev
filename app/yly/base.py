@@ -12,8 +12,9 @@ inf = float("inf")
 MOD=(10**9)+7
 try:
     from app.yly.manage import SolutionBase
-
+    DEV=True
 except:
+    DEV=False
     class SolutionBase:
         def input(self):
             return input()
