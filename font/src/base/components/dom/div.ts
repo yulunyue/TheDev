@@ -9,6 +9,7 @@ export class Div {
     parent: Div
     dialog: Div
     option: Node
+    index: number
     on_mount_call: any
     constructor(node_type: string = 'div', parent_node_type: string = "div") {
         this.childs = []
@@ -177,6 +178,7 @@ export class Div {
     add_child(c: any) {
         c.mount(this.el)
         c.parent = this
+        c.index = this.childs.length
         this.childs.push(c)
         return this
     }
@@ -186,7 +188,16 @@ export class Div {
         }
         return this
     }
-
+    get_tree_infos(){
+        let p:Div=this
+        let info=[]
+        while(p){
+            info.push({index:p.index,type:this.node_type})
+            p=p.parent
+        }
+        info.reverse()
+        return info
+    }
     set_option(option: Node) {
         this.option = option
         return this

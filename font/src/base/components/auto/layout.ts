@@ -50,7 +50,8 @@ export class Layout extends Div {
                 position: "absolute",
                 border: "1px solid #000"
             })
-            let p = new Div().set_html(JSON.stringify(this.childs[i].dump()))
+            let tmp=JSON.stringify(this.childs[i].get_tree_infos())
+            let p = new Div().set_html(tmp)
             this.childs[i].div_el.appendChild(p.div_el)
 
         }
