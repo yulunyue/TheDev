@@ -11,14 +11,16 @@ import math
 import heapq
 import json
 import json
-inf = float("inf")
-
+inf = 10000000
+inm = inf+1
+MAX_DEPATH = 4
 try:
     from app.yly.manage import SolutionBase
     from pyinstrument import Profiler
-    DEV=True
+    DEV = True
 except:
-    DEV=False
+    DEV = False
+
     class SolutionBase:
         def input(self):
             return input()
@@ -50,6 +52,8 @@ LINES = [
     [2, 4, 6, 0]
 ]
 POS = [4, 1, 3, 5, 7, 0, 2, 6, 8]
+POS_STATE = []
+MAX_TIME = 0.2
 G = [[] for _ in range(9)]
 STATE_MASK = []
 WIN1 = [[1, 1, 1]]
@@ -71,6 +75,7 @@ MASK_POS = (1 << 9)-1
 
 def init():
     for i in range(9):
+        POS_STATE.append(3 << (i*2))
         STATE_MASK.append(MASK_GRID ^ (3 << (i*2)))
     for i, v2 in enumerate(LINES):
 
@@ -90,17 +95,17 @@ def init():
 def pos1(i, j):
     y1, y2 = i//3, i % 3
     x1, x2 = j//3, j % 3
-    return y1*3+x1, y2*3+x2
+    return [y1*3+x1, y2*3+x2]
 
 
-def pos2(idx, pos, *args):
+def pos2(idxpos):
+    if isinstance(idxpos, Mv):
+        idx, pos = idxpos.idx, idxpos.pos
+    else:
+        idx, pos = idxpos
     y1, x1 = idx//3, idx % 3
     y2, x2 = pos//3, pos % 3
-    return y1*3+y2, x1*3+x2
-
-
-# def s(v, i, j):
-#     return (v >> (LINES[i][j]*2) & 3) << j*2
+    return [y1*3+y2, x1*3+x2]
 
 
 def setbit(x, n):
@@ -130,7 +135,7 @@ class Grid:
     def init(self, idx):
         self.idx = idx
 
-    def put(self, pos, val):
+    def put(self, pos, val, last_mv=None):
         self.grid_state = (
             self.grid_state & STATE_MASK[pos]) | (val << (pos*2))
         # self.states[pos] = val
@@ -161,16 +166,16 @@ class Grid:
             self.win_state = 0
         return ans
 
-    def calc_score(self):
-        ans = 0
-        for k, v in enumerate(self.state_ct):
-            ans += STATE_SCORE.get(k, 0)*v
-        return ans
+    # def calc_score(self):
+    #     ans = 0
+    #     for k, v in enumerate(self.state_ct):
+    #         ans += STATE_SCORE.get(k, 0)*v
+    #     return ans
 
     def get_moves(self, op):
         ret = []
         for p in POS:
-            if self.grid_state >> (p*2) & 3 == 0:
+            if self.grid_state & POS_STATE[p] == 0:
                 ret.append([self.idx, p])
         return ret
 
@@ -185,62 +190,48 @@ class Gd(Grid):
         super().__init__()
         self.load()
         self.score = 0
+        self.play_id = 1
 
     def load(self):
         self.nodes: List[Grid] = []
-        for i in range(9):
+        self.nodes_sort: List[Grid] = []
+        for i in range(len(POS)):
             g = Grid()
             g.init(i)
             self.nodes.append(g)
+        for n in POS:
+            self.nodes_sort.append(self.nodes[n])
 
-    def put(self, pos, idx, op):
-        c: Grid = self.nodes[pos]
-        self.score += c.put(idx, op)
-        self.score += 100*super().put(pos, c.win_state)
+    def put(self, pi, op, last_mv=None, is_best=False):
+        c: Grid = self.nodes[pi[0]]
+        if last_mv and pos2(last_mv) == [5, 2] and pos2(pi) == [8, 6]:
+            pass
+        self.score += c.put(pi[1], op)
+        self.score += 100*super().put(pi[0], c.win_state)
+        self.play_id = 3-self.play_id
 
-    def calc_score(self):
-        return 100*super().calc_score()+sum(c.calc_score() for c in self.nodes)
+    def get_score(self, depth):
+        if self.win_state == 1:
+            return inm if self.play_id == 1 else -inm
+        if self.win_state == 2:
+            return inm if self.play_id == 2 else -inm
+        return self.score if self.play_id == 1 else -self.score
 
-    def get_score(self, val):
-        return self.score if val == 1 else -self.score
-
-    def get_moves(self, pos, op):
-        if pos is not None and self.nodes[pos].win_state == 0:
-            ret = self.nodes[pos].get_moves(op)
+    def get_moves(self, depth, last_move):
+        if last_move is not None and self.nodes[last_move[1]].win_state == 0 and self.nodes[last_move[1]].grid_state.bit_count() != 9:
+            ret = self.nodes[last_move[1]].get_moves(self.play_id)
         else:
             ret = []
-            for n in self.nodes:
+            for n in self.nodes_sort:
                 if n.win_state:
                     continue
-                ret.extend(n.get_moves(op))
+                ret.extend(n.get_moves(self.play_id))
         # ret = sorted(ret, key=lambda v: v[2],
         #              reverse=True if op == 1 else False)[:7]
         return ret
 
-    def dumps(self):
-        info = [["0"]*9 for _ in range(9)]
-        for pos in range(81):
-            y1, x1 = pos//9, pos % 9
-            pos, idx = pos1(y1, x1)
-            c: Grid = self.nodes[pos]
-            s = (c.grid_state >> (idx*2)) & 3
-            if c.win_state:
-                info[y1][x1] = str(c.win_state+3)
-            else:
-                info[y1][x1] = str(s)
-        infs = []
-        for i, inv in enumerate(info):
-            if i % 3 == 0:
-                infs.append('\n')
-            tmp = []
-            for j in range(3):
-                tmp.append(inv[j*3]+inv[j*3+1]+inv[j*3+2]+" ")
-            infs.append("".join(tmp)+"\n")
-
-        return dict(
-            infos="".join(infs),
-            score=self.calc_score()
-        )
+    def get_depth(self):
+        return MAX_DEPATH
 
 
 class AlphaBate:
@@ -253,106 +244,57 @@ class AlphaBate:
 
 
     '''
+    last_move = None
 
-    def __init__(self, max_depth, max_time) -> None:
-        self.max_depth = max_depth
-        self.max_time = max_time
+    def __init__(self) -> None:
         self.grid = Gd()
-        self.max_time = max_time
-        self.grid = Gd()
-        self.play_id=1
 
-    def evaluate(self,depth):
-        return self.grid.get_score(self.play_id)
+    def do(self, pos):
+        self.last_move = pos
+        self.grid.put(pos, self.grid.play_id)
 
-    def put(self, *args):
-        self.grid.put(*args)
-
-    def end_search(self, depth):
-        return depth >= self.max_depth
-
-    def do(self, pos, idx):
-        self.put(pos, idx, self.play_id)
-        self.play_id=3-self.play_id
-
-    def undo(self, pos, idx):
-        self.put(pos, idx, 0)
-        self.play_id=3-self.play_id
-
-    def get_moves(self,last_mv):
-        if not last_mv:
-            return self.grid.get_moves(None)
-        return self.grid.get_moves(last_mv)
-
-    def search(self, depth, last_mv=None,alpha=-inf, bate=inf) -> None:
+    def absearch(self, depth, last_move=None, alpha=-inf, bate=inf) -> None:
         if depth == 0:
-            return None, self.evaluate(depth)
-        movs = self.get_moves(last_mv)
+            return None, self.grid.get_score(depth)
+        movs = self.grid.get_moves(depth, last_move)
         if not movs:
-            return None, self.evaluate(depth)
-        best_mv = None
+            return None, self.grid.get_score(depth)
+        best_mv = movs[0]
         for mv in movs:
-            self.do(*mv)
-            _, val = self.search(depth=depth-1,last_mv=mv,alpha=-bate, bate=-alpha)
+            self.grid.put(mv, self.grid.play_id, last_move, False)
+            _, val = self.absearch(depth=depth-1, last_move=mv,
+                                   alpha=-bate, bate=-alpha)
             val = -val
-            self.undo(*mv)
             if val >= bate:
                 alpha = bate
                 best_mv = mv
+                self.grid.put(mv, 0, last_move, True)
                 break
             if val > alpha:
                 alpha = val
                 best_mv = mv
+                self.grid.put(mv, 0, last_move, True)
+            else:
+                self.grid.put(mv, 0, last_move, False)
         return best_mv, alpha
 
     def run(self):
         start_time = time.time()
         best_move, best_score = None, -inf
-        for i in range(self.max_depth):
-            if time.time()-start_time >= self.max_time:
+        for i in range(self.grid.get_depth()):
+            if time.time()-start_time >= MAX_TIME:
                 break
-            best_move, best_score = self.search(i+1)
+            best_move, best_score = self.absearch(
+                i+1, last_move=self.last_move)
         return best_move, best_score
 
-    def get_depth(self):
-        return 4+(len(self.pos)//100)
-
-    def search2(self):
-        depth=self.get_depth()
-        return self.search(depth)
-
-class AlphaBateDebug(AlphaBate):
-    pass
-
-class Solution(SolutionBase):
-    uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
-    gameid = '6246186678d52f83e9a2d47885d4b6f60900eed7'
-    game_type = 'pk'
-    agentsIds = [
-        # 5604295,
-        -2, -1
-    ]
-
-    def __init__(self) -> None:
-        self.ai = AlphaBate() if not DEV else AlphaBateDebug()
-
-    def get_cases(self):
-        return [
-            # dict(result="0 1",pre=[[-1,-1]]),
-            dict(result="0 1", pre=[[4, 4], [3, 3], [0, 0]]),
-        ]
-
-    def draw(self, mv, score):
-        # [pos2(*v) for v in self.ai.pos]
-
-        info = self.ai.grid.dumps()
-        self.log(
-            f"----mv:{mv},pos:{len(self.ai.pos)},score_calc:{info['score']},score_add:{self.ai.grid.score}")
-        self.log(info['infos'])
-        self.log(f"----score:{score}")
+    def search(self):
+        depth = self.grid.get_depth()
+        return self.absearch(depth, last_move=self.last_move)
+        # return self.run()
 
     @staticmethod
-    def get_info(frames, *args, **kwargs):
+    def get_info(frames):
         pos = []
         min_num, max_num, min_score, max_score = inf, -inf, inf, -inf
         for frame in frames:
@@ -365,36 +307,162 @@ class Solution(SolutionBase):
                     jl['vt_num'], max_num)
                 min_score, max_score = min(
                     jl['score'], min_score), max(jl['score'], max_score)
-            pos.append([int(stdout[0]), int(stdout[2])])
+            try:
+                pos.append([int(stdout[0]), int(stdout[2])])
+            except:
+                pos.append(stdout)
         return dict(
             pos=str(pos),
             nums=[min_num, max_num],
             score=[min_score, max_score]
         )
 
-    def execute(self, pre, **kg):
-        for row, col in pre:
-            if row >= 0 and col >= 0:
-                self.ai.do(*pos1(row, col))
-        mv, score = self.ai.search2()
-        # if len(pre) > 1:
-        #     self.draw(mv, score)
-        self.log(dict(vt_num=self.ai.vt_num, score=score))
-        if mv:
-            self.ai.do(*mv)
-            mv = pos2(*mv)
-            return f'{mv[0]} {mv[1]}'
-        return f'-1 -1'
+    def dump(self, *args):
+        return dict(vt_num=0, score=0)
+
+
+class Mv:
+    def __init__(self, idx, pos, depth=None, player_id=None, parent=None) -> None:
+        self.idx = idx
+        self.pos = pos
+        self.depth = depth
+        self.player_id = player_id
+        self.score = 0
+        # self.pre: Mv = parent
+        self.after: Mv = None
+
+    def __str__(self) -> str:
+        p = self
+        ret = []
+        while p:
+            ret.append(str(pos2(p)))
+            p = p.after
+        return ",".join(ret)
+
+
+class GdDev(Gd):
+    def put(self, pi, op, last_mv: Mv = None, is_best=False):
+        if is_best and isinstance(last_mv, Mv):
+            last_mv.after = pi
+        if isinstance(pi, Mv):
+            pi = [pi.idx, pi.pos]
+        ret = super().put(pi, op, last_mv)
+        # Solution.log(pi, op)
+        return ret
+
+    def get_moves(self, depth, last_move):
+        if isinstance(last_move, Mv):
+            last_move = [last_move.idx, last_move.pos]
+        self.vt_ct[depth] += 1
+        return [Mv(*d, depth=depth, player_id=self.play_id) for d in super().get_moves(depth, last_move)]
+
+    def get_score(self, depth):
+        ret = super().get_score(None)
+        self.vt_ct[depth] += 1
+        return ret
+
+    def dumps(self):
+        info = [["0"]*9 for _ in range(9)]
+        for pos in range(81):
+            y1, x1 = pos//9, pos % 9
+            pos, idx = pos1(y1, x1)
+            c: Grid = self.nodes[pos]
+            s = (c.grid_state >> (idx*2)) & 3
+            if c.win_state and idx == 4:
+                # info[y1][x1] = str(c.win_state*3+s)
+                info[y1][x1] = ['0', 'X', 'O'][c.win_state]
+            else:
+                info[y1][x1] = str(s)
+        infs = []
+        for i, inv in enumerate(info):
+            if i % 3 == 0:
+                infs.append('\n')
+            tmp = [] if i != 0 else ['   012 345 678\n']
+            for j in range(3):
+                tmp.append((f"{i}: " if j == 0 else "") +
+                           inv[j*3]+inv[j*3+1]+inv[j*3+2]+" ")
+            infs.append("".join(tmp)+"\n")
+
+        return dict(
+            infos="".join(infs),
+            # score=self.calc_score()
+        )
+
+    def get_depth(self):
+        ret = MAX_DEPATH
+        self.vt_ct = [0]*(ret+1)
+        return ret
+
+
+class AlphaBateDev(AlphaBate):
+    def __init__(self) -> None:
+        self.grid = GdDev()
+
+    def dump(self, mv, last_mv, score):
+        infos = self.grid.dumps()
+        return ";".join([
+            f'---play_id:{self.grid.play_id}',
+            f'mv:{mv}',
+            f'lastmv:{last_mv}',
+            f'score:{score}---{infos["infos"]}---vt_ct:{self.grid.vt_ct}---\n'
+        ])
 
     def profile(self):
         self.log = lambda *args: print(*args)
         p = Profiler()
         p.start()
-        self.execute([[4, 4], [3, 3], [2, 2], [6, 8], [2, 8], [6, 7], [2, 4], [7, 3], [5, 1], [7, 5], [5, 6], [8, 1], [8, 3], [8, 0], [7, 2], [3, 7], [1, 5], [3, 6], [1, 2], [3, 8], [1, 7], [
-                     4, 3], [4, 0], [4, 1], [5, 4], [8, 5], [8, 7], [6, 4], [1, 3], [5, 0], [7, 0], [3, 2], [2, 7], [8, 4], [6, 5], [2, 6], [6, 2], [0, 7], [0, 4], [2, 3], [8, 2], [8, 8], [8, 6]])
         p.stop()
         p.print()
 
+    def search(self):
+        return super().search()
+        # return None, None
+
+
+class Solution(SolutionBase):
+    uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
+    gameid = '6246186678d52f83e9a2d47885d4b6f60900eed7'
+    game_type = 'pk'
+    agentsIds = [
+        # 5604295,
+        -2, -1
+    ]
+
+    def __init__(self) -> None:
+        self.ai = AlphaBate() if not DEV else AlphaBateDev()
+
+    def get_cases(self):
+        return [
+            # dict(result="", pre=[[0, 0]]),
+            # dict(result="", pre=[[-1, -1]]),
+            dict(result="", pre=0),
+            # dict(result="0 1", pre=[]),
+        ]
+
+    @staticmethod
+    def get_info(frames, *args, **kwargs):
+        return AlphaBate.get_info(frames)
+
+    def execute(self, pre, **kg):
+        last_pre = pre
+        if isinstance(pre, int):
+            data = json.load(
+                open("data/log/codingame/tic_toc.main.json", 'r'))
+            pres = json.loads(data["pos"])
+            if pre == 0:
+                pre = len(pres)
+            last_pre = pres[pre-1:]
+            pre = pres[:pre]
+        for row, col in pre:
+            if row >= 0 and col >= 0:
+                self.ai.do(pos1(row, col))
+        mv, score = self.ai.search()
+        self.log(self.ai.dump(mv, last_pre, score))
+        if mv:
+            self.ai.do(mv)
+            mv = pos2(mv)
+            return f'{mv[0]} {mv[1]}'
+        return f'9 9'
 
 
 if __name__ == '__main__':
