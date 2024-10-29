@@ -8,12 +8,10 @@ def dijkstra(g, start):
     dist = defaultdict(lambda: float('inf'))
     dist[start] = 0
     q = [(0, start)]
-    vt = set()
     while q:
         cost, u = heapq.heappop(q)
-        if u in vt:
+        if cost > dist[u]:
             continue
-        vt.add(u)
         for v, weight in g[u]:
             target = cost + weight
             if target < dist[v]:
@@ -111,8 +109,8 @@ class AlphaBate:
                 alpha = val
                 best_mv = mv
         return best_mv, alpha
-    
+
     def serach_limit_time(self):
-        best_mv,best_score=None,-inf
+        best_mv, best_score = None, -inf
         for i in range(self.max_depth):
             pass

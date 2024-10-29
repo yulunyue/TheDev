@@ -9,12 +9,13 @@ import sys
 import math
 import heapq
 inf = float("inf")
-MOD=(10**9)+7
+MOD = (10**9)+7
 try:
     from app.yly.manage import SolutionBase
-    DEV=True
+    DEV = True
 except:
-    DEV=False
+    DEV = False
+
     class SolutionBase:
         def input(self):
             return input()
@@ -38,8 +39,8 @@ class Solution(SolutionBase):
 
         ]
 
-    def execute(self):
-        pass
+    def execute(self, *args, **kw):
+        return self.xx(*args, **kw)
 
 
 if __name__ == '__main__':
