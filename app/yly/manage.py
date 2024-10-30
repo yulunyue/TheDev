@@ -2,6 +2,7 @@ from common.tool.thread_util import run_watch_fun
 from common.service.http import Node
 from common.util.module import Module
 from common.util.log import logger
+from common.util.fp import File
 import os
 import time
 
@@ -9,6 +10,7 @@ import time
 class SolutionBase:
     logs = ""
     case_load = None
+    name = "test"
 
     def get_cases(self):
         return [
@@ -38,15 +40,13 @@ class SolutionBase:
 
     def run(self):
 
-        for case in self.get_cases():
+        for i, case in enumerate(self.get_cases()):
             self.__class__.logs = ""
             if isinstance(case, str):
                 case = SolutionBase.case_load(
                     [v for v in case.split('\n') if v])
             self.ep = case.pop("result")
             a = time.time()
-            if 'info' in case:
-                case.pop('info')
             try:
                 r = self.execute(**case)
                 self.log("finish", time.time()-a)
@@ -55,19 +55,20 @@ class SolutionBase:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, self.ep):
-                print(case, 'result', r, 'except', self.ep)
-                print(self.__class__.logs)
-                break
+                self.log(f'case: {case}; result: {r}; except: {self.ep}')
+                self.flush_log(i)
+
+    def flush_log(self, i):
+        path = f'data/log/solution/{self.name}/{i}.log'
+        File(path).write_file(self.__class__.logs)
 
     @classmethod
     def cls_run(cls):
-
         for case in cls.get_cases():
             cls.logs = ""
             m, inp, es = case
             r = cls(*inp[0])
             cls.log(m[0], *inp[0])
-            flag = True
             for i in range(1, len(inp)):
                 cls.log(m[i], inp[i], es[i])
                 try:
@@ -75,11 +76,8 @@ class SolutionBase:
                 except Exception as a:
                     e = a
                 if not r.diff(e, es[i]):
-                    print(f'{cls.logs}, result:{e}, expect:{es[i]}')
-                    flag = False
-                    break
-            if not flag:
-                break
+                    cls.log(f'result:{e}, expect:{es[i]}')
+                    cls.flush_log(i)
 
     def diff(self, a, b):
         if isinstance(a, float) and isinstance(b, float):
