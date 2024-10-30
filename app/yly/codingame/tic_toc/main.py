@@ -449,7 +449,7 @@ class Solution(SolutionBase):
             for i in range(1, len(pres), 2)
         ]
 
-    @ staticmethod
+    @staticmethod
     def get_info(frames, *args, **kwargs):
         return AlphaBate.get_info(frames)
 
