@@ -34,13 +34,6 @@ class TestAlgo(TestBase):
         self.expect(s.query_sum(6)-s.query_sum(4), 2)
 
     def test_seg_tree(self):
-        s = SegTreeNode(6, 0)
-
-    def test_floyd(self):
-        g = {
-            0: {1: 1},
-            1: {}
-        }
         pass
 
     def test_alphabate(self):
