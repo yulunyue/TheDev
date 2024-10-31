@@ -10,6 +10,25 @@ def pi_float(v):
     return v
 
 
+def mul_rect(a, b, mod):
+    ans = [[0]*len(b[0]) for _ in range(len(a))]
+    for i in range(len(a)):
+        for j in range(len(b[0])):
+            for k in range(len(a[i])):
+                ans[i][j] = (ans[i][j]+a[i][k]*b[k][j]) % mod
+    return ans
+
+
+def pow_mul_rect(a, n, f0, mod):
+    res = f0
+    while n:
+        if n & 1:
+            res = mul_rect(a, res, mod)
+        a = mul_rect(a, a, mod)
+        n >>= 1
+    return res
+
+
 def setbit(x, n):
     return x | 1 << n
 

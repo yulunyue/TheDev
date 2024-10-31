@@ -17,6 +17,10 @@ except:
     DEV = False
 
     class SolutionBase:
+        @staticmethod
+        def get_info(self, **kw):
+            return dict()
+
         def input(self):
             return input()
 

@@ -6,9 +6,9 @@ LOG_MAP = dict()
 class Logger(logging.Logger):
     def __init__(self, name) -> None:
         super().__init__(name)
-        # self.add_hander(logging.FileHandler(
-        #     f'../data/{name}.log', mode='w'), logging.NOTSET)
-        self.add_hander(logging.StreamHandler(), logging.INFO)
+        self.add_hander(logging.FileHandler(
+            f'./data/log/{name}.log', mode='w'), logging.NOTSET)
+        # self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):
         fm = logging.Formatter("[%("+')s] [%('.join([

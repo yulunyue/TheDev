@@ -11,7 +11,7 @@ import math
 import heapq
 import json
 import json
-inf = 10000000
+inf = 100000000
 inm = inf+1
 MAX_DEPATH = 4
 try:
@@ -423,6 +423,7 @@ class Solution(SolutionBase):
     uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
     gameid = '6246186678d52f83e9a2d47885d4b6f60900eed7'
     game_type = 'pk'
+    name = "tic_toc"
     agentsIds = [
         # 5604295,
         -2, -1
@@ -439,25 +440,25 @@ class Solution(SolutionBase):
             # dict(result="0 1", pre=[]),
         ]
 
+    def get_cases(self):
+        data = json.load(
+            open("data/log/codingame/tic_toc.main.json", 'r'))
+        pres = json.loads(data["pos"])
+        return [
+            dict(pre=pres[:i], result="")
+            for i in range(1, len(pres), 2)
+        ]
+
     @staticmethod
     def get_info(frames, *args, **kwargs):
         return AlphaBate.get_info(frames)
 
     def execute(self, pre, **kg):
-        last_pre = pre
-        if isinstance(pre, int):
-            data = json.load(
-                open("data/log/codingame/tic_toc.main.json", 'r'))
-            pres = json.loads(data["pos"])
-            if pre == 0:
-                pre = len(pres)
-            last_pre = pres[pre-1:]
-            pre = pres[:pre]
         for row, col in pre:
             if row >= 0 and col >= 0:
                 self.ai.do(pos1(row, col))
         mv, score = self.ai.search()
-        self.log(self.ai.dump(mv, last_pre, score))
+        self.log(self.ai.dump(mv, pre[-2:], score))
         if mv:
             self.ai.do(mv)
             mv = pos2(mv)

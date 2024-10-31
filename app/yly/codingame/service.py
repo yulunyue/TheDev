@@ -32,10 +32,10 @@ class CodingGame(Api):
 
     def run(self, name):
         c = Module().load_module(f'app.yly.codingame.{name}')
-        if c.Solution.game_type == 'pk':
-            info = self.pk(c.__file__, c.Solution.gameid, c.Solution.agentsIds)
-        else:
+        if getattr(c.Solution, "game_type") == 'solve':
             info = self.solve(c.__file__, c.Solution.gameid)
+        else:
+            info = self.pk(c.__file__, c.Solution.gameid, c.Solution.agentsIds)
         info.update(c.Solution.get_info(**info))
         File(f"data/log/codingame/{name}.json").write_file(info)
 
