@@ -1,25 +1,21 @@
 
 def yml_to_dict(datas: str):
-    ret = dict()
-    stacks = [ret]
-    last_indent = 0
-    for s in datas.split('\n'):
 
+    q = [[-1,dict(_value="")]]
+    for s in datas.split('\n'):
         indent = 0
         while indent < len(s) and s[indent] == ' ':
-            indent += 1
+            indent += 2
         s1 = s[indent:]
-        split_index = s.find(':')
+        split_index = s1.find(':')
         if split_index == -1:
             continue
-        key, value = s1[:split_index], s1[split_index+1:]
-        if indent == last_indent:
-            stacks[-1][key] = value
-        elif indent > last_indent:
-            if key not in stacks[-1]:
-                stacks[-1][key] = dict()
-            stacks.append(stacks[-1][key])
-        else:
-            stacks.pop()
-        last_indent = indent
-    return ret
+        key, value = s1[:split_index], s1[split_index+2:]
+        while q and q[-1][0]>=indent:
+            q.pop()
+        mp = q[-1][1][key] = dict(_value=value)
+        q.append([indent,mp])
+
+        
+
+    return q[0][1]

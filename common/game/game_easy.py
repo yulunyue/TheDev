@@ -5,7 +5,7 @@ import sys
 
 class GameNumChoice(GameBase):
     '''
-                                           a:2
+                                           a:4
                                            min                                
           b:2                  c:6                    d:3             e:2            
           max                  max                    max
@@ -15,7 +15,7 @@ o:8     p:9
     '''
     name = "GameNumChoice"
     tree_map = '''
-a:
+a: 4
   b:
     f:
       o: 8

@@ -2,7 +2,7 @@ from typing import List
 from common.util.fp import File
 from common.util.log import logger
 from common.util.yml import yml_to_dict
-
+import json
 
 class Base:
     def __init__(self, name) -> None:
@@ -10,18 +10,27 @@ class Base:
 
 
 class Node:
-    def __init__(self, *childs, value=None) -> None:
-        self.value = value
+    def __init__(self,key="", *childs, value=0) -> None:
+        self.key = key
+        self.value = 0
         self.childs = list(childs)
-
+    def set_value(self,value):
+        if value == '':
+            return
+        self.value = int(value)
+    
     def to_str(self):
         return f'{self.value}'
-
-    def init(self):
+    
+    def load_from_dict(self,mp:dict):
+        self.set_value(mp.pop('_value'))
+        for key,value in mp.items():
+            self.childs.append(Node(key=key).load_from_dict(value))
         return self
-
+        
     def load_from_yml(self, yml):
-        logger.info(yml_to_dict(yml))
+        return self.load_from_dict(yml_to_dict(yml))
+
 
 
 class PlayerBase(Base):
