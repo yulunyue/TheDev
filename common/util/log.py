@@ -11,14 +11,15 @@ class Logger(logging.Logger):
         # self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):
-        fm = logging.Formatter("%("+')s %('.join([
-            "asctime",
-            "levelname",
+        fm = logging.Formatter(''.join([
+            # "asctime",
+            # "levelname",
             # "process)s:%(threadName",
-            "pathname)s:%(lineno",
-            "funcName",
-            "message"
-        ])+")s")
+            "[%(filename)-10s]",
+            "[%(lineno)-3s]",
+            "[%(funcName)-12s] ",
+            "%(message)-4s"
+        ]))
         h.setLevel(level)
         h.setFormatter(fm)
         self.addHandler(h)
