@@ -8,7 +8,7 @@ import time
 
 
 class SolutionBase:
-    logs = ""
+    logs = []
     case_load = None
     name = "test"
 
@@ -22,11 +22,7 @@ class SolutionBase:
 
     @classmethod
     def log(cls, *s, tp: str = ""):
-        if len(cls.logs) >= 102400:
-            return
-        if tp:
-            cls.draw(s[0], tp)
-        cls.logs += " ".join([str(v) for v in s])+"\n"
+        cls.logs.append(f'{" ".join(str(s1) for s1 in s)}')
 
     @classmethod
     def draw(cls, s, tp: str):
@@ -41,7 +37,7 @@ class SolutionBase:
     def run(self):
 
         for i, case in enumerate(self.get_cases()):
-            self.__class__.logs = ""
+            self.__class__.logs = []
             if isinstance(case, str):
                 case = SolutionBase.case_load(
                     [v for v in case.split('\n') if v])
@@ -55,12 +51,18 @@ class SolutionBase:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, self.ep):
-                self.log(f'case: {case}; result: {r}; except: {self.ep}')
-                self.flush_log(i)
+                self.flush_log(
+                    i, f'case: {case}; result: {r}; except: {self.ep}')
+            else:
+                self.flush_log(i, "")
 
-    def flush_log(self, i):
-        path = f'data/log/solution/{self.name}/{i}.log'
-        File(path).write_file(self.__class__.logs)
+    def flush_log(self, i, s):
+
+        fp = File(f'data/log/solution/{self.name}/{i}.log')
+        if s:
+            fp.write_file("\n".join([s]+self.__class__.logs))
+        else:
+            fp.write_file("")
 
     @classmethod
     def cls_run(cls):

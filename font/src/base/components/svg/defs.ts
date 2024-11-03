@@ -1,8 +1,8 @@
-import { GNode,gnode } from "./gnode";
+import { GNode, gnode } from "./gnode";
 import { line } from "./line";
 export class Defs extends GNode {
     constructor() {
-        super("defs", "")
+        super("defs")
     }
     init_node(): void {
         this.add_child(gnode("marker").add_child(

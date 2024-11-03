@@ -111,6 +111,25 @@ class WebDom {
     bind_mousedown(dom: Dom, call_back: any) {
         dom.onmousedown = call_back
     }
+    bind_drag(dom: any, call_back: any) {
+        dom.onmousedown = (e: any) => {
+            dom._drag_state = true
+            console.log(e)
+            call_back("start", e.x, e.y)
+        }
+        dom.onmousemove = (e: any) => {
+            if (dom._drag_state) {
+                call_back("move", e.x, e.y)
+            }
+
+        }
+        dom.onmouseup = (e: any) => {
+            dom._drag_state = false
+            if (dom._drag_state) {
+                call_back("end", e.x, e.y)
+            }
+        }
+    }
     loop_task = {}
     loop_state = "stop"
     loop_count = 0

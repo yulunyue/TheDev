@@ -1,6 +1,6 @@
 import web_dom from "../base/web/web_dom";
-import { DEV_COMPONENT, Layout, Node } from "../base/components/export"
-class Demo extends Layout {
+import { DEV_COMPONENT, Node, Div } from "../base/components/export"
+class Demo extends Div {
     init() {
         let childs = []
         for (var key in DEV_COMPONENT) {
@@ -12,10 +12,10 @@ class Demo extends Layout {
                 childs.push(child)
             }
         }
-        this.add_grid_childs(childs)
-        return this
+        return this.add_grid_childs(childs)
     }
 }
 export default function () {
-    return new Demo(Layout.VERTICAL).init()
+    let ret = new Demo().init()
+    return ret
 }

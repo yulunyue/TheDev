@@ -7,13 +7,15 @@ import { grid } from "./comb/grid"
 import { Text, text } from "./text"
 import { Node } from "../../web/cls"
 import web_dom from "../../web/web_dom"
-export class Svg extends GNode {
+export class Svg extends Div {
     constructor() {
         super("svg", "div")
     }
-    set_size(w: number, h: number): this {
-        this.set_attr("width", w).set_attr("height", h)
-        return this
+    create_element(name: string) {
+        return web_dom.createElementNS(name)
+    }
+    set_width(w: number): this {
+        return this.set_attr("width", w)
     }
     get_x() {
         return this.el.clientLeft

@@ -1,6 +1,8 @@
 import web_dom from "../../web/web_dom"
 import { Style, Node, Fn1 } from "src/base/web/cls"
 import { Dom } from "../../web/cls"
+const HORIZONTAL = 0
+const VERTICAL = 1
 export class Div {
     el: Dom
     div_el: Dom
@@ -11,6 +13,77 @@ export class Div {
     option: Node
     index: number
     on_mount_call: any
+    direction: number = 0
+    layout_type: number = 0
+    size: number = 0
+    add_grid_childs(childs: any[]) {
+        let row = Math.ceil(Math.sqrt(childs.length))
+        let col = Math.ceil(childs.length / row)
+        for (var i = 0; i < row; i++) {
+            let tmp_layout = new Div()
+            for (var j = 0; j < col; j += 1) {
+                let idx = i * col + j
+                if (idx >= childs.length) {
+                    break
+                }
+                tmp_layout.add_child(childs[idx])
+            }
+            this.add_child(tmp_layout)
+        }
+        return this
+    }
+    flex_horizontal_layout() {
+        this.direction = HORIZONTAL
+        this.set_flex_style()
+    }
+    flex_veritcal_layout() {
+        this.direction = VERTICAL
+        this.set_flex_style()
+    }
+    abs_horizontal_layout() {
+        this.direction = HORIZONTAL
+        this.set_abs_style()
+    }
+    abs_veritcal_layout() {
+        this.direction = VERTICAL
+        this.set_abs_style()
+    }
+    set_abs_style() {
+        this.set_div_style({
+            width: 1,
+            height: 1,
+            position: "absolute"
+        })
+        for (var i = 0; i < this.childs.length; i++) {
+            this.childs[i].set_div_style({
+                left: this.direction == VERTICAL ? i / this.childs.length : 0,
+                width: this.direction == VERTICAL ? 1 / this.childs.length : 1,
+                height: this.direction == HORIZONTAL ? 1 / this.childs.length : 1,
+                top: this.direction == HORIZONTAL ? i / this.childs.length : 0,
+                position: "absolute",
+                border: "1px solid #000"
+            })
+            this.direction == VERTICAL ? this.childs[i].abs_horizontal_layout() : this.childs[i].abs_veritcal_layout()
+
+        }
+
+    }
+    set_flex_style() {
+        this.set_div_style({
+            flexDirection: this.direction == VERTICAL ? "row" : "column",
+            display: "flex",
+            justifyContent: "center",
+            alignContent: "center",
+            flexGrow: this.size + "",
+            border: "1px solid #000"
+        })
+        for (var i = 0; i < this.childs.length; i++) {
+            if (this.childs[i].flex_horizontal_layout && this.childs[i].flex_veritcal_layout) {
+                this.direction == VERTICAL ? this.childs[i].flex_horizontal_layout() : this.childs[i].flex_veritcal_layout()
+            }
+        }
+
+    }
     constructor(node_type: string = 'div', parent_node_type: string = "div") {
         this.childs = []
         this.on_mount_call = {}
@@ -20,10 +93,11 @@ export class Div {
         if (parent_node_type && parent_node_type != node_type) {
             this.div_el = web_dom.createElement(parent_node_type)
             this.div_el.appendChild(this.el)
-            this.init_default_div_style()
+
         } else {
             this.div_el = this.el
         }
+        this.init_default_div_style()
         this.init_node()
         this.init_style()
         this.init_event()
@@ -111,9 +185,10 @@ export class Div {
     }
     init_default_div_style() {
         this.set_div_style({
-            width: 1,
-            height: 1,
-            position: "absolute"
+            // width: 1,
+            // height: 1,
+            // position: "absolute",
+            border: "1px splid #000"
         })
     }
     set_attr(key: string, value: any) {
@@ -123,9 +198,15 @@ export class Div {
     get_attr(key: string) {
         return this.el.getAttribute(key)
     }
-    set_size(w: number, h: number) {
-        this.set_div_style({ width: w, height: h })
+    set_size(size: number) {
+        this.size = size
         return this
+    }
+    set_height(h: number) {
+        return this.set_div_style({ height: h })
+    }
+    set_width(h: number) {
+        this.set_div_style({ width: h })
     }
     set_pos(x: number, y: number) {
         return this
@@ -170,7 +251,6 @@ export class Div {
     }
     mount_html(call: any) {
         this.on_mount_call["set_html"] = [() => {
-            console.log("xx")
             return call(this.el)
         }]
         return this
@@ -180,7 +260,7 @@ export class Div {
         c.parent = this
         c.index = this.childs.length
         this.childs.push(c)
-        return this
+        return c
     }
     set_childs(childs: Div[]) {
         for (var i = 0; i < childs.length; i++) {
@@ -188,12 +268,12 @@ export class Div {
         }
         return this
     }
-    get_tree_infos(){
-        let p:Div=this
-        let info=[]
-        while(p){
-            info.push({index:p.index,type:this.node_type})
-            p=p.parent
+    get_tree_infos() {
+        let p: Div = this
+        let info = []
+        while (p) {
+            info.push({ index: p.index, type: this.node_type })
+            p = p.parent
         }
         info.reverse()
         return info
@@ -202,7 +282,7 @@ export class Div {
         this.option = option
         return this
     }
-    add_childs(childs: Div[]) {
+    add_childs(childs: any[]) {
         return this.set_childs(childs)
     }
     set_html(text: string | Fn1<any, string>) {

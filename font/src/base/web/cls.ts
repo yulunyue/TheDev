@@ -15,7 +15,7 @@ export interface Style {
     fill?: "none"
     stroke?: string
     strokeWidth?: string
-    flexGrow?: number
+    flexGrow?: string
     visibility?: "hidden" | "visible"
     margin?: number | string
     marginLeft?: number
@@ -47,6 +47,9 @@ export interface Style {
     overflowX?: "hidden" | "auto"
     backgroundImage?: string
     backgroundColor?: color
+    justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around"
+    alignContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around"
+    alignItems?: "flex-start" | "flex-end" | "center" | "baseline" | "stretch"
 }
 export interface FnVoid {
     (): any

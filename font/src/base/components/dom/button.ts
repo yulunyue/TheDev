@@ -1,5 +1,6 @@
 import { Div } from "./div";
 import { Style, Node, Fn1 } from "../../web/cls"
+import Constant from "../../web/constant";
 export class Button extends Div {
     constructor() {
         super("button")
@@ -8,7 +9,11 @@ export class Button extends Div {
 
     }
     init_style(): void {
-        this.set_style({ outline: "none" })
+        this.set_style({
+            outline: "none",
+            margin: Constant.DEFAULT_MARGIN,
+            padding: Constant.DEFAULT_PADDING
+        })
     }
 }
 export function button() {

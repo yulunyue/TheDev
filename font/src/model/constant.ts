@@ -27,16 +27,16 @@ class Constant {
     }
     init_body(body: any) {
         let dialog = div().set_html(
-            "xx"
+            "x"
         ).set_div_style({
             position: "fixed",
             right: 0,
-            bottom: 0
+            top: 0
         }).mount(
             web_dom.get_body()
         )
         web_dom.bind_mousemove(body, (e: any) => {
-            dialog.set_html(e.x + "xx" + e.y)
+            dialog.set_html(e.x + "x" + e.y)
         })
 
     }
