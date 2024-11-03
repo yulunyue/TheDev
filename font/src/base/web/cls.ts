@@ -12,7 +12,7 @@ export interface Style {
     minWidth?: number
     minHeight?: number
     flexWrap?: "wrap"
-    fill?: "none"
+    fill?: string
     stroke?: string
     strokeWidth?: string
     flexGrow?: string

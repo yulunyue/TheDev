@@ -6,6 +6,7 @@ import { Circle, circle } from "../circle";
 import { Text, text } from "../text";
 import { Node } from "../../../web/cls";
 import { Svg } from "../svg";
+import Constant from "../../../web/constant";
 class ProgrePoint extends GNode {
     rect: Rect
     text: Text
@@ -21,6 +22,8 @@ export class Progress extends GNode {
     points: ProgrePoint[]
     progre_points: GNode
     bg: Rect
+    cur_point_x:number
+    cur_point_y:number
     init_node(): void {
         this.points = []
         this.bg = this.add_child(new Rect())
@@ -30,7 +33,18 @@ export class Progress extends GNode {
     }
     init_event() {
         web_dom.bind_drag(this.el, (state: string, x: number, y: number) => {
-            console.log(state, x, y)
+            if(state == 'start'){
+                //this.cur_point.set_color(Constant.COLOR_YELLOW)
+                this.cur_point.x=this.cur_point.get_x()
+                this.cur_point.y=this.cur_point.get_y()
+            }
+            else if(state=='move'){
+                this.cur_point.set_x(
+                    this.cur_point.x+x
+                )
+            }else{
+                // this.cur_point.set_color(Constant.COLOR_BALCK)
+            }
         })
 
     }
@@ -38,7 +52,7 @@ export class Progress extends GNode {
         let rect = this.parent.get_rect()
         let margin = 10
         let height = rect.height / 2
-        this.bg.set_wh(rect.width, rect.height).set_color("")
+        this.bg.set_wh(rect.width, rect.height)
         this.main_line.set_d([
             { x: margin, y: height },
             { x: rect.width - margin * 2, y: height }

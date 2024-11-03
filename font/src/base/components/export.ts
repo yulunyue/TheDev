@@ -1,4 +1,4 @@
-import { input } from "./dom/input"
+import { input,Input } from "./dom/input"
 import { search, search_dev } from "./dom/search"
 import { select } from "./dom/select"
 import { canca_dev } from "./canva/canva"
@@ -21,6 +21,6 @@ const DEV_COMPONENT = {
     dagre_d3_dev, progress_dev
 }
 export {
-    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress,
-    Constant, Node, svg_node_factory, line, gnode, GNode, button
+    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress,Input,
+    Constant, Node, svg_node_factory, line, gnode, GNode, button,input
 }

@@ -1,4 +1,5 @@
 import { Div } from "./div";
+import Constant from "../../web/constant";
 export class Input extends Div {
     el: HTMLInputElement
     constructor() {
@@ -9,7 +10,9 @@ export class Input extends Div {
     }
 
     init_style(): void {
-        this.set_style({ outline: "none" })
+        this.set_style({ outline: "none",           
+             margin: Constant.DEFAULT_MARGIN,
+            padding: Constant.DEFAULT_PADDING })
     }
     on_click() {
 

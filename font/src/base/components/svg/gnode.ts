@@ -1,16 +1,20 @@
 import web_dom from "../../web/web_dom"
-import { Node, Dom } from "../../web/cls"
+import { Node, Dom,Style } from "../../web/cls"
 
 export class GNode {
     el: Dom
     on_mount_call: any
     parent: any
     childs: GNode[]
+    x:number
+    y:number
     constructor(name: string = "g") {
         this.el = this.create_element(name)
         this.parent = null
         this.childs = []
         this.on_mount_call = {}
+        this.x=0
+        this.y=0
         this.init_style()
         this.init_node()
         this.init_event()
@@ -33,10 +37,11 @@ export class GNode {
     get_attr(key: string) {
         return this.el.getAttribute(key)
     }
-    set_style(s: any) {
-        for (var k in s) {
-            this.el.style[k] = s[k]
-        }
+    set_div_style(s:any){
+
+    }
+    set_style(style: Style) {
+        web_dom.set_el_style(this.el,style)
         return this
     }
     mount(el: any) {
@@ -58,12 +63,6 @@ export class GNode {
     }
     set_color(color: string) {
         return this.set_style({ fill: color })
-    }
-    x(v: any) {
-        return v
-    }
-    y(v: any) {
-        return v
     }
     set_html(s: string) {
         this.el.innerHTML = s

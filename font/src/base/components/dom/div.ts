@@ -63,8 +63,9 @@ export class Div {
                 position: "absolute",
                 border: "1px solid #000"
             })
-            this.direction == VERTICAL ? this.childs[i].abs_horizontal_layout() : this.childs[i].abs_veritcal_layout()
-
+            if(this.childs[i].abs_horizontal_layout){
+                this.direction == VERTICAL ? this.childs[i].abs_horizontal_layout() : this.childs[i].abs_veritcal_layout()
+            }
         }
 
     }
@@ -206,7 +207,7 @@ export class Div {
         return this.set_div_style({ height: h })
     }
     set_width(h: number) {
-        this.set_div_style({ width: h })
+        return this.set_div_style({ width: h })
     }
     set_pos(x: number, y: number) {
         return this

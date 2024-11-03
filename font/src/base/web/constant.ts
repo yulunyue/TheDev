@@ -22,6 +22,9 @@ class Constant {
     DEFAULT_LINE_HEIGHT = 40
     MOCK_KEY = "MOCK_KEY"
     COLOR_WHITE = '#fff'
+    COLOR_YELLOW= '#ff0'
+    COLOR_BALCK= '#000'
+    INPUT_NUMBER_WIDTH = 40
     MOCK_NODE_3_20 = fack_data(3, 20)
     MOCK_NODE_3_5 = fack_data(3, 5)
     get_mock_data(s: string) {

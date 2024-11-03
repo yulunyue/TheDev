@@ -1,7 +1,7 @@
 import web_dom from "../base/web/web_dom";
 import { DEV_COMPONENT, Node, Div } from "../base/components/export"
 class Demo extends Div {
-    init() {
+    init_node() {
         let childs = []
         for (var key in DEV_COMPONENT) {
             let child = DEV_COMPONENT[key]()
@@ -12,10 +12,9 @@ class Demo extends Div {
                 childs.push(child)
             }
         }
-        return this.add_grid_childs(childs)
+        this.add_grid_childs(childs).abs_horizontal_layout()
     }
 }
 export default function () {
-    let ret = new Demo().init()
-    return ret
+    return new Demo()
 }

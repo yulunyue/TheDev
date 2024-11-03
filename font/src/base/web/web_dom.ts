@@ -114,19 +114,20 @@ class WebDom {
     bind_drag(dom: any, call_back: any) {
         dom.onmousedown = (e: any) => {
             dom._drag_state = true
-            console.log(e)
-            call_back("start", e.x, e.y)
+            dom._drag_start_x=e.x
+            dom._drag_start_y=e.y
+            call_back("start")
         }
         dom.onmousemove = (e: any) => {
             if (dom._drag_state) {
-                call_back("move", e.x, e.y)
+                call_back("move", e.x-dom._drag_start_x, e.y-dom._drag_start_y)
             }
 
         }
         dom.onmouseup = (e: any) => {
             dom._drag_state = false
             if (dom._drag_state) {
-                call_back("end", e.x, e.y)
+                call_back("end")
             }
         }
     }

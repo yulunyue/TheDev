@@ -13,10 +13,10 @@ export class Circle extends GNode {
         return this
     }
     set_x(x: number) {
-        return this.set_attr("cx", this.x(x))
+        return this.set_attr("cx", x)
     }
     set_y(y: number) {
-        return this.set_attr("cy", this.y(y))
+        return this.set_attr("cy", y)
     }
     get_x() {
         return parseFloat(this.get_attr("cx"))
