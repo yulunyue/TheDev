@@ -21,9 +21,11 @@ class Constant {
     DEFAULT_PADDING = 3
     DEFAULT_LINE_HEIGHT = 40
     MOCK_KEY = "MOCK_KEY"
+    HORIZONTAL = 0
+    VERTICAL = 1
     COLOR_WHITE = '#fff'
-    COLOR_YELLOW= '#ff0'
-    COLOR_BALCK= '#000'
+    COLOR_YELLOW = '#ff0'
+    COLOR_BALCK = '#000'
     INPUT_NUMBER_WIDTH = 40
     MOCK_NODE_3_20 = fack_data(3, 20)
     MOCK_NODE_3_5 = fack_data(3, 5)

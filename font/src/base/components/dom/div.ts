@@ -1,8 +1,8 @@
 import web_dom from "../../web/web_dom"
 import { Style, Node, Fn1 } from "src/base/web/cls"
 import { Dom } from "../../web/cls"
-const HORIZONTAL = 0
-const VERTICAL = 1
+import Constant from "../../web/constant"
+
 export class Div {
     el: Dom
     div_el: Dom
@@ -13,9 +13,20 @@ export class Div {
     option: Node
     index: number
     on_mount_call: any
-    direction: number = 0
+    direction: number = null
     layout_type: number = 0
     size: number = 0
+    set_direction(direction: number) {
+        this.direction = direction
+        return this
+    }
+    get_direction(direction: number) {
+        console.log(this.direction)
+        if (this.direction != null) {
+            return this.direction
+        }
+        return direction
+    }
     add_grid_childs(childs: any[]) {
         let row = Math.ceil(Math.sqrt(childs.length))
         let col = Math.ceil(childs.length / row)
@@ -33,45 +44,43 @@ export class Div {
         return this
     }
     flex_horizontal_layout() {
-        this.direction = HORIZONTAL
-        this.set_flex_style()
+        this.set_flex_style(Constant.HORIZONTAL)
     }
     flex_veritcal_layout() {
-        this.direction = VERTICAL
-        this.set_flex_style()
+        this.set_flex_style(Constant.VERTICAL)
     }
     abs_horizontal_layout() {
-        this.direction = HORIZONTAL
-        this.set_abs_style()
+        this.set_abs_style(Constant.HORIZONTAL)
     }
     abs_veritcal_layout() {
-        this.direction = VERTICAL
-        this.set_abs_style()
+        this.set_abs_style(Constant.VERTICAL)
     }
-    set_abs_style() {
+    set_abs_style(direction: number) {
         this.set_div_style({
             width: 1,
             height: 1,
             position: "absolute"
         })
+        direction = this.get_direction(direction)
         for (var i = 0; i < this.childs.length; i++) {
             this.childs[i].set_div_style({
-                left: this.direction == VERTICAL ? i / this.childs.length : 0,
-                width: this.direction == VERTICAL ? 1 / this.childs.length : 1,
-                height: this.direction == HORIZONTAL ? 1 / this.childs.length : 1,
-                top: this.direction == HORIZONTAL ? i / this.childs.length : 0,
+                left: direction == Constant.VERTICAL ? i / this.childs.length : 0,
+                width: direction == Constant.VERTICAL ? 1 / this.childs.length : 1,
+                height: direction == Constant.HORIZONTAL ? 1 / this.childs.length : 1,
+                top: direction == Constant.HORIZONTAL ? i / this.childs.length : 0,
                 position: "absolute",
                 border: "1px solid #000"
             })
-            if(this.childs[i].abs_horizontal_layout){
-                this.direction == VERTICAL ? this.childs[i].abs_horizontal_layout() : this.childs[i].abs_veritcal_layout()
+            if (this.childs[i].set_abs_style) {
+                this.childs[i].set_abs_style(1 - direction)
             }
         }
 
     }
-    set_flex_style() {
+    set_flex_style(direction: number) {
+        direction = this.get_direction(direction)
         this.set_div_style({
-            flexDirection: this.direction == VERTICAL ? "row" : "column",
+            flexDirection: direction == Constant.VERTICAL ? "row" : "column",
             display: "flex",
             justifyContent: "center",
             alignContent: "center",
@@ -79,8 +88,8 @@ export class Div {
             border: "1px solid #000"
         })
         for (var i = 0; i < this.childs.length; i++) {
-            if (this.childs[i].flex_horizontal_layout && this.childs[i].flex_veritcal_layout) {
-                this.direction == VERTICAL ? this.childs[i].flex_horizontal_layout() : this.childs[i].flex_veritcal_layout()
+            if (this.childs[i].set_flex_style) {
+                this.childs[i].set_flex_style(1 - direction)
             }
         }
 

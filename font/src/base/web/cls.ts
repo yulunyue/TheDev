@@ -57,6 +57,9 @@ export interface FnVoid {
 export interface Fn1Void<P> {
     (p: P): any
 }
+export interface Fn2Void<P, T> {
+    (p: P, t: T): any
+}
 export interface Fn<T> {
     (): T
 }
@@ -75,6 +78,9 @@ export class Node {
     option?: any = null
     parent?: Node = null
     childs?: Node[] = null
+    depth?: number = 0
+    x?: number = 0
+    y?: number = 0
     constructor() {
         this.childs = []
     }
@@ -91,9 +97,22 @@ export class Node {
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Node) {
                 this.add_child(childs[i])
+            } else {
+                this.add_child(new Node().set_option(childs[i]))
             }
         }
         return this
+    }
+    set_option(data: any) {
+        this.set_title(
+            data.title
+        ).set_value(
+            data.value
+        ).set_childs(
+            data.childs || []
+        ).set_type(
+            data.type
+        )
     }
     dump() {
         return {
@@ -113,16 +132,33 @@ export class Node {
         }))
         return ret
     }
-    dfs(callback: any, depth: number, j: number) {
-        callback(this, depth, j)
+    dfs(callback: any) {
+        callback(this)
         for (var i = 0; i < this.childs.length; i++) {
-            this.childs[i].dfs(callback, depth + 1, i)
+            this.childs[i].dfs(callback)
         }
+    }
+    init_layout() {
+        let ret = { y: 0, x: 0 }
+        this.dfs((node: Node) => {
+            if (node.childs.length == 0) {
+                node.x = ret.x
+                ret.x += 1
+                node.parent.x += node.x
+                return
+            }
+            node.y = node.parent ? node.parent.y + 1 : 0
+            node.x = node.x / node.childs.length
+            ret.y = Math.max(ret.y, node.y)
+
+        })
+        return ret
     }
     set_type(type: string) {
         this.type = type
         return this
     }
+
     get_title() {
         return this.title
     }

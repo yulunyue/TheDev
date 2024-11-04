@@ -1,4 +1,4 @@
-import { Style, Fn1Void, Dom, Node } from "./cls"
+import { Style, Fn1Void, Dom, Node, Fn2Void } from "./cls"
 import Ut from "../tool/util"
 import Ct from "./constant"
 class WebDom {
@@ -7,7 +7,9 @@ class WebDom {
     HTTP_CONTENT_TYPE_KEY: string = "Content-type"
     HTTP_CONTENT_TYPE_JSON: string = "application/json"
     HTTP_STATE_FINISH: number = 4
+    constructor() {
 
+    }
     get_body() {
         return document.body
     }
@@ -93,6 +95,14 @@ class WebDom {
             call_back()
         }
     }
+    bind_key(call_back: Fn2Void<string, KeyboardEvent>) {
+        window.document.body.onkeydown = (e: KeyboardEvent) => {
+            call_back("keydown", e)
+        }
+        window.document.body.onkeyup = (e: KeyboardEvent) => {
+            call_back("up", e)
+        }
+    }
     bind_input(dom: Dom, call_back: any) {
         dom.oninput = call_back
     }
@@ -114,13 +124,13 @@ class WebDom {
     bind_drag(dom: any, call_back: any) {
         dom.onmousedown = (e: any) => {
             dom._drag_state = true
-            dom._drag_start_x=e.x
-            dom._drag_start_y=e.y
+            dom._drag_start_x = e.x
+            dom._drag_start_y = e.y
             call_back("start")
         }
         dom.onmousemove = (e: any) => {
             if (dom._drag_state) {
-                call_back("move", e.x-dom._drag_start_x, e.y-dom._drag_start_y)
+                call_back("move", e.x - dom._drag_start_x, e.y - dom._drag_start_y)
             }
 
         }

@@ -4,6 +4,7 @@ import { line } from "./line"
 import { circle } from "./circle"
 import { GNode } from "./gnode"
 import { grid } from "./comb/grid"
+import { Tree, tree } from "./comb/tree"
 import { Text, text } from "./text"
 import { Node } from "../../web/cls"
 import web_dom from "../../web/web_dom"
@@ -14,9 +15,7 @@ export class Svg extends Div {
     create_element(name: string) {
         return web_dom.createElementNS(name)
     }
-    set_width(w: number): this {
-        return this.set_attr("width", w)
-    }
+
     get_x() {
         return this.el.clientLeft
     }
@@ -41,12 +40,15 @@ export function svg() {
     return new Svg()
 }
 export function svg_node_factory(n: Node) {
-    return {
-        circle,
-        text
-    }[n.type](
+    return svg().add_childs([
+        {
+            circle,
+            text,
+            tree
+        }[n.type](
 
-    ).set_option(n)
+        ).set_option(n)
+    ])
 }
 export function svg_dev() {
     let c = circle().set_pos(10, 10).set_r(10)
