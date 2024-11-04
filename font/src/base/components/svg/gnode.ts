@@ -8,6 +8,7 @@ export class GNode {
     childs: GNode[]
     x:number
     y:number
+    option:Node
     constructor(name: string = "g") {
         this.el = this.create_element(name)
         this.parent = null
@@ -57,6 +58,9 @@ export class GNode {
     clear() {
         this.set_html("")
     }
+    update_pos(){
+        return this.set_style({transform:`translate(${Math.floor(this.x)}px, ${Math.floor(this.y)}px)`})
+    }
     set_attr(key: string, value: any) {
         this.el.setAttribute(key, value)
         return this
@@ -69,16 +73,18 @@ export class GNode {
         return this
     }
     set_x(x: number) {
-        return this.set_attr("x", x)
+        this.x=x
+        return this.update_pos()
     }
     set_y(y: number) {
-        return this.set_attr("y", y)
+        this.y=y
+        return this.update_pos()
     }
     get_x() {
-        return parseFloat(this.get_attr("x"))
+        return this.x
     }
     get_y() {
-        return parseFloat(this.get_attr("y"))
+        return this.y
     }
     set_option(option: Node): this {
         return this.set_x(

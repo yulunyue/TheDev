@@ -22,7 +22,7 @@ class Algo extends Div {
     set_option(option: Node): this {
         this.div.clear().add_grid_childs(
             option.childs.map(v => svg_node_factory(v))
-        ).abs_veritcal_layout()
+        )
         return this
     }
     test() {

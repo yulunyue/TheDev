@@ -9,7 +9,7 @@ export class Text extends GNode {
             fontFamily: "Arial",
             dominantBaseline: "middle",
             textAnchor: 'middle',
-            fontSize: 20,
+            fontSize: 12,
             cursor: "pointer",
         })
     }

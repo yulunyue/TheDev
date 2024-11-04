@@ -1,10 +1,9 @@
 import { Node } from "../../export";
 import { GNode, gnode } from "../gnode";
-import { Svg } from "../svg";
 export class TreeNode extends GNode {
 
 }
-export class Tree extends Svg {
+export class Tree extends GNode {
     width: number
     height: number
     max_xy: any
