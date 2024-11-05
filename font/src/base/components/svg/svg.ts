@@ -39,16 +39,13 @@ export class Svg extends Div {
 export function svg() {
     return new Svg()
 }
-export function svg_node_factory(n: Node) {
-    return svg().add_childs([
-        {
-            circle,
-            text,
-            tree
-        }[n.type](
-
-        ).set_option(n)
-    ]).set_size(1)
+export function svg_node_factory(n: string) {
+    return {
+        circle,
+        text,
+        tree
+    }[n]()
+    
 }
 export function svg_dev() {
     let c = circle().set_pos(10, 10).set_r(10)

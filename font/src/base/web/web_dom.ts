@@ -36,7 +36,7 @@ class WebDom {
         return location.href
     }
     get_local(key: string) {
-        return localStorage.getItem(key)
+        return localStorage.getItem("yly_"+key)
     }
     set_local(key: string, value: any) {
         if (typeof value == "object") {
@@ -45,9 +45,10 @@ class WebDom {
             localStorage.setItem(key, value)
         }
     }
-    prefix: string = ""
     url(path: string) {
-        return this.prefix + path
+        let prefix=this.get_local("http")
+        console.log(prefix + path)
+        return prefix + path
     }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back?: Fn1Void<Node>) {
@@ -57,13 +58,12 @@ class WebDom {
             return call_back(mock_data)
         }
         let req = new XMLHttpRequest()
-        req.open(method, url)
         if (method == this.HTTP_GET_METHOD) {
             req.open(method, Ut.object_to_get_param(data, path));
             req.send();
         } else if (method == this.HTTP_POST_METHOD) {
+            req.open(method, url);
             req.setRequestHeader(this.HTTP_CONTENT_TYPE_KEY, this.HTTP_CONTENT_TYPE_JSON)
-            req.open(method, path);
             for (var key in this.headers) {
                 if (this.headers[key]) {
                     req.setRequestHeader(key, this.headers[key]);
@@ -75,6 +75,7 @@ class WebDom {
             if (req.readyState == this.HTTP_STATE_FINISH) {
                 let data = this.hander_res(JSON.parse(req.responseText))
                 if (data) {
+                    // call_back(new Node().set_option(data))
                     call_back(data)
                 }
             }

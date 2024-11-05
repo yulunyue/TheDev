@@ -95,9 +95,9 @@ class SolutionBase:
         pass
 
 
-def view(v):
-    if hasattr(v, 'view'):
-        return v.view()
+def to_json(v):
+    if hasattr(v, 'to_json'):
+        return v.to_json()
     return v
 
 
@@ -123,7 +123,7 @@ class Route:
         ans = case.pop("result")
         f.init(**case)
         run_watch_fun(f.execute, f.record)
-        return Node(data=run_watch_fun(f.execute, f.record)).to_json()
+        return dict(childs=run_watch_fun(f.execute, f.record))
 
 
 if __name__ == "__main__":

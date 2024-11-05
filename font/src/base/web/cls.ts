@@ -162,3 +162,10 @@ export class Node {
         return this.title
     }
 }
+
+export function to_node(n:any){
+    if(n instanceof Node){
+        return n
+    }
+    return new Node().set_option(n)
+}

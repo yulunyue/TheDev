@@ -1,5 +1,5 @@
 import { Line, line } from "../line";
-import { Node } from "../../../web/cls";
+import { Node,to_node } from "../../../web/cls";
 import { Text, text } from "../text";
 import { GNode, gnode } from "../gnode";
 export class TreeNode extends GNode {
@@ -32,8 +32,8 @@ export class Tree extends GNode {
     margin_left: number = 30
     max_xy: any
     set_option(option: Node): this {
-        this.max_xy = option.init_layout()
-        this.option = option
+        this.option = to_node(option)
+        this.max_xy = this.option.init_layout()
         this.draw()
         return this
     }

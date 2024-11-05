@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.base import SolutionBase, view
+    from app.yly.manage import SolutionBase, to_json
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -17,7 +17,7 @@ except:
         def run(self):
             pass
 
-    def view(v):
+    def to_json(v):
         return v
 inf = float("inf")
 null = None
@@ -100,12 +100,17 @@ class SegTreeNode:
         self.f10 = max(self.left.f10+self.right.f10,
                        self.left.f11+self.right.f00)
 
-    def view(self):
-        ret = dict(title=f"")
-
-        def dfs():
-            pass
-        return dfs
+    def to_json(self):
+        ret = dict(
+            title=f"{self.f00},{self.f01},{self.f11},{self.f10}",
+            childs=[],
+            type="tree"
+        )
+        if self._left:
+            ret['childs'].append(self._left.to_json())
+        if self._right:
+            ret['childs'].append(self._left.to_json())
+        return ret
 
 
 class Solution(SolutionBase):
@@ -135,7 +140,7 @@ class Solution(SolutionBase):
         return self.execute()
 
     def record(self):
-        return [view(self.t)]
+        return dict(childs=[to_json(self.t)])
 
 
 if __name__ == '__main__':

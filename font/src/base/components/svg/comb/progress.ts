@@ -39,6 +39,7 @@ export class Progress extends Div {
     input_line: Input
     max_value: ProgrePoint
     value: ProgrePoint
+    _on_change:any
     margin: number = 10
     height: number = 0
     width: number = 0
@@ -67,8 +68,12 @@ export class Progress extends Div {
             }
         })
     }
+    change(callback:any){
+        this._on_change=callback
+        return this
+    }
     on_change(value: number) {
-
+        this._on_change?.(value)
     }
     set_max_value(value: number) {
         this.max_value.set_value(value, this.width)

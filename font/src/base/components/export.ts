@@ -13,6 +13,7 @@ import { listui, listdev } from "./dom/list"
 import { dagre_d3_dev } from "../../third/third_util"
 import Constant from "../../base/web/constant"
 import { Node } from "../../base/web/cls"
+import web_dom from "../../base/web/web_dom"
 import { line, Line } from "./svg/line"
 
 const DEV_COMPONENT = {
@@ -21,6 +22,7 @@ const DEV_COMPONENT = {
     dagre_d3_dev, progress_dev
 }
 export {
-    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input,
+    
+    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input,web_dom,
     Constant, Node, svg_node_factory, line, Line, gnode, GNode, button, input
 }
