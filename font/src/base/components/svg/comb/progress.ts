@@ -15,11 +15,11 @@ class ProgrePoint extends GNode {
     rect: Rect
     text: Text
     value: number = 0
-    start_x:number
-    start_y:number
+    start_x: number
+    start_y: number
     init_node(): void {
         this.rect = this.add_child(rect())
-        this.rect.set_wh(7,14).set_color(Constant.COLOR_BALCK).set_y(-10)
+        this.rect.set_wh(7, 14).set_color(Constant.COLOR_BALCK).set_y(-10)
         this.text = this.add_child(text())
         this.text.set_y(14).set_x(2)
     }
@@ -46,7 +46,7 @@ export class Progress extends Div {
         // this.points = []
         this.min_g = new GNode()
         // this.bg = this.min_g.add_child(new Rect())
-        this.main_line = this.min_g.add_child(new Line())
+        this.main_line = this.min_g.add_child(new Line().with_arrow())
         this.value = this.min_g.add_child(new ProgrePoint())
         this.max_value = this.min_g.add_child(new ProgrePoint())
         // this.progre_points = this.add_child(new GNode())
@@ -63,7 +63,7 @@ export class Progress extends Div {
                 this.set_value(this.value.value + 1)
             }
             else if (tp == 'keydown' && e.key == Constant.KEY_LEFT) {
-                this.set_value(this.value.value -1)
+                this.set_value(this.value.value - 1)
             }
         })
     }
@@ -83,7 +83,7 @@ export class Progress extends Div {
             pos = value / this.max_value.value * this.width
         }
         this.input_line.set_value(value)
-        this.value.set_value(value, pos+this.margin)
+        this.value.set_value(value, pos + this.margin)
         this.on_change(value)
         return this
     }
@@ -97,7 +97,7 @@ export class Progress extends Div {
             }
             else if (state == 'move') {
                 let pos = Math.min(this.value.start_x + x, this.width)
-                this.set_value(Math.floor(pos*this.max_value.value / this.width), pos)
+                this.set_value(Math.floor(pos * this.max_value.value / this.width), pos)
             } else {
                 // this.cur_point.set_color(Constant.COLOR_BALCK)
             }
@@ -121,7 +121,7 @@ export class Progress extends Div {
         this.draw()
     }
     set_option(option: Node): this {
-        this.set_max_value(option.data || 100)
+        this.set_max_value(option.childs.length)
         this.set_value(option.value || 0)
         return this
     }

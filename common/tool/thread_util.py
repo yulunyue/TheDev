@@ -17,23 +17,15 @@ class FmInfo:
     def __init__(self, frame) -> None:
         self.frame: FrameType = frame
 
-    def get_locals(self):
-        locals_var = self.frame.f_locals
-        if not ThreadUtil.RECORD_ENABLE in locals_var:
-            return
-        ret = dict()
-        for k in locals_var:
-            if k == ThreadUtil.RECORD_ENABLE or k == 'self':
-                continue
-            ret[k] = locals_var[k]
-        return ret
+    def get_local_self(self):
+        return self.frame.f_locals['self']
 
 
-class ThreadUtil(threading.Thread):
-    RECORD_ENABLE = 'RECORD_ENABLE'
+class ThreadRecord(threading.Thread):
 
-    def __init__(self, target=None, kwargs=None) -> None:
-        super().__init__(target=target, kwargs=kwargs)
+    def __init__(self, target, record_fun) -> None:
+        super().__init__(target=target)
+        self.record_fun = record_fun
         self.records = []
 
     def run(self) -> None:
@@ -48,7 +40,7 @@ class ThreadUtil(threading.Thread):
         return self.localtrace
 
     def localtrace(self, frame, event, arg):
-        info = FmInfo(frame).get_locals()
+        info = self.record_fun()
         if info:
             self.records.append(info)
         return self.localtrace
@@ -64,8 +56,8 @@ class ThreadUtil(threading.Thread):
         pass
 
 
-def run_watch_fun(fun, **kg):
-    u = ThreadUtil(target=fun, kwargs=kg)
+def run_watch_fun(exec_fun, record_fun):
+    u = ThreadRecord(exec_fun, record_fun)
     return u.get_record()
 
 

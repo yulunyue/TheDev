@@ -5,7 +5,7 @@ import time
 
 
 class TaskConfg(ConfigBase):
-    tasks: DictModel = DictModel()
+    tasks = dict()
 
 
 class Task:
@@ -13,7 +13,7 @@ class Task:
     PY_FILE_TYPE = ''
 
     def __init__(self) -> None:
-        self.config = TaskConfg()
+        self.config = dict()
 
     def set_task(self, task_name, task_type, task_args):
         task_info = self.config.tasks.get(task_name, {})
@@ -23,8 +23,8 @@ class Task:
         return self
 
     def loop(self):
-        for k, v in self.config.tasks.get_value().items():
-            self.do_task(k, **v)
+        # for k, v in self.config.tasks.get_value().items():
+        #     self.do_task(k, **v)
         return self
 
     def do_task(self, task_name, task_type, task_args):

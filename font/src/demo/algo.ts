@@ -22,11 +22,11 @@ class Algo extends Div {
     set_option(option: Node): this {
         this.div.clear().add_grid_childs(
             option.childs.map(v => svg_node_factory(v))
-        )
+        ).flex_horizontal_layout().emit_mount()
         return this
     }
     test() {
-        this.set_option(new Node())
+        this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
     on_mount() {
         this.test()

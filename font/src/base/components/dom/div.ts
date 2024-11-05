@@ -21,7 +21,6 @@ export class Div {
         return this
     }
     get_direction(direction: number) {
-        console.log(this.direction)
         if (this.direction != null) {
             return this.direction
         }
@@ -31,7 +30,7 @@ export class Div {
         let row = Math.ceil(Math.sqrt(childs.length))
         let col = Math.ceil(childs.length / row)
         for (var i = 0; i < row; i++) {
-            let tmp_layout = new Div()
+            let tmp_layout = new Div().set_size(1)
             for (var j = 0; j < col; j += 1) {
                 let idx = i * col + j
                 if (idx >= childs.length) {
@@ -44,10 +43,13 @@ export class Div {
         return this
     }
     flex_horizontal_layout() {
-        this.set_flex_style(Constant.HORIZONTAL)
+        this.set_size(1)
+        return this.set_flex_style(Constant.HORIZONTAL)
+
     }
     flex_veritcal_layout() {
-        this.set_flex_style(Constant.VERTICAL)
+        this.set_size(1)
+        return this.set_flex_style(Constant.VERTICAL)
     }
     abs_horizontal_layout() {
         this.set_abs_style(Constant.HORIZONTAL)
@@ -75,6 +77,7 @@ export class Div {
                 this.childs[i].set_abs_style(1 - direction)
             }
         }
+        return this
 
     }
     set_flex_style(direction: number) {
@@ -92,6 +95,7 @@ export class Div {
                 this.childs[i].set_flex_style(1 - direction)
             }
         }
+        return this
 
     }
     constructor(node_type: string = 'div', parent_node_type: string = "div") {

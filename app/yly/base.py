@@ -43,8 +43,8 @@ class Solution(SolutionBase):
 
         ]
 
-    def execute(self, *args, **kw):
-        return self.xx(*args, **kw)
+    def xx(self, *args, **kw):
+        return self.execute(*args, **kw)
 
 
 if __name__ == '__main__':

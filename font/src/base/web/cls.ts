@@ -83,6 +83,7 @@ export class Node {
     y?: number = 0
     constructor() {
         this.childs = []
+        this.data = {}
     }
     set_title(title: string = "") {
         this.title = title
@@ -104,7 +105,7 @@ export class Node {
         return this
     }
     set_option(data: any) {
-        this.set_title(
+        return this.set_title(
             data.title
         ).set_value(
             data.value
@@ -132,26 +133,24 @@ export class Node {
         }))
         return ret
     }
-    dfs(callback: any) {
-        callback(this)
-        for (var i = 0; i < this.childs.length; i++) {
-            this.childs[i].dfs(callback)
-        }
-    }
     init_layout() {
         let ret = { y: 0, x: 0 }
-        this.dfs((node: Node) => {
+        function dfs(node: Node, p: Node) {
             if (node.childs.length == 0) {
                 node.x = ret.x
                 ret.x += 1
-                node.parent.x += node.x
-                return
+                return node.x
             }
-            node.y = node.parent ? node.parent.y + 1 : 0
+            for (var i = 0; i < node.childs.length; i++) {
+                node.childs[i].y = node.y + 1
+                ret.y = Math.max(ret.y, node.childs[i].y)
+                node.x += dfs(node.childs[i], node)
+            }
             node.x = node.x / node.childs.length
-            ret.y = Math.max(ret.y, node.y)
-
-        })
+            return node.x
+        }
+        dfs(this, null)
+        ret.x -= 1
         return ret
     }
     set_type(type: string) {

@@ -1,21 +1,21 @@
 import web_dom from "../../web/web_dom"
-import { Node, Dom,Style } from "../../web/cls"
+import { Node, Dom, Style } from "../../web/cls"
 
 export class GNode {
     el: Dom
     on_mount_call: any
     parent: any
     childs: GNode[]
-    x:number
-    y:number
-    option:Node
+    x: number
+    y: number
+    option: Node
     constructor(name: string = "g") {
         this.el = this.create_element(name)
         this.parent = null
         this.childs = []
         this.on_mount_call = {}
-        this.x=0
-        this.y=0
+        this.x = 0
+        this.y = 0
         this.init_style()
         this.init_node()
         this.init_event()
@@ -38,11 +38,11 @@ export class GNode {
     get_attr(key: string) {
         return this.el.getAttribute(key)
     }
-    set_div_style(s:any){
+    set_div_style(s: any) {
 
     }
     set_style(style: Style) {
-        web_dom.set_el_style(this.el,style)
+        web_dom.set_el_style(this.el, style)
         return this
     }
     mount(el: any) {
@@ -55,11 +55,17 @@ export class GNode {
         this.childs.push(c)
         return c
     }
+    add_childs(childs: GNode[]) {
+        for (var i = 0; i < childs.length; i++) {
+            this.add_child(childs[i])
+        }
+        return this
+    }
     clear() {
         this.set_html("")
     }
-    update_pos(){
-        return this.set_style({transform:`translate(${Math.floor(this.x)}px, ${Math.floor(this.y)}px)`})
+    update_pos() {
+        return this.set_style({ transform: `translate(${Math.floor(this.x)}px, ${Math.floor(this.y)}px)` })
     }
     set_attr(key: string, value: any) {
         this.el.setAttribute(key, value)
@@ -73,11 +79,11 @@ export class GNode {
         return this
     }
     set_x(x: number) {
-        this.x=x
+        this.x = x
         return this.update_pos()
     }
     set_y(y: number) {
-        this.y=y
+        this.y = y
         return this.update_pos()
     }
     get_x() {

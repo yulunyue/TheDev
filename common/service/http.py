@@ -1,4 +1,5 @@
 
+from common.service.api import Api
 import tornado
 from typing import List
 from tornado.httputil import HTTPServerRequest
@@ -30,20 +31,23 @@ class TornadaWebSocketConnectHandler(tornado.websocket.WebSocketHandler):
 
 
 class Node:
-    def __init__(self, code=0, type="", key="", title="", value=None, data=None, option=None) -> None:
+    def __init__(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None) -> None:
         self.code = code
         self.type = type
         self.key = key
         self.title = title
         self.value = value
-        self.data = data
+        self.data = data or dict()
         self.option = option
         self.parent = None
         self.childs: List[Node] = []
+        if childs:
+            for cd in childs:
+                self.add_child(**cd)
 
-    def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None):
+    def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None):
         ret = Node(code, type, key, title,
-                   value, data, option)
+                   value, data, option, childs=childs)
         self.childs.append(ret)
         ret.parent = self
         return ret
@@ -73,7 +77,7 @@ class ApiCall:
             return ret.to_json()
         return ret
 
-    def load_module(self, key: str, modules: List[str]):
+    def load_module_str(self, key: str, modules: List[str]):
         if key and not os.path.isdir(key):
             raise Exception(key)
         if modules == '*':
@@ -90,9 +94,24 @@ class ApiCall:
                 if callable(f):
                     self.fun_map[fun_key] = f
 
-    def load_modules(self, data: dict):
-        for key, value in data.items():
-            self.load_module(key, value)
+    def load_module(self, cls):
+        m = cls.Route()
+        moudule_name_key = cls.__name__.replace('.', '/')
+        for fun_name in dir(m):
+            if fun_name.startswith('_'):
+                continue
+            f = getattr(m, fun_name)
+            fun_key = f'/{moudule_name_key}/{fun_name}'
+            if callable(f):
+                self.fun_map[fun_key] = f
+                logger.info(f"register {fun_key}")
+
+    def load_modules(self, mds):
+        for md in mds:
+            if isinstance(md, str):
+                self.load_module_str(md)
+            else:
+                self.load_module(md)
 
 
 class MainHander(RequestHandler):
@@ -116,10 +135,13 @@ class MainHander(RequestHandler):
         if os.path.isfile(path):
             with open(path, 'rb') as f:
                 ret = f.read()
+        logger.info(f'{list(args)}:{len(ret)}')
         self.out(ret)
 
     def post(self, *args):
-        self.out(self.POST_API.call(self.path, self.params))
+        ret = self.POST_API.call(self.path, self.params)
+        logger.info(f'[{self.path}] [{self.params}] [{len(ret)}]')
+        self.out(ret)
 
     def options(self, *args):
         self.out('ok')
@@ -145,16 +167,17 @@ class MainHander(RequestHandler):
 DEFAULT_CONF_PATH = "data/setting/http.json"
 
 
-def run(path: str = DEFAULT_CONF_PATH):
-    config = dict()
-    if isinstance(path, str):
-        with open(path, 'r') as f:
+def load(mds):
+    config = dict(port=9999)
+    if os.path.exists(DEFAULT_CONF_PATH):
+        with open(DEFAULT_CONF_PATH, 'r') as f:
             config.update(json.loads(f.read()))
-    else:
-        config.update(path)
-    if 'py_modules' in config:
-        MainHander.POST_API.load_modules(config['py_modules'])
+    MainHander.POST_API.load_modules(config.get('py_modules', [])+list(mds))
+    return config
 
+
+def run(*args):
+    config = load(args)
     app = Application([
         (r'/ws', TornadaWebSocketConnectHandler),
         (r"/(.*)", MainHander)
@@ -165,8 +188,11 @@ def run(path: str = DEFAULT_CONF_PATH):
 
 
 def stop():
-
     IOLoop.instance().stop()
+
+
+def http_test(path):
+    return Api().post(path)
 
 
 if __name__ == "__main__":

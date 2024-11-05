@@ -1,10 +1,12 @@
 from common.tool.thread_util import run_watch_fun
-from common.service.http import Node
+from common.service.http import Node, http_test
+
 from common.util.module import Module
 from common.util.log import logger
 from common.util.fp import File
 import os
 import time
+import sys
 
 
 class SolutionBase:
@@ -86,6 +88,18 @@ class SolutionBase:
             return "%.2f" % (a) == "%.2f" % (b)
         return str(a) == str(b)
 
+    def init(self):
+        pass
+
+    def record(self):
+        pass
+
+
+def view(v):
+    if hasattr(v, 'view'):
+        return v.view()
+    return v
+
 
 PATH = 'app/yly/leetcode/view'
 
@@ -102,16 +116,16 @@ class Route:
             ret.add_child(value=moudle_name, data=f.get_cases())
         return ret
 
-    def execute(self, moudle_name, case):
+    def execute(self, moudle_name="app.yly.leetcode.view.3165", case: dict = None):
         f: SolutionBase = Module().load_module(moudle_name, fun_name='Solution')()
-        return Node(data=run_watch_fun(f.execute, **case)).to_json()
-
-
-def test():
-    r = Route()
-    info = r.query().childs[0]
-    r.execute(info.value, info.data[0])
+        if case is None:
+            case = f.get_cases()[0]
+        ans = case.pop("result")
+        f.init(**case)
+        run_watch_fun(f.execute, f.record)
+        return Node(data=run_watch_fun(f.execute, f.record)).to_json()
 
 
 if __name__ == "__main__":
-    test()
+    # print(http_test('/app/yly/manage/'+sys.argv[1]))
+    print(Route().execute())

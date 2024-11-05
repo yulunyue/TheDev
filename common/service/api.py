@@ -1,6 +1,7 @@
 import requests
-from common.util.log import logger
+from common.util.log import get_log
 from common.util.baseconfig import ConfigBase, StrModel, DictModel
+logger = get_log("api")
 
 
 class Api(ConfigBase):
@@ -90,7 +91,7 @@ class Api(ConfigBase):
 
     def hander_error(self, method, uri, res: requests.Response, data):
         logger.error(
-            f'{method}:{uri}:{res.status_code}:{res.content[:300]}:{data}')
+            f'{method}:{uri}:{res.status_code}:{res.content[:300]+res.content[-300:]}:{data}')
 
     def parse(self, value):
         return value

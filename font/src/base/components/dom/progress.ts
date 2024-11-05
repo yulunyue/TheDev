@@ -12,5 +12,5 @@ export function progress() {
     return new Progress()
 }
 export function progress_dev() {
-    return new Progress().set_max(100).set_value(22)
+    return new Progress()
 }
