@@ -36,7 +36,7 @@ class WebDom {
         return location.href
     }
     get_local(key: string) {
-        return localStorage.getItem("yly_"+key)
+        return localStorage.getItem("yly_" + key)
     }
     set_local(key: string, value: any) {
         if (typeof value == "object") {
@@ -45,10 +45,23 @@ class WebDom {
             localStorage.setItem(key, value)
         }
     }
+    web_host: string
+    web_port: number
+    bk_port: string = "9999"
+    url_param: any
+    prefix: string
+    init_href() {
+        this.url_param = {}
+        var location_href = this.get_location()
+        var hrefs = location_href.split('/')
+        var ip_ports = hrefs[2].split(':')
+        this.web_host = ip_ports[0]
+        this.web_port = parseInt(ip_ports[1])
+        Ut.extend(this.url_param, Ut.url_to_json(hrefs[hrefs.length - 1].split('?').pop()))
+        this.prefix = 'http://' + this.web_host + ":" + this.bk_port
+    }
     url(path: string) {
-        let prefix=this.get_local("http")
-        console.log(prefix + path)
-        return prefix + path
+        return this.prefix + path
     }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back?: Fn1Void<Node>) {
@@ -96,6 +109,9 @@ class WebDom {
             call_back()
         }
     }
+    next_frame(callback: any) {
+        requestAnimationFrame(callback)
+    }
     bind_key(call_back: Fn2Void<string, KeyboardEvent>) {
         window.document.body.onkeydown = (e: KeyboardEvent) => {
             call_back("keydown", e)
@@ -129,13 +145,13 @@ class WebDom {
             dom._drag_start_y = e.y
             call_back("start")
         }
-        dom.onmousemove = (e: any) => {
+        document.body.onmousemove = (e: any) => {
             if (dom._drag_state) {
                 call_back("move", e.x - dom._drag_start_x, e.y - dom._drag_start_y)
             }
 
         }
-        dom.onmouseup = (e: any) => {
+        document.body.onmouseup = (e: any) => {
             dom._drag_state = false
             if (dom._drag_state) {
                 call_back("end")

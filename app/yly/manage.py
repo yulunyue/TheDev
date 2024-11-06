@@ -7,6 +7,7 @@ from common.util.fp import File
 import os
 import time
 import sys
+import json
 
 
 class SolutionBase:
@@ -14,13 +15,16 @@ class SolutionBase:
     case_load = None
     name = "test"
 
+    def __init__(self) -> None:
+        self.watch_var = []
+
     def get_cases(self):
         return [
 
         ]
 
     def execute(self):
-        RECORD_ENABLE = True
+        pass
 
     @classmethod
     def log(cls, *s, tp: str = ""):
@@ -46,7 +50,8 @@ class SolutionBase:
             self.ep = case.pop("result")
             a = time.time()
             try:
-                r = self.execute(**case)
+                self.init(**case)
+                r = self.execute()
                 self.log("finish", time.time()-a)
             except Exception as e:
                 import traceback
@@ -92,13 +97,30 @@ class SolutionBase:
         pass
 
     def record(self):
-        pass
+        childs = []
+        key = ""
+        for i, var in enumerate(self.watch_var):
+            childs.append(to_json(var))
+            key += hex_str(var)
+        return key, childs
+
+
+def hex_str(v):
+    if hasattr(v, 'hex_str'):
+        return v.hex_str()
+    return str(v)
 
 
 def to_json(v):
     if hasattr(v, 'to_json'):
         return v.to_json()
     return v
+
+
+def ui_info(v):
+    if hasattr(v, 'ui_info'):
+        return v.ui_info()
+    return dict(type='text')
 
 
 PATH = 'app/yly/leetcode/view'
@@ -122,10 +144,12 @@ class Route:
             case = f.get_cases()[0]
         ans = case.pop("result")
         f.init(**case)
-        run_watch_fun(f.execute, f.record)
-        return dict(childs=run_watch_fun(f.execute, f.record))
+        return dict(option=dict(
+            nodes=[ui_info(watch) for watch in f.watch_var],
+            records=run_watch_fun(f.execute, f.record)
+        ))
 
 
 if __name__ == "__main__":
     # print(http_test('/app/yly/manage/'+sys.argv[1]))
-    print(Route().execute())
+    json.dump(Route().execute(), open("data/a.json", 'w'), indent=4)

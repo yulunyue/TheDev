@@ -1,21 +1,32 @@
 import { Line, line } from "../line";
-import { Node,to_node } from "../../../web/cls";
-import { Text, text } from "../text";
+import { Node, to_node } from "../../../web/cls";
+import { Text, text } from "./div_text";
 import { GNode, gnode } from "../gnode";
 export class TreeNode extends GNode {
-    lines: Line[]
+    line: Line
     text: Text
     parent: TreeNode
+    height1: number
+    height2: number
+    nodes: TreeNode[]
     init_node(): void {
-        this.lines = []
-        this.text = this.add_child(text())
+        this.nodes = []
+        this.line = line().with_arrow()
+        this.text = this.add_child(text().on_change(() => this.on_text_change()))
         this.parent = null
     }
+    on_text_change() {
+        let h = this.text.get_height()
+        this.line.set_dst(this.option.data.pos.y - h / 2 - 2, this.option.data.pos.x)
+        for (var i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].line.set_src(this.option.data.pos.y + h / 2 + 2, this.option.data.pos.x)
+        }
+
+    }
     add_node(c: TreeNode) {
-        return line().set_d([
-            { x: this.option.data.pos.x, y: this.option.data.pos.y },
-            { x: c.option.data.pos.x, y: c.option.data.pos.y }
-        ]).with_arrow()
+        this.nodes.push(c)
+        c.parent = this
+        return c.line
     }
     set_option(option: Node) {
         this.set_pos(option.data.pos.x, option.data.pos.y)
@@ -28,8 +39,7 @@ export class TreeNode extends GNode {
 export class Tree extends GNode {
     width: number
     height: number
-    margin_top: number = 10
-    margin_left: number = 30
+
     max_xy: any
     set_option(option: Node): this {
         this.option = to_node(option)
@@ -38,9 +48,13 @@ export class Tree extends GNode {
         return this
     }
     calc_pos(x: number, y: number) {
+        let h = Math.min(1 / this.max_xy.y * this.height, 150)
+        let w = Math.min(1 / this.max_xy.x * this.width, 200)
+        let margin_left = (this.width - w * this.max_xy.x) / 2
+        let margin_top = (this.height - h * this.max_xy.y) / 2
         return {
-            x: this.margin_left + x / this.max_xy.x * (this.width - this.margin_left * 2),
-            y: this.margin_top + y / this.max_xy.y * (this.height - this.margin_top * 2)
+            x: margin_left + x * w,
+            y: margin_top + y * h
         }
     }
     draw() {

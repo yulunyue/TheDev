@@ -4,8 +4,8 @@ import { Dom } from "../../web/cls"
 import Constant from "../../web/constant"
 
 export class Div {
-    el: Dom
-    div_el: Dom
+    el: HTMLElement
+    div_el: HTMLElement
     node_type: string
     childs: Div[]
     parent: Div
@@ -239,7 +239,7 @@ export class Div {
     init_event() {
 
     }
-    create_element(name: string): HTMLElement | SVGElement {
+    create_element(name: string): any {
         return web_dom.createElement(name)
     }
     init_node() {

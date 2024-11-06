@@ -2,15 +2,20 @@ import { GNode } from "./gnode"
 import { Point } from "../../tool/data"
 export class Line extends GNode {
     pts: Point[]
+    src_y: number
+    src_x: number
+    dst_y: number
+    dst_x: number
     constructor() {
         super("path")
         this.pts = []
     }
+
     init_style(): void {
         this.set_style({
-            strokeWidth: "1",
+            strokeWidth: "2",
             stroke: '#000',
-            fill: "none"
+            fill: "#000"
         })
     }
     set_d(pts: string | Point[]) {
@@ -18,6 +23,9 @@ export class Line extends GNode {
         if (Array.isArray(pts)) {
             this.pts = pts
             for (var i = 0; i < pts.length; i++) {
+                if (isNaN(pts[i].x) || isNaN(pts[i].y)) {
+                    console.trace(pts[i])
+                }
                 if (i == 0) {
                     ds += `M ${pts[i].x} ${pts[i].y} `
                 } else {
@@ -33,6 +41,23 @@ export class Line extends GNode {
     mount_d(pts: string | Point[]) {
         this.on_mount_call["set_d"] = [pts]
         return this
+    }
+    draw2() {
+        if (isNaN(this.src_x) || isNaN(this.src_y) || isNaN(this.dst_y) || isNaN(this.dst_x)) {
+            return this
+        }
+        this.set_d(`M ${this.src_x} ${this.src_y} L ${this.dst_x} ${this.dst_y}`)
+        return this
+    }
+    set_src(y: number, x: number) {
+        this.src_y = y
+        this.src_x = x
+        return this.draw2()
+    }
+    set_dst(y: number, x: number) {
+        this.dst_y = y
+        this.dst_x = x
+        return this.draw2()
     }
     with_arrow() {
         return this.set_attr("marker-end", "url(#markerArrow)")

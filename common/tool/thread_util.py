@@ -27,6 +27,7 @@ class ThreadRecord(threading.Thread):
         super().__init__(target=target)
         self.record_fun = record_fun
         self.records = []
+        self.last_key = None
 
     def run(self) -> None:
         sys.settrace(self.globaltrace)
@@ -40,9 +41,12 @@ class ThreadRecord(threading.Thread):
         return self.localtrace
 
     def localtrace(self, frame, event, arg):
-        info = self.record_fun()
-        if info:
+        if event == 'return':
+            return self.localtrace
+        key, info = self.record_fun()
+        if info and key != self.last_key:
             self.records.append(info)
+            self.last_key = key
         return self.localtrace
 
     def get_record(self):

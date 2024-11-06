@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.manage import SolutionBase, to_json
+    from app.yly.manage import SolutionBase
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -100,17 +100,34 @@ class SegTreeNode:
         self.f10 = max(self.left.f10+self.right.f10,
                        self.left.f11+self.right.f00)
 
+    def get_title(self):
+        return '</br>'.join([
+            f"[{self.l},{self.r}]",
+            f"f00: {self.f00}, f10: {self.f10}",
+            f"f11: {self.f11}, f01: {self.f01}"
+        ])
+
     def to_json(self):
         ret = dict(
-            title=f"{self.f00},{self.f01},{self.f11},{self.f10}",
+            title=self.get_title(),
             childs=[],
-            type="tree"
         )
         if self._left:
             ret['childs'].append(self._left.to_json())
         if self._right:
-            ret['childs'].append(self._left.to_json())
+            ret['childs'].append(self._right.to_json())
         return ret
+
+    def hex_str(self):
+        ret = [f'{self.f00}{self.f01}{self.f10}{self.f11}']
+        if self._left:
+            ret.append(self._left.hex_str())
+        if self._right:
+            ret.append(self._right.hex_str())
+        return "".join(ret)
+
+    def ui_info(self):
+        return dict(type='tree')
 
 
 class Solution(SolutionBase):
@@ -125,6 +142,7 @@ class Solution(SolutionBase):
         self.n = len(self.nums)
         self.t = SegTreeNode(0, self.n-1)
         self.ans = 0
+        self.watch_var = [self.t]
 
     def execute(self):
         for i, v in enumerate(self.nums):
@@ -138,9 +156,6 @@ class Solution(SolutionBase):
     def maximumSumSubsequence(self, *args, **kg):
         self.init(*args, **kg)
         return self.execute()
-
-    def record(self):
-        return dict(childs=[to_json(self.t)])
 
 
 if __name__ == '__main__':

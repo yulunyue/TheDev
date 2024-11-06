@@ -2,13 +2,14 @@ import web_dom from "../../web/web_dom"
 import { Node, Dom, Style } from "../../web/cls"
 
 export class GNode {
-    el: Dom
+    el: SVGElement
     on_mount_call: any
     parent: any
     childs: GNode[]
     x: number
     y: number
     option: Node
+    _on_change: any
     constructor(name: string = "g") {
         this.el = this.create_element(name)
         this.parent = null
@@ -19,6 +20,11 @@ export class GNode {
         this.init_style()
         this.init_node()
         this.init_event()
+
+    }
+    on_change(call_back: any) {
+        this._on_change = call_back
+        return this
     }
     init_event() {
 
@@ -28,6 +34,9 @@ export class GNode {
     }
     init_node() {
 
+    }
+    set_font_size(value: number) {
+        return this.set_style({ fontSize: value })
     }
     create_element(name: string) {
         return web_dom.createElementNS(name)
@@ -40,6 +49,12 @@ export class GNode {
     }
     set_div_style(s: any) {
 
+    }
+    set_width(w: number) {
+        return this.set_attr("width", w)
+    }
+    set_height(w: number) {
+        return this.set_attr("height", w)
     }
     set_style(style: Style) {
         web_dom.set_el_style(this.el, style)
@@ -55,7 +70,7 @@ export class GNode {
         this.childs.push(c)
         return c
     }
-    add_childs(childs: GNode[]) {
+    add_childs(childs: any[]) {
         for (var i = 0; i < childs.length; i++) {
             this.add_child(childs[i])
         }

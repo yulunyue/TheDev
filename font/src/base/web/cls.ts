@@ -1,3 +1,5 @@
+
+
 export type color = "red" | "blue" | "green" | "white" | "black" | "gray"
 export interface Style {
     color?: string
@@ -66,7 +68,7 @@ export interface Fn<T> {
 export interface Fn1<P1, T> {
     (p1: P1): T
 }
-export type Dom = HTMLElement | SVGElement
+export type Dom = HTMLElement
 
 export class Node {
     code?: number = 0
@@ -163,8 +165,8 @@ export class Node {
     }
 }
 
-export function to_node(n:any){
-    if(n instanceof Node){
+export function to_node(n: any) {
+    if (n instanceof Node) {
         return n
     }
     return new Node().set_option(n)
