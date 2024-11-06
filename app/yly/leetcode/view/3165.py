@@ -101,11 +101,13 @@ class SegTreeNode:
                        self.left.f11+self.right.f00)
 
     def get_title(self):
+        #return f'{self.f00}{self.f01}{self.f10}{self.f11}'
         return '</br>'.join([
             f"[{self.l},{self.r}]",
             f"f00: {self.f00}, f10: {self.f10}",
             f"f11: {self.f11}, f01: {self.f01}"
         ])
+        
 
     def to_json(self):
         ret = dict(
@@ -131,6 +133,7 @@ class SegTreeNode:
 
 
 class Solution(SolutionBase):
+    uri='https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
     def get_cases(self):
         return [
             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21)
@@ -142,15 +145,21 @@ class Solution(SolutionBase):
         self.n = len(self.nums)
         self.t = SegTreeNode(0, self.n-1)
         self.ans = 0
-        self.watch_var = [self.t]
+        self.arr = [0]*(self.n)
+        self.watch_var = ['ans','arr','t']
+        #  self.watch_var =[]
+        for _ in range(self.n):
+            self.t.update(0,0,0)
 
     def execute(self):
         for i, v in enumerate(self.nums):
+            self.arr[i]=v
             self.t.update(i, i, v)
 
         for idx, value in self.queries:
+            self.arr[idx]=value
             self.t.update(idx, idx, value)
-            self.ans += self.t.query(0, self.n-1)
+            self.ans =self.ans+self.t.query(0, self.n-1)
         return self.ans % M
 
     def maximumSumSubsequence(self, *args, **kg):

@@ -9,15 +9,18 @@ export class Text extends GNode {
             fontFamily: "Arial",
             dominantBaseline: "middle",
             textAnchor: 'middle',
-            fontSize: 12,
+            fontSize: 16,
             cursor: "pointer",
         })
     }
     set_option(option: Node): this {
-        this.set_html(option.get_title())
+        this.set_html(option.title)
         return super.set_option(option)
     }
 }
 export function text() {
     return new Text()
+}
+export function text_mid_max(){
+    return text().set_pos(100,100).set_font_size(30)
 }

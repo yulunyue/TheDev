@@ -99,7 +99,8 @@ class SolutionBase:
     def record(self):
         childs = []
         key = ""
-        for i, var in enumerate(self.watch_var):
+        for k in self.watch_var:
+            var=getattr(self,k)
             childs.append(to_json(var))
             key += hex_str(var)
         return key, childs
@@ -114,7 +115,7 @@ def hex_str(v):
 def to_json(v):
     if hasattr(v, 'to_json'):
         return v.to_json()
-    return v
+    return dict(title=str(v))
 
 
 def ui_info(v):
@@ -145,7 +146,7 @@ class Route:
         ans = case.pop("result")
         f.init(**case)
         return dict(option=dict(
-            nodes=[ui_info(watch) for watch in f.watch_var],
+            nodes=[ui_info(getattr(f,k)) for k in f.watch_var],
             records=run_watch_fun(f.execute, f.record)
         ))
 

@@ -108,11 +108,12 @@ export class GNode {
         return this.y
     }
     set_option(option: Node): this {
-        return this.set_x(
-            option.data.x
-        ).set_y(
-            option.data.y
-        )
+        // return this.set_x(
+        //     option.data.x
+        // ).set_y(
+        //     option.data.y
+        // )
+        return this
     }
     on_mount() {
 

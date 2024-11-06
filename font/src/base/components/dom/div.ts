@@ -30,7 +30,7 @@ export class Div {
         let row = Math.ceil(Math.sqrt(childs.length))
         let col = Math.ceil(childs.length / row)
         for (var i = 0; i < row; i++) {
-            let tmp_layout = new Div().set_size(1)
+            let tmp_layout = new Div().set_size(i)
             for (var j = 0; j < col; j += 1) {
                 let idx = i * col + j
                 if (idx >= childs.length) {
@@ -52,10 +52,10 @@ export class Div {
         return this.set_flex_style(Constant.VERTICAL)
     }
     abs_horizontal_layout() {
-        this.set_abs_style(Constant.HORIZONTAL)
+        return this.set_abs_style(Constant.HORIZONTAL)
     }
     abs_veritcal_layout() {
-        this.set_abs_style(Constant.VERTICAL)
+        return this.set_abs_style(Constant.VERTICAL)
     }
     set_abs_style(direction: number) {
         this.set_div_style({

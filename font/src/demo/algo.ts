@@ -35,7 +35,7 @@ class Algo extends Div {
                 this.svg_nodes.push(node)
                 return svg().add_childs([node]).set_size(1)
             })
-        ).flex_horizontal_layout().emit_mount()
+        ).flex_veritcal_layout().emit_mount()
     }
     goto(idx: number) {
         if (!this.option || !this.option.option.records[idx]) {

@@ -43,6 +43,7 @@ export class Text extends GNode {
         return this.contain.get_height()
     }
     set_option(option: Node): this {
+        this.set_html(option.title)
         return this
     }
 }
