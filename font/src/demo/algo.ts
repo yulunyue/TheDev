@@ -1,12 +1,12 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree,
+    Div, Svg, svg, Constant, Node, web_dom, tree,Form,form,
     line, gnode, GNode, button, progress, div, input, Input, Progress
 } from "../base/components/export";
 
 function algo_node_factory(n: string) {
     return {
-        text: div,
+        text: form,
         tree
     }[n]()
 }

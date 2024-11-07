@@ -12,10 +12,12 @@ CHANGE_STORE = dict()
 
 
 def wc(key, v):
-    if v != CHANGE_STORE.get(key):
+    if v!=CHANGE_STORE.get(key,v):
         CHANGE_STORE[key] = v
         return f'<span style="color:blue">{v}</span>'
+    CHANGE_STORE[key] = v
     return v
+    
 
 
 class WatchVar:
@@ -35,11 +37,12 @@ class WatchVar:
         return ""
 
     def to_json(self):
-        value = ""
+        childs=[]
         if isinstance(self.watch_keys, dict):
-            value = "</br>".join([f'{name}: {wc("self_"+k,getattr(self.watch_ins, k))}' for k,
-                                 name in self.watch_keys.items()])
-        return dict(title=value)
+            for k,name in self.watch_keys.items():
+                value=wc("self_"+k,str(getattr(self.watch_ins, k)))
+                childs.append(dict(title=name+":",value=value))
+        return dict(childs=childs)
 
     def ui_info(self):
         return dict(type=self._type)
@@ -162,6 +165,7 @@ class Route:
         f: SolutionBase = Module().load_module(moudle_name, fun_name='Solution')()
         if case is None:
             case = f.get_cases()[0]
+        CHANGE_STORE.clear()
         f.init(**case)
         return dict(data=dict(
             nodes=[v.ui_info() for v in f.watch_var],

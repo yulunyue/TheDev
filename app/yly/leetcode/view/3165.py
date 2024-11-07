@@ -145,7 +145,7 @@ class Solution(SolutionBase):
             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21)
         ]
 
-    def init(self, nums: List[int], queries: List[List[int]], result) -> int:
+    def init(self, nums: List[int], queries: List[List[int]], result=0) -> int:
         self.result = result
         self.nums = nums
         self.queries = queries
@@ -159,14 +159,17 @@ class Solution(SolutionBase):
             self.watch(arr="当前数组", ans="当前答案"),
             self.t
         ]
+        self.t.update(0, 0, 0)
         self.t.update(self.n-1, self.n-1, 0)
 
     def execute(self):
         for i, v in enumerate(self.nums):
+            self.nums[i]=0
             self.arr[i] = v
             self.t.update(i, i, v)
 
-        for idx, value in self.queries:
+        while self.queries:
+            idx,value=self.queries.pop(0)
             self.arr[idx] = value
             self.t.update(idx, idx, value)
             self.ans = self.ans+self.t.query(0, self.n-1)

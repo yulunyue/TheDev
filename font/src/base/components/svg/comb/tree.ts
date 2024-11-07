@@ -55,7 +55,7 @@ export class Tree extends Svg {
         let h = Math.min(1 / this.max_xy.y * this.height, 150)
         let w = Math.min(1 / this.max_xy.x * this.width, 200)
         let margin_left = (this.width - w * this.max_xy.x) / 2
-        let margin_top = (this.height - h * this.max_xy.y) / 2
+        let margin_top = (this.height - h * this.max_xy.y) / 2-30
         return {
             x: margin_left + x * w,
             y: margin_top + y * h
