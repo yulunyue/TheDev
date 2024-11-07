@@ -294,6 +294,7 @@ export class Div {
     }
     set_option(option: Node) {
         this.option = option
+        this.set_html(option.title)
         return this
     }
     add_childs(childs: any[]) {

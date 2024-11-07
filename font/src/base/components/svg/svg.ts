@@ -5,7 +5,7 @@ import { circle } from "./circle"
 import { GNode } from "./gnode"
 import { grid } from "./comb/grid"
 import { Tree, tree } from "./comb/tree"
-import { Text, text,text_mid_max } from "./text"
+import { Text, text, text_mid_max } from "./text"
 import { Node } from "../../web/cls"
 import web_dom from "../../web/web_dom"
 export class Svg extends Div {
@@ -39,13 +39,7 @@ export class Svg extends Div {
 export function svg() {
     return new Svg()
 }
-export function svg_node_factory(n: string) {
-    return {
-        circle,
-        text:text_mid_max,
-        tree
-    }[n]()
-}
+
 export function svg_dev() {
     let c = circle().set_pos(10, 10).set_r(10)
     function loop() {

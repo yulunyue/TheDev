@@ -1,6 +1,6 @@
 from common.tool.thread_util import run_watch_fun
 from common.service.http import Node, http_test
-
+from typing import List
 from common.util.module import Module
 from common.util.log import logger
 from common.util.fp import File
@@ -8,6 +8,41 @@ import os
 import time
 import sys
 import json
+CHANGE_STORE = dict()
+
+
+def wc(key, v):
+    if v != CHANGE_STORE.get(key):
+        CHANGE_STORE[key] = v
+        return f'<span style="color:blue">{v}</span>'
+    return v
+
+
+class WatchVar:
+    def __init__(self) -> None:
+        self._type = "text"
+        self.watch_ins = None
+        self.watch_keys = None
+
+    def set_json_view(self, watch_ins, watch_keys):
+        self.watch_ins = watch_ins
+        self.watch_keys = watch_keys
+        return self
+
+    def hex_str(self):
+        if isinstance(self.watch_keys, dict):
+            return "".join(str(getattr(self.watch_ins, key)) for key in self.watch_keys.keys())
+        return ""
+
+    def to_json(self):
+        value = ""
+        if isinstance(self.watch_keys, dict):
+            value = "</br>".join([f'{name}: {wc("self_"+k,getattr(self.watch_ins, k))}' for k,
+                                 name in self.watch_keys.items()])
+        return dict(title=value)
+
+    def ui_info(self):
+        return dict(type=self._type)
 
 
 class SolutionBase:
@@ -16,7 +51,7 @@ class SolutionBase:
     name = "test"
 
     def __init__(self) -> None:
-        self.watch_var = []
+        self.watch_var: List[WatchVar] = []
 
     def get_cases(self):
         return [
@@ -93,35 +128,19 @@ class SolutionBase:
             return "%.2f" % (a) == "%.2f" % (b)
         return str(a) == str(b)
 
-    def init(self):
+    def init(self, *args, **kwargs):
         pass
+
+    def watch(self, **kw):
+        return WatchVar().set_json_view(self, kw)
 
     def record(self):
         childs = []
         key = ""
-        for k in self.watch_var:
-            var=getattr(self,k)
-            childs.append(to_json(var))
-            key += hex_str(var)
+        for var in self.watch_var:
+            childs.append(var.to_json())
+            key += var.hex_str()
         return key, childs
-
-
-def hex_str(v):
-    if hasattr(v, 'hex_str'):
-        return v.hex_str()
-    return str(v)
-
-
-def to_json(v):
-    if hasattr(v, 'to_json'):
-        return v.to_json()
-    return dict(title=str(v))
-
-
-def ui_info(v):
-    if hasattr(v, 'ui_info'):
-        return v.ui_info()
-    return dict(type='text')
 
 
 PATH = 'app/yly/leetcode/view'
@@ -143,14 +162,15 @@ class Route:
         f: SolutionBase = Module().load_module(moudle_name, fun_name='Solution')()
         if case is None:
             case = f.get_cases()[0]
-        ans = case.pop("result")
         f.init(**case)
-        return dict(option=dict(
-            nodes=[ui_info(getattr(f,k)) for k in f.watch_var],
+        return dict(data=dict(
+            nodes=[v.ui_info() for v in f.watch_var],
             records=run_watch_fun(f.execute, f.record)
         ))
 
 
 if __name__ == "__main__":
     # print(http_test('/app/yly/manage/'+sys.argv[1]))
-    json.dump(Route().execute(), open("data/a.json", 'w'), indent=4)
+    open("data/a.json", 'w', encoding='utf-8').write(
+        json.dumps(Route().execute(), indent=4,
+                   ensure_ascii=False))

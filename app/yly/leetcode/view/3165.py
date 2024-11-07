@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.manage import SolutionBase
+    from app.yly.manage import SolutionBase, wc
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -17,7 +17,10 @@ except:
         def run(self):
             pass
 
-    def to_json(v):
+        def watch(self, **kwags):
+            pass
+
+    def wc(v, *args):
         return v
 inf = float("inf")
 null = None
@@ -100,14 +103,16 @@ class SegTreeNode:
         self.f10 = max(self.left.f10+self.right.f10,
                        self.left.f11+self.right.f00)
 
+    def title2(self, key):
+        return f'{key}: {wc("ti_"+str(self.idx)+"_"+key,getattr(self,key))}'
+
     def get_title(self):
-        #return f'{self.f00}{self.f01}{self.f10}{self.f11}'
+        # return f'{self.f00}{self.f01}{self.f10}{self.f11}'
         return '</br>'.join([
             f"[{self.l},{self.r}]",
-            f"f00: {self.f00}, f10: {self.f10}",
-            f"f11: {self.f11}, f01: {self.f01}"
+            f"{self.title2('f00')},  {self.title2('f10')}",
+            f"{self.title2('f11')},  {self.title2('f01')}"
         ])
-        
 
     def to_json(self):
         ret = dict(
@@ -133,33 +138,38 @@ class SegTreeNode:
 
 
 class Solution(SolutionBase):
-    uri='https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
+    uri = 'https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
+
     def get_cases(self):
         return [
             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21)
         ]
 
-    def init(self, nums: List[int], queries: List[List[int]]) -> int:
+    def init(self, nums: List[int], queries: List[List[int]], result) -> int:
+        self.result = result
         self.nums = nums
         self.queries = queries
         self.n = len(self.nums)
         self.t = SegTreeNode(0, self.n-1)
         self.ans = 0
         self.arr = [0]*(self.n)
-        self.watch_var = ['ans','arr','t']
-        #  self.watch_var =[]
-        for _ in range(self.n):
-            self.t.update(0,0,0)
+
+        self.watch_var = [
+            self.watch(nums="输入数组", queries="查询列表",  result="期望结果"),
+            self.watch(arr="当前数组", ans="当前答案"),
+            self.t
+        ]
+        self.t.update(self.n-1, self.n-1, 0)
 
     def execute(self):
         for i, v in enumerate(self.nums):
-            self.arr[i]=v
+            self.arr[i] = v
             self.t.update(i, i, v)
 
         for idx, value in self.queries:
-            self.arr[idx]=value
+            self.arr[idx] = value
             self.t.update(idx, idx, value)
-            self.ans =self.ans+self.t.query(0, self.n-1)
+            self.ans = self.ans+self.t.query(0, self.n-1)
         return self.ans % M
 
     def maximumSumSubsequence(self, *args, **kg):

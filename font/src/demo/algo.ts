@@ -1,12 +1,19 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom,
-    svg_node_factory, line, gnode, GNode, button, progress, div, input, Input, Progress
+    Div, Svg, svg, Constant, Node, web_dom, tree,
+    line, gnode, GNode, button, progress, div, input, Input, Progress
 } from "../base/components/export";
+
+function algo_node_factory(n: string) {
+    return {
+        text: div,
+        tree
+    }[n]()
+}
 class Algo extends Div {
     div: Div
     pro: Progress
-    svg_nodes: Svg[]
+    algo_nodes: Div[]
     init_style(): void {
         this.full()
     }
@@ -28,22 +35,21 @@ class Algo extends Div {
         return this
     }
     draw_nodes() {
-        this.svg_nodes = []
+        this.algo_nodes = []
         this.div.clear().add_grid_childs(
-            this.option.option.nodes.map((v: Node) => {
-                let node = svg_node_factory(v.type)
-                this.svg_nodes.push(node)
-                return svg().add_childs([node]).set_size(1)
+            this.option.data.nodes.map((v: Node) => {
+                let node = algo_node_factory(v.type)
+                this.algo_nodes.push(node)
+                return node.set_size(1)
             })
-        ).flex_veritcal_layout().emit_mount()
+        ).flex_horizontal_layout().emit_mount()
     }
     goto(idx: number) {
-        if (!this.option || !this.option.option.records[idx]) {
+        if (!this.option || !this.option.data.records[idx]) {
             return
         }
-        for (var i = 0; i < this.option.option.records[idx].length; i++) {
-            console.log(this.option.option.records[idx][i])
-            this.svg_nodes[i].set_option(this.option.option.records[idx][i])
+        for (var i = 0; i < this.option.data.records[idx].length; i++) {
+            this.algo_nodes[i].set_option(this.option.data.records[idx][i])
         }
     }
     test() {
@@ -53,7 +59,7 @@ class Algo extends Div {
         web_dom.post('/app/yly/manage/execute', {}, (node: Node) => {
             //console.log(node)
             this.set_option(node)
-            this.pro.set_max_value(node.option.records.length)
+            this.pro.set_max_value(node.data.records.length)
         })
     }
     on_mount() {

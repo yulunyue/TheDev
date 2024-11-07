@@ -2,6 +2,7 @@ import { Line, line } from "../line";
 import { Node, to_node } from "../../../web/cls";
 import { Text, text } from "./div_text";
 import { GNode, gnode } from "../gnode";
+import { Svg, svg } from "../svg";
 export class TreeNode extends GNode {
     line: Line
     text: Text
@@ -36,11 +37,14 @@ export class TreeNode extends GNode {
     }
 
 }
-export class Tree extends GNode {
+export class Tree extends Svg {
     width: number
     height: number
-
     max_xy: any
+    g: GNode
+    init_node(): void {
+        this.g = this.add_child(new GNode())
+    }
     set_option(option: Node): this {
         this.option = to_node(option)
         this.max_xy = this.option.init_layout()
@@ -61,14 +65,14 @@ export class Tree extends GNode {
         if (!this.width || !this.height || !this.option) {
             return
         }
-        this.clear()
+        this.g.clear()
         var dfs = (node: Node, p: Node) => {
             node.data.node = new TreeNode()
             node.data.pos = this.calc_pos(node.x, node.y)
             node.data.node.set_option(node)
-            this.add_child(node.data.node)
+            this.g.add_child(node.data.node)
             if (p) {
-                this.add_child(p.data.node.add_node(node.data.node))
+                this.g.add_child(p.data.node.add_node(node.data.node))
             }
             for (var i = 0; i < node.childs.length; i++) {
                 dfs(node.childs[i], node)
@@ -77,11 +81,11 @@ export class Tree extends GNode {
         dfs(this.option, null)
     }
     on_mount(): void {
-        this.width = this.parent.get_width()
-        this.height = this.parent.get_height()
+        this.width = this.get_width()
+        this.height = this.get_height()
         this.draw()
     }
 }
 export function tree() {
-    return new Tree
+    return new Tree()
 }

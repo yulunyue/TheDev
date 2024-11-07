@@ -2,11 +2,12 @@ import { input, Input } from "./dom/input"
 import { search, search_dev } from "./dom/search"
 import { select } from "./dom/select"
 import { canca_dev } from "./canva/canva"
-import { Svg, svg, svg_dev, svg_node_factory } from "./svg/svg"
+import { Svg, svg, svg_dev } from "./svg/svg"
 import { button_dev, button } from "./dom/button"
 import { div, Div } from "./dom/div"
 import { gnode, GNode } from "./svg/gnode"
 import { progress_dev, progress, Progress } from "./svg/comb/progress"
+import { tree } from "./svg/comb/tree"
 import { table } from "./dom/table"
 import { label_dev } from "./dom/label"
 import { listui, listdev } from "./dom/list"
@@ -22,7 +23,7 @@ const DEV_COMPONENT = {
     dagre_d3_dev, progress_dev
 }
 export {
-    
-    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input,web_dom,
-    Constant, Node, svg_node_factory, line, Line, gnode, GNode, button, input
+
+    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom,
+    Constant, Node, line, Line, gnode, GNode, button, input, tree
 }
