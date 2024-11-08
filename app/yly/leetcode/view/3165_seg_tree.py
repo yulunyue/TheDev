@@ -157,7 +157,7 @@ class Solution(SolutionBase):
         self.watch_var = [
             self.watch(nums="输入数组", queries="查询列表",  result="期望结果"),
             self.watch(arr="当前数组", ans="当前答案"),
-            self.t
+            self.watch(_type="tree", _ins=self.t)
         ]
         self.t.update(self.n-1, self.n-1, 0)
 

@@ -20,26 +20,28 @@ def wc(key, v):
 
 class WatchVar:
     def __init__(self) -> None:
-        self._type = "text"
         self.watch_ins = None
         self.watch_keys = None
+        self._ins = None
 
-    def set_json_view(self, watch_ins, watch_keys):
+    def set_json_view(self, watch_ins, _type="text", _ins=None, **watch_keys):
+        self._ins = _ins
+        self._type = _type
         self.watch_ins = watch_ins
         self.watch_keys = watch_keys
         return self
 
     def hex_str(self):
-        if isinstance(self.watch_keys, dict):
+        if self._type == 'text':
             return "".join(str(getattr(self.watch_ins, key)) for key in self.watch_keys.keys())
         return ""
 
     def to_json(self):
-        value = ""
-        if isinstance(self.watch_keys, dict):
+        if self._type == 'text':
             value = "</br>".join([f'{name}: {wc("self_"+k,getattr(self.watch_ins, k))}' for k,
                                  name in self.watch_keys.items()])
-        return dict(title=value)
+            return dict(title=value)
+        return self._ins.to_json()
 
     def ui_info(self):
         return dict(type=self._type)
@@ -132,7 +134,7 @@ class SolutionBase:
         pass
 
     def watch(self, **kw):
-        return WatchVar().set_json_view(self, kw)
+        return WatchVar().set_json_view(self, **kw)
 
     def record(self):
         childs = []
