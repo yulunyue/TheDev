@@ -40,14 +40,15 @@ class Solution(SolutionBase):
 
     def get_cases(self):
         return [
-
+            dict(X=3, Y=4, circles=[[2, 1, 1]], result=True)
         ]
 
     def execute(self):
         pass
 
     def init(self, xCorner: int, yCorner: int, circles: List[List[int]]) -> bool:
-        pass
+        self.n = len(circles)
+        self.g = [[] for _ in range(self.n)]
 
     def canReachCorner(self, *arg, **kg):
         self.init(*arg, **kg)
