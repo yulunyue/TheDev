@@ -16,6 +16,7 @@ import Constant from "../../base/web/constant"
 import { Node } from "../../base/web/cls"
 import web_dom from "../../base/web/web_dom"
 import { line, Line } from "./svg/line"
+import { Form,form } from "./dom/form"
 
 const DEV_COMPONENT = {
     input, search_dev, select, canca_dev, svg_dev,
@@ -25,5 +26,5 @@ const DEV_COMPONENT = {
 export {
 
     DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom,
-    Constant, Node, line, Line, gnode, GNode, button, input, tree
+    Constant, Node, line, Line, gnode, GNode, button, input, tree,Form,form
 }

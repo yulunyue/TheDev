@@ -80,16 +80,19 @@ export class Div {
         return this
 
     }
-    set_flex_style(direction: number) {
-        direction = this.get_direction(direction)
-        this.set_div_style({
+    set_style_flex(direction:number){
+        return this.set_div_style({
             flexDirection: direction == Constant.VERTICAL ? "row" : "column",
             display: "flex",
             justifyContent: "center",
             alignContent: "center",
             flexGrow: this.size + "",
-            border: "1px solid #000"
         })
+    }
+    set_flex_style(direction: number) {
+        direction = this.get_direction(direction)
+        this.set_style_flex(direction)
+        this.set_div_style({border: "1px solid #000"})
         for (var i = 0; i < this.childs.length; i++) {
             if (this.childs[i].set_flex_style) {
                 this.childs[i].set_flex_style(1 - direction)

@@ -21,7 +21,7 @@ class ProgrePoint extends GNode {
         this.rect = this.add_child(rect())
         this.rect.set_wh(7, 14).set_color(Constant.COLOR_BALCK).set_y(-10)
         this.text = this.add_child(text())
-        this.text.set_y(14).set_x(2)
+        this.text.set_y(14).set_x(4)
     }
     set_value(value: number, x: number) {
         this.value = value

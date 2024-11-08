@@ -4,9 +4,6 @@ export class Label extends Div {
     constructor() {
         super("p")
     }
-    init_default_div_style() {
-
-    }
     click(call_back: any) {
         web.bind_mouseenter(this.el, () => {
             this.set_style({
