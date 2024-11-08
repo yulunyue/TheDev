@@ -35,15 +35,17 @@ class WatchVar:
     def hex_str(self):
         if self._type == 'text':
             return "".join(str(getattr(self.watch_ins, key)) for key in self.watch_keys.keys())
-        return ""
+        return self._ins.hex_str()
 
     def to_json(self):
-        childs = []
-        if isinstance(self.watch_keys, dict):
+
+        if self._type == 'text':
+            childs = []
             for k, name in self.watch_keys.items():
                 value = wc("self_"+k, str(getattr(self.watch_ins, k)))
                 childs.append(dict(title=name+":", value=value))
-        return dict(childs=childs)
+            return dict(childs=childs)
+        return self._ins.to_json()
 
     def ui_info(self):
         return dict(type=self._type)
@@ -53,6 +55,7 @@ class SolutionBase:
     logs = []
     case_load = None
     name = "test"
+    DEV = True
 
     def __init__(self) -> None:
         self.watch_var: List[WatchVar] = []

@@ -12,12 +12,11 @@ inf = float("inf")
 MOD = (10**9)+7
 try:
     from app.yly.manage import SolutionBase
-
+    DEV = True
 except:
+    DEV = False
 
     class SolutionBase:
-        DEV = False
-
         @staticmethod
         def get_info(self, **kw):
             return dict()
@@ -47,7 +46,10 @@ class Solution(SolutionBase):
     def execute(self):
         pass
 
-    def xx(self, *arg, **kg):
+    def init(self, xCorner: int, yCorner: int, circles: List[List[int]]) -> bool:
+        pass
+
+    def canReachCorner(self, *arg, **kg):
         self.init(*arg, **kg)
         return self.execute()
 

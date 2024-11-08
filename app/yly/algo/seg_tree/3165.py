@@ -133,9 +133,6 @@ class SegTreeNode:
             ret.append(self._right.hex_str())
         return "".join(ret)
 
-    def ui_info(self):
-        return dict(type='tree')
-
 
 class Solution(SolutionBase):
     uri = 'https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
@@ -164,12 +161,12 @@ class Solution(SolutionBase):
 
     def execute(self):
         for i, v in enumerate(self.nums):
-            self.nums[i]=0
+            self.nums[i] = 0
             self.arr[i] = v
             self.t.update(i, i, v)
 
         while self.queries:
-            idx,value=self.queries.pop(0)
+            idx, value = self.queries.pop(0)
             self.arr[idx] = value
             self.t.update(idx, idx, value)
             self.ans = self.ans+self.t.query(0, self.n-1)
