@@ -165,7 +165,7 @@ class Route:
             ret.add_child(value=moudle_name, data=f.get_cases())
         return ret
 
-    def execute(self, moudle_name="app.yly.leetcode.view.3165", case: dict = None):
+    def execute(self, moudle_name="app.yly.algo.seg_tree.3165", case: dict = None):
         f: SolutionBase = Module().load_module(moudle_name, fun_name='Solution')()
         if case is None:
             case = f.get_cases()[0]

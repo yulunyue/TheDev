@@ -98,18 +98,19 @@ class SegTreeNode:
                        self.left.f01+self.right.f00)
         self.f01 = max(self.left.f00+self.right.f11,
                        self.left.f01+self.right.f01)
-        self.f11 = max(self.left.f10+self.right.f11,
-                       self.left.f11+self.right.f01)
         self.f10 = max(self.left.f10+self.right.f10,
                        self.left.f11+self.right.f00)
+        self.f11 = max(self.left.f10+self.right.f11,
+                       self.left.f11+self.right.f01)
 
     def title2(self, key):
         return f'{key}: {wc("ti_"+str(self.idx)+"_"+key,getattr(self,key))}'
 
     def get_title(self):
         # return f'{self.f00}{self.f01}{self.f10}{self.f11}'
+        sr=wc(f'self_arr_{self.idx}',Solution.arr[self.l:self.r+1])
         return '</br>'.join([
-            f"[{self.l},{self.r}]",
+            f"[{self.l}:{self.r}]->{sr}",
             f"{self.title2('f00')},  {self.title2('f10')}",
             f"{self.title2('f11')},  {self.title2('f01')}"
         ])
@@ -136,7 +137,7 @@ class SegTreeNode:
 
 class Solution(SolutionBase):
     uri = 'https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
-
+    arr = []
     def get_cases(self):
         return [
             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21)
@@ -149,7 +150,7 @@ class Solution(SolutionBase):
         self.n = len(self.nums)
         self.t = SegTreeNode(0, self.n-1)
         self.ans = 0
-        self.arr = [0]*(self.n)
+        Solution.arr = [0]*(self.n)
 
         self.watch_var = [
             self.watch(nums="输入数组", queries="查询列表",  result="期望结果"),
@@ -162,12 +163,12 @@ class Solution(SolutionBase):
     def execute(self):
         for i, v in enumerate(self.nums):
             self.nums[i] = 0
-            self.arr[i] = v
+            Solution.arr[i] = v
             self.t.update(i, i, v)
 
         while self.queries:
             idx, value = self.queries.pop(0)
-            self.arr[idx] = value
+            Solution.arr[idx] = value
             self.t.update(idx, idx, value)
             self.ans = self.ans+self.t.query(0, self.n-1)
         return self.ans % M

@@ -56,7 +56,9 @@ class Algo extends Div {
         this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
     load() {
-        web_dom.post('/app/yly/manage/execute', {}, (node: Node) => {
+        web_dom.post('/app/yly/manage/execute', {
+            
+        }, (node: Node) => {
             //console.log(node)
             this.set_option(node)
             this.pro.set_max_value(node.data.records.length)
