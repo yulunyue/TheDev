@@ -56,9 +56,7 @@ class SolutionBase:
     case_load = None
     name = "test"
     DEV = True
-
-    def __init__(self) -> None:
-        self.watch_var: List[WatchVar] = []
+    watch_var = None
 
     def get_cases(self):
         return [
@@ -149,6 +147,9 @@ class SolutionBase:
             key += var.hex_str()
         return key, childs
 
+    def get_watch(self):
+        return []
+
 
 PATH = 'app/yly/leetcode/view'
 
@@ -171,6 +172,7 @@ class Route:
             case = f.get_cases()[0]
         CHANGE_STORE.clear()
         f.init(**case)
+        f.watch_var = f.get_watch()
         return dict(data=dict(
             nodes=[v.ui_info() for v in f.watch_var],
             records=run_watch_fun(f.execute, f.record)
@@ -180,5 +182,5 @@ class Route:
 if __name__ == "__main__":
     # print(http_test('/app/yly/manage/'+sys.argv[1]))
     open("data/a.json", 'w', encoding='utf-8').write(
-        json.dumps(Route().execute(), indent=4,
+        json.dumps(Route().execute('app.yly.algo.geometry.lc_3235'), indent=4,
                    ensure_ascii=False))

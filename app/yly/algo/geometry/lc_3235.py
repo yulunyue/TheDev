@@ -17,13 +17,6 @@ except:
     DEV = False
 
     class SolutionBase:
-        @staticmethod
-        def get_info(self, **kw):
-            return dict()
-
-        def input(self):
-            return input()
-
         def log(self, *args, **kwargs):
             pass
 
@@ -31,6 +24,9 @@ except:
             pass
 
         def run(self):
+            pass
+
+        def watch(self, watch_ins, _type="text", _ins=None, **kg):
             pass
 
 
@@ -44,11 +40,36 @@ class Solution(SolutionBase):
         ]
 
     def execute(self):
-        pass
+        def dis(x1, x2, y1, y2):
+            return (y1-y2) * (y1-y2)+(x1-x2)*(x1-x2)
+        for i in range(self.n):
+            xi, yi, ir = self.circles[i]
+            left_c = -ir <= xi <= ir and 0 <= yi <= self.y
+            right_c = -ir <= xi-self.x and 0 <= yi <= self.y
+            top_c = -ir <= yi <= ir and 0 <= xi <= self.x
+            bottom_c = -ir <= yi-self.x <= ir and 0 <= xi <= self.x
+            if (left_c and top_c) or (right_c and bottom_c):
+                return False
 
-    def init(self, xCorner: int, yCorner: int, circles: List[List[int]]) -> bool:
+            for j in range(i+1, self.n):
+                xj, yj, jr = self.circles[j]
+                if ir+jr <= dis(xi, xj, yi, yj):
+                    self.g[i].append(j)
+                    self.g[j].append(i)
+
+    def init(self, X: int, Y: int, circles: List[List[int]], result=None) -> bool:
+        self.x = X
+        self.y = Y
         self.n = len(circles)
-        self.g = [[] for _ in range(self.n)]
+        self.g = [[] for _ in range(self.n+2)]
+        self.circles = circles
+
+    def get_watch(self):
+        return [
+            self.watch(
+                self.circles
+            )
+        ]
 
     def canReachCorner(self, *arg, **kg):
         self.init(*arg, **kg)

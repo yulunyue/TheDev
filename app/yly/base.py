@@ -18,13 +18,6 @@ except:
     class SolutionBase:
         DEV = False
 
-        @staticmethod
-        def get_info(self, **kw):
-            return dict()
-
-        def input(self):
-            return input()
-
         def log(self, *args, **kwargs):
             pass
 
@@ -32,6 +25,9 @@ except:
             pass
 
         def run(self):
+            pass
+
+        def watch(self):
             pass
 
 
