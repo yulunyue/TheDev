@@ -39,11 +39,9 @@ class Solution(SolutionBase):
         return [
 
         ]
-
-    def execute(self):
+    def init(self,*arg, **kg):
         pass
-    
-    def init(self,*args,**kwarg):
+    def execute(self):
         pass
 
     def xx(self, *arg, **kg):

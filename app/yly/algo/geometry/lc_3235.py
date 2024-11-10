@@ -40,22 +40,32 @@ class Solution(SolutionBase):
         ]
 
     def execute(self):
+        LT=self.n
+        RB=self.n+1
         def dis(x1, x2, y1, y2):
             return (y1-y2) * (y1-y2)+(x1-x2)*(x1-x2)
+        def add(x,y):
+            self.g[x].append(y)
+            self.g[y].append(x)
+
         for i in range(self.n):
             xi, yi, ir = self.circles[i]
             left_c = -ir <= xi <= ir and 0 <= yi <= self.y
             right_c = -ir <= xi-self.x and 0 <= yi <= self.y
             top_c = -ir <= yi <= ir and 0 <= xi <= self.x
             bottom_c = -ir <= yi-self.x <= ir and 0 <= xi <= self.x
-            if (left_c and top_c) or (right_c and bottom_c):
-                return False
-
+            if (left_c and bottom_c) or (top_c and right_c):
+                return True
+            if left_c or top_c:
+                add(i,LT)
+            if right_c or bottom_c:
+                add(i,RB)
             for j in range(i+1, self.n):
                 xj, yj, jr = self.circles[j]
                 if ir+jr <= dis(xi, xj, yi, yj):
-                    self.g[i].append(j)
-                    self.g[j].append(i)
+                    add(i,j)
+        return True
+
 
     def init(self, X: int, Y: int, circles: List[List[int]], result=None) -> bool:
         self.x = X

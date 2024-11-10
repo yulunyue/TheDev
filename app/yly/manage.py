@@ -99,18 +99,10 @@ class SolutionBase:
                 r = None
             if not self.diff(r, self.ep):
                 self.flush_log(
-                    i, f'case: {case}; result: {r}; except: {self.ep}')
-            else:
-                self.flush_log(i, "")
-
+                    i, f'case: {case}; result: {r}; except: {self.ep}\n{"\n".join(self.__class__.logs)}')
+                break
     def flush_log(self, i, s):
-
-        fp = File(f'data/log/solution/{self.name}/{i}.log')
-        if s:
-            fp.write_file("\n".join([s]+self.__class__.logs))
-        else:
-            fp.write_file("")
-
+        logger.info(f'{i}:{s}')
     @classmethod
     def cls_run(cls):
         for case in cls.get_cases():
