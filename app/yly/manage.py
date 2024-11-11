@@ -98,11 +98,14 @@ class SolutionBase:
                 traceback.print_exc()
                 r = None
             if not self.diff(r, self.ep):
+                logs = "\n".join(self.__class__.logs)
                 self.flush_log(
-                    i, f'case: {case}; result: {r}; except: {self.ep}\n{"\n".join(self.__class__.logs)}')
+                    i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                 break
+
     def flush_log(self, i, s):
         logger.info(f'{i}:{s}')
+
     @classmethod
     def cls_run(cls):
         for case in cls.get_cases():
