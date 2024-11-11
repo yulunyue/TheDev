@@ -32,11 +32,12 @@ except:
 
 
 class Solution(SolutionBase):
-    uri = ""
+    uri = "https://leetcode.cn/problems/maximum-frequency-of-an-element-after-performing-operations-ii/"
     gameid = ''
 
     def get_cases(self):
         return [
+            dict(nums =[5,64],k =42,numOperations=2,result=2),
             dict(nums =[1,2,4,5],k =2,numOperations =4,result=4),
             dict(nums =[94,10,92],k =0,numOperations =3,result=1),
             dict(nums = [5,11,20,20], k = 5, numOperations = 1,result=2),
@@ -44,21 +45,16 @@ class Solution(SolutionBase):
         ]
 
     def execute(self):
-
-        ct=defaultdict(int)
-        for v in self.nums:
-            ct[v]+=1
-
-        self.nums.sort()
-        n=self.nums[-1]+1
+        a,b=min(self.nums),max(self.nums)
+        n=b-a+1
         ct=[0]*n
         for v in self.nums:
-            ct[v]+=1
+            ct[v-a]+=1
         for i in range(1,n):
             ct[i]+=ct[i-1]
         ans=1
-        # print(ct)
-        for i in self.nums:
+        self.log(ct)
+        for i in range(1,n):
             tmp=ct[i]-ct[i-1]
             if tmp+self.numOperations<=ans:
                 continue
@@ -73,7 +69,7 @@ class Solution(SolutionBase):
                 lc=self.numOperations
             if tmp+lc>ans:
                 ans=tmp+lc
-            # print(i,tmp,ct[i-1]-ct[l],ct[r]-ct[i],ans)
+            self.log(i,tmp,ct[i-1]-ct[l],ct[r]-ct[i],ans)
         return ans
 
     def init(self, nums: List[int], k: int, numOperations: int) -> int:
