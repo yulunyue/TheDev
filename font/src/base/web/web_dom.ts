@@ -66,7 +66,7 @@ class WebDom {
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back?: Fn1Void<Node>) {
         let url = this.url(path)
-        let mock_data = Ct.get_mock_data(url)
+        let mock_data = Ct.get_mock_data(url, data)
         if (mock_data) {
             return call_back(mock_data)
         }

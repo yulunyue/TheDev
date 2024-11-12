@@ -68,13 +68,23 @@ class Node:
 class ApiCall:
     def __init__(self) -> None:
         self.fun_map = dict()
+        self.mock_call = []
 
-    def call(self, path, params):
+    def add_hock(self, call):
+        self.mock_call.append(call)
+
+    def call_app(self, path, params):
         if path not in self.fun_map:
             return dict(statu=404, path=path, data=list(self.fun_map.keys()))
         ret = self.fun_map[path](**params)
         if isinstance(ret, Node):
             return ret.to_json()
+        return ret
+
+    def call(self, path, param):
+        ret = self.call_app(path, param)
+        for mock_fun in self.mock_call:
+            mock_fun(path, param, ret)
         return ret
 
     def load_module_str(self, key: str, modules: List[str]):

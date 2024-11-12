@@ -11,7 +11,7 @@ import heapq
 inf = float("inf")
 MOD = (10**9)+7
 try:
-    from app.yly.manage import SolutionBase
+    from app.yly.algo.manage import SolutionBase
 
 except:
 
@@ -39,9 +39,11 @@ class Solution(SolutionBase):
         return [
 
         ]
-    def init(self,*arg, **kg):
-        pass
+
     def execute(self):
+        pass
+
+    def init(self, *args, **kwarg):
         pass
 
     def xx(self, *arg, **kg):

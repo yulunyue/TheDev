@@ -29,5 +29,21 @@ export class Util {
         }
         return rt;
     }
+    hash_any(c: any) {
+        let res = ""
+        if (Array.isArray(c)) {
+            for (var i = 0; i < c.length; i++) {
+                res += this.hash_any(c[i])
+            }
+        } else if (c.constructor === Object) {
+            let keys = Object.keys(c).sort()
+            for (var i = 0; i < keys.length; i++) {
+                res += keys[i] + this.hash_any(c[keys[i]])
+            }
+        } else {
+            res += c
+        }
+        return res
+    }
 }
 export default new Util()

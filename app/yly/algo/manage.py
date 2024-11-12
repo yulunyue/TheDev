@@ -158,7 +158,10 @@ class Route:
                 continue
             moudle_name = path.replace('/', '.')+"."+name.replace('.py', '')
             f: SolutionBase = Module().load_module(moudle_name, fun_name='Solution')()
-            ret.add_child(value=moudle_name, data=f.get_cases())
+            cases = f.get_cases()
+            f.init(**cases[0])
+            if f.get_watch():
+                ret.add_child(value=moudle_name, data=cases)
         return ret
 
     def execute(self, moudle_name="app.yly.algo.seg_tree.3165", case: dict = None):

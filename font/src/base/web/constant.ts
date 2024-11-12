@@ -1,5 +1,7 @@
 import { Node } from "./cls"
-
+import web_dom from "./web_dom"
+import util from "../tool/util"
+import MOCK_DATA from "../../model/mock"
 function fack_data(depth: number, max_dp: number, len: number) {
     let ret = new Node().set_title("root")
     if (depth == max_dp) {
@@ -37,10 +39,17 @@ class Constant {
     MOCK_NODE_3_20 = fack_data(0, 3, 20)
     MOCK_NODE_3_5 = fack_data(0, 3, 5)
     MOCK_NODE_3_3 = fack_data(0, 3, 3)
-    get_mock_data(s: string) {
-        if (s == this.MOCK_KEY) {
-            return this.MOCK_NODE_3_20
+    get_mock_data(s: string, param: any) {
+        if (web_dom.web_host.endsWith('github.io')) {
+            return this.get_ts_data(s, param)
         }
+        return null
+    }
+    get_ts_data(s: string, param: any) {
+        let param_hash = util.hash_any(param)
+        if (MOCK_DATA[s] && MOCK_DATA[s][param_hash])
+            return MOCK_DATA[s][param_hash]
+        return null
     }
 }
 export default new Constant()
