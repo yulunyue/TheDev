@@ -19,36 +19,42 @@ def wc(key, v):
     return v
 
 
-class WatchVar:
-    def __init__(self) -> None:
-        self.watch_ins = None
-        self.watch_keys = None
-        self._ins = None
-
-    def set_json_view(self, watch_ins, _type="text", _ins=None, **watch_keys):
-        self._ins = _ins
-        self._type = _type
-        self.watch_ins = watch_ins
-        self.watch_keys = watch_keys
-        return self
-
-    def hex_str(self):
-        if self._type == 'text':
-            return "".join(str(getattr(self.watch_ins, key)) for key in self.watch_keys.keys())
-        return self._ins.hex_str()
-
-    def to_json(self):
-
-        if self._type == 'text':
-            childs = []
-            for k, name in self.watch_keys.items():
-                value = wc("self_"+k, str(getattr(self.watch_ins, k)))
-                childs.append(dict(title=name+":", value=value))
-            return dict(childs=childs)
-        return self._ins.to_json()
+class WatchBase:
 
     def ui_info(self):
-        return dict(type=self._type)
+        return dict(type=self.type)
+
+    def set_type(self, v):
+        self.type = v
+        return self
+
+
+class WatchAny(WatchBase):
+    def __init__(self, ins, **kwarg) -> None:
+        self.ins = ins
+
+    def hex_str(self):
+        return self.ins.hex_str()
+
+    def to_json(self):
+        return self.ins.to_json()
+
+
+class WatchText(WatchBase):
+
+    def __init__(self, wathc_ins, **watch_keys):
+        self.watch_ins = wathc_ins
+        self.watch_keys: dict = watch_keys
+
+    def hex_str(self):
+        return "".join(str(getattr(self.watch_ins, key)) for key in self.watch_keys.keys())
+
+    def to_json(self):
+        childs = []
+        for k, name in self.watch_keys.items():
+            value = wc("self_"+k, str(getattr(self.watch_ins, k)))
+            childs.append(dict(title=name+":", value=value))
+        return dict(childs=childs)
 
 
 class SolutionBase:
@@ -131,8 +137,10 @@ class SolutionBase:
     def init(self, *args, **kwargs):
         pass
 
-    def watch(self, **kw):
-        return WatchVar().set_json_view(self, **kw)
+    def watch(self, type, *args, **kw):
+        return dict(
+            text=WatchText
+        ).get(type)(*args, _ins=self, **kw).set_type(type)
 
     def record(self):
         childs = []

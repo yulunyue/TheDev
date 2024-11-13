@@ -1,6 +1,5 @@
 
 
-export type color = "red" | "blue" | "green" | "white" | "black" | "gray"
 export interface Style {
     color?: string
     left?: number
@@ -24,7 +23,7 @@ export interface Style {
     marginRight?: number
     padding?: number | string
     fontSize?: number | string
-    zIndex?: number
+    zIndex?: string
     display?: "flex" | "none" | "" | "initial"
     outline?: "none"
     whiteSpace?: "pre-line" | "nowrap" | "pre-wrap"
@@ -48,7 +47,7 @@ export interface Style {
     overflowY?: "hidden" | "auto"
     overflowX?: "hidden" | "auto"
     backgroundImage?: string
-    backgroundColor?: color
+    backgroundColor?: string
     justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around"
     alignContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around"
     alignItems?: "flex-start" | "flex-end" | "center" | "baseline" | "stretch"

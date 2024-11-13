@@ -145,6 +145,7 @@ class WebDom {
             dom._drag_start_y = e.y
             call_back("start")
         }
+
         document.body.onmousemove = (e: any) => {
             if (dom._drag_state) {
                 call_back("move", e.x - dom._drag_start_x, e.y - dom._drag_start_y)

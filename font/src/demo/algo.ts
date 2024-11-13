@@ -1,6 +1,6 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree,Form,form,
+    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form,
     line, gnode, GNode, button, progress, div, input, Input, Progress
 } from "../base/components/export";
 
@@ -14,6 +14,7 @@ class Algo extends Div {
     div: Div
     pro: Progress
     algo_nodes: Div[]
+    form: Form
     init_style(): void {
         this.full()
     }
@@ -56,17 +57,18 @@ class Algo extends Div {
         this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
     load() {
-        web_dom.post('/app/yly/manage/execute', {
-            
+        web_dom.post('/app/yly/algo/manage/execute', {
+
         }, (node: Node) => {
-            //console.log(node)
             this.set_option(node)
             this.pro.set_max_value(node.data.records.length)
         })
     }
     on_mount() {
         //this.test()
-        this.load()
+        //this.load()
+        console.log(web_dom.url_param)
+
     }
 }
 export default function () {

@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.manage import SolutionBase, wc
+    from app.yly.algo.manage import SolutionBase
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -17,11 +17,10 @@ except:
         def run(self):
             pass
 
-        def watch(self, **kwags):
+        def watch(self, *args, **kwags):
             pass
 
-    def wc(v, *args):
-        return v
+
 inf = float("inf")
 null = None
 true = True
@@ -44,7 +43,7 @@ class SegTreeNode:
         self.m = (l+r)//2
         self.default_value = default_value
         self.todo = 0
-        self.f00 = self.f01 = self.f10 = self.f11 = 0
+        self.f00 = self.f01 = self.f10 = self.fmx = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
 
@@ -64,7 +63,7 @@ class SegTreeNode:
 
     def query(self, l, r):
         if l <= self.l and self.r <= r:
-            return self.f11
+            return self.fmx
         self.down()
         res = 0
         if self.m < r:
@@ -85,7 +84,7 @@ class SegTreeNode:
         self.up()
 
     def do(self, v):
-        self.f11 = max(v, 0)
+        self.fmx = max(v, 0)
 
     def down(self):
         if self.todo:
@@ -96,23 +95,24 @@ class SegTreeNode:
     def up(self):
         self.f00 = max(self.left.f00+self.right.f10,
                        self.left.f01+self.right.f00)
-        self.f01 = max(self.left.f00+self.right.f11,
+        self.f01 = max(self.left.f00+self.right.fmx,
                        self.left.f01+self.right.f01)
         self.f10 = max(self.left.f10+self.right.f10,
-                       self.left.f11+self.right.f00)
-        self.f11 = max(self.left.f10+self.right.f11,
-                       self.left.f11+self.right.f01)
+                       self.left.fmx+self.right.f00)
+        self.fmx = max(self.left.f10+self.right.fmx,
+                       self.left.fmx+self.right.f01)
 
     def title2(self, key):
+        from app.yly.algo.manage import wc
         return f'{key}: {wc("ti_"+str(self.idx)+"_"+key,getattr(self,key))}'
 
     def get_title(self):
-        # return f'{self.f00}{self.f01}{self.f10}{self.f11}'
-        sr=wc(f'self_arr_{self.idx}',Solution.arr[self.l:self.r+1])
+        from app.yly.algo.manage import wc
+        sr = wc(f'self_arr_{self.idx}', Solution.arr[self.l:self.r+1])
         return '</br>'.join([
             f"[{self.l}:{self.r}]->{sr}",
             f"{self.title2('f00')},  {self.title2('f10')}",
-            f"{self.title2('f11')},  {self.title2('f01')}"
+            f"{self.title2('f01')},  {self.title2('fmx')}"
         ])
 
     def to_json(self):
@@ -127,7 +127,7 @@ class SegTreeNode:
         return ret
 
     def hex_str(self):
-        ret = [f'{self.f00}{self.f01}{self.f10}{self.f11}']
+        ret = [f'{self.f00}{self.f01}{self.f10}{self.fmx}']
         if self._left:
             ret.append(self._left.hex_str())
         if self._right:
@@ -138,6 +138,7 @@ class SegTreeNode:
 class Solution(SolutionBase):
     uri = 'https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
     arr = []
+
     def get_cases(self):
         return [
             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21)
@@ -145,26 +146,22 @@ class Solution(SolutionBase):
 
     def init(self, nums: List[int], queries: List[List[int]], result=0) -> int:
         self.result = result
-        self.nums = nums
+        Solution.arr = nums
         self.queries = queries
-        self.n = len(self.nums)
+        self.n = len(Solution.arr)
         self.t = SegTreeNode(0, self.n-1)
         self.ans = 0
-        Solution.arr = [0]*(self.n)
+        for i, v in enumerate(Solution.arr):
+            self.t.update(i, i, v)
 
-        self.watch_var = [
-            self.watch(nums="输入数组", queries="查询列表",  result="期望结果"),
-            self.watch(arr="当前数组", ans="当前答案"),
-            self.watch(_type="tree", _ins=self.t)
+    def get_watch(self):
+        return [
+            self.watch('text', queries="查询列表",  result="期望结果"),
+            self.watch('text', arr="数组", ans="当前答案"),
+            self.watch("tree", self.t)
         ]
-        self.t.update(0, 0, 0)
-        self.t.update(self.n-1, self.n-1, 0)
 
     def execute(self):
-        for i, v in enumerate(self.nums):
-            self.nums[i] = 0
-            Solution.arr[i] = v
-            self.t.update(i, i, v)
 
         while self.queries:
             idx, value = self.queries.pop(0)

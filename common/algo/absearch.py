@@ -1,6 +1,5 @@
 from typing import List
 from common.tool.debug_tool import Number, set_value
-from common.game.game_base import PlayerBase, logger
 from common.util.yml import yml_to_dict
 inf = float("inf")
 
@@ -15,13 +14,68 @@ o:8     p:9
 '''
 
 
+class AbNode:
+    KID = 0
+
+    def __init__(self, key):
+        self.key = key
+        self.value = None
+        self.childs: List[AbNode] = []
+        self.alpha = -inf
+        self.bate = inf
+
+    def set_value(self, value):
+        self.value = value
+        return self
+
+    def set_children(self, childs):
+        self.childs = childs
+        return self
+
+    def load_from_dict(self, mp: dict):
+        v = mp.pop('_value')
+        if v:
+            self.set_value(int(v))
+        for key, value in mp.items():
+            self.childs.append(AbNode(key).load_from_dict(value))
+        return self
+
+    def load_from_yml(self, yml):
+        return self.load_from_dict(yml_to_dict(yml))
+
+    def __str__(self) -> str:
+        return f'[{self.key}:{self.value}]'
+
+    def hex_str(self):
+        res = f'{self.key}{self.value}{self.alpha}{self.bate}'
+        return res+"".join(d.hex_str() for d in self.childs)
+
+    def title2(self, key):
+        from app.yly.algo.manage import wc
+        return f'{key}: {wc("ti_"+str(self.key)+"_"+key, getattr(self,key))}'
+
+    def get_title(self):
+        from app.yly.algo.manage import wc
+        sr = wc(f'self_arr_{self.key}', self.value)
+        return '</br>'.join([
+            f"{self.key}:->{self.value}",
+            f"{self.title2('alpha')}, {self.title2('bate')}",
+        ])
+
+    def to_json(self):
+        return dict(
+            title=self.get_title(),
+            childs=[v.to_json() for v in self.childs]
+        )
+
+
 class AlphaBateSearch:
 
-    def evaluate(self):
-        return 0
+    def evaluate(self, depth, last_move: AbNode):
+        return last_move.value
 
-    def get_moves(self, depth, last_move):
-        return []
+    def get_moves(self, depth, last_move: AbNode):
+        return last_move.childs
 
     def do(self, *mv):
         pass
@@ -50,54 +104,3 @@ class AlphaBateSearch:
                 alpha = set_value(alpha, val)
                 best_mv = mv
         return best_mv, alpha
-
-
-class AbNode(Number):
-    def init(self):
-        self.childs: List[AbNode] = []
-        self._alpha: AbNode = None
-        self._bate: AbNode = None
-        return super().init()
-
-    @property
-    def alpha(self):
-        if self._alpha is None:
-            self._alpha = AbNode(f"{self.key}_al").set_value(-inf)
-        return self._alpha
-
-    @property
-    def bate(self):
-        if self._bate is None:
-            self._bate = AbNode(f"{self.key}_ba").set_value(inf)
-        return self._bate
-
-    def set_children(self, childs):
-        self.childs = childs
-        return self
-
-    def load_from_dict(self, mp: dict):
-        v = mp.pop('_value')
-        if v:
-            self.set_value(int(v))
-        for key, value in mp.items():
-            self.childs.append(AbNode(key).load_from_dict(value))
-        return self
-
-    def load_from_yml(self, yml):
-        return self.load_from_dict(yml_to_dict(yml))
-
-
-class AlphaBateSearchDev(AlphaBateSearch, PlayerBase):
-
-    def execute(self, i, env: AbNode):
-        self.env = env
-        best_mv, _ = self.search(alpha=env.alpha, bate=env.bate)
-        return best_mv
-
-    def evaluate(self, depth, mv: AbNode):
-        return mv
-
-    def get_moves(self, depth, last_move: AbNode):
-        if last_move is None:
-            return self.env.childs
-        return last_move.childs

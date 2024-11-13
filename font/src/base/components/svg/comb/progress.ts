@@ -97,16 +97,17 @@ export class Progress extends Div {
         return this
     }
     init_event() {
-        web_dom.bind_drag(this.el, (state: string, x: number, y: number) => {
+        web_dom.bind_drag(this.value.el, (state: string, x: number, y: number) => {
             if (state == 'start') {
-                //this.cur_point.set_color(Constant.COLOR_YELLOW)
-                this.value.start_x = this.value.get_x()
-                this.value.start_y = this.value.get_y()
 
+                this.value.start_x = this.value.get_x() - this.margin
+                this.value.start_y = this.value.get_y()
+                // console.log(this.value.get_x())
             }
             else if (state == 'move') {
                 let pos = Math.min(this.value.start_x + x, this.width)
                 this.set_value(Math.floor(pos * this.max_value.value / this.width), pos)
+                // console.log(this.value.get_x())
             } else {
                 // this.cur_point.set_color(Constant.COLOR_BALCK)
             }
