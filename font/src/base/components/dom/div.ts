@@ -9,7 +9,6 @@ export class Div {
     node_type: string
     childs: Div[]
     parent: Div
-    dialog: Div
     option: Node
     index: number
     on_mount_call: any
@@ -92,7 +91,7 @@ export class Div {
     set_flex_style(direction: number) {
         direction = this.get_direction(direction)
         this.set_style_flex(direction)
-        this.set_div_style({border: "1px solid #000"})
+        //this.set_div_style({border: "1px solid #000"})
         for (var i = 0; i < this.childs.length; i++) {
             if (this.childs[i].set_flex_style) {
                 this.childs[i].set_flex_style(1 - direction)
@@ -107,14 +106,8 @@ export class Div {
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         this.parent = null
-        if (parent_node_type && parent_node_type != node_type) {
-            this.div_el = web_dom.createElement(parent_node_type)
-            this.div_el.appendChild(this.el)
+        this.div_el = this.el
 
-        } else {
-            this.div_el = this.el
-        }
-        this.init_default_div_style()
         this.init_node()
         this.init_style()
         this.init_event()
@@ -126,20 +119,12 @@ export class Div {
             rect: this.get_rect()
         }
     }
-    full() {
+    set_style_ab_full() {
         return this.set_div_style({
             position: "fixed",
             width: 1,
             height: 1
         })
-    }
-    get_dialog() {
-        if (!this.dialog) {
-            this.dialog = new Div("div", "").set_div_style(
-                { position: "fixed" }
-            ).mount(web_dom.get_body())
-        }
-        return this.dialog
     }
     show() {
         return this.set_div_style({ display: "" })
@@ -236,6 +221,14 @@ export class Div {
         web_dom.set_el_style(this.el, style)
         return this
     }
+    set_style_ab_center(){
+        return this.set_style({
+            position:"fixed",
+            top:"50%",
+            left:"50%",
+            transform:"translate(-50%,-50%)"
+        })
+    }
     init_style() {
 
     }
@@ -250,7 +243,6 @@ export class Div {
     }
     mount(el: Dom) {
         el.appendChild(this.div_el)
-        this.render()
         return this
     }
     emit_mount() {
@@ -297,8 +289,11 @@ export class Div {
     }
     set_option(option: Node) {
         this.option = option
-        this.set_html(option.title)
+        this.render_option()
         return this
+    }
+    render_option(){
+
     }
     add_childs(childs: any[]) {
         return this.set_childs(childs)

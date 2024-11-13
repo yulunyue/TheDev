@@ -13,7 +13,7 @@ import { label_dev } from "./dom/label"
 import { listui, listdev } from "./dom/list"
 import { dagre_d3_dev } from "../../third/third_util"
 import Constant from "../../base/web/constant"
-import { Node } from "../../base/web/cls"
+import { Node,node } from "../../base/web/cls"
 import web_dom from "../../base/web/web_dom"
 import { line, Line } from "./svg/line"
 import { Form, form } from "./dom/form"
@@ -21,10 +21,10 @@ import dialog from "./dom/dialog"
 const DEV_COMPONENT = {
     input, search_dev, select, canca_dev, svg_dev,
     button_dev, table, listdev, label_dev,
-    dagre_d3_dev, progress_dev, dialog
+    dagre_d3_dev, progress_dev
 }
 export {
 
-    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom,
-    Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form
+    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom,dialog,
+    Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form,node
 }

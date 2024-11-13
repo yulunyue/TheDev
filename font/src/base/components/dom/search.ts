@@ -3,7 +3,12 @@ import web from "../../web/web_dom"
 import Ct from "../../web/constant"
 import { Node } from "../../web/cls";
 import { listui } from "./list";
+import {Div} from "./div"
 export class Search extends Input {
+    dialog:Div
+    init_node(): void {
+        this.dialog=new Div().mount(this.div_el)
+    }
     set_search(url: string) {
         web.bind_click(this.el, () => this.emit_search(url))
         web.bind_input(this.el, () => this.emit_search(url))
@@ -20,7 +25,7 @@ export class Search extends Input {
     }
     show_search_dialog() {
         console.log(this.get_rect(), this.el)
-        this.get_dialog().set_style({
+        this.dialog.set_style({
             left: this.get_a_x(),
             top: this.get_a_y() + this.get_height(),
             width: this.get_width(),
@@ -31,13 +36,13 @@ export class Search extends Input {
         }).clear().add_child(
             listui().set_option(
                 this.option.filter(this.get_value())
-            ).select((v) => {
+            ).select((v:any) => {
                 this.set_value(v.title)
-                this.get_dialog().hide()
+                this.dialog.hide()
             })
         ).show()
         web.body_click(() => {
-            this.get_dialog().hide()
+            this.dialog.hide()
         })
     }
 
