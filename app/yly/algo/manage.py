@@ -53,7 +53,7 @@ class WatchText(WatchBase):
         childs = []
         for k, name in self.watch_keys.items():
             value = wc("self_"+k, str(getattr(self.watch_ins, k)))
-            childs.append(dict(title=name+":", value=value))
+            childs.append(dict(title=name+":", value=value, type='text'))
         return dict(childs=childs)
 
 
@@ -154,19 +154,24 @@ class SolutionBase:
         return []
 
 
-PATH = 'app/yly/leetcode/view'
+PATH = 'app/yly/algo'
 
 
 class Route:
 
-    def query(self, path=PATH):
-        ret = Node(value=path)
-        for name in os.listdir(path):
+    def query(self, **kwargs):
+        ret = Node(value=PATH)
+        for name in os.listdir(PATH):
             if not name.endswith('.py'):
                 continue
-            moudle_name = path.replace('/', '.')+"."+name.replace('.py', '')
-            f: SolutionBase = Module().load_module(moudle_name, fun_name='Solution')()
+            moudle_name = PATH.replace('/', '.')+"."+name.replace('.py', '')
+            fc = Module().load_module(moudle_name)
+            if not hasattr(fc, 'Solution'):
+                continue
+            f: SolutionBase = fc.Solution()
             cases = f.get_cases()
+            if not cases:
+                continue
             f.init(**cases[0])
             if f.get_watch():
                 ret.add_child(value=moudle_name, data=cases)

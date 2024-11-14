@@ -2,10 +2,10 @@
 
 export interface Style {
     color?: string
-    left?: number|string
-    right?: number|string
-    bottom?: number|string
-    top?: number|string
+    left?: number | string
+    right?: number | string
+    bottom?: number | string
+    top?: number | string
     width?: number
     height?: number
     maxWidth?: number
@@ -82,14 +82,18 @@ export class Node {
     depth?: number = 0
     x?: number = 0
     y?: number = 0
-    constructor(key?:string) {
+    constructor(key?: string) {
         this.childs = []
         this.data = {}
-        this.key=key
-        this.title=key
+        this.key = key
+        this.title = key
     }
     set_title(title: string = "") {
         this.title = title
+        return this
+    }
+    set_data(data: any) {
+        this.data = data
         return this
     }
     set_value(value: any) {
@@ -172,6 +176,6 @@ export function to_node(n: any) {
     }
     return new Node().set_option(n)
 }
-export function node(key?:string){
+export function node(key?: string) {
     return new Node(key)
 }

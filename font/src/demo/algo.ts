@@ -1,6 +1,6 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form,dialog,node,
+    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form, dialog, node,
     line, gnode, GNode, button, progress, div, input, Input, Progress
 } from "../base/components/export";
 
@@ -14,26 +14,28 @@ class Algo extends Div {
     div: Div
     pro: Progress
     algo_nodes: Div[]
-    form:Form
+    form: Form
     init_style(): void {
         this.set_style_ab_full()
     }
     init_node() {
         this.div = div()
         this.form = form().set_option(node().set_childs([
-            node("moudule_name").set_type("seach"),
+            node("moudule_name").set_type("search").set_data({
+                uri: "/app/yly/algo/manage/query"
+            }),
         ]))
         this.pro = progress().set_size(1).change((v: number) => this.goto(v))
         this.add_childs([
             this.div.set_size(1),
             div().add_childs([
                 this.pro,
-                button().set_html("setting").click(()=>this.open_setting()),
+                button().set_html("setting").click(() => this.open_setting()),
                 button().set_html("run").click(() => this.load())
             ]).set_height(Constant.DEFAULT_LINE_HEIGHT)
         ]).flex_horizontal_layout()
     }
-    open_setting(){
+    open_setting() {
         dialog.open(this.form)
     }
     set_option(option: Node): this {

@@ -38,6 +38,9 @@ class WebDom {
     get_local(key: string) {
         return localStorage.getItem("yly_" + key)
     }
+    get_param(key: string) {
+
+    }
     set_local(key: string, value: any) {
         if (typeof value == "object") {
             localStorage.setItem(key, JSON.stringify(value))

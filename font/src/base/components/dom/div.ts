@@ -79,7 +79,7 @@ export class Div {
         return this
 
     }
-    set_style_flex(direction:number){
+    set_style_flex(direction: number) {
         return this.set_div_style({
             flexDirection: direction == Constant.VERTICAL ? "row" : "column",
             display: "flex",
@@ -131,12 +131,6 @@ export class Div {
     }
     hide() {
         return this.set_div_style({ display: "none" })
-    }
-    get_p_x() {
-        return (this.el as HTMLElement).offsetLeft
-    }
-    get_p_y() {
-        return (this.el as HTMLElement).offsetTop
     }
     get_a_x() {
         return (this.el as HTMLElement).getBoundingClientRect().x;
@@ -221,12 +215,12 @@ export class Div {
         web_dom.set_el_style(this.el, style)
         return this
     }
-    set_style_ab_center(){
+    set_style_ab_center() {
         return this.set_style({
-            position:"fixed",
-            top:"50%",
-            left:"50%",
-            transform:"translate(-50%,-50%)"
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)"
         })
     }
     init_style() {
@@ -292,8 +286,8 @@ export class Div {
         this.render_option()
         return this
     }
-    render_option(){
-
+    render_option() {
+        this.set_html(this.option.value)
     }
     add_childs(childs: any[]) {
         return this.set_childs(childs)

@@ -10,11 +10,14 @@ export class Input extends Div {
     }
 
     init_style(): void {
-        this.set_style({ 
-            outline: "none",           
+        this.set_style({
+            outline: "none",
             margin: Constant.DEFAULT_MARGIN,
-            padding: Constant.DEFAULT_PADDING 
+            padding: Constant.DEFAULT_PADDING
         })
+    }
+    render_option() {
+        this.set_value(this.option.value)
     }
     on_click() {
 
