@@ -35,7 +35,7 @@ class Solution(SolutionBase):
 
     def get_watch(self):
         return [
-            self.watch("tree", self.root)
+            # self.watch("tree", self.root)
         ]
 
     def execute(self):

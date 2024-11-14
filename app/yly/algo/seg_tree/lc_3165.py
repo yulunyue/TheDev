@@ -9,7 +9,8 @@ import math
 import heapq
 try:
     from app.yly.algo.manage import SolutionBase
-except:
+except Exception as e:
+    print(f'{e}',file=sys.stderr)
     class SolutionBase:
         def log(self, *args, **kwargs):
             pass
@@ -156,8 +157,8 @@ class Solution(SolutionBase):
 
     def get_watch(self):
         return [
-            self.watch('text', queries="查询列表",  result="期望结果"),
-            self.watch('text', arr="数组", ans="当前答案"),
+            self.watch('text', self, queries="查询列表",  result="期望结果"),
+            self.watch('text', self, arr="数组", ans="当前答案"),
             self.watch("tree", self.t)
         ]
 

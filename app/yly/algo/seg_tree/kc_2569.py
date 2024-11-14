@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.manage import SolutionBase
+    from app.yly.algo.manage import SolutionBase
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):

@@ -12,7 +12,7 @@ import heapq
 inf = float("inf")
 MOD = (10**9)+7
 try:
-    from app.yly.manage import SolutionBase
+    from app.yly.algo.manage import SolutionBase
     DEV = True
 except:
     DEV = False

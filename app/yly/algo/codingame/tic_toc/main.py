@@ -15,7 +15,7 @@ inf = 100000000
 inm = inf+1
 MAX_DEPATH = 4
 try:
-    from app.yly.manage import SolutionBase
+    from app.yly.algo.manage import SolutionBase
     from pyinstrument import Profiler
     DEV = True
 except:

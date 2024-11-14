@@ -5,16 +5,18 @@ import { Node, to_node } from "../../web/cls";
 import { listui } from "./list";
 import { Div } from "./div"
 import { ListUi } from "./list";
-export class Search extends Input {
+export class Search extends Div {
     dialog: Div
     listui: ListUi
+    input:Input
     init_node(): void {
-        this.dialog = new Div().mount(this.div_el)
+        this.input =  this.add_child(new Input())
+        this.dialog = this.add_child(new Div().hide())
         this.listui = this.dialog.add_child(new ListUi())
     }
     set_search(url: string) {
-        web.bind_click(this.el, () => this.emit_search(url))
-        web.bind_input(this.el, () => this.filter())
+        web.bind_click(this.input.el, () => this.emit_search(url))
+        // web.bind_input(this.input.el, () => this.filter())
         return this
     }
     emit_search(url: string) {
@@ -24,8 +26,9 @@ export class Search extends Input {
         })
     }
     filter() {
-        listui().set_option(
-            to_node(this.option).filter(this.get_value())
+        this.listui.set_option(
+            //to_node(this.option).filter(this.get_value())
+            this.option
         ).select((v: any) => {
             this.set_value(v.title)
             this.dialog.hide()
@@ -38,6 +41,7 @@ export class Search extends Input {
     }
     show_search_dialog() {
         // console.log(this.get_rect(), this.el)
+        this.filter()
         this.dialog.set_style({
             left: this.get_a_x(),
             top: this.get_a_y() + this.get_height(),
@@ -46,6 +50,7 @@ export class Search extends Input {
             overflowY: "auto",
             border: "1px solid #000",
             backgroundColor: "white",
+            position:"fixed"
         }).show()
         web.body_click(() => {
             this.dialog.hide()

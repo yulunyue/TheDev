@@ -21,7 +21,7 @@ class Algo extends Div {
     init_node() {
         this.div = div()
         this.form = form().set_option(node().set_childs([
-            node("moudule_name").set_type("search").set_data({
+            node("moudule_name").set_type("select").set_data({
                 uri: "/app/yly/algo/manage/query"
             }),
         ]))

@@ -11,10 +11,10 @@ import heapq
 inf = float("inf")
 MOD = (10**9)+7
 try:
-    from app.yly.manage import SolutionBase
-    DEV = True
+    from app.yly.algo.manage import SolutionBase
+    
 except:
-    DEV = False
+    
 
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -76,9 +76,9 @@ class Solution(SolutionBase):
 
     def get_watch(self):
         return [
-            self.watch(
-                self.circles
-            )
+            # self.watch(
+            #     self.circles
+            # )
         ]
 
     def canReachCorner(self, *arg, **kg):

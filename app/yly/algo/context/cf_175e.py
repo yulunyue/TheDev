@@ -19,8 +19,8 @@ def case_load(sl):
 
 
 try:
-    from app.yly.manage import SolutionBase
-    SolutionBase.case_load = case_load
+    from app.yly.algo.manage import SolutionBase
+
 except:
     class SolutionBase:
 
@@ -75,14 +75,7 @@ class UniFind:
 
     def get_pkeys(self):
         return set(list(self.p.values()))
-
-
-class Solution(SolutionBase):
-    uri = ""
-    gameid = ''
-
-    def get_cases(self):
-        return [
+inps=[
             '''
 6
 0
@@ -107,6 +100,13 @@ class Solution(SolutionBase):
 864760239
 '''
         ]
+
+class Solution(SolutionBase):
+    uri = ""
+    gameid = ''
+
+    def get_cases(self):
+        return []
 
     def execute(self, n, vids, **kw):
         ans = 0

@@ -55,3 +55,18 @@ class File:
 
     def exists(self):
         return os.path.exists(self.path)
+    
+    def list_dir(self):
+        return [File(self.path+'/'+f) for f in os.listdir(self.path)]
+    
+    def dp_dir(self):
+        ret:List[File]=[]
+        for f in self.list_dir():
+            if f.is_dir():
+                ret.extend(f.dp_dir())
+            else:
+                ret.append(f)
+        return ret
+    
+    def is_dir(self):
+        return os.path.isdir(self.path)

@@ -42,8 +42,8 @@ class WatchAny(WatchBase):
 
 class WatchText(WatchBase):
 
-    def __init__(self, wathc_ins, **watch_keys):
-        self.watch_ins = wathc_ins
+    def __init__(self, ins, **watch_keys):
+        self.watch_ins = ins
         self.watch_keys: dict = watch_keys
 
     def hex_str(self):
@@ -140,7 +140,7 @@ class SolutionBase:
     def watch(self, type, *args, **kw):
         return dict(
             text=WatchText
-        ).get(type)(*args, _ins=self, **kw).set_type(type)
+        ).get(type,WatchAny)(*args, **kw).set_type(type)
 
     def record(self):
         childs = []
@@ -161,17 +161,18 @@ class Route:
 
     def query(self, **kwargs):
         ret = Node(value=PATH)
-        for name in os.listdir(PATH):
-            if not name.endswith('.py'):
+        
+        for fp in File(PATH).dp_dir():
+            if not fp.path.endswith('.py'):
                 continue
-            moudle_name = PATH.replace('/', '.')+"."+name.replace('.py', '')
+            moudle_name = fp.path.replace('/', '.').replace('.py', '')
             fc = Module().load_module(moudle_name)
             if not hasattr(fc, 'Solution'):
                 continue
             f: SolutionBase = fc.Solution()
             cases = f.get_cases()
             if not cases:
-                continue
+                continue 
             f.init(**cases[0])
             if f.get_watch():
                 ret.add_child(value=moudle_name, data=cases)
@@ -192,6 +193,7 @@ class Route:
 
 if __name__ == "__main__":
     # print(http_test('/app/yly/manage/'+sys.argv[1]))
-    open("data/a.json", 'w', encoding='utf-8').write(
-        json.dumps(Route().execute('app.yly.algo.geometry.lc_3235'), indent=4,
-                   ensure_ascii=False))
+    # open("data/a.json", 'w', encoding='utf-8').write(
+    #     json.dumps(Route().execute('app.yly.algo.geometry.lc_3235'), indent=4,
+    #                ensure_ascii=False))
+    print(Route().query().to_json())
