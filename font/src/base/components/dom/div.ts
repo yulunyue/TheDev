@@ -287,7 +287,7 @@ export class Div {
         return this
     }
     render_option() {
-        this.set_html(this.option.value)
+        this.set_html(this.option.get_title())
     }
     add_childs(childs: any[]) {
         return this.set_childs(childs)

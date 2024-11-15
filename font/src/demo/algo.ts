@@ -6,7 +6,7 @@ import {
 
 function algo_node_factory(n: string) {
     return {
-        text: form,
+        text: div,
         tree
     }[n]()
 }
@@ -51,7 +51,7 @@ class Algo extends Div {
                 this.algo_nodes.push(node)
                 return node.set_size(1)
             })
-        ).flex_horizontal_layout().emit_mount()
+        ).flex_veritcal_layout().emit_mount()
     }
     goto(idx: number) {
         if (!this.option.data.records || !this.option.data.records[idx]) {

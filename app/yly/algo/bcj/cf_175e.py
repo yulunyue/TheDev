@@ -10,12 +10,6 @@ import math
 import heapq
 
 
-def case_load(sl):
-    return dict(
-        n=int(sl[0]),
-        vids=[list(map(int, v.split(' '))) for v in sl[1:-1]],
-        result=sl[-1]
-    )
 
 
 try:
@@ -23,19 +17,20 @@ try:
 
 except:
     class SolutionBase:
+        def input(self):
+            return input()
 
         def log(self, *args, **kwargs):
             pass
 
         def execute(self, *args, **kwargs):
             pass
+        
+        def exec(self):
+            pass
 
         def run(self):
-            sl = [input()]
-            for _ in range(int(sl[0])):
-                sl.append(input())
-            sl.append("")
-            print(self.execute(**case_load(sl)))
+            print(self.exec())
 
 inf = float("inf")
 M = (10**9)+7
@@ -77,8 +72,7 @@ class UniFind:
         return set(list(self.p.values()))
 
 
-inps = [
-    '''
+CASE1 ='''
 6
 0
 0
@@ -88,31 +82,26 @@ inps = [
 1 3 4
 30
 '''
-]
 class Solution(SolutionBase):
     uri = "https://codeforces.com/contest/175/problem/E"
     gameinfo = ('cf',175,'E')
 
     def get_cases(self):
-        return []
+        return [CASE1]
 
-    def init(self,n,vids,**kw):
-        self.n=n
-        self.vids=vids
-
-    def execute(self):
+    def exec(self):
         ans = 0
+        n=int(self.input())
         uf = UniFind(self.n+1)
-        for pid, ids in enumerate(self.vids, 1):
-            for i in range(1, len(ids), 2):
-                cid, value = ids[i], ids[i+1]
+        for pid in range(1,n+1):
+            ids = self.input().split(' ')
+            for i in range(1,len(ids),2):
+                cid, value = int(ids[i]), int(ids[i+1])
                 parent, val = uf.find(cid)
                 val += value
                 ans += val
                 uf.merge(pid, parent, val)
-
         return ans % M
-    
 
 if __name__ == '__main__':
     Solution().run()

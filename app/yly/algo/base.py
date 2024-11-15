@@ -23,9 +23,10 @@ except:
 
         def execute(self, *args, **kwargs):
             pass
-
-        def run(self):
+        def exec(self):
             pass
+        def run(self):
+            print(self.exec())
 
         def watch(self):
             pass

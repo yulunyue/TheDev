@@ -11,50 +11,51 @@ import json
 CHANGE_STORE = dict()
 
 
-def wc(key, v):
-    if v != CHANGE_STORE.get(key, v):
+def wc(title, key, v, color):
+    k = title+key
+    cl='#000'
+    if v != CHANGE_STORE.get(k, v):
         CHANGE_STORE[key] = v
-        return f'<span style="color:blue">{v}</span>'
+        cl=color 
     CHANGE_STORE[key] = v
-    return v
+    return f'<span>{title}</span><span style="color:{cl};margin:3px">{v}</span>'
 
 
-class WatchBase:
+def rs(title,value,key=""):
+    return wc(title,key,value,'red')
 
-    def ui_info(self):
-        return dict(type=self.type)
+def ah(txt,href):
+    return f'<a href="{href}"></a>'
 
-    def set_type(self, v):
-        self.type = v
-        return self
+def bs(title,value,key=""):
+    return wc(title,key,value,'blue')
 
 
-class WatchAny(WatchBase):
-    def __init__(self, ins, **kwarg) -> None:
-        self.ins = ins
+def gs(title,value,key):
+    return wc(title,key,value,'green')
+
+
+
+
+class WatchAny:
+    def __init__(self, tp,ins,size=0) -> None:
+        self.ins =ins
+        self.type=tp
+        self.size=size
 
     def hex_str(self):
         return self.ins.hex_str()
 
-    def to_json(self):
-        return self.ins.to_json()
+    def algo_view(self):
+        return self.ins.algo_view()
+    
+    
+    def ui_info(self):
+        return dict(type=self.type,size=self.size)
 
-
-class WatchText(WatchBase):
-
-    def __init__(self, ins, **watch_keys):
-        self.watch_ins = ins
-        self.watch_keys: dict = watch_keys
-
-    def hex_str(self):
-        return "".join(str(getattr(self.watch_ins, key)) for key in self.watch_keys.keys())
-
-    def to_json(self):
-        childs = []
-        for k, name in self.watch_keys.items():
-            value = wc("self_"+k, str(getattr(self.watch_ins, k)))
-            childs.append(dict(title=name+":", value=value, type='text'))
-        return dict(childs=childs)
+    def set_type(self, v):
+        self.type = v
+        return self
 
 
 class SolutionBase:
@@ -63,11 +64,12 @@ class SolutionBase:
     name = "test"
     DEV = True
     watch_var = None
-
+    gameinfo = ['lc']
     def get_cases(self):
         return [
 
         ]
+ 
 
     def execute(self):
         pass
@@ -86,13 +88,14 @@ class SolutionBase:
             d.draw_graph(s)
         d.save(f"data/log/{tp}.png")
 
-    def run(self):
+    def run_cf(self):
+        pass
 
+
+    def run_lc(self):
+        game_type,*args=self.gameinfo
         for i, case in enumerate(self.get_cases()):
             self.__class__.logs = []
-            if isinstance(case, str):
-                case = SolutionBase.case_load(
-                    [v for v in case.split('\n') if v])
             self.ep = case.pop("result")
             a = time.time()
             try:
@@ -108,7 +111,11 @@ class SolutionBase:
                 self.flush_log(
                     i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                 break
-
+    def run(self):
+        if self.gameinfo[0]=='lc':
+            self.run_lc()
+        elif self.gameinfo[0]=='cf':
+            self.run_cf()
     def flush_log(self, i, s):
         logger.info(f'{i}:{s}')
 
@@ -137,16 +144,14 @@ class SolutionBase:
     def init(self, *args, **kwargs):
         pass
 
-    def watch(self, type, *args, **kw):
-        return dict(
-            text=WatchText
-        ).get(type,WatchAny)(*args, **kw).set_type(type)
+    def watch(self,tp,ins,size=0):
+        return WatchAny(tp,ins,size)
 
     def record(self):
         childs = []
         key = ""
         for var in self.watch_var:
-            childs.append(var.to_json())
+            childs.append(var.algo_view())
             key += var.hex_str()
         return key, childs
 
@@ -172,8 +177,9 @@ class Route:
             f: SolutionBase = fc.Solution()
             cases = f.get_cases()
             if not cases:
-                continue 
-            f.init(**cases[0])
+                continue
+            if isinstance(cases[0],dict): 
+                f.init(**cases[0])
             if f.get_watch():
                 ret.add_child(value=moudle_name, data=cases)
         return ret

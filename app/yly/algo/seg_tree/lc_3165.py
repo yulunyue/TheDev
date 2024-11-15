@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.algo.manage import SolutionBase
+    from app.yly.algo.manage import SolutionBase,rs,bs,gs,ah
 except Exception as e:
     print(f'{e}',file=sys.stderr)
     class SolutionBase:
@@ -103,28 +103,25 @@ class SegTreeNode:
         self.fmx = max(self.left.f10+self.right.fmx,
                        self.left.fmx+self.right.f01)
 
-    def title2(self, key):
-        from app.yly.algo.manage import wc
-        return f'{key}: {wc("ti_"+str(self.idx)+"_"+key,getattr(self,key))}'
+
 
     def get_title(self):
-        from app.yly.algo.manage import wc
-        sr = wc(f'self_arr_{self.idx}', Solution.arr[self.l:self.r+1])
+        sr = rs(f"{self.l}:{self.r}",Solution.arr[self.l:self.r])
         return '</br>'.join([
-            f"[{self.l}:{self.r}]->{sr}",
-            f"{self.title2('f00')},  {self.title2('f10')}",
-            f"{self.title2('f01')},  {self.title2('fmx')}"
+            f"sr",
+            f"{rs('f00',self.f00)}, {rs('f10',self.f10)}",
+            f"{rs('f01',self.f01)},  {rs('fmx',self.fmx)}"
         ])
 
-    def to_json(self):
+    def algo_view(self):
         ret = dict(
             title=self.get_title(),
             childs=[],
         )
         if self._left:
-            ret['childs'].append(self._left.to_json())
+            ret['childs'].append(self._left.algo_view())
         if self._right:
-            ret['childs'].append(self._right.to_json())
+            ret['childs'].append(self._right.algo_view())
         return ret
 
     def hex_str(self):
@@ -156,15 +153,38 @@ class Solution(SolutionBase):
         for i, v in enumerate(Solution.arr):
             self.t.update(i, i, v)
 
+    def hex_str(self):
+        return f'{self.queries}{Solution.arr}'
+
+    def algo_view(self):
+        ret='<br>'.join([
+            f'lc3165_不包含相邻元素的子序列的最大和',
+            f'{ah("链接",self.uri)}; 解法: 线段树',
+            f"",
+            f'每个节点存储4个信息',
+            f'1. f00: 区间最左边和最右边的数都不选的情况下的最大值',
+            f'2. f01: 最左边的数不选的最大值',
+            f'3. f10: 最右边的数不选的最大值',
+            f'4. fmx: 区间最大值',
+            "",
+            f'所以有: ',
+            f'f00 = max(left.f00+right.f10, left.f01+right.f00)',
+            f'f01 = max(left.f00+right.fmx, left.f01+right.f01)',
+            f'f10 = max(left.f10+right.f10, left.fmx+right.f00)',
+            f'fmx = max(left.f10+right.fmx, left.fmx+right.f01)',
+            "",
+            f'样例:',
+            f'{bs("输入序列",Solution.arr)} {bs("查询列表",self.queries)}',
+            f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}'
+        ])
+        return dict(title=ret)
     def get_watch(self):
         return [
-            self.watch('text', self, queries="查询列表",  result="期望结果"),
-            self.watch('text', self, arr="数组", ans="当前答案"),
+            self.watch('text', self),
             self.watch("tree", self.t)
         ]
 
     def execute(self):
-
         while self.queries:
             idx, value = self.queries.pop(0)
             Solution.arr[idx] = value
