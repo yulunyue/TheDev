@@ -35,7 +35,7 @@ class Constant {
     DIALOG_COLOR = '#8888'
 
     INPUT_NUMBER_WIDTH = 40
-
+    INPUT_STRING_MIN_WIDTH = 120
     KEY_RIGHT = 'ArrowRight'
     KEY_LEFT = 'ArrowLeft'
     MOCK_NODE_3_20 = fack_data(0, 3, 20)

@@ -75,8 +75,10 @@ class UniFind:
 
     def get_pkeys(self):
         return set(list(self.p.values()))
-inps=[
-            '''
+
+
+inps = [
+    '''
 6
 0
 0
@@ -99,10 +101,11 @@ inps=[
 3 4 -642324044 8 609375785 9 -62137735
 864760239
 '''
-        ]
+]
+
 
 class Solution(SolutionBase):
-    uri = ""
+    uri = "https://codeforces.com/contest/175/problem/E"
     gameid = ''
 
     def get_cases(self):

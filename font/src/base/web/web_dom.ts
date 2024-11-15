@@ -126,6 +126,9 @@ class WebDom {
     bind_input(dom: Dom, call_back: any) {
         dom.oninput = call_back
     }
+    bind_change(dom: Dom, call_back: any) {
+        dom.onchange = call_back
+    }
     bind_mousemove(dom: Dom, call_back: any) {
         dom.onmousemove = call_back
     }
