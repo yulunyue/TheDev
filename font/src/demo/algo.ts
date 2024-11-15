@@ -21,7 +21,7 @@ class Algo extends Div {
     init_node() {
         this.div = div()
         this.form = form().set_option(node().set_childs([
-            node("moudule_name").set_type("select").set_data({
+            node("moudle_name").set_type("select").set_data({
                 uri: "/app/yly/algo/manage/query"
             }),
         ]))
@@ -54,7 +54,7 @@ class Algo extends Div {
         ).flex_horizontal_layout().emit_mount()
     }
     goto(idx: number) {
-        if (!this.option || !this.option.data.records[idx]) {
+        if (!this.option.data.records || !this.option.data.records[idx]) {
             return
         }
         for (var i = 0; i < this.option.data.records[idx].length; i++) {
@@ -65,8 +65,12 @@ class Algo extends Div {
         this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
     load() {
+        let moudle_name=this.form.get("moudle_name",web_dom.url_param['moudle_name'])
+        if(!moudle_name){
+            return
+        }
         web_dom.post('/app/yly/algo/manage/execute', {
-
+            moudle_name
         }, (node: Node) => {
             this.set_option(node)
             this.pro.set_max_value(node.data.records.length)
@@ -74,9 +78,9 @@ class Algo extends Div {
     }
     on_mount() {
         //this.test()
-        //this.load()
-        this.open_setting()
-
+        this.load()
+        //this.open_setting()
+        
     }
 }
 export default function () {

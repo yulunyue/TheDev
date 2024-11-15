@@ -45,15 +45,13 @@ export class Tree extends Svg {
     init_node(): void {
         this.g = this.add_child(new GNode())
     }
-    set_option(option: Node): this {
-        this.option = to_node(option)
+    render_option(){
         this.max_xy = this.option.init_layout()
         this.draw()
-        return this
     }
     calc_pos(x: number, y: number) {
         let h = Math.min(1 / this.max_xy.y * this.height, 150)
-        let w = Math.min(1 / this.max_xy.x * this.width, 200)
+        let w = Math.min(1 / this.max_xy.x * this.width, 210)
         let margin_left = (this.width - w * this.max_xy.x) / 2
         let margin_top = (this.height - h * this.max_xy.y) / 2-30
         return {
@@ -62,7 +60,7 @@ export class Tree extends Svg {
         }
     }
     draw() {
-        if (!this.width || !this.height || !this.option) {
+        if (!this.width || !this.height || !this.max_xy) {
             return
         }
         this.g.clear()

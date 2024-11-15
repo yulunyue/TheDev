@@ -9,7 +9,7 @@ export class Text extends GNode {
     foreign_object: GNode
     max_width: number
     init_node(): void {
-        this.max_width = 150
+        this.max_width = 180
         this.contain = new Div().set_style({
             border: "1px solid #000",
             width: this.max_width,

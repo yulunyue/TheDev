@@ -82,6 +82,7 @@ export class Node {
     depth?: number = 0
     x?: number = 0
     y?: number = 0
+    el?:any
     constructor(key?: string) {
         this.childs = []
         this.data = {}
@@ -93,7 +94,9 @@ export class Node {
         return this
     }
     set_data(data: any) {
-        this.data = data
+        for(var key in data){
+            this.data[key]=data[key]
+        }
         return this
     }
     set_value(value: any) {
@@ -112,6 +115,12 @@ export class Node {
         return this
     }
     set_option(data: any) {
+        if(data.key){
+            this.key=data.key
+        }
+        if(data.data){
+            this.set_data(data.data)
+        }
         return this.set_title(
             data.title
         ).set_value(
@@ -142,6 +151,7 @@ export class Node {
     }
     init_layout() {
         let ret = { y: 0, x: 0 }
+        this.x=0
         function dfs(node: Node, p: Node) {
             if (node.childs.length == 0) {
                 node.x = ret.x
@@ -166,7 +176,14 @@ export class Node {
     }
 
     get_title() {
-        return this.title
+        let ret=this.title
+        if(!ret){
+            ret=this.key
+        }
+        if(!ret){
+            ret=this.value
+        }
+        return ret
     }
 }
 
@@ -178,4 +195,10 @@ export function to_node(n: any) {
 }
 export function node(key?: string) {
     return new Node(key)
+}
+export function not_null(a:any,b:any){
+    if(a==""||a==null||a==undefined){
+        return b
+    }
+    return a
 }

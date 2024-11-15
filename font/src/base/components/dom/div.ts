@@ -1,5 +1,5 @@
 import web_dom from "../../web/web_dom"
-import { Style, Node, Fn1 } from "src/base/web/cls"
+import { Style, Node, Fn1, to_node } from "../../web/cls"
 import { Dom } from "../../web/cls"
 import Constant from "../../web/constant"
 
@@ -91,7 +91,7 @@ export class Div {
     set_flex_style(direction: number) {
         direction = this.get_direction(direction)
         this.set_style_flex(direction)
-        //this.set_div_style({border: "1px solid #000"})
+        this.set_div_style({border: "1px solid #ccc"})
         for (var i = 0; i < this.childs.length; i++) {
             if (this.childs[i].set_flex_style) {
                 this.childs[i].set_flex_style(1 - direction)
@@ -107,7 +107,7 @@ export class Div {
         this.el = this.create_element(this.node_type)
         this.parent = null
         this.div_el = this.el
-
+        this.option=new Node()
         this.init_node()
         this.init_style()
         this.init_event()
@@ -282,7 +282,7 @@ export class Div {
         return info
     }
     set_option(option: Node) {
-        this.option = option
+        this.option.set_option(option)
         this.render_option()
         return this
     }

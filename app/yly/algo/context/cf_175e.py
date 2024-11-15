@@ -87,34 +87,23 @@ inps = [
 1 1 2
 1 3 4
 30
-''', '''
-10
-0
-0
-0
-1 3 -823680354
-1 3 -850620736
-2 3 640948460 2 -822416813
-0
-1 7 668611485
-0
-3 4 -642324044 8 609375785 9 -62137735
-864760239
 '''
 ]
-
-
 class Solution(SolutionBase):
     uri = "https://codeforces.com/contest/175/problem/E"
-    gameid = ''
+    gameinfo = ('cf',175,'E')
 
     def get_cases(self):
         return []
 
-    def execute(self, n, vids, **kw):
+    def init(self,n,vids,**kw):
+        self.n=n
+        self.vids=vids
+
+    def execute(self):
         ans = 0
-        uf = UniFind(n+1)
-        for pid, ids in enumerate(vids, 1):
+        uf = UniFind(self.n+1)
+        for pid, ids in enumerate(self.vids, 1):
             for i in range(1, len(ids), 2):
                 cid, value = ids[i], ids[i+1]
                 parent, val = uf.find(cid)
@@ -122,10 +111,8 @@ class Solution(SolutionBase):
                 ans += val
                 uf.merge(pid, parent, val)
 
-                # self.log(pid, cid, value, ans, values, values[parent])
-        # self.log(p)
         return ans % M
-
+    
 
 if __name__ == '__main__':
     Solution().run()
