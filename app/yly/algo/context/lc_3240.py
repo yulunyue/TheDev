@@ -1,0 +1,65 @@
+
+
+from typing import List, Dict, Optional
+from collections import defaultdict, deque, Counter
+from itertools import accumulate, product, permutations
+from functools import lru_cache
+import bisect
+import sys
+import math
+import heapq
+inf = float("inf")
+MOD = (10**9)+7
+try:
+    from app.yly.algo.manage import SolutionBase
+
+except:
+
+    class SolutionBase:
+        DEV = False
+
+        def log(self, *args, **kwargs):
+            pass
+
+        def execute(self, *args, **kwargs):
+            pass
+
+        def exec(self):
+            pass
+
+        def run(self):
+            print(self.exec())
+
+        def watch(self):
+            pass
+
+
+class Solution(SolutionBase):
+    uri = ""
+    gameid = ''
+
+    def get_cases(self):
+        return [
+
+        ]
+
+    def execute(self):
+        n, m = len(self.grid), len(self.grid[0])
+        rb, cb, re, ce = 0, 0, n-1, m-1
+        for i in range(n//2+1):
+            for j in range(m//2+1):
+                pass
+
+    def init(self, grid: List[List[int]]) -> int:
+        self.grid = grid
+
+    def init(self, *args, **kwarg):
+        pass
+
+    def minFlips(self, *arg, **kg):
+        self.init(*arg, **kg)
+        return self.execute()
+
+
+if __name__ == '__main__':
+    Solution().run()

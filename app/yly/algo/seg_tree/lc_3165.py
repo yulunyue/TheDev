@@ -8,9 +8,10 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.algo.manage import SolutionBase,rs,bs,gs,ah
+    from app.yly.algo.manage import SolutionBase, rs, bs, gs, ah
 except Exception as e:
-    print(f'{e}',file=sys.stderr)
+    print(f'{e}', file=sys.stderr)
+
     class SolutionBase:
         def log(self, *args, **kwargs):
             pass
@@ -103,12 +104,10 @@ class SegTreeNode:
         self.fmx = max(self.left.f10+self.right.fmx,
                        self.left.fmx+self.right.f01)
 
-
-
     def get_title(self):
-        sr = rs(f"{self.l}:{self.r}",Solution.arr[self.l:self.r])
+        sr = rs(f"{self.l}:{self.r}", Solution.arr[self.l:self.r])
         return '</br>'.join([
-            f"sr",
+            f"{sr}",
             f"{rs('f00',self.f00)}, {rs('f10',self.f10)}",
             f"{rs('f01',self.f01)},  {rs('fmx',self.fmx)}"
         ])
@@ -136,10 +135,12 @@ class SegTreeNode:
 class Solution(SolutionBase):
     uri = 'https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
     arr = []
+    has_view = True
 
     def get_cases(self):
         return [
-            dict(nums=[4,5,10,12,15,6], queries=[[1, 3], [2, 7]], result=21),
+            dict(nums=[4, 5, 10, 12, 15, 6], queries=[
+                 [1, 3], [2, 7]], result=21),
             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21)
         ]
 
@@ -154,10 +155,10 @@ class Solution(SolutionBase):
             self.t.update(i, i, v)
 
     def hex_str(self):
-        return f'{self.queries}{Solution.arr}'
+        return ''
 
     def algo_view(self):
-        ret='<br>'.join([
+        ret = '<br>'.join([
             f'lc3165_不包含相邻元素的子序列的最大和',
             f'{ah("链接",self.uri)}; 解法: 线段树',
             f"",
@@ -172,16 +173,30 @@ class Solution(SolutionBase):
             f'f01 = max(left.f00+right.fmx, left.f01+right.f01)',
             f'f10 = max(left.f10+right.f10, left.fmx+right.f00)',
             f'fmx = max(left.f10+right.fmx, left.fmx+right.f01)',
-            "",
-            f'样例:',
-            f'{bs("输入序列",Solution.arr)} {bs("查询列表",self.queries)}',
-            f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}'
+
         ])
         return dict(title=ret)
+
     def get_watch(self):
         return [
-            self.watch('text', self),
-            self.watch("tree", self.t)
+            self.watch('text', self.hex_str, self.algo_view),
+            [
+
+                [
+                    self.watch(
+                        'text',
+                        lambda: f'{Solution.arr+self.queries}',
+                        lambda: dict(title=bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries))),
+                    self.watch(
+                        'text',
+                        lambda: f'{self.result}{self.ans}',
+                        lambda:  dict(
+                            title=f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}')
+                    ),
+                ],
+                self.watch("tree", self.t.hex_str, self.t.algo_view, 1),
+            ],
+
         ]
 
     def execute(self):

@@ -1,5 +1,5 @@
 import web_dom from "../../web/web_dom"
-import { Style, Node, Fn1, to_node } from "../../web/cls"
+import { Style, Node, Fn1, to_node, not_null } from "../../web/cls"
 import { Dom } from "../../web/cls"
 import Constant from "../../web/constant"
 
@@ -25,20 +25,26 @@ export class Div {
         }
         return direction
     }
-    add_grid_childs(childs: any[]) {
-        let row = Math.ceil(Math.sqrt(childs.length))
-        let col = Math.ceil(childs.length / row)
-        for (var i = 0; i < row; i++) {
-            let tmp_layout = new Div().set_size(i)
-            for (var j = 0; j < col; j += 1) {
-                let idx = i * col + j
-                if (idx >= childs.length) {
-                    break
-                }
-                tmp_layout.add_child(childs[idx])
+    add_dfs_childs(childs: any[], direction: number) {
+
+        let size = 0
+        for (var i = 0; i < childs.length; i++) {
+            if (Array.isArray(childs[i])) {
+                let tmp = new Div()
+                size += tmp.add_dfs_childs(childs[i], 1 - direction)
+                this.add_child(tmp)
+            } else {
+                let c_size = not_null(childs[i].option.size, 0)
+                childs[i].set_size(c_size).set_flex_style(1 - direction)
+                this.add_child(childs[i])
+                size += c_size
             }
-            this.add_child(tmp_layout)
         }
+        this.set_size(size).set_flex_style(direction)
+        return size
+    }
+    add_grid_childs(childs: any[], direction: number) {
+        this.add_dfs_childs(childs, direction)
         return this
     }
     flex_horizontal_layout() {
@@ -91,7 +97,7 @@ export class Div {
     set_flex_style(direction: number) {
         direction = this.get_direction(direction)
         this.set_style_flex(direction)
-        this.set_div_style({border: "1px solid #ccc"})
+        this.set_div_style({ border: "1px solid #ccc" })
         for (var i = 0; i < this.childs.length; i++) {
             if (this.childs[i].set_flex_style) {
                 this.childs[i].set_flex_style(1 - direction)
@@ -107,7 +113,7 @@ export class Div {
         this.el = this.create_element(this.node_type)
         this.parent = null
         this.div_el = this.el
-        this.option=new Node()
+        this.option = new Node()
         this.init_node()
         this.init_style()
         this.init_event()

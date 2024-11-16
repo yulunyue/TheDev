@@ -45,13 +45,28 @@ class Algo extends Div {
     }
     draw_nodes() {
         this.algo_nodes = []
-        this.div.clear().add_grid_childs(
-            this.option.data.nodes.map((v: Node) => {
-                let node = algo_node_factory(v.type)
+        let nodes = []
+        var dfs = (cr: any, nds: any) => {
+            if (Array.isArray(cr)) {
+                let tmp_nodes = []
+                nds.push(tmp_nodes)
+                for (var i = 0; i < cr.length; i++) {
+                    dfs(cr[i], tmp_nodes)
+                }
+
+            } else {
+                let node = algo_node_factory(cr.type)
+                node.option.size = cr.size
                 this.algo_nodes.push(node)
-                return node.set_size(1)
-            })
-        ).flex_veritcal_layout().emit_mount()
+                nds.push(node)
+            }
+        }
+
+        dfs(this.option.childs, nodes)
+        this.div.clear().add_grid_childs(
+            nodes,
+            Constant.HORIZONTAL
+        ).emit_mount()
     }
     goto(idx: number) {
         if (!this.option.data.records || !this.option.data.records[idx]) {
@@ -65,8 +80,8 @@ class Algo extends Div {
         this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
     load() {
-        let moudle_name=this.form.get("moudle_name",web_dom.url_param['moudle_name'])
-        if(!moudle_name){
+        let moudle_name = this.form.get("moudle_name", web_dom.url_param['moudle_name'])
+        if (!moudle_name) {
             return
         }
         web_dom.post('/app/yly/algo/manage/execute', {
@@ -80,7 +95,7 @@ class Algo extends Div {
         //this.test()
         this.load()
         //this.open_setting()
-        
+
     }
 }
 export default function () {

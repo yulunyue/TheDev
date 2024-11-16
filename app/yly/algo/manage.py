@@ -13,45 +13,45 @@ CHANGE_STORE = dict()
 
 def wc(title, key, v, color):
     k = title+key
-    cl='#000'
+    cl = '#000'
     if v != CHANGE_STORE.get(k, v):
         CHANGE_STORE[key] = v
-        cl=color 
+        cl = color
     CHANGE_STORE[key] = v
     return f'<span>{title}</span><span style="color:{cl};margin:3px">{v}</span>'
 
 
-def rs(title,value,key=""):
-    return wc(title,key,value,'red')
-
-def ah(txt,href):
-    return f'<a href="{href}"></a>'
-
-def bs(title,value,key=""):
-    return wc(title,key,value,'blue')
+def li(array, method_name):
+    if isinstance(array, list):
+        return [li(v, method_name) for v in array]
+    return getattr(array, method_name)()
 
 
-def gs(title,value,key):
-    return wc(title,key,value,'green')
+def rs(title, value, key=""):
+    return wc(title, key, value, 'red')
 
 
+def ah(txt, href):
+    return f'<a href="{href}">{txt}</a>'
+
+
+def bs(title, value, key=""):
+    return wc(title, key, value, 'blue')
+
+
+def gs(title, value, key):
+    return wc(title, key, value, 'green')
 
 
 class WatchAny:
-    def __init__(self, tp,ins,size=0) -> None:
-        self.ins =ins
-        self.type=tp
-        self.size=size
+    def __init__(self, tp, hex_str, algo_view, size=0) -> None:
+        self.hex_str = hex_str
+        self.algo_view = algo_view
+        self.type = tp
+        self.size = size
 
-    def hex_str(self):
-        return self.ins.hex_str()
-
-    def algo_view(self):
-        return self.ins.algo_view()
-    
-    
     def ui_info(self):
-        return dict(type=self.type,size=self.size)
+        return dict(type=self.type, size=self.size)
 
     def set_type(self, v):
         self.type = v
@@ -60,19 +60,22 @@ class WatchAny:
 
 class SolutionBase:
     logs = []
-    case_load = None
+    has_view = False
     name = "test"
     DEV = True
     watch_var = None
     gameinfo = ['lc']
+
     def get_cases(self):
         return [
 
         ]
- 
 
     def execute(self):
         pass
+
+    def algo_view(self):
+        return []
 
     @classmethod
     def log(cls, *s, tp: str = ""):
@@ -91,9 +94,7 @@ class SolutionBase:
     def run_cf(self):
         pass
 
-
     def run_lc(self):
-        game_type,*args=self.gameinfo
         for i, case in enumerate(self.get_cases()):
             self.__class__.logs = []
             self.ep = case.pop("result")
@@ -111,11 +112,13 @@ class SolutionBase:
                 self.flush_log(
                     i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                 break
+
     def run(self):
-        if self.gameinfo[0]=='lc':
+        if self.gameinfo[0] == 'lc':
             self.run_lc()
-        elif self.gameinfo[0]=='cf':
+        elif self.gameinfo[0] == 'cf':
             self.run_cf()
+
     def flush_log(self, i, s):
         logger.info(f'{i}:{s}')
 
@@ -144,16 +147,20 @@ class SolutionBase:
     def init(self, *args, **kwargs):
         pass
 
-    def watch(self,tp,ins,size=0):
-        return WatchAny(tp,ins,size)
+    def watch(self, tp, hex_str, algo_view, size=0):
+        return WatchAny(tp, hex_str, algo_view, size)
 
     def record(self):
         childs = []
-        key = ""
-        for var in self.watch_var:
+        keys = []
+
+        def dfs(var):
+            if isinstance(var, list):
+                return [dfs(v) for v in var]
             childs.append(var.algo_view())
-            key += var.hex_str()
-        return key, childs
+            keys.append(var.hex_str())
+        dfs(self.watch_var)
+        return "".join(keys), childs
 
     def get_watch(self):
         return []
@@ -166,22 +173,14 @@ class Route:
 
     def query(self, **kwargs):
         ret = Node(value=PATH)
-        
+
         for fp in File(PATH).dp_dir():
             if not fp.path.endswith('.py'):
                 continue
             moudle_name = fp.path.replace('/', '.').replace('.py', '')
             fc = Module().load_module(moudle_name)
-            if not hasattr(fc, 'Solution'):
-                continue
-            f: SolutionBase = fc.Solution()
-            cases = f.get_cases()
-            if not cases:
-                continue
-            if isinstance(cases[0],dict): 
-                f.init(**cases[0])
-            if f.get_watch():
-                ret.add_child(value=moudle_name, data=cases)
+            if hasattr(fc, 'has_view') and getattr(fc, 'has_view'):
+                ret.add_child(value=moudle_name, data=fc.get_cases())
         return ret
 
     def execute(self, moudle_name, case: dict = None):
@@ -191,15 +190,17 @@ class Route:
         CHANGE_STORE.clear()
         f.init(**case)
         f.watch_var = f.get_watch()
-        return dict(data=dict(
-            nodes=[v.ui_info() for v in f.watch_var],
-            records=run_watch_fun(f.execute, f.record)
-        ))
+        return dict(
+            childs=li(f.watch_var, 'ui_info'),
+            data=dict(
+                records=run_watch_fun(f.execute, f.record)
+            )
+        )
 
 
 if __name__ == "__main__":
     # print(http_test('/app/yly/manage/'+sys.argv[1]))
-    # open("data/a.json", 'w', encoding='utf-8').write(
-    #     json.dumps(Route().execute('app.yly.algo.geometry.lc_3235'), indent=4,
-    #                ensure_ascii=False))
-    print(Route().query().to_json())
+    open("data/a.json", 'w', encoding='utf-8').write(
+        json.dumps(Route().execute('app.yly.algo.seg_tree.lc_3165'), indent=4,
+                   ensure_ascii=False))
+    # print(Route().query().to_json())
