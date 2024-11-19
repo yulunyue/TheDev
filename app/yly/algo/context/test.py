@@ -20,7 +20,8 @@ except:
 
         def log(self, *args, **kwargs):
             pass
-
+        def init(self,*args,**kwagrs):
+            pass
         def execute(self, *args, **kwargs):
             pass
         def exec(self):
@@ -38,85 +39,34 @@ class Solution(SolutionBase):
 
     def get_cases(self):
         return [
-            dict(nums=[20,-1,72,-1,108],result=26),
-            dict(nums=[1,12],result=11),
-            dict(nums=[-1,-1,-1,38],result=0),
-            dict(nums=[14,-1,-1,46],result=11),
-            dict(nums = [1,2,-1,10,8],result=4),
-            dict(nums=[-1,-1,-1],result=0),       
+            dict(n = 4, queries = [[0, 3], [0, 2]],result=[1, 1]),
+            dict(n =5,queries =[[1,3],[2,4]],result=[3,3]),
         ]
-
-
-    def init(self, nums: List[int]) -> int:
-        self.nums=nums
-    
-    def execute(self):
-        n = len(self.nums)
-        mv=0
-        idx=0
-        l2,l3=[],[]
-        def l_append(q:List[int],i1,i2):
-            tmp=[]
-            if self.nums[i1]!=-1:
-                tmp.append(self.nums[i1])
-            if i2<len(self.nums) and self.nums[i2]!=-1:
-                if tmp and tmp[0]>self.nums[i2]:
-                    tmp.insert(0,self.nums[i2])
-                else:
-                    tmp.append(self.nums[i2])
-            q.append(tmp)
-        max_r=0
-        while idx<n:
-            max_r=max(max_r,self.nums[idx])
-            i=idx+1
-            while i<n and self.nums[i]==-1:
-                i+=1
-            if i==idx+2:
-                l_append(l2,idx,i)
-            elif i>idx+2:
-                l_append(l3,idx,i)
-            elif i<n and i>0 and self.nums[i-1]!=-1:
-                mv=max(mv,abs(self.nums[i]-self.nums[i-1]))
-            idx=i
-        def checkl(v,l,n):
-            for a in l:
-                pass
-        def check(c):
-            self.x1=self.x2=mv
-            self.y1=self.y2=max_r
-            if l2 and not checkl(c,l2,2):
-                return False
-            if l3 and not checkl(c,l3,3):
-                return False
-            return True
-
-        ans=l=mv
-        r=max_r
-        while l<=r:
-            m=(l+r)//2
-            if check(m):
-                ans=m
-                l=m+1
-            else:
-                r=m-1
-        # l2.sort()
-        # l3.sort()
-        self.log(l2,l3,mv)
-        # if len(l2)==1 and len(l3)==1:
-        #     return 0
-        # if len(l2)>=1:
-        #     mv=max(mv,math.ceil((l2[-1]-l2[0])/2))
-        # if len(l3)>=1:
-        #     mv=max(mv,math.ceil((l3[-1]-l3[0])/3))
-       
+     
+    def execute(self, n: int, queries: List[List[int]]) -> List[int]:
+        dis=list(range(n))
+        pre=[[] for _ in range(n)]
+        ans=[]
+        for a,b in queries:
+            pre[b].append(a)
+            if dis[a]+1>=dis[b]:
+                ans.append(dis[-1])
+                continue
+            dis[b]=dis[a]+1
+            for c in range(b+1,n):
+                dis[c]=min(dis[c],dis[c-1]+1)
+                for p in pre[c]:
+                    dis[c]=min(dis[c],dis[p]+1)
+            ans.append(dis[-1])
+                
         return ans
 
 
   
         
-    def minDifference(self, *arg, **kg):
+    def shortestDistanceAfterQueries(self, *arg, **kg):
         self.init(*arg, **kg)
-        return self.execute()
+        return self.execute(*arg, **kg)
 
 
 if __name__ == '__main__':

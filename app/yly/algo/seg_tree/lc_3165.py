@@ -19,7 +19,8 @@ except Exception as e:
         def run(self):
             pass
 
-        def watch(self, *args, **kwags):
+
+        def layout(self, *args, **kwags):
             pass
 
 
@@ -140,7 +141,7 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             dict(nums=[4, 5, 10, 12, 15, 6], queries=[
-                 [1, 3], [2, 7]], result=21),
+                 [1, 3], [2, 7]], result=55),
             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21)
         ]
 
@@ -178,28 +179,28 @@ class Solution(SolutionBase):
         return dict(title=ret)
 
     def get_watch(self):
-        return [
-            self.watch('text', self.hex_str, self.algo_view),
-            [
-
-                [
-                    self.watch(
+        return self.layout("v",
+            self.layout("v",
+                self.layout('text', self.hex_str, self.algo_view),
+                self.layout(
+                    'v',
+                    self.layout(
                         'text',
                         lambda: f'{Solution.arr+self.queries}',
                         lambda: dict(title=bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries))),
-                    self.watch(
+                    self.layout(
                         'text',
                         lambda: f'{self.result}{self.ans}',
                         lambda:  dict(
                             title=f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}')
                     ),
-                ],
-                self.watch("tree", self.t.hex_str, self.t.algo_view, 1),
-            ],
+                )
+            ),
+            self.layout("tree", self.t.hex_str, self.t.algo_view, 1),
+        )
 
-        ]
 
-    def execute(self):
+    def execute(self,**kwargs):
         while self.queries:
             idx, value = self.queries.pop(0)
             Solution.arr[idx] = value

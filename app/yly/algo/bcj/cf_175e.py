@@ -80,20 +80,21 @@ CASE1 ='''
 2 1 5 2 2
 1 1 2
 1 3 4
-30
 '''
 class Solution(SolutionBase):
     uri = "https://codeforces.com/contest/175/problem/E"
     gameinfo = ('cf',175,'E')
 
     def get_cases(self):
-        return [CASE1]
+        return [
+            dict(input=CASE1,result=30),
+        ]
 
-    def exec(self):
+    def exec(self,**kg):
         ans = 0
-        n=int(self.input())
+        self.n=int(self.input())
         uf = UniFind(self.n+1)
-        for pid in range(1,n+1):
+        for pid in range(1,self.n+1):
             ids = self.input().split(' ')
             for i in range(1,len(ids),2):
                 cid, value = int(ids[i]), int(ids[i+1])
