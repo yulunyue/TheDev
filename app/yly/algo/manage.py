@@ -44,14 +44,19 @@ def gs(title, value, key):
 
 
 class WatchAny:
-    def __init__(self, tp, hex_str, algo_view, size=0) -> None:
+    def __init__(self, tp, *args, hex_str=None, algo_view=None, size=0) -> None:
         self.hex_str = hex_str
         self.algo_view = algo_view
         self.type = tp
         self.size = size
+        self.childs:List[WatchAny] = list(args)
 
     def ui_info(self):
-        return dict(type=self.type, size=self.size)
+        return dict(
+            type=self.type, 
+            size=self.size,
+            childs=[v.ui_info() for v in self.childs]
+        )
 
     def set_type(self, v):
         self.type = v
@@ -63,9 +68,8 @@ class SolutionBase:
     has_view = False
     name = "test"
     DEV = True
-    watch_var = None
+    watch_var:WatchAny = None
     gameinfo = ['lc']
-
     def get_cases(self):
         return [
 
@@ -91,17 +95,21 @@ class SolutionBase:
             d.draw_graph(s)
         d.save(f"data/log/{tp}.png")
 
-    def run_cf(self):
+    def exec(self,**kg):
         pass
 
-    def run_lc(self):
+    def run(self):
         for i, case in enumerate(self.get_cases()):
             self.__class__.logs = []
             self.ep = case.pop("result")
             a = time.time()
             try:
                 self.init(**case)
-                r = self.execute()
+                if self.gameinfo[0]=='cf':
+                    self.lines=[v for v in case.pop('input').split('\n') if v]
+                    r = self.exec(**case)
+                else:
+                    r = self.execute(**case)
                 self.log("finish", time.time()-a)
             except Exception as e:
                 import traceback
@@ -112,12 +120,8 @@ class SolutionBase:
                 self.flush_log(
                     i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                 break
-
-    def run(self):
-        if self.gameinfo[0] == 'lc':
-            self.run_lc()
-        elif self.gameinfo[0] == 'cf':
-            self.run_cf()
+    def input(self):
+        return self.lines.pop(0)
 
     def flush_log(self, i, s):
         logger.info(f'{i}:{s}')
@@ -145,11 +149,11 @@ class SolutionBase:
         return str(a) == str(b)
 
     def init(self, *args, **kwargs):
-        pass
-
-    def watch(self, tp, hex_str, algo_view, size=0):
-        return WatchAny(tp, hex_str, algo_view, size)
-
+        pass        
+    
+    def layout(self,tp,*args, hex_str=None, algo_view=None, size=0):
+        return WatchAny(tp, *args, hex_str=hex_str, algo_view=algo_view, size=size)
+    
     def record(self):
         childs = []
         keys = []
@@ -159,7 +163,7 @@ class SolutionBase:
                 return [dfs(v) for v in var]
             childs.append(var.algo_view())
             keys.append(var.hex_str())
-        dfs(self.watch_var)
+        # dfs(self.watch_var)
         return "".join(keys), childs
 
     def get_watch(self):
@@ -190,13 +194,9 @@ class Route:
         CHANGE_STORE.clear()
         f.init(**case)
         f.watch_var = f.get_watch()
-        return dict(
-            childs=li(f.watch_var, 'ui_info'),
-            data=dict(
-                records=run_watch_fun(f.execute, f.record)
-            )
-        )
-
+        ret=f.watch_var.ui_info()
+        ret["data"]=dict(records=run_watch_fun(f.execute, f.record))
+        return ret
 
 if __name__ == "__main__":
     # print(http_test('/app/yly/manage/'+sys.argv[1]))

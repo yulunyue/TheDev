@@ -20,7 +20,8 @@ except:
 
         def log(self, *args, **kwargs):
             pass
-
+        def init(self,*args,**kwagrs):
+            pass
         def execute(self, *args, **kwargs):
             pass
         def exec(self):
@@ -38,13 +39,10 @@ class Solution(SolutionBase):
 
     def get_cases(self):
         return [
-            dict(nums=[20,-1,72,-1,108],result=26),
-            dict(nums=[1,12],result=11),
-            dict(nums=[-1,-1,-1,38],result=0),
-            dict(nums=[14,-1,-1,46],result=11),
-            dict(nums = [1,2,-1,10,8],result=4),
-            dict(nums=[-1,-1,-1],result=0),       
+            dict(n = 4, queries = [[0, 3], [0, 2]],result=[1, 1]),
+            dict(n =5,queries =[[1,3],[2,4]],result=[3,3]),
         ]
+<<<<<<< HEAD
 
 
     def init(self, nums: List[int]) -> int:
@@ -69,14 +67,33 @@ class Solution(SolutionBase):
             idx=i
 
        
+=======
+     
+    def execute(self, n: int, queries: List[List[int]]) -> List[int]:
+        dis=list(range(n))
+        pre=[[] for _ in range(n)]
+        ans=[]
+        for a,b in queries:
+            pre[b].append(a)
+            if dis[a]+1>=dis[b]:
+                ans.append(dis[-1])
+                continue
+            dis[b]=dis[a]+1
+            for c in range(b+1,n):
+                dis[c]=min(dis[c],dis[c-1]+1)
+                for p in pre[c]:
+                    dis[c]=min(dis[c],dis[p]+1)
+            ans.append(dis[-1])
+                
+>>>>>>> 3a4de23693d9086a09c4068accf3a376b41e2d05
         return ans
 
 
   
         
-    def minDifference(self, *arg, **kg):
+    def shortestDistanceAfterQueries(self, *arg, **kg):
         self.init(*arg, **kg)
-        return self.execute()
+        return self.execute(*arg, **kg)
 
 
 if __name__ == '__main__':
