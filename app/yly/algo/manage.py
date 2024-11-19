@@ -50,7 +50,7 @@ class WatchAny:
         self.type = tp
         self.size = size
         self.childs:List[WatchAny] = list(args)
-
+        self.leaf:List[WatchAny]=[]
     def ui_info(self):
         return dict(
             type=self.type, 
@@ -61,6 +61,18 @@ class WatchAny:
     def set_type(self, v):
         self.type = v
         return self
+   
+    def load(self):
+        self.leaf =[]
+        def dfs(c:WatchAny):
+            for n in c.childs:
+                dfs(n)
+            if not c.childs:
+                if c.algo_view is None or c.hex_str is None:
+                    raise Exception(c,c.type,c.childs)
+                self.leaf.append(c)
+        dfs(self)
+        return self
 
 
 class SolutionBase:
@@ -68,8 +80,9 @@ class SolutionBase:
     has_view = False
     name = "test"
     DEV = True
-    watch_var:WatchAny = None
     gameinfo = ['lc']
+    watch_var:WatchAny
+    
     def get_cases(self):
         return [
 
@@ -151,23 +164,21 @@ class SolutionBase:
     def init(self, *args, **kwargs):
         pass        
     
-    def layout(self,tp,*args, hex_str=None, algo_view=None, size=0):
-        return WatchAny(tp, *args, hex_str=hex_str, algo_view=algo_view, size=size)
+    def layout(self,tp,*args, hex_str=None, algo_view=None, size=0,**kw):
+        return WatchAny(tp, *args, hex_str=hex_str, algo_view=algo_view, size=size,**kw)
     
     def record(self):
         childs = []
         keys = []
-
-        def dfs(var):
-            if isinstance(var, list):
-                return [dfs(v) for v in var]
+   
+        for var in self.watch_var.leaf:
             childs.append(var.algo_view())
             keys.append(var.hex_str())
         # dfs(self.watch_var)
         return "".join(keys), childs
 
     def get_watch(self):
-        return []
+        raise Exception("xx")
 
 
 PATH = 'app/yly/algo'

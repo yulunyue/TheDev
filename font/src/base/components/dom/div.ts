@@ -19,6 +19,10 @@ export class Div {
         this.direction = direction
         return this
     }
+    get_content_divs(){
+        let ret=[]
+        return ret
+    }
     get_direction(direction: number) {
         if (this.direction != null) {
             return this.direction

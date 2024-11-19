@@ -181,23 +181,32 @@ class Solution(SolutionBase):
     def get_watch(self):
         return self.layout("v",
             self.layout("v",
-                self.layout('text', self.hex_str, self.algo_view),
+                self.layout(
+                    'text', 
+                    hex_str=self.hex_str, 
+                    algo_view=self.algo_view
+                ),
                 self.layout(
                     'v',
                     self.layout(
                         'text',
-                        lambda: f'{Solution.arr+self.queries}',
-                        lambda: dict(title=bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries))),
+                        hex_str=lambda: f'{Solution.arr+self.queries}',
+                        algo_view=lambda: dict(title=bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries))),
                     self.layout(
                         'text',
-                        lambda: f'{self.result}{self.ans}',
-                        lambda:  dict(
+                        hex_str=lambda: f'{self.result}{self.ans}',
+                        algo_view=lambda:  dict(
                             title=f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}')
                     ),
                 )
             ),
-            self.layout("tree", self.t.hex_str, self.t.algo_view, 1),
-        )
+            self.layout(
+                "tree", 
+                hex_str=self.t.hex_str, 
+                algo_view=self.t.algo_view, 
+                size=1
+            ),
+        ).load()
 
 
     def execute(self,**kwargs):
