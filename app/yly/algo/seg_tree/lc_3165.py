@@ -7,20 +7,15 @@ import bisect
 import sys
 import math
 import heapq
+import os
 try:
-    from app.yly.algo.manage import SolutionBase, rs, bs, gs, ah
+    from app.yly.algo.manage import SolutionBase, rs, bs, gs, ah, div,tree
 except Exception as e:
-    print(f'{e}', file=sys.stderr)
-
     class SolutionBase:
         def log(self, *args, **kwargs):
             pass
 
         def run(self):
-            pass
-
-
-        def layout(self, *args, **kwags):
             pass
 
 
@@ -159,7 +154,7 @@ class Solution(SolutionBase):
         return ''
 
     def algo_view(self):
-        ret = '<br>'.join([
+        return '<br>'.join([
             f'lc3165_不包含相邻元素的子序列的最大和',
             f'{ah("链接",self.uri)}; 解法: 线段树',
             f"",
@@ -174,36 +169,27 @@ class Solution(SolutionBase):
             f'f01 = max(left.f00+right.fmx, left.f01+right.f01)',
             f'f10 = max(left.f10+right.f10, left.fmx+right.f00)',
             f'fmx = max(left.f10+right.fmx, left.fmx+right.f01)',
-
         ])
-        return dict(title=ret)
 
     def get_watch(self):
-        return self.layout("v",
-            self.layout("v",
-                self.layout(
-                    'text', 
+        return div(
+            div(
+                div(
                     hex_str=self.hex_str, 
-                    algo_view=self.algo_view
+                    algo_view=self.algo_view,
                 ),
-                self.layout(
-                    'v',
-                    self.layout(
-                        'text',
+                div(
+                    div(
                         hex_str=lambda: f'{Solution.arr+self.queries}',
-                        algo_view=lambda: dict(title=bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries))),
-                    self.layout(
-                        'text',
+                        algo_view=lambda: bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries)),
+                    div(
                         hex_str=lambda: f'{self.result}{self.ans}',
-                        algo_view=lambda:  dict(
-                            title=f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}')
+                        algo_view=lambda: f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}'
                     ),
                 )
             ),
-            self.layout(
-                "tree", 
-                hex_str=self.t.hex_str, 
-                algo_view=self.t.algo_view, 
+            tree(
+                self.t,
                 size=1
             ),
         ).load()

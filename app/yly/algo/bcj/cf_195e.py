@@ -1,13 +1,13 @@
 
 
-from typing import List, Dict, Optional
-from collections import defaultdict, deque, Counter
-from itertools import accumulate, product, permutations
-from functools import lru_cache
-import bisect
-import sys
-import math
-import heapq
+# from typing import List, Dict, Optional
+# from collections import defaultdict, deque, Counter
+# from itertools import accumulate, product, permutations
+# from functools import lru_cache
+# import bisect
+# import sys
+# import math
+# import heapq
 
 
 
@@ -39,7 +39,6 @@ M = (10**9)+7
 class UniFind:
     def __init__(self, n) -> None:
         self.p = [-1]*n
-        # self.size = defaultdict(int)
         self.value = [0]*n
 
     def merge(self, parent, child, val=0):
@@ -82,8 +81,8 @@ CASE1 ='''
 1 3 4
 '''
 class Solution(SolutionBase):
-    uri = "https://codeforces.com/contest/175/problem/E"
-    gameinfo = ('cf',175,'E')
+    uri = "https://codeforces.com/contest/195/problem/E"
+    gameinfo = ('cf',195,'E')
 
     def get_cases(self):
         return [

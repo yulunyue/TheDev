@@ -4,16 +4,7 @@ import {
     line, gnode, GNode, button, progress, div, input, Input, Progress
 } from "../base/components/export";
 
-const VH={
-    v:Constant.VERTICAL,
-    h:Constant.HORIZONTAL
-}
-function algo_node_factory(n: string) {
-    return {
-        text: div,
-        tree
-    }[n]()
-}
+
 class Algo extends Div {
     div: Div
     pro: Progress
@@ -48,9 +39,9 @@ class Algo extends Div {
         return this
     }
     draw_nodes() {
-        this.algo_nodes=this.div.clear().add_grid_childs(
+        this.algo_nodes = this.div.clear().add_grid_childs(
             this.option.childs,
-            VH[this.option.type]
+            Constant.HORIZONTAL
         ).emit_mount().get_content_divs()
     }
     goto(idx: number) {

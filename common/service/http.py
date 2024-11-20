@@ -31,20 +31,22 @@ class TornadaWebSocketConnectHandler(tornado.websocket.WebSocketHandler):
 
 
 class Node:
-    def __init__(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None) -> None:
+    def __init__(self, code=0, type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
         self.code = code
         self.type = type
         self.key = key
         self.title = title
         self.value = value
+        self.size = size
         self.data = data or dict()
-        self.option = option
         self.parent = None
         self.childs: List[Node] = []
         if childs:
             for cd in childs:
-                self.add_child(**cd)
-
+                if isinstance(cd,dict):
+                    self.add_child(**cd)
+                else:
+                    self.childs.append(cd)
     def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None):
         ret = Node(code, type, key, title,
                    value, data, option, childs=childs)
@@ -57,13 +59,15 @@ class Node:
             code=self.code,
             type=self.type,
             key=self.key,
-            title=self.title,
+            title=self.get_title(),
             value=self.value,
             data=self.data,
-            option=self.option,
+            size=self.size,
             childs=[c.to_json() for c in self.childs]
         )
 
+    def get_title(self):
+        return self.title
 
 class ApiCall:
     def __init__(self) -> None:

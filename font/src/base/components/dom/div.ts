@@ -2,7 +2,15 @@ import web_dom from "../../web/web_dom"
 import { Style, Node, Fn1, to_node, not_null } from "../../web/cls"
 import { Dom } from "../../web/cls"
 import Constant from "../../web/constant"
-
+export class DivFactory {
+    static fac_map = {}
+    static register(key: string, fun: any) {
+        DivFactory.fac_map[key] = fun
+    }
+    static new_div(key: string, option: Node) {
+        return this.fac_map[key]().set_option(option)
+    }
+}
 export class Div {
     el: HTMLElement
     div_el: HTMLElement
@@ -19,8 +27,8 @@ export class Div {
         this.direction = direction
         return this
     }
-    get_content_divs(){
-        let ret=[]
+    get_content_divs() {
+        let ret = []
         return ret
     }
     get_direction(direction: number) {
@@ -30,22 +38,17 @@ export class Div {
         return direction
     }
     add_dfs_childs(childs: any[], direction: number) {
-
-        let size = 0
         for (var i = 0; i < childs.length; i++) {
-            if (Array.isArray(childs[i])) {
-                let tmp = new Div()
-                size += tmp.add_dfs_childs(childs[i], 1 - direction)
-                this.add_child(tmp)
-            } else {
-                let c_size = not_null(childs[i].option.size, 0)
-                childs[i].set_size(c_size).set_flex_style(1 - direction)
+            if (childs[i] instanceof Div) {
                 this.add_child(childs[i])
-                size += c_size
+            } else {
+                let tmp = DivFactory.new_div(childs[i].type, childs[i])
+                tmp.set_size(childs[i].size).set_flex_style(1 - direction)
+                this.add_dfs_childs(childs[i].childs, 1 - direction)
+                this.add_child(tmp)
             }
         }
-        this.set_size(size).set_flex_style(direction)
-        return size
+
     }
     add_grid_childs(childs: any[], direction: number) {
         this.add_dfs_childs(childs, direction)

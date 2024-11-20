@@ -21,11 +21,34 @@ def wc(title, key, v, color):
     return f'<span>{title}</span><span style="color:{cl};margin:3px">{v}</span>'
 
 
-def li(array, method_name):
-    if isinstance(array, list):
-        return [li(v, method_name) for v in array]
-    return getattr(array, method_name)()
 
+class WatchAny(Node):
+    def __init__(self, *args, hex_str=None, algo_view=None, **kwargs) -> None:
+        self.hex_str = hex_str
+        self.algo_view = algo_view
+        self.leaf:List[WatchAny]=[]
+        super().__init__(**kwargs,childs=args)
+    
+    def get_title(self):
+        return self.algo_view() if self.algo_view else ""
+
+    def get_hex_str(self):
+        return self.hex_str()
+        
+    def ui_info(self):
+        return self.to_json()
+   
+    def load(self):
+        self.leaf =[]
+        def dfs(c:WatchAny):
+            for n in c.childs:
+                dfs(n)
+            if not c.childs:
+                if c.algo_view is None or c.hex_str is None:
+                    raise Exception(c,c.type,c.childs)
+                self.leaf.append(c)
+        dfs(self)
+        return self
 
 def rs(title, value, key=""):
     return wc(title, key, value, 'red')
@@ -42,38 +65,11 @@ def bs(title, value, key=""):
 def gs(title, value, key):
     return wc(title, key, value, 'green')
 
+def div(*args,hex_str=None, algo_view=None,size=0):
+    return WatchAny(*args,type='div', hex_str=hex_str, algo_view=algo_view, size=size)
 
-class WatchAny:
-    def __init__(self, tp, *args, hex_str=None, algo_view=None, size=0) -> None:
-        self.hex_str = hex_str
-        self.algo_view = algo_view
-        self.type = tp
-        self.size = size
-        self.childs:List[WatchAny] = list(args)
-        self.leaf:List[WatchAny]=[]
-    def ui_info(self):
-        return dict(
-            type=self.type, 
-            size=self.size,
-            childs=[v.ui_info() for v in self.childs]
-        )
-
-    def set_type(self, v):
-        self.type = v
-        return self
-   
-    def load(self):
-        self.leaf =[]
-        def dfs(c:WatchAny):
-            for n in c.childs:
-                dfs(n)
-            if not c.childs:
-                if c.algo_view is None or c.hex_str is None:
-                    raise Exception(c,c.type,c.childs)
-                self.leaf.append(c)
-        dfs(self)
-        return self
-
+def tree(t:WatchAny,size=1):
+    return WatchAny(type='tree',hex_str=t.hex_str,algo_view=t.algo_view,size=size)
 
 class SolutionBase:
     logs = []
@@ -164,8 +160,8 @@ class SolutionBase:
     def init(self, *args, **kwargs):
         pass        
     
-    def layout(self,tp,*args, hex_str=None, algo_view=None, size=0,**kw):
-        return WatchAny(tp, *args, hex_str=hex_str, algo_view=algo_view, size=size,**kw)
+    
+      
     
     def record(self):
         childs = []
