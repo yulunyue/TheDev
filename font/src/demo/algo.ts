@@ -41,7 +41,7 @@ class Algo extends Div {
     draw_nodes() {
         this.algo_nodes = this.div.clear().add_grid_childs(
             this.option.childs,
-            this.option.data.direction
+            this.option.direction
         ).emit_mount().get_content_divs()
     }
     goto(idx: number) {

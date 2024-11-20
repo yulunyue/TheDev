@@ -38,8 +38,6 @@ export class TreeNode extends GNode {
 
 }
 export class Tree extends Svg {
-    width: number
-    height: number
     max_xy: any
     g: GNode
     add_dfs_childs(nodes: any, depth: any) {
@@ -53,19 +51,20 @@ export class Tree extends Svg {
         this.draw()
     }
     calc_pos(x: number, y: number) {
-        let h = Math.min(1 / this.max_xy.y * this.height, 150)
-        let w = Math.min(1 / this.max_xy.x * this.width, 210)
-        let margin_left = (this.width - w * this.max_xy.x) / 2
-        let margin_top = (this.height - h * this.max_xy.y) / 2 - 30
+        let h = Math.min(1 / this.max_xy.y * this.get_height(), 150)
+        let w = Math.min(1 / this.max_xy.x * this.get_width(), 210)
+        let margin_left = (this.get_width() - w * this.max_xy.x) / 2
+        let margin_top = (this.get_height() - h * this.max_xy.y) / 2 - 30
         return {
             x: margin_left + x * w,
             y: margin_top + y * h
         }
     }
     draw() {
-        if (!this.width || !this.height || !this.max_xy) {
+        if (!this.get_width() || !this.get_height() || !this.max_xy) {
             return
         }
+        console.warn(this.get_width(),this.get_height(),this.max_xy)
         this.g.clear()
         var dfs = (node: Node, p: Node) => {
             node.data.node = new TreeNode()
@@ -82,8 +81,6 @@ export class Tree extends Svg {
         dfs(this.option, null)
     }
     on_mount(): void {
-        this.width = this.get_width()
-        this.height = this.get_height()
         this.draw()
     }
 }

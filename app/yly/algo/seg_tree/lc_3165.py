@@ -101,11 +101,11 @@ class SegTreeNode:
                        self.left.fmx+self.right.f01)
 
     def get_title(self):
-        sr = rs(f"{self.l}:{self.r}", Solution.arr[self.l:self.r])
+        sr = bs(f"{self.idx}->[{self.l},{self.r}]", Solution.arr[self.l:self.r+1])
         return '</br>'.join([
             f"{sr}",
-            f"{rs('f00',self.f00)}, {rs('f10',self.f10)}",
-            f"{rs('f01',self.f01)},  {rs('fmx',self.fmx)}"
+            f"{bs('f00',self.f00,self.idx)}, {bs('f10',self.f10,self.idx)}",
+            f"{bs('f01',self.f01,self.idx)}, {bs('fmx',self.fmx,self.idx)}"
         ])
 
     def algo_view(self):
@@ -154,16 +154,15 @@ class Solution(SolutionBase):
         return ''
 
     def algo_view(self):
-        return '<br>'.join([
-            f'lc3165_不包含相邻元素的子序列的最大和',
-            f'{ah("链接",self.uri)}; 解法: 线段树',
-            f"",
+        return '<br><br>'.join([
+            f'leetcode 3165_不包含相邻元素的子序列的最大和',
+            f'{ah("链接",self.uri)}',
+            f"解法: 线段树",
             f'每个节点存储4个信息',
             f'1. f00: 区间最左边和最右边的数都不选的情况下的最大值',
             f'2. f01: 最左边的数不选的最大值',
             f'3. f10: 最右边的数不选的最大值',
             f'4. fmx: 区间最大值',
-            "",
             f'所以有: ',
             f'f00 = max(left.f00+right.f10, left.f01+right.f00)',
             f'f01 = max(left.f00+right.fmx, left.f01+right.f01)',
@@ -174,10 +173,11 @@ class Solution(SolutionBase):
     def get_watch(self):
         return divv(
             div(
-                divh(
-                    hex_str=self.hex_str, 
-                    algo_view=self.algo_view,
-                ),
+                hex_str=self.hex_str, 
+                algo_view=self.algo_view,
+                size=0,
+            ),
+            div(
                 div(
                     div(
                         hex_str=lambda: f'{Solution.arr+self.queries}',
@@ -186,11 +186,13 @@ class Solution(SolutionBase):
                         hex_str=lambda: f'{self.result}{self.ans}',
                         algo_view=lambda: f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}'
                     ),
-                )
+                ),
+                tree(
+                    self.t,
+                ),
+                size=1,
             ),
-            tree(
-                self.t,
-            ),
+      
         ).load()
 
 

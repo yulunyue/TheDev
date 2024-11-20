@@ -12,22 +12,24 @@ CHANGE_STORE = dict()
 
 
 def wc(title, key, v, color):
-    k = title+key
+    k = f'{title}{key}'
     cl = '#000'
+    v = str(v)
+    # print(k,v,CHANGE_STORE.get(k))
     if v != CHANGE_STORE.get(k, v):
-        CHANGE_STORE[key] = v
+        CHANGE_STORE[k] = v
         cl = color
-    CHANGE_STORE[key] = v
-    return f'<span>{title}</span><span style="color:{cl};margin:3px">{v}</span>'
+    
+    CHANGE_STORE[k] = v
+    return f'<span>{title}:</span><span style="color:{cl};margin:3px">{v}</span>'
 
 
 
 class WatchAny(Node):
-    def __init__(self, *args, hex_str=None, algo_view=None, direction=-1,size=None,**kwargs) -> None:
+    def __init__(self, *args, hex_str=None, algo_view=None,size=None,**kwargs) -> None:
         self.hex_str = hex_str
         self._algo_view = algo_view
         self.leaf:List[WatchAny]=[]
-        self.direction = direction
         if size is None:
             size=1 if algo_view and hex_str else 0
         super().__init__(**kwargs,childs=args,size=size)
@@ -42,9 +44,7 @@ class WatchAny(Node):
         return self.hex_str()
         
 
-    
-    def get_data(self):
-        return dict(direction=self.direction)
+
    
     def load(self):
         self.leaf =[]

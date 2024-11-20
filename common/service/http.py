@@ -33,7 +33,7 @@ class TornadaWebSocketConnectHandler(tornado.websocket.WebSocketHandler):
 
 
 class Node:
-    def __init__(self, code=0, type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
+    def __init__(self, code=0,  direction=-1,type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
         self.code = code
         self.type = type
         self.key = key or uid('node')
@@ -43,6 +43,7 @@ class Node:
         self.data = data or dict()
         self.parent = None
         self.childs: List[Node] = []
+        self.direction = direction
         if childs:
             for cd in childs:
                 if isinstance(cd,dict):
@@ -58,6 +59,7 @@ class Node:
 
     def to_json(self):
         return dict(
+            direction=self.direction,
             code=self.code,
             type=self.type,
             key=self.key,

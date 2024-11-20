@@ -79,6 +79,7 @@ export class Node {
     option?: any = null
     parent?: Node = null
     childs?: Node[] = null
+    direction?:number = -1
     depth?: number = 0
     x?: number = 0
     y?: number = 0
@@ -115,8 +116,12 @@ export class Node {
         }
         return this
     }
-    set_size(size: any) {
+    set_size(size: number) {
         this.size = size
+        return this
+    }
+    set_direction(direction:number){
+        this.direction = direction
         return this
     }
     set_option(data: any) {
@@ -136,6 +141,8 @@ export class Node {
             data.type
         ).set_size(
             data.size
+        ).set_direction(
+            data.direction
         )
     }
     dump() {

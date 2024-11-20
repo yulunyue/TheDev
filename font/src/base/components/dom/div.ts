@@ -49,18 +49,17 @@ export class Div {
         return direction
     }
     add_dfs_childs(childs: Node[], direction: number) {
-        this.set_flex_style(direction)
+        this.set_style_flex(this.get_direction(direction))
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Div) {
                 this.add_child(childs[i])
             } else {
-                let tmp = DivFactory.new_div(childs[i].type, childs[i])
-
+                let tmp:Div = DivFactory.new_div(childs[i].type, childs[i])
+                tmp.set_option(childs[i])
                 if (childs[i].childs) {
                     tmp.add_dfs_childs(childs[i].childs, 1 - direction)
-                    tmp.set_size(childs[i].size)
                 } else {
-                    tmp.set_size(childs[i].size)
+                    
                 }
                 this.add_child(tmp)
             }
@@ -116,6 +115,7 @@ export class Div {
             justifyContent: "center",
             alignContent: "center",
             flexGrow: this.size + "",
+            border: "1px solid #ccc" 
         })
     }
     set_flex_style(direction: number) {
@@ -313,7 +313,8 @@ export class Div {
     }
     set_option(option: Node) {
         this.option.set_option(option)
-        this.set_direction(option.data?.direction)
+        this.set_direction(option.direction)
+        this.set_size(option.size)
         DivFactory.set(this.option.key, this)
         this.render_option()
         return this
