@@ -4,10 +4,18 @@ import { Dom } from "../../web/cls"
 import Constant from "../../web/constant"
 export class DivFactory {
     static fac_map = {}
+    static instance = {}
+    static set(key: string, value: any) {
+        DivFactory.instance[key] = value
+    }
+    static get(key: string) {
+        return DivFactory.instance[key]
+    }
     static register(key: string, fun: any) {
         DivFactory.fac_map[key] = fun
     }
     static new_div(key: string, option: Node) {
+        console.log(key, DivFactory.fac_map)
         return this.fac_map[key]().set_option(option)
     }
 }
@@ -20,10 +28,13 @@ export class Div {
     option: Node
     index: number
     on_mount_call: any
-    direction: number = null
+    direction: number = -1
     layout_type: number = 0
     size: number = 0
     set_direction(direction: number) {
+        if (direction != 0 && direction != -1 && direction != 1) {
+            return this
+        }
         this.direction = direction
         return this
     }
@@ -32,19 +43,25 @@ export class Div {
         return ret
     }
     get_direction(direction: number) {
-        if (this.direction != null) {
+        if (this.direction != -1) {
             return this.direction
         }
         return direction
     }
-    add_dfs_childs(childs: any[], direction: number) {
+    add_dfs_childs(childs: Node[], direction: number) {
+        this.set_flex_style(direction)
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Div) {
                 this.add_child(childs[i])
             } else {
                 let tmp = DivFactory.new_div(childs[i].type, childs[i])
-                tmp.set_size(childs[i].size).set_flex_style(1 - direction)
-                this.add_dfs_childs(childs[i].childs, 1 - direction)
+
+                if (childs[i].childs) {
+                    tmp.add_dfs_childs(childs[i].childs, 1 - direction)
+                    tmp.set_size(childs[i].size)
+                } else {
+                    tmp.set_size(childs[i].size)
+                }
                 this.add_child(tmp)
             }
         }
@@ -296,6 +313,8 @@ export class Div {
     }
     set_option(option: Node) {
         this.option.set_option(option)
+        this.set_direction(option.data?.direction)
+        DivFactory.set(this.option.key, this)
         this.render_option()
         return this
     }

@@ -201,25 +201,26 @@ class UnionFind:
     def getDepth(self, a):
         self.find(a)
         return self.depth[a]
- 
-n = II()
-dsu = UnionFind(n)
-ans = 0
- 
-for i in range(n):
-    tmp = LII()
-    for j in range(1, len(tmp), 2):
-        idx = tmp[j] - 1
-        val = tmp[j + 1]
-        if val < 0: val += mod
-        
-        val += dsu.getDepth(idx)
-        if val >= mod: val -= mod
-        
-        ans += val
-        if ans >= mod: ans -= mod
-        
-        u = dsu.find(idx)
-        dsu.merge(i, u, val)
- 
-print(ans)
+
+if __name__ == '__main__':
+    n = II()
+    dsu = UnionFind(n)
+    ans = 0
+    
+    for i in range(n):
+        tmp = LII()
+        for j in range(1, len(tmp), 2):
+            idx = tmp[j] - 1
+            val = tmp[j + 1]
+            if val < 0: val += mod
+            
+            val += dsu.getDepth(idx)
+            if val >= mod: val -= mod
+            
+            ans += val
+            if ans >= mod: ans -= mod
+            
+            u = dsu.find(idx)
+            dsu.merge(i, u, val)
+    
+    print(ans)

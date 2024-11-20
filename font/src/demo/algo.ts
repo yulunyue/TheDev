@@ -1,7 +1,7 @@
 
 import {
     Div, Svg, svg, Constant, Node, web_dom, tree, Form, form, dialog, node,
-    line, gnode, GNode, button, progress, div, input, Input, Progress
+    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory
 } from "../base/components/export";
 
 
@@ -41,15 +41,16 @@ class Algo extends Div {
     draw_nodes() {
         this.algo_nodes = this.div.clear().add_grid_childs(
             this.option.childs,
-            Constant.HORIZONTAL
+            this.option.data.direction
         ).emit_mount().get_content_divs()
     }
     goto(idx: number) {
         if (!this.option.data.records || !this.option.data.records[idx]) {
             return
         }
-        for (var i = 0; i < this.option.data.records[idx].length; i++) {
-            this.algo_nodes[i].set_option(this.option.data.records[idx][i])
+        console.log(this.option.data.records[idx], DivFactory.instance)
+        for (var key in this.option.data.records[idx]) {
+            DivFactory.get(key).set_option(this.option.data.records[idx][key])
         }
     }
     test() {

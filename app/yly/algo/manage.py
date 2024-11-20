@@ -23,29 +23,35 @@ def wc(title, key, v, color):
 
 
 class WatchAny(Node):
-    def __init__(self, *args, hex_str=None, algo_view=None, **kwargs) -> None:
+    def __init__(self, *args, hex_str=None, algo_view=None, direction=-1,size=None,**kwargs) -> None:
         self.hex_str = hex_str
-        self.algo_view = algo_view
+        self._algo_view = algo_view
         self.leaf:List[WatchAny]=[]
-        super().__init__(**kwargs,childs=args)
+        self.direction = direction
+        if size is None:
+            size=1 if algo_view and hex_str else 0
+        super().__init__(**kwargs,childs=args,size=size)
     
-    def get_title(self):
-        return self.algo_view() if self.algo_view else ""
+    def algo_view(self):
+        ret=self._algo_view() if self._algo_view else ""
+        if isinstance(ret,str):
+            ret=dict(title=ret)
+        return ret
 
     def get_hex_str(self):
         return self.hex_str()
         
-    def ui_info(self):
-        return self.to_json()
+
+    
+    def get_data(self):
+        return dict(direction=self.direction)
    
     def load(self):
         self.leaf =[]
         def dfs(c:WatchAny):
             for n in c.childs:
                 dfs(n)
-            if not c.childs:
-                if c.algo_view is None or c.hex_str is None:
-                    raise Exception(c,c.type,c.childs)
+            if c._algo_view is not None and c.hex_str is not None:
                 self.leaf.append(c)
         dfs(self)
         return self
@@ -65,10 +71,17 @@ def bs(title, value, key=""):
 def gs(title, value, key):
     return wc(title, key, value, 'green')
 
-def div(*args,hex_str=None, algo_view=None,size=0):
-    return WatchAny(*args,type='div', hex_str=hex_str, algo_view=algo_view, size=size)
+def div(*args,hex_str=None, algo_view=None,size=None,**kg):
+    return WatchAny(*args,type='div', hex_str=hex_str, algo_view=algo_view, size=size,**kg)
+HORIZONTAL = 0
+VERTICAL = 1
+def divh(*args,hex_str=None, algo_view=None,size=None):
+    return div(*args,hex_str=hex_str, algo_view=algo_view,size=size,direction=HORIZONTAL)
 
-def tree(t:WatchAny,size=1):
+def divv(*args,hex_str=None, algo_view=None,size=None):
+    return div(*args,hex_str=hex_str, algo_view=algo_view,size=size,direction=VERTICAL)
+
+def tree(t:WatchAny,size=None):
     return WatchAny(type='tree',hex_str=t.hex_str,algo_view=t.algo_view,size=size)
 
 class SolutionBase:
@@ -86,9 +99,6 @@ class SolutionBase:
 
     def execute(self):
         pass
-
-    def algo_view(self):
-        return []
 
     @classmethod
     def log(cls, *s, tp: str = ""):
@@ -164,11 +174,11 @@ class SolutionBase:
       
     
     def record(self):
-        childs = []
+        childs = {}
         keys = []
    
         for var in self.watch_var.leaf:
-            childs.append(var.algo_view())
+            childs[var.key]=var.algo_view()
             keys.append(var.hex_str())
         # dfs(self.watch_var)
         return "".join(keys), childs
@@ -189,7 +199,9 @@ class Route:
             if not fp.path.endswith('.py'):
                 continue
             moudle_name = fp.path.replace('/', '.').replace('.py', '')
+            
             fc = Module().load_module(moudle_name)
+            print(moudle_name,fc)
             if hasattr(fc, 'has_view') and getattr(fc, 'has_view'):
                 ret.add_child(value=moudle_name, data=fc.get_cases())
         return ret
@@ -201,8 +213,8 @@ class Route:
         CHANGE_STORE.clear()
         f.init(**case)
         f.watch_var = f.get_watch()
-        ret=f.watch_var.ui_info()
-        ret["data"]=dict(records=run_watch_fun(f.execute, f.record))
+        ret=f.watch_var.to_json()
+        ret["data"]['records']=run_watch_fun(f.execute, f.record)
         return ret
 
 if __name__ == "__main__":

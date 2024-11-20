@@ -9,7 +9,7 @@ import math
 import heapq
 import os
 try:
-    from app.yly.algo.manage import SolutionBase, rs, bs, gs, ah, div,tree
+    from app.yly.algo.manage import SolutionBase, rs, bs, gs, ah, div,tree,divv,divh
 except Exception as e:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -172,9 +172,9 @@ class Solution(SolutionBase):
         ])
 
     def get_watch(self):
-        return div(
+        return divv(
             div(
-                div(
+                divh(
                     hex_str=self.hex_str, 
                     algo_view=self.algo_view,
                 ),
@@ -190,7 +190,6 @@ class Solution(SolutionBase):
             ),
             tree(
                 self.t,
-                size=1
             ),
         ).load()
 

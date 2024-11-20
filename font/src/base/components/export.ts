@@ -27,6 +27,6 @@ DivFactory.register("div", div)
 DivFactory.register("tree", tree)
 export {
 
-    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom, dialog,
+    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node
 }

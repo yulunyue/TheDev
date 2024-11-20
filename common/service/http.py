@@ -13,6 +13,7 @@ import sys
 import json
 import os
 from common.util.log import logger
+from common.util.tool import uid
 from common.util.module import Module
 HTML_CONTENT_TYPE = dict(
     jpg="image/jpeg",
@@ -30,11 +31,12 @@ class TornadaWebSocketConnectHandler(tornado.websocket.WebSocketHandler):
     pass
 
 
+
 class Node:
     def __init__(self, code=0, type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
         self.code = code
         self.type = type
-        self.key = key
+        self.key = key or uid('node')
         self.title = title
         self.value = value
         self.size = size
@@ -61,13 +63,16 @@ class Node:
             key=self.key,
             title=self.get_title(),
             value=self.value,
-            data=self.data,
+            data=self.get_data(),
             size=self.size,
             childs=[c.to_json() for c in self.childs]
         )
 
     def get_title(self):
         return self.title
+    
+    def get_data(self):
+        return self.data
 
 class ApiCall:
     def __init__(self) -> None:

@@ -82,7 +82,8 @@ export class Node {
     depth?: number = 0
     x?: number = 0
     y?: number = 0
-    el?:any
+    el?: any = null
+    size?: number = 0
     constructor(key?: string) {
         this.childs = []
         this.data = {}
@@ -94,8 +95,8 @@ export class Node {
         return this
     }
     set_data(data: any) {
-        for(var key in data){
-            this.data[key]=data[key]
+        for (var key in data) {
+            this.data[key] = data[key]
         }
         return this
     }
@@ -114,11 +115,15 @@ export class Node {
         }
         return this
     }
+    set_size(size: any) {
+        this.size = size
+        return this
+    }
     set_option(data: any) {
-        if(data.key){
-            this.key=data.key
+        if (data.key) {
+            this.key = data.key
         }
-        if(data.data){
+        if (data.data) {
             this.set_data(data.data)
         }
         return this.set_title(
@@ -129,6 +134,8 @@ export class Node {
             data.childs || []
         ).set_type(
             data.type
+        ).set_size(
+            data.size
         )
     }
     dump() {
@@ -151,7 +158,7 @@ export class Node {
     }
     init_layout() {
         let ret = { y: 0, x: 0 }
-        this.x=0
+        this.x = 0
         function dfs(node: Node, p: Node) {
             if (node.childs.length == 0) {
                 node.x = ret.x
@@ -176,14 +183,7 @@ export class Node {
     }
 
     get_title() {
-        let ret=this.title
-        if(!ret){
-            ret=this.key
-        }
-        if(!ret){
-            ret=this.value
-        }
-        return ret
+        return this.title
     }
 }
 
@@ -196,8 +196,8 @@ export function to_node(n: any) {
 export function node(key?: string) {
     return new Node(key)
 }
-export function not_null(a:any,b:any){
-    if(a==""||a==null||a==undefined){
+export function not_null(a: any, b: any) {
+    if (a == "" || a == null || a == undefined) {
         return b
     }
     return a
