@@ -54,12 +54,10 @@ export class Div {
             if (childs[i] instanceof Div) {
                 this.add_child(childs[i])
             } else {
-                let tmp:Div = DivFactory.new_div(childs[i].type, childs[i])
+                let tmp: Div = DivFactory.new_div(childs[i].type, childs[i])
                 tmp.set_option(childs[i])
                 if (childs[i].childs) {
                     tmp.add_dfs_childs(childs[i].childs, 1 - direction)
-                } else {
-                    
                 }
                 this.add_child(tmp)
             }
@@ -115,7 +113,7 @@ export class Div {
             justifyContent: "center",
             alignContent: "center",
             flexGrow: this.size + "",
-            border: "1px solid #ccc" 
+            border: "1px solid #ccc"
         })
     }
     set_flex_style(direction: number) {
