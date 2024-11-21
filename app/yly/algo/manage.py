@@ -171,8 +171,6 @@ class SolutionBase:
         pass        
     
     
-      
-    
     def record(self):
         childs = {}
         keys = []
@@ -189,27 +187,39 @@ class SolutionBase:
 
 PATH = 'app/yly/algo'
 
-
+def get_md(moudle_name):
+    try:
+        return Module().load_module(moudle_name,fun_name='Solution')()
+    except Exception as e:
+        logger.exception(f'{moudle_name},{e}')
+        return SolutionBase
+Solution = SolutionBase
 class Route:
 
     def query(self, **kwargs):
         ret = Node(value=PATH)
-
         for fp in File(PATH).dp_dir():
             if not fp.path.endswith('.py'):
                 continue
             moudle_name = fp.path.replace('/', '.').replace('.py', '')
-            
-            fc = Module().load_module(moudle_name)
-            print(moudle_name,fc)
-            if hasattr(fc, 'has_view') and getattr(fc, 'has_view'):
-                ret.add_child(value=moudle_name, data=fc.get_cases())
-        return ret
+            title=moudle_name.split('.')[-1]
+            fc:SolutionBase = get_md(moudle_name)
+            if not fc.has_view:
+                continue
+            ret.add_child(
+                value=moudle_name, 
+                title=title,
+                data=dict(
+                    content=fp.read_file(),
+                    cases=fc.get_cases()
+                )
+            )
+        return ret.to_json()
 
-    def execute(self, moudle_name, case: dict = None):
-        f: SolutionBase = Module().load_module(moudle_name, fun_name='Solution')()
-        if case is None:
-            case = f.get_cases()[0]
+    def execute(self, moudle_name, case: dict = 0):
+        f: SolutionBase = get_md(moudle_name)
+        if isinstance(case,int):
+            case = f.get_cases()[case]
         CHANGE_STORE.clear()
         f.init(**case)
         f.watch_var = f.get_watch()

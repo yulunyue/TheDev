@@ -19,13 +19,14 @@ export class Label extends Div {
     }
 
 }
+export class Pre extends Div {
+    constructor() {
+        super("pre")
+    }
+}
 export function label() {
     return new Label()
 }
-export function label_dev() {
-    return label().set_html(
-        "label"
-    ).click((v) => {
-        console.log(v)
-    })
+export function pre() {
+    return new Pre()
 }

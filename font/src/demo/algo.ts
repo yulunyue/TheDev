@@ -1,7 +1,8 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form, dialog, node,
-    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory
+    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form, dialog, Row, node, Select, select, Pre, pre,
+    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory, row1, row2,
+    text_area, TextArea
 } from "../base/components/export";
 
 
@@ -9,18 +10,37 @@ class Algo extends Div {
     div: Div
     pro: Progress
     algo_nodes: Div[]
-    form: Form
+    dialog_div: Form
+    code_select: Row
+    code_pre: Row
+    case_select: Row
+    case_pre: Row
     init_style(): void {
         this.set_style_ab_full()
     }
     init_node() {
         this.div = div()
-        this.form = form().set_option(node().set_childs([
-            node("moudle_name").set_type("select").set_data({
-                uri: "/app/yly/algo/manage/query"
-            }),
-        ]))
-        this.pro = progress().set_size(1).change((v: number) => this.goto(v))
+        this.code_select = row1().set_input(
+            select()
+        ).set_title(
+            "模块名"
+        )
+        this.code_pre = row1().set_input(text_area().set_style({
+            height: Constant.TEXT_AREA_HEIGHT_3,
+        }))
+        this.case_select = row1().set_input(
+            select()
+        ).set_title(
+            "样例"
+        )
+        this.case_pre = row1().set_input(text_area())
+        this.dialog_div = form().set_rows([
+            this.code_select,
+            this.code_pre,
+            this.case_select,
+            this.case_pre,
+        ])
+        this.pro = progress().set_size(1).change(() => this.goto())
         this.add_childs([
             this.div.set_size(1),
             div().add_childs([
@@ -30,8 +50,26 @@ class Algo extends Div {
             ]).set_height(Constant.DEFAULT_LINE_HEIGHT)
         ]).flex_horizontal_layout()
     }
+    init_event(): void {
+        this.code_select.change(() => {
+            let o = this.code_select.get_value()
+            this.code_pre.set_value(o.data.content)
+            this.case_select.input.set_option(new Node().set_childs(
+                o.data.cases.map((v: any, i: number) => {
+                    return new Node().set_value(v).set_title('case ' + i)
+                })
+            ))
+        })
+        this.case_select.change(() => {
+            let o = this.case_select.get_value()
+            this.case_pre.set_value(JSON.stringify(o.value))
+        })
+        web_dom.post("/app/yly/algo/manage/query", {}, (node: Node) => {
+            this.code_select.input.set_option(node)
+        })
+    }
     open_setting() {
-        dialog.open(this.form)
+        dialog.open(this.dialog_div)
     }
     set_option(option: Node): this {
         this.option = option
@@ -44,11 +82,11 @@ class Algo extends Div {
             this.option.direction
         ).emit_mount().get_content_divs()
     }
-    goto(idx: number) {
+    goto() {
+        let idx = this.pro.get_value()
         if (!this.option.data.records || !this.option.data.records[idx]) {
             return
         }
-        console.log(this.option.data.records[idx], DivFactory.instance)
         for (var key in this.option.data.records[idx]) {
             DivFactory.get(key).set_option(this.option.data.records[idx][key])
         }
@@ -56,13 +94,21 @@ class Algo extends Div {
     test() {
         this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
+    get_module_name() {
+        return this.code_select.get_value() || web_dom.url_param['moudle_name']
+    }
+    get_case() {
+        return this.case_pre.get_value() || 0
+    }
     load() {
-        let moudle_name = this.form.get("moudle_name", web_dom.url_param['moudle_name'])
-        if (!moudle_name) {
+        let moudle_name = this.get_module_name()
+        let case_idx = this.get_case()
+        if (moudle_name == null || case_idx == null) {
             return
         }
         web_dom.post('/app/yly/algo/manage/execute', {
-            moudle_name
+            moudle_name: moudle_name,
+            case: case_idx
         }, (node: Node) => {
             this.set_option(node)
             this.pro.set_max_value(node.data.records.length)

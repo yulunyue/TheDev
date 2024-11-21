@@ -51,8 +51,8 @@ class Node:
                 else:
                     self.childs.append(cd)
     def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None):
-        ret = Node(code, type, key, title,
-                   value, data, option, childs=childs)
+        ret = Node(code=code, type=type, key=key, title=title,
+                   value=value, data=data, option=option, childs=childs)
         self.childs.append(ret)
         ret.parent = self
         return ret

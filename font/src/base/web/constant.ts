@@ -36,6 +36,12 @@ class Constant {
 
     INPUT_NUMBER_WIDTH = 40
     INPUT_STRING_MIN_WIDTH = 120
+    TEXT_AREA_WIDTH = 600
+    TEXT_AREA_HEIGHT_1 = 100
+    TEXT_AREA_HEIGHT_2 = 200
+    TEXT_AREA_HEIGHT_3 = 400
+
+
     KEY_RIGHT = 'ArrowRight'
     KEY_LEFT = 'ArrowLeft'
     MOCK_NODE_3_20 = fack_data(0, 3, 20)

@@ -1,3 +1,4 @@
+from typing import List,Dict
 class UniFind:
     def __init__(self) -> None:
         self.p = dict()
@@ -27,3 +28,18 @@ class UniFind:
 
     def get_pkeys(self):
         return set(list(self.p.values()))
+    
+    def algo_view(self):
+        root_child=[]
+        nodes=[dict(title=f'{i}',childs=[]) for i,v in enumerate(self.p)]
+        for i,v in enumerate(self.p):
+            if v==i:
+                root_child.append(nodes[i])
+            else:
+                nodes[v]['childs'].append(nodes[i])
+        return dict(childs=root_child,title='root')
+
+    def hex_str(self):
+        return str(self.p) 
+
+        

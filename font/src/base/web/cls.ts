@@ -79,7 +79,7 @@ export class Node {
     option?: any = null
     parent?: Node = null
     childs?: Node[] = null
-    direction?:number = -1
+    direction?: number = -1
     depth?: number = 0
     x?: number = 0
     y?: number = 0
@@ -120,7 +120,7 @@ export class Node {
         this.size = size
         return this
     }
-    set_direction(direction:number){
+    set_direction(direction: number) {
         this.direction = direction
         return this
     }

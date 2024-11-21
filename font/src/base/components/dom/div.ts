@@ -31,6 +31,15 @@ export class Div {
     direction: number = -1
     layout_type: number = 0
     size: number = 0
+    on_change: any = null
+    change(call: any) {
+        this.on_change = call
+        return this
+    }
+    do_change() {
+        this.on_change?.()
+        return this
+    }
     set_direction(direction: number) {
         if (direction != 0 && direction != -1 && direction != 1) {
             return this
@@ -50,6 +59,7 @@ export class Div {
     }
     add_dfs_childs(childs: Node[], direction: number) {
         this.set_style_flex(this.get_direction(direction))
+        this.set_div_style({ border: "1px solid #ccc" })
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Div) {
                 this.add_child(childs[i])
@@ -113,7 +123,7 @@ export class Div {
             justifyContent: "center",
             alignContent: "center",
             flexGrow: this.size + "",
-            border: "1px solid #ccc"
+
         })
     }
     set_flex_style(direction: number) {

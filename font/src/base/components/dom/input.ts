@@ -30,6 +30,21 @@ export class Input extends Div {
     }
 
 }
+export class TextArea extends Div {
+    constructor() {
+        super("textarea")
+    }
+    init_style(): void {
+        this.set_style({
+            width: Constant.TEXT_AREA_WIDTH,
+            height: Constant.TEXT_AREA_HEIGHT_1,
+            overflow: "auto"
+        })
+    }
+}
 export function input() {
     return new Input()
+}
+export function text_area() {
+    return new TextArea()
 }
