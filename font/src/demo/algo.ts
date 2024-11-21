@@ -95,19 +95,20 @@ class Algo extends Div {
         this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
     get_module_name() {
-        return this.code_select.get_value() || web_dom.url_param['moudle_name']
+        return this.code_select.get_value() || web_dom.url_param['module_name']
     }
     get_case() {
         return this.case_pre.get_value() || 0
     }
     load() {
-        let moudle_name = this.get_module_name()
+        let module_name = this.get_module_name()
         let case_idx = this.get_case()
-        if (moudle_name == null || case_idx == null) {
+        console.warn(module_name,case_idx)
+        if (module_name == null || case_idx == null) {
             return
         }
         web_dom.post('/app/yly/algo/manage/execute', {
-            moudle_name: moudle_name,
+            module_name: module_name,
             case: case_idx
         }, (node: Node) => {
             this.set_option(node)

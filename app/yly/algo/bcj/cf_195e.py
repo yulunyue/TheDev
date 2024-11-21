@@ -68,12 +68,15 @@ class UniFind:
 
     def algo_view(self):
         root_child=[]
-        nodes=[dict(title=f'{i}',childs=[]) for i,v in enumerate(self.p)]
+        nodes=[dict(
+            title=f'{i}:{self.value[i]}',
+            childs=[]
+        ) for i,v in enumerate(self.p)]
         for i,v in enumerate(self.p):
-            if v==i:
-                root_child.append(nodes[i])
-            else:
+            if v>0 and v!=i:
                 nodes[v]['childs'].append(nodes[i])
+            else:
+                root_child.append(nodes[i])
         return dict(childs=root_child,title='root')
 
     def hex_str(self):
@@ -100,27 +103,36 @@ class Solution(SolutionBase):
     def init(self, **kwargs):
         self.n= self.i1()
         self.uf = UniFind(self.n+1)
-        self.lines = self.il()
-
+        self.lines = self.il(self.n)
+        self.ans=0
+        self.pid=0
+    def algo_view(self):
+        return "<br>".join([
+            f'ans:{self.ans}',
+            f'pid:{self.pid}'
+        ]+[f"line{i+1}:{l[1:]}" for i,l in enumerate(self.lines)] )
+    def hex_str(self):
+        return f'{self.ans}{self.pid}{self.lines}'
     def get_watch(self):
         return divv(
-            div(),
-            tree()
-        )
+            div(algo_view=self.algo_view,hex_str=self.hex_str),
+            tree(self.uf)
+        ).load()
+    
     def exec(self,**kg):
-        ans = 0
-        for pid in range(1,self.n+1):
-            ids = self.lines[i-1]
+        self.ans = 0
+        
+        while self.pid<len(self.lines):
+            ids = self.lines[self.pid]
+            self.pid+=1
             for i in range(1,len(ids),2):
                 cid, value = ids[i], ids[i+1]
                 parent, val = self.uf.find(cid)
                 val += value
-                ans += val
-                self.uf.merge(pid, parent, val)
-        return ans % MOD
+                self.ans += val
+                self.uf.merge(self.pid, parent, val)
+        return self.ans % MOD
     
-    def execute(self,*args,**kwargs):
-        return self.exec()
     
 if __name__ == '__main__':
     Solution().run()

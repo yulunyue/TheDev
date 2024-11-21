@@ -27,11 +27,11 @@ def wc(title, key, v, color):
 
 class WatchAny(Node):
     def __init__(self, *args, hex_str=None, algo_view=None,size=None,**kwargs) -> None:
-        self.hex_str = hex_str
+        self.hex_str = hex_str or algo_view
         self._algo_view = algo_view
         self.leaf:List[WatchAny]=[]
         if size is None:
-            size=1 if algo_view and hex_str else 0
+            size=1 if algo_view else 0
         super().__init__(**kwargs,childs=args,size=size)
     
     def algo_view(self):
@@ -98,7 +98,7 @@ class SolutionBase:
         ]
 
     def execute(self):
-        pass
+        return self.exec()
 
     @classmethod
     def log(cls, *s, tp: str = ""):
@@ -116,6 +116,10 @@ class SolutionBase:
 
     def exec(self,**kg):
         pass
+    
+    def pre(self,input=None,**kwargs):
+        if input is not None:
+            self.lines=[v for v in input.split('\n') if v]
 
     def run(self):
         for i, case in enumerate(self.get_cases()):
@@ -123,12 +127,9 @@ class SolutionBase:
             self.ep = case.pop("result")
             a = time.time()
             try:
+                self.pre(**case)
                 self.init(**case)
-                if self.gameinfo[0]=='cf':
-                    self.lines=[v for v in case.pop('input').split('\n') if v]
-                    r = self.exec(**case)
-                else:
-                    r = self.execute(**case)
+                r = self.execute(**case)
                 self.log("finish", time.time()-a)
             except Exception as e:
                 import traceback
@@ -139,9 +140,12 @@ class SolutionBase:
                 self.flush_log(
                     i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                 break
-    def input(self):
+    def input(self)->str:
         return self.lines.pop(0)
-
+    def i1(self):
+        return int(self.input().strip())
+    def il(self,n):
+        return [[int(v) for v in self.input().split(' ')] for _ in range(n)]
     def flush_log(self, i, s):
         logger.info(f'{i}:{s}')
 
@@ -173,13 +177,16 @@ class SolutionBase:
     
     def record(self):
         childs = {}
-        keys = []
-   
+
+
         for var in self.watch_var.leaf:
-            childs[var.key]=var.algo_view()
-            keys.append(var.hex_str())
+            key2,s2=var.key+'_algo',var.get_hex_str()
+            if CHANGE_STORE.get(key2)!=s2:
+                childs[var.key]=var.algo_view()
+            CHANGE_STORE[key2]=s2
+
         # dfs(self.watch_var)
-        return "".join(keys), childs
+        return childs
 
     def get_watch(self):
         raise Exception("xx")
@@ -201,13 +208,13 @@ class Route:
         for fp in File(PATH).dp_dir():
             if not fp.path.endswith('.py'):
                 continue
-            moudle_name = fp.path.replace('/', '.').replace('.py', '')
-            title=moudle_name.split('.')[-1]
-            fc:SolutionBase = get_md(moudle_name)
+            module_name = fp.path.replace('/', '.').replace('.py', '')
+            title=module_name.split('.')[-1]
+            fc:SolutionBase = get_md(module_name)
             if not fc.has_view:
                 continue
             ret.add_child(
-                value=moudle_name, 
+                value=module_name, 
                 title=title,
                 data=dict(
                     content=fp.read_file(),
@@ -216,11 +223,12 @@ class Route:
             )
         return ret.to_json()
 
-    def execute(self, moudle_name, case: dict = 0):
-        f: SolutionBase = get_md(moudle_name)
+    def execute(self, module_name, case: dict = 0):
+        f: SolutionBase = get_md(module_name)
         if isinstance(case,int):
             case = f.get_cases()[case]
         CHANGE_STORE.clear()
+        f.pre(**case)
         f.init(**case)
         f.watch_var = f.get_watch()
         ret=f.watch_var.to_json()
@@ -230,6 +238,6 @@ class Route:
 if __name__ == "__main__":
     # print(http_test('/app/yly/manage/'+sys.argv[1]))
     open("data/a.json", 'w', encoding='utf-8').write(
-        json.dumps(Route().execute('app.yly.algo.seg_tree.lc_3165'), indent=4,
+        json.dumps(Route().execute('app.yly.algo.bcj.cf_195e'), indent=4,
                    ensure_ascii=False))
     # print(Route().query().to_json())
