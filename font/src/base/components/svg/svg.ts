@@ -5,7 +5,7 @@ import { circle } from "./circle"
 import { GNode } from "./gnode"
 import { grid } from "./comb/grid"
 import { Tree, tree } from "./comb/tree"
-import { Text, text, text_mid_max } from "./text"
+import { GText, gtext } from "./text"
 import { Node } from "../../web/cls"
 import web_dom from "../../web/web_dom"
 export class Svg extends Div {
@@ -50,7 +50,7 @@ export function svg_dev() {
     }
     web_dom.add_task("svg_dev", loop, 1)
     return svg().add_childs([
-        text().set_pos(4, 4).set_html("xxx"),
+        gtext().set_pos(4, 4).set_html("xxx"),
         // line().set_d("M0 5 L5 10 L30 0 Z"),
         line().mount_d([
             { x: 0, y: 0 },

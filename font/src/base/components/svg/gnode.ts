@@ -17,6 +17,7 @@ export class GNode {
         this.on_mount_call = {}
         this.x = 0
         this.y = 0
+        this.option = new Node()
         this.init_style()
         this.init_node()
         this.init_event()
@@ -108,12 +109,12 @@ export class GNode {
         return this.y
     }
     set_option(option: Node): this {
-        // return this.set_x(
-        //     option.data.x
-        // ).set_y(
-        //     option.data.y
-        // )
+        this.option.set_option(option)
+        this.render_option()
         return this
+    }
+    render_option() {
+
     }
     on_mount() {
 

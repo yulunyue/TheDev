@@ -1,6 +1,6 @@
 import { GNode } from "./gnode"
 import { Node } from "../../web/cls"
-export class Text extends GNode {
+export class GText extends GNode {
     constructor() {
         super("text")
     }
@@ -18,9 +18,6 @@ export class Text extends GNode {
         return super.set_option(option)
     }
 }
-export function text() {
-    return new Text()
-}
-export function text_mid_max(){
-    return text().set_pos(100,100).set_font_size(30)
+export function gtext() {
+    return new GText()
 }

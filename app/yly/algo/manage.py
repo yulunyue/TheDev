@@ -90,6 +90,7 @@ class SolutionBase:
     name = "test"
     DEV = True
     gameinfo = ['lc']
+    tags = []
     watch_var:WatchAny
     
     def get_cases(self):
@@ -190,16 +191,34 @@ class SolutionBase:
 
     def get_watch(self):
         raise Exception("xx")
-
+    def hex_str(self):
+        return ""
+    def algo_view(self):
+        return '<br><br>'.join([
+            f'{self.name}',
+            f'{ah("链接",self.uri)}',
+            f"标签: {self.tags}",
+        ]+self.get_info())
+    
+    def get_info(self):
+        return []
+    
+    def watch(self):
+        self.watch_var=divv(
+            div(
+                hex_str=self.hex_str,
+                algo_view=self.algo_view,
+                size=0,
+            ),
+            self.get_watch()
+        ).load()
+        return self.watch_var.to_json()
 
 PATH = 'app/yly/algo'
-
+TMP_PATH = 'data/algo/main.py'
 def get_md(moudle_name):
-    try:
-        return Module().load_module(moudle_name,fun_name='Solution')()
-    except Exception as e:
-        logger.exception(f'{moudle_name},{e}')
-        return SolutionBase
+    return Module().load_module(moudle_name,fun_name='Solution')()
+
 Solution = SolutionBase
 class Route:
 
@@ -208,7 +227,7 @@ class Route:
         for fp in File(PATH).dp_dir():
             if not fp.path.endswith('.py'):
                 continue
-            module_name = fp.path.replace('/', '.').replace('.py', '')
+            module_name = fp.py_module_path()
             title=module_name.split('.')[-1]
             fc:SolutionBase = get_md(module_name)
             if not fc.has_view:
@@ -223,21 +242,22 @@ class Route:
             )
         return ret.to_json()
 
-    def execute(self, module_name, case: dict = 0):
+    def execute(self, content, case):
+        fp=File(TMP_PATH).write_file(content)
+        module_name=fp.py_module_path()
         f: SolutionBase = get_md(module_name)
-        if isinstance(case,int):
-            case = f.get_cases()[case]
         CHANGE_STORE.clear()
         f.pre(**case)
         f.init(**case)
-        f.watch_var = f.get_watch()
-        ret=f.watch_var.to_json()
+        ret=f.watch()
         ret["data"]['records']=run_watch_fun(f.execute, f.record)
         return ret
-
+    
+class Util:
+    def test(self):
+        fp=File('app/yly/algo/bcj/cf_195e.py')
+        f: SolutionBase = get_md(fp.py_module_path())
+        File('data/algo/test.json').write_file(Route().execute(fp.read_file(),f.get_cases()[0]))
+        
 if __name__ == "__main__":
-    # print(http_test('/app/yly/manage/'+sys.argv[1]))
-    open("data/a.json", 'w', encoding='utf-8').write(
-        json.dumps(Route().execute('app.yly.algo.bcj.cf_195e'), indent=4,
-                   ensure_ascii=False))
-    # print(Route().query().to_json())
+    Util().test()

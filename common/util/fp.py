@@ -32,7 +32,7 @@ class File:
         else:
             with open(self.path, 'w', encoding=encoding) as f:
                 f.write(data)
-
+        return self
     def is_json_file(self):
         return self.path.endswith('.json')
 
@@ -70,3 +70,6 @@ class File:
     
     def is_dir(self):
         return os.path.isdir(self.path)
+    
+    def py_module_path(self):
+        return self.path.replace('/', '.').replace('.py', '')

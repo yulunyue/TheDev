@@ -129,8 +129,10 @@ class SegTreeNode:
 
 
 class Solution(SolutionBase):
+    name = 'leetcode 3165_不包含相邻元素的子序列的最大和'
     uri = 'https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
     arr = []
+    tags = '线段树'
     has_view = True
 
     def get_cases(self):
@@ -153,11 +155,8 @@ class Solution(SolutionBase):
     def hex_str(self):
         return ''
 
-    def algo_view(self):
-        return '<br><br>'.join([
-            f'leetcode 3165_不包含相邻元素的子序列的最大和',
-            f'{ah("链接",self.uri)}',
-            f"解法: 线段树",
+    def get_info(self):
+        return [
             f'每个节点存储4个信息',
             f'1. f00: 区间最左边和最右边的数都不选的情况下的最大值',
             f'2. f01: 最左边的数不选的最大值',
@@ -168,32 +167,24 @@ class Solution(SolutionBase):
             f'f01 = max(left.f00+right.fmx, left.f01+right.f01)',
             f'f10 = max(left.f10+right.f10, left.fmx+right.f00)',
             f'fmx = max(left.f10+right.fmx, left.fmx+right.f01)',
-        ])
+        ]
 
     def get_watch(self):
-        return divv(
-            div(
-                hex_str=self.hex_str, 
-                algo_view=self.algo_view,
-                size=0,
-            ),
+        return div(
             div(
                 div(
-                    div(
-                        hex_str=lambda: f'{Solution.arr+self.queries}',
-                        algo_view=lambda: bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries)),
-                    div(
-                        hex_str=lambda: f'{self.result}{self.ans}',
-                        algo_view=lambda: f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}'
-                    ),
+                    hex_str=lambda: f'{Solution.arr+self.queries}',
+                    algo_view=lambda: bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries)),
+                div(
+                    hex_str=lambda: f'{self.result}{self.ans}',
+                    algo_view=lambda: f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}'
                 ),
-                tree(
-                    self.t,
-                ),
-                size=1,
             ),
-      
-        ).load()
+            tree(
+                self.t,
+            ),
+            size=1,
+        )
 
 
     def execute(self,**kwargs):
