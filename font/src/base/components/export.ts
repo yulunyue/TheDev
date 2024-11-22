@@ -17,6 +17,7 @@ import web_dom from "../../base/web/web_dom"
 import { line, Line } from "./svg/line"
 import { Form, form, row1, row2, Row } from "./dom/form"
 import { Select, select } from "./dom/select";
+
 import dialog from "./dom/dialog"
 const DEV_COMPONENT = {
     input, search_dev, Select, select, canca_dev, svg_dev,

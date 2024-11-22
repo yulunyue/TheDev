@@ -59,8 +59,14 @@ export class Line extends GNode {
         this.dst_x = x
         return this.draw2()
     }
+    with_arrow_end() {
+        return this.set_attr("marker-end", "url(#markerArrowEnd)")
+    }
+    with_arrow_start() {
+        return this.set_attr("marker-start", "url(#markerArrow)")
+    }
     with_arrow() {
-        return this.set_attr("marker-end", "url(#markerArrow)")
+        return this.with_arrow_end().with_arrow_start()
     }
 }
 export function line() {

@@ -85,17 +85,28 @@ class WebDom {
                     req.setRequestHeader(key, this.headers[key]);
                 }
             }
-            req.send(JSON.stringify(data))
+            try {
+                let dt = JSON.stringify(data)
+                req.send(dt)
+            } catch (e: any) {
+                alert('post:' + path + data)
+            }
+
         }
         req.onreadystatechange = (ev: any) => {
             if (req.readyState == this.HTTP_STATE_FINISH) {
+
                 let data = this.hander_res(JSON.parse(req.responseText))
-                if (data) {
+                if (data && data.code == 500) {
+                    alert(data.title)
+                }
+                else if (data) {
                     // call_back(new Node().set_option(data))
                     call_back(data)
                 }
             }
         }
+
     }
     hander_res(node: Node) {
         return node

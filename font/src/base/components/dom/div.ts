@@ -15,7 +15,7 @@ export class DivFactory {
         DivFactory.fac_map[key] = fun
     }
     static new_div(key: string, option: Node) {
-        console.log(key, DivFactory.fac_map)
+        // console.log(key, DivFactory.fac_map)
         return this.fac_map[key]().set_option(option)
     }
 }

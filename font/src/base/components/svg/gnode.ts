@@ -18,10 +18,12 @@ export class GNode {
         this.x = 0
         this.y = 0
         this.option = new Node()
-        this.init_style()
         this.init_node()
+        this.init_style()
         this.init_event()
-
+    }
+    fill(color: string) {
+        this.set_style({ fill: color })
     }
     on_change(call_back: any) {
         this._on_change = call_back
@@ -42,7 +44,7 @@ export class GNode {
     create_element(name: string) {
         return web_dom.createElementNS(name)
     }
-    set_pos(x: number, y: number): this {
+    set_pos(y: number, x: number): this {
         return this.set_x(x).set_y(y)
     }
     get_attr(key: string) {
@@ -70,6 +72,12 @@ export class GNode {
         c.index = this.childs.length
         this.childs.push(c)
         return c
+    }
+    get_width() {
+        return this.el.clientWidth
+    }
+    get_height() {
+        return this.el.clientHeight
     }
     add_childs(childs: any[]) {
         for (var i = 0; i < childs.length; i++) {

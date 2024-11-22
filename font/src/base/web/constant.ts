@@ -31,7 +31,7 @@ class Constant {
     COLOR_WHITE = '#fff'
     COLOR_YELLOW = '#ff0'
     COLOR_BALCK = '#000'
-
+    COLOR_GRAY = '#888'
     DIALOG_COLOR = '#8888'
 
     INPUT_NUMBER_WIDTH = 40

@@ -63,10 +63,10 @@ class Algo extends Div {
         this.case_select.change(() => {
             let o = this.case_select.get_value()
             this.case_pre.set_value(JSON.stringify(o.value))
+
+
         })
-        web_dom.post("/app/yly/algo/manage/query", {}, (node: Node) => {
-            this.code_select.input.set_option(node)
-        })
+
     }
     open_setting() {
         dialog.open(this.dialog_div)
@@ -94,22 +94,24 @@ class Algo extends Div {
     test() {
         this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
-    get_module_name() {
-        return this.code_select.get_value() || web_dom.url_param['module_name']
-    }
+
     get_case() {
-        return this.case_pre.get_value() || 0
+        return this.case_pre.get_value()
     }
     load() {
-        let module_name = this.get_module_name()
-        let case_idx = this.get_case()
-        console.warn(module_name,case_idx)
-        if (module_name == null || case_idx == null) {
-            return
-        }
+        web_dom.post("/app/yly/algo/manage/query", {}, (node: Node) => {
+            this.code_select.input.set_option(node)
+            this.run()
+        })
+
+    }
+    run() {
+        let module_select = this.code_select.get_value()
+        let case_select = this.case_pre.get_value()
+
         web_dom.post('/app/yly/algo/manage/execute', {
-            module_name: module_name,
-            case: case_idx
+            content: module_select.data.content,
+            case: case_select
         }, (node: Node) => {
             this.set_option(node)
             this.pro.set_max_value(node.data.records.length)

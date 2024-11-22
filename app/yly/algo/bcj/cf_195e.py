@@ -38,19 +38,19 @@ MOD = (10**9)+7
 
 
 class UniFind:
+    
     def __init__(self, n) -> None:
         self.p = [-1]*n
         self.value = [0]*n
 
-    def merge(self, parent, child, val=0):
+    def merge(self, parent, child, val):
         parent1, pval = self.find(parent)
         child1, cval = self.find(child)
-        val = val+pval-cval
-        self.value[child] = val
         if parent1 == child1:
             return parent1, False
         self.p[parent1] = self.p[parent1]+self.p[child1]
         self.p[child1] = parent1
+        self.value[child] = val+pval-cval
         return parent1, True
 
     def find(self, idx):
@@ -69,7 +69,8 @@ class UniFind:
     def algo_view(self):
         root_child=[]
         nodes=[dict(
-            title=f'{i}:{self.value[i]}',
+            title=f'{i+1}:{-v if v<0 else 1}',
+            data=dict(line_title=self.value[i]),
             childs=[]
         ) for i,v in enumerate(self.p)]
         for i,v in enumerate(self.p):
@@ -102,7 +103,7 @@ class Solution(SolutionBase):
         ]
     def init(self, **kwargs):
         self.n= self.i1()
-        self.uf = UniFind(self.n+1)
+        self.uf = UniFind(self.n)
         self.lines = self.il(self.n)
         self.ans=0
         self.pid=0
@@ -114,23 +115,21 @@ class Solution(SolutionBase):
     def hex_str(self):
         return f'{self.ans}{self.pid}{self.lines}'
     def get_watch(self):
-        return divv(
-            div(algo_view=self.algo_view,hex_str=self.hex_str),
-            tree(self.uf)
-        ).load()
+        return tree(self.uf)
+        
     
     def exec(self,**kg):
         self.ans = 0
         
         while self.pid<len(self.lines):
             ids = self.lines[self.pid]
-            self.pid+=1
             for i in range(1,len(ids),2):
-                cid, value = ids[i], ids[i+1]
+                cid, value = ids[i]-1, ids[i+1]
                 parent, val = self.uf.find(cid)
                 val += value
                 self.ans += val
                 self.uf.merge(self.pid, parent, val)
+            self.pid+=1
         return self.ans % MOD
     
     

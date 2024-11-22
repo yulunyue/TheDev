@@ -21,13 +21,13 @@ export class TreeNode extends GNode {
     }
     on_text_change() {
         let h = this.text.get_height()
-        this.line.set_dst(this.option.data.pos.y - h / 2 - 2, this.option.data.pos.x)
+        this.line.set_dst(this.option.data.y - h / 2 - 2, this.option.data.x)
         for (var i = 0; i < this.nodes.length; i++) {
-            this.nodes[i].line.set_src(this.option.data.pos.y + h / 2 + 2, this.option.data.pos.x)
+            this.nodes[i].line.set_src(this.option.data.y + h / 2 + 2, this.option.data.x)
         }
         let y = (this.line.src_y + this.line.dst_y) / 2
         let x = (this.line.src_x + this.line.dst_x) / 2
-        if (!isNaN(y) || !isNaN(x)) {
+        if (!isNaN(y) && !isNaN(x)) {
             this.line_text.set_pos(y, x)
         }
 
@@ -35,12 +35,12 @@ export class TreeNode extends GNode {
     add_node(c: TreeNode) {
         this.nodes.push(c)
         c.parent = this
-        return [c.line_text, c.line]
+        return [c.line, c.line_text]
     }
     render_option() {
-        this.set_pos(this.option.x, this.option.y)
+        this.set_pos(this.option.data.y, this.option.data.x)
         this.text.set_html(this.option.title)
-        this.line_text.set_html(this.option.data.line_title || "")
+        this.line_text.set_html(this.option.data.line_title)
         return this
     }
 

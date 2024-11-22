@@ -18,6 +18,7 @@ export class Rect extends GNode {
         return this.set_attr("height", y)
     }
 
+
 }
 export function rect() {
     return new Rect()

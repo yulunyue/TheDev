@@ -87,7 +87,13 @@ class ApiCall:
     def call_app(self, path, params):
         if path not in self.fun_map:
             return dict(statu=404, path=path, data=list(self.fun_map.keys()))
-        ret = self.fun_map[path](**params)
+        try:
+            ret = self.fun_map[path](**params)
+        except Exception as e:
+            logger.error(e)
+            import traceback
+            traceback.print_exc()
+            ret = dict(code=500,title=str(e))
         if isinstance(ret, Node):
             return ret.to_json()
         return ret
@@ -161,7 +167,7 @@ class MainHander(RequestHandler):
 
     def post(self, *args):
         ret = self.POST_API.call(self.path, self.params)
-        logger.info(f'[{self.path}] [{self.params}] [{len(ret)}]')
+        logger.info(f'[{self.path}]')
         self.out(ret)
 
     def options(self, *args):

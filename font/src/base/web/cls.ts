@@ -41,7 +41,7 @@ export interface Style {
     textOverflow?: 'ellipsis'
     textAlign?: "center"
     fontFamily?: string
-    dominantBaseline?: 'middle'
+    dominantBaseline?: 'middle' | 'text-before-edge'
     cursor?: "pointer"
     overflow?: "hidden" | "auto"
     overflowY?: "hidden" | "auto"

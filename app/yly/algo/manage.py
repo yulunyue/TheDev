@@ -98,8 +98,8 @@ class SolutionBase:
 
         ]
 
-    def execute(self):
-        return self.exec()
+    def execute(self,**kg):
+        return self.exec(**kg)
 
     @classmethod
     def log(cls, *s, tp: str = ""):
@@ -217,8 +217,11 @@ class SolutionBase:
 PATH = 'app/yly/algo'
 TMP_PATH = 'data/algo/main.py'
 def get_md(moudle_name):
-    return Module().load_module(moudle_name,fun_name='Solution')()
-
+    try:
+        return Module().load_module(moudle_name,fun_name='Solution')()
+    except Exception as e:
+        logger.error(e)
+    
 Solution = SolutionBase
 class Route:
 
@@ -230,7 +233,7 @@ class Route:
             module_name = fp.py_module_path()
             title=module_name.split('.')[-1]
             fc:SolutionBase = get_md(module_name)
-            if not fc.has_view:
+            if fc is None or not fc.has_view:
                 continue
             ret.add_child(
                 value=module_name, 
@@ -243,6 +246,8 @@ class Route:
         return ret.to_json()
 
     def execute(self, content, case):
+        if isinstance(case,str):
+            case=json.loads(case)
         fp=File(TMP_PATH).write_file(content)
         module_name=fp.py_module_path()
         f: SolutionBase = get_md(module_name)

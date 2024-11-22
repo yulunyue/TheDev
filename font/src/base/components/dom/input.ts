@@ -31,6 +31,7 @@ export class Input extends Div {
 
 }
 export class TextArea extends Div {
+    el: HTMLTextAreaElement
     constructor() {
         super("textarea")
     }
@@ -41,6 +42,10 @@ export class TextArea extends Div {
             overflow: "auto"
         })
     }
+    get_value() {
+        return this.el.value
+    }
+
 }
 export function input() {
     return new Input()
