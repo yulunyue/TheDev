@@ -85,7 +85,15 @@ export class Tree extends Svg {
                 dfs(node.childs[i], node)
             }
         }
-        dfs(this.option, null)
+        if(this.option.title){
+            dfs(this.option, null)
+        }else{
+            this.max_xy.y-=1
+            this.option.childs.map((v=>{
+                v.y-=1
+                dfs(v,null)
+            }))
+        }
     }
     on_mount(): void {
         this.draw()

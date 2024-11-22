@@ -13,21 +13,22 @@ CHANGE_STORE = dict()
 
 def wc(title, key, v, color):
     k = f'{title}{key}'
-    cl = '#000'
+    size=""
     v = str(v)
+    tp='span'
     # print(k,v,CHANGE_STORE.get(k))
     if v != CHANGE_STORE.get(k, v):
         CHANGE_STORE[k] = v
-        cl = color
-    
+        size=f'font-size:28px;color:{color}'
+        tp = 'b'
     CHANGE_STORE[k] = v
-    return f'<span>{title}:</span><span style="color:{cl};margin:3px">{v}</span>'
+    return f'<p><span>{title}:</span><{tp} style="margin-left:6px;{size}">{v}</{tp}></p>'
 
 
 
 class WatchAny(Node):
     def __init__(self, *args, hex_str=None, algo_view=None,size=None,**kwargs) -> None:
-        self.hex_str = hex_str or algo_view
+        self.hex_str = hex_str
         self._algo_view = algo_view
         self.leaf:List[WatchAny]=[]
         if size is None:
@@ -36,22 +37,19 @@ class WatchAny(Node):
     
     def algo_view(self):
         ret=self._algo_view() if self._algo_view else ""
+        if isinstance(ret,list):
+            ret="</br></br>".join(ret)
         if isinstance(ret,str):
             ret=dict(title=ret)
         return ret
 
-    def get_hex_str(self):
-        return self.hex_str()
-        
-
-
-   
+    
     def load(self):
         self.leaf =[]
         def dfs(c:WatchAny):
             for n in c.childs:
                 dfs(n)
-            if c._algo_view is not None and c.hex_str is not None:
+            if c._algo_view is not None:
                 self.leaf.append(c)
         dfs(self)
         return self
@@ -73,12 +71,13 @@ def gs(title, value, key):
 
 def div(*args,hex_str=None, algo_view=None,size=None,**kg):
     return WatchAny(*args,type='div', hex_str=hex_str, algo_view=algo_view, size=size,**kg)
+
 HORIZONTAL = 0
 VERTICAL = 1
 def divh(*args,hex_str=None, algo_view=None,size=None):
     return div(*args,hex_str=hex_str, algo_view=algo_view,size=size,direction=HORIZONTAL)
 
-def divv(*args,hex_str=None, algo_view=None,size=None):
+def divv(*args, hex_str=None, algo_view=None,size=None):
     return div(*args,hex_str=hex_str, algo_view=algo_view,size=size,direction=VERTICAL)
 
 def tree(t:WatchAny,size=None):
@@ -181,7 +180,13 @@ class SolutionBase:
 
 
         for var in self.watch_var.leaf:
-            key2,s2=var.key+'_algo',var.get_hex_str()
+            if var.hex_str is None:
+                var.hex_str = '?'
+                childs[var.key]=var.algo_view()
+            if var.hex_str =='?':
+                continue
+
+            key2,s2=var.key+'_algo',var.hex_str()
             if CHANGE_STORE.get(key2)!=s2:
                 childs[var.key]=var.algo_view()
             CHANGE_STORE[key2]=s2
@@ -189,27 +194,42 @@ class SolutionBase:
         # dfs(self.watch_var)
         return childs
 
-    def get_watch(self):
-        raise Exception("xx")
-    def hex_str(self):
-        return ""
-    def algo_view(self):
-        return '<br><br>'.join([
+    
+    def info_main(self):
+        return [
             f'{self.name}',
             f'{ah("链接",self.uri)}',
             f"标签: {self.tags}",
-        ]+self.get_info())
+        ]
     
-    def get_info(self):
+    def left(self):
         return []
     
+    def left_c(self):
+        return div(
+            divh(
+                algo_view=self.info_main,
+            ),
+            *self.left()
+        )
+    
+    def get_watch(self):
+        a=self.top()
+        b=self.main()
+        if a:
+            return div(a,b)
+        return b
+    
+    def top(self):
+        pass
+    
+    def main(self):
+        raise Exception("todo")
+
+
     def watch(self):
         self.watch_var=divv(
-            div(
-                hex_str=self.hex_str,
-                algo_view=self.algo_view,
-                size=0,
-            ),
+            self.left_c(),
             self.get_watch()
         ).load()
         return self.watch_var.to_json()
@@ -255,7 +275,9 @@ class Route:
         f.pre(**case)
         f.init(**case)
         ret=f.watch()
-        ret["data"]['records']=run_watch_fun(f.execute, f.record)
+        ret["data"]['records'],msg=run_watch_fun(f.execute, f.record)
+        if msg:
+            raise Exception(msg)
         return ret
     
 class Util:

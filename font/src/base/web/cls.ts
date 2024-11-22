@@ -8,6 +8,7 @@ export interface Style {
     top?: number | string
     width?: number
     height?: number
+    textWrap?:"wrap"
     maxWidth?: number
     maxHeight?: number
     minWidth?: number
@@ -182,6 +183,7 @@ export class Node {
         }
         dfs(this, null)
         ret.x -= 1
+        console.warn(ret.x,ret.y)
         return ret
     }
     set_type(type: string) {

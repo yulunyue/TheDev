@@ -36,7 +36,9 @@ except:
 class Solution(SolutionBase):
     uri = ""
     gameid = ''
-
+    name = ''
+    tags = []
+    has_view = False
     def get_cases(self):
         return [
 

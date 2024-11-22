@@ -48,8 +48,9 @@ class UniFind:
         child1, cval = self.find(child)
         if parent1 == child1:
             return parent1, False
-        self.p[parent1] = self.p[parent1]+self.p[child1]
+        pct =  self.p[parent1]+self.p[child1]
         self.p[child1] = parent1
+        self.p[parent1]=pct
         self.value[child] = val+pval-cval
         return parent1, True
 
@@ -69,7 +70,7 @@ class UniFind:
     def algo_view(self):
         root_child=[]
         nodes=[dict(
-            title=f'{i+1}:{-v if v<0 else 1}',
+            title=f'节点{i+1}{bs("子节点数",-v if v<0 else 1,i)}',
             data=dict(line_title=self.value[i]),
             childs=[]
         ) for i,v in enumerate(self.p)]
@@ -78,7 +79,7 @@ class UniFind:
                 nodes[v]['childs'].append(nodes[i])
             else:
                 root_child.append(nodes[i])
-        return dict(childs=root_child,title='root')
+        return dict(childs=root_child,depth=1)
 
     def hex_str(self):
         return str(self.p) 
@@ -96,39 +97,60 @@ CASE1 ='''
 class Solution(SolutionBase):
     uri = "https://codeforces.com/contest/195/problem/E"
     gameinfo = ('cf',195,'E')
+    name = 'CodeForce_195_E 计算树的深度和'
+    tags = ['并查集']
     has_view = True
     def get_cases(self):
         return [
             dict(input=CASE1,result=30),
         ]
-    def init(self, **kwargs):
+    def init(self, result=0,**kwargs):
         self.n= self.i1()
         self.uf = UniFind(self.n)
-        self.lines = self.il(self.n)
+        self.lines=self.il(self.n)
+        self.result=result
         self.ans=0
         self.pid=0
-    def algo_view(self):
-        return "<br>".join([
-            f'ans:{self.ans}',
-            f'pid:{self.pid}'
-        ]+[f"line{i+1}:{l[1:]}" for i,l in enumerate(self.lines)] )
+        self.cid=-2
+        self.rid=-2
+        self.weight=-2
+    
     def hex_str(self):
         return f'{self.ans}{self.pid}{self.lines}'
-    def get_watch(self):
+    
+    def main(self):
         return tree(self.uf)
+    
+    def left(self):
+        a1=lambda: [f"节点{i+1}:{l[1:]}" for i,l in enumerate(self.lines)]+[f'答案: {self.result}']
+        a2=lambda: [
+            bs("连接父节点",self.pid+1),
+            bs("连接子节点的根节点",self.rid+1),
+            bs("连接子节点",self.cid+1),
+            bs("权重",self.weight),
+        ]
+        b2=lambda: f"{self.cid}{self.pid}{self.weight}"
+        return [
+            divh(
+                algo_view=a1,
+            ),
+            divh(
+                algo_view=a2,
+                hex_str=b2
+            )
+        ]
         
     
     def exec(self,**kg):
         self.ans = 0
-        
         while self.pid<len(self.lines):
             ids = self.lines[self.pid]
             for i in range(1,len(ids),2):
-                cid, value = ids[i]-1, ids[i+1]
-                parent, val = self.uf.find(cid)
-                val += value
+                self.cid, self.weight = ids[i]-1, ids[i+1]
+                self.rid, val = self.uf.find(self.cid)
+                val += self.weight
                 self.ans += val
-                self.uf.merge(self.pid, parent, val)
+                self.uf.merge(self.pid, self.rid, val)
             self.pid+=1
         return self.ans % MOD
     

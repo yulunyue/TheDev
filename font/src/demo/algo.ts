@@ -46,7 +46,6 @@ class Algo extends Div {
             div().add_childs([
                 this.pro,
                 button().set_html("setting").click(() => this.open_setting()),
-                button().set_html("run").click(() => this.load())
             ]).set_height(Constant.DEFAULT_LINE_HEIGHT)
         ]).flex_horizontal_layout()
     }

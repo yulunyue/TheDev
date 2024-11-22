@@ -1,5 +1,6 @@
 import { Div } from "./div";
 import web from "../../web/web_dom"
+import { Constant } from "../export";
 export class Label extends Div {
     constructor() {
         super("p")
@@ -22,6 +23,12 @@ export class Label extends Div {
 export class Pre extends Div {
     constructor() {
         super("pre")
+    }
+    init_style(): void {
+        this.set_style({
+            padding:Constant.DEFAULT_PADDING,
+            textWrap:"wrap"
+        })
     }
 }
 export function label() {

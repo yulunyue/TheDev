@@ -2,7 +2,7 @@ import sys
 import threading
 import time
 from types import FrameType
-
+import traceback
 
 def test_fun(n):
     RECORD_ENABLE = True
@@ -27,10 +27,14 @@ class ThreadRecord(threading.Thread):
         super().__init__(target=target)
         self.record_fun = record_fun
         self.records = []
-
+        self.error_msg=""
     def run(self) -> None:
         sys.settrace(self.globaltrace)
-        super().run()
+        try:
+            super().run()
+        except Exception as e:
+            self.error_msg = str(e)
+            traceback.print_exc()
         self.state = 1
 
     def hander_frame(info: FmInfo):
@@ -60,7 +64,7 @@ class ThreadRecord(threading.Thread):
 
 def run_watch_fun(exec_fun, record_fun):
     u = ThreadRecord(exec_fun, record_fun)
-    return u.get_record()
+    return u.get_record(),u.error_msg
 
 
 def test():
