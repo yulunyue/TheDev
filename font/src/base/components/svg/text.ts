@@ -44,8 +44,8 @@ export class GText extends GNode {
             let r = this.text.get_rect()
             let w = r.width
             let h = r.height
-            this.text.set_pos(-w / 2, -h / 2)
-            this.bg.set_pos(-w / 2 - 2, -h / 2 - 2)
+            this.text.set_pos(-h / 2, -w / 2)
+            this.bg.set_pos(-h / 2 - 2, -w / 2 - 2,)
             this.bg.set_wh(w + 4, h + 4)
 
 
