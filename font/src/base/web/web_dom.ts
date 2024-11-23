@@ -53,7 +53,7 @@ class WebDom {
     }
     web_host: string
     web_port: number
-    bk_port: string = "9999"
+    bk_port: string = "8888"
     url_param: any
     prefix: string
     init_href() {
