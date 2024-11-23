@@ -17,7 +17,7 @@ class Logger(logging.Logger):
 
     def add_hander(self, h: logging.Handler, level):
         fm = logging.Formatter(''.join([
-            # "asctime",
+            "[%(asctime)]",
             # "levelname",
             # "process)s:%(threadName",
             "[%(filename)-10s]",
