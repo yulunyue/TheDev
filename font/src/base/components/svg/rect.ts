@@ -18,8 +18,10 @@ export class Rect extends GNode {
         return this.set_attr("height", y)
     }
 }
-export class Polygon {
-
+export class Polygon extends GNode {
+    constructor() {
+        super("polygon")
+    }
 }
 export function rect() {
     return new Rect()
