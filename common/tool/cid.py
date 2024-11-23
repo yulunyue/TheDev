@@ -5,15 +5,15 @@ import subprocess
 PORT=8888
 cron_path='/etc/crontab'
 
-con_cmd='*/5 * * * * python3 '
+cron_cmd='*/5 * * * * python3 /opt/cloud/thedev/main.py check'
 def install():
-    File(cron_path)
+    pass
 
 def check():
     s2=os.popen(f'netstat -nltp | grep {PORT}').read()
-    restart_cmd=f'sh {__file__}'
     if s2:
+        print(s2)
         print(f'port:{PORT} check ok')
     else:
         print(f'port:{PORT} check fail restart')
-        print(__name__,__file__)
+        os.system('sh /opt/cloud/thedev/restart.sh')

@@ -12,7 +12,7 @@ class Logger(logging.Logger):
         if not fp.exists():
             fp.write_file('')
         self.add_hander(logging.FileHandler(
-            self.path, mode='w'), logging.INFO)
+            self.path, mode='a+'), logging.INFO)
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):
