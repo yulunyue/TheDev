@@ -174,7 +174,7 @@ export class Node {
         return ret
     }
     init_layout() {
-        let ret = { y: 0, x: 0 }
+        let ret = { y: this.title ? 0 : -1, x: 0 }
         this.x = 0
         function dfs(node: Node, p: Node) {
             if (node.childs.length == 0) {
@@ -192,7 +192,6 @@ export class Node {
         }
         dfs(this, null)
         ret.x -= 1
-        console.warn(ret.x, ret.y)
         return ret
     }
     set_type(type: string) {
