@@ -1,5 +1,6 @@
 import web_dom from "../../web/web_dom"
 import { Node, Dom, Style } from "../../web/cls"
+import util from "../../tool/util"
 
 export class GNode {
     el: SVGElement
@@ -21,6 +22,7 @@ export class GNode {
         this.init_node()
         this.init_style()
         this.init_event()
+
     }
     fill(color: string) {
         this.set_style({ fill: color })
@@ -66,13 +68,18 @@ export class GNode {
     mount(el: any) {
         el.appendChild(this.el)
     }
+    set_parent(p: any) {
+        this.parent = p
+        return this
+    }
     add_child(c: any) {
         c.mount(this.el)
-        c.parent = this
+        c.set_parent(this)
         c.index = this.childs.length
         this.childs.push(c)
         return c
     }
+
     get_width() {
         return this.el.clientWidth
     }
@@ -92,7 +99,16 @@ export class GNode {
         return this.set_style({ transform: `translate(${Math.floor(this.x)}px, ${Math.floor(this.y)}px)` })
     }
     set_attr(key: string, value: any) {
+        if (value == undefined || value == null) {
+            return
+        }
         this.el.setAttribute(key, value)
+        return this
+    }
+    set_attrs(attrs: any) {
+        for (var key in attrs) {
+            this.set_attr(key, attrs[key])
+        }
         return this
     }
     set_color(color: string) {

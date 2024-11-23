@@ -38,8 +38,11 @@ class WebDom {
     get_local(key: string) {
         return localStorage.getItem("yly_" + key)
     }
-    get_param(key: string) {
-
+    get_param(key: string, defult_value?: any) {
+        if (!(key in this.url_param)) {
+            return defult_value
+        }
+        return this.url_param[key]
     }
     set_local(key: string, value: any) {
         if (typeof value == "object") {

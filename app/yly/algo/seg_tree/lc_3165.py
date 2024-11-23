@@ -9,7 +9,7 @@ import math
 import heapq
 import os
 try:
-    from app.yly.algo.manage import SolutionBase, rs, bs, gs, ah, div,tree,divv,divh
+    from app.yly.algo.manage import SolutionBase, bp, bs, div,tree,divv,divh
 except Exception as e:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -152,11 +152,10 @@ class Solution(SolutionBase):
         for i, v in enumerate(Solution.arr):
             self.t.update(i, i, v)
 
-    def hex_str(self):
-        return ''
 
-    def get_info(self):
-        return [
+
+    def left(self):
+        a1 = lambda :[
             f'每个节点存储4个信息',
             f'1. f00: 区间最左边和最右边的数都不选的情况下的最大值',
             f'2. f01: 最左边的数不选的最大值',
@@ -168,23 +167,24 @@ class Solution(SolutionBase):
             f'f10 = max(left.f10+right.f10, left.fmx+right.f00)',
             f'fmx = max(left.f10+right.fmx, left.fmx+right.f01)',
         ]
-
-    def get_watch(self):
-        return div(
-            div(
-                div(
-                    hex_str=lambda: f'{Solution.arr+self.queries}',
-                    algo_view=lambda: bs("输入序列", Solution.arr)+" "+bs("查询列表", self.queries)),
-                div(
-                    hex_str=lambda: f'{self.result}{self.ans}',
-                    algo_view=lambda: f'{bs("期望结果",self.result)} {bs("当前结果",self.ans)}'
-                ),
+        a2 = lambda:[
+            bp("输入序列", Solution.arr),
+            bp("查询列表", self.queries),
+            bp("期望结果",self.result),
+            bp("当前结果",self.ans)
+        ]
+        b2 = lambda :f'{Solution.arr}{self.queries}{self.result}{self.ans}'
+        return [
+            divh(
+                algo_view=a1,
             ),
-            tree(
-                self.t,
-            ),
-            size=1,
-        )
+            divh(
+                algo_view=a2,
+                hex_str=b2
+            )
+        ]
+    def main(self):
+        return tree(self.t)
 
 
     def execute(self,**kwargs):

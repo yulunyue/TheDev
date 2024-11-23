@@ -57,12 +57,17 @@ export class Row extends Div {
         this.input.set_value(v)
         return this
     }
+    select(v: any) {
+        this.input.select(v)
+        return this
+    }
 }
 export class Form extends Div {
     header: Div
     body: Div
     footer: Div
     _dialog: Div
+    _ok: any
     init_style(): void {
         this.set_style({
             textAlign: "center"
@@ -77,7 +82,12 @@ export class Form extends Div {
             button().set_html("取消").click(() => { this.do_cancel() })
         ])
     }
+    ok(call: any) {
+        this._ok = call
+        return this
+    }
     do_ok() {
+        this._ok?.()
         this._dialog?.hide()
     }
     do_cancel() {

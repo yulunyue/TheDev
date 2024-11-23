@@ -1,5 +1,6 @@
 import { GNode } from "./gnode"
 import { Point } from "../../tool/data"
+import { Defs, ARROW_KEY, ARROW_START, ARROW_END } from "./defs"
 export class Line extends GNode {
     pts: Point[]
     src_y: number
@@ -59,14 +60,12 @@ export class Line extends GNode {
         this.dst_x = x
         return this.draw2()
     }
-    with_arrow_end() {
-        return this.set_attr("marker-end", "url(#markerArrowEnd)")
-    }
+
     with_arrow_start() {
-        return this.set_attr("marker-start", "url(#markerArrow)")
+        return this.set_attr("marker-start", Defs.marker_id(ARROW_KEY, ARROW_START))
     }
     with_arrow() {
-        return this.with_arrow_end().with_arrow_start()
+        return this.set_attr("marker-end", Defs.marker_id(ARROW_KEY, ARROW_END))
     }
 }
 export function line() {

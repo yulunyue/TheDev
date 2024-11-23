@@ -3,11 +3,16 @@ import { Constant } from "../export";
 import web from "../../web/web_dom"
 import { Node, to_node } from "../../web/cls";
 export class SeOption extends Div {
+    el: HTMLOptionElement
     constructor() {
         super("option")
     }
     render_option(): void {
         this.set_html(this.option.title)
+    }
+    select(v: any) {
+        this.el.selected = v
+        return this
     }
 }
 export class Select extends Div {
@@ -42,9 +47,25 @@ export class Select extends Div {
         this.clear()
         for (var i = 0; i < this.option.childs.length; i++) {
             let op = this.option.childs[i]
-            this.add_child(new SeOption().set_option(op).set_value(i))
+            let so = new SeOption().set_option(op).set_value(i)
+            this.add_child(so)
         }
-        this.do_change()
+    }
+    select(key: string) {
+        if (key == null || key == undefined) {
+            return this
+        }
+        for (var i = 0; i < this.childs.length; i++) {
+            let so = this.childs[i]
+            if (so.option.key == key) {
+                so.select(true)
+                this.do_change()
+            } else {
+                so.select(false)
+            }
+        }
+        return this
+
     }
     get_value() {
         return this.option.childs[this.el.value]

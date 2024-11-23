@@ -13,7 +13,7 @@ import heapq
 
 
 try:
-    from app.yly.algo.manage import SolutionBase,div,bs,divh,divv,tree
+    from app.yly.algo.manage import SolutionBase,div,bp,divh,divv,tree
 
 except:
     class SolutionBase:
@@ -31,6 +31,7 @@ except:
             pass
 
         def run(self):
+            self.init()
             print(self.exec())
 
 inf = float("inf")
@@ -51,14 +52,14 @@ class UniFind:
         pct =  self.p[parent1]+self.p[child1]
         self.p[child1] = parent1
         self.p[parent1]=pct
-        self.value[child] = val+pval-cval
+        self.value[child] = (val+pval-cval)%MOD
         return parent1, True
 
     def find(self, idx):
         idz = idy = idx
         value = 0
         while self.p[idx] >= 0:
-            value = value+self.value[idx]
+            value = (value+self.value[idx])%MOD
             idx = self.p[idx]
         while idy != idx:
             self.value[idy], value = value, value-self.value[idy]
@@ -70,7 +71,7 @@ class UniFind:
     def algo_view(self):
         root_child=[]
         nodes=[dict(
-            title=f'节点{i+1}{bs("子节点数",-v if v<0 else 1,i)}',
+            title=f'节点{i}{bp("子节点数",-v if v<0 else 1,i)}',
             data=dict(line_title=self.value[i]),
             childs=[]
         ) for i,v in enumerate(self.p)]
@@ -111,9 +112,10 @@ class Solution(SolutionBase):
         self.result=result
         self.ans=0
         self.pid=0
-        self.cid=-2
-        self.rid=-2
-        self.weight=-2
+        self.cid=-1
+        self.rid=-1
+        self.r_val=-1
+        self.weight=-1
     
     def hex_str(self):
         return f'{self.ans}{self.pid}{self.lines}'
@@ -122,14 +124,15 @@ class Solution(SolutionBase):
         return tree(self.uf)
     
     def left(self):
-        a1=lambda: [f"节点{i+1}:{l[1:]}" for i,l in enumerate(self.lines)]+[f'答案: {self.result}']
+        a1=lambda: [f"节点{i}:{[vj-(j%2==0) for j,vj in enumerate(l[1:])]}" for i,l in enumerate(self.lines)]+[f'答案: {self.result}']
         a2=lambda: [
-            bs("连接父节点",self.pid+1),
-            bs("连接子节点的根节点",self.rid+1),
-            bs("连接子节点",self.cid+1),
-            bs("权重",self.weight),
+            bp("连接父节点",self.pid),
+            bp("连接子节点的根节点",[self.rid,self.r_val]),
+            bp("连接子节点",self.cid),
+            bp("权重",self.weight),
+            bp("总和",self.ans),
         ]
-        b2=lambda: f"{self.cid}{self.pid}{self.weight}"
+        b2=lambda: f"{self.cid}{self.pid}{self.rid}{self.weight}{self.ans}{self.r_val}"
         return [
             divh(
                 algo_view=a1,
@@ -147,10 +150,10 @@ class Solution(SolutionBase):
             ids = self.lines[self.pid]
             for i in range(1,len(ids),2):
                 self.cid, self.weight = ids[i]-1, ids[i+1]
-                self.rid, val = self.uf.find(self.cid)
-                val += self.weight
-                self.ans += val
-                self.uf.merge(self.pid, self.rid, val)
+                self.rid, self.r_val = self.uf.find(self.cid)
+                self.r_val = (self.r_val+self.weight)%MOD
+                self.uf.merge(self.pid, self.rid, self.r_val)
+                self.ans = (self.r_val+self.ans)%MOD
             self.pid+=1
         return self.ans % MOD
     
