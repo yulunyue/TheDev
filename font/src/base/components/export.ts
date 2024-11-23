@@ -7,6 +7,7 @@ import { div, Div, DivFactory } from "./dom/div"
 import { gnode, GNode } from "./svg/gnode"
 import { progress_dev, progress, Progress } from "./svg/comb/progress"
 import { tree } from "./svg/comb/tree"
+import { grid } from './svg/comb/grid'
 import { table } from "./dom/table"
 import { label, pre, Pre } from "./dom/label"
 import { listui, listdev } from "./dom/list"
@@ -26,6 +27,7 @@ const DEV_COMPONENT = {
 }
 DivFactory.register("div", pre)
 DivFactory.register("tree", tree)
+DivFactory.register('grid', grid)
 export {
     Select, select, Pre, pre, Row, text_area, TextArea,
     DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,

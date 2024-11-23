@@ -83,6 +83,9 @@ def divv(*args, hex_str=None, algo_view=None,size=None):
 def tree(t:WatchAny,size=None):
     return WatchAny(type='tree',hex_str=t.hex_str,algo_view=t.algo_view,size=size)
 
+def grid(algo_view,hex_str=None):
+    return WatchAny(type='grid',algo_view=algo_view,hex_str=hex_str)
+
 class SolutionBase:
     logs = []
     has_view = False
@@ -280,7 +283,7 @@ class Route:
     
 class Util:
     def test(self):
-        fp=File('app/yly/algo/bcj/cf_195e.py')
+        fp=File('app/yly/algo/geometry/lc_3235.py')
         f: SolutionBase = get_md(fp.py_module_path())
         File('data/algo/test.json').write_file(Route().execute(fp.read_file(),f.get_cases()[0]))
         

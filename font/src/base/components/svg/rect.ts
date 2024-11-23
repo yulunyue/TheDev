@@ -17,7 +17,8 @@ export class Rect extends GNode {
     set_height(y: number) {
         return this.set_attr("height", y)
     }
-
+}
+export class Polygon {
 
 }
 export function rect() {
