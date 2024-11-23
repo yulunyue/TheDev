@@ -1,13 +1,18 @@
 import logging
 from common.constant import Constant
+from common.util.fp import File
 LOG_MAP = dict()
 
 
 class Logger(logging.Logger):
     def __init__(self, name) -> None:
         super().__init__(name)
+        self.path=f'./data/log/{name}.log'
+        fp=File(self.path)
+        if not fp.exists():
+            fp.write_file('')
         self.add_hander(logging.FileHandler(
-            f'./data/log/{name}.log', mode='w'), logging.INFO)
+            self.path, mode='w'), logging.INFO)
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):

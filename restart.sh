@@ -1,0 +1,1 @@
+python3 /opt/cloud/thedev/main.py run 2>&1 >/dev/null

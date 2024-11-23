@@ -194,23 +194,17 @@ class MainHander(RequestHandler):
 DEFAULT_CONF_PATH = "data/setting/http.json"
 
 
-def load(mds):
-    config = dict(port=9999)
-    if os.path.exists(DEFAULT_CONF_PATH):
-        with open(DEFAULT_CONF_PATH, 'r') as f:
-            config.update(json.loads(f.read()))
-    MainHander.POST_API.load_modules(config.get('py_modules', [])+list(mds))
-    return config
 
 
-def run(*args):
-    config = load(args)
+
+def run(*args,port=8888):
+    MainHander.POST_API.load_modules(list(args))
     app = Application([
         (r'/ws', TornadaWebSocketConnectHandler),
         (r"/(.*)", MainHander)
     ])
-    app.listen(config['port'], "0.0.0.0")
-    logger.info(f"listen:{config['port']}")
+    logger.info(f"listen:{port}")
+    app.listen(port, "0.0.0.0")
     IOLoop.instance().start()
 
 
