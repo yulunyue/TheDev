@@ -1,9 +1,9 @@
 import { GNode, gnode } from "../gnode";
 import { line } from "../line";
-import { Svg } from "../svg";
+import { SvgNode } from "../svg";
 import { circle } from "../circle";
 import { Rect, rect } from "../rect";
-export class Grid extends Svg {
+export class Grid extends SvgNode {
     g: GNode
     init_node(): void {
         this.g = this.add_child(new GNode())

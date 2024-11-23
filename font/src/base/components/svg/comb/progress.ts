@@ -5,7 +5,7 @@ import { Rect, rect } from "../rect";
 import { Circle, circle } from "../circle";
 import { GText, gtext } from "../text";
 import { Node } from "../../../web/cls";
-import { Svg, svg } from "../svg";
+import { SvgNode, svg } from "../svg";
 import { div, Div } from "../../dom/div";
 import Constant from "../../../web/constant";
 import { button } from "../../dom/button";

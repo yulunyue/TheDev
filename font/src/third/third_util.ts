@@ -2,7 +2,7 @@ import { graphlib, render } from "dagre-d3"
 import { div } from "../base/components/dom/div"
 import * as d3 from "d3"
 import constant from "src/base/web/constant";
-import { Svg } from "../base/components/svg/svg";
+import { SvgNode } from "../base/components/svg/svg";
 class ThirdUtil {
     dagre_d3(el: any) {
         let g = new graphlib.Graph().setGraph({})
@@ -39,7 +39,7 @@ class ThirdUtil {
 }
 let third_util = new ThirdUtil()
 export function dagre_d3_dev() {
-    return new Svg().mount_html((el: any) => {
+    return new SvgNode().mount_html((el: any) => {
         third_util.dagre_d3(el)
     })
 }

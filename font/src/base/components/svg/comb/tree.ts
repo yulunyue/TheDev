@@ -3,7 +3,7 @@ import { Node, to_node } from "../../../web/cls";
 import { Text, text } from "./div_text";
 import { GText, gtext } from "../text";
 import { GNode, gnode } from "../gnode";
-import { Svg, svg } from "../svg";
+import { SvgNode, svg } from "../svg";
 export class TreeNode extends GNode {
     line: Line
     line_text: GText
@@ -45,7 +45,7 @@ export class TreeNode extends GNode {
     }
 
 }
-export class Tree extends Svg {
+export class Tree extends SvgNode {
     max_xy: any
     g: GNode
     add_dfs_childs(nodes: any, depth: any) {

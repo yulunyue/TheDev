@@ -1,6 +1,5 @@
 import { GNode } from "./gnode"
 import Constant from "../../web/constant";
-import { Point } from "../../tool/data"
 export class Rect extends GNode {
     constructor() {
         super("rect")
@@ -18,11 +17,13 @@ export class Rect extends GNode {
         return this.set_attr("height", y)
     }
 }
-export class Polygon extends GNode {
-    constructor() {
-        super("polygon")
-    }
-}
+// export class Polygon extends GNode {
+//     constructor() {
+//         super("polygon")
+//     }
+// }
+
+
 export function rect() {
     return new Rect()
 }

@@ -1,7 +1,7 @@
 import { input, Input, text_area, TextArea } from "./dom/input"
 import { search, search_dev } from "./dom/search"
 import { canca_dev } from "./canva/canva"
-import { Svg, svg, svg_dev } from "./svg/svg"
+import { SvgNode, svg } from "./svg/svg"
 import { button_dev, button } from "./dom/button"
 import { div, Div, DivFactory } from "./dom/div"
 import { gnode, GNode } from "./svg/gnode"
@@ -21,7 +21,7 @@ import { Select, select } from "./dom/select";
 
 import dialog from "./dom/dialog"
 const DEV_COMPONENT = {
-    input, search_dev, Select, select, canca_dev, svg_dev,
+    input, search_dev, Select, select, canca_dev,
     button_dev, table, listdev,
     dagre_d3_dev, progress_dev
 }
@@ -30,6 +30,6 @@ DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
 export {
     Select, select, Pre, pre, Row, text_area, TextArea,
-    DEV_COMPONENT, Div, div, Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
+    DEV_COMPONENT, Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2
 }
