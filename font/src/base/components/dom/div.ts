@@ -298,10 +298,14 @@ export class Div {
     }
     add_child(c: any) {
         c.mount(this.el)
-        c.parent = this
+        c.set_parent(this)
         c.index = this.childs.length
         this.childs.push(c)
         return c
+    }
+    set_parent(p: any) {
+        this.parent = p
+        return this
     }
     set_childs(childs: Div[]) {
         for (var i = 0; i < childs.length; i++) {
@@ -318,6 +322,9 @@ export class Div {
         }
         info.reverse()
         return info
+    }
+    select(v: any) {
+        return this
     }
     set_option(option: Node) {
         this.option.set_option(option)

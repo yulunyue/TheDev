@@ -1,5 +1,5 @@
 import { Div } from "../dom/div"
-import { Defs, defs } from "./defs"
+import { Defs } from "./defs"
 import { line } from "./line"
 import { circle } from "./circle"
 import { GNode } from "./gnode"
@@ -9,13 +9,14 @@ import { GText, gtext } from "./text"
 import { Node } from "../../web/cls"
 import web_dom from "../../web/web_dom"
 export class Svg extends Div {
+    def: Defs
     constructor() {
         super("svg", "div")
+        this.add_child(new Defs())
     }
     create_element(name: string) {
         return web_dom.createElementNS(name)
     }
-
     get_x() {
         return this.el.clientLeft
     }
@@ -23,10 +24,9 @@ export class Svg extends Div {
         return this.el.clientTop
     }
     init_node(): void {
-        this.set_attr("shape-rendering", "geometricPrecision")
-        this.add_child(defs())
     }
     init_style(): void {
+        this.set_attr("shape-rendering", "geometricPrecision")
         this.set_style({
             width: 1,
             height: 1

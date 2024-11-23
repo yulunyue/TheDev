@@ -8,7 +8,7 @@ export interface Style {
     top?: number | string
     width?: number
     height?: number
-    textWrap?:"wrap"
+    textWrap?: "wrap"
     maxWidth?: number
     maxHeight?: number
     minWidth?: number
@@ -96,7 +96,17 @@ export class Node {
         this.title = title
         return this
     }
+    set_key(key: any) {
+        if (key == undefined || key == null) {
+            return this
+        }
+        this.key = key
+        return this
+    }
     set_data(data: any) {
+        if (data == undefined || data == null) {
+            return this
+        }
         for (var key in data) {
             this.data[key] = data[key]
         }
@@ -126,12 +136,7 @@ export class Node {
         return this
     }
     set_option(data: any) {
-        if (data.key) {
-            this.key = data.key
-        }
-        if (data.data) {
-            this.set_data(data.data)
-        }
+
         return this.set_title(
             data.title
         ).set_value(
@@ -144,6 +149,10 @@ export class Node {
             data.size
         ).set_direction(
             data.direction
+        ).set_key(
+            data.key
+        ).set_data(
+            data.data
         )
     }
     dump() {
@@ -165,7 +174,7 @@ export class Node {
         return ret
     }
     init_layout() {
-        let ret = { y: 0, x: 0 }
+        let ret = { y: this.title ? 0 : -1, x: 0 }
         this.x = 0
         function dfs(node: Node, p: Node) {
             if (node.childs.length == 0) {
@@ -183,7 +192,6 @@ export class Node {
         }
         dfs(this, null)
         ret.x -= 1
-        console.warn(ret.x,ret.y)
         return ret
     }
     set_type(type: string) {

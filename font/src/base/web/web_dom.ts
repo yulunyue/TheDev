@@ -38,8 +38,11 @@ class WebDom {
     get_local(key: string) {
         return localStorage.getItem("yly_" + key)
     }
-    get_param(key: string) {
-
+    get_param(key: string, defult_value?: any) {
+        if (!(key in this.url_param)) {
+            return defult_value
+        }
+        return this.url_param[key]
     }
     set_local(key: string, value: any) {
         if (typeof value == "object") {
@@ -61,7 +64,11 @@ class WebDom {
         this.web_host = ip_ports[0]
         this.web_port = parseInt(ip_ports[1])
         Ut.extend(this.url_param, Ut.url_to_json(hrefs[hrefs.length - 1].split('?').pop()))
-        this.prefix = 'http://' + this.web_host + ":" + this.bk_port
+        let bk_host = this.web_host
+        if (bk_host.endsWith('github.io')) {
+            bk_host = '1.14.93.140'
+        }
+        this.prefix = 'http://' + bk_host + ":" + this.bk_port
     }
     url(path: string) {
         return this.prefix + path

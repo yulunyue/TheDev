@@ -48,7 +48,6 @@ export class GText extends GNode {
             this.bg.set_pos(-h / 2 - 2, -w / 2 - 2,)
             this.bg.set_wh(w + 4, h + 4)
 
-
         })
         return this
     }

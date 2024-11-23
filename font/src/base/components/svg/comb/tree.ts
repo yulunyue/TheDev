@@ -59,6 +59,7 @@ export class Tree extends Svg {
         this.draw()
     }
     calc_pos(x: number, y: number) {
+
         let h = Math.min(1 / this.max_xy.y * this.get_height(), 150)
         let w = Math.min(1 / this.max_xy.x * this.get_width(), 210)
         let margin_left = (this.get_width() - w * this.max_xy.x) / 2
@@ -75,6 +76,7 @@ export class Tree extends Svg {
         this.g.clear()
         var dfs = (node: Node, p: Node) => {
             node.data.node = new TreeNode()
+            console.log(node.title, node.x, node.y, this.max_xy)
             node.set_data(this.calc_pos(node.x, node.y))
             node.data.node.set_option(node)
             this.g.add_child(node.data.node)
@@ -85,13 +87,11 @@ export class Tree extends Svg {
                 dfs(node.childs[i], node)
             }
         }
-        if(this.option.title){
+        if (this.option.title) {
             dfs(this.option, null)
-        }else{
-            this.max_xy.y-=1
-            this.option.childs.map((v=>{
-                v.y-=1
-                dfs(v,null)
+        } else {
+            this.option.childs.map((v => {
+                dfs(v, null)
             }))
         }
     }

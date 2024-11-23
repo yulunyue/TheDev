@@ -39,7 +39,9 @@ class Algo extends Div {
             this.code_pre,
             this.case_select,
             this.case_pre,
-        ])
+        ]).ok(() => {
+            this.run()
+        })
         this.pro = progress().set_size(1).change(() => this.goto())
         this.add_childs([
             this.div.set_size(1),
@@ -52,17 +54,16 @@ class Algo extends Div {
     init_event(): void {
         this.code_select.change(() => {
             let o = this.code_select.get_value()
-            this.code_pre.set_value(o.data.content)
-            this.case_select.input.set_option(new Node().set_childs(
+            this.code_pre.set_value(o.value)
+            this.case_select.set_option(new Node().set_childs(
                 o.data.cases.map((v: any, i: number) => {
-                    return new Node().set_value(v).set_title('case ' + i)
+                    return new Node().set_value(v).set_title('case ' + i).set_key(i)
                 })
-            ))
+            )).select(web_dom.get_param('case', 0))
         })
         this.case_select.change(() => {
             let o = this.case_select.get_value()
             this.case_pre.set_value(JSON.stringify(o.value))
-
 
         })
 
@@ -99,17 +100,17 @@ class Algo extends Div {
     }
     load() {
         web_dom.post("/app/yly/algo/manage/query", {}, (node: Node) => {
-            this.code_select.input.set_option(node)
+            this.code_select.set_option(node).select(web_dom.get_param("py_module"))
             this.run()
         })
 
     }
     run() {
-        let module_select = this.code_select.get_value()
+        let module_select = this.code_pre.get_value()
         let case_select = this.case_pre.get_value()
 
         web_dom.post('/app/yly/algo/manage/execute', {
-            content: module_select.data.content,
+            content: module_select,
             case: case_select
         }, (node: Node) => {
             this.set_option(node)

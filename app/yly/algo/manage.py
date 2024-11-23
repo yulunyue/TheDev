@@ -11,18 +11,18 @@ import json
 CHANGE_STORE = dict()
 
 
-def wc(title, key, v, color):
+def wc(title, key, v, color,sp):
     k = f'{title}{key}'
     size=""
     v = str(v)
     tp='span'
-    # print(k,v,CHANGE_STORE.get(k))
+    # font-size:28px
     if v != CHANGE_STORE.get(k, v):
         CHANGE_STORE[k] = v
-        size=f'font-size:28px;color:{color}'
+        size=f'color:{color}'
         tp = 'b'
     CHANGE_STORE[k] = v
-    return f'<p><span>{title}:</span><{tp} style="margin-left:6px;{size}">{v}</{tp}></p>'
+    return f'<{sp}><span>{title}:</span><{tp} style="margin-left:4px;{size}">{v}</{tp}></{sp}>'
 
 
 
@@ -54,20 +54,20 @@ class WatchAny(Node):
         dfs(self)
         return self
 
-def rs(title, value, key=""):
-    return wc(title, key, value, 'red')
+
 
 
 def ah(txt, href):
     return f'<a href="{href}">{txt}</a>'
 
 
+def bp(title, value, key=""):
+    return wc(title, key, value, 'blue','p')
+
 def bs(title, value, key=""):
-    return wc(title, key, value, 'blue')
+    return wc(title, key, value, 'blue','span')
 
 
-def gs(title, value, key):
-    return wc(title, key, value, 'green')
 
 def div(*args,hex_str=None, algo_view=None,size=None,**kg):
     return WatchAny(*args,type='div', hex_str=hex_str, algo_view=algo_view, size=size,**kg)
@@ -82,6 +82,9 @@ def divv(*args, hex_str=None, algo_view=None,size=None):
 
 def tree(t:WatchAny,size=None):
     return WatchAny(type='tree',hex_str=t.hex_str,algo_view=t.algo_view,size=size)
+
+def grid(algo_view,hex_str=None):
+    return WatchAny(type='grid',algo_view=algo_view,hex_str=hex_str)
 
 class SolutionBase:
     logs = []
@@ -177,22 +180,20 @@ class SolutionBase:
     
     def record(self):
         childs = {}
-
+        flag=False
 
         for var in self.watch_var.leaf:
             if var.hex_str is None:
-                var.hex_str = '?'
                 childs[var.key]=var.algo_view()
-            if var.hex_str =='?':
                 continue
-
             key2,s2=var.key+'_algo',var.hex_str()
+            childs[var.key]=var.algo_view()
             if CHANGE_STORE.get(key2)!=s2:
-                childs[var.key]=var.algo_view()
+                flag=True
             CHANGE_STORE[key2]=s2
-
-        # dfs(self.watch_var)
-        return childs
+        if flag:
+            return childs
+        
 
     
     def info_main(self):
@@ -256,10 +257,10 @@ class Route:
             if fc is None or not fc.has_view:
                 continue
             ret.add_child(
-                value=module_name, 
+                key=module_name, 
                 title=title,
+                value=fp.read_file(),
                 data=dict(
-                    content=fp.read_file(),
                     cases=fc.get_cases()
                 )
             )
@@ -282,7 +283,7 @@ class Route:
     
 class Util:
     def test(self):
-        fp=File('app/yly/algo/bcj/cf_195e.py')
+        fp=File('app/yly/algo/geometry/lc_3235.py')
         f: SolutionBase = get_md(fp.py_module_path())
         File('data/algo/test.json').write_file(Route().execute(fp.read_file(),f.get_cases()[0]))
         

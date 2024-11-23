@@ -16,6 +16,7 @@ class Module:
         if fun_name:
             for attr in fun_name.split('.'):
                 ret = getattr(ret, attr)
+        sys.modules.pop(modeule_name)
         
         # sys.path.pop()
         return ret
