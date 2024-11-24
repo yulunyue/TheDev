@@ -13,7 +13,7 @@ class Logger(logging.Logger):
             fp.write_file('')
         self.add_hander(logging.FileHandler(
             self.path, mode='a+'), logging.INFO)
-        self.add_hander(logging.StreamHandler(), logging.INFO)
+        #self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):
         fm = logging.Formatter(''.join([

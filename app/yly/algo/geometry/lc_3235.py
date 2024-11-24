@@ -33,7 +33,7 @@ except:
 class Solution(SolutionBase):
     uri = "https://leetcode.cn/problems/check-if-the-rectangle-corner-is-reachable/description/"
     name = 'leetcode_3235. 判断矩形的两个角落是否可达'
-    has_view=True
+    has_view=False
     def get_cases(self):
         return [
             dict(X=3, Y=4, circles=[[2, 1, 1]], result=True)

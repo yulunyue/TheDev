@@ -254,7 +254,7 @@ class Route:
             module_name = fp.py_module_path()
             title=module_name.split('.')[-1]
             fc:SolutionBase = get_md(module_name)
-            if fc is None or not fc.has_view:
+            if fc is None or not getattr(fc,'has_view',None):
                 continue
             ret.add_child(
                 key=module_name, 
