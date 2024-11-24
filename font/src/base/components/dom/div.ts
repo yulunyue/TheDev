@@ -284,8 +284,12 @@ export class Div {
         for (var i = 0; i < this.childs.length; i++) {
             this.childs[i].emit_mount()
         }
+        this.on_render()
         this.on_mount()
         return this
+    }
+    on_render(){
+        
     }
     on_mount() {
 

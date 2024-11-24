@@ -32,7 +32,10 @@ class Constant {
     COLOR_YELLOW = '#ff0'
     COLOR_BALCK = '#000'
     COLOR_GRAY = '#888'
+    COLOR_TANS = 'transparent'
+
     DIALOG_COLOR = '#8888'
+
 
     INPUT_NUMBER_WIDTH = 20
     INPUT_STRING_MIN_WIDTH = 120

@@ -136,24 +136,15 @@ export class Node {
         return this
     }
     set_option(data: any) {
-
-        return this.set_title(
-            data.title
-        ).set_value(
-            data.value
-        ).set_childs(
-            data.childs || []
-        ).set_type(
-            data.type
-        ).set_size(
-            data.size
-        ).set_direction(
-            data.direction
-        ).set_key(
-            data.key
-        ).set_data(
-            data.data
-        )
+        for(var k in data){
+            if(k=='childs'){
+                this.set_childs(data[k]) 
+            }
+            else{
+                this[k]=data[k]
+            }
+        }
+        return this
     }
     dump() {
         return {

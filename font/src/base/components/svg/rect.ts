@@ -17,12 +17,26 @@ export class Rect extends GNode {
         return this.set_attr("height", y)
     }
 }
-// export class Polygon extends GNode {
-//     constructor() {
-//         super("polygon")
-//     }
-// }
-
+export class Polygon extends GNode {
+    constructor() {
+        super("polygon")
+    }
+    set_points(points:any){
+        if(points==null || points==undefined){
+            return
+        }
+        if(Array.isArray(points)){
+            points=points.map(v=>v[0]+","+v[1]).join(' ')
+        }
+        return this.set_attr("points",points)
+    }
+    render_option(): void {
+        this.set_points(this.option.value)
+    }
+}
+export function polygon(){
+    return new Polygon()
+}
 
 export function rect() {
     return new Rect()

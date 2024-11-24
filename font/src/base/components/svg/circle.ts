@@ -1,9 +1,16 @@
 import { GNode } from "./gnode"
 import { Point } from "../../tool/data"
 import { Node } from "../../web/cls"
+import { Constant } from "../export"
 export class Circle extends GNode {
     constructor() {
         super("circle")
+    }
+    init_style(): void {
+        this.set_style({
+            fill:Constant.COLOR_TANS,
+            stroke:Constant.COLOR_BALCK
+        })
     }
     set_r(radius: number) {
         if (!radius) {
@@ -24,9 +31,9 @@ export class Circle extends GNode {
     get_y() {
         return parseFloat(this.get_attr("cy"))
     }
-    set_option(option: Node): this {
-        this.set_r(option.data.r)
-        return super.set_option(option)
+    render_option(): void {
+        console.warn(this.option)
+        this.set_x(this.option.x).set_y(this.option.y).set_r(this.option.value)
     }
 }
 export function circle() {

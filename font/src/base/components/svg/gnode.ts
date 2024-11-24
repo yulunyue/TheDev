@@ -112,7 +112,10 @@ export class GNode {
         return this
     }
     set_color(color: string) {
-        return this.set_style({ fill: color })
+        if(color==null||color==undefined){
+            return this
+        }
+        return this.set_style({ fill: color,stroke:color })
     }
     set_html(s: string) {
         this.el.innerHTML = s

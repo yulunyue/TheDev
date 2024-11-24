@@ -16,10 +16,13 @@ export class Line extends GNode {
         this.set_style({
             strokeWidth: "2",
             stroke: '#000',
-            fill: "#000"
+            fill: "#fff"
         })
     }
     set_d(pts: string | Point[]) {
+        if(pts==null||pts==undefined){
+            return this
+        }
         let ds = ""
         if (Array.isArray(pts)) {
             this.pts = pts
@@ -42,6 +45,16 @@ export class Line extends GNode {
     mount_d(pts: string | Point[]) {
         this.on_mount_call["set_d"] = [pts]
         return this
+    }
+    render_option(): void {
+        this.set_d(this.option.value)
+        this.set_color(this.option.data.color)
+    }
+    set_color(color: string) {
+        if(color==null||color==undefined){
+            return this
+        }
+        return this.set_style({ stroke:color })
     }
     draw2() {
         if (isNaN(this.src_x) || isNaN(this.src_y) || isNaN(this.dst_y) || isNaN(this.dst_x)) {

@@ -31,9 +31,10 @@ export class SvgNode extends Div {
             height: 1
         })
     }
-    set_backgroud_grid() {
+    on_render(): void {
 
     }
+
 }
 export function svg() {
     return new SvgNode()

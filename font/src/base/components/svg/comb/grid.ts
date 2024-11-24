@@ -2,7 +2,12 @@ import { GNode, gnode } from "../gnode";
 import { line } from "../line";
 import { SvgNode } from "../svg";
 import { circle } from "../circle";
-import { Rect, rect } from "../rect";
+import { Rect, rect, polygon } from "../rect";
+const NODE_GEN= {
+    polygon,
+    circle,
+    line
+}
 export class Grid extends SvgNode {
     g: GNode
     init_node(): void {
@@ -10,7 +15,8 @@ export class Grid extends SvgNode {
     }
     draw_child() {
         for (var i = 0; i < this.option.childs.length; i += 1) {
-            // this.add_child()
+            let op=this.option.childs[i]
+            this.g.add_child(NODE_GEN[op.type]()).set_option(op)
         }
     }
     draw() {
@@ -25,7 +31,6 @@ export class Grid extends SvgNode {
         this.draw()
     }
     render_option(): void {
-
         this.draw()
     }
 
