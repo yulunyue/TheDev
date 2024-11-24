@@ -100,6 +100,7 @@ class Solution(SolutionBase):
     gameinfo = ('cf',195,'E')
     name = 'CodeForce_195_E 计算树的深度和'
     tags = ['并查集']
+    动画演示='http://1.14.93.140:8888/font/dist//index.html?route=algo&py_module=app.yly.algo.bcj.cf_195e'
     has_view = True
     def get_cases(self):
         return [

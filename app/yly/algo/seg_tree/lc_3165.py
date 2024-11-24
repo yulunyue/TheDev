@@ -131,6 +131,7 @@ class SegTreeNode:
 class Solution(SolutionBase):
     name = 'leetcode 3165_不包含相邻元素的子序列的最大和'
     uri = 'https://leetcode.cn/problems/maximum-sum-of-subsequence-with-non-adjacent-elements/description/'
+    动画演示='http://1.14.93.140:8888/font/dist//index.html?route=algo&py_module=app.yly.algo.seg_tree.lc_3165'
     arr = []
     tags = '线段树'
     has_view = True
