@@ -2,8 +2,10 @@ from common.tool.thread_util import run_watch_fun
 from common.service.http import Node, http_test
 from typing import List
 from common.util.module import Module
+from common.util.model import NumberModel,number
 from common.util.log import logger
 from common.util.fp import File
+from collections import defaultdict
 import os
 import time
 import sys
@@ -86,6 +88,47 @@ def tree(t:WatchAny,size=None):
 def grid(algo_view,hex_str=None):
     return WatchAny(type='grid',algo_view=algo_view,hex_str=hex_str)
 
+
+    
+
+    
+
+class Util:
+    def __init__(self) -> None:
+        self.op=defaultdict(defaultdict(str))
+
+    # def get_node(self,k)->Node:
+        
+    #     if k not in self.op:
+    #         self.op[k]=Node(key=v,title=info)
+    #     return self.op[v]
+    def fmax(self,a,b,k,info):
+        # a,b=number(a),number(b)
+        if a<b:
+            self.op[k][b]=[a,info]
+            return b
+        return a
+
+    def fmin(self,a,b,k,info):
+        # a,b=number(a),number(b)
+        if a>b:
+            self.op[k][b][a]=info
+            return b
+        return a
+
+    def get_info(self,n,b):
+        ret=[f'{n} {b}']
+        space=" "
+        while n>0:
+            b,info=self.op[n][b]
+            ret.append(f'{space} {n} {b} {info}')
+            space+=" "
+            n-=1
+        return "\n".join(ret)
+
+
+
+U=Util()
 class SolutionBase:
     logs = []
     has_view = False
@@ -125,15 +168,20 @@ class SolutionBase:
             self.lines=[v for v in input.split('\n') if v]
 
     def run(self):
+        if len(sys.argv)>1 and sys.argv[1].startswith('test_'):
+            exec_name=sys.argv[1][5:]
+        else:
+            exec_name='execute'
         for i, case in enumerate(self.get_cases()):
             self.__class__.logs = []
             self.ep = case.pop("result")
             a = time.time()
             try:
+                self.log(f"begin {self.name}-{exec_name}")
                 self.pre(**case)
                 self.init(**case)
-                r = self.execute(**case)
-                self.log("finish", time.time()-a)
+                r = getattr(self,exec_name)(**case)
+                self.log(f"finish {self.name}-{exec_name}", time.time()-a)
             except Exception as e:
                 import traceback
                 traceback.print_exc()

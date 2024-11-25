@@ -7,14 +7,22 @@ from functools import lru_cache
 import bisect
 import sys
 import math
+import os
 import heapq
 inf = float("inf")
 MOD = (10**9)+7
 try:
-    from app.yly.algo.manage import SolutionBase
-
-except:
-
+    from app.yly.algo.manage import SolutionBase,U
+except Exception as e:
+    print(e,file=sys.stderr)
+    class U:
+        @staticmethod
+        def fmax(a,b,*args):return a if a>b else b
+        @staticmethod
+        def fmin(a,b,*args):return a if a<b else b
+        @staticmethod
+        def get_info(*args):
+            pass
     class SolutionBase:
         DEV = False
 
@@ -31,8 +39,7 @@ except:
 
         def watch(self):
             pass
-fmin = lambda x, y: x if x < y else y
-fmax = lambda x, y: x if x > y else y
+
 
 class Solution(SolutionBase):
     uri = "https://leetcode.cn/contest/weekly-contest-425/problems/minimum-array-sum/description/"
@@ -40,9 +47,10 @@ class Solution(SolutionBase):
 
     def get_cases(self):
         return [
+            dict(nums = [882,307,624,469,329,684,851,608,317,205],k =431,op1 =9,op2=4,result=1582.1),
             dict(nums=[0,4],k=3,op1=1,op2=1,result=1),
             dict(nums = [2,8,3,19,3], k = 3, op1 = 1, op2 = 1,result=23),
-            dict(nums = [882,307,624,469,329,684,851,608,317,205],k =431,op1 =9,op2=4,result=1582),
+            
             
             dict(nums =[10],k =3,op1 =1,op2 =1,result=2),
             dict(nums =[9],k =5,op1 =1,op2 =1,result=0),
@@ -50,7 +58,7 @@ class Solution(SolutionBase):
             
         ]
 
-    def execute(self, nums: List[int], k: int, op1: int, op2: int) -> int:
+    def execute_tanxin(self, nums: List[int], k: int, op1: int, op2: int) -> int:
         sall=sum(nums)
         nums=sorted(nums)
         self.log(nums)
@@ -87,8 +95,9 @@ class Solution(SolutionBase):
         self.log(ans)
         return sall-ans
     
-    def execute2(self, nums: List[int], k: int, op1: int, op2: int) -> int:
-        nums.sort()
+    def execute(self, nums: List[int], k: int, op1: int, op2: int) -> int:
+        #nums.sort()
+
         @lru_cache(None)
         def dfs(n,op1,op2):
             if op1==0 and op2==0:
@@ -97,35 +106,19 @@ class Solution(SolutionBase):
                 return 0
             ans=dfs(n-1,op1,op2)
             if op1>0:
-                ans=max(ans,nums[n]//2+dfs(n-1,op1-1,op2))
+                ans=U.fmax(ans,nums[n]//2+dfs(n-1,op1-1,op2),n,f'op1 {nums[n]}')
             if op2>0 and nums[n]>=k:
-                ans=max(ans,k+dfs(n-1,op1,op2-1))
+                ans=U.fmax(ans,k+dfs(n-1,op1,op2-1), n,f'op2 {nums[n]}')
             if op1>0 and op2>0:
                 if nums[n]>=2*k-1:
-                    ans=max(ans,k+nums[n]//2+dfs(n-1,op1-1,op2-1))
+                    ans=U.fmax(ans,k+nums[n]//2+dfs(n-1,op1-1,op2-1),n,f'op1 op2 {nums[n]}')
                 elif nums[n]>=k:
-                    ans=max(ans,nums[n]-(nums[n]-k+1)//2+dfs(n-1,op1-1,op2-1))
-            self.log(nums[:n+1],op1,op2,ans)
+                    ans=U.fmax(ans,nums[n]-(nums[n]-k+1)//2+dfs(n-1,op1-1,op2-1),n,f'op2 op1 {nums[n]}')
             return ans
-        
-        return sum(nums)-dfs(len(nums)-1,op1,op2)
-    
-    def execute2(self, nums: List[int], k: int, op1: int, op2: int) -> int:
-        def f(x): return x - x // 2
-        def g(x): return x if x < k else x - k
-        dp = [[0] * (op2 + 1) for _ in range(op1 + 1)]
-        dp[0][0] = 0
-        for v in nums:
-            v1 = v // 2
-            v2 = 0 if v < k else k
-            v12 = v - fmin(f(g(v)), g(f(v)))
-            for i in range(op1, -1, -1):
-                for j in range(op2, -1, -1):
-                    if i: dp[i][j] = fmax(dp[i][j], dp[i - 1][j] + v1)
-                    if j: dp[i][j] = fmax(dp[i][j], dp[i][j - 1] + v2)
-                    if i and j:
-                        dp[i][j] = fmax(dp[i][j], dp[i - 1][j - 1] + v12)
-        return sum(nums) - dp[-1][-1]
+        ans=dfs(len(nums)-1,op1,op2)
+        self.log(U.get_info(len(nums)-1,ans))
+        return sum(nums)-ans
+
     def minArraySum(self, *arg, **kg):
         self.init(*arg, **kg)
         return self.execute(*arg, **kg)

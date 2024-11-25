@@ -1,8 +1,10 @@
 import logging
+import logging.handlers
+import os
 from common.constant import Constant
 from common.util.fp import File
 LOG_MAP = dict()
-
+LOGGER_MODE='LOGGER_MODE'
 
 class Logger(logging.Logger):
     def __init__(self, name) -> None:
@@ -11,9 +13,10 @@ class Logger(logging.Logger):
         fp=File(self.path)
         if not fp.exists():
             fp.write_file('')
+   
         self.add_hander(logging.FileHandler(
-            self.path, mode='w'), logging.INFO)
-        self.info("---start---log---")
+            self.path, mode=os.environ.get(LOGGER_MODE,'w')), logging.INFO)
+        self.info("\n\n---start---log---\n\n")
         #self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):
