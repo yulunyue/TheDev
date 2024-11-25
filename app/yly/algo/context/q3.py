@@ -58,7 +58,7 @@ class Solution(SolutionBase):
             
         ]
 
-    def execute_tanxin(self, nums: List[int], k: int, op1: int, op2: int) -> int:
+    def tx(self, nums: List[int], k: int, op1: int, op2: int) -> int:
         sall=sum(nums)
         nums=sorted(nums)
         self.log(nums)
@@ -71,17 +71,17 @@ class Solution(SolutionBase):
             if op1<=0 and op2<=0:
                 break
             if op1>0:
-                self.log(1,i,nums[i])
+                self.log(f'{nums[i]} op1')
                 c=(c+1)//2
                 op1-=1
             if op2>0:
                 c-=k
-                self.log(2,i,nums[i])
+                self.log(f'{nums[i]} op2')
                 op2-=1
             ans+=nums[i]-c
         # ki+=1
         while op2>0 and ki<ki2:
-            self.log(2,ki,nums[ki])
+            self.log(f'{nums[ki]} op2')
             nums[ki]-=k
             ans+=k
             op2-=1
@@ -89,14 +89,14 @@ class Solution(SolutionBase):
         nums=sorted(nums[:ki2])
         self.log(nums)
         while op1>0 and nums:
-            self.log(1,len(nums)-1,nums[-1])
+            self.log(f'{nums[-1]} op1')
             ans+=nums.pop()//2
             op1-=1
         self.log(ans)
         return sall-ans
     
-    def execute(self, nums: List[int], k: int, op1: int, op2: int) -> int:
-        #nums.sort()
+    def dp(self, nums: List[int], k: int, op1: int, op2: int) -> int:
+        nums.sort()
 
         @lru_cache(None)
         def dfs(n,op1,op2):
@@ -106,18 +106,25 @@ class Solution(SolutionBase):
                 return 0
             ans=dfs(n-1,op1,op2)
             if op1>0:
-                ans=U.fmax(ans,nums[n]//2+dfs(n-1,op1-1,op2),n,f'op1 {nums[n]}')
+                dop1=dfs(n-1,op1-1,op2)
+                ans=U.fmax(ans,nums[n]//2+dop1,n-1,dop1,f'{nums[n]},op1')
             if op2>0 and nums[n]>=k:
-                ans=U.fmax(ans,k+dfs(n-1,op1,op2-1), n,f'op2 {nums[n]}')
+                dop2=dfs(n-1,op1,op2-1)
+                ans=U.fmax(ans,k+dop2, n-1,dop2,f'{nums[n]} op2')
             if op1>0 and op2>0:
                 if nums[n]>=2*k-1:
-                    ans=U.fmax(ans,k+nums[n]//2+dfs(n-1,op1-1,op2-1),n,f'op1 op2 {nums[n]}')
+                    dop12 = dfs(n-1,op1-1,op2-1)
+                    ans=U.fmax(ans,k+nums[n]//2+dop12,n-1,dop12,f'{nums[n]} op1 op2')
                 elif nums[n]>=k:
-                    ans=U.fmax(ans,nums[n]-(nums[n]-k+1)//2+dfs(n-1,op1-1,op2-1),n,f'op2 op1 {nums[n]}')
+                    dop21 = dfs(n-1,op1-1,op2-1)
+                    ans=U.fmax(ans,nums[n]-(nums[n]-k+1)//2+dop21,n-1,dop21,f'{nums[n]} op2 op1')
             return ans
         ans=dfs(len(nums)-1,op1,op2)
         self.log(U.get_info(len(nums)-1,ans))
         return sum(nums)-ans
+
+    def execute(self, *args, **kwargs):
+        return self.dp(*args,**kwargs)
 
     def minArraySum(self, *arg, **kg):
         self.init(*arg, **kg)

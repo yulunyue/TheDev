@@ -95,35 +95,33 @@ def grid(algo_view,hex_str=None):
 
 class Util:
     def __init__(self) -> None:
-        self.op=defaultdict(defaultdict(str))
+        self.op=defaultdict(lambda:defaultdict(str))
 
     # def get_node(self,k)->Node:
         
     #     if k not in self.op:
     #         self.op[k]=Node(key=v,title=info)
     #     return self.op[v]
-    def fmax(self,a,b,k,info):
+    def fmax(self,a,b,n,f,info):
         # a,b=number(a),number(b)
         if a<b:
-            self.op[k][b]=[a,info]
+            self.op[b][f]=info
             return b
         return a
 
-    def fmin(self,a,b,k,info):
+    def fmin(self,a,b,n,f,info):
         # a,b=number(a),number(b)
         if a>b:
-            self.op[k][b][a]=info
+            self.op[b][f]=info
             return b
         return a
 
     def get_info(self,n,b):
-        ret=[f'{n} {b}']
-        space=" "
-        while n>0:
-            b,info=self.op[n][b]
-            ret.append(f'{space} {n} {b} {info}')
-            space+=" "
-            n-=1
+        ret=[f'{b}']
+        while b in self.op:
+            a=self.op[b]
+            b,info=list(a.items())[0]
+            ret.append(f'{info}{b}')
         return "\n".join(ret)
 
 
@@ -168,29 +166,27 @@ class SolutionBase:
             self.lines=[v for v in input.split('\n') if v]
 
     def run(self):
-        if len(sys.argv)>1 and sys.argv[1].startswith('test_'):
-            exec_name=sys.argv[1][5:]
-        else:
-            exec_name='execute'
-        for i, case in enumerate(self.get_cases()):
-            self.__class__.logs = []
-            self.ep = case.pop("result")
-            a = time.time()
-            try:
-                self.log(f"begin {self.name}-{exec_name}")
-                self.pre(**case)
-                self.init(**case)
-                r = getattr(self,exec_name)(**case)
-                self.log(f"finish {self.name}-{exec_name}", time.time()-a)
-            except Exception as e:
-                import traceback
-                traceback.print_exc()
-                r = None
-            if not self.diff(r, self.ep):
-                logs = "\n".join(self.__class__.logs)
-                self.flush_log(
-                    i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
-                break
+        exec_names=['execute']+sys.argv[1:]
+        for exec_name in exec_names:
+            for i, case in enumerate(self.get_cases()):
+                self.__class__.logs = []
+                self.ep = case.pop("result")
+                a = time.time()
+                try:
+                    self.log(f"begin {self.name}-{exec_name}")
+                    self.pre(**case)
+                    self.init(**case)
+                    r = getattr(self,exec_name)(**case)
+                    self.log(f"finish {self.name}-{exec_name}", time.time()-a)
+                except Exception as e:
+                    import traceback
+                    traceback.print_exc()
+                    r = None
+                if not self.diff(r, self.ep):
+                    logs = "\n".join(self.__class__.logs)
+                    self.flush_log(
+                        i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
+                    break
     def input(self)->str:
         return self.lines.pop(0)
     def i1(self):
