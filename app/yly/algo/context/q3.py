@@ -50,24 +50,50 @@ class Solution(SolutionBase):
             dict(nums = [882,307,624,469,329,684,851,608,317,205],k =431,op1 =9,op2=4,result=1582.1),
             dict(nums=[0,4],k=3,op1=1,op2=1,result=1),
             dict(nums = [2,8,3,19,3], k = 3, op1 = 1, op2 = 1,result=23),
-            
-            
             dict(nums =[10],k =3,op1 =1,op2 =1,result=2),
             dict(nums =[9],k =5,op1 =1,op2 =1,result=0),
            
             
         ]
+    
+    def execute(self, nums: List[int], k: int, op1: int, op2: int) -> int:
+        # op2_ct=0
+        sum_all=0
+        # big_diff_k_ct = 0 # 统计 >=k 且与k 不同奇偶的个数
+        #small_odd_ct = 0 # 统计 <k 的奇数
+        num1=[]
+        num2=[]
+        for v in nums:
+            sum_all+=v
+            if v>=k:
+                num1.append([v,v%2!=k%2,v-k])
+            else:
+                # small_odd_ct=v%2==1
+                num2.append([v,v%2==1,v])
+        num3=sorted(num1+num2,key=lambda v:-v[-1])
+        op2_sum=min(len(num1),op2)*k
+        op1_sum=-op2_sum
+        odd_ct=0
+        for i in range(min(op1,len(num3))):
+            odd_ct+=num3[i][1]
+            op1_sum+=num3[i][0]
+        # self.log(num1)
+        # self.log(num2)
+        self.log(num3)
+        # self.log(num3)      
+        return sum_all-op2_sum-(op1_sum//2)+odd_ct
 
     def tx(self, nums: List[int], k: int, op1: int, op2: int) -> int:
+        nums.sort()
         sall=sum(nums)
-        nums=sorted(nums)
-        self.log(nums)
+        nums2=sorted(nums)
+        self.log(nums2)
         ans=0
-        n=len(nums)
-        ki2=bisect.bisect_left(nums,2*k-1)
-        ki=bisect.bisect_left(nums,k)
+        n=len(nums2)
+        ki2=bisect.bisect_left(nums2,2*k-1)
+        ki=bisect.bisect_left(nums2,k)
         for i in range(n-1,ki2-1,-1):
-            c=nums[i]
+            c=nums2[i]
             if op1<=0 and op2<=0:
                 break
             if op1>0:
@@ -78,19 +104,20 @@ class Solution(SolutionBase):
                 c-=k
                 self.log(f'{nums[i]} op2')
                 op2-=1
-            ans+=nums[i]-c
+            ans+=nums2[i]-c
+        for i in range(ki,ki2):
+            if op2>0:
+                ans+=k
+                op2-=1
+            nums2[i]-=k
         # ki+=1
-        while op2>0 and ki<ki2:
-            self.log(f'{nums[ki]} op2')
-            nums[ki]-=k
-            ans+=k
-            op2-=1
-            ki+=1
-        nums=sorted(nums[:ki2])
-        self.log(nums)
-        while op1>0 and nums:
-            self.log(f'{nums[-1]} op1')
-            ans+=nums.pop()//2
+
+        nums3=sorted([[nums2[i],i] for i in range(ki2)])
+        self.log(nums3)
+        while op1>0 and nums3:
+            a,b=nums3.pop()
+            self.log(f'{nums[b]} op1')
+            ans+=a//2
             op1-=1
         self.log(ans)
         return sall-ans
@@ -123,8 +150,7 @@ class Solution(SolutionBase):
         self.log(U.get_info(len(nums)-1,ans))
         return sum(nums)-ans
 
-    def execute(self, *args, **kwargs):
-        return self.dp(*args,**kwargs)
+
 
     def minArraySum(self, *arg, **kg):
         self.init(*arg, **kg)

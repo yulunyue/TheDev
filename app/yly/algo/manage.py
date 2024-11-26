@@ -121,7 +121,7 @@ class Util:
         while b in self.op:
             a=self.op[b]
             b,info=list(a.items())[0]
-            ret.append(f'{info}{b}')
+            ret.append(f'{info} {b}')
         return "\n".join(ret)
 
 
