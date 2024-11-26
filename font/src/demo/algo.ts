@@ -79,7 +79,7 @@ class Algo extends Div {
     draw_nodes() {
         this.algo_nodes = this.div.clear().add_grid_childs(
             this.option.childs,
-            this.option.direction
+            web_dom.get_wh_scale()<1?Constant.HORIZONTAL:Constant.VERTICAL
         ).emit_mount().get_content_divs()
     }
     goto() {

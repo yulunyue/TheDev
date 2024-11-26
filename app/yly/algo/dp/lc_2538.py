@@ -52,10 +52,6 @@ class Solution(SolutionBase):
 
                 s1, s2 = dfs(y, x)
 
-                # 前面最大带叶子的路径和 + 当前不带叶子的路径和
-
-                # 前面最大不带叶子的路径和 + 当前带叶子的路径和
-
                 ans = max(ans, max_s1 + s2, max_s2 + s1)
 
                 max_s1 = max(max_s1, s1 + p)

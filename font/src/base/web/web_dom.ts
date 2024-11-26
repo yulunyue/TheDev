@@ -73,6 +73,9 @@ class WebDom {
     url(path: string) {
         return this.prefix + path
     }
+    get_wh_scale(){
+        return window.innerWidth/window.innerHeight
+    }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back?: Fn1Void<Node>) {
         let url = this.url(path)
