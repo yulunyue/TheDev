@@ -19,7 +19,7 @@ export class Game extends Div {
         ))
     }
     do_msg(n: Node) {
-
+        console.warn(n)
     }
     init_game() {
 
@@ -29,10 +29,8 @@ export class Game extends Div {
         if (!this.room_id) {
             return
         }
-        Data.get_user_name((user_name: any) => {
-            web_socket.sub(user_name + '&' + this.game_id + '&' + this.room_id, (data: Node) => {
-                this.do_msg(data)
-            })
+        web_socket.sub(this.room_id, (data: Node) => {
+            this.do_msg(data)
         })
         this.init_game()
     }

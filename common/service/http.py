@@ -95,6 +95,9 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         logger.info(f"WebSocket closed {self}")
         if self.user_name in WEB_SOCKET_CLIENTS:
             WEB_SOCKET_CLIENTS[self.user_name]
+        
+    def check_origin(self, origin):
+        return True
 
 
 WEB_SOCKET_CLIENTS:Dict[str,TornadaWebSocketConnectHandler] = dict()

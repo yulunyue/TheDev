@@ -5,7 +5,7 @@ export class Data {
         let user_name = web_dom.get_local("user_name")
         if (!user_name) {
             dialog.open_form({
-                user_name: "text"
+                user_name: "input"
             }, (data: any) => {
                 web_dom.set_local("user_name", data.user_name)
                 call_back(data.user_name)

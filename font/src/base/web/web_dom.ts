@@ -46,9 +46,9 @@ class WebDom {
     }
     set_local(key: string, value: any) {
         if (typeof value == "object") {
-            localStorage.setItem(key, JSON.stringify(value))
+            localStorage.setItem("yly_"+key, JSON.stringify(value))
         } else {
-            localStorage.setItem(key, value)
+            localStorage.setItem("yly_"+key, value)
         }
     }
     web_host: string
