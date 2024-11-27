@@ -1,4 +1,7 @@
 
+export class Point {
+
+}
 
 export interface Style {
     color?: string
@@ -136,12 +139,12 @@ export class Node {
         return this
     }
     set_option(data: any) {
-        for(var k in data){
-            if(k=='childs'){
-                this.set_childs(data[k]) 
+        for (var k in data) {
+            if (k == 'childs') {
+                this.set_childs(data[k])
             }
-            else{
-                this[k]=data[k]
+            else {
+                this[k] = data[k]
             }
         }
         return this

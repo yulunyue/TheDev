@@ -1,8 +1,7 @@
 import { GNode } from "./gnode"
-import { Point } from "../../tool/data"
 import { Defs, ARROW_KEY, ARROW_START, ARROW_END } from "./defs"
 export class Line extends GNode {
-    pts: Point[]
+    pts: any[]
     src_y: number
     src_x: number
     dst_y: number
@@ -19,8 +18,8 @@ export class Line extends GNode {
             fill: "#fff"
         })
     }
-    set_d(pts: string | Point[]) {
-        if(pts==null||pts==undefined){
+    set_d(pts: string | any[]) {
+        if (pts == null || pts == undefined) {
             return this
         }
         let ds = ""
@@ -42,7 +41,7 @@ export class Line extends GNode {
         }
         return this.set_attr("d", ds)
     }
-    mount_d(pts: string | Point[]) {
+    mount_d(pts: string | any[]) {
         this.on_mount_call["set_d"] = [pts]
         return this
     }
@@ -51,10 +50,10 @@ export class Line extends GNode {
         this.set_color(this.option.data.color)
     }
     set_color(color: string) {
-        if(color==null||color==undefined){
+        if (color == null || color == undefined) {
             return this
         }
-        return this.set_style({ stroke:color })
+        return this.set_style({ stroke: color })
     }
     draw2() {
         if (isNaN(this.src_x) || isNaN(this.src_y) || isNaN(this.dst_y) || isNaN(this.dst_x)) {

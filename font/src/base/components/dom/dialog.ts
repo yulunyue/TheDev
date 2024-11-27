@@ -1,7 +1,7 @@
 import { Div, div } from "./div";
-import Constant from "../../web/constant";
 import web_dom from "../../web/web_dom"
-
+import { form, Row, row1 } from "./form";
+import { Node } from "../../web/cls";
 export class Dialog extends Div {
     container: Div
     header: Div
@@ -27,6 +27,19 @@ export class Dialog extends Div {
     init_event(): void {
 
     }
+    open_form(oj: any, call: any) {
+        let rows = []
+        for (var key in oj) {
+            rows.push(
+                row1().set_option(new Node().set_type(
+                    oj[key]
+                ).set_title(
+                    key
+                ).set_key(key))
+            )
+        }
+        return this.open(form().set_rows(rows).ok(call))
+    }
     open(c: any) {
         this.container.clear().add_child(c)
         c._dialog = this
@@ -36,7 +49,9 @@ export class Dialog extends Div {
         })
         web_dom.bind_click(this.container.el, () => {
         })
+        return this
     }
+
 
 }
 export default new Dialog()

@@ -87,7 +87,7 @@ export class Form extends Div {
         return this
     }
     do_ok() {
-        this._ok?.()
+        this._ok?.(this.get_value())
         this._dialog?.hide()
     }
     do_cancel() {

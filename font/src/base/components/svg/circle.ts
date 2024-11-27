@@ -1,6 +1,6 @@
 import { GNode } from "./gnode"
-import { Point } from "../../tool/data"
-import { Node } from "../../web/cls"
+
+import { Node, Point } from "../../web/cls"
 import { Constant } from "../export"
 export class Circle extends GNode {
     constructor() {
@@ -8,8 +8,8 @@ export class Circle extends GNode {
     }
     init_style(): void {
         this.set_style({
-            fill:Constant.COLOR_TANS,
-            stroke:Constant.COLOR_BALCK
+            fill: Constant.COLOR_TANS,
+            stroke: Constant.COLOR_BALCK
         })
     }
     set_r(radius: number) {

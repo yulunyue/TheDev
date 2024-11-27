@@ -1,4 +1,7 @@
-export class Util {
+
+import web_dom from "../web/web_dom"
+
+export class UtilCls {
     url_to_json(s: string) {
         var ret = {}
         var s1 = s.split('&')
@@ -45,5 +48,6 @@ export class Util {
         }
         return res
     }
+
 }
-export default new Util()
+export default new UtilCls()
