@@ -1,7 +1,7 @@
 
 from common.service.api import Api
 import tornado
-from typing import List
+from typing import Awaitable, List,Dict
 from tornado.httputil import HTTPServerRequest
 from tornado.web import Application, RequestHandler
 from tornado.websocket import WebSocketHandler
@@ -26,12 +26,6 @@ HTML_CONTENT_TYPE = dict(
     js="application/x-javascript"
 )
 
-
-class TornadaWebSocketConnectHandler(tornado.websocket.WebSocketHandler):
-    pass
-
-
-
 class Node:
     def __init__(self, code=0,  direction=-1,type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
         self.code = code
@@ -50,6 +44,8 @@ class Node:
                     self.add_child(**cd)
                 else:
                     self.childs.append(cd)
+    def set_option(self,**kwargs):
+        pass
     def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None):
         ret = Node(code=code, type=type, key=key, title=title,
                    value=value, data=data, option=option, childs=childs)
@@ -75,6 +71,35 @@ class Node:
     
     def get_data(self):
         return self.data
+    
+class TornadaWebSocketConnectHandler(WebSocketHandler):
+    user_name=""
+    def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
+        logger.info(f"WebSocket opened {self}")
+        return super().open(*args, **kwargs)
+    
+    def hander_msg(self,node:Node):
+        if node.type == 'login':
+            self.user_name=node.data['user_name']
+            WEB_SOCKET_CLIENTS[self.user_name]=self
+            node.title = f'welcom {self.user_name}'
+            return node
+        
+    def on_message(self, message):
+        oj = json.loads(message)
+        res = self.hander_msg(Node(tyep=oj['type'],data=oj['data']))
+        if res:
+            self.write_message(res.to_json())
+
+    def on_close(self):
+        logger.info(f"WebSocket closed {self}")
+        if self.user_name in WEB_SOCKET_CLIENTS:
+            WEB_SOCKET_CLIENTS[self.user_name]
+
+
+WEB_SOCKET_CLIENTS:Dict[str,TornadaWebSocketConnectHandler] = dict()
+
+
 
 class ApiCall:
     def __init__(self) -> None:

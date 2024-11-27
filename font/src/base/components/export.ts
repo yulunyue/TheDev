@@ -18,8 +18,10 @@ import web_dom from "../../base/web/web_dom"
 import { line, Line } from "./svg/line"
 import { Form, form, row1, row2, Row } from "./dom/form"
 import { Select, select } from "./dom/select";
-
+import Util from "../tool/util"
+import Data from "../tool/data"
 import dialog from "./dom/dialog"
+import web_socket from "../web/web_socket"
 const DEV_COMPONENT = {
     input, search_dev, Select, select, canca_dev,
     button_dev, table, listdev,
@@ -29,7 +31,7 @@ DivFactory.register("div", pre)
 DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
 export {
-    Select, select, Pre, pre, Row, text_area, TextArea,
+    Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data,
     DEV_COMPONENT, Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2
 }
