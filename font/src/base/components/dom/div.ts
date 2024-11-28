@@ -271,6 +271,9 @@ export class Div {
     init_event() {
 
     }
+    set_center(){
+        this.set_style({textAlign:"center"})
+    }
     create_element(name: string): any {
         return web_dom.createElement(name)
     }
@@ -351,7 +354,7 @@ export class Div {
             }
         }
         for (var i = this.childs.length; i < option.childs.length; i++) {
-            this.add_child(cls()).set_option(option.childs[i])
+            this.add_child(new cls()).set_option(option.childs[i])
         }
         let childs_l = this.childs.length;
         for (var i = option.childs.length; i < childs_l; i++) {

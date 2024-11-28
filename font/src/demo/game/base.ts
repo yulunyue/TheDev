@@ -9,6 +9,19 @@ export class Game extends Div {
     user_id: string
 
     do_msg(n: Node) {
+        let player=null
+        let players=[]
+        for(var i=0;i<n.childs.length;i++){
+            if(n.childs[i].key==this.user_id){
+                player=n.childs[i]
+            }else{
+                players.push(n.childs[i])
+            }
+        }
+        this.do_player_msg(player,players,n)
+
+    }
+    do_player_msg(player_self:Node,players:Node[],option:Node){
 
     }
     init_game() {
