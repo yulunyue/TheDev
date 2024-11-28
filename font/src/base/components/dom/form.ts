@@ -68,6 +68,7 @@ export class Form extends Div {
     footer: Div
     _dialog: Div
     _ok: any
+    rows: Row[]
     init_style(): void {
         this.set_style({
             textAlign: "center"
@@ -76,6 +77,7 @@ export class Form extends Div {
     init_node(): void {
         this.header = this.add_child(div())
         this.body = this.add_child(div())
+        this.rows = []
         this.footer = this.add_child(div())
         this.footer.add_childs([
             button().set_html("确认").click(() => { this.do_ok() }),
@@ -94,13 +96,15 @@ export class Form extends Div {
         this._dialog?.hide()
     }
     set_rows(rows: Row[]) {
+        this.rows = rows
         this.body.clear().add_childs(rows)
         return this
     }
     get_value() {
         let ret = {}
-        for (var i = 0; i < this.childs.length; i++) {
-            ret[this.childs[i].option.key] = this.childs[i].get_value()
+        for (var i = 0; i < this.rows.length; i++) {
+            // console.log(this.childs[i])
+            ret[this.rows[i].option.key] = this.rows[i].get_value()
         }
         return ret
     }

@@ -45,10 +45,13 @@ class WebDom {
         return this.url_param[key]
     }
     set_local(key: string, value: any) {
+        if (value == undefined || value == null) {
+            return
+        }
         if (typeof value == "object") {
-            localStorage.setItem("yly_"+key, JSON.stringify(value))
+            localStorage.setItem("yly_" + key, JSON.stringify(value))
         } else {
-            localStorage.setItem("yly_"+key, value)
+            localStorage.setItem("yly_" + key, value)
         }
     }
     web_host: string
@@ -73,8 +76,8 @@ class WebDom {
     url(path: string) {
         return this.prefix + path
     }
-    get_wh_scale(){
-        return window.innerWidth/window.innerHeight
+    get_wh_scale() {
+        return window.innerWidth / window.innerHeight
     }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back?: Fn1Void<Node>) {

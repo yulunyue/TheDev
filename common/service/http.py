@@ -46,6 +46,7 @@ class Node:
                     self.childs.append(cd)
     def set_option(self,**kwargs):
         pass
+
     def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None):
         ret = Node(code=code, type=type, key=key, title=title,
                    value=value, data=data, option=option, childs=childs)
@@ -87,14 +88,14 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         
     def on_message(self, message):
         oj = json.loads(message)
-        res = self.hander_msg(Node(tyep=oj['type'],data=oj['data']))
+        res = self.hander_msg(Node(type=oj['type'],data=oj['data']))
         if res:
             self.write_message(res.to_json())
 
     def on_close(self):
         logger.info(f"WebSocket closed {self}")
         if self.user_name in WEB_SOCKET_CLIENTS:
-            WEB_SOCKET_CLIENTS[self.user_name]
+            WEB_SOCKET_CLIENTS.pop(self.user_name)
         
     def check_origin(self, origin):
         return True
@@ -102,7 +103,13 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
 
 WEB_SOCKET_CLIENTS:Dict[str,TornadaWebSocketConnectHandler] = dict()
 
-
+def send_clients_mag(user, data):
+    if isinstance(user,str):
+        user=[user]
+    for u in user:
+        if u not in WEB_SOCKET_CLIENTS:
+            continue
+        WEB_SOCKET_CLIENTS[u].write_message(data)
 
 class ApiCall:
     def __init__(self) -> None:

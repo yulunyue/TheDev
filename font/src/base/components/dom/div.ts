@@ -126,10 +126,14 @@ export class Div {
 
         })
     }
-    set_flex_style(direction: number) {
-        direction = this.get_direction(direction)
+    set_style_flex2(direction: number) {
         this.set_style_flex(direction)
         this.set_div_style({ border: "1px solid #ccc" })
+        return this
+    }
+    set_flex_style(direction: number) {
+        direction = this.get_direction(direction)
+        this.set_style_flex2(direction)
         for (var i = 0; i < this.childs.length; i++) {
             if (this.childs[i].set_flex_style) {
                 this.childs[i].set_flex_style(1 - direction)
@@ -288,8 +292,8 @@ export class Div {
         this.on_mount()
         return this
     }
-    on_render(){
-        
+    on_render() {
+
     }
     on_mount() {
 
@@ -338,8 +342,29 @@ export class Div {
         this.render_option()
         return this
     }
+    update_option(option: Node, cls: any) {
+        this.set_option(option)
+
+        for (var i = 0; i < this.childs.length; i++) {
+            if (option.childs[i]) {
+                this.childs[i].set_option(option.childs[i])
+            }
+        }
+        for (var i = this.childs.length; i < option.childs.length; i++) {
+            this.add_child(cls()).set_option(option.childs[i])
+        }
+        let childs_l = this.childs.length;
+        for (var i = option.childs.length; i < childs_l; i++) {
+            // console.log(i)
+            // let n = this.childs.splice(i, 1)
+            // this.el.removeChild(n[0].el)
+        }
+    }
+    remove(i: number) {
+
+    }
     render_option() {
-        this.set_html(this.option.get_title())
+        // this.set_html(this.option.get_title())
     }
     add_childs(childs: any[]) {
         return this.set_childs(childs)

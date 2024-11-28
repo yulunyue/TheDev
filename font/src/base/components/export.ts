@@ -2,7 +2,7 @@ import { input, Input, text_area, TextArea } from "./dom/input"
 import { search, search_dev } from "./dom/search"
 import { canca_dev } from "./canva/canva"
 import { SvgNode, svg } from "./svg/svg"
-import { button_dev, button } from "./dom/button"
+import { button_dev, button, Button } from "./dom/button"
 import { div, Div, DivFactory } from "./dom/div"
 import { gnode, GNode } from "./svg/gnode"
 import { progress_dev, progress, Progress } from "./svg/comb/progress"
@@ -31,7 +31,7 @@ DivFactory.register("div", pre)
 DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
 export {
-    Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data,
+    Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button,
     DEV_COMPONENT, Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2
 }

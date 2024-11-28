@@ -3,6 +3,7 @@ import { Node } from "./cls"
 import Data from "../tool/data"
 export class NetKakfa {
     _client: WebSocket
+    _login: any
     sub_call_back: any
     constructor() {
         this.sub_call_back = {}
@@ -13,8 +14,8 @@ export class NetKakfa {
             this._client = new WebSocket("ws://" + web_dom.web_host + ":" + web_dom.bk_port + "/ws")
             this._client.onopen = () => {
                 console.log("web_socket_open")
-                this.login()
-                
+                this.do_login()
+
             }
             this._client.onclose = function () {
                 console.log("web_socket_open");
@@ -25,21 +26,30 @@ export class NetKakfa {
         }
         return this._client
     }
-    send_data(tp:string,data:any){
-        
+    send_data(tp: string, data: any) {
+        this._client.send(JSON.stringify({
+            type: tp,
+            data: data
+        }))
     }
-    login(){
-        Data.get_user_name((user_name:string)=>{
-            this.send_data("login",{user_name})
+    do_login() {
+        Data.get_user_name((user_name: string) => {
+            this.send_data("login", { user_name })
         })
+    }
+    login(call_back: any) {
+        this._login = call_back
+        return this
     }
     hander_msg(data: any) {
         let obj = JSON.parse(data)
         let node = new Node().set_option(obj)
-        if (node.type in this.sub_call_back) {
+        if (node.type == 'login') {
+            this._login?.(node.data.user_name)
+        } else if (node.type in this.sub_call_back) {
             this.sub_call_back[node.type](node)
         } else {
-            console.warn(data)
+            console.log(data)
         }
     }
     sub(topic_name: string, call_back: any) {
