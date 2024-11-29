@@ -44,6 +44,22 @@ class Node:
                     self.add_child(**cd)
                 else:
                     self.childs.append(cd)
+        self.init()
+    def init(self):
+        pass
+    def set_type(self,tp):
+        self.type=tp
+        return self
+    
+    def set_key(self,key):
+        self.key=key
+        return self
+    
+    def set_data(self,**kw):
+        for k,v in kw.items():
+            self.data[k]=v
+        return self
+
     def set_option(self,**kwargs):
         pass
 
@@ -104,12 +120,8 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
 WEB_SOCKET_CLIENTS:Dict[str,TornadaWebSocketConnectHandler] = dict()
 
 def send_clients_mag(user, data):
-    if isinstance(user,str):
-        user=[user]
-    for u in user:
-        if u not in WEB_SOCKET_CLIENTS:
-            continue
-        WEB_SOCKET_CLIENTS[u].write_message(data)
+    WEB_SOCKET_CLIENTS[user].write_message(data)
+ 
 
 class ApiCall:
     def __init__(self) -> None:

@@ -80,12 +80,20 @@ export class Div {
     }
     flex_horizontal_layout() {
         this.set_size(1)
-        return this.set_flex_style(Constant.HORIZONTAL)
-
+        return this.set_flex_style(
+            Constant.HORIZONTAL
+        ).full()
+    }
+    full() {
+        return this.set_style({
+            width: 1,
+            height: 1,
+            position: "absolute"
+        })
     }
     flex_veritcal_layout() {
         this.set_size(1)
-        return this.set_flex_style(Constant.VERTICAL)
+        return this.set_flex_style(Constant.VERTICAL).full()
     }
     abs_horizontal_layout() {
         return this.set_abs_style(Constant.HORIZONTAL)
@@ -271,8 +279,8 @@ export class Div {
     init_event() {
 
     }
-    set_center(){
-        this.set_style({textAlign:"center"})
+    set_center() {
+        this.set_style({ textAlign: "center" })
     }
     create_element(name: string): any {
         return web_dom.createElement(name)
@@ -353,6 +361,7 @@ export class Div {
                 this.childs[i].set_option(option.childs[i])
             }
         }
+        console.log(this.childs.length, option.childs.length)
         for (var i = this.childs.length; i < option.childs.length; i++) {
             this.add_child(new cls()).set_option(option.childs[i])
         }
