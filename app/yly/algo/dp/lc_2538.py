@@ -31,38 +31,15 @@ class Solution(SolutionBase):
         ]
 
     def execute(self, n: int, edges: List[List[int]], price: List[int]) -> int:
-        g = [[] for _ in range(n)]
-        for x, y in edges:
-            g[x].append(y)
-            g[y].append(x)  # 建树
-        ans = 0
+        g=[[] for _ in range(n)]
+        self.ans=-inf
+        for f,t in edges:
+            g[f].append(t)
+            g[t].append(f)
+        def dfs():
+            pass
 
-        def dfs(x: int, fa: int):
-
-            nonlocal ans
-
-            max_s1 = p = price[x]
-
-            max_s2 = 0
-
-            for y in g[x]:
-
-                if y == fa:
-                    continue
-
-                s1, s2 = dfs(y, x)
-
-                ans = max(ans, max_s1 + s2, max_s2 + s1)
-
-                max_s1 = max(max_s1, s1 + p)
-
-                max_s2 = max(max_s2, s2 + p)  # 这里加上 p 是因为 x 必然不是叶子
-            self.log(fa, x, max_s1, max_s2, ans)
-            return max_s1, max_s2
-
-        dfs(0, -1)
-
-        return ans
+        return self.ans
 
     def maxOutput(self, *args, **kg):
         return self.execute(*args, **kg)
