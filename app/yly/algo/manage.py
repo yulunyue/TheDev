@@ -166,7 +166,11 @@ class SolutionBase:
             self.lines=[v for v in input.split('\n') if v]
 
     def run(self):
-        exec_names=['execute']+sys.argv[1:]
+        exec_names=sys.argv[1:]
+        if exec_names and exec_names[0]=='view':
+            return self.view()
+        if not exec_names:
+            exec_names = ['execute']
         for exec_name in exec_names:
             for i, case in enumerate(self.get_cases()):
                 self.__class__.logs = []
@@ -278,6 +282,17 @@ class SolutionBase:
             self.get_watch()
         ).load()
         return self.watch_var.to_json()
+    
+
+    def view(self,case=None):
+        if case is None:
+            case=self.get_cases()[0]
+        CHANGE_STORE.clear()
+        self.pre(**case)
+        self.init(**case)
+        ret=self.watch()
+        ret["data"]['records'],msg=run_watch_fun(self.execute, self.record)
+        return ret,msg
 
 PATH = 'app/yly/algo'
 TMP_PATH = 'data/algo/main.py'
@@ -316,20 +331,11 @@ class Route:
         fp=File(TMP_PATH).write_file(content)
         module_name=fp.py_module_path()
         f: SolutionBase = get_md(module_name)
-        CHANGE_STORE.clear()
-        f.pre(**case)
-        f.init(**case)
-        ret=f.watch()
-        ret["data"]['records'],msg=run_watch_fun(f.execute, f.record)
+        ret,msg=f.view(case)
         if msg:
             raise Exception(msg)
         return ret
     
-class Util:
-    def test(self):
-        fp=File('app/yly/algo/geometry/lc_3235.py')
-        f: SolutionBase = get_md(fp.py_module_path())
-        File('data/algo/test.json').write_file(Route().execute(fp.read_file(),f.get_cases()[0]))
         
 if __name__ == "__main__":
     Util().test()

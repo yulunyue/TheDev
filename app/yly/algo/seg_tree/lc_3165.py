@@ -138,7 +138,7 @@ class Solution(SolutionBase):
 
     def get_cases(self):
         return [
-             dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21),
+            dict(nums=[3, 5, 9], queries=[[1, -2], [0, -3]], result=21),
             dict(nums=[4, 5, 10, 12, 15, 6], queries=[
                  [1, 3], [2, 7]], result=55),
            

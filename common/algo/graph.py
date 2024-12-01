@@ -58,3 +58,34 @@ def floyd(dis, keys):
             for j in keys:
                 dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j])
     return dis
+
+
+class Graph:
+    def __init__(self):
+        self.g=[]
+
+    def load_from_edges(self,edges):
+        self.g = [[] for _ in range(len(edges))]
+        for x, y in edges:
+            self.g[x].append(y)
+            self.g[y].append(x)  # 建树
+        return self
+    
+    def algo_view(self):
+        ret = dict(
+            
+        )
+        def dfs(c,p,v):
+            v['title']=c
+            v['childs']=[]
+            for n in self.g[c]:
+                if p==n:continue
+                tmp=dict()
+                v['childs'].append(tmp)
+                dfs(n,c,tmp)
+        dfs(0,-1, ret)
+        return ret
+    
+    def hex_str(self):
+        return str(self.g)
+        

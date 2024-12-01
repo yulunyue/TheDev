@@ -108,7 +108,9 @@ class Algo extends Div {
     run() {
         let module_select = this.code_pre.get_value()
         let case_select = this.case_pre.get_value()
-
+        if(!module_select || !case_select){
+            return
+        }
         web_dom.post('/app/yly/algo/manage/execute', {
             content: module_select,
             case: case_select
