@@ -11,9 +11,17 @@ import time
 import sys
 import json
 CHANGE_STORE = dict()
+def ah(txt, href):
+    return f'<a href="{href}">{txt}</a>'
 
 
-def wc(title, key, v, color,sp):
+def bp(title, value, key=""):
+    return wc(title, key, value, 'blue','p')
+
+def bs(title, value, key=""):
+    return wc(title, key, value, 'blue','span')
+
+def wc(title, key, v, color,sp='p'):
     k = f'{title}{key}'
     size=""
     v = str(v)
@@ -29,64 +37,22 @@ def wc(title, key, v, color,sp):
 
 
 class WatchAny(Node):
-    def __init__(self, *args, hex_str=None, algo_view=None,size=None,**kwargs) -> None:
-        self.hex_str = hex_str
-        self._algo_view = algo_view
-        self.leaf:List[WatchAny]=[]
-        if size is None:
-            size=1 if algo_view else 0
-        super().__init__(**kwargs,childs=args,size=size)
-    
-    def algo_view(self):
-        ret=self._algo_view() if self._algo_view else ""
-        if isinstance(ret,list):
-            ret="</br></br>".join(ret)
-        if isinstance(ret,str):
-            ret=dict(title=ret)
-        return ret
+    def hex_str(self):
+        pass
+
+
 
     
-    def load(self):
-        self.leaf =[]
-        def dfs(c:WatchAny):
-            for n in c.childs:
-                dfs(n)
-            if c._algo_view is not None:
-                self.leaf.append(c)
-        dfs(self)
-        return self
 
 
 
 
-def ah(txt, href):
-    return f'<a href="{href}">{txt}</a>'
-
-
-def bp(title, value, key=""):
-    return wc(title, key, value, 'blue','p')
-
-def bs(title, value, key=""):
-    return wc(title, key, value, 'blue','span')
 
 
 
-def div(*args,hex_str=None, algo_view=None,size=None,**kg):
-    return WatchAny(*args,type='div', hex_str=hex_str, algo_view=algo_view, size=size,**kg)
 
-HORIZONTAL = 0
-VERTICAL = 1
-def divh(*args,hex_str=None, algo_view=None,size=None):
-    return div(*args,hex_str=hex_str, algo_view=algo_view,size=size,direction=HORIZONTAL)
 
-def divv(*args, hex_str=None, algo_view=None,size=None):
-    return div(*args,hex_str=hex_str, algo_view=algo_view,size=size,direction=VERTICAL)
 
-def tree(t:WatchAny,size=None):
-    return WatchAny(type='tree',hex_str=t.hex_str,algo_view=t.algo_view,size=size)
-
-def grid(algo_view,hex_str=None):
-    return WatchAny(type='grid',algo_view=algo_view,hex_str=hex_str)
 
 
     
@@ -128,13 +94,13 @@ class Util:
 
 U=Util()
 class SolutionBase:
-    logs = []
-    has_view = False
-    name = "test"
-    DEV = True
-    gameinfo = ['lc']
-    tags = []
-    watch_var:WatchAny
+    _logs = []
+    _has_view = False
+    _name = "test"
+    _DEV = True
+    _gameinfo = ['lc']
+    _tags = []
+    _watch_var:List[WatchAny] = None
     
     def get_cases(self):
         return [
@@ -192,11 +158,16 @@ class SolutionBase:
                         i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                     break
     def input(self)->str:
+        while self.lines and not self.lines[0]:
+            self.lines.pop(0)
         return self.lines.pop(0)
+    
     def i1(self):
         return int(self.input().strip())
-    def il(self,n):
-        return [[int(v) for v in self.input().split(' ')] for _ in range(n)]
+    
+    def il(self):
+        return [int(v) for v in self.input().split(' ') if v]
+    
     def flush_log(self, i, s):
         logger.info(f'{i}:{s}')
 
@@ -230,58 +201,36 @@ class SolutionBase:
         childs = {}
         flag=False
 
-        for var in self.watch_var.leaf:
-            if var.hex_str is None:
-                childs[var.key]=var.algo_view()
-                continue
-            key2,s2=var.key+'_algo',var.hex_str()
-            childs[var.key]=var.algo_view()
+        for var in self._watch_var:
+            key2,s2=var.key+'_algo',var.hex_str() if var.hex_str else ""
             if CHANGE_STORE.get(key2)!=s2:
                 flag=True
-            CHANGE_STORE[key2]=s2
+                childs[var.key]=var.algo_view()
+                CHANGE_STORE[key2]=s2
+            
         if flag:
             return childs
         
-
-    
-    def info_main(self):
-        return [
-            f'{self.name}',
-            f'{ah("链接",self.uri)}',
-            f"标签: {self.tags}",
-        ]
-    
-    def left(self):
-        return []
-    
-    def left_c(self):
-        return div(
-            divh(
-                algo_view=self.info_main,
-            ),
-            *self.left()
-        )
     
     def get_watch(self):
-        a=self.top()
-        b=self.main()
-        if a:
-            return div(a,b)
-        return b
-    
-    def top(self):
-        pass
-    
-    def main(self):
-        raise Exception("todo")
+        self._watch_var=[]
+        for key in dir(self):
+            if key.startswith('_'):
+                continue
+            v=getattr(self,key)
+            if isinstance(v,str,dict,int,float):
+                self._watch_var.append(Node(key=v))
+            elif isinstance(v,Node):
+                self._watch_var.append(v)
+
+
 
 
     def watch(self):
-        self.watch_var=divv(
-            self.left_c(),
-            self.get_watch()
-        ).load()
-        return self.watch_var.to_json()
+        if self._watch_var is not None:
+            return
+        self._watch_var=self.get_watch()
+    
     
 
     def view(self,case=None):

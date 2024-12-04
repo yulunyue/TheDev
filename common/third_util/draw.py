@@ -1,10 +1,11 @@
-import matplotlib.pyplot as plt
+
 import json
 import sys
 
 
 class Draw:
     def __init__(self) -> None:
+        import matplotlib.pyplot as plt
         self.fig, self.ax = plt.subplots()
 
     def draw_bar_chart(self, lines):
@@ -15,6 +16,7 @@ class Draw:
         return self
 
     def draw_graph(self, datas):
+        import matplotlib.pyplot as plt
         import networkx as nx
         plt.figure(figsize=(8, 8))
         g = nx.DiGraph()
@@ -59,9 +61,10 @@ class Draw:
                 k1, *args = e.split(':')
                 get_node(k1)
                 add_edge(k, k1, *args)
-        g.render(format="svg")
+        g.render(format="png")
 
     def save(self, path):
+        import matplotlib.pyplot as plt
         plt.savefig(path)
         return self
 

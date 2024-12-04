@@ -36,50 +36,7 @@ class Solution(SolutionBase):
         ]
 
     def execute(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:
-        RECORD_ENABLE = True
-        n = len(nums1)
-        oi = [0]*(n*4)
-        flip = [False]*(n*4)
-
-        def build(o, l, r):
-            if l == r:
-                oi[o] = nums1[l]
-                return
-            m = (l+r)//2
-            build(o*2, l, m)
-            build(o*2+1, m+1, r)
-            oi[o] = oi[o*2]+oi[o*2+1]
-
-        def do(o, l, r):
-            oi[o] = r-l+1-oi[o]
-            # flip[o]=not flip[o]
-            flip[o] = True
-        build(1, 0, n-1)
-
-        def update(o, l, r, L, R):
-            if L <= l and r <= R:
-                do(o, l, r)
-                return
-            m = (l+r)//2
-            if flip[o]:
-                do(o*2, l, m)
-                do(o*2+1, m+1, r)
-                flip[o] = False
-            if m >= L:
-                update(o*2, l, m, L, R)
-            if m < R:
-                update(o*2+1, m+1, r, L, R)
-            oi[o] = oi[o*2]+oi[o*2+1]
-        ret = []
-        s = sum(nums2)
-        for op, l, r in queries:
-            if op == 1:
-                update(1, 0, n-1, l, r)
-            elif op == 2:
-                s += l*oi[1]
-            else:
-                ret.append(s)
-        return ret
+        pass
 
     def handleQuery(self, *args, **kg):
         return self.execute(*args, **kg)

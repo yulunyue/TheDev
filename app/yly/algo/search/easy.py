@@ -1,7 +1,7 @@
 
 from common.algo.absearch import AlphaBateSearch, AbNode
 import sys
-from app.yly.algo.manage import SolutionBase
+from app.yly.algo.manage import SolutionBase,div
 TREE1 = '''
 a: 4
   b:
@@ -21,22 +21,23 @@ a: 4
   e: 2
 '''
 
+class Serach(AlphaBateSearch):
+    def set_root(self,data):
+        self.root = AbNode("").load_from_yml(data)
+        return self
 
 class Solution(SolutionBase):
-
+    has_view=True
     def get_cases(self):
         return [
             dict(root=TREE1, result="")
         ]
 
     def init(self, root, **kw):
-        self.root = AbNode("").load_from_yml(root)
-        self.ab = AlphaBateSearch()
+        self.ab = Serach().set_root(root)
 
-    def get_watch(self):
-        return [
-            # self.watch("tree", self.root)
-        ]
+    def main(self):
+        return div(self.ab)
 
     def execute(self):
         return self.ab.search(last_move=self.root)[1]
