@@ -99,11 +99,11 @@ class SolutionBase:
                 self.ep = case.pop("result")
                 a = time.time()
                 try:
-                    self.log(f"begin {self.name}-{exec_name}")
+                    self.log(f"begin {self._name}-{exec_name}")
                     self.pre(**case)
                     self.init(**case)
                     r = getattr(self,exec_name)(**case)
-                    self.log(f"finish {self.name}-{exec_name}", time.time()-a)
+                    self.log(f"finish {self._name}-{exec_name}", time.time()-a)
                 except Exception as e:
                     import traceback
                     traceback.print_exc()

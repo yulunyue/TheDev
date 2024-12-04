@@ -1,5 +1,6 @@
 from typing import List
 from common.util.fp import File
+from common.util.log import logger
 import os
 
 
@@ -9,6 +10,11 @@ class ReadmeField:
     
     def init(self):
         pass
+    
+    def set_title(self,title,level=1):
+        self.title=title
+        self.level=level
+        return self
 
     def set_data(self,data):
         return self
@@ -19,10 +25,6 @@ class ReadmeField:
 
 
 class ReadmeLine(ReadmeField):
-    def set_title(self,title,level=1):
-        self.title=title
-        self.level=level
-        return self
     
     def lines(self):
         return [f'{"#"*self.level} {self.title}']
@@ -31,8 +33,26 @@ class ReadmeLine(ReadmeField):
 class ReadmeImg(ReadmeField):
     pass
 
-class ReadmeTree(ReadmeField):
-    pass
+class ReadmeGraph(ReadmeField):
+    def set_data(self, data):
+        self.titles=[]
+        self.graph_line=[]
+        if not data['childs']:
+            self.graph_line.append(data['title']+";")
+            return self
+        def dfs(node):
+            if node["value"]:
+                self.titles.append(f'### {node["value"]}')
+            for cd in node['childs']:
+                self.graph_line.append(f'{node["title"]}-->{cd["title"]};')
+                dfs(cd)
+        # logger.info(data)
+        dfs(data)      
+        return self  
+    def lines(self):
+        ret = self.titles+['```mermaid','graph']+self.graph_line
+        ret.append('```')
+        return ret 
 
 class ReadmeTable(ReadmeField):
 
@@ -78,11 +98,13 @@ class ReadmeGen:
         self.fields = []
         self.fields.append(ReadmeLine().set_title(f'LunYue ---Md Debug---'))
         table=ReadmeTable()
+        nodes=[]
         for i in range(len(datas)):
             data=dict()
             for k,v in datas[i].items():
-                if v['type']=='tree':
-                    #self.fields.append(ReadmeTree().set_data(v))
+                if v['type']=='graph':
+                    nodes.append(ReadmeGraph().set_title(
+                        f'{k}:{i}').set_data(v))
                     continue
                 table.add_column(k)
                 data[k]=v['title']
@@ -90,4 +112,5 @@ class ReadmeGen:
                 table.rows.append(data)
         if table.rows:
             self.fields.append(table)
+        self.fields.extend(nodes)
         return self

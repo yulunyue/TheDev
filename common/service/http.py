@@ -45,6 +45,9 @@ class Node:
                 else:
                     self.childs.append(cd)
         self.init()
+    def set_value(self,v):
+        self.value=v 
+        return self
     def init(self):
         pass
     def set_type(self,tp):
@@ -59,6 +62,7 @@ class Node:
         for k,v in kw.items():
             self.data[k]=v
         return self
+
 
     def set_option(self,**kwargs):
         pass
