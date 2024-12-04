@@ -6,6 +6,7 @@ from common.util.model import NumberModel,number
 from common.util.log import logger
 from common.util.fp import File
 from collections import defaultdict
+from common.tool.readme import ReadmeGen
 import os
 import time
 import sys
@@ -37,66 +38,21 @@ def wc(title, key, v, color,sp='p'):
 
 
 class WatchAny(Node):
+    def get_title(self):
+        return str(getattr(self.ins,self.key))
+    
     def hex_str(self):
-        pass
-
-
-
+        return self.get_title()
     
+    def set_ins(self,ins):
+        self.ins=ins
+        return self
 
 
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-class Util:
-    def __init__(self) -> None:
-        self.op=defaultdict(lambda:defaultdict(str))
-
-    # def get_node(self,k)->Node:
-        
-    #     if k not in self.op:
-    #         self.op[k]=Node(key=v,title=info)
-    #     return self.op[v]
-    def fmax(self,a,b,n,f,info):
-        # a,b=number(a),number(b)
-        if a<b:
-            self.op[b][f]=info
-            return b
-        return a
-
-    def fmin(self,a,b,n,f,info):
-        # a,b=number(a),number(b)
-        if a>b:
-            self.op[b][f]=info
-            return b
-        return a
-
-    def get_info(self,n,b):
-        ret=[f'{b}']
-        while b in self.op:
-            a=self.op[b]
-            b,info=list(a.items())[0]
-            ret.append(f'{info} {b}')
-        return "\n".join(ret)
-
-
-
-U=Util()
 class SolutionBase:
     _logs = []
     _has_view = False
-    _name = "test"
+    _name = ""
     _DEV = True
     _gameinfo = ['lc']
     _tags = []
@@ -112,7 +68,7 @@ class SolutionBase:
 
     @classmethod
     def log(cls, *s, tp: str = ""):
-        cls.logs.append(f'{" ".join(str(s1) for s1 in s)}')
+        cls._logs.append(f'{" ".join(str(s1) for s1 in s)}')
 
     @classmethod
     def draw(cls, s, tp: str):
@@ -139,7 +95,7 @@ class SolutionBase:
             exec_names = ['execute']
         for exec_name in exec_names:
             for i, case in enumerate(self.get_cases()):
-                self.__class__.logs = []
+                self.__class__._logs = []
                 self.ep = case.pop("result")
                 a = time.time()
                 try:
@@ -153,7 +109,7 @@ class SolutionBase:
                     traceback.print_exc()
                     r = None
                 if not self.diff(r, self.ep):
-                    logs = "\n".join(self.__class__.logs)
+                    logs = "\n".join(self.__class__._logs)
                     self.flush_log(
                         i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                     break
@@ -174,7 +130,7 @@ class SolutionBase:
     @classmethod
     def cls_run(cls):
         for case in cls.get_cases():
-            cls.logs = ""
+            cls._logs = []
             m, inp, es = case
             r = cls(*inp[0])
             cls.log(m[0], *inp[0])
@@ -205,33 +161,26 @@ class SolutionBase:
             key2,s2=var.key+'_algo',var.hex_str() if var.hex_str else ""
             if CHANGE_STORE.get(key2)!=s2:
                 flag=True
-                childs[var.key]=var.algo_view()
+                childs[var.key]=var.to_json()
                 CHANGE_STORE[key2]=s2
             
         if flag:
             return childs
         
     
-    def get_watch(self):
+    def init_watch(self):
+        if self._watch_var is not None:
+            return
         self._watch_var=[]
         for key in dir(self):
             if key.startswith('_'):
                 continue
             v=getattr(self,key)
-            if isinstance(v,str,dict,int,float):
-                self._watch_var.append(Node(key=v))
-            elif isinstance(v,Node):
+            if isinstance(v,(str,dict,int,float)):
+                self._watch_var.append(WatchAny(key=key).set_ins(self))
+            elif isinstance(v,WatchAny):
                 self._watch_var.append(v)
 
-
-
-
-    def watch(self):
-        if self._watch_var is not None:
-            return
-        self._watch_var=self.get_watch()
-    
-    
 
     def view(self,case=None):
         if case is None:
@@ -239,9 +188,12 @@ class SolutionBase:
         CHANGE_STORE.clear()
         self.pre(**case)
         self.init(**case)
-        ret=self.watch()
-        ret["data"]['records'],msg=run_watch_fun(self.execute, self.record)
-        return ret,msg
+        self.init_watch()
+        ret,msg=run_watch_fun(self.execute, self.record)
+        ReadmeGen(f'data/algo/{self.get_name()}/readme').set_frames(ret).save()
+        return ret,msg  
+    def get_name(self):
+        return self._name or self.__class__.__name__
 
 PATH = 'app/yly/algo'
 TMP_PATH = 'data/algo/main.py'
@@ -253,7 +205,6 @@ def get_md(moudle_name):
     
 Solution = SolutionBase
 class Route:
-
     def query(self, **kwargs):
         ret = Node(value=PATH)
         for fp in File(PATH).dp_dir():
@@ -286,5 +237,4 @@ class Route:
         return ret
     
         
-if __name__ == "__main__":
-    Util().test()
+

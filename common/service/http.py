@@ -72,14 +72,10 @@ class Node:
 
     def to_json(self):
         return dict(
-            direction=self.direction,
-            code=self.code,
             type=self.type,
             key=self.key,
             title=self.get_title(),
             value=self.value,
-            data=self.get_data(),
-            size=self.size,
             childs=[c.to_json() for c in self.childs]
         )
 

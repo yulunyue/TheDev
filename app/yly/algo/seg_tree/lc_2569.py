@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.algo.manage import SolutionBase
+    from app.yly.algo.manage import SolutionBase,WatchAny
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -22,7 +22,7 @@ true = True
 false = False
 M = 10**9 + 7
 
-class SegTreeNode:
+class SegTreeNode(WatchAny):
     '''
                           1[0-6]
             2[0-3]                      3[4-6]
@@ -94,10 +94,14 @@ class SegTreeNode:
     def up(self):
         self.value = self.r-self.l+1-self.value
 
+    
+    def get_title(self):
+        return dict(t)
+
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-                 dict(nums1=[1, 0, 1], nums2=[0, 0, 0], queries=[
+            dict(nums1=[1, 0, 1], nums2=[0, 0, 0], queries=[
                  [1, 1, 1], [2, 1, 0], [3, 0, 0]], result=[3]),
             dict(nums1=[0, 1, 0, 0, 0, 0],
                  nums2=[14, 4, 13, 13, 47, 18],
@@ -107,7 +111,7 @@ class Solution(SolutionBase):
        
         ]
     
-    def init(self,nums1: List[int], nums2: List[int], queries: List[List[int]]):
+    def init(self,nums1: List[int], nums2: List[int], queries: List[List[int]],**kwagrs):
         SegTreeNode.arr=nums1
         self.n=len(nums1)
         self.ans=sum(nums2)
