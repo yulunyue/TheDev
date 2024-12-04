@@ -81,8 +81,9 @@ class Solution(SolutionBase):
                     continue
                 max_c2=max(dfs(n,c),max_c2)
             return max_c2+self.price[c]
-
-        return max(dfs(i,-1)-self.price[i] for i in range(self.n))
+        for i in range(self.n):
+            self.ans=max(self.ansd)
+        return self.ans
     
     def execute1(self,*args,**kg) -> int:
         self.ans = 0

@@ -41,7 +41,7 @@ class SegTreeNode:
      4[0-1]        5[2-3]         6[4-5]         7[6-6]
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
-    arr = []
+
     def __init__(self, l, r,idx=1, default_value=0) -> None:
         self.idx = idx
         self.l = l
@@ -105,30 +105,4 @@ class SegTreeNode:
     def up(self):
         self.value = self.left.value+self.right.value
 
-    def get_title(self):
-        return "<br>".join([
-            f"{self.idx}->[{self.l},{self.r}]:{SegTreeNode.arr[self.l:self.r+1]}" 
-        ])
-
-
-    def algo_view(self):
-        ret = dict(
-            title=self.get_title(),
-            childs=[],
-        )
-        if self._left:
-            ret['childs'].append(self._left.algo_view())
-        if self._right:
-            ret['childs'].append(self._right.algo_view())
-        return ret
-    
-    def id_str(self):
-        return f'{self.value}'
-    
-    def hex_str(self):
-        ret = [self.id_str()]
-        if self._left:
-            ret.append(self._left.hex_str())
-        if self._right:
-            ret.append(self._right.hex_str())
-        return "".join(ret)
+  
