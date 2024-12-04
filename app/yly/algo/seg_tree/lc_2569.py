@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.algo.manage import SolutionBase,WatchAny
+    from app.yly.algo.manage import SolutionBase,WatchAny,Node
 except:
     class SolutionBase:
         def log(self, *args, **kwargs):
@@ -93,12 +93,26 @@ class SegTreeNode(WatchAny):
 
     def up(self):
         self.value = self.r-self.l+1-self.value
-
     
-    def get_title(self):
-        return dict(t)
+    def to_node(self):
+        ret = Node(title=str(self.value))
+        if self._left:
+            ret.add_node(self._left.to_node())
+        if self._right:
+            ret.add_node(self._right.to_node())
+        return ret
+    
+    def to_json(self):
+        return self.to_node().set_type("tree").to_json()
+    
+    def hex_str(self):
+        ret=str(self.value)
+        if self._left:ret+=self._left.hex_str()
+        if self._right:ret+=self._right.hex_str()
+        return ret
 
 class Solution(SolutionBase):
+    has_view=True
     def get_cases(self):
         return [
             dict(nums1=[1, 0, 1], nums2=[0, 0, 0], queries=[

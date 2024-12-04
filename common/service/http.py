@@ -70,6 +70,10 @@ class Node:
         ret.parent = self
         return ret
 
+    def add_node(self,n):
+        self.childs.append(n)
+        return self
+
     def to_json(self):
         return dict(
             type=self.type,

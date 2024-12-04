@@ -179,6 +179,7 @@ class SolutionBase:
             if isinstance(v,(str,dict,int,float)):
                 self._watch_var.append(WatchAny(key=key).set_ins(self))
             elif isinstance(v,WatchAny):
+                v.key=key
                 self._watch_var.append(v)
 
 

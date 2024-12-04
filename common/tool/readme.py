@@ -5,31 +5,59 @@ import os
 
 class ReadmeField:
     def __init__(self) -> None:
+        self.init()
+    
+    def init(self):
         pass
+
+    def set_data(self,data):
+        return self
 
     def lines(self):
         return []
 
-    def set_info(self, **kw):
-        return self
+
 
 class ReadmeLine(ReadmeField):
-    def set_title(self,title):
+    def set_title(self,title,level=1):
         self.title=title
-        return self
-    
-    def set_info(self, key, title,**kw):
-        self.title = f'{key} {title}'
+        self.level=level
         return self
     
     def lines(self):
-        return [f'## {self.title}']
+        return [f'{"#"*self.level} {self.title}']
+
 
 class ReadmeImg(ReadmeField):
     pass
 
-class ReadmeTable(ReadmeField):
+class ReadmeTree(ReadmeField):
     pass
+
+class ReadmeTable(ReadmeField):
+
+    def init(self):
+        self.columns = set()
+        self.rows = []
+        return self
+    
+    def add_column(self,key):
+        self.columns.add(key) 
+        return self
+
+
+    def add_row(self,rows):
+        self.rows.append(rows)
+        return self
+
+    
+    def lines(self):
+        ret=['|-|'+'|'.join(self.columns)+'|']
+        ret.append('|'+'|'.join(["---"]*(len(self.columns)+1))+'|')
+        for i,r in enumerate(self.rows):
+            ret.append(f'|{i}|'+'|'.join([r.get(c,'') for c in self.columns])+'|')
+        return ret
+            
 
 class ReadmeGen:
     def __init__(self, path) -> None:
@@ -48,8 +76,18 @@ class ReadmeGen:
 
     def set_frames(self,datas):
         self.fields = []
+        self.fields.append(ReadmeLine().set_title(f'LunYue ---Md Debug---'))
+        table=ReadmeTable()
         for i in range(len(datas)):
-            self.fields.append(ReadmeLine().set_title(f'frame {i}'))
+            data=dict()
             for k,v in datas[i].items():
-                self.fields.append(ReadmeLine().set_info(**v))
+                if v['type']=='tree':
+                    #self.fields.append(ReadmeTree().set_data(v))
+                    continue
+                table.add_column(k)
+                data[k]=v['title']
+            if data:
+                table.rows.append(data)
+        if table.rows:
+            self.fields.append(table)
         return self
