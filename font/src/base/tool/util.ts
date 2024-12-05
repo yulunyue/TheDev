@@ -1,6 +1,6 @@
 
 import web_dom from "../web/web_dom"
-
+import {Node} from "../web/cls"
 export class UtilCls {
     url_to_json(s: string) {
         var ret = {}
@@ -31,6 +31,20 @@ export class UtilCls {
             rt = rt + key + "=" + oj[key];
         }
         return rt;
+    }
+    grid_size(sizes:any[]){
+        let n=new Node().set_size(0)
+        for(var i=0;i<sizes.length;i++){
+            let tmp=null
+            if(Array.isArray(sizes[i])){
+                tmp=this.grid_size(sizes[i])    
+            }else{
+                tmp=new Node().set_size(sizes[i])
+            }
+            n.add_child(tmp)
+            n.size+=tmp.size
+        }
+        return n
     }
     hash_any(c: any) {
         let res = ""

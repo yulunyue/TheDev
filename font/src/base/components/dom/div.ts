@@ -1,6 +1,7 @@
 import web_dom from "../../web/web_dom"
 import { Style, Node, Fn1, to_node, not_null } from "../../web/cls"
 import { Dom } from "../../web/cls"
+import Util from "../../tool/util"
 import Constant from "../../web/constant"
 export class DivFactory {
     static fac_map = {}
@@ -95,32 +96,37 @@ export class Div {
         this.set_size(1)
         return this.set_flex_style(Constant.VERTICAL).full()
     }
-    abs_horizontal_layout() {
-        return this.set_abs_style(Constant.HORIZONTAL)
+    abs_horizontal_layout(sizes:number[]) {
+        return this.set_abs_style(Constant.HORIZONTAL,sizes)
     }
-    abs_veritcal_layout() {
-        return this.set_abs_style(Constant.VERTICAL)
+    abs_veritcal_layout(sizes:number[]) {
+        return this.set_abs_style(Constant.VERTICAL,sizes)
     }
-    set_abs_style(direction: number) {
-        this.set_div_style({
+    set_abs_style(direction: number,sizes:number[]) {
+        let node = Util.grid_size(sizes)
+        this.set_style({
             width: 1,
             height: 1,
             position: "absolute"
         })
-        direction = this.get_direction(direction)
-        for (var i = 0; i < this.childs.length; i++) {
-            this.childs[i].set_div_style({
-                left: direction == Constant.VERTICAL ? i / this.childs.length : 0,
-                width: direction == Constant.VERTICAL ? 1 / this.childs.length : 1,
-                height: direction == Constant.HORIZONTAL ? 1 / this.childs.length : 1,
-                top: direction == Constant.HORIZONTAL ? i / this.childs.length : 0,
-                position: "absolute",
-                border: "1px solid #000"
-            })
-            if (this.childs[i].set_abs_style) {
-                this.childs[i].set_abs_style(1 - direction)
+        
+        function dfs(node:Div,option:Node,direction:number){
+            node.set_border()
+            for(var i=0;i<option.childs.length;i++){
+                let tmp=new Div()
+                tmp.set_style({
+                    left: direction == Constant.VERTICAL ? option.childs[i].size / node.size : 0,
+                    width: direction == Constant.VERTICAL ? 1 / node.size : 1,
+                    height: direction == Constant.HORIZONTAL ? 1 / node.size : 1,
+                    top: direction == Constant.HORIZONTAL ? i / node.size : 0,
+                    position: "absolute",
+                    border: "1px solid #000"
+                })
+                dfs(tmp,option.childs[i],1-direction)
+                node.add_child(tmp)
             }
         }
+        dfs(this,node,direction)
         return this
 
     }
@@ -134,9 +140,12 @@ export class Div {
 
         })
     }
+    set_border(){   
+        return this.set_div_style({ border: "1px solid #ccc" })
+    }
     set_style_flex2(direction: number) {
         this.set_style_flex(direction)
-        this.set_div_style({ border: "1px solid #ccc" })
+        this.set_border()
         return this
     }
     set_flex_style(direction: number) {
