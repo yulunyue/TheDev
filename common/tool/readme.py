@@ -75,7 +75,8 @@ class ReadmeTable(ReadmeField):
         ret=['|-|'+'|'.join(self.columns)+'|']
         ret.append('|'+'|'.join(["---"]*(len(self.columns)+1))+'|')
         for i,r in enumerate(self.rows):
-            ret.append(f'|{i}|'+'|'.join([r.get(c,'') for c in self.columns])+'|')
+            ret.append(f'|{i}|'+'|'.join([str(r.get(c,'')) for c in self.columns])+'|')
+        ret.append('# ')
         return ret
             
 
@@ -84,6 +85,7 @@ class ReadmeGen:
         self.fields: List[ReadmeField] = []
         self.store_dir=File(path)
         self.save_file=File(path+'.md')
+        self.fields.append(ReadmeLine().set_title(f'LunYue ---Md Debug---'))
     
     def add_filed(self):
         pass
@@ -94,9 +96,15 @@ class ReadmeGen:
             lines += fd.lines()
         self.save_file.write_file("\n".join(lines))
 
+    def add_table(self,data:dict):
+        table=ReadmeTable()
+        for k in data:
+            table.add_column(k)
+        table.add_row(data)
+        self.fields.append(table)
+        return self
+    
     def set_frames(self,datas):
-        self.fields = []
-        self.fields.append(ReadmeLine().set_title(f'LunYue ---Md Debug---'))
         table=ReadmeTable()
         nodes=[]
         for i in range(len(datas)):

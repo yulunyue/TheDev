@@ -79,7 +79,7 @@ class Algo extends Div {
     draw_nodes() {
         this.algo_nodes = this.div.clear().add_grid_childs(
             this.option.childs,
-            web_dom.get_wh_scale()<1?Constant.HORIZONTAL:Constant.VERTICAL
+            web_dom.get_wh_scale() < 1 ? Constant.HORIZONTAL : Constant.VERTICAL
         ).emit_mount().get_content_divs()
     }
     goto() {
@@ -108,7 +108,7 @@ class Algo extends Div {
     run() {
         let module_select = this.code_pre.get_value()
         let case_select = this.case_pre.get_value()
-        if(!module_select || !case_select){
+        if (!module_select || !case_select) {
             return
         }
         web_dom.post('/app/yly/algo/manage/execute', {

@@ -57,7 +57,7 @@ class SolutionBase:
     _gameinfo = ['lc']
     _tags = []
     _watch_var:List[WatchAny] = None
-    
+    action=""
     def get_cases(self):
         return [
 
@@ -66,9 +66,10 @@ class SolutionBase:
     def execute(self,**kg):
         return self.exec(**kg)
 
-    @classmethod
-    def log(cls, *s, tp: str = ""):
-        cls._logs.append(f'{" ".join(str(s1) for s1 in s)}')
+
+    def log(self, *s, tp: str = ""):
+        self.action = f'{" ".join(str(s1) for s1 in s)}'
+        self._logs.append(self.action)
 
     @classmethod
     def draw(cls, s, tp: str):
@@ -176,7 +177,7 @@ class SolutionBase:
             if key.startswith('_'):
                 continue
             v=getattr(self,key)
-            if isinstance(v,(str,dict,int,float)):
+            if isinstance(v,(str,dict,int,float,list)):
                 self._watch_var.append(WatchAny(key=key).set_ins(self))
             elif isinstance(v,WatchAny):
                 v.key=key
@@ -191,7 +192,11 @@ class SolutionBase:
         self.init(**case)
         self.init_watch()
         ret,msg=run_watch_fun(self.execute, self.record)
-        ReadmeGen(f'data/algo/{self.get_name()}/readme').set_frames(ret).save()
+        ReadmeGen(
+            f'data/algo/{self.get_name()}/readme'
+        ).add_table(
+            case
+        ).set_frames(ret).save()
         return ret,msg  
     def get_name(self):
         return self._name or self.__class__.__name__

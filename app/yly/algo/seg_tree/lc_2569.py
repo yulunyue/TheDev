@@ -10,6 +10,8 @@ import heapq
 try:
     from app.yly.algo.manage import SolutionBase,WatchAny,Node
 except:
+    class WatchAny:
+        pass
     class SolutionBase:
         def log(self, *args, **kwargs):
             pass
@@ -40,7 +42,7 @@ class SegTreeNode(WatchAny):
         self.todo = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
-        self.info = ""
+
     @property
     def left(self):
         if not self._left:
@@ -66,8 +68,7 @@ class SegTreeNode(WatchAny):
             res+=self.left.query(l, r)
         return res
     
-    def update(self, l,r, value, info=""):
-        self.info=info
+    def update(self, l,r, value):
         if l <=self.l and self.r<= r:
             self.do(value)
             return
@@ -80,7 +81,7 @@ class SegTreeNode(WatchAny):
 
     def do(self,v):
         if v is None:
-            self.todo += 1
+            self.value = self.r-self.l+1-self.value
         else:
             self.value = v
 
@@ -95,7 +96,11 @@ class SegTreeNode(WatchAny):
         self.value = self.left.value+self.right.value
     
     def to_node(self):
-        ret = Node(title=f'id:{self.idx},v:{self.value},todo:{self.todo}').set_value(self.info)
+        ret = Node(title=",".join([
+            f'id:{self.idx}',
+            f'v:{self.value}',
+            #f'todo:{self.todo}'
+        ]))
         if self._left:
             ret.add_node(self._left.to_node())
         if self._right:
@@ -115,6 +120,7 @@ class Solution(SolutionBase):
     _has_view=True
     def get_cases(self):
         return [
+            dict(nums1 =[1,0,1],nums2 =[44,28,35],queries =[[1,0,1],[2,10,0],[2,2,0],[2,7,0],[3,0,0],[3,0,0],[1,2,2],[1,1,2],[2,1,0],[1,0,2],[1,2,2],[1,0,2],[3,0,0],[1,1,2],[3,0,0],[1,0,1],[2,21,0],[1,0,1],[2,26,0],[1,1,1]],result=[145,145,146,146]),
             dict(nums1=[1, 0, 1], nums2=[0, 0, 0], queries=[
                  [1, 1, 1], [2, 1, 0], [3, 0, 0]], result=[3]),
             dict(nums1=[0, 1, 0, 0, 0, 0],
@@ -126,26 +132,29 @@ class Solution(SolutionBase):
         ]
     
     def init(self,nums1: List[int], nums2: List[int], queries: List[List[int]], result=0,**kwagrs):
-        self.result=str(result)
-        self.n=len(nums1)
-        self.ans=sum(nums2)
-        self.root=SegTreeNode(0,self.n-1)
-        self.root.query(0,self.n-1)
+        self._n=len(nums1)
+        self.sum=sum(nums2)
+        self.result=[]
+        self.root=SegTreeNode(0,self._n-1)
+        self.root.query(0,self._n-1)
         self._queries=queries
         self._nums1=nums1
         for i,v in enumerate(self._nums1):
-            self.root.update(i,i,v,info=f'set {i} {v}')
-    def execute(self, **kw) -> List[int]:
-        result=[]
+            self.root.update(i,i,v)
+    def execute(self,*args,**kw) -> List[int]:
+        
         for tp,a,b in self._queries:
             if tp==1:
+                self.log(f'update {a} {b}')
                 self.root.update(a,b,None)
-            elif tp==2.1:
-                self.ans+=self.root.query(0,self.n-1)*b
-            elif tp==3.1:
-                result.append(self.ans)                
-        return result
+            elif tp==2:
+                self.log(f'query {a} {b}')
+                self.sum+=self.root.query(0,self._n-1)*a
+            elif tp==3:
+                self.result.append(self.sum)                
+        return self.result
     def handleQuery(self, *args, **kg):
+        self.init(*args,**kg)
         return self.execute(*args, **kg)
 
 
