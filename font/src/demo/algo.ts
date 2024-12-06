@@ -18,8 +18,7 @@ class Algo extends Div {
     init_style(): void {
         this.set_style_ab_full()
     }
-    init_node() {
-        this.div = div()
+    init_edit_dialog(){
         this.code_select = row1().set_input(
             select()
         ).set_title(
@@ -42,6 +41,10 @@ class Algo extends Div {
         ]).ok(() => {
             this.run()
         })
+    }
+    init_node() {
+        this.init_edit_dialog()
+        this.div = div()
         this.pro = progress().set_size(1).change(() => this.goto())
         this.add_childs([
             this.div.set_size(1),
