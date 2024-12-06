@@ -140,10 +140,10 @@ class Solution(SolutionBase):
         self._queries=queries
         self._nums1=nums1
         for i,v in enumerate(self._nums1):
-            if v==1:
-                self.root.update(i,i,SegTreeNode.FZ)
+            if v==0:
+                continue
+            self.root.update(i,i,SegTreeNode.FZ)
     def execute(self,*args,**kw) -> List[int]:
-        
         for tp,a,b in self._queries:
             if tp==1:
                 self.log(f'update {a} {b}')

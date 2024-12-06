@@ -90,8 +90,10 @@ class SolutionBase:
 
     def run(self):
         exec_names=sys.argv[1:]
-        if exec_names and exec_names[0]=='view':
-            return self.view()
+        if exec_names and exec_names[0]=='view_md':
+            return self.view_md()
+        if exec_names and exec_names[0]=='view_font':
+            return self.view_font()
         if not exec_names:
             exec_names = ['execute']
         for exec_name in exec_names:
@@ -169,7 +171,7 @@ class SolutionBase:
             return childs
         
     
-    def init_watch(self):
+    def init_watch(self,tp):
         if self._watch_var is not None:
             return
         self._watch_var=[]
@@ -183,21 +185,27 @@ class SolutionBase:
                 v.key=key
                 self._watch_var.append(v)
 
-
-    def view(self,case=None):
-        if case is None:
-            case=self.get_cases()[0]
-        CHANGE_STORE.clear()
-        self.pre(**case)
-        self.init(**case)
-        self.init_watch()
-        ret,msg=run_watch_fun(self.execute, self.record)
+    def view_md(self):
+        case,ret,msg = self.view(tp="md")
         ReadmeGen(
             f'data/algo/{self.get_name()}/readme'
         ).add_table(
             case
         ).set_frames(ret).save()
-        return ret,msg  
+
+    def view_font(self):
+        _,ret,_ = self.view()
+        File(f'data/algo/{self.get_name()}/readme.json').write_file(ret)
+
+    def view(self,case=None,tp='font'):
+        if case is None:
+            case=self.get_cases()[0]
+        CHANGE_STORE.clear()
+        self.pre(**case)
+        self.init(**case)
+        self.init_watch(tp)
+        ret,msg=run_watch_fun(self.execute, self.record)
+        return case,ret,msg  
     def get_name(self):
         return self._name or self.__class__.__name__
 
