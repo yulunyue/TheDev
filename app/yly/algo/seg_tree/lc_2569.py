@@ -31,6 +31,8 @@ class SegTreeNode(WatchAny):
      4[0-1]        5[2-3]         6[4-5]         7[6-6]
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
+    FZ='FZ'
+    QU='QU'
     def __init__(self, l, r,idx=1, default_value=0) -> None:
         self.idx = idx
         self.l = l
@@ -60,7 +62,6 @@ class SegTreeNode(WatchAny):
     def query(self, l, r):
         if l <= self.l and self.r <= r:
             return self.value
-        self.down()
         res = 0
         if self.m < r:
             res+=self.right.query(l, r)
@@ -71,35 +72,34 @@ class SegTreeNode(WatchAny):
     def update(self, l,r, value):
         if l <=self.l and self.r<= r:
             self.do(value)
-            return
-        self.down()
+            return self.value
+        self.down(value)
         if self.m < r:
             self.right.update(l, r,value)
         if self.m >= l:
             self.left.update(l, r,value)
-        self.up()
+        self.up(value)
+        return self.value
 
     def do(self,v):
-        if v is None:
-            self.value = self.r-self.l+1-self.value
-        else:
-            self.value = v
-
+        self.value = self.r-self.l+1
+        if self.l!=self.r:
+            self.todo=1-self.todo
         
-    def down(self):
+    def down(self,v):
         if self.todo:
-            self.left.do(self.todo)
-            self.right.do(self.todo)
-            self.todo=0
-
-    def up(self):
+            self.left.do(v)
+            self.right.do(v)
+            self.todo = 1-self.todo
+      
+    def up(self,value):
         self.value = self.left.value+self.right.value
     
     def to_node(self):
         ret = Node(title=",".join([
             f'id:{self.idx}',
             f'v:{self.value}',
-            #f'todo:{self.todo}'
+            f'todo:{self.todo}'
         ]))
         if self._left:
             ret.add_node(self._left.to_node())
@@ -140,13 +140,14 @@ class Solution(SolutionBase):
         self._queries=queries
         self._nums1=nums1
         for i,v in enumerate(self._nums1):
-            self.root.update(i,i,v)
+            if v==1:
+                self.root.update(i,i,SegTreeNode.FZ)
     def execute(self,*args,**kw) -> List[int]:
         
         for tp,a,b in self._queries:
             if tp==1:
                 self.log(f'update {a} {b}')
-                self.root.update(a,b,None)
+                self.root.update(a,b,SegTreeNode.FZ)
             elif tp==2:
                 self.log(f'query {a} {b}')
                 self.sum+=self.root.query(0,self._n-1)*a

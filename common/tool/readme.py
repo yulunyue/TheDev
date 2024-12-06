@@ -106,19 +106,24 @@ class ReadmeGen:
     
     def set_frames(self,datas):
         table=ReadmeTable()
-        nodes=[]
         for i in range(len(datas)):
             data=dict()
+            gp=[]
             for k,v in datas[i].items():
                 if v['type']=='graph':
-                    nodes.append(ReadmeGraph().set_title(
+                    gp.append(ReadmeGraph().set_title(
                         f'{k}:{i}').set_data(v))
                     continue
                 table.add_column(k)
                 data[k]=v['title']
             if data:
                 table.rows.append(data)
+            if gp:
+                if table.rows:
+                    self.fields.append(table)
+                    table=ReadmeTable()
+                self.fields.extend(gp)
+                gp.clear()
         if table.rows:
             self.fields.append(table)
-        self.fields.extend(nodes)
         return self
