@@ -143,6 +143,8 @@ class Solution(SolutionBase):
             if v==0:
                 continue
             self.root.update(i,i,SegTreeNode.FZ)
+    
+    
     def execute(self,*args,**kw) -> List[int]:
         for tp,a,b in self._queries:
             if tp==1:
