@@ -32,11 +32,14 @@ export class Marker extends GNode {
     }
     update_node() {
         if (this.key == ARROW_KEY) {
-            let l = line().set_color(Constant.COLOR_BALCK)
+            let l = line().set_style({
+                stroke: Constant.COLOR_BALCK,
+                fill: Constant.COLOR_BALCK
+            })
             if (this.arg1 == ARROW_START) {
-                l.set_d("M0,5 L10,0 L10,10 Z")
+                l.set_d("M-20,5 L0,0 L-10,10 Z")
             } else {
-                l.set_d("M1,5 L11,10 L1,15 Z")
+                l.set_d("M0,5 L10,10 L0,15 Z")
             }
             this.add_child(l)
         }

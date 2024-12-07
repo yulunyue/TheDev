@@ -62,30 +62,23 @@ def floyd(dis, keys):
 
 class Graph:
     def __init__(self):
-        self.g=[]
+        self.g = defaultdict(list)
 
+    def add_edge(self,y,x):
+        self.g[x].append(y)
+        self.g[y].append(x)  # 建树
+    
     def load_from_edges(self,edges):
-        self.g = [[] for _ in range(len(edges))]
+        self.edges=edges
         for x, y in edges:
-            self.g[x].append(y)
-            self.g[y].append(x)  # 建树
+            self.add_edge(x,y)
         return self
     
-    def algo_view(self):
-        ret = dict(
-            
-        )
-        def dfs(c,p,v):
-            v['title']=c
-            v['childs']=[]
-            for n in self.g[c]:
-                if p==n:continue
-                tmp=dict()
-                v['childs'].append(tmp)
-                dfs(n,c,tmp)
-        dfs(0,-1, ret)
-        return ret
+    def to_json(self):
+        return dict(data=dict(
+            g=self.g
+        ))
     
-    def hex_str(self):
+    def __str__(self):
         return str(self.g)
         

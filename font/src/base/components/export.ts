@@ -22,6 +22,7 @@ import Util from "../tool/util"
 import Data from "../tool/data"
 import dialog from "./dom/dialog"
 import web_socket from "../web/web_socket"
+import { mera_util, MeraGraph } from "./svg/comb/mermaid_util"
 const DEV_COMPONENT = {
     input, search_dev, Select, select, canca_dev,
     button_dev, table, listdev,
@@ -31,6 +32,7 @@ DivFactory.register("div", div)
 DivFactory.register("pre", pre)
 DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
+DivFactory.register('graph', () => new MeraGraph())
 export {
     Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button,
     DEV_COMPONENT, Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,

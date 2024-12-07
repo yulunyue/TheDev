@@ -17,22 +17,6 @@ export class Label extends Div {
         this.change_color = color
         return this
     }
-    set_html(s: string) {
-        if (s == null || s == undefined) {
-            return this
-        }
-        if (this.change_color) {
-            if (this.text) {
-                if (this.text != s) {
-                    this.set_color(this.change_color)
-                } else {
-                    this.set_color(Constant.COLOR_BALCK)
-                }
-            }
-            this.text = s
-        }
-        return super.set_html(s)
-    }
     click(call_back: any) {
         web.bind_mouseenter(this.el, () => {
             this.set_style({
@@ -79,9 +63,7 @@ export class Pre extends Div {
         }
     }
     render_option() {
-        if (this.option.title) {
-            this.set_text(this.option.key + ' : ' + this.option.title)
-        }
+        this.set_text(this.option.title)
     }
 }
 export function label() {

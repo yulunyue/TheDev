@@ -26,12 +26,12 @@ export class Text extends GNode {
         return this
     }
     set_text(s: any) {
-        let w = 0
+        let w = 80
 
-        for (var i = 0; i < s.length; i++) {
-            let w2 = web_dom.calc_text_width(s[i], Constant.DEFAULT_FONT_FAMILY, Constant.DEFAULT_FONT_SIZE)
-            w = Math.max(w, w2)
-        }
+        // for (var i = 0; i < s.length; i++) {
+        //     let w2 = web_dom.calc_text_width(s[i], Constant.DEFAULT_FONT_FAMILY, Constant.DEFAULT_FONT_SIZE)
+        //     w = Math.max(w, w2)
+        // }
         this.contain.set_text(s)
         this.foreign_object.set_width(w + Constant.DEFAULT_PADDING * 3).set_attr("x", -w / 2)
         web_dom.next_frame(() => {

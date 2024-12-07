@@ -40,6 +40,9 @@ export class Div {
         this.on_change = call
         return this
     }
+    set_class(name: string) {
+        return this.set_attr("class", name)
+    }
     set_color(s: string) {
         this.set_style({
             color: s

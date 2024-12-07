@@ -10,7 +10,7 @@ import math
 import heapq
 inf = float("inf")
 try:
-    from app.yly.algo.manage import SolutionBase
+    from app.yly.algo.manage import SolutionBase,View
 
 except:
     class SolutionBase:
@@ -39,6 +39,18 @@ except:
             self.init()
             print(self.exec())
 
+CASE2 = '''
+4 6 3
+1 2
+2 3
+1 4
+4 3
+2 4
+1 3
+'''
+RESULT2='''2
+111100
+110110'''
 CASE1 ='''
 4 4 3
 1 2 
@@ -46,19 +58,47 @@ CASE1 ='''
 1 4
 4 3
 '''
-result1='''2
+RESULT1='''2
 1110
 1011'''
+
+class Graph:
+    def __init__(self):
+        self.g = defaultdict(list)
+
+    def add_edge(self,y,x):
+        self.g[x].append(y)
+        self.g[y].append(x)  # 建树
+    
+    def load_from_edges(self,edges):
+        self.edges=edges
+        for x, y in edges:
+            self.add_edge(x,y)
+        return self
+    
+    def to_view(self):
+        return dict(data=dict(
+            g=dict(self.g)
+        ))
+    
+    def __str__(self):
+        return str(self.g)
+
 class Solution(SolutionBase):
     _uri = "https://codeforces.com/problemset/problem/1005/F"
     _gameid = ''
-
+    '''
+    给定一个图
+    '''
+    _has_view=True
     def get_cases(self):
         return [
-            dict(input=CASE1,result=result1),
+            dict(input=CASE2,result=RESULT2),
+            dict(input=CASE1,result=RESULT1),
         ]
     
-    def init(self,*arg,**kwargs):
+    def init(self,*arg,result=0,**kwargs):
+        self.root=Graph()
         self.n,self.m,self.k=self.il()
         self.us=[]
         self.vs=[]
@@ -73,7 +113,12 @@ class Solution(SolutionBase):
             self.vs.append(t-1)
             self.g[f-1].append(i)
             self.g[t-1].append(i)
-    
+            self.root.add_edge(f-1,t-1)
+
+    def get_watch2(self):
+        return [
+            View(key='root').graph()
+        ]
     def exec(self,*args,**kwagrs):
         pass
 

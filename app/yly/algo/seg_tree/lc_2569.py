@@ -8,7 +8,7 @@ import sys
 import math
 import heapq
 try:
-    from app.yly.algo.manage import SolutionBase,View
+    from app.yly.algo.manage import SolutionBase,View,bp
     ViewEr = View
 except:
     class ViewEr:
@@ -75,15 +75,15 @@ class SegTreeNode:
             self.do(value)
             return self.value
         self.down(value)
-        if self.m < r:
-            self.right.update(l, r,value)
         if self.m >= l:
             self.left.update(l, r,value)
+        if self.m < r:
+            self.right.update(l, r,value)
         self.up(value)
         return self.value
 
     def do(self,v):
-        self.value = self.r-self.l+1
+        self.value = self.r-self.l+1-self.value
         if self.l!=self.r:
             self.todo=1-self.todo
         
@@ -106,9 +106,9 @@ class SegTreeNode:
     
     def get_title(self):
         return [
-            f'id : {self.idx}',
-            f'v : {self.value}',
-            f'todo : {self.todo}'
+            bp("",self.idx,self.idx),
+            bp('value', self.value,self.idx),
+            bp('todo', self.todo,self.idx),
         ]
     
     def to_view(self):
@@ -126,6 +126,7 @@ class SegTreeNode:
 class Solution(SolutionBase):
     _has_view=True
     action="log"
+    uid="https://leetcode.cn/problems/handling-sum-queries-after-update/description/"
     def get_cases(self):
         return [
             dict(nums1 =[1,0,1],nums2 =[44,28,35],queries =[[1,0,1],[2,10,0],[2,2,0],[2,7,0],[3,0,0],[3,0,0],[1,2,2],[1,1,2],[2,1,0],[1,0,2],[1,2,2],[1,0,2],[3,0,0],[1,1,2],[3,0,0],[1,0,1],[2,21,0],[1,0,1],[2,26,0],[1,1,1]],result=[145,145,146,146]),
@@ -147,8 +148,8 @@ class Solution(SolutionBase):
         self.root=SegTreeNode(0,self._n-1)
         self.root.query(0,self._n-1)
         self._queries=queries
-        self._nums1=nums1
-        for i,v in enumerate(self._nums1):
+        self.nums1=nums1
+        for i,v in enumerate(self.nums1):
             if v==0:
                 continue
             self.root.update(i,i,SegTreeNode.FZ)
@@ -156,12 +157,13 @@ class Solution(SolutionBase):
     def get_watch(self):
         return View().add_node(
             View().add_node(
+                View(key="nums1"),
                 View(key="ans"),
                 View(key="result"),
                 View(key="sum"),
                 View(key="action"),
             ),
-            View(key="root",size=24).tree(),
+            View(key="root",size=30).tree(),
         )
     
     def execute(self,*args,**kw) -> List[int]:

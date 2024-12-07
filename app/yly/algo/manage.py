@@ -32,8 +32,11 @@ def wc(title, key, v, color,sp='p'):
         CHANGE_STORE[k] = v
         size=f'color:{color}'
         tp = 'b'
+    ret=f"<{sp}>"
+    if title:
+        ret+=f'<tp>{title} :</tp>'
     CHANGE_STORE[k] = v
-    return f'<{sp}><span>{title}:</span><{tp} style="margin-left:4px;{size}">{v}</{tp}></{sp}>'
+    return ret+f'<{tp} style="margin-left:4px;{size}">{v}</{tp}></{sp}>'
 
 
 
@@ -46,6 +49,8 @@ class View(Node):
     def tree(self):
         return self.set_type("tree")
 
+    def graph(self):
+        return self.set_type("graph")
     
     def hex_str(self):
         node=getattr(self.ins,self.key)
@@ -59,7 +64,7 @@ class View(Node):
         node=getattr(self.ins,self.key)
         if hasattr(node,'to_view'):
             return node.to_view()
-        return dict(title=str(node))
+        return dict(title=bp(self.key,str(node),'self'))
     
     def to_json(self):
         return super().to_json(size=self.size)
@@ -171,9 +176,10 @@ class SolutionBase:
         if flag:
             return childs
     
+    def get_watch2(self):
+        return []
     def get_watch(self):
-        pass
-    
+        return View().add_node(*self.get_watch2())
     def init_watch(self,tp):
         if self._watch_var is not None:
             return

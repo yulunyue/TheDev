@@ -59,6 +59,7 @@ export class Select extends Div {
             let so = this.childs[i]
             if (so.option.key == key) {
                 so.select(true)
+
                 this.do_change()
             } else {
                 so.select(false)
