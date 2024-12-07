@@ -92,8 +92,8 @@ class SolutionBase:
         exec_names=sys.argv[1:]
         if exec_names and exec_names[0]=='view_md':
             return self.view_md()
-        if exec_names and exec_names[0]=='view_font':
-            return self.view_font()
+        if exec_names and exec_names[0]=='view_web':
+            return self.view_web()
         if not exec_names:
             exec_names = ['execute']
         for exec_name in exec_names:
@@ -130,22 +130,7 @@ class SolutionBase:
     def flush_log(self, i, s):
         logger.info(f'{i}:{s}')
 
-    @classmethod
-    def cls_run(cls):
-        for case in cls.get_cases():
-            cls._logs = []
-            m, inp, es = case
-            r = cls(*inp[0])
-            cls.log(m[0], *inp[0])
-            for i in range(1, len(inp)):
-                cls.log(m[i], inp[i], es[i])
-                try:
-                    e = getattr(r, m[i])(*inp[i])
-                except Exception as a:
-                    e = a
-                if not r.diff(e, es[i]):
-                    cls.log(f'result:{e}, expect:{es[i]}')
-                    cls.flush_log(i)
+
 
     def diff(self, a, b):
         if isinstance(a, float) and isinstance(b, float):
@@ -169,15 +154,23 @@ class SolutionBase:
             
         if flag:
             return childs
-        
+    
+    def get_watch(self):
+        pass
     
     def init_watch(self,tp):
         if self._watch_var is not None:
             return
-        self._watch_var=[]
-        for key in dir(self):
-            if key.startswith('_'):
-                continue
+        node:Node=self.get_watch()
+        keys=[]
+        self._watch_var = []
+        def dfs(p:Node):
+            if not p.childs:
+                keys.append(p.key)
+            for c in p.childs:
+                dfs(c)
+        dfs(node)
+        for key in keys:
             v=getattr(self,key)
             if isinstance(v,(str,dict,int,float,list)):
                 self._watch_var.append(WatchAny(key=key).set_ins(self))
@@ -193,19 +186,23 @@ class SolutionBase:
             case
         ).set_frames(ret).save()
 
-    def view_font(self):
+    def view_web(self):
         _,ret,_ = self.view()
         File(f'data/algo/{self.get_name()}/readme.json').write_file(ret)
 
-    def view(self,case=None,tp='font'):
+    def view(self,case=None,tp='web'):
         if case is None:
             case=self.get_cases()[0]
         CHANGE_STORE.clear()
         self.pre(**case)
         self.init(**case)
         self.init_watch(tp)
-        ret,msg=run_watch_fun(self.execute, self.record)
+        ret1,msg=run_watch_fun(self.execute, self.record)
+        ret=self.get_watch().to_json()
+        ret['data']=dict(record=ret1)
         return case,ret,msg  
+    
+
     def get_name(self):
         return self._name or self.__class__.__name__
 

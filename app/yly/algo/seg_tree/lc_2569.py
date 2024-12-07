@@ -44,7 +44,7 @@ class SegTreeNode(WatchAny):
         self.todo = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
-
+    
     @property
     def left(self):
         if not self._left:
@@ -144,21 +144,27 @@ class Solution(SolutionBase):
                 continue
             self.root.update(i,i,SegTreeNode.FZ)
     
+    def get_watch(self):
+        return Node().add_node(
+            
+        )
     
     def execute(self,*args,**kw) -> List[int]:
         for tp,a,b in self._queries:
             if tp==1:
-                self.log(f'update {a} {b}')
+                # self.log(f'update {a} {b}')
                 self.root.update(a,b,SegTreeNode.FZ)
             elif tp==2:
-                self.log(f'query {a} {b}')
+                # self.log(f'query {a} {b}')
                 self.sum+=self.root.query(0,self._n-1)*a
             elif tp==3:
                 self.result.append(self.sum)                
         return self.result
+    
     def handleQuery(self, *args, **kg):
         self.init(*args,**kg)
         return self.execute(*args, **kg)
+
 
 
 if __name__ == '__main__':
