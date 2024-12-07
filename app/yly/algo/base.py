@@ -11,7 +11,7 @@ import heapq
 inf = float("inf")
 MOD = (10**9)+7
 try:
-    from app.yly.algo.manage import SolutionBase,div,bp,divh,divv
+    from app.yly.algo.manage import SolutionBase,WatchAny,Node
 
 except:
     def fmax(a,b,*args):return a if a>b else b
@@ -57,8 +57,6 @@ class Solution(SolutionBase):
 
         ]
 
-    def init(self,*args,**kwargs):
-        pass
 
     def xx(self, *arg, **kg):
         self.init(*arg, **kg)

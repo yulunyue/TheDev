@@ -3,7 +3,7 @@ import web_dom from "../../../web/web_dom"
 import { Line, line } from "../line";
 import { Rect, rect } from "../rect";
 import { Circle, circle } from "../circle";
-import { GText, gtext } from "../text";
+import { Text, text } from "../text";
 import { Node } from "../../../web/cls";
 import { SvgNode, svg } from "../svg";
 import { div, Div } from "../../dom/div";
@@ -13,14 +13,14 @@ import { Input, input } from "../../dom/input";
 
 class ProgrePoint extends GNode {
     rect: Rect
-    text: GText
+    text: Text
     value: number = 0
     start_x: number
     start_y: number
     init_node(): void {
         this.rect = this.add_child(rect())
         this.rect.set_wh(7, 14).set_color(Constant.COLOR_BALCK).set_y(-10)
-        this.text = this.add_child(gtext())
+        this.text = this.add_child(text())
         this.text.set_y(14).set_x(4)
     }
     set_value(value: number, x: number) {

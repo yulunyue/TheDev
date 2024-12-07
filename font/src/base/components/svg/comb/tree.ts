@@ -1,12 +1,10 @@
 import { Line, line } from "../line";
 import { Node, to_node } from "../../../web/cls";
-import { Text, text } from "./div_text";
-import { GText, gtext } from "../text";
+import { Text, text } from "../comb/div_text";
 import { GNode, gnode } from "../gnode";
 import { SvgNode, svg } from "../svg";
 export class TreeNode extends GNode {
     line: Line
-    line_text: GText
     text: Text
     parent: TreeNode
     height1: number
@@ -14,7 +12,6 @@ export class TreeNode extends GNode {
     nodes: TreeNode[]
     init_node(): void {
         this.nodes = []
-        this.line_text = gtext()
         this.line = line().with_arrow()
         this.text = this.add_child(text().on_change(() => this.on_text_change()))
         this.parent = null
@@ -25,22 +22,16 @@ export class TreeNode extends GNode {
         for (var i = 0; i < this.nodes.length; i++) {
             this.nodes[i].line.set_src(this.option.data.y + h / 2 + 2, this.option.data.x)
         }
-        let y = (this.line.src_y + this.line.dst_y) / 2
-        let x = (this.line.src_x + this.line.dst_x) / 2
-        if (!isNaN(y) && !isNaN(x)) {
-            this.line_text.set_pos(y, x)
-        }
 
     }
     add_node(c: TreeNode) {
         this.nodes.push(c)
         c.parent = this
-        return [c.line, c.line_text]
+        return c.line
     }
     render_option() {
         this.set_pos(this.option.data.y, this.option.data.x)
-        this.text.set_html(this.option.title)
-        this.line_text.set_html(this.option.data.line_title)
+        this.text.set_text(this.option.title)
         return this
     }
 
@@ -55,7 +46,7 @@ export class Tree extends SvgNode {
         this.g = this.add_child(new GNode())
     }
     render_option() {
-        this.max_xy = this.option.init_layout()
+        this.max_xy = this.option.init_tree_layout()
         this.draw()
     }
     calc_pos(x: number, y: number) {
@@ -76,12 +67,11 @@ export class Tree extends SvgNode {
         this.g.clear()
         var dfs = (node: Node, p: Node) => {
             node.data.node = new TreeNode()
-            console.log(node.title, node.x, node.y, this.max_xy)
             node.set_data(this.calc_pos(node.x, node.y))
             node.data.node.set_option(node)
             this.g.add_child(node.data.node)
             if (p) {
-                this.g.add_childs(p.data.node.add_node(node.data.node))
+                this.g.add_child(p.data.node.add_node(node.data.node))
             }
             for (var i = 0; i < node.childs.length; i++) {
                 dfs(node.childs[i], node)

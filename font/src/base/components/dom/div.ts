@@ -10,6 +10,9 @@ export class DivFactory {
         DivFactory.instance[key] = value
     }
     static get(key: string) {
+        if (!DivFactory.instance[key]) {
+            console.log(DivFactory.instance)
+        }
         return DivFactory.instance[key]
     }
     static register(key: string, fun: any) {
@@ -37,6 +40,11 @@ export class Div {
         this.on_change = call
         return this
     }
+    set_color(s: string) {
+        this.set_style({
+            color: s
+        })
+    }
     do_change() {
         this.on_change?.()
         return this
@@ -58,26 +66,12 @@ export class Div {
         }
         return direction
     }
-    add_dfs_childs(childs: Node[], direction: number) {
-        this.set_style_flex(this.get_direction(direction))
-        this.set_div_style({ border: "1px solid #ccc" })
-        for (var i = 0; i < childs.length; i++) {
-            if (childs[i] instanceof Div) {
-                this.add_child(childs[i])
-            } else {
-                let tmp: Div = DivFactory.new_div(childs[i].type, childs[i])
-                tmp.set_option(childs[i])
-                if (childs[i].childs) {
-                    tmp.add_dfs_childs(childs[i].childs, 1 - direction)
-                }
-                this.add_child(tmp)
-            }
+    get_child(idx: number, call: any) {
+        if (this.childs[idx]) {
+            return this.childs[idx]
         }
-
-    }
-    add_grid_childs(childs: any[], direction: number) {
-        this.add_dfs_childs(childs, direction)
-        return this
+        this.childs[idx] = this.add_child(call())
+        return this.childs[idx]
     }
     flex_horizontal_layout() {
         this.set_size(1)
@@ -88,45 +82,41 @@ export class Div {
     full() {
         return this.set_style({
             width: 1,
-            height: 1,
-            position: "absolute"
+            height: 1
         })
     }
     flex_veritcal_layout() {
         this.set_size(1)
         return this.set_flex_style(Constant.VERTICAL).full()
     }
-    abs_horizontal_layout(sizes:number[]) {
-        return this.set_abs_style(Constant.HORIZONTAL,sizes)
-    }
-    abs_veritcal_layout(sizes:number[]) {
-        return this.set_abs_style(Constant.VERTICAL,sizes)
-    }
-    set_abs_style(direction: number,sizes:number[]) {
-        let node = Util.grid_size(sizes)
-        this.set_style({
-            width: 1,
-            height: 1,
-            position: "absolute"
-        })
-        
-        function dfs(node:Div,option:Node,direction:number){
+
+    set_abs_style(option: Node, direction: number) {
+        this.clear().full()
+        function dfs(node: Div, option: Node, direction: number) {
             node.set_border()
-            for(var i=0;i<option.childs.length;i++){
-                let tmp=new Div()
-                tmp.set_style({
-                    left: direction == Constant.VERTICAL ? option.childs[i].size / node.size : 0,
-                    width: direction == Constant.VERTICAL ? 1 / node.size : 1,
-                    height: direction == Constant.HORIZONTAL ? 1 / node.size : 1,
-                    top: direction == Constant.HORIZONTAL ? i / node.size : 0,
-                    position: "absolute",
-                    border: "1px solid #000"
-                })
-                dfs(tmp,option.childs[i],1-direction)
+            let lt = 0
+            for (var i = 0; i < option.childs.length; i++) {
+                let tmp = DivFactory.new_div(option.childs[i].type, option.childs[i])
+                let style: Style = {
+                    left: 0,
+                    top: 0,
+                    width: 1,
+                    height: 1,
+                }
+                if (direction == Constant.VERTICAL) {
+                    style.left = lt / option.size_calc
+                    style.width = option.childs[i].size_calc / option.size_calc
+                } else {
+                    style.top = lt / option.size_calc
+                    style.height = option.childs[i].size_calc / option.size_calc
+                }
+                lt += option.childs[i].size_calc
+                tmp.set_style(style)
+                dfs(tmp, option.childs[i], 1 - direction)
                 node.add_child(tmp)
             }
         }
-        dfs(this,node,direction)
+        dfs(this, to_node(option).calc_size(), direction)
         return this
 
     }
@@ -140,7 +130,7 @@ export class Div {
 
         })
     }
-    set_border(){   
+    set_border() {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
     set_style_flex2(direction: number) {
@@ -357,7 +347,6 @@ export class Div {
     set_option(option: Node) {
         this.option.set_option(option)
         this.set_direction(option.direction)
-        this.set_size(option.size)
         DivFactory.set(this.option.key, this)
         this.render_option()
         return this
@@ -385,12 +374,15 @@ export class Div {
 
     }
     render_option() {
-        // this.set_html(this.option.get_title())
+        this.set_html(this.option.title)
     }
     add_childs(childs: any[]) {
         return this.set_childs(childs)
     }
     set_html(text: string | Fn1<any, string>) {
+        if (text == null || text == undefined) {
+            return this
+        }
         if (typeof text == 'function') {
             text(this.el)
             return this

@@ -27,7 +27,8 @@ const DEV_COMPONENT = {
     button_dev, table, listdev,
     dagre_d3_dev, progress_dev
 }
-DivFactory.register("div", pre)
+DivFactory.register("div", div)
+DivFactory.register("pre", pre)
 DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
 export {

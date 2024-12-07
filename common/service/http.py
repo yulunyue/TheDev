@@ -12,7 +12,7 @@ import signal
 import sys
 import json
 import os
-from common.util.log import logger
+from common.util.log import logger,File
 from common.util.tool import uid
 from common.util.module import Module
 HTML_CONTENT_TYPE = dict(
@@ -27,7 +27,7 @@ HTML_CONTENT_TYPE = dict(
 )
 
 class Node:
-    def __init__(self, code=0,  direction=-1,type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
+    def __init__(self, code=0,type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
         self.code = code
         self.type = type
         self.key = key or uid('node')
@@ -37,7 +37,6 @@ class Node:
         self.data = data or dict()
         self.parent = None
         self.childs: List[Node] = []
-        self.direction = direction
         if childs:
             for cd in childs:
                 if isinstance(cd,dict):
@@ -79,15 +78,20 @@ class Node:
             self.childs.append(n)
         return self
 
-    def to_json(self):
-        return dict(
+    def to_json(self,**kw):
+        ret = dict(
             type=self.type,
             key=self.key,
             title=self.get_title(),
             value=self.value,
-            childs=[c.to_json() for c in self.childs]
+            childs=[c.to_json() for c in self.get_childs()],
+            data=self.get_data()
         )
-
+        ret.update(kw)
+        return ret
+    def get_childs(self):
+        return self.childs
+    
     def get_title(self):
         return self.title
     
@@ -220,12 +224,16 @@ class MainHander(RequestHandler):
     def post(self, *args):
         ret = self.POST_API.call(self.path, self.params)
         logger.info(f'[{self.path}]')
-        self.out(ret)
+        self.out(ret,self.params)
 
     def options(self, *args):
-        self.out('ok')
+        self.out('ok',None)
 
-    def out(self, data):
+    def out(self, data, params):
+        if params:
+            File(f'data/log/http/{self.path}/input.json').write_file(params)
+        if data:
+            File(f'data/log/http/{self.path}/result.json').write_file(data)
         self.send_header()
         self.write(data)
 

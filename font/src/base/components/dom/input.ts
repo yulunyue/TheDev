@@ -43,7 +43,6 @@ export class TextArea extends Div {
         })
     }
     get_value() {
-        console.log(this.el.value)
         return this.el.value
     }
 

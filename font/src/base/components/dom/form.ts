@@ -32,7 +32,9 @@ export class Row extends Div {
         return this
     }
     render_option(): this {
-        this.set_title(this.option.title)
+        if (this.option.title) {
+            this.set_title(this.option.title)
+        }
         if (this.option.type == 'text') {
             this.set_input(new Div())
         } else if (this.option.type == 'search') {

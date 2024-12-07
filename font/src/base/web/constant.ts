@@ -31,9 +31,11 @@ class Constant {
     COLOR_WHITE = '#fff'
     COLOR_YELLOW = '#ff0'
     COLOR_BALCK = '#000'
+    COLOR_BLUE = '#00f'
     COLOR_GRAY = '#888'
     COLOR_TANS = 'transparent'
-
+    DEFAULT_FONT_FAMILY = "'Times New Roman', serif"
+    DEFAULT_FONT_SIZE = "16px"
     DIALOG_COLOR = '#8888'
 
 

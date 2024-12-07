@@ -89,6 +89,7 @@ export class Node {
     y?: number = 0
     el?: any = null
     size?: number = 0
+    size_calc?: number = 0
     constructor(key?: string) {
         this.childs = []
         this.data = {}
@@ -167,7 +168,7 @@ export class Node {
         }))
         return ret
     }
-    init_layout() {
+    init_tree_layout() {
         let ret = { y: this.title ? 0 : -1, x: 0 }
         this.x = 0
         function dfs(node: Node, p: Node) {
@@ -187,6 +188,16 @@ export class Node {
         dfs(this, null)
         ret.x -= 1
         return ret
+    }
+    calc_size() {
+        this.size_calc = 0
+        if (this.childs.length == 0) {
+            this.size_calc = Math.max(this.size, 1)
+        }
+        for (var i = 0; i < this.childs.length; i++) {
+            this.size_calc += this.childs[i].calc_size().size_calc
+        }
+        return this
     }
     set_type(type: string) {
         this.type = type

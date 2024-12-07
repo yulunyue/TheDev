@@ -15,7 +15,10 @@ class Tt extends GNode {
     }
 
 }
-export class GText extends GNode {
+function span() {
+    return new GNode("span")
+}
+export class Text extends GNode {
     text: Tt
     bg: Rect
     init_node(): void {
@@ -51,7 +54,10 @@ export class GText extends GNode {
         })
         return this
     }
+    set_text() {
+
+    }
 }
-export function gtext() {
-    return new GText()
+export function text() {
+    return new Text()
 }

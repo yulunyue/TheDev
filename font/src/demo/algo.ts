@@ -9,7 +9,6 @@ import {
 class Algo extends Div {
     div: Div
     pro: Progress
-    algo_nodes: Div[]
     dialog_div: Form
     code_select: Row
     code_pre: Row
@@ -18,11 +17,11 @@ class Algo extends Div {
     init_style(): void {
         this.set_style_ab_full()
     }
-    init_edit_dialog(){
+    init_edit_dialog() {
         this.code_select = row1().set_input(
             select()
         ).set_title(
-            "模块名"
+            "py_module"
         )
         this.code_pre = row1().set_input(text_area().set_style({
             height: Constant.TEXT_AREA_HEIGHT_3,
@@ -30,7 +29,7 @@ class Algo extends Div {
         this.case_select = row1().set_input(
             select()
         ).set_title(
-            "样例"
+            "case"
         )
         this.case_pre = row1().set_input(text_area())
         this.dialog_div = form().set_rows([
@@ -47,7 +46,8 @@ class Algo extends Div {
         this.div = div()
         this.pro = progress().set_size(1).change(() => this.goto())
         this.add_childs([
-            this.div.set_size(1),
+            //div().set_size(1).add_childs([this.div]),
+            this.div,
             div().add_childs([
                 this.pro,
                 button().set_html("setting").click(() => this.open_setting()),
@@ -74,24 +74,18 @@ class Algo extends Div {
     open_setting() {
         dialog.open(this.dialog_div)
     }
-    set_option(option: Node): this {
-        this.option = option
-        this.draw_nodes()
-        return this
-    }
-    draw_nodes() {
-        this.algo_nodes = this.div.clear().add_grid_childs(
-            this.option.childs,
-            web_dom.get_wh_scale() < 1 ? Constant.HORIZONTAL : Constant.VERTICAL
-        ).emit_mount().get_content_divs()
+
+    render_option() {
+        this.div.set_abs_style(this.option, Constant.VERTICAL)
     }
     goto() {
         let idx = this.pro.get_value()
-        if (!this.option.data.records || !this.option.data.records[idx]) {
+        if (!this.option.data.record || !this.option.data.record[idx]) {
             return
         }
-        for (var key in this.option.data.records[idx]) {
-            DivFactory.get(key).set_option(this.option.data.records[idx][key])
+        for (var key in this.option.data.record[idx]) {
+
+            DivFactory.get(key).set_option(this.option.data.record[idx][key])
         }
     }
     test() {
@@ -102,7 +96,9 @@ class Algo extends Div {
         return this.case_pre.get_value()
     }
     load() {
-        web_dom.post("/app/yly/algo/manage/query", {}, (node: Node) => {
+        web_dom.post("/app/yly/algo/manage/query", {
+
+        }, (node: Node) => {
             this.code_select.set_option(node).select(web_dom.get_param("py_module"))
             this.run()
         })
@@ -119,13 +115,13 @@ class Algo extends Div {
             case: case_select
         }, (node: Node) => {
             this.set_option(node)
-            this.pro.set_max_value(node.data.records.length)
+            this.pro.set_max_value(node.data.record.length)
         })
     }
     on_mount() {
         //this.test()
         this.load()
-        //this.open_setting()
+        // this.open_setting()
 
     }
 }

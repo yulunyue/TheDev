@@ -56,7 +56,7 @@ class WebDom {
     }
     web_host: string
     web_port: number
-    bk_port: string = "8888"
+    bk_port: string = "9999"
     url_param: any
     prefix: string
     init_href() {
@@ -217,6 +217,18 @@ class WebDom {
         this.get_body().onclick = () => {
             call_back()
         }
+    }
+    _text_cav: any
+    _text_ctx: any
+    calc_text_width(s: string, family: any, size: any) {
+        if (!this._text_cav) {
+            this._text_cav = document.createElement("canvas");
+            this._text_ctx = this._text_cav.getContext("2d");
+        }
+        this._text_ctx.font = `${size} ${family}`;
+        let metrics = this._text_ctx.measureText(s);
+        let actual = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight)
+        return Math.max(metrics.width, actual)
     }
 
 }

@@ -37,16 +37,32 @@ def wc(title, key, v, color,sp='p'):
 
 
 
-class WatchAny(Node):
-    def get_title(self):
-        return str(getattr(self.ins,self.key))
+class View(Node):
+    def __init__(self, key="",type="div",**kwargs) -> None:
+        if key:
+            type = 'pre'
+        super().__init__(type=type,key=key,**kwargs)
+    
+    def tree(self):
+        return self.set_type("tree")
+
     
     def hex_str(self):
-        return self.get_title()
+        node=getattr(self.ins,self.key)
+        return str(node)
     
     def set_ins(self,ins):
         self.ins=ins
         return self
+    
+    def to_view(self):
+        node=getattr(self.ins,self.key)
+        if hasattr(node,'to_view'):
+            return node.to_view()
+        return dict(title=str(node))
+    
+    def to_json(self):
+        return super().to_json(size=self.size)
 
 
 class SolutionBase:
@@ -56,8 +72,8 @@ class SolutionBase:
     _DEV = True
     _gameinfo = ['lc']
     _tags = []
-    _watch_var:List[WatchAny] = None
-    action=""
+    _watch_var:List[View] = None
+    action="log"
     def get_cases(self):
         return [
 
@@ -149,8 +165,8 @@ class SolutionBase:
             key2,s2=var.key+'_algo',var.hex_str() if var.hex_str else ""
             if CHANGE_STORE.get(key2)!=s2:
                 flag=True
-                childs[var.key]=var.to_json()
                 CHANGE_STORE[key2]=s2
+            childs[var.key]=var.to_view()
             
         if flag:
             return childs
@@ -171,12 +187,8 @@ class SolutionBase:
                 dfs(c)
         dfs(node)
         for key in keys:
-            v=getattr(self,key)
-            if isinstance(v,(str,dict,int,float,list)):
-                self._watch_var.append(WatchAny(key=key).set_ins(self))
-            elif isinstance(v,WatchAny):
-                v.key=key
-                self._watch_var.append(v)
+            self._watch_var.append(View(key=key).set_ins(self))
+
 
     def view_md(self):
         case,ret,msg = self.view(tp="md")
@@ -224,7 +236,7 @@ class Route:
             module_name = fp.py_module_path()
             title=module_name.split('.')[-1]
             fc:SolutionBase = get_md(module_name)
-            if fc is None or not getattr(fc,'has_view',None):
+            if fc is None or not getattr(fc,'_has_view',None):
                 continue
             ret.add_child(
                 key=module_name, 
@@ -242,9 +254,9 @@ class Route:
         fp=File(TMP_PATH).write_file(content)
         module_name=fp.py_module_path()
         f: SolutionBase = get_md(module_name)
-        ret,msg=f.view(case)
-        if msg:
-            raise Exception(msg)
+        _,ret,msg=f.view(case)
+        # if msg:
+        #     raise Exception(msg)
         return ret
     
         

@@ -4,7 +4,6 @@ import { line } from "./line"
 import { circle } from "./circle"
 import { GNode } from "./gnode"
 import { Tree, tree } from "./comb/tree"
-import { GText, gtext } from "./text"
 import { Node } from "../../web/cls"
 import web_dom from "../../web/web_dom"
 export class SvgNode extends Div {
