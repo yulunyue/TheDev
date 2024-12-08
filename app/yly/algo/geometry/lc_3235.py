@@ -67,7 +67,6 @@ class Solution(SolutionBase):
 
         while self.i<self.n:
             xi, yi, ir = self.circles[self.i]
-            lt=dis(xi,yi,0,0)
             y_in=0<=yi<=self.y
             x_in=0<=xi<=self.x
             left_c = xi-ir <= 0 and xi+ir>= 0 and y_in

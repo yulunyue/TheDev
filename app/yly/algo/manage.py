@@ -7,6 +7,8 @@ from common.util.log import logger
 from common.util.fp import File
 from collections import defaultdict
 from common.tool.readme import ReadmeGen
+from common.algo.unifind import UniFind
+from common.algo.graph import Graph
 import os
 import time
 import sys
@@ -105,7 +107,7 @@ class SolutionBase:
     def exec(self,**kg):
         pass
     
-    def pre(self,input=None,**kwargs):
+    def pre(self,input=None,result=None,**kwargs):
         if input is not None:
             self.lines=[v for v in input.split('\n') if v]
 
@@ -176,14 +178,14 @@ class SolutionBase:
         if flag:
             return childs
     
-    def get_watch2(self):
-        return []
     def get_watch(self):
-        return View().add_node(*self.get_watch2())
+        return []
+    def get_main_view(self):
+        return View().add_node(*self.get_watch())
     def init_watch(self,tp):
         if self._watch_var is not None:
             return
-        node:Node=self.get_watch()
+        node:Node=self.get_main_view()
         keys=[]
         self._watch_var = []
         def dfs(p:Node):
@@ -216,7 +218,7 @@ class SolutionBase:
         self.init(**case)
         self.init_watch(tp)
         ret1,msg=run_watch_fun(self.execute, self.record)
-        ret=self.get_watch().to_json()
+        ret=self.get_main_view().to_json()
         ret['data']=dict(record=ret1)
         return case,ret,msg  
     

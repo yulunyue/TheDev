@@ -47,7 +47,7 @@ class Algo extends Div {
         this.pro = progress().set_size(1).change(() => this.goto())
         this.add_childs([
             //div().set_size(1).add_childs([this.div]),
-            this.div,
+            this.div.set_size(1),
             div().add_childs([
                 this.pro,
                 button().set_html("setting").click(() => this.open_setting()),
@@ -85,8 +85,9 @@ class Algo extends Div {
             return
         }
         for (var key in this.option.data.record[idx]) {
-
-            DivFactory.get(key).set_option(this.option.data.record[idx][key])
+            let d=DivFactory.get(key)
+            console.error(key,d)
+            d.set_option(this.option.data.record[idx][key])
         }
     }
     test() {

@@ -84,12 +84,14 @@ def decomposition_prime_factors(v):
 
 
 def prime_flags(max_v):
-    ret = [None]*max_v
+    ret = [True]*max_v
+    ret[0]=False
+    ret[1]=False
     for i in range(2, max_v):
         if ret[i] == False:
             continue
         ret[i] = True
-        for j in range(i+i, max_v, i):
+        for j in range(i*i, max_v, i):
             ret[j] = False
     return ret
 

@@ -41,52 +41,7 @@ inf = float("inf")
 MOD = (10**9)+7
 
 
-class UniFind:
-    
-    def __init__(self, n) -> None:
-        self.p = [-1]*n
-        self.value = [0]*n
 
-    def merge(self, parent, child, val):
-        parent1, pval = self.find(parent)
-        child1, cval = self.find(child)
-        if parent1 == child1:
-            return parent1, False
-        pct =  self.p[parent1]+self.p[child1]
-        self.p[child1] = parent1
-        self.p[parent1]=pct
-        self.value[child] = (val+pval-cval)%MOD
-        return parent1, True
-
-    def find(self, idx):
-        idz = idy = idx
-        value = 0
-        while self.p[idx] >= 0:
-            value = (value+self.value[idx])%MOD
-            idx = self.p[idx]
-        while idy != idx:
-            self.value[idy], value = value, value-self.value[idy]
-            self.p[idy], idy = idx, self.p[idy]
-        return idy, self.value[idz]
-
-
-
-    def algo_view(self):
-        root_child=[]
-        nodes=[dict(
-            title=f'节点{i}{bp("子节点数",-v if v<0 else 1,i)}',
-            data=dict(line_title=self.value[i]),
-            childs=[]
-        ) for i,v in enumerate(self.p)]
-        for i,v in enumerate(self.p):
-            if v>0 and v!=i:
-                nodes[v]['childs'].append(nodes[i])
-            else:
-                root_child.append(nodes[i])
-        return dict(childs=root_child,depth=1)
-
-    def hex_str(self):
-        return str(self.p) 
 
 
 CASE1 ='''

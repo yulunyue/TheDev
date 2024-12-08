@@ -105,6 +105,8 @@ export class Div {
                     top: 0,
                     width: 1,
                     height: 1,
+                    display:"flex",
+                    flexDirection:direction==Constant.VERTICAL?"column":"row",
                 }
                 if (direction == Constant.VERTICAL) {
                     style.left = lt / option.size_calc
