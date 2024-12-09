@@ -57,7 +57,6 @@ class Algo extends Div {
     init_event(): void {
         this.code_select.change(() => {
             let o = this.code_select.get_value()
-            console.log(o)
             this.code_pre.set_value(o.value)
             this.case_select.set_option(new Node().set_childs(
                 o.data.cases.map((v: any, i: number) => {
@@ -85,8 +84,7 @@ class Algo extends Div {
             return
         }
         for (var key in this.option.data.record[idx]) {
-            let d=DivFactory.get(key)
-            console.error(key,d)
+            let d = DivFactory.get(key)
             d.set_option(this.option.data.record[idx][key])
         }
     }

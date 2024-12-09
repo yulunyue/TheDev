@@ -1,15 +1,26 @@
 from typing import List,Dict
+from collections import defaultdict
 class UniFind:
     def __init__(self,n=None) -> None:
         self.p = dict()
-        self.size = dict()
+        self.size = defaultdict(int)
+        self.value = defaultdict(int)
+        self.init()
         if isinstance(n,int):
             self.load(n)
+    def init(self):
+        pass
+    
     def load(self,n):
         for v in range(n):
             self.find(v)
-
-
+        return self
+    
+    def set_values(self,vals):
+        for i,v in enumerate(vals):
+            self.value[i]=v
+        return self
+    
     def merge(self, parent, child):
         parent1 = self.find(parent)
         child1 = self.find(child)
@@ -40,11 +51,13 @@ class UniFind:
         return dict(
             title=[
                 bp('',i,f"bcj_{i}"),
-                bp("size",self.size.get(i,0),f'gcj_size_{i}'),
-            ],
+            ]+[bp(k,getattr(self,k)[i],f'bcj_{k}_{i}') for k in self.get_title_key()],
             childs=[]
         ) 
-
+    
+    def get_title_key(self):
+        return ['size','value']
+    
     def to_view(self):
         nodes = {k:self.get_node(k) for k in self.p}
         childs = []
@@ -52,7 +65,7 @@ class UniFind:
             if k==v:
                 childs.append(nodes[k])
                 continue
-            nodes[k]['childs'].append(nodes[v])
+            nodes[v]['childs'].append(nodes[k])
         return dict(childs=childs, depth=1)
 
     def __str__(self):

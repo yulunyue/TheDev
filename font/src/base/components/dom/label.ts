@@ -10,7 +10,8 @@ export class Label extends Div {
     init_style(): void {
         this.set_style({
             fontFamily: Constant.DEFAULT_FONT_FAMILY,
-            fontSize: Constant.DEFAULT_FONT_SIZE
+            fontSize: Constant.DEFAULT_FONT_SIZE,
+            textWrap: "wrap"
         })
     }
     set_change_color(color: string) {

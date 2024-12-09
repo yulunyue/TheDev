@@ -39,7 +39,10 @@ class File:
     def read_data(self):
         with open(self.path, 'rb') as f:
             return f.read()
-
+    
+    def read_line(self):
+        return self.read_data().decode('utf-8').replace('\r','').split('\n')
+    
     def read_file(self, encoding='utf-8'):
         data = self.read_data()
         if self.is_json_file():

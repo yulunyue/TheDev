@@ -1,32 +1,28 @@
-from typing import List, Dict, Optional
-from collections import defaultdict, deque, Counter
-from itertools import accumulate, product, permutations
-from sortedcontainers import SortedList
-from functools import lru_cache
-import bisect
-import sys
-import math
-import heapq
-try:
-    from app.yly.algo.manage import SolutionBase,View,UniFind,Graph
-except:
-    class SolutionBase:
-        def log(self, *args, **kwargs):
-            pass
+from app.yly.algo.manage import SolutionBase,View
+from typing import List,Dict
+from collections import defaultdict
+from common.algo.unifind import UniFind
+from common.algo.graph import Graph
 
-        def run(self):
-            pass
-inf = float("inf")
-null = None
-true = True
-false = False
 M = 10**9 + 7
+
+class Uf(UniFind):
+    def init(self):
+        self.ways=defaultdict(lambda:1)
+
+    def get_title_key(self):
+        return ['ways']
+    
+    def __str__(self):
+        return super().__str__()+str(self.ways)
 
 
 class Solution(SolutionBase):
     _has_view=True
+    _uri='https://leetcode.cn/problems/number-of-good-paths/description/'
     def get_cases(self):
         return [
+            dict(vals =[2,5,5,1,5,2,3,5,1,5],edges =[[0,1],[2,1],[3,2],[3,4],[3,5],[5,6],[1,7],[8,4],[9,7]],result=20),
             dict(vals=[1, 3, 2, 1, 3], edges=[
                  [0, 1], [0, 2], [2, 3], [2, 4]], result=6)
         ]
@@ -35,19 +31,18 @@ class Solution(SolutionBase):
 
     def init(self, vals: List[int], edges: List[List[int]],result=0):
         self.ans=result
-        self.graph=Graph().load_from_edges(edges)
-        self.uf=UniFind(len(vals))
-        self.result=0
-        self.vals = vals
+        self.graph=Graph().load_from_edges(edges).set_values(vals)
+        self.uf=Uf(len(vals)).set_values(vals)
+        self.result=len(vals)
         self.nums=sorted([[v, i] for i, v in enumerate(vals)])
     
     def get_watch(self):
         return [
             View().add_node(
                 View("ans"),
-                View("vals"),
                 View("nums"),
-                View("result")
+                View("result"),
+                View("action")
             ),
             View().add_node(
                 View("uf",size=10).tree(),
@@ -55,16 +50,19 @@ class Solution(SolutionBase):
             )
         ]
     
-    def execute(self,**kw):
+    def execute(self,*args,**kw):
         for v, pid in self.nums:
             ppid = self.uf.find(pid)
-            for pnid,*args in self.graph.g[pid]:
-                pnid = self.uf.find(pnid)
-                if self.vals[pnid] > v or pnid == ppid:
+            for nid,*args in self.graph.g[pid]:
+                pnid = self.uf.find(nid)
+                if self.graph.values[pnid] > v or pnid == ppid:
                     continue
-                if self.vals[pnid] == v:
-                    self.result += self.uf.size[ppid]*self.uf.size[pnid]
+                self.log(f'merge {pid} {pnid}->{ppid}')
                 self.uf.merge(ppid,pnid)
+                if self.graph.values[pnid] == v:
+                    self.result += self.uf.ways[ppid]*self.uf.ways[pnid]
+                    self.uf.ways[ppid]+=self.uf.ways[pnid]
+                    
         return self.result
 
     def numberOfGoodPaths(self, *args, **kg) -> int:

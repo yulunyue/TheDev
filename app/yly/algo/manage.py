@@ -7,8 +7,6 @@ from common.util.log import logger
 from common.util.fp import File
 from collections import defaultdict
 from common.tool.readme import ReadmeGen
-from common.algo.unifind import UniFind
-from common.algo.graph import Graph
 import os
 import time
 import sys
@@ -43,10 +41,9 @@ def wc(title, key, v, color,sp='p'):
 
 
 class View(Node):
-    def __init__(self, key="",type="div",**kwargs) -> None:
-        if key:
-            type = 'pre'
-        super().__init__(type=type,key=key,**kwargs)
+    def __init__(self, key="",size=1,**kwargs) -> None:
+        type = 'pre' if key else 'div'
+        super().__init__(type=type,key=key,size=size,**kwargs)
     
     def tree(self):
         return self.set_type("tree")
@@ -55,7 +52,7 @@ class View(Node):
         return self.set_type("graph")
     
     def hex_str(self):
-        node=getattr(self.ins,self.key)
+        node=getattr(self.ins,self.key,None)
         return str(node)
     
     def set_ins(self,ins):
@@ -63,9 +60,11 @@ class View(Node):
         return self
     
     def to_view(self):
-        node=getattr(self.ins,self.key)
+        node=getattr(self.ins,self.key,None)
         if hasattr(node,'to_view'):
             return node.to_view()
+        if node is None:
+            return dict(title="")
         return dict(title=bp(self.key,str(node),'self'))
     
     def to_json(self):
@@ -110,7 +109,31 @@ class SolutionBase:
     def pre(self,input=None,result=None,**kwargs):
         if input is not None:
             self.lines=[v for v in input.split('\n') if v]
-
+    
+    def gen_file(self):
+        write_path='data/algo/run.py'
+        lines=[]
+        def read_file(md_name:str):
+            path=""
+            if md_name=='app.yly.algo.manage':
+                path='app/yly/algo/base.py'
+            elif md_name.startswith('common.algo'):
+                path=sys.modules[md_name].__file__
+            if path:
+                return File(path).read_line()
+        for ln in File(sys.argv[0]).read_line():
+            if not ln:continue
+            elif ln.startswith('from'):
+                data=read_file(ln.split(' ')[1])
+                if data:
+                    lines.extend(data)
+                else:
+                    lines.append(ln)
+            else:
+                lines.append(ln)
+        File(write_path).write_file("\n".join(lines))
+        self.log(f'gen_file {write_path}')
+    
     def run(self):
         exec_names=sys.argv[1:]
         if exec_names and exec_names[0]=='view_md':
@@ -119,6 +142,7 @@ class SolutionBase:
             return self.view_web()
         if not exec_names:
             exec_names = ['execute']
+            self.gen_file()
         for exec_name in exec_names:
             for i, case in enumerate(self.get_cases()):
                 self.__class__._logs = []

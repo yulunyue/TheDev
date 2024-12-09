@@ -78,6 +78,7 @@ class SegTreeNode:
         return ret
     
     def get_title(self):
+        from app.yly.algo.manage import bp
         return [
             bp("",self.idx,self.idx),
             bp('value', self.value,self.idx),
