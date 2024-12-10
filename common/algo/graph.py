@@ -9,11 +9,16 @@ inf = float("inf")
 
 
 class Graph:
-    def __init__(self,value=0):
+    def __init__(self,value=inf):
         self.g = defaultdict(list)
         self.edges = []
         self.value = defaultdict(lambda: value)
+        self.init()
+    def init(self):
+        pass
+
     
+
     def set_values(self,values):
         for i,v in enumerate(values):
             self.value[i]=v

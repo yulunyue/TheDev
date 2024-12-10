@@ -3,9 +3,9 @@ import mermaid from "mermaid";
 import { Svg, Node } from "../../export";
 import { line, web_dom } from "../../export";
 mermaid.initialize({
-    theme: 'neutral',
-    look: "handDrawn",
-    // themeCSS: '.node rect { fill: red; }',
+    //theme: 'neutral',
+    //look: "handDrawn",
+    themeCSS: '.node rect { fill: white; }',
 
     logLevel: 3,
     securityLevel: 'loose',
@@ -108,7 +108,7 @@ export class MeraGraph extends MeraUtil {
             if (title) {
                 title += ':'
             }
-            lines.push(`<p>${title}<span style='color:${data[i].color}'>${data[i].value}</span></p>`)
+            lines.push(`<p>${title}<span style='color:${data[i].color};margin-left:4px'>${data[i].value}</span></p>`)
         }
         this.render_tmp_store[key] = `${key}(${lines.join("")})`
         return this.render_tmp_store[key]

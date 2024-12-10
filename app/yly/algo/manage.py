@@ -24,9 +24,9 @@ def wc(title, key, v, change_color,sp='p'):
     k=f'{title}_{key}'
     # font-size:28px
     color=""
-    if v != CHANGE_STORE.get(k, v):
-        CHANGE_STORE[k] = v
+    if k in CHANGE_STORE and v!=CHANGE_STORE[k]:
         color=change_color
+    CHANGE_STORE[k] = v
     return dict(
         key=k,
         title=title,
@@ -129,7 +129,6 @@ class SolutionBase:
             else:
                 lines.append(ln)
         File(write_path).write_file("\n".join(lines))
-        self.log(f'gen_file {write_path}')
     
     def run(self):
         exec_names=sys.argv[1:]
