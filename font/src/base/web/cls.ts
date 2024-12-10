@@ -90,6 +90,7 @@ export class Node {
     el?: any = null
     size?: number = 0
     size_calc?: number = 0
+    color?: string = ""
     constructor(key?: string) {
         this.childs = []
         this.data = {}

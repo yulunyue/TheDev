@@ -9,15 +9,17 @@ inf = float("inf")
 
 
 class Graph:
-    def __init__(self,value=inf):
+    def __init__(self,value=0):
         self.g = defaultdict(list)
         self.edges = []
-        self.values = defaultdict(lambda: value)
+        self.value = defaultdict(lambda: value)
     
     def set_values(self,values):
         for i,v in enumerate(values):
-            self.values[i]=v
+            self.value[i]=v
         return self
+
+
     def add_edge(self,idx,y,x,valuey=None,valuex=None):
         self.g[x].append([y,idx,valuey])
         self.g[y].append([x,idx,valuex])  # 建树
@@ -27,15 +29,31 @@ class Graph:
         for i,edge in enumerate(edges):
             self.add_edge(i,*edge)
         return self
+    def key(self,k):
+        return f'graph_{k}'
     
-    def to_view(self):
+    def get_title_key(self):
+        return ['value']
+
+    def get_nodes(self,i):
+        from app.yly.algo.manage import bp
+        return dict(data=[
+            bp('',i,self.key(i)),
+        ]+[
+            bp(k,getattr(self,k)[i],self.key(f'{k}_{i}')) 
+            for k in self.get_title_key()
+        ])
+    def get_edges(self):
+        return [[self.key(e[0]),self.key(e[1])]+e[2:] for e in self.edges]
+
+    def graph_view(self):
         return dict(data=dict(
-            edges=self.edges,
-            nodes=self.values,
+            edges=self.get_edges(),
+            nodes={self.key(k):self.get_nodes(k) for k in self.g},
         ))
     
     def __str__(self):
-        return str(self.edges)
+        return f'{self.edges}{self.value}'
     
     def dijkstra(self, start):
         

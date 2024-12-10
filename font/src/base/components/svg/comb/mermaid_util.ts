@@ -1,15 +1,18 @@
 import { Div } from "../../dom/div";
 import mermaid from "mermaid";
-import { Svg } from "../../export";
+import { Svg, Node } from "../../export";
 import { line, web_dom } from "../../export";
 mermaid.initialize({
-    theme: 'default',
+    theme: 'neutral',
+    look: "handDrawn",
     // themeCSS: '.node rect { fill: red; }',
+
     logLevel: 3,
     securityLevel: 'loose',
     flowchart: { curve: 'basis' },
     gantt: { axisFormat: '%m/%d/%Y' },
     sequence: { actorMargin: 50 },
+
     // sequenceDiagram: { actorMargin: 300 } // deprecated
 })
 export class MeraUtil extends Div {
@@ -46,12 +49,8 @@ export class MeraUtil extends Div {
     }
 }
 export class MeraGraph extends MeraUtil {
-    render_option(): void {
-        let lines = ['graph']
-        let edges = this.option.data.edges
-        if (!edges) {
-            return
-        }
+    render_tmp_store: any
+    render_edges(edges: any, lines: string[]) {
         for (var i = 0; i < edges.length; i++) {
             lines.push([
                 this.get_title(edges[i][0]),
@@ -59,20 +58,60 @@ export class MeraGraph extends MeraUtil {
                 this.get_title(edges[i][1])
             ].join(" "))
         }
+    }
+    get_edges() {
+        let edges = []
+        this.option.data.nodes = {}
+
+        let dfs = (op: Node) => {
+            this.option.data.nodes[op.key] = op
+            for (var i = 0; i < op.childs.length; i++) {
+                edges.push([op.key, op.childs[i].key])
+                dfs(op.childs[i])
+            }
+        }
+        dfs(this.option)
+        return edges
+    }
+    render_option(): void {
+        this.render_tmp_store = {}
+        let lines = ['graph']
+        let edges = this.option.data.edges
+        if (edges) {
+            this.render_edges(edges, lines)
+        } else (
+            this.render_edges(this.get_edges(), lines)
+        )
+        console.log(lines.join("\n"))
         this.set_graph(lines)
     }
+
     get_line_text(s: any, s1: any, s2: any) {
-        let line_text = "---"
+        let line_text = "-->"
         if (s != null) {
             line_text = '<-->|' + s + '|'
         }
         return line_text
     }
-    get_title(key: string) {
-        if (this.option.data && key in this.option.data.nodes) {
-            return `${key}(${key}:${this.option.data.nodes[key]})`
+    get_title(key: any) {
+        if (key in this.render_tmp_store) {
+            return key
         }
-        return key
+
+        let data = this.option.data.nodes[key].data
+        if (!Array.isArray(data)) {
+            data = [data]
+        }
+        let lines = []
+        for (var i = 0; i < data.length; i++) {
+            let title = data[i].title
+            if (title) {
+                title += ':'
+            }
+            lines.push(`<p>${title}<span style='color:${data[i].color}'>${data[i].value}</span></p>`)
+        }
+        this.render_tmp_store[key] = `${key}(${lines.join("")})`
+        return this.render_tmp_store[key]
     }
 }
 export function mera_util() {

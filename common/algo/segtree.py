@@ -5,32 +5,37 @@ class SegTreeNode:
      4[0-1]        5[2-3]         6[4-5]         7[6-6]
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
-    FZ='FZ'
-    QU='QU'
-    def __init__(self, l, r,idx=1, default_value=0) -> None:
+    FZ=0
+    QU=1
+    ADD=2
+    OP=None
+    def __init__(self,idx=1, default_value=0) -> None:
         self.idx = idx
-        self.l = l
-        self.r = r
-        self.m = (l+r)//2
         self.default_value = default_value
-        self.add_value=0
         self.value = default_value
         self.todo = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
+    def set_range(self,l,r):
+        self.l = l
+        self.r = r
+        self.m = (l+r)//2
+        return self
     
     @property
     def left(self):
         if not self._left:
             self._left = SegTreeNode(
-                 self.l, self.m, self.idx*2,self.default_value)
+                 self.idx*2,self.default_value
+            ).set_range(self.l, self.m)
         return self._left
 
     @property
     def right(self):
         if not self._right:
             self._right = SegTreeNode(
-                self.m+1, self.r, self.idx*2+1, self.default_value)
+                self.idx*2+1, self.default_value
+            ).set_range(self.m+1, self.r)
         return self._right
 
     def query(self, l, r):
@@ -42,6 +47,17 @@ class SegTreeNode:
         if self.m >= l:
             res+=self.left.query(l, r)
         return res
+    
+    def query_sum(self,l,r):
+        return self.query(l,r)
+    
+    def add_value(self,arg1,arg2,arg3=None):
+        if arg3 is None:
+            l,v,r=arg1,arg2,arg1
+        else:
+            l,v,r=arg1,arg2,arg3
+        SegTreeNode.OP=SegTreeNode.ADD
+        return self.update(l,r,v)
     
     def update(self, l,r, value):
         if l <=self.l and self.r<= r:
@@ -56,9 +72,12 @@ class SegTreeNode:
         return self.value
 
     def do(self,v):
+        self.todo=1-self.todo
+        if SegTreeNode.OP == SegTreeNode.ADD:
+            self.value+=v
+            return
         self.value = self.r-self.l+1-self.value
-        if self.l!=self.r:
-            self.todo=1-self.todo
+        
         
     def down(self,v):
         if self.todo:
@@ -67,6 +86,8 @@ class SegTreeNode:
             self.todo = 1-self.todo
       
     def up(self,value):
+        if SegTreeNode.OP == 'ADD':
+            return
         self.value = self.left.value+self.right.value
     
     def get_childs(self):
@@ -77,19 +98,24 @@ class SegTreeNode:
             ret.append(self._right)
         return ret
     
-    def get_title(self):
+    def get_data(self):
         from app.yly.algo.manage import bp
+        key = f'seg_tree_{self.idx}'
         return [
-            bp("",self.idx,self.idx),
-            bp('value', self.value,self.idx),
-            bp('todo', self.todo,self.idx),
+            bp("",self.idx, key),
+            bp('value', self.value,key),
+            bp('todo', self.todo,key),
         ]
     
-    def to_view(self):
+    def tree_view(self):
         return dict(
-            title=self.get_title(),
-            childs=[v.to_view() for v in self.get_childs()]
+            data=self.get_data(),
+            childs=[v.tree_view() for v in self.get_childs()],
+            key=f'seg_tree_{self.idx}',
         )
+    
+    def graph_view(self):
+        return self.tree_view()
 
     def __str__(self):
         ret=f'{self.value}{self.todo}'

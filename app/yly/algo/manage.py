@@ -12,31 +12,28 @@ import time
 import sys
 import json
 CHANGE_STORE = dict()
-def ah(txt, href):
-    return f'<a href="{href}">{txt}</a>'
+
 
 
 def bp(title, value, key=""):
-    return wc(title, key, value, 'blue','p')
+    return wc(title, key, value, 'blue')
 
-def bs(title, value, key=""):
-    return wc(title, key, value, 'blue','span')
 
-def wc(title, key, v, color,sp='p'):
-    k = f'{title}{key}'
-    size=""
+def wc(title, key, v, change_color,sp='p'):
     v = str(v)
-    tp='span'
+    k=f'{title}_{key}'
     # font-size:28px
+    color=""
     if v != CHANGE_STORE.get(k, v):
         CHANGE_STORE[k] = v
-        size=f'color:{color}'
-        tp = 'b'
-    ret=f"<{sp}>"
-    if title:
-        ret+=f'<tp>{title} :</tp>'
-    CHANGE_STORE[k] = v
-    return ret+f'<{tp} style="margin-left:4px;{size}">{v}</{tp}></{sp}>'
+        color=change_color
+    return dict(
+        key=k,
+        title=title,
+        value=v,
+        color=color,
+        type='p'
+    )
 
 
 
@@ -59,13 +56,13 @@ class View(Node):
         self.ins=ins
         return self
     
-    def to_view(self):
-        node=getattr(self.ins,self.key,None)
-        if hasattr(node,'to_view'):
-            return node.to_view()
-        if node is None:
-            return dict(title="")
-        return dict(title=bp(self.key,str(node),'self'))
+    def view(self):
+        node=getattr(self.ins,self.key)
+        if self.type == 'tree':
+            return node.tree_view()
+        if self.type == 'graph':
+            return node.graph_view()
+        return dict(data=bp(self.key,str(node),'self'),type=self.type)
     
     def to_json(self):
         return super().to_json(size=self.size)
@@ -85,8 +82,8 @@ class SolutionBase:
 
         ]
 
-    def execute(self,**kg):
-        return self.exec(**kg)
+    def execute(self):
+        return self.exec()
 
 
     def log(self, *s, tp: str = ""):
@@ -152,7 +149,7 @@ class SolutionBase:
                     self.log(f"begin {self._name}-{exec_name}")
                     self.pre(**case)
                     self.init(**case)
-                    r = getattr(self,exec_name)(**case)
+                    r = getattr(self,exec_name)()
                     self.log(f"finish {self._name}-{exec_name}", time.time()-a)
                 except Exception as e:
                     import traceback
@@ -197,7 +194,7 @@ class SolutionBase:
             if CHANGE_STORE.get(key2)!=s2:
                 flag=True
                 CHANGE_STORE[key2]=s2
-            childs[var.key]=var.to_view()
+            childs[var.key]=var.view()
             
         if flag:
             return childs
@@ -209,17 +206,16 @@ class SolutionBase:
     def init_watch(self,tp):
         if self._watch_var is not None:
             return
-        node:Node=self.get_main_view()
+        node:View=self.get_main_view()
         keys=[]
         self._watch_var = []
-        def dfs(p:Node):
+        def dfs(p:View):
             if not p.childs:
-                keys.append(p.key)
+                self._watch_var.append(p.set_ins(self))
             for c in p.childs:
                 dfs(c)
         dfs(node)
-        for key in keys:
-            self._watch_var.append(View(key=key).set_ins(self))
+
 
 
     def view_md(self):
@@ -244,6 +240,8 @@ class SolutionBase:
         ret1,msg=run_watch_fun(self.execute, self.record)
         ret=self.get_main_view().to_json()
         ret['data']=dict(record=ret1)
+        if msg:
+            raise Exception(msg)
         return case,ret,msg  
     
 

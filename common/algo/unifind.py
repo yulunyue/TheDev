@@ -1,21 +1,15 @@
 from typing import List,Dict
 from collections import defaultdict
 class UniFind:
-    def __init__(self,n=None) -> None:
+    def __init__(self) -> None:
         self.p = dict()
         self.size = defaultdict(int)
         self.value = defaultdict(int)
         self.init()
-        if isinstance(n,int):
-            self.load(n)
+
     def init(self):
         pass
-    
-    def load(self,n):
-        for v in range(n):
-            self.find(v)
-        return self
-    
+        
     def set_values(self,vals):
         for i,v in enumerate(vals):
             self.value[i]=v

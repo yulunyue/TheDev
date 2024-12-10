@@ -76,6 +76,9 @@ export class Progress extends Div {
         return this.value.value
     }
     set_value(value: number, pos?: number) {
+        if (isNaN(value)) {
+            return this
+        }
         if (value < 0 || value > this.max_value.value) {
             value = this.value.value
         }

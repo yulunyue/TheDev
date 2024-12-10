@@ -45,6 +45,7 @@ class Algo extends Div {
         this.init_edit_dialog()
         this.div = div()
         this.pro = progress().set_size(1).change(() => this.goto())
+
         this.add_childs([
             //div().set_size(1).add_childs([this.div]),
             this.div.set_size(1),
@@ -101,6 +102,7 @@ class Algo extends Div {
         }, (node: Node) => {
             this.code_select.set_option(node).select(web_dom.get_param("py_module"))
             this.run()
+
         })
 
     }
@@ -116,6 +118,9 @@ class Algo extends Div {
         }, (node: Node) => {
             this.set_option(node)
             this.pro.set_max_value(node.data.record.length)
+            this.pro.set_value(
+                parseInt(web_dom.get_param("goto"))
+            )
         })
     }
     on_mount() {

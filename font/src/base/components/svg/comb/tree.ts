@@ -51,8 +51,8 @@ export class Tree extends SvgNode {
     }
     calc_pos(x: number, y: number) {
 
-        let h = Math.min(1 / this.max_xy.y * this.get_height(), 150)
-        let w = Math.min(1 / this.max_xy.x * this.get_width(), 210)
+        let h = Math.min(1 / this.max_xy.y * this.get_height(), 100)
+        let w = Math.min(1 / this.max_xy.x * this.get_width(), 140)
         let margin_left = (this.get_width() - w * this.max_xy.x) / 2
         let margin_top = (this.get_height() - h * this.max_xy.y) / 2 - 30
         return {

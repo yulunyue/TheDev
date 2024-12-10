@@ -1,6 +1,6 @@
 import { Div } from "./div";
 import web from "../../web/web_dom"
-import { Constant } from "../export";
+import { Constant, Node } from "../export";
 export class Label extends Div {
     text: string = null
     change_color: string = null
@@ -52,19 +52,23 @@ export class Pre extends Div {
         })
     }
     set_text(s: any) {
-        if (typeof s == 'string') {
-            this.set_titles([s])
-        } else {
+        if (Array.isArray(s)) {
             this.set_titles(s)
+        } else {
+            this.set_titles([s])
         }
     }
-    set_titles(s: string[]) {
+    set_titles(s: Node[]) {
         for (var i = 0; i < s.length; i++) {
-            this.get_child(i, lb).set_html(s[i])
+            let title = s[i].value
+            if (s[i].title) {
+                title = s[i].title + ' : ' + s[i].value
+            }
+            this.get_child(i, lb).set_html(title).set_color(s[i].color)
         }
     }
     render_option() {
-        this.set_text(this.option.title)
+        this.set_text(this.option.data)
     }
 }
 export function label() {
