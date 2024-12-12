@@ -34,7 +34,7 @@ DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
 DivFactory.register('graph', () => new MeraGraph())
 export {
-    Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button,
+    Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button,MeraGraph,mera_util,
     DEV_COMPONENT, Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2
 }

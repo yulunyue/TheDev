@@ -24,7 +24,8 @@ class AbNode:
         self._value= random.randint(-6,6) if len(self.childs)==0 else None
         self.alpha = -inf
         self.bate = inf
-    
+    def set_type(self):
+        return self
     @staticmethod
     def load_from_json(value,childs,depth=0,**kw):
         ret = AbNode()
@@ -80,11 +81,7 @@ class AbNode:
         return ret+"".join([str(v) for v in self.childs])
 
     def to_json(self):
-        return dict(
-            key=self.key,
-            value=self._value,
-            childs=[v.to_json() for v in self.childs]
-        )
+        return self.tree_view()
     
     def calc_value(self,depth):
         self.value = self._value

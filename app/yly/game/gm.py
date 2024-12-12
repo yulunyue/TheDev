@@ -3,7 +3,7 @@ from common.service.http import Node
 from common.service.user import User
 from .gus_num.main import GusNum
 from .game_base import GameBase
-
+from .ab.main import AbGame
 GAME:Dict[str,GameBase]=dict()
 for cls in GameBase.__subclasses__():
     GAME[cls.__name__]=cls

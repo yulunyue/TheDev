@@ -4,14 +4,14 @@ from common.service.http import Node,send_clients_mag,WEB_SOCKET_CLIENTS
 AI_KEY='AI_KEY'
 class GameBase:
     def __init__(self,room_id) -> None:
-        self.state:Node = self.get_data().set_type(room_id)
+        self.state:Node = self.get_data()
         self.user:Dict[str,Node] =dict()
         self.reset()
     
     def login(self,user_id):
         if user_id in self.user:
             return
-        self.user[user_id] = self.get_data().set_key(user_id)
+        self.user[user_id] = self.get_data()
         self.state.childs.append(self.user[user_id])
     
     def get_data(self):

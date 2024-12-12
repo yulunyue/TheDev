@@ -3,45 +3,46 @@ from common.algo.absearch import AlphaBateSearch, AbNode
 import sys
 from app.yly.algo.manage import SolutionBase,View
 import random
-random.seed(7)
-TEST_TREE=AbNode(
-    AbNode(
+# random.seed(7)
+def shape1(AbNode):
+    return AbNode(
+        AbNode(
+            AbNode(
+                AbNode(),
+                AbNode()
+            ),
+            AbNode(),
+            AbNode(
+                AbNode(),
+                AbNode()
+            ),
+        ),
         AbNode(
             AbNode(),
+            AbNode(
+                AbNode(),
+                AbNode()
+            ),
             AbNode()
         ),
-        AbNode(),
         AbNode(
-            AbNode(),
-            AbNode()
-        ),
-    ),
-    AbNode(
-        AbNode(),
-        AbNode(
+            AbNode(
+                AbNode(),
+                AbNode(),
+                AbNode()
+            ),
             AbNode(),
             AbNode()
         ),
         AbNode()
-    ),
-    AbNode(
-        AbNode(
-            AbNode(),
-            AbNode(),
-            AbNode()
-        ),
-        AbNode(),
-        AbNode()
-    ),
-    AbNode()
-).init()
+    ).init()
 
 
 class Solution(SolutionBase):
     _has_view=True
     def get_cases(self):
         return [
-            dict(root=TEST_TREE.to_json(), result="")
+            dict(root=shape1(AbNode).to_json(), result="")
         ]
 
     def get_watch(self):
