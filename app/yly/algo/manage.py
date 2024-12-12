@@ -12,8 +12,23 @@ import time
 import sys
 import json
 CHANGE_STORE = dict()
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left:TreeNode = None
+        self.right:TreeNode = None
 
-
+    @staticmethod
+    def load_from_lc_array(array):
+        ret = [None]+[TreeNode(v) for v in array]
+        for v in range(2,len(ret)):
+            if ret[v].val is None:
+                continue
+            if v%2==0:
+                ret[v//2].left=ret[v]
+            else:
+                ret[v//2].right=ret[v]
+        return ret[1]
 
 def bp(title, value, key=""):
     return wc(title, key, value, 'blue')
@@ -106,7 +121,7 @@ class SolutionBase:
     def pre(self,input=None,result=None,**kwargs):
         if input is not None:
             self.lines=[v for v in input.split('\n') if v]
-    
+        return kwargs
     def gen_file(self):
         write_path='data/algo/run.py'
         lines=[]
@@ -146,7 +161,7 @@ class SolutionBase:
                 a = time.time()
                 try:
                     self.log(f"begin {self._name}-{exec_name}")
-                    self.pre(**case)
+                    case=self.pre(**case)
                     self.init(**case)
                     r = getattr(self,exec_name)()
                     self.log(f"finish {self._name}-{exec_name}", time.time()-a)

@@ -31,7 +31,7 @@ export class TreeNode extends GNode {
     }
     render_option() {
         this.set_pos(this.option.data.y, this.option.data.x)
-        this.text.set_text(this.option.title)
+        this.text.set_text(this.option.data)
         return this
     }
 

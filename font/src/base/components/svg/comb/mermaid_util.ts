@@ -102,14 +102,18 @@ export class MeraGraph extends MeraUtil {
         if (!Array.isArray(data)) {
             data = [data]
         }
-        let lines = []
+        let lines = ['<div style="width:90px">']
         for (var i = 0; i < data.length; i++) {
             let title = data[i].title
             if (title) {
                 title += ':'
             }
-            lines.push(`<p>${title}<span style='color:${data[i].color};margin-left:4px'>${data[i].value}</span></p>`)
+            lines.push(`<p>${title}
+                <span style='color:${data[i].color};margin-left:4px'>${data[i].value}
+                </span>
+            </p>`)
         }
+        lines.push('</div>')
         this.render_tmp_store[key] = `${key}(${lines.join("")})`
         return this.render_tmp_store[key]
     }

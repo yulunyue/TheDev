@@ -1,6 +1,5 @@
 from typing import List
-from common.tool.debug_tool import Number, set_value
-from common.util.yml import yml_to_dict
+import random
 inf = float("inf")
 
 '''
@@ -14,16 +13,42 @@ o:8     p:9
 '''
 
 
-class AbNode:
-    KID = 0
 
-    def __init__(self, key):
-        self.key = key
+class AbNode:
+    NODE_ID=0
+    def __init__(self, *args):
+        self.key = AbNode.NODE_ID
+        AbNode.NODE_ID+=1
         self.value = None
-        self.childs: List[AbNode] = []
+        self.childs: List[AbNode] = list(args)
+        self._value= random.randint(-6,6) if len(self.childs)==0 else None
         self.alpha = -inf
         self.bate = inf
-
+    
+    @staticmethod
+    def load_from_json(value,childs,depth=0,**kw):
+        ret = AbNode()
+        ret._value=value
+        ret.depth = depth
+        for v in childs:
+            ret.childs.append(AbNode.load_from_json(depth=depth+1,**v))
+        return ret
+    
+    def init(self,depth=0):
+        self.depth = depth            
+        for v in self.childs:
+            v.init(depth+1)        
+        return self
+    
+    def k(self, name):
+        from app.yly.algo.manage import bp
+        if not name:
+            value = f'{["Y","Z"][self.depth%2]}'
+            #value = self.key
+        else:
+            value = getattr(self,name)
+        return bp(name ,value,f"Ab_Node_{self.key}")
+    
     def set_value(self, value):
         self.value = value
         return self
@@ -32,47 +57,44 @@ class AbNode:
         self.childs = childs
         return self
 
-    def load_from_dict(self, mp: dict):
-        v = mp.pop('_value')
-        if v:
-            self.set_value(int(v))
-        for key, value in mp.items():
-            self.childs.append(AbNode(key).load_from_dict(value))
-        return self
+    def get_title_keys(self):
+        if self._value is not None:
+            return ['value']
+        return ['','alpha','bate']
 
-    def load_from_yml(self, yml):
-        return self.load_from_dict(yml_to_dict(yml))
 
+    def tree_view(self):
+        return dict(
+            data=[
+                self.k(k) for k in self.get_title_keys()
+            ],
+            childs=[c.tree_view() for c in self.childs],
+            key=self.key
+        )
+    
+    def graph_view(self):
+        return self.tree_view()
+    
     def __str__(self) -> str:
-        return f'[{self.key}:{self.value}]'
-
-    def hex_str(self):
-        res = f'{self.key}{self.value}{self.alpha}{self.bate}'
-        return res+"".join(d.hex_str() for d in self.childs)
-
-    def title2(self, key):
-        from app.yly.algo.manage import wc
-        return f'{key}: {wc("ti_"+str(self.key)+"_"+key, getattr(self,key))}'
-
-    def get_title(self):
-        from app.yly.algo.manage import wc
-        sr = wc(f'self_arr_{self.key}', self.value)
-        return '</br>'.join([
-            f"{self.key}:->{self.value}",
-            f"{self.title2('alpha')}, {self.title2('bate')}",
-        ])
+        ret=f'[{self.value}{self.alpha}{self.bate}]'
+        return ret+"".join([str(v) for v in self.childs])
 
     def to_json(self):
         return dict(
-            title=self.get_title(),
+            key=self.key,
+            value=self._value,
             childs=[v.to_json() for v in self.childs]
         )
+    
+    def calc_value(self,depth):
+        self.value = self._value
+        return self.value
 
 
 class AlphaBateSearch:
 
     def evaluate(self, depth, last_move: AbNode):
-        return last_move.value
+        return last_move.calc_value(depth)
 
     def get_moves(self, depth, last_move: AbNode):
         return last_move.childs
@@ -83,24 +105,21 @@ class AlphaBateSearch:
     def undo(self, *mv):
         return
 
-    def search(self, depth=10, last_move=None, alpha=-inf, bate=inf) -> None:
+    def search(self, last_move:AbNode, depth=10, alpha=-inf, bate=inf) -> None:
         if depth == 0:
-            return None, self.evaluate(depth, last_move)
+            return self.evaluate(depth, last_move)
         mvs = self.get_moves(depth, last_move)
         if not mvs:
-            return None, self.evaluate(depth, last_move)
-        best_mv = mvs[0]
+            return self.evaluate(depth, last_move)
+        last_move.alpha, last_move.bate = alpha, bate
         for mv in mvs:
             self.do(mv)
-            _, val = self.search(depth=depth-1, last_move=mv,
-                                 alpha=-bate, bate=-alpha)
-            val = -val
+            value = -self.search(mv,depth=depth-1,
+                                 alpha=-last_move.bate, bate=-last_move.alpha)
             self.undo(mv)
-            if val >= bate:
-                alpha = set_value(alpha, bate)
-                best_mv = mv
+            if value >= bate:
+                last_move.alpha = bate
                 break
-            if val > alpha:
-                alpha = set_value(alpha, val)
-                best_mv = mv
-        return best_mv, alpha
+            if value > alpha:
+                last_move.alpha = value
+        return last_move.alpha
