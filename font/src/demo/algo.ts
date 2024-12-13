@@ -44,7 +44,7 @@ class Algo extends Div {
     init_node() {
         this.init_edit_dialog()
         this.div = div()
-        this.pro = progress().set_size(1).change(() => this.goto())
+        this.pro = progress().set_size(1).on_change(() => this.goto())
 
         this.add_childs([
             //div().set_size(1).add_childs([this.div]),
@@ -56,7 +56,7 @@ class Algo extends Div {
         ]).flex_horizontal_layout()
     }
     init_event(): void {
-        this.code_select.change(() => {
+        this.code_select.on_change(() => {
             let o = this.code_select.get_value()
             this.code_pre.set_value(o.value)
             this.case_select.set_option(new Node().set_childs(
@@ -65,7 +65,7 @@ class Algo extends Div {
                 })
             )).select(web_dom.get_param('case', 0))
         })
-        this.case_select.change(() => {
+        this.case_select.on_change(() => {
             let o = this.case_select.get_value()
             this.case_pre.set_value(JSON.stringify(o.value))
 

@@ -43,19 +43,17 @@ export class NetKakfa {
     }
     hander_msg(data: any) {
         let obj = JSON.parse(data)
-        let node = new Node().set_option(obj)
-        console.error(obj,node)
-        if (node.type == 'login') {
-            this._login?.(node.data.user_name)
-        } else if (node.type in this.sub_call_back) {
-            this.sub_call_back[node.type](node)
+        if (obj.type == 'login') {
+            this._login?.(obj.data.user_name)
+        } else if (obj.type in this.sub_call_back) {
+            this.sub_call_back[obj.type](obj.data)
         } else {
             console.log(data)
         }
     }
     sub(topic_name: string, call_back: any) {
         this.get_client()
-       
+
         this.sub_call_back[topic_name] = call_back
         return this
     }

@@ -3,7 +3,7 @@ from common.algo.absearch import AlphaBateSearch, AbNode
 import sys
 from app.yly.algo.manage import SolutionBase,View
 import random
-# random.seed(7)
+
 def shape1(AbNode):
     return AbNode(
         AbNode(
@@ -41,8 +41,20 @@ def shape1(AbNode):
 class Solution(SolutionBase):
     _has_view=True
     def get_cases(self):
+        random.seed(7)
         return [
-            dict(root=shape1(AbNode).to_json(), result="")
+            dict(root=shape1(AbNode).dump(), result=""),
+            dict(root=AbNode(
+                AbNode(
+                    AbNode().set_value(-2),
+                    AbNode().set_value(-4),
+                ),
+                AbNode().set_value(-3)
+            ).dump(), result=""),
+            dict(root=AbNode(
+                AbNode().set_value(-2),
+                AbNode().set_value(-3)
+            ).dump(), result="")
         ]
 
     def get_watch(self):

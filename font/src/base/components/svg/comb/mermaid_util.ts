@@ -8,7 +8,7 @@ mermaid.initialize({
     themeCSS: '.node rect { fill: white; }',
 
     logLevel: 3,
-    securityLevel: 'loose',
+    securityLevel: 'antiscript',
     flowchart: { curve: 'basis' },
     gantt: { axisFormat: '%m/%d/%Y' },
     sequence: { actorMargin: 50 },
@@ -20,8 +20,8 @@ export class MeraUtil extends Div {
     constructor() {
         super("pre")
     }
-    init_node(): void {
-
+    init_style(): void {
+        this.full()
     }
     on_load() {
         let svg = (this.el.children[0] as any)
@@ -31,7 +31,17 @@ export class MeraUtil extends Div {
         let w = this.el.clientWidth - svg.clientWidth
         let h = this.el.clientHeight - svg.clientHeight
         svg.style.transform = `translate(${w / 2}px,${h / 2}px)`
-
+        this.load_event()
+    }
+    load_event(): void {
+        let ps = this.el.querySelectorAll('p')
+        var register_click = (v: any) => {
+            let name = v.getAttribute("name")
+            v.onclick = () => { this.do_select(name) }
+        }
+        for (var i = 0; i < ps.length; i++) {
+            register_click(ps[i])
+        }
     }
     mermaid_run() {
         mermaid.run({
@@ -82,7 +92,7 @@ export class MeraGraph extends MeraUtil {
         } else (
             this.render_edges(this.get_edges(), lines)
         )
-        console.log(lines.join("\n"))
+        // console.log(lines.join("\n"))
         this.set_graph(lines)
     }
 
@@ -108,7 +118,7 @@ export class MeraGraph extends MeraUtil {
             if (title) {
                 title += ':'
             }
-            lines.push(`<p>${title}
+            lines.push(`<p name="${data[i].key}">${title}
                 <span style='color:${data[i].color};margin-left:4px'>${data[i].value}
                 </span>
             </p>`)
@@ -119,5 +129,5 @@ export class MeraGraph extends MeraUtil {
     }
 }
 export function mera_util() {
-    return new MeraUtil()
+    return new MeraGraph()
 }

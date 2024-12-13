@@ -48,8 +48,8 @@ export class Row extends Div {
         this.input.set_option(this.option)
         return this
     }
-    change(call: any) {
-        this.input.change(call)
+    on_change(call: any) {
+        this.input.on_change(call)
         return this
     }
     get_value() {

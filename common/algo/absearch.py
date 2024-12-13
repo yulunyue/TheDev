@@ -21,15 +21,17 @@ class AbNode:
         AbNode.NODE_ID+=1
         self.value = None
         self.childs: List[AbNode] = list(args)
-        self._value= random.randint(-6,6) if len(self.childs)==0 else None
         self.alpha = -inf
         self.bate = inf
-    def set_type(self):
+        self._value =  None
+
+    def set_value(self,value):
+        self._value=value
         return self
+    
     @staticmethod
     def load_from_json(value,childs,depth=0,**kw):
-        ret = AbNode()
-        ret._value=value
+        ret = AbNode().set_value(value)
         ret.depth = depth
         for v in childs:
             ret.childs.append(AbNode.load_from_json(depth=depth+1,**v))
@@ -50,19 +52,15 @@ class AbNode:
             value = getattr(self,name)
         return bp(name ,value,f"Ab_Node_{self.key}")
     
-    def set_value(self, value):
-        self.value = value
-        return self
 
     def set_children(self, childs):
         self.childs = childs
         return self
 
     def get_title_keys(self):
-        if self._value is not None:
+        if not self.childs:
             return ['value']
         return ['','alpha','bate']
-
 
     def tree_view(self):
         return dict(
@@ -70,7 +68,7 @@ class AbNode:
                 self.k(k) for k in self.get_title_keys()
             ],
             childs=[c.tree_view() for c in self.childs],
-            key=self.key
+            key=f"Ab_Nd_{self.key}"
         )
     
     def graph_view(self):
@@ -80,12 +78,21 @@ class AbNode:
         ret=f'[{self.value}{self.alpha}{self.bate}]'
         return ret+"".join([str(v) for v in self.childs])
 
+    def dump(self):
+        return dict(
+            value=self._value,
+            childs=[v.dump() for v in self.childs]
+        )
+
     def to_json(self):
         return self.tree_view()
     
     def calc_value(self,depth):
-        self.value = self._value
-        return self.value
+        if self._value is not None:
+            self.value = self._value
+        else:
+            self.value = random.randint(-5,5)
+        return -self.value if self.depth%2==1 else self.value
 
 
 class AlphaBateSearch:
@@ -111,12 +118,12 @@ class AlphaBateSearch:
         last_move.alpha, last_move.bate = alpha, bate
         for mv in mvs:
             self.do(mv)
-            value = -self.search(mv,depth=depth-1,
+            last_move.value = -self.search(mv,depth=depth-1,
                                  alpha=-last_move.bate, bate=-last_move.alpha)
             self.undo(mv)
-            if value >= bate:
-                last_move.alpha = bate
+            if last_move.value >= last_move.bate:
+                last_move.alpha = last_move.bate
                 break
-            if value > alpha:
-                last_move.alpha = value
+            if last_move.value > last_move.alpha:
+                last_move.alpha = last_move.value
         return last_move.alpha

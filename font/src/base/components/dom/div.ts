@@ -35,9 +35,22 @@ export class Div {
     direction: number = -1
     layout_type: number = 0
     size: number = 0
-    on_change: any = null
-    change(call: any) {
-        this.on_change = call
+    _on_change: any = null
+    _on_select: any = null
+    do_change() {
+        this._on_change?.()
+        return this
+    }
+    on_change(call: any) {
+        this._on_change = call
+        return this
+    }
+    do_select(arg: any) {
+        this._on_select?.(arg)
+        return this
+    }
+    on_select(call: any) {
+        this._on_select = call
         return this
     }
     set_class(name: string) {
@@ -47,10 +60,6 @@ export class Div {
         this.set_style({
             color: s
         })
-    }
-    do_change() {
-        this.on_change?.()
-        return this
     }
     set_direction(direction: number) {
         if (direction != 0 && direction != -1 && direction != 1) {
@@ -105,8 +114,8 @@ export class Div {
                     top: 0,
                     width: 1,
                     height: 1,
-                    display:"flex",
-                    flexDirection:direction==Constant.VERTICAL?"column":"row",
+                    display: "flex",
+                    flexDirection: direction == Constant.VERTICAL ? "column" : "row",
                 }
                 if (direction == Constant.VERTICAL) {
                     style.left = lt / option.size_calc

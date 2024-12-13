@@ -9,30 +9,23 @@ export class Game extends Div {
     user_id: string
 
     do_msg(n: Node) {
-        let player=null
-        let players=[]
-        for(var i=0;i<n.childs.length;i++){
-            if(n.childs[i].key==this.user_id){
-                player=n.childs[i]
-            }else{
-                players.push(n.childs[i])
-            }
-        }
-        this.do_player_msg(player,players,n)
+
 
     }
-    do_player_msg(player_self:Node,players:Node[],option:Node){
 
-    }
     init_game() {
 
     }
-    post(tp: string, data: any) {
+    post(tp: string, data?: any) {
+        if (!data) {
+            data = {}
+        }
         web_dom.post('/app/yly/game/gm/do', {
             room_id: this.room_id,
             game_id: this.game_id,
             user_id: this.user_id,
-            tp, data
+            tp,
+            data
         }, () => {
 
         })
@@ -40,6 +33,7 @@ export class Game extends Div {
     on_mount(): void {
         this.room_id = web_dom.get_param("room_id")
         if (!this.room_id) {
+            console.error("room_id is Null")
             return
         }
         web_socket.login((user_id: string) => {
@@ -47,7 +41,7 @@ export class Game extends Div {
             this.post('login', {})
             this.init_game()
         })
-        web_socket.sub(this.room_id, (data: Node) => {
+        web_socket.sub(this.game_id + "_" + this.room_id, (data: Node) => {
             this.do_msg(data)
         })
 

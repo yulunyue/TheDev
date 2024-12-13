@@ -91,7 +91,7 @@ export class Progress extends Div {
         }
         this.input_line.set_value(value)
         this.value.set_value(value, Math.min(pos + this.margin, this.width))
-        this.on_change(value)
+        this._on_change(value)
         return this
     }
     init_event() {
