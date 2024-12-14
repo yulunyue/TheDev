@@ -118,12 +118,12 @@ class AlphaBateSearch:
         last_move.alpha, last_move.bate = alpha, bate
         for mv in mvs:
             self.do(mv)
-            last_move.value = -self.search(mv,depth=depth-1,
+            value = -self.search(mv,depth=depth-1,
                                  alpha=-last_move.bate, bate=-last_move.alpha)
             self.undo(mv)
-            if last_move.value >= last_move.bate:
+            if value >= last_move.bate:
                 last_move.alpha = last_move.bate
                 break
-            if last_move.value > last_move.alpha:
-                last_move.alpha = last_move.value
+            if value > last_move.alpha:
+                last_move.alpha = value
         return last_move.alpha
