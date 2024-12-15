@@ -1,4 +1,4 @@
-
+                   
 def kmp_next(l, s, pi, v):
     while l and s[l] != v:
         l = pi[l-1]
@@ -38,15 +38,25 @@ def z_kmp(s):
     '''
     z[i]=max(j) 
     s[:j+1]==s[i:i+j+1]))
+    z(aaabaab) = [0, 2, 1, 0, 2, 1, 0]
+        aaabaab 
+      1 aabaab 2
+      2 abaab 1
+    z(abacaba) = [0, 0, 1, 0, 3, 0, 1]
+        abacaba
+      2 acaba 1
+      4 aba 
     '''
-    z = [0]*n
     n = len(s)
+    z = [0]*n
     l = r = 0
     for i in range(1, n):
-        z[i] = max(min(z[i-l], r-i+1), 0)
+        if i<r:
+            z[i] = min(z[i-l], r-i)
         while i+z[i] < n and s[z[i]] == s[z[i]+i]:
-            l, r = i, i+z[i]
             z[i] += 1
+        if i+z[i]>r:
+            l, r = i, i+z[i]
     return z
 
 

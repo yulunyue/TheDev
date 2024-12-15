@@ -147,14 +147,17 @@ class SolutionBase:
     
     def run(self):
         exec_names=sys.argv[1:]
-        if exec_names and exec_names[0]=='view_md':
-            return self.view_md()
         if exec_names and exec_names[0]=='view_web':
             return self.view_web()
-        if not exec_names:
-            exec_names = ['execute']
-            self.gen_file()
-        for exec_name in exec_names:
+        self.gen_file()
+        if exec_names:
+            self.test(exec_names[0])
+        else:
+            self.exec()
+            
+
+    def test(self, exec_name:str):
+        for exec_name in exec_name.split(','):
             for i, case in enumerate(self.get_cases()):
                 self.__class__._logs = []
                 self.ep = case.pop("result")
@@ -229,16 +232,6 @@ class SolutionBase:
             for c in p.childs:
                 dfs(c)
         dfs(node)
-
-
-
-    def view_md(self):
-        case,ret,msg = self.view(tp="md")
-        ReadmeGen(
-            f'data/algo/{self.get_name()}/readme'
-        ).add_table(
-            case
-        ).set_frames(ret).save()
 
     def view_web(self):
         _,ret,_ = self.view()

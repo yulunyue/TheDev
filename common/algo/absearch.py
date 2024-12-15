@@ -46,7 +46,9 @@ class AbNode:
     def k(self, name):
         from app.yly.algo.manage import bp
         if not name:
-            value = f'{["Y","Z"][self.depth%2]}'
+            value = f'{self.key}'
+            if self.childs:
+                value+=[":Y",":Z"][self.depth%2]
             #value = self.key
         else:
             value = getattr(self,name)
@@ -59,7 +61,7 @@ class AbNode:
 
     def get_title_keys(self):
         if not self.childs:
-            return ['value']
+            return ['','value']
         return ['','alpha','bate']
 
     def tree_view(self):
@@ -87,43 +89,40 @@ class AbNode:
     def to_json(self):
         return self.tree_view()
     
-    def calc_value(self,depth):
+    def calc_value(self, depth):
         if self._value is not None:
             self.value = self._value
         else:
             self.value = random.randint(-5,5)
-        return -self.value if self.depth%2==1 else self.value
+        return self
 
 
 class AlphaBateSearch:
-
-    def evaluate(self, depth, last_move: AbNode):
-        return last_move.calc_value(depth)
 
     def get_moves(self, depth, last_move: AbNode):
         return last_move.childs
 
     def do(self, *mv):
-        pass
+        return self
 
     def undo(self, *mv):
-        return
+        return self
 
     def search(self, last_move:AbNode, depth=10, alpha=-inf, bate=inf) -> None:
         if depth == 0:
-            return self.evaluate(depth, last_move)
+            return last_move.calc_value(depth)
         mvs = self.get_moves(depth, last_move)
         if not mvs:
-            return self.evaluate(depth, last_move)
+            return last_move.calc_value(depth)
         last_move.alpha, last_move.bate = alpha, bate
         for mv in mvs:
             self.do(mv)
-            value = -self.search(mv,depth=depth-1,
+            self.search(mv,depth=depth-1,
                                  alpha=-last_move.bate, bate=-last_move.alpha)
             self.undo(mv)
-            if value >= last_move.bate:
+            if mv.value >= last_move.bate:
                 last_move.alpha = last_move.bate
                 break
-            if value > last_move.alpha:
-                last_move.alpha = value
+            if mv.value > last_move.alpha:
+                last_move.alpha = mv.value
         return last_move.alpha

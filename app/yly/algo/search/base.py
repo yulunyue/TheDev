@@ -41,7 +41,7 @@ def shape1(AbNode):
 class Solution(SolutionBase):
     _has_view=True
     def get_cases(self):
-        random.seed(7)
+        random.seed(4)
         return [
             dict(root=shape1(AbNode).dump(), result=""),
             dict(root=AbNode(

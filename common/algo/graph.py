@@ -61,19 +61,18 @@ class Graph:
         return f'{self.edges}{self.value}'
     
     def dijkstra(self, start):
-        
-        self.dist[start] = 0
-        q = [(0, start)]
+        self.value[start] = 1
+        q = [(1, start)]
         while q:
             cost, u = heapq.heappop(q)
-            if cost > self.dist[u]:
+            if cost > self.value[u]:
                 continue
-            for v, weight in self.g[u]:
-                target = cost + weight
-                if target < self.dist[v]:
-                    self.dist[v] = target
-                    heapq.heappush(q, (self.dist[v], v))
-        return self.dist
+            for v, idx, weight,*args in self.g[u]:
+                target = cost * weight
+                if target < self.value[v]:
+                    self.value[v] = target
+                    heapq.heappush(q, (self.value[v], v))
+        return self.value
 
 
     def tarjan(self, b, init_ct=0):
