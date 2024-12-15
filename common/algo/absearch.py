@@ -95,7 +95,8 @@ class AbNode:
         else:
             self.value = random.randint(-5,5)
         return self
-
+    
+    
 
 class AlphaBateSearch:
 
@@ -126,3 +127,4 @@ class AlphaBateSearch:
             if mv.value > last_move.alpha:
                 last_move.alpha = mv.value
         return last_move.alpha
+

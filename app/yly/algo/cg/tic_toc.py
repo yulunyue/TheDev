@@ -11,20 +11,22 @@ import math
 import heapq
 import json
 import json
-MAX_DEPATH = 4
 from common.algo.absearch import AlphaBateSearch,AbNode,inf
 from app.yly.algo.manage import SolutionBase
-LINES = [
-    [0, 1, 2, 0],
-    [3, 4, 5, 0],
-    [6, 7, 8, 0],
-    [0, 3, 6, 0],
-    [1, 4, 7, 0],
-    [2, 5, 8, 0],
-    [0, 4, 8, 0],
-    [2, 4, 6, 0]
-]
 POS = [4, 1, 3, 5, 7, 0, 2, 6, 8]
+LINES = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+]
+'''
+
+
 POS_STATE = []
 MAX_TIME = 0.2
 G = [[] for _ in range(9)]
@@ -60,93 +62,35 @@ def init():
 
 
 init()
-
+'''
 
 class Grid3:
     def __init__(self) -> None:
-        self.line_state = [0]*len(LINES)
-        self.state_ct = dict()
-        self.state_ct[0] = len(LINES)
-        for k in SCORE_STATE:
-            self.state_ct[k] = self.state_ct[-k] = 0
-        self.win_state = 0
-        self.grid_state = 0
+        self.init()
 
 
-    def init(self, idx):
-        self.idx = idx
+    def init(self):
+        self.grid=[0]*9
 
-    def put(self, pos, val, last_mv=None):
-        self.grid_state = (
-            self.grid_state & STATE_MASK[pos]) | (val << (pos*2))
-        # self.states[pos] = val
-        return self.update(pos)
+    def put(self, pos, val):
+        self.grid[pos]=val
 
-    def update(self, pos):
-        # lct = len(G[pos])
-        ans = 0
-        for i in G[pos]:
-            new_state = self.grid_state & LINES[i][3]
-            # new_state = self.states[LINES[i][0]]*9 + \
-            #     self.states[LINES[i][1]]*3+self.states[LINES[i][2]]
-            # if new_state not in STATE_SCORE:
-            #     lct -= 1
-            ans += STATE_SCORE[new_state] - STATE_SCORE[self.line_state[i]]
-            self.state_ct[STATE_SCORE[self.line_state[i]]] -= 1
-            self.line_state[i] = new_state
-            self.state_ct[STATE_SCORE[new_state]] += 1
-        # self.pos_state = setbit(
-        #     self.pos_state, pos) if lct else clrbit(self.pos_state, pos)
-        if self.state_ct[SCORE3]:
-            self.win_state = 1
-        elif self.state_ct[-SCORE3]:
-            self.win_state = 2
-        # elif self.pos_state == 0:
-        #     self.win_state = 3
-        else:
-            self.win_state = 0
-        return ans
-
-    # def calc_score(self):
-    #     ans = 0
-    #     for k, v in enumerate(self.state_ct):
-    #         ans += STATE_SCORE.get(k, 0)*v
-    #     return ans
-
-    def get_moves(self, op):
+    def get_moves(self):
         ret = []
         for p in POS:
-            if self.grid_state & POS_STATE[p] == 0:
-                ret.append([self.idx, p])
+            if self.grid[p]==0:
+                ret.append(p)
         return ret
 
 
 
-
 class Grid9(Grid3):
-    def __init__(self):
-        super().__init__()
-        self.load()
-        self.score = 0
-        self.play_id = 1
 
-    def load(self):
-        self.nodes: List[Grid] = []
-        self.nodes_sort: List[Grid] = []
-        for i in range(len(POS)):
-            g = Grid()
-            g.init(i)
-            self.nodes.append(g)
-        for n in POS:
-            self.nodes_sort.append(self.nodes[n])
+    def init(self):
+        self.grid=[Grid3() for _ in range(9)]
 
-    def put(self, pi, op, last_mv=None, is_best=False):
-        c: Grid = self.nodes[pi[0]]
-        if last_mv and pos2(last_mv) == [5, 2] and pos2(pi) == [8, 6]:
-            pass
-        self.score += c.put(pi[1], op)
-        self.score += 100*super().put(pi[0], c.win_state)
-        self.play_id = 3-self.play_id
+    def put(self, pi, op):
+        pass
 
     def get_score(self, depth):
         return self.score if self.play_id == 1 else -self.score
@@ -164,8 +108,6 @@ class Grid9(Grid3):
         #              reverse=True if op == 1 else False)[:7]
         return ret
 
-    def get_depth(self):
-        return MAX_DEPATH
 
 
 def get_info(frames):
