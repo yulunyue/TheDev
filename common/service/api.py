@@ -1,20 +1,21 @@
 import requests
 from common.util.log import get_log
 from common.util.baseconfig import ConfigBase, StrModel, DictModel
+from common.util.model import NumberModel
 logger = get_log("api")
 
 
-class Api(ConfigBase):
+
+class Api:
     CONTENT_TYPE = 'content-type'
     APPLICATION_JSON = 'application/json;charset=UTF-8'
 
-    def __init__(self) -> None:
-        super().__init__("api")
-
-    def init_param(self):
-        self.endpoint = StrModel(self)
-        self.cookie = DictModel(self)
-        self.proxy = DictModel(self)
+    def __init__(self):
+        self.config=ConfigBase("api",self.__class__.__name__)
+        self.endpoint = StrModel("endpoint",self.config)
+        self.cookie = DictModel("cookie",self.config)
+        self.proxy = DictModel("proxy",self.config)
+        self.timeout = NumberModel("timeout",10,self.config)
 
     def get_endpoint(self):
         return self.endpoint.get_value()
@@ -54,7 +55,7 @@ class Api(ConfigBase):
         pass
 
     def get_timeout(self):
-        return 10
+        return self.timeout.get_value()
 
     def http(self, method, path, data=None, headers=None, param=None):
         if headers is None:
@@ -63,7 +64,7 @@ class Api(ConfigBase):
         mock_res = self.get_mock_data(uri)
         if mock_res:
             return mock_res
-
+        logger.info(f'DO HTTP [{method}] {uri}')
         params = dict()
         if method == 'GET':
             params.update(dict(params=data))

@@ -11,13 +11,30 @@ inf = float("inf")
 class Graph:
     def __init__(self,value=inf):
         self.g = defaultdict(list)
+        self.dis = dict()
         self.edges = []
         self.value = defaultdict(lambda: value)
         self.init()
+
+    def load_grid(self,grid,wall_char='#'):
+        dr = [[1,0],[-1,0],[0,1],[0.-1]]
+        idx=0
+        for i,row in enumerate(grid):
+            for j,v in enumerate(row):
+                if grid[i][j]==wall_char:
+                    continue
+                for dy,dx in dr:
+                    y,x=dy+i,dx+j
+                    if y<0 or x<0 or y>=len(grid) or x>=len(grid[0]):
+                        continue
+                    if grid[y][x]==wall_char:
+                        continue
+                    self.add_edge(idx,(i,j),(y,x))
+                    idx+=1       
+        return self
+
     def init(self):
         pass
-
-    
 
     def set_values(self,values):
         for i,v in enumerate(values):
@@ -60,21 +77,48 @@ class Graph:
     def __str__(self):
         return f'{self.edges}{self.value}'
     
-    def dijkstra(self, start):
-        self.value[start] = 1
-        q = [(1, start)]
+    def dijkstra(self, start,init_value=0):
+        self.value[start] = init_value
+        q = [(init_value, start)]
         while q:
             cost, u = heapq.heappop(q)
             if cost > self.value[u]:
                 continue
             for v, idx, weight,*args in self.g[u]:
-                target = cost * weight
+                if init_value==0:
+                    target = cost + weight
+                else:
+                    target = cost * weight
                 if target < self.value[v]:
                     self.value[v] = target
                     heapq.heappush(q, (self.value[v], v))
         return self.value
 
-
+    def bfs(self,start):
+        q=[start]
+        dis=dict()
+        l=0
+        dis[start]=l
+        while q:
+            tmp=q
+            q=[]
+            for c in tmp:
+                for n,*args in self.g[c]:
+                    if n in dis:
+                        continue
+                    dis[n]=l+1
+                    q.append(c)
+            l+=1
+        return dis
+    
+    def get_dis(self,y,x):
+        if y in self.dis:
+            return self.dis[y].get(x,inf)
+        if x in self.dis:
+            return self.dis[x].get(y,inf)
+        self.dis[y]=self.bfs(y)
+        return self.dis[y].get(x)
+    
     def tarjan(self, b, init_ct=0):
         low = defaultdict(lambda: init_ct)
         vt = defaultdict(lambda: init_ct)

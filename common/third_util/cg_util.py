@@ -7,6 +7,11 @@ import json
 
 
 class CodingGame(Api):
+    def __init__(self,name):
+        self.name = name
+        self.log_json = File(f"data/log/cg/{self.name}.json")
+    
+
 
     def execute(self, file_path, game_id, key, data):
         code = open(file_path, 'r').read()
@@ -24,20 +29,21 @@ class CodingGame(Api):
         return self.execute(file_path, game_id, "multipleLanguages", dict(testIndex=3))
 
     def pk(self, file_path, game_id, agentsIds):
-        return self.execute(file_path, game_id, "multi", dict(
+        ret = self.execute(file_path, game_id, "multi", dict(
             agentsIds=agentsIds,
             gameOptions=None,
             isSoloLeague=False
         ))
+        self.log_json.write_file(ret)
+    
+    def get_states(self):
+        states = self.log_json.read_file()
+        lines = []
+        for frame in states['frames']:
+            if 'stderr' in frame:
+                lines.extend(frame['stderr'].split('\n'))
+        return lines
 
-    def run(self, name):
-        c = Module().load_module(f'app.yly.codingame.{name}')
-        if getattr(c.Solution, "game_type") == 'solve':
-            info = self.solve(c.__file__, c.Solution.gameid)
-        else:
-            info = self.pk(c.__file__, c.Solution.gameid, c.Solution.agentsIds)
-        info.update(c.Solution.get_info(**info))
-        File(f"data/log/codingame/{name}.json").write_file(info)
 
 
 if __name__ == "__main__":

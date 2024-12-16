@@ -1,4 +1,4 @@
-
+import sys
 inf = float("inf")
 MOD = (10**9)+7
 
@@ -9,10 +9,15 @@ class View:
         pass
 class SolutionBase:
     DEV = False
-    
+    inputs=[]
     def input(self):
-        return input()
-
+        self.inputs.append(input())
+        return self.inputs[-1]
+    
+    def error(self,*args):
+        print("\n".join(self.inputs), file=sys.stderr, flush=True)
+        self.inputs.clear()
+        
     def i1(self):
         return int(self.input())
     
@@ -34,8 +39,10 @@ class SolutionBase:
     def run(self):
         print(self.exec())
 
+    def output(self,*args):
+        print(*args)
 
-  
+
 
 
 

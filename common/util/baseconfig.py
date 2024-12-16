@@ -7,8 +7,8 @@ CONFIG_SETTING_DIR = 'data/setting'
 
 class ConfigBase:
 
-    def __init__(self, file_name) -> None:
-        self._config_name = self.__class__.__name__
+    def __init__(self, file_name,config_name) -> None:
+        self._config_name = config_name
         self._fp = File(f'{CONFIG_SETTING_DIR}/{file_name}.json')
         self._mtime = 0
         self._params: List[BaseModel] = []

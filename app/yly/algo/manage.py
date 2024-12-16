@@ -2,15 +2,15 @@ from common.tool.thread_util import run_watch_fun
 from common.service.http import Node, http_test
 from typing import List
 from common.util.module import Module
-from common.util.model import NumberModel,number
 from common.util.log import logger
 from common.util.fp import File
 from collections import defaultdict
-from common.tool.readme import ReadmeGen
+from common.third_util.cg_util import CodingGame
 import os
 import time
 import sys
 import json
+WRITE_PATH='data/algo/run.py'
 CHANGE_STORE = dict()
 class TreeNode:
     def __init__(self, x):
@@ -84,19 +84,20 @@ class View(Node):
 
 
 class SolutionBase:
+    uri=""
     _logs = []
     _has_view = False
-    _name = ""
+    name = ""
     _DEV = True
-    _gameinfo = ['lc']
     _tags = []
     _watch_var:List[View] = None
     action="log"
+    game_id=""
     def get_cases(self):
         return [
 
         ]
-
+    
     def execute(self):
         return self.exec()
 
@@ -115,15 +116,14 @@ class SolutionBase:
             d.draw_graph(s)
         d.save(f"data/log/{tp}.png")
 
-    def exec(self,**kg):
-        pass
+
     
     def pre(self,input=None,result=None,**kwargs):
         if input is not None:
             self.lines=[v for v in input.split('\n') if v]
         return kwargs
     def gen_file(self):
-        write_path='data/algo/run.py'
+        
         lines=[]
         def read_file(md_name:str):
             path=""
@@ -143,31 +143,53 @@ class SolutionBase:
                     lines.append(ln)
             else:
                 lines.append(ln)
-        File(write_path).write_file("\n".join(lines))
+        File(WRITE_PATH).write_file("\n".join(lines))
+    
+    def exec(self):
+        pass
     
     def run(self):
         exec_names=sys.argv[1:]
+        self.gen_file()
         if exec_names and exec_names[0]=='view_web':
             return self.view_web()
-        self.gen_file()
+        if exec_names and exec_names[0]=='submit':
+            return self.submit()
+        if exec_names and exec_names[0]=='replay':
+            return self.replay()
         if exec_names:
-            self.test(exec_names[0])
+            self.test([getattr(self,v) for v in exec_names[0].split(',')])
         else:
             self.exec()
+        self.flush_log()
+    agentsIds=None
+    def submit(self):
+        if 'codingame' in  self.uri:
+            CodingGame().pk(
+                self.name,
+                WRITE_PATH,self.game_id,self.agentsIds
+            )
+        else:
+            raise Exception(self.uri)
+    def replay(self):
+        if 'codingame' in  self.uri:
+            self.lines=CodingGame(self.name).get_states()
+            self.exec()
             
-
-    def test(self, exec_name:str):
-        for exec_name in exec_name.split(','):
+        else:
+            raise Exception(self.uri)
+    def test(self, func):
+        for fn in func:
             for i, case in enumerate(self.get_cases()):
                 self.__class__._logs = []
                 self.ep = case.pop("result")
                 a = time.time()
                 try:
-                    self.log(f"begin {self._name}-{exec_name}")
+                    self.log(f"begin {self.name}-{fn.__name__}")
                     case=self.pre(**case)
                     self.init(**case)
-                    r = getattr(self,exec_name)()
-                    self.log(f"finish {self._name}-{exec_name}", time.time()-a)
+                    r = fn()
+                    self.log(f"finish {self.name}-{fn.__name__}", time.time()-a)
                 except Exception as e:
                     import traceback
                     traceback.print_exc()
@@ -177,19 +199,26 @@ class SolutionBase:
                     self.flush_log(
                         i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                     break
+    def error(self,*args):
+        pass
+    
+    def output(self,*args):
+        pass
+
     def input(self)->str:
         while self.lines and not self.lines[0]:
             self.lines.pop(0)
-        return self.lines.pop(0)
-    
+        if self.lines:
+            return self.lines.pop(0)
+
     def i1(self):
         return int(self.input().strip())
     
     def il(self):
         return [int(v) for v in self.input().split(' ') if v]
     
-    def flush_log(self, i, s):
-        logger.info(f'{i}:{s}')
+    def flush_log(self):
+        logger.info("\n".join(self._logs))
 
 
 

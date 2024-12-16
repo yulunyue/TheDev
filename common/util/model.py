@@ -4,17 +4,14 @@ import json
 
 
 class BaseModel:
-    def __init__(self, value, data_source=None) -> None:
+    def __init__(self, key, value, data_source=None) -> None:
         self.value = value
         self.data_source = data_source
         if self.data_source:
             self.data_source.add_param(self)
         self.ops=[]
-        self.key = ""
-        self.info=""
-    def set_info(self,info):
-        self.info=info
-        return self
+        self.key = key
+
     
     def get_value(self) -> str:
         if self.data_source and self.key:
@@ -57,8 +54,8 @@ class BaseModel:
         return f'value:{self.value},{self.ops},{self.info}'
 
 class StrModel(BaseModel):
-    def __init__(self, data_source, value="") -> None:
-        super().__init__(data_source, value)
+    def __init__(self, key,data_source, value="") -> None:
+        super().__init__(key,data_source, value)
 
 
 class NumberModel(BaseModel):
@@ -70,8 +67,8 @@ def number(v):
     return NumberModel(v)
 
 class DictModel(BaseModel):
-    def __init__(self, data_source, value=None) -> None:
-        super().__init__(data_source, value or dict())
+    def __init__(self, key,data_source, value=None) -> None:
+        super().__init__(key, value or dict(),data_source=data_source)
 
     def get(self, key, default_value=None) -> dict:
         if key in self.value:
