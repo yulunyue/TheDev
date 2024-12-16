@@ -48,7 +48,7 @@ class AbNode:
         if not name:
             value = f'{self.key}'
             if self.childs:
-                value+=[":Y",":Z"][self.depth%2]
+                value+=[":Z",":Y"][self.depth%2]
             #value = self.key
         else:
             value = getattr(self,name)
@@ -93,7 +93,7 @@ class AbNode:
         if self._value is not None:
             self.value = self._value
         else:
-            self.value = random.randint(-5,5)
+            self.value = random.randint(-20,20)
         return self
     
     

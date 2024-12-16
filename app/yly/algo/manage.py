@@ -106,15 +106,6 @@ class SolutionBase:
         self.action = f'{" ".join(str(s1) for s1 in s)}'
         self._logs.append(self.action)
 
-    @classmethod
-    def draw(cls, s, tp: str):
-        from common.third_util.draw import Draw
-        d = Draw()
-        if tp.startswith('bar'):
-            d.draw_bar_chart(s)
-        elif tp.startswith('graph'):
-            d.draw_graph(s)
-        d.save(f"data/log/{tp}.png")
 
 
     
@@ -123,7 +114,6 @@ class SolutionBase:
             self.lines=[v for v in input.split('\n') if v]
         return kwargs
     def gen_file(self):
-        
         lines=[]
         def read_file(md_name:str):
             path=""
@@ -165,8 +155,7 @@ class SolutionBase:
     agentsIds=None
     def submit(self):
         if 'codingame' in  self.uri:
-            CodingGame().pk(
-                self.name,
+            CodingGame(self.name).pk(
                 WRITE_PATH,self.game_id,self.agentsIds
             )
         else:
@@ -174,8 +163,8 @@ class SolutionBase:
     def replay(self):
         if 'codingame' in  self.uri:
             self.lines=CodingGame(self.name).get_states()
-            self.exec()
-            
+            File(f"data/log/cg/{self.name}.txt").write_file("\n".join(self.lines))
+            self.exec()            
         else:
             raise Exception(self.uri)
     def test(self, func):
@@ -203,7 +192,7 @@ class SolutionBase:
         pass
     
     def output(self,*args):
-        pass
+        logger.info(args)
 
     def input(self)->str:
         while self.lines and not self.lines[0]:

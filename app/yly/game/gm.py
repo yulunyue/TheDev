@@ -1,6 +1,5 @@
 from typing import Dict
 from common.service.http import Node
-from common.service.user import User
 from .gus_num.main import GusNum
 from .game_base import GameBase
 from .ab.main import AbGame

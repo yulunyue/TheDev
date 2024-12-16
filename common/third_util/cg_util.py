@@ -10,7 +10,7 @@ class CodingGame(Api):
     def __init__(self,name):
         self.name = name
         self.log_json = File(f"data/log/cg/{self.name}.json")
-    
+        super().__init__()
 
 
     def execute(self, file_path, game_id, key, data):

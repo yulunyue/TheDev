@@ -3,11 +3,6 @@ import heapq
 from typing import List
 inf = float("inf")
 
-
-
-
-
-
 class Graph:
     def __init__(self,value=inf):
         self.g = defaultdict(list)
@@ -17,11 +12,11 @@ class Graph:
         self.init()
 
     def load_grid(self,grid,wall_char='#'):
-        dr = [[1,0],[-1,0],[0,1],[0.-1]]
+        dr = [[1,0],[0,1]]
         idx=0
         for i,row in enumerate(grid):
             for j,v in enumerate(row):
-                if grid[i][j]==wall_char:
+                if v==wall_char:
                     continue
                 for dy,dx in dr:
                     y,x=dy+i,dx+j
@@ -107,7 +102,7 @@ class Graph:
                     if n in dis:
                         continue
                     dis[n]=l+1
-                    q.append(c)
+                    q.append(n)
             l+=1
         return dis
     

@@ -5,13 +5,13 @@ from functools import lru_cache
 import math
 MOD=(10**9)+7
 inf = float("inf")
-
+DR = [[1,0],[-1,0],[0,1],[0,-1]]
 class Player:
     EXPLORER='EXPLORER'
     WANDERER='WANDERER'
     def __init__(self,entity_type,key,x,y,param_0,param_1,param_2) -> None:
-        self.x=x
-        self.y=y
+        self.x=int(x)
+        self.y=int(y)
         self.entity_type = entity_type
         self.key=key
 
@@ -25,14 +25,26 @@ class Solution(SolutionBase):
 
         ]
     
-    def init_grid(self,lines):
-        pass
-    
-    def init(self,*args,**kwargs):
-        pass
+    def get_dis(self,c1,c2:Player):
+        ret = self.grid.get_dis(c1,(c2.y,c2.x))
+        return 0 if ret==inf else ret
     
     def execute(self):
-        return
+        self.cur_node=self.node_map[Player.EXPLORER][0]
+        ret=None
+        dis_min=-inf
+        for nk,*args in self.grid.g[(self.cur_node.y,self.cur_node.x)]:
+            dis_w=0
+            for w in self.node_map[Player.WANDERER]:
+                dis_w+=self.get_dis(nk,w)
+            dis_e = 0
+            for e in self.node_map[Player.EXPLORER][1:]:
+                dis_e+=self.get_dis(nk,e)
+            v = 100*dis_w-dis_e
+            if v>dis_min:
+                ret=nk
+                dis_min=v
+        return ret
     
     def exec(self):
         # Survive the wrath of Kutulu
@@ -56,18 +68,16 @@ class Solution(SolutionBase):
                 break
             entity_count = int(c)  # the first given entity corresponds to your explorer
             self.nodes_list:List[Player]=[]
-            self.node_map:Dict[str,List[Player]] = dict()
+            self.node_map:Dict[str,List[Player]] = {Player.EXPLORER:[],Player.WANDERER:[]}
             for _ in range(entity_count):
                 inputs = self.input().split()
-                self.nodes_list.append(Player(*inputs))
-                
-            # Write an action using print
-      
-            # MOVE <x> <y> | WAIT
+                p=Player(*inputs)
+                self.nodes_list.append(p)
+                self.node_map[p.entity_type].append(p)
             self.error()
             info=self.execute()
             if info:
-                self.output(f'MOVE {info[0]} {info[1]}')
+                self.output(f'MOVE {info[1]} {info[0]}')
             else:
                 self.output('WAIT')
 

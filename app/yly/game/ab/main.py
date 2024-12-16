@@ -11,7 +11,7 @@ class AbGame(GameBase):
                 if key is None:
                     c.value = None
                 elif key==c.k("value")["key"] and c.value is None:
-                    c.value = c.calc_value(0)
+                    c.calc_value(0)
             for n in c.childs:
                 util(n)
         util(self.state)

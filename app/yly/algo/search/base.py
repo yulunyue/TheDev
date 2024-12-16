@@ -34,7 +34,10 @@ def shape1(AbNode):
             AbNode(),
             AbNode()
         ),
-        AbNode()
+        AbNode(
+            AbNode(),
+            AbNode()
+        )
     ).init()
 
 
