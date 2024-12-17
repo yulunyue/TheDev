@@ -2,7 +2,6 @@ import logging
 import logging.handlers
 import os
 from common.constant import Constant
-from common.util.fp import File
 LOG_MAP = dict()
 LOGGER_MODE='LOGGER_MODE'
 
@@ -10,6 +9,7 @@ class Logger(logging.Logger):
     def __init__(self, name) -> None:
         super().__init__(name)
         self.path=f'./data/log/{name}.log'
+
         fp=File(self.path)
         if not fp.exists():
             fp.write_file('')

@@ -5,6 +5,8 @@ from common.util.log import logger
 from collections import defaultdict
 
 UK_MAP=dict()
+
+
 def uid(s):
     if s not in UK_MAP:
         UK_MAP[s]=-1

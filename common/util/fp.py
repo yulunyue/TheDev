@@ -1,13 +1,17 @@
 import os
 import json
 from typing import List
-
-
+def dump_default(v):
+    return str(v)
+def json_dump(oj):
+    return json.dumps(oj,indent=4,ensure_ascii=False,default=dump_default)
 class File:
     def __init__(self, path: str) -> None:
         self.path = path
         self.dirs = path.split('/')
-        self.name = self.dirs.pop()
+        names =  self.dirs.pop().split('.')
+        self.name = names[0]
+        self.type = names[-1]
         self.m_time = 0
         self.data = b''
 
@@ -24,7 +28,7 @@ class File:
 
     def write_file(self, data: str, encoding='utf-8'):
         if isinstance(data, dict) or isinstance(data, list):
-            data = json.dumps(data, indent=4, ensure_ascii=False)
+            data = json_dump(data)
         self.make_dir_if_not_exist()
         if isinstance(data, bytes):
             with open(self.path, 'wb') as f:
@@ -76,3 +80,16 @@ class File:
     
     def py_module_path(self):
         return self.path.replace('/', '.').replace('.py', '')
+    
+    def dump_excel(self):
+        import pandas
+        ret=pandas.read_excel(self.path,sheet_name=None)
+        sheets=ret.keys()
+        ret=dict()
+        for name in sheets:
+            ret[name]=pandas.read_excel(self.path,sheet_name=name).to_dict()
+        return ret
+    
+    def dump(self):
+        if self.type.startswith('xls'):
+            return self.dump_excel()
