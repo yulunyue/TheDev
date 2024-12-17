@@ -46,6 +46,7 @@ class Graph:
         for i,edge in enumerate(edges):
             self.add_edge(i,*edge)
         return self
+    
     def key(self,k):
         return f'graph_{k}'
     

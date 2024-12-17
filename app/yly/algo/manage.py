@@ -73,10 +73,8 @@ class View(Node):
     
     def view(self):
         node=getattr(self.ins,self.key)
-        if self.type == 'tree':
-            return node.tree_view()
-        if self.type == 'graph':
-            return node.graph_view()
+        if hasattr(node,f'{self.type}_view'):
+            return getattr(node,f'{self.type}_view')()
         return dict(data=bp(self.key,str(node),'self'),type=self.type)
     
     def to_json(self):
@@ -175,19 +173,19 @@ class SolutionBase:
                 a = time.time()
                 try:
                     self.log(f"begin {self.name}-{fn.__name__}")
+                    self.log(f'case: {case}; except: {self.ep}')
                     case=self.pre(**case)
                     self.init(**case)
                     r = fn()
-                    self.log(f"finish {self.name}-{fn.__name__}", time.time()-a)
+                    self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
                 except Exception as e:
                     import traceback
                     traceback.print_exc()
                     r = None
                 if not self.diff(r, self.ep):
-                    logs = "\n".join(self.__class__._logs)
-                    self.flush_log(
-                        i, f'case: {case}; result: {r}; except: {self.ep}\n{logs}')
                     break
+                self.__class__._logs = []
+            
     def error(self,*args):
         pass
     
@@ -208,6 +206,7 @@ class SolutionBase:
     
     def flush_log(self):
         logger.info("\n".join(self._logs))
+        self._logs.clear()
 
 
 
@@ -253,7 +252,7 @@ class SolutionBase:
 
     def view_web(self):
         _,ret,_ = self.view()
-        File(f'data/algo/{self.get_name()}/readme.json').write_file(ret)
+        File(f'data/algo/{self.name}/readme.json').write_file(ret)
 
     def view(self,case=None,tp='web'):
         if case is None:
@@ -270,8 +269,7 @@ class SolutionBase:
         return case,ret,msg  
     
 
-    def get_name(self):
-        return self._name or self.__class__.__name__
+
 
 PATH = 'app/yly/algo'
 TMP_PATH = 'data/algo/main.py'

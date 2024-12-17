@@ -99,7 +99,7 @@ export class MeraGraph extends MeraUtil {
     get_line_text(s: any, s1: any, s2: any) {
         let line_text = "-->"
         if (s != null) {
-            line_text = '<-->|' + s + '|'
+            line_text = '-->|' + s + '|'
         }
         return line_text
     }
