@@ -2,6 +2,7 @@ import logging
 import logging.handlers
 import os
 from common.constant import Constant
+from common.util.fp import File
 LOG_MAP = dict()
 LOGGER_MODE='LOGGER_MODE'
 

@@ -31,12 +31,18 @@ export class MeraUtil extends Div {
         let w = this.el.clientWidth - svg.clientWidth
         let h = this.el.clientHeight - svg.clientHeight
         svg.style.transform = `translate(${w / 2}px,${h / 2}px)`
-        this.load_event()
+        this.load_after()
     }
-    load_event(): void {
-        let ps = this.el.querySelectorAll('p')
-        var register_click = (v: any) => {
+    load_after(): void {
+        let ps = this.el.querySelectorAll('div')
+        var register_click = (v: HTMLDivElement) => {
             let name = v.getAttribute("name")
+            if(!name){
+                return
+            }
+            // console.error(this.option.data.nodes,name)
+            let color=this.option.data.nodes[name].color
+            v.style.background = color
             v.onclick = () => { this.do_select(name) }
         }
         for (var i = 0; i < ps.length; i++) {
@@ -92,7 +98,7 @@ export class MeraGraph extends MeraUtil {
         } else (
             this.render_edges(this.get_edges(), lines)
         )
-        // console.log(lines.join("\n"))
+        console.error(lines.join("\n"))
         this.set_graph(lines)
     }
 
@@ -112,13 +118,13 @@ export class MeraGraph extends MeraUtil {
         if (!Array.isArray(data)) {
             data = [data]
         }
-        let lines = ['<div style="width:90px">']
+        let lines = [`<div name="${key}" style="width:90px">`]
         for (var i = 0; i < data.length; i++) {
             let title = data[i].title
             if (title) {
                 title += ':'
             }
-            lines.push(`<p name="${data[i].key}">${title}
+            lines.push(`<p>${title}
                 <span style='color:${data[i].color};margin-left:4px'>${data[i].value}
                 </span>
             </p>`)

@@ -33,18 +33,23 @@ class Solution(SolutionBase):
         self.cur_node=self.node_map[Player.EXPLORER][0]
         ret=None
         dis_min=-inf
+
         for nk,*args in self.grid.g[(self.cur_node.y,self.cur_node.x)]:
-            dis_w=0
+            self.dis_w=[]
+            self.dis_e=[]
             for w in self.node_map[Player.WANDERER]:
-                dis_w+=self.get_dis(nk,w)
-            dis_e = 0
+                self.dis_w.append(self.get_dis(nk,w))
             for e in self.node_map[Player.EXPLORER][1:]:
-                dis_e+=self.get_dis(nk,e)
-            v = 100*dis_w-dis_e
-            if v>dis_min:
+                self.dis_e.append(self.get_dis(nk,e))
+            score = self.get_score()
+            if score>dis_min:
                 ret=nk
-                dis_min=v
+                dis_min=score
         return ret
+    
+    def get_score(self):
+        min_w=min(self.dis_w)
+        min_e=min(self.dis_e)
     
     def exec(self):
         # Survive the wrath of Kutulu
