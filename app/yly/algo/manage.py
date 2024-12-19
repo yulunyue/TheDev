@@ -190,7 +190,7 @@ class SolutionBase:
         pass
     
     def output(self,*args):
-        logger.info(args)
+        logger.info(*args)
 
     def input(self)->str:
         while self.lines and not self.lines[0]:

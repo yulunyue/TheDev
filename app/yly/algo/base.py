@@ -21,8 +21,8 @@ class SolutionBase:
     def i1(self):
         return int(self.input())
     
-    def il(self,n):
-        return [[int(v) for v in self.input().split(' ')] for _ in range(n)]
+    def il(self):
+        return [int(v) for v in self.input().split(' ')]
     
     def log(self, *args, **kwargs):
         pass
@@ -37,10 +37,11 @@ class SolutionBase:
         pass
 
     def run(self):
-        print(self.exec())
+        self.exec()
 
     def output(self,*args):
         print(*args)
+        sys.stdout.flush()
 
 
 

@@ -8,41 +8,7 @@ import bisect
 import sys
 import math
 import heapq
-
-
-
-
-try:
-    from app.yly.algo.manage import SolutionBase,div,bp,divh,divv,tree
-
-except:
-    class SolutionBase:
-        def i1(self):
-            return int(sys.stdin.readline().strip())
-        
-        def il(self,n):
-            return [[int(v) for v in sys.stdin.readline().strip().split(' ')] for _ in range(n)]
-        
-        def log(self, *args, **kwargs):
-            pass
-
-        def execute(self, *args, **kwargs):
-            pass
-        
-        def exec(self):
-            pass
-        def exec(self,*args,**kwargs):
-            pass
-        def run(self):
-            self.init()
-            print(self.exec())
-
-inf = float("inf")
-MOD = (10**9)+7
-
-
-
-
+from app.yly.algo.manage import SolutionBase,div,bp,divh,divv,tree
 
 CASE1 ='''
 6
