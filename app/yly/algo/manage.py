@@ -91,14 +91,15 @@ class SolutionBase:
     _watch_var:List[View] = None
     action="log"
     game_id=""
+    results = []
     def get_cases(self):
         return [
 
         ]
     
     def execute(self):
-        return self.exec()
-
+        self.exec()
+        return "\n".join(self.results)
 
     def log(self, *s, tp: str = ""):
         self.action = f'{" ".join(str(s1) for s1 in s)}'
@@ -189,8 +190,8 @@ class SolutionBase:
     def error(self,*args):
         pass
     
-    def output(self,*args):
-        logger.info(*args)
+    def output(self,s):
+        self.results.append(str(s))
 
     def input(self)->str:
         while self.lines and not self.lines[0]:

@@ -43,19 +43,24 @@ class Solution(SolutionBase):
 
     def exec(self):
         self.n,self.m,self.c=self.il()
-        self.nums=[]
-        for _ in range(self.m):
-            v=self.i1()
-            i=bisect.bisect_left(self.nums,v)
-            if i>=len(self.nums) or self.nums[i]==v:
-                self.nums.append(v)
+        self.nums=[0]*(self.n+1)
+        q=0
+        while self.m>0:
+            self.m-=1
+            x=self.i1()
+            if x>self.c//2:
+                q=self.n
+                while self.nums[q]>=x:
+                    q-=1
             else:
-                self.nums[i]=v
-            self.log(i,v,self.nums)
-            self.output(i+1)
-            if len(self.nums)==self.n:
+                q=1
+                while self.nums[q] and self.nums[q]<=x:
+                    q+=1
+            self.log(self.nums,q,x)
+            self.output(q)
+            self.nums[q]=x
+            if all(self.nums[1:]):
                 break
-
 
 if __name__=='__main__':
     Solution().run()
