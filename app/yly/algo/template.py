@@ -13,8 +13,7 @@ class Solution(SolutionBase):
         self.init(*args,**kw)
         return self.execute()
         
-    def init(self,*args,**kwargs):
-        pass
+
 
     def execute(self):
         pass
