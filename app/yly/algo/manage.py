@@ -200,9 +200,12 @@ class SolutionBase:
             self.lines.pop(0)
         if self.lines:
             return self.lines.pop(0)
-
+    
     def i1(self):
-        return int(self.input().strip())
+        s=self.input()
+        if s is None:
+            return
+        return int(s)
     
     def il(self):
         return [int(v) for v in self.input().split(' ') if v]
