@@ -23,10 +23,11 @@ class ProgrePoint extends GNode {
         this.text = this.add_child(text())
         this.text.set_y(14).set_x(4)
     }
-    set_value(value: number, x: number) {
+    set_value(value: number, x?: number) {
         this.value = value
         this.text.set_html(value + "")
         this.set_x(x)
+        return this
     }
 }
 

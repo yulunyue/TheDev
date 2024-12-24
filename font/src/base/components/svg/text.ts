@@ -9,8 +9,10 @@ class Tt extends GNode {
     get_rect() {
         let ret = this.el.getBoundingClientRect()
         return {
-            width: ret.width,
-            height: ret.height
+            left: 0,
+            top: 0,
+            width: ret.width as number,
+            height: ret.height as number
         }
     }
 

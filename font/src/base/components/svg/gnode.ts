@@ -1,17 +1,18 @@
 import web_dom from "../../web/web_dom"
 import { Node, Dom, Style } from "../../web/cls"
 import util from "../../tool/util"
-
-export class GNode {
-    el: SVGElement
+import { Div } from "../dom/div"
+export class GNode extends Div {
+    el: any
     on_mount_call: any
     parent: any
-    childs: GNode[]
+    childs: any[]
     x: number
     y: number
     option: Node
     _on_change: any
     constructor(name: string = "g") {
+        super(name)
         this.el = this.create_element(name)
         this.parent = null
         this.childs = []
@@ -52,9 +53,7 @@ export class GNode {
     get_attr(key: string) {
         return this.el.getAttribute(key)
     }
-    set_div_style(s: any) {
 
-    }
     set_width(w: number) {
         return this.set_attr("width", w)
     }
@@ -67,6 +66,7 @@ export class GNode {
     }
     mount(el: any) {
         el.appendChild(this.el)
+        return this
     }
     set_parent(p: any) {
         this.parent = p
@@ -93,7 +93,7 @@ export class GNode {
         return this
     }
     clear() {
-        this.set_html("")
+        return this.set_html("")
     }
     update_pos() {
         return this.set_style({ transform: `translate(${Math.floor(this.x)}px, ${Math.floor(this.y)}px)` })
@@ -112,10 +112,10 @@ export class GNode {
         return this
     }
     set_color(color: string) {
-        if(color==null||color==undefined){
+        if (color == null || color == undefined) {
             return this
         }
-        return this.set_style({ fill: color,stroke:color })
+        return this.set_style({ fill: color, stroke: color })
     }
     set_html(s: string) {
         this.el.innerHTML = s
@@ -148,6 +148,7 @@ export class GNode {
     }
     emit_mount() {
         this.on_mount()
+        return this
     }
 
 }

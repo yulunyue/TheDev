@@ -37,6 +37,7 @@ class SolutionBase:
         pass
 
     def run(self):
+        self.init()
         self.exec()
 
     def output(self,*args):

@@ -39,12 +39,35 @@ class Solution(SolutionBase):
             dict(input=CASE2,result=RESULT2),
             dict(input=CASE1,result=RESULT1)
         ]
-        
+    
+    def init(self,**kw):
+        self.n,self.m,self.c=self.il()
+        self.nums=[]
+
+    def get_watch(self):
+        return [
+            View("nums").list()
+        ]
+
+    def exec1(self):
+        self.nums=[]
+        for _ in range(self.m):
+            v=self.i1()
+            if not self.nums or v>=self.nums[-1]:
+                self.nums.append(v)
+                i=len(self.nums)-1
+            else:
+                i=bisect.bisect_right(self.nums,v)
+                if i<len(self.nums):
+                    self.nums[i]=v
+            self.log(i,v,self.nums)
+            self.output(i+1)
+            if len(self.nums)==self.n:
+                break
 
     def exec(self):
-        self.n,self.m,self.c=self.il()
-        self.nums=[0]*(self.n+1)
         q=0
+        self.nums=[0]*(self.n+1)
         while self.m>0:
             self.m-=1
             x=self.i1()
@@ -56,7 +79,7 @@ class Solution(SolutionBase):
                 q=1
                 while self.nums[q] and self.nums[q]<=x:
                     q+=1
-            self.log(self.nums,q,x)
+            self.log(self.nums, q,x)
             self.output(q)
             self.nums[q]=x
             if all(self.nums[1:]):

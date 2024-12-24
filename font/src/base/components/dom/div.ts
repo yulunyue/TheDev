@@ -25,7 +25,6 @@ export class DivFactory {
 }
 export class Div {
     el: HTMLElement
-    div_el: HTMLElement
     node_type: string
     childs: Div[]
     parent: Div
@@ -169,7 +168,7 @@ export class Div {
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         this.parent = null
-        this.div_el = this.el
+
         this.option = new Node()
         this.init_node()
         this.init_style()
@@ -204,7 +203,7 @@ export class Div {
     get_rect() {
         return {
             left: this.get_x(),
-            right: this.get_y(),
+            top: this.get_y(),
             width: this.get_width(),
             height: this.get_height()
         }
@@ -221,17 +220,11 @@ export class Div {
         web_dom.bind_click(this.el, call_back)
         return this
     }
-    x(v: number) {
-        return v
-    }
     get_x() {
         return this.el.clientLeft
     }
     get_y() {
         return this.el.clientTop
-    }
-    y(v: number) {
-        return v
     }
     get_width() {
         return this.el.clientWidth
@@ -271,7 +264,7 @@ export class Div {
         return this
     }
     set_div_style(style: Style) {
-        web_dom.set_el_style(this.div_el, style)
+        web_dom.set_el_style(this.el, style)
         return this
     }
     set_style(style: Style) {
@@ -302,7 +295,7 @@ export class Div {
 
     }
     mount(el: Dom) {
-        el.appendChild(this.div_el)
+        el.appendChild(this.el)
         return this
     }
     emit_mount() {

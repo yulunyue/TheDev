@@ -63,6 +63,9 @@ class View(Node):
     def graph(self):
         return self.set_type("graph")
     
+    def list(self):
+        return self.set_type("list")
+    
     def hex_str(self):
         node=getattr(self.ins,self.key,None)
         return str(node)
@@ -73,6 +76,8 @@ class View(Node):
     
     def view(self):
         node=getattr(self.ins,self.key)
+        if self.type == 'list':
+            return dict(data=node, type=self.type)
         if hasattr(node,f'{self.type}_view'):
             return getattr(node,f'{self.type}_view')()
         return dict(data=bp(self.key,str(node),'self'),type=self.type)
@@ -85,7 +90,7 @@ class SolutionBase:
     uri=""
     _logs = []
     _has_view = False
-    name = ""
+    name = "solution"
     _DEV = True
     _tags = []
     _watch_var:List[View] = None
@@ -105,9 +110,6 @@ class SolutionBase:
         self.action = f'{" ".join(str(s1) for s1 in s)}'
         self._logs.append(self.action)
 
-
-
-    
     def pre(self,input=None,result=None,**kwargs):
         if input is not None:
             self.lines=[v for v in input.split('\n') if v]
@@ -169,7 +171,7 @@ class SolutionBase:
     def test(self, func):
         for fn in func:
             for i, case in enumerate(self.get_cases()):
-                self.__class__._logs = []
+                
                 self.ep = case.pop("result")
                 a = time.time()
                 try:
@@ -185,7 +187,7 @@ class SolutionBase:
                     r = None
                 if not self.diff(r, self.ep):
                     break
-                self.__class__._logs = []
+                
             
     def error(self,*args):
         pass
@@ -230,7 +232,6 @@ class SolutionBase:
                 flag=True
                 CHANGE_STORE[key2]=s2
             childs[var.key]=var.view()
-            
         if flag:
             return childs
     
@@ -242,7 +243,6 @@ class SolutionBase:
         if self._watch_var is not None:
             return
         node:View=self.get_main_view()
-        keys=[]
         self._watch_var = []
         def dfs(p:View):
             if not p.childs:
