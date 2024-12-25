@@ -10,10 +10,11 @@ class View:
 class SolutionBase:
     DEV = False
     inputs=[]
+    results=[]
+    uri=""
     def input(self):
         self.inputs.append(input())
         return self.inputs[-1]
-    
     def error(self,*args):
         print("\n".join(self.inputs), file=sys.stderr, flush=True)
         self.inputs.clear()
@@ -37,7 +38,8 @@ class SolutionBase:
         pass
 
     def run(self):
-        self.init()
+        if 'codeforces' in self.uri:
+            self.init()
         self.exec()
 
     def output(self,*args):

@@ -148,11 +148,9 @@ class SolutionBase:
             return self.submit()
         if exec_names and exec_names[0]=='replay':
             return self.replay()
-        if exec_names:
-            self.test([getattr(self,v) for v in exec_names[0].split(',')])
-        else:
-            self.exec()
+        self.test([getattr(self,v) for v in exec_names[0].split(',')])
         self.flush_log()
+        
     agentsIds=None
     def submit(self):
         if 'codingame' in  self.uri:
@@ -169,9 +167,8 @@ class SolutionBase:
         else:
             raise Exception(self.uri)
     def test(self, func):
-        for fn in func:
-            for i, case in enumerate(self.get_cases()):
-                
+        for i, case in enumerate(self.get_cases()):
+            for fn in func:    
                 self.ep = case.pop("result")
                 a = time.time()
                 try:
@@ -186,7 +183,10 @@ class SolutionBase:
                     traceback.print_exc()
                     r = None
                 if not self.diff(r, self.ep):
+                    self.flush_log()
                     break
+                self._logs=[]
+                
                 
             
     def error(self,*args):
@@ -211,8 +211,9 @@ class SolutionBase:
         return [int(v) for v in self.input().split(' ') if v]
     
     def flush_log(self):
-        logger.info("\n".join(self._logs))
-        self._logs.clear()
+        if self._logs:
+            logger.info("\n".join(self._logs))
+            self._logs.clear()
 
 
 
