@@ -74,6 +74,7 @@ class Solution(SolutionBase):
             start -= 1
             start %= n
             a = b[:]
+            
         for _ in range(start):
             out.append("DR"*(n-1))
         self.output(len(out))
