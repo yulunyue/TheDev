@@ -3,31 +3,13 @@ from typing import Dict,List
 from functools import lru_cache
 MOD=(10**9)+7
 inf = float("inf")
-CASE1=dict(
-    input='''3
-2
-1 2
-3
-2 1 3
-4
-3 2 3 4
-''',
-result='''0
-2
-DRDR
-RRDD
-3
-RRDRDD
-DRDDRR
-DDRRRD''')
 class Solution(SolutionBase):
     uri='https://codeforces.com/problemset/problem/2039/H1'
     def get_cases(self):
         return [
-            CASE1
+            dict(array=[3,2,3,4],result=0)
         ]
-    def init(self, *args, **kwargs):
-        self.inputs=[]
+
 
     def performSwaps(self,skips:List[int]):
         o = []
@@ -44,13 +26,19 @@ class Solution(SolutionBase):
             o.append("DR")
         return o
     
-    def calc(self,a:List[int]):
+    def init(self, array, **kwargs):
+        self.array=array
+
+    def execute(self):
         out=[]
+        a = self.array
         n=self.n=len(a)
         min_a=min(a)
         start=a.index(min_a)
+
         while True:
             exit_flag=True
+            self.log(start,a)
             for i in range(n-1):
                 if a[(start+i)%n]>a[(start+i+1)%n]:
                     exit_flag=False
@@ -63,29 +51,30 @@ class Solution(SolutionBase):
                 if a[i]<=a[i+1] or i+1 == start%n:
                     b.append(a[i])
                     b.append(a[i+1])
-                    continue
-                swaps.append(i)
-                b.append(a[i+1])
-                b.append(a[i])
+                else:
+                    swaps.append(i)
+                    b.append(a[i+1])
+                    b.append(a[i])
             if n%2==0:
                 b.append(a[-1])
             b.append(a[0])
             out.append("".join(self.performSwaps(swaps)))
-            start -= 1
-            start %= n
+            start =(start-1+n)%n
             a = b[:]
+            self.log(out[-1])
             
         for _ in range(start):
             out.append("DR"*(n-1))
         self.output(len(out))
         for mv in out:
             self.output(mv)
+        return len(self.results)
 
     def exec(self):
         for _ in range(self.i1()):
-            self.i1()
-            self.calc(self.il())
-        return "\n".join(self.results)
+            self.init(self.i1())
+            self.execute()
+
         
 
 

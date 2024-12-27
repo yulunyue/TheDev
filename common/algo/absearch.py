@@ -12,58 +12,64 @@ inf = float("inf")
 o:8     p:9                                                 
 '''
 
-
-
-class AbNode:
+class State:
     NODE_ID=0
-    def __init__(self, *args):
-        self.key = AbNode.NODE_ID
-        AbNode.NODE_ID+=1
-        self.value = None
-        self.childs: List[AbNode] = list(args)
-        self.alpha = -inf
-        self.bate = inf
-        self._value =  None
+    def __init__(self,*args) -> None:
+        self.key = State.NODE_ID
+        State.NODE_ID+=1
+        self.value = 0
+        self.childs: List[State] = list(args)
+        self.child_idx=0
+        self.parent:State = None
+        for d in self.childs:
+            d.parent=self
+        self.depth = 0
+        self.init()
 
-    def set_value(self,value):
-        self._value=value
-        return self
+    def init(self):
+        pass
+
+    def has_childs(self):
+        return len(self.childs)
     
-    @staticmethod
-    def load_from_json(value,childs,depth=0,**kw):
-        ret = AbNode().set_value(value)
-        ret.depth = depth
-        for v in childs:
-            ret.childs.append(AbNode.load_from_json(depth=depth+1,**v))
+    def get_next(self):
+        ret=self.childs[self.child_idx]
+        self.child_idx=(self.child_idx+1)%len(self.childs)
         return ret
     
-    def init(self,depth=0):
-        self.depth = depth            
-        for v in self.childs:
-            v.init(depth+1)        
+    def calc_value(self, *args):
+        return self.value
+    
+    def get_value(self,*args):
+        return self.value
+    
+    def set_value(self,value):
+        self.value = value
         return self
     
-    def k(self, name):
-        from app.yly.algo.manage import bp
-        if not name:
-            value = f'{self.key}'
-            if self.childs:
-                value+=[":Z",":Y"][self.depth%2]
-            #value = self.key
-        else:
-            value = getattr(self,name)
-        return bp(name ,value,f"Ab_Node_{self.key}")
-    
-
-    def set_children(self, childs):
-        self.childs = childs
+    def set_random_value(self,a=-10,b=10):
+        random.seed(7)
+        def dfs(c:State,depth):
+            c.depth = depth
+            if len(c.childs)==0:
+                c.value=random.randint(a,b)            
+                return c.value
+            c.value=0
+            for v in c.childs:
+                c.value+=dfs(v,depth+1)
+            return c.value
+        dfs(self,0)       
         return self
-
+    
     def get_title_keys(self):
-        if not self.childs:
-            return ['','value']
-        return ['','alpha','bate']
-
+        return ['value']
+    
+    def dump(self):
+        return dict(
+            value=self.value,
+            childs=[v.dump() for v in self.childs]
+        )
+    
     def tree_view(self):
         return dict(
             data=[
@@ -76,28 +82,26 @@ class AbNode:
     def graph_view(self):
         return self.tree_view()
     
+    def k(self, name):
+        from app.yly.algo.manage import bp
+        value = getattr(self,name)
+        return bp(name ,value,f"Node_{self.key}")
+     
     def __str__(self) -> str:
-        ret=f'[{self.value}{self.alpha}{self.bate}]'
+        ret=f'{self.value}'
         return ret+"".join([str(v) for v in self.childs])
-
-    def dump(self):
-        return dict(
-            value=self._value,
-            childs=[v.dump() for v in self.childs]
-        )
-
-    def to_json(self):
-        return self.tree_view()
     
-    def calc_value(self, depth):
-        if self._value is not None:
-            self.value = self._value
-        else:
-            self.value = random.randint(-20,20)
-        return self
+    @classmethod
+    def load_from_json(cls,value,childs,depth=0,**kw):
+        return cls(
+            *[cls.load_from_json(**d) for d in childs]
+        ).set_value(value)
     
+class AbNode(State):
+    def init(self):
+        self.alpha = -inf
+        self.bate = inf
     
-
 class AlphaBateSearch:
 
     def get_moves(self, depth, last_move: AbNode):
@@ -109,7 +113,7 @@ class AlphaBateSearch:
     def undo(self, *mv):
         return self
 
-    def search(self, last_move:AbNode, depth=10, alpha=-inf, bate=inf) -> None:
+    def search(self, last_move:AbNode, depth=10, alpha=-inf, bate=inf,**kw) -> None:
         if depth == 0:
             return last_move.calc_value(depth)
         mvs = self.get_moves(depth, last_move)
