@@ -167,8 +167,8 @@ class SolutionBase:
         else:
             raise Exception(self.uri)
     def test(self, func):
-        for i, case in enumerate(self.get_cases()):
-            for fn in func:    
+        for fn in func:
+            for i, case in enumerate(self.get_cases()):
                 self.ep = case.pop("result")
                 a = time.time()
                 try:

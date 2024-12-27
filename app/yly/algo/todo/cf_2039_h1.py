@@ -7,7 +7,8 @@ class Solution(SolutionBase):
     uri='https://codeforces.com/problemset/problem/2039/H1'
     def get_cases(self):
         return [
-            dict(array=[3,2,3,4],result=0)
+            dict(array=[4,3,2,1],result=0),
+            dict(array=[3,2,3,4],result=2),
         ]
 
 
