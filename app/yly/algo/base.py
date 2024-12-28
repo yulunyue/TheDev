@@ -38,8 +38,6 @@ class SolutionBase:
         pass
 
     def run(self):
-        if 'codeforces' in self.uri:
-            self.init()
         self.exec()
 
     def output(self,*args):

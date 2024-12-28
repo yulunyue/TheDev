@@ -76,7 +76,7 @@ class State:
                 self.k(k) for k in self.get_title_keys()
             ],
             childs=[c.tree_view() for c in self.childs],
-            key=f"Ab_Nd_{self.key}"
+            key=f"search_state_{self.key}"
         )
     
     def graph_view(self):

@@ -1,14 +1,23 @@
 from app.yly.algo.manage import SolutionBase,View
 from typing import Dict,List
 from functools import lru_cache
+from common.algo.math_util import Comb
 MOD=(10**9)+7
 inf = float("inf")
+from collections import defaultdict
 class Solution(SolutionBase):
     uri='https://codeforces.com/problemset/problem/2039/H1'
     def get_cases(self):
         return [
-            dict(array=[4,3,2,1],result=0),
-            dict(array=[3,2,3,4],result=2),
+            dict(array=[2, 1, 0, 3],result=0),
+            dict(array=[2, 1, 0],result=0),
+            dict(array=[3, 1, 0, 2],result=0),
+            dict(array=[2, 3, 4, 1, 0], result=0),
+            dict(array=[2, 4, 3, 1, 0], result=0),
+            dict(array=[2, 1, 0, 3, 4, 5], result=0),
+            dict(array=[2, 1, 0, 3, 4, 5], result=0),
+
+     
         ]
 
 
@@ -36,9 +45,11 @@ class Solution(SolutionBase):
         n=self.n=len(a)
         min_a=min(a)
         start=a.index(min_a)
-
+        
         while True:
             exit_flag=True
+            if out:
+                self.log(out[-1])
             self.log(start,a)
             for i in range(n-1):
                 if a[(start+i)%n]>a[(start+i+1)%n]:
@@ -52,6 +63,7 @@ class Solution(SolutionBase):
                 if a[i]<=a[i+1] or i+1 == start%n:
                     b.append(a[i])
                     b.append(a[i+1])
+             
                 else:
                     swaps.append(i)
                     b.append(a[i+1])
@@ -61,19 +73,34 @@ class Solution(SolutionBase):
             b.append(a[0])
             out.append("".join(self.performSwaps(swaps)))
             start =(start-1+n)%n
-            a = b[:]
-            self.log(out[-1])
+            a = b
+            # self.log(out[-1])
             
         for _ in range(start):
             out.append("DR"*(n-1))
         self.output(len(out))
         for mv in out:
             self.output(mv)
-        return len(self.results)
+        return len(out)
+    
+    def baoli(self):
+        for n in list(range(8,9)):
+            max_t=defaultdict(list)
+            cms=Comb().make_array(list(range(0,n)))
+            for a in cms:
+                self.array=a
+                max_t[self.execute()].append(a)
+            idx=max(max_t.keys())
+            self.log(f'---{n}---')
+            for v in max_t[idx]:
+                self.log(v)
+            self.log(idx)
 
+    
     def exec(self):
         for _ in range(self.i1()):
-            self.init(self.i1())
+            self.i1()
+            self.init(self.il())
             self.execute()
 
         

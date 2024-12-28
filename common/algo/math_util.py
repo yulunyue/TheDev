@@ -110,8 +110,7 @@ def stl_2(n, i):
 
 
 class Comb:
-    def __init__(self, mod, mx):
-
+    def load(self,mod, mx):
         self.mod = mod
         self.mx = mx
         # 组合数模板
@@ -124,6 +123,18 @@ class Comb:
         self.inv_fac[mx - 1] = pow(self.fac[mx - 1], -1, mod)
         for i in range(mx - 1, 0, -1):
             self.inv_fac[i - 1] = self.inv_fac[i] * i % mod
-
+        return self
+    
     def comb(self, n: int, k: int) -> int:
         return self.fac[n] * self.inv_fac[k] % self.mod * self.inv_fac[n - k] % self.mod
+    
+    def make_array(self,array):
+        ans=[]
+        def dfs(a,b):
+            if not a:
+                ans.append(b[:])
+                return
+            for i in range(len(a)):
+                dfs(a[:i]+a[i+1:],b+[a[i]])
+        dfs(array,[])
+        return ans
