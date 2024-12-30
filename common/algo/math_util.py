@@ -138,3 +138,9 @@ class Comb:
                 dfs(a[:i]+a[i+1:],b+[a[i]])
         dfs(array,[])
         return ans
+
+@lru_cache(None)
+def jc(n):
+    if n<=2:
+        return 2
+    return n*jc(n-1)

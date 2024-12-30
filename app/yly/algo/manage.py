@@ -10,6 +10,7 @@ import os
 import time
 import sys
 import json
+sys.setrecursionlimit(10**5+1)
 WRITE_PATH='data/algo/run.py'
 CHANGE_STORE = dict()
 class TreeNode:
@@ -150,7 +151,7 @@ class SolutionBase:
             return self.replay()
         self.test([getattr(self,v) for v in exec_names[0].split(',')])
         self.flush_log()
-        
+
     agentsIds=None
     def submit(self):
         if 'codingame' in  self.uri:
