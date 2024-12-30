@@ -238,6 +238,7 @@ class SolutionBase:
             key2,s2=var.key+'_algo',var.hex_str() if var.hex_str else ""
             if CHANGE_STORE.get(key2)!=s2:
                 flag=True
+                logger.info(f'{key2}:{CHANGE_STORE.get(key2)},{s2}')
                 CHANGE_STORE[key2]=s2
             childs[var.key]=var.view()
         if flag:

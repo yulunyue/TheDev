@@ -14,13 +14,16 @@ o:8     p:9
 
 class State:
     NODE_ID=0
-    CUR=None
     def __init__(self,*args) -> None:
         self.key = State.NODE_ID
         State.NODE_ID+=1
         self.value = 0
+        self.score = 0
+        self.state_value=0
         self.childs: List[State] = list(args)
         self.child_idx=0
+        self.root:State = None
+        self.cur:State = None
         self.parent:State = None
         for d in self.childs:
             d.parent=self
@@ -34,9 +37,9 @@ class State:
         return len(self.childs)
     
     def get_next(self):
-        State.CUR=self.childs[self.child_idx]
+        ret=self.childs[self.child_idx]
         self.child_idx=(self.child_idx+1)%len(self.childs)
-        return State.CUR
+        return ret
     
     def calc_value(self, *args):
         return self.value
@@ -48,17 +51,18 @@ class State:
         self.value = value
         return self
     
-    def set_random_value(self,a=-10,b=10):
-        random.seed(7)
+    def load(self,fun=None):
         def dfs(c:State,depth):
+            c.root = self
             c.depth = depth
             if len(c.childs)==0:
-                c.value=random.randint(a,b)            
-                return c.value
-            c.value=0
+                if fun:
+                    c.state_value=c.value=fun()        
+                return c.state_value
+            c.state_value=0
             for v in c.childs:
-                c.value+=dfs(v,depth+1)
-            return c.value
+                c.state_value+=dfs(v,depth+1)
+            return c.state_value
         dfs(self,0)       
         return self
     
@@ -79,7 +83,7 @@ class State:
             ],
             childs=[c.tree_view() for c in self.childs],
             key=f"search_state_{self.key}",
-            color=color(self,State.CUR),
+            color=color(self,self.root.cur if self.root and self.root.cur else None),
         )
     
     def graph_view(self):
@@ -98,7 +102,7 @@ class State:
         return f'{self.value}'
     
     def __str__(self) -> str:
-        cur_key=str(State.CUR.key if State.CUR else '')
+        cur_key=str(self.root.cur.key if self.root and self.root.cur else '')
         return cur_key+self.__id__()+"".join([v.__id__() for v in self.childs])
     
     @classmethod

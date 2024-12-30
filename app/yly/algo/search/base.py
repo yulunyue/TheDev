@@ -40,7 +40,8 @@ def shape1(AbNode:State):
             AbNode()
         )
     )
-    return ret.set_random_value()
+    random.seed(7)
+    return ret.load(lambda *args:random.randint(-10,10))
 
 
 class Solution(SolutionBase):
@@ -71,10 +72,10 @@ class Solution(SolutionBase):
         self.kw=kw
         self.search_type = search_type
         if search_type == 'mcts':
-            self.root = MctsNode.load_from_json(**root)
+            self.root = MctsNode.load_from_json(**root).load()
             self.search_tree = MctsSearchTree()
         else:
-            self.root = AbNode.load_from_json(**root)
+            self.root = AbNode.load_from_json(**root).load()
             self.search_tree = AlphaBateSearch()
 
 
