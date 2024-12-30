@@ -14,6 +14,7 @@ o:8     p:9
 
 class State:
     NODE_ID=0
+    CUR=None
     def __init__(self,*args) -> None:
         self.key = State.NODE_ID
         State.NODE_ID+=1
@@ -33,9 +34,9 @@ class State:
         return len(self.childs)
     
     def get_next(self):
-        ret=self.childs[self.child_idx]
+        State.CUR=self.childs[self.child_idx]
         self.child_idx=(self.child_idx+1)%len(self.childs)
-        return ret
+        return State.CUR
     
     def calc_value(self, *args):
         return self.value
@@ -62,7 +63,7 @@ class State:
         return self
     
     def get_title_keys(self):
-        return ['value']
+        return ['key','value']
     
     def dump(self):
         return dict(
@@ -71,12 +72,14 @@ class State:
         )
     
     def tree_view(self):
+        from app.yly.algo.manage import color
         return dict(
             data=[
                 self.k(k) for k in self.get_title_keys()
             ],
             childs=[c.tree_view() for c in self.childs],
-            key=f"search_state_{self.key}"
+            key=f"search_state_{self.key}",
+            color=color(self,State.CUR),
         )
     
     def graph_view(self):
@@ -86,10 +89,17 @@ class State:
         from app.yly.algo.manage import bp
         value = getattr(self,name)
         return bp(name ,value,f"Node_{self.key}")
-     
+    def __eq__(self, value: object) -> bool:
+        if value is None:
+            return False
+        return value.key==self.key
+    
+    def __id__(self) -> int:
+        return f'{self.value}'
+    
     def __str__(self) -> str:
-        ret=f'{self.value}'
-        return ret+"".join([str(v) for v in self.childs])
+        cur_key=str(State.CUR.key if State.CUR else '')
+        return cur_key+self.__id__()+"".join([v.__id__() for v in self.childs])
     
     @classmethod
     def load_from_json(cls,value,childs,depth=0,**kw):

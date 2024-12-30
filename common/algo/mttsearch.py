@@ -8,7 +8,11 @@ class MctsNode(State):
         super().__init__(*args)
         self.visits = 0
         self.expand_nodes:Dict[str,MctsNode]=dict()
-
+        self.score = 0
+    
+    def get_title_keys(self):
+        return ['key', 'value', 'visits','score']
+    
     def expand(self,n:State):
         self.expand_nodes[n.key]=n
 
@@ -16,6 +20,9 @@ class MctsNode(State):
         if len(self.expand_nodes) == len(self.childs):
             return True
         return False
+    
+    def __id__(self) -> int:
+        return f'{self.value}{self.visits}{self.score}'
 
 class MctsSearchTree:
     '''
@@ -24,6 +31,8 @@ class MctsSearchTree:
     def __init__(self) -> None:
         self.scalar=1/(2*math.sqrt(2.0))
         self.explore_ratio = 0
+        self.root:MctsNode=None
+
     def expand(self, node:MctsNode):
         next_node=node.get_next()
         while next_node.has_childs() and next_node.key in node.expand_nodes:
@@ -52,12 +61,12 @@ class MctsSearchTree:
     def best_select(self,node:MctsNode,scalar):
         bestscore,bestchildren=-inf,[]
         for key,c in node.expand_nodes.items():
-            score=self.get_score(node,c,scalar)
-            if score == bestscore:
+            node.score=self.get_score(node,c,scalar)
+            if node.score == bestscore:
                 bestchildren.append(c)
-            if score > bestscore:
+            if node.score > bestscore:
                 bestchildren = [c]
-                bestscore=score
+                bestscore=node.score
         return bestchildren[0]
             
     def get_score(self,c:MctsNode, node:MctsNode,scalar):
@@ -65,11 +74,12 @@ class MctsSearchTree:
         explore=math.sqrt(2.0*math.log(node.visits)/float(c.visits))    
         return exploit+scalar*explore
 
-    def uct_seach(self,root:MctsNode,budget):
+    def uct_seach(self,budget):
         for _ in range(budget):
-            front=self.policy(root)
+            front=self.policy(self.root)
             self.buck_up(front, front.calc_value())
-        return self.best_select(root,0)
+        return self.best_select(self.root,0)
     
     def search(self,root:MctsNode,budget=10,**kw):
-        return self.uct_seach(root, budget)
+        self.root = root
+        return self.uct_seach(budget)

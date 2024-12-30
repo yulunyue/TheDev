@@ -31,6 +31,9 @@ class TreeNode:
                 ret[v//2].right=ret[v]
         return ret[1]
 
+def color(a,b):
+    return '#ccc' if a==b else '#fff'
+
 def bp(title, value, key=""):
     return wc(title, key, value, 'blue')
 
