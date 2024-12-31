@@ -10,6 +10,7 @@ import os
 import time
 import sys
 import json
+sys.setrecursionlimit(10**5+1)
 WRITE_PATH='data/algo/run.py'
 CHANGE_STORE = dict()
 class TreeNode:
@@ -29,6 +30,9 @@ class TreeNode:
             else:
                 ret[v//2].right=ret[v]
         return ret[1]
+
+def color(a,b):
+    return '#ccc' if a==b else '#fff'
 
 def bp(title, value, key=""):
     return wc(title, key, value, 'blue')
@@ -150,7 +154,7 @@ class SolutionBase:
             return self.replay()
         self.test([getattr(self,v) for v in exec_names[0].split(',')])
         self.flush_log()
-        
+
     agentsIds=None
     def submit(self):
         if 'codingame' in  self.uri:
@@ -234,6 +238,7 @@ class SolutionBase:
             key2,s2=var.key+'_algo',var.hex_str() if var.hex_str else ""
             if CHANGE_STORE.get(key2)!=s2:
                 flag=True
+                logger.info(f'{key2}:{CHANGE_STORE.get(key2)},{s2}')
                 CHANGE_STORE[key2]=s2
             childs[var.key]=var.view()
         if flag:

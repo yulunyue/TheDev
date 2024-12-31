@@ -18,8 +18,12 @@ class State:
         self.key = State.NODE_ID
         State.NODE_ID+=1
         self.value = 0
+        self.score = 0
+        self.state_value=0
         self.childs: List[State] = list(args)
         self.child_idx=0
+        self.root:State = None
+        self.cur:State = None
         self.parent:State = None
         for d in self.childs:
             d.parent=self
@@ -47,22 +51,23 @@ class State:
         self.value = value
         return self
     
-    def set_random_value(self,a=-10,b=10):
-        random.seed(7)
+    def load(self,fun=None):
         def dfs(c:State,depth):
+            c.root = self
             c.depth = depth
             if len(c.childs)==0:
-                c.value=random.randint(a,b)            
-                return c.value
-            c.value=0
+                if fun:
+                    c.state_value=c.value=fun()        
+                return c.state_value
+            c.state_value=0
             for v in c.childs:
-                c.value+=dfs(v,depth+1)
-            return c.value
+                c.state_value+=dfs(v,depth+1)
+            return c.state_value
         dfs(self,0)       
         return self
     
     def get_title_keys(self):
-        return ['value']
+        return ['key','value']
     
     def dump(self):
         return dict(
@@ -71,12 +76,14 @@ class State:
         )
     
     def tree_view(self):
+        from app.yly.algo.manage import color
         return dict(
             data=[
                 self.k(k) for k in self.get_title_keys()
             ],
             childs=[c.tree_view() for c in self.childs],
-            key=f"search_state_{self.key}"
+            key=f"search_state_{self.key}",
+            color=color(self,self.root.cur if self.root and self.root.cur else None),
         )
     
     def graph_view(self):
@@ -86,10 +93,17 @@ class State:
         from app.yly.algo.manage import bp
         value = getattr(self,name)
         return bp(name ,value,f"Node_{self.key}")
-     
+    def __eq__(self, value: object) -> bool:
+        if value is None:
+            return False
+        return value.key==self.key
+    
+    def __id__(self) -> int:
+        return f'{self.value}'
+    
     def __str__(self) -> str:
-        ret=f'{self.value}'
-        return ret+"".join([str(v) for v in self.childs])
+        cur_key=str(self.root.cur.key if self.root and self.root.cur else '')
+        return cur_key+self.__id__()+"".join([v.__id__() for v in self.childs])
     
     @classmethod
     def load_from_json(cls,value,childs,depth=0,**kw):
