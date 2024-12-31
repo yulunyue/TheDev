@@ -47,9 +47,7 @@ class Solution(SolutionBase):
         start=a.index(min_a)
         
         while True:
-            exit_flag=True
-            if out:
-                self.log(out[-1])
+            exit_flag=True         
             self.log(start,a)
             for i in range(n-1):
                 if a[(start+i)%n]>a[(start+i+1)%n]:
@@ -72,6 +70,7 @@ class Solution(SolutionBase):
                 b.append(a[-1])
             b.append(a[0])
             out.append("".join(self.performSwaps(swaps)))
+            self.log(out[-1],swaps)
             start =(start-1+n)%n
             a = b
             # self.log(out[-1])

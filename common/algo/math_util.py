@@ -3,6 +3,9 @@ import itertools
 from functools import lru_cache
 from collections import defaultdict, deque, Counter
 
+@lru_cache(None)
+def gcd(v1,v2):
+    return gcd(v2,v1%v2) if v2>0 else v1    
 
 def pi_float(v):
     if isinstance(v, int):
