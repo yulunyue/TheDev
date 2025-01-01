@@ -64,20 +64,19 @@ class MctsSearchTree:
         return self.root.cur
 
     def best_select(self,node:MctsNode,scalar):
-        node.score,bestchildren=-inf,[]
+        best_score,bestchildren=-inf,[]
         for key,c in node.expand_nodes.items():
-            self.root.cur = c
-            self.root.cur.score=self.get_score(node,c,scalar)
-            if self.root.cur.score == node.score:
+            c.score=self.get_score(node,c,scalar)
+            if c.score == best_score:
                 bestchildren.append(c)
-            if self.root.cur.score > node.score:
-                bestchildren = [self.root.cur]
-                node.score=self.root.cur.score
+            if c.score > best_score:
+                bestchildren = [c]
+                best_score=c.score
         return bestchildren[0]
             
-    def get_score(self,c:MctsNode, node:MctsNode,scalar):
-        exploit=c.get_value()/c.visits
-        explore=math.sqrt(2.0*math.log(node.visits)/float(c.visits))    
+    def get_score(self,p:MctsNode, node:MctsNode,scalar):
+        exploit=p.get_value()/p.visits #平均值
+        explore=math.sqrt(2.0*math.log(node.visits)/float(p.visits))    
         return exploit+scalar*explore
 
     def uct_seach(self,budget):
