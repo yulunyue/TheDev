@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "dagre-d3": "^0.4.18",
-    "mermaid": "^11.4.1"
+    "mermaid": "^11.4.1",
+    "panzoom": "^9.4.3"
   }
 }

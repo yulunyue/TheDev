@@ -13,7 +13,7 @@ import { label, pre, Pre } from "./dom/label"
 import { listui, listdev } from "./dom/list"
 import { dagre_d3_dev } from "../../third/third_util"
 import Constant from "../../base/web/constant"
-import { Node, node } from "../../base/web/cls"
+import { Node, node, to_node } from "../../base/web/cls"
 import web_dom from "../../base/web/web_dom"
 import { line, Line } from "./svg/line"
 import { Form, form, row1, row2, Row } from "./dom/form"
@@ -34,7 +34,8 @@ DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
 DivFactory.register('graph', () => new MeraGraph())
 export {
-    Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button,MeraGraph,mera_util,
+    Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button, MeraGraph, mera_util,
     DEV_COMPONENT, Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
-    Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2
+    Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2,
+    to_node,
 }

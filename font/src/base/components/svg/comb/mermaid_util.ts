@@ -2,6 +2,7 @@ import { Div } from "../../dom/div";
 import mermaid from "mermaid";
 import { Svg, Node } from "../../export";
 import { line, web_dom } from "../../export";
+import createPanZoom from "panzoom";
 mermaid.initialize({
     //theme: 'neutral',
     //look: "handDrawn",
@@ -23,25 +24,43 @@ export class MeraUtil extends Div {
     init_style(): void {
         this.full()
     }
-    on_load() {
-        let svg = (this.el.children[0] as any)
-        if (!svg || !svg.clientWidth) {
-            return
-        }
-        let w = this.el.clientWidth - svg.clientWidth
-        let h = this.el.clientHeight - svg.clientHeight
-        svg.style.transform = `translate(${w / 2}px,${h / 2}px)`
-        this.load_after()
+    on_load_room() {
+        const container = this.el;
+        const svgElement = container.querySelector("svg");
+
+        // Initialize Panzoom
+        const panzoomInstance = createPanZoom(svgElement, {
+            //maxScale: 5,
+            // minScale: 0.5,
+            // step: 0.1,
+        });
+
+        // Add mouse wheel zoom
+        container.addEventListener("wheel", (event) => {
+            // panzoomInstance.zoomWithWheel(event);
+        });
     }
-    load_after(): void {
+    on_load() {
+
+        // let svg = (this.el.children[0] as any)
+        // if (!svg || !svg.clientWidth) {
+        //     return
+        // }
+        // let w = this.el.clientWidth - svg.clientWidth
+        // let h = this.el.clientHeight - svg.clientHeight
+        // svg.style.transform = `translate(${w / 2}px,${h / 2}px)`
+        this.on_load_room()
+        this.load_event()
+    }
+    load_event(): void {
         let ps = this.el.querySelectorAll('div')
         var register_click = (v: HTMLDivElement) => {
             let name = v.getAttribute("name")
-            if(!name){
+            if (!name) {
                 return
             }
             // console.error(this.option.data.nodes,name)
-            let color=this.option.data.nodes[name].color
+            let color = this.option.data.nodes[name].color
             v.style.background = color
             v.onclick = () => { this.do_select(name) }
         }
@@ -70,8 +89,8 @@ export class MeraGraph extends MeraUtil {
         for (var i = 0; i < edges.length; i++) {
             lines.push([
                 this.get_title(edges[i][0]),
-                this.get_line_text(edges[i][2], edges[i][3], edges[i][4]),
-                this.get_title(edges[i][1])
+                this.get_line_text(edges[i][1], edges[i][2], edges[i][3], edges[i][4]),
+
             ].join(" "))
         }
     }
@@ -80,7 +99,7 @@ export class MeraGraph extends MeraUtil {
         this.option.data.nodes = {}
 
         let dfs = (op: Node) => {
-            this.option.data.nodes[op.key] = op
+            this.option.data.nodes[op.key] = op.data
             for (var i = 0; i < op.childs.length; i++) {
                 edges.push([op.key, op.childs[i].key])
                 dfs(op.childs[i])
@@ -91,30 +110,35 @@ export class MeraGraph extends MeraUtil {
     }
     render_option(): void {
         this.render_tmp_store = {}
-        let lines = ['graph']
+        let lines = ['graph LR']
         let edges = this.option.data.edges
         if (edges) {
             this.render_edges(edges, lines)
         } else (
             this.render_edges(this.get_edges(), lines)
         )
-        console.error(lines.join("\n"))
+        //console.error(lines.join("\n"))
         this.set_graph(lines)
     }
 
-    get_line_text(s: any, s1: any, s2: any) {
+    get_line_text(ss: string, s: any, s1: any, s2: any) {
+        if (ss == undefined || ss == null) {
+            return ""
+        }
         let line_text = "-->"
         if (s != null) {
             line_text = '-->|' + s + '|'
         }
-        return line_text
+        return line_text + this.get_title(ss)
     }
     get_title(key: any) {
-        if (key in this.render_tmp_store) {
+        if (key in this.render_tmp_store || !this.option.data.nodes) {
             return key
         }
-
-        let data = this.option.data.nodes[key].data
+        let data = this.option.data.nodes[key]
+        if (data == undefined || data == null) {
+            return key
+        }
         if (!Array.isArray(data)) {
             data = [data]
         }

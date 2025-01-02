@@ -61,16 +61,17 @@ class WebDom {
     prefix: string
     init_href() {
         this.url_param = {}
-        var location_href = this.get_location()
-        var hrefs = location_href.split('/')
+        var location_href2 = this.get_location().split('?')
+        var hrefs = location_href2[0].split('/')
         var ip_ports = hrefs[2].split(':')
         this.web_host = ip_ports[0]
         this.web_port = parseInt(ip_ports[1])
-        Ut.extend(this.url_param, Ut.url_to_json(hrefs[hrefs.length - 1].split('?').pop()))
+        Ut.extend(this.url_param, Ut.url_to_json(location_href2[1]))
         let bk_host = this.web_host
         if (bk_host.endsWith('github.io')) {
             bk_host = '1.14.93.140'
         }
+        console.log(this.url_param)
         this.prefix = 'http://' + bk_host + ":" + this.bk_port
     }
     url(path: string) {
@@ -110,8 +111,8 @@ class WebDom {
             if (req.readyState == this.HTTP_STATE_FINISH) {
 
                 let data = this.hander_res(JSON.parse(req.responseText))
-                if (data && data.code == 500) {
-                    alert(data.title)
+                if (data && data.code > 300) {
+                    alert(data.code + '->' + data.title)
                 }
                 else if (data) {
                     // call_back(new Node().set_option(data))

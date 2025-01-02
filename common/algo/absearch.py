@@ -111,15 +111,15 @@ class State:
             *[cls.load_from_json(**d) for d in childs]
         ).set_value(value)
     
+    def get_nexts(self,depth):
+        return self.childs
+    
 class AbNode(State):
     def init(self):
         self.alpha = -inf
         self.bate = inf
     
 class AlphaBateSearch:
-
-    def get_moves(self, depth, last_move: AbNode):
-        return last_move.childs
 
     def do(self, *mv):
         return self
@@ -130,7 +130,7 @@ class AlphaBateSearch:
     def search(self, last_move:AbNode, depth=10, alpha=-inf, bate=inf,**kw) -> None:
         if depth == 0:
             return last_move.calc_value(depth)
-        mvs = self.get_moves(depth, last_move)
+        mvs = last_move.get_nexts(depth)
         if not mvs:
             return last_move.calc_value(depth)
         last_move.alpha, last_move.bate = alpha, bate

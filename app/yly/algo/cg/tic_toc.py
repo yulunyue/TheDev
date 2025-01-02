@@ -64,15 +64,13 @@ def init():
 init()
 '''
 
-class Grid3:
-    def __init__(self) -> None:
-        self.init()
-
+class Grid3(AbNode):
 
     def init(self):
+        super().init()
         self.grid=[0]*9
 
-    def put(self, pos, val):
+    def put3(self, pos, val):
         self.grid[pos]=val
 
     def get_moves(self):
@@ -82,20 +80,20 @@ class Grid3:
                 ret.append(p)
         return ret
 
-
-
 class Grid9(Grid3):
-
     def init(self):
-        self.grid=[Grid3() for _ in range(9)]
+        super().init()
+        self.grid:List[Grid3]=[Grid3() for _ in range(9)]
+        self.i=self.j=-1
 
-    def put(self, pi, op):
-        pass
+    def put(self, i, j, op):
+        self.i,self.j=i,j
+        self.grid[self.i].put3(self.j,op)
 
     def get_score(self, depth):
         return self.score if self.play_id == 1 else -self.score
 
-    def get_moves(self, depth, last_move):
+    def get_nexts(self, depth):
         if last_move is not None and self.nodes[last_move[1]].win_state == 0 and self.nodes[last_move[1]].grid_state.bit_count() != 9:
             ret = self.nodes[last_move[1]].get_moves(self.play_id)
         else:
@@ -110,51 +108,7 @@ class Grid9(Grid3):
 
 
 
-def get_info(frames):
-    pos = []
-    min_num, max_num, min_score, max_score = inf, -inf, inf, -inf
-    for frame in frames:
-        stdout = frame.get("stdout")
-        if not stdout:
-            continue
-        if 'stderr' in frame:
-            jl = json.loads(frame['stderr'])
-            min_num, max_num = min(jl['vt_num'], min_num), max(
-                jl['vt_num'], max_num)
-            min_score, max_score = min(
-                jl['score'], min_score), max(jl['score'], max_score)
-        try:
-            pos.append([int(stdout[0]), int(stdout[2])])
-        except:
-            pos.append(stdout)
-    return dict(
-        pos=str(pos),
-        nums=[min_num, max_num],
-        score=[min_score, max_score]
-    )
 
-class Mv(AbNode):
-    def __init__(self, idx, pos, depth=None, player_id=None, parent=None) -> None:
-        self.idx = idx
-        self.pos = pos
-        self.depth = depth
-        self.player_id = player_id
-        self.score = 0
-        # self.pre: Mv = parent
-        self.after: Mv = None
-
-    def __str__(self) -> str:
-        p = self
-        ret = []
-        while p:
-            ret.append(str(pos2(p)))
-            p = p.after
-        return ",".join(ret)
-
-
-
-
-        # return None, None
 
 
 class Solution(SolutionBase):
@@ -166,10 +120,10 @@ class Solution(SolutionBase):
         # 5604295,
         -2, -1
     ]
-
+    _has_view = True
     def __init__(self) -> None:
         self.state = Grid9()
-        self.ab_search = AlphaBateSearch()
+        self.search = AlphaBateSearch()
 
     def get_cases(self):
         return [
@@ -181,8 +135,8 @@ class Solution(SolutionBase):
         pass
 
     def execute(self):
-        mv = self.ab_search.search(self.state,4)
-        return f'{mv[0]} {mv[1]}'
+        self.search.search(self.state, 4)
+        return str(self.state)
 
 
     def exec(self):

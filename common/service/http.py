@@ -142,7 +142,7 @@ class ApiCall:
 
     def call_app(self, path, params):
         if path not in self.fun_map:
-            return dict(statu=404, path=path, data=list(self.fun_map.keys()))
+            return dict(code=404, title=f'{path} not in {list(self.fun_map.keys())}')
         try:
             ret = self.fun_map[path](**params)
         except Exception as e:
@@ -151,7 +151,7 @@ class ApiCall:
             traceback.print_exc()
             ret = dict(code=500,title=str(e))
         if isinstance(ret, Node):
-            return ret.to_json()
+            return json.dumps(ret.to_json(),ensure_ascii=False)
         return ret
 
     def call(self, path, param):
