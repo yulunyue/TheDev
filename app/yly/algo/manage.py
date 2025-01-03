@@ -216,7 +216,7 @@ class SolutionBase:
     
     def flush_log(self):
         if self._logs:
-            logger.info("\n".join(self._logs))
+            logger.info("\n"+"\n".join(self._logs))
             self._logs.clear()
 
 
@@ -278,6 +278,24 @@ class SolutionBase:
             raise Exception(msg)
         return case,ret,msg  
     
+    def run_cls(self):
+        self.gen_file()
+        for method,param,result in self.get_cases():
+            self.init()
+            self._logs.clear()
+            flag=False
+            self.log(f'{method} {param} {result}')
+            for i in range(1,len(method)):
+                e=getattr(self,method[i])(*param[i])
+                self.log(f'{i} {method[i]} {param[i]} {e}')
+                if e!=result[i]:
+                    self.log(f'ans:{result[i]}')
+                    flag=True
+                    break
+            if flag:
+                break
+            self._logs.clear()
+        self.flush_log()
 
 
 

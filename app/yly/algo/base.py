@@ -39,7 +39,8 @@ class SolutionBase:
 
     def run(self):
         self.exec()
-
+    def run_cls(self):
+        pass
     def output(self,*args):
         print(*args)
         sys.stdout.flush()

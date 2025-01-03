@@ -1,3 +1,4 @@
+inf=float("inf")
 class SegTreeNode:
     '''
                           1[0-6]
@@ -5,10 +6,7 @@ class SegTreeNode:
      4[0-1]        5[2-3]         6[4-5]         7[6-6]
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
-    FZ=0
-    QU=1
-    ADD=2
-    OP=None
+
     def __init__(self,idx=1, default_value=0) -> None:
         self.idx = idx
         self.default_value = default_value
@@ -16,6 +14,7 @@ class SegTreeNode:
         self.todo = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
+    
     def set_range(self,l,r):
         self.l = l
         self.r = r
@@ -25,7 +24,7 @@ class SegTreeNode:
     @property
     def left(self):
         if not self._left:
-            self._left = SegTreeNode(
+            self._left = self.__class__(
                  self.idx*2,self.default_value
             ).set_range(self.l, self.m)
         return self._left
@@ -33,33 +32,34 @@ class SegTreeNode:
     @property
     def right(self):
         if not self._right:
-            self._right = SegTreeNode(
+            self._right = self.__class__(
                 self.idx*2+1, self.default_value
             ).set_range(self.m+1, self.r)
         return self._right
 
-    def query(self, l, r):
+    def query_sum(self, l, r):
         if l <= self.l and self.r <= r:
             return self.value
         res = 0
         if self.m < r:
-            res+=self.right.query(l, r)
+            res+=self.right.query_sum(l, r)
         if self.m >= l:
-            res+=self.left.query(l, r)
+            res+=self.left.query_sum(l, r)
         return res
     
-    def query_sum(self,l,r):
-        return self.query(l,r)
-    
-    def add_value(self,arg1,arg2,arg3=None):
-        if arg3 is None:
-            l,v,r=arg1,arg2,arg1
-        else:
-            l,v,r=arg1,arg2,arg3
-        SegTreeNode.OP=SegTreeNode.ADD
-        return self.update(l,r,v)
-    
-    def update(self, l,r, value):
+    def query_max(self, l, r):
+        if l <= self.l and self.r <= r:
+            return self.value
+        res = -inf
+        self.down(self.todo)
+        if self.m < r:
+            res=max(res,self.right.query_max(l, r))
+        if self.m >= l:
+            res=max(res,self.left.query_max(l, r))
+        return res
+
+        
+    def update(self, l, r, value):
         if l <=self.l and self.r<= r:
             self.do(value)
             return self.value
@@ -72,23 +72,19 @@ class SegTreeNode:
         return self.value
 
     def do(self,v):
-        self.todo=1-self.todo
-        if SegTreeNode.OP == SegTreeNode.ADD:
-            self.value+=v
-            return
-        self.value = self.r-self.l+1-self.value
-        
+        pass
+
+    def update_value(self,v):
+        pass
         
     def down(self,v):
         if self.todo:
             self.left.do(v)
             self.right.do(v)
-            self.todo = 1-self.todo
+            self.todo = 0
       
     def up(self,value):
-        if SegTreeNode.OP == 'ADD':
-            return
-        self.value = self.left.value+self.right.value
+        pass
     
     def get_childs(self):
         ret = []

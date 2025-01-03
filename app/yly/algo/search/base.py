@@ -4,6 +4,7 @@ from common.algo.mttsearch import MctsNode,MctsSearchTree
 import sys
 from app.yly.algo.manage import SolutionBase,View
 import random
+from typing import List
 
 def shape1(AbNode:State):
     ret:State=AbNode(
@@ -43,6 +44,44 @@ def shape1(AbNode:State):
     random.seed(7)
     return ret.load(lambda *args:random.randint(-10,10))
 
+class StateView(State):
+    NODE_ID=0
+    def init(self,*args):
+        self.key = State.NODE_ID
+        StateView.NODE_ID+=1
+        self.root:State = None
+        self.cur:State = None
+        self.parent:State = None
+        self.childs: List[State] = list(args)
+    def load(self,fun=None):
+        def dfs(c:State,depth):
+            c.root = self
+            c.depth = depth
+            if len(c.childs)==0:
+                if fun:
+                    c.state_value=c.value=fun()        
+                return c.state_value
+            c.state_value=0
+            for v in c.childs:
+                c.state_value+=dfs(v,depth+1)
+            return c.state_value
+        dfs(self,0)       
+        return self
+    
+    def __id__(self) -> int:
+        return f'{self.value}'
+    
+    def __str__(self) -> str:
+        cur_key=str(self.root.cur.key if self.root and self.root.cur else '')
+        return cur_key+self.__id__()+"".join([v.__id__() for v in self.childs])
+
+class AbSearchState(StateView):
+    pass
+
+class MctsState(StateView):
+    def init(self):
+        self.child_idx=0
+        return super().init()
 
 class Solution(SolutionBase):
     _has_view=True

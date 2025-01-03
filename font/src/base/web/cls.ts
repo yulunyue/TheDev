@@ -162,7 +162,9 @@ export class Node {
     add_child(v: any) {
         this.childs.push(v)
         v.parent = this
+        return v
     }
+
     filter(key: string) {
         let ret = new Node().set_childs(this.childs.filter(v => {
             return v.title.indexOf(key) != -1

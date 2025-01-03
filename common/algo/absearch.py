@@ -13,66 +13,28 @@ o:8     p:9
 '''
 
 class State:
-    NODE_ID=0
     def __init__(self,*args) -> None:
-        self.key = State.NODE_ID
-        State.NODE_ID+=1
-        self.value = 0
-        self.score = 0
-        self.state_value=0
-        self.childs: List[State] = list(args)
-        self.child_idx=0
-        self.root:State = None
-        self.cur:State = None
-        self.parent:State = None
-        for d in self.childs:
-            d.parent=self
-        self.depth = 0
-        self.init()
-
+        self.init(*args)
+    
     def init(self):
         pass
 
-    def has_childs(self):
-        return len(self.childs)
+    def get_value(self):
+        return None
     
-    def get_next(self):
-        ret=self.childs[self.child_idx]
-        self.child_idx=(self.child_idx+1)%len(self.childs)
-        return ret
+    def set_value(self,*args):
+        return self
     
     def calc_value(self, *args):
-        return self.value
-    
-    def get_value(self,*args):
-        return self.value
-    
-    def set_value(self,value):
-        self.value = value
-        return self
-    
-    def load(self,fun=None):
-        def dfs(c:State,depth):
-            c.root = self
-            c.depth = depth
-            if len(c.childs)==0:
-                if fun:
-                    c.state_value=c.value=fun()        
-                return c.state_value
-            c.state_value=0
-            for v in c.childs:
-                c.state_value+=dfs(v,depth+1)
-            return c.state_value
-        dfs(self,0)       
-        return self
-    
+        return None
+
     def get_title_keys(self):
-        return ['key','value']
+        return []
     
     def dump(self):
         return dict(
-            value=self.value,
-            childs=[v.dump() for v in self.childs]
+            value=self.get_value(),
+            childs=[v.dump() for v in self.get_nexts()]
         )
     
     def tree_view(self):
@@ -81,7 +43,7 @@ class State:
             data=[
                 self.k(k) for k in self.get_title_keys()
             ],
-            childs=[c.tree_view() for c in self.childs],
+            childs=[c.tree_view() for c in self.get_nexts()],
             key=f"search_state_{self.key}",
             color=color(self,self.root.cur if self.root and self.root.cur else None),
         )
@@ -93,17 +55,12 @@ class State:
         from app.yly.algo.manage import bp
         value = getattr(self,name)
         return bp(name ,value,f"Node_{self.key}")
+    
     def __eq__(self, value: object) -> bool:
         if value is None:
             return False
         return value.key==self.key
     
-    def __id__(self) -> int:
-        return f'{self.value}'
-    
-    def __str__(self) -> str:
-        cur_key=str(self.root.cur.key if self.root and self.root.cur else '')
-        return cur_key+self.__id__()+"".join([v.__id__() for v in self.childs])
     
     @classmethod
     def load_from_json(cls,value,childs,depth=0,**kw):
@@ -112,13 +69,15 @@ class State:
         ).set_value(value)
     
     def get_nexts(self,depth):
-        return self.childs
+        return []
     
 class AbNode(State):
     def init(self):
         self.alpha = -inf
         self.bate = inf
-    
+        self.value = None
+        self.best_action:AbNode=None
+
 class AlphaBateSearch:
 
     def do(self, *mv):
@@ -130,19 +89,21 @@ class AlphaBateSearch:
     def search(self, last_move:AbNode, depth=10, alpha=-inf, bate=inf,**kw) -> None:
         if depth == 0:
             return last_move.calc_value(depth)
-        mvs = last_move.get_nexts(depth)
+        mvs:List[AbNode] = last_move.get_nexts(depth)
         if not mvs:
             return last_move.calc_value(depth)
         last_move.alpha, last_move.bate = alpha, bate
         for mv in mvs:
             self.do(mv)
-            self.search(mv,depth=depth-1,
+            mv.value=-self.search(mv,depth=depth-1,
                                  alpha=-last_move.bate, bate=-last_move.alpha)
             self.undo(mv)
             if mv.value >= last_move.bate:
                 last_move.alpha = last_move.bate
+                last_move.best_action=mv
                 break
             if mv.value > last_move.alpha:
                 last_move.alpha = mv.value
+                last_move.best_action=mv
         return last_move.alpha
 
