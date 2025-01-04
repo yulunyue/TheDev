@@ -1,13 +1,12 @@
 from typing import Dict
 from common.service.http import Node
-from .gus_num.main import GusNum
-from .game_base import GameBase
-from .ab.main import AbGame
+from app.yly.game.gus_num.main import GusNum
+from app.yly.game.game_base import GameBase
+from app.yly.game.ab.main import AbGame
+from app.yly.game.connect_four.main import CfGame
 GAME:Dict[str,GameBase]=dict()
 for cls in GameBase.__subclasses__():
     GAME[cls.__name__]=cls
-
-
     
 def get_game(game_id,room_id):
     key = (game_id,room_id)

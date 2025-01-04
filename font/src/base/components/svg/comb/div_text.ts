@@ -21,10 +21,10 @@ export class Text extends GNode {
 
     }
 
-    set_style(s: Style) {
-        this.contain.set_style(s)
-        return this
-    }
+    // set_style(s: Style) {
+    //     this.contain.set_style(s)
+    //     return this
+    // }
     set_text(s: any) {
         let w = 80
 
@@ -46,8 +46,21 @@ export class Text extends GNode {
     init_style(): void {
 
     }
+    set_width(w: number) {
+        this.contain.set_width(w)
+        this.foreign_object.set_width(w)
+        return this
+    }
+    set_height(w: number) {
+        this.contain.set_height(w)
+        this.foreign_object.set_height(w)
+        return this
+    }
     get_height() {
         return this.contain.get_height()
+    }
+    render_option(): void {
+        // this.set_text(this.option.title)
     }
 
 }

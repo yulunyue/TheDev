@@ -37,6 +37,14 @@ export class Text extends GNode {
             cursor: "pointer",
         })
     }
+    set_width(w: number) {
+        this.bg.set_width(w)
+        return this
+    }
+    set_height(w: number) {
+        this.bg.set_height(w)
+        return this
+    }
     render_option() {
 
     }
