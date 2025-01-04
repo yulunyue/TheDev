@@ -248,6 +248,7 @@ class SolutionBase:
         return []
     def get_main_view(self):
         return View().add_node(*self.get_watch())
+    
     def init_watch(self,tp):
         if self._watch_var is not None:
             return
@@ -277,7 +278,7 @@ class SolutionBase:
         if msg:
             raise Exception(msg)
         return case,ret,msg  
-    
+
     def run_cls(self):
         self.gen_file()
         for method,param,result in self.get_cases():

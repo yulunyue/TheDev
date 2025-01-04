@@ -74,8 +74,6 @@ class SegTreeNode:
     def do(self,v):
         pass
 
-    def update_value(self,v):
-        pass
         
     def down(self,v):
         if self.todo:
