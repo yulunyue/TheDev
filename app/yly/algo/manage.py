@@ -171,6 +171,8 @@ class SolutionBase:
         else:
             raise Exception(self.uri)
     def test(self, func):
+        if self.uri.startswith('lc_cls'):
+            return self.run_cls()
         for fn in func:
             for i, case in enumerate(self.get_cases()):
                 self.ep = case.pop("result")
@@ -280,8 +282,8 @@ class SolutionBase:
         return case,ret,msg  
 
     def run_cls(self):
-        self.gen_file()
-        for method,param,result in self.get_cases():
+        for case in self.get_cases():
+            method,param,result=case['mathods'],case['params'],case['result']
             self.init()
             self._logs.clear()
             flag=False

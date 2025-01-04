@@ -1,7 +1,10 @@
 from app.yly.algo.manage import SolutionBase,View
 from common.algo.segtree import SegTreeNode
+from sortedcontainers import SortedList
 from typing import Dict,List
+from collections import defaultdict
 from functools import lru_cache
+import bisect
 MOD=(10**9)+7
 inf = float("inf")
 false=False
@@ -16,10 +19,10 @@ class St(SegTreeNode):
         self.value=max(self.left.value,self.right.value)
 
 class MyCalendarThree(SolutionBase):
-    _has_view = True
+    uri='lc_cls'
     def get_watch(self):
         return [
-            View("seg").graph()
+      
         ]
     def get_cases(self):
         return [dict(
@@ -31,12 +34,25 @@ class MyCalendarThree(SolutionBase):
     def __init__(self):
         self.init()
 
-    def init(self,params=None,**kwargs):
-        self.seg=St().set_range(0,MOD)     
+    def init(self, *args, **kwargs):
+        self.array=SortedList()
+        self.ct=defaultdict(int)
+        return super().init(*args, **kwargs)
+
 
     def book(self, startTime: int, endTime: int) -> int:
-        self.seg.update(startTime,endTime-1,1)
-        return self.seg.value
+        if startTime not in self.ct:
+            self.array.add(startTime)
+        if endTime not in self.ct:
+            self.array.add(endTime)
+        self.ct[startTime]+=1
+        self.ct[endTime]-=1
+        ret=-inf
+        ans=0
+        for v in self.array:
+            ans+=self.ct[v]
+            ret=max(ans,ret)
+        return ret
 
 # Your MyCalendarThree object will be instantiated and called as such:
 # obj = MyCalendarThree()
