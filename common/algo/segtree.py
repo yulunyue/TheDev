@@ -6,7 +6,7 @@ class SegTreeNode:
      4[0-1]        5[2-3]         6[4-5]         7[6-6]
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
-
+    QUERY_DEFAULT=0
     def __init__(self,idx=1, default_value=0) -> None:
         self.idx = idx
         self.default_value = default_value
@@ -37,27 +37,27 @@ class SegTreeNode:
             ).set_range(self.m+1, self.r)
         return self._right
 
-    def query_sum(self, l, r):
+    def query(self, l, r,fn):
         if l <= self.l and self.r <= r:
             return self.value
-        res = 0
-        if self.m < r:
-            res+=self.right.query_sum(l, r)
-        if self.m >= l:
-            res+=self.left.query_sum(l, r)
-        return res
-    
-    def query_max(self, l, r):
-        if l <= self.l and self.r <= r:
-            return self.value
-        res = -inf
+        res = SegTreeNode.QUERY_DEFAULT
         self.down(self.todo)
         if self.m < r:
-            res=max(res,self.right.query_max(l, r))
+            res=fn(res,self.right.query(l, r,fn))
         if self.m >= l:
-            res=max(res,self.left.query_max(l, r))
+            res=fn(res,self.left.query(l, r, fn))
         return res
+    
+    def query_sum(self,l,r):
+        return self.query(l,r,lambda a,b:a+b)
+    
+    def query_max(self, l, r):
+        SegTreeNode.QUERY_DEFAULT = -inf
+        return self.query(l,r,lambda a,b:a if a>b else b)
 
+    def query_min(self, l, r):
+        SegTreeNode.QUERY_DEFAULT = inf
+        return self.query(l,r,lambda a,b:a if a<b else b)
         
     def update(self, l, r, value):
         if l <=self.l and self.r<= r:

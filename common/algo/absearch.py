@@ -13,8 +13,15 @@ o:8     p:9
 '''
 
 class State:
-    def __init__(self,*args) -> None:
-        self.init(*args)
+    root = None
+    def __init__(self) -> None:
+        self.value =None
+        self.depth = 0
+        self.init()
+    
+    def set_depth(self,depth):
+        self.depth = depth
+        return self
     
     def init(self):
         pass
@@ -26,10 +33,10 @@ class State:
         return self
     
     def calc_value(self, *args):
-        return None
+        raise Exception("todo")
 
     def get_title_keys(self):
-        return []
+        return ['key','value']
     
     def dump(self):
         return dict(
@@ -43,7 +50,7 @@ class State:
             data=[
                 self.k(k) for k in self.get_title_keys()
             ],
-            childs=[c.tree_view() for c in self.get_nexts()],
+            childs=[c.tree_view() for c in self.get_nexts(self.depth)],
             key=f"search_state_{self.key}",
             color=color(self,self.root.cur if self.root and self.root.cur else None),
         )
@@ -72,30 +79,28 @@ class State:
         return []
     
 class AbNode(State):
-    def init(self):
+    def init(self,*args):
         self.alpha = -inf
         self.bate = inf
-        self.value = None
         self.best_action:AbNode=None
 
 class AlphaBateSearch:
-
+    def __init__(self):
+        pass
     def do(self, *mv):
         return self
 
     def undo(self, *mv):
         return self
 
-    def search(self, last_move:AbNode, depth=10, alpha=-inf, bate=inf,**kw) -> None:
-        if depth == 0:
-            return last_move.calc_value(depth)
+    def search(self, last_move:AbNode, depth=0, alpha=-inf, bate=inf,**kw) -> None:
         mvs:List[AbNode] = last_move.get_nexts(depth)
         if not mvs:
             return last_move.calc_value(depth)
         last_move.alpha, last_move.bate = alpha, bate
         for mv in mvs:
             self.do(mv)
-            mv.value=-self.search(mv,depth=depth-1,
+            mv.value=-self.search(mv,depth=depth+1,
                                  alpha=-last_move.bate, bate=-last_move.alpha)
             self.undo(mv)
             if mv.value >= last_move.bate:

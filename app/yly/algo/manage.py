@@ -64,6 +64,9 @@ class View(Node):
     def tree(self):
         return self.set_type("tree")
 
+    def grid(self):
+        return self.set_type("grid")
+    
     def graph(self):
         return self.set_type("graph")
     
@@ -238,7 +241,7 @@ class SolutionBase:
             key2,s2=var.key+'_algo',var.hex_str() if var.hex_str else ""
             if CHANGE_STORE.get(key2)!=s2:
                 flag=True
-                logger.info(f'{key2}:{CHANGE_STORE.get(key2)},{s2}')
+                # logger.info(f'{key2}:{CHANGE_STORE.get(key2)},{s2}')
                 CHANGE_STORE[key2]=s2
             childs[var.key]=var.view()
         if flag:
@@ -262,7 +265,9 @@ class SolutionBase:
 
     def view_web(self):
         _,ret,_ = self.view()
-        File(f'data/algo/{self.name}/readme.json').write_file(ret)
+        path=f'data/algo/{self.name}/record.json'
+        File(path).write_file(ret)
+        logger.info(path)
 
     def view(self,case=None,tp='web'):
         if case is None:
