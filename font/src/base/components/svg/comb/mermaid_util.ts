@@ -110,7 +110,8 @@ export class MeraGraph extends MeraUtil {
     }
     render_option(): void {
         this.render_tmp_store = {}
-        let lines = ['graph TD']
+        let dire = this.option.data.direction || 'TD'
+        let lines = ['graph ' + dire]
         let edges = this.option.data.edges
         if (edges) {
             this.render_edges(edges, lines)

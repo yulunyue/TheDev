@@ -92,7 +92,8 @@ class View(Node):
     def to_json(self):
         return super().to_json(size=self.size)
 
-
+def fmax(a,b,*args):return a if a>b else b
+def fmin(a,b,*args):return a if a<b else b
 class SolutionBase:
     uri=""
     _logs = []

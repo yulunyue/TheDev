@@ -19,6 +19,7 @@
 ## 作者相信
 1. The Code You Write More，The Code You Need Write LESS
 2. Code Make World Better and Easy
+3. 大多数人并不笨，那些难题也没有想象的那么难，只是没有遇到一个合适的场景，合适的人帮助你真正理解问题
 
 
 
