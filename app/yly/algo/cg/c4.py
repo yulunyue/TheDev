@@ -123,58 +123,40 @@ class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"
     game_id = '70989246b492bcc523436cf43b6090c82395d392'
     agentsIds = [
-        -1,-2
+        -2,-1
     ]
     name = 'f4'
     def get_cases(self):
         return [
             
-            dict(board_rows='''11.......
-11.......
-11..0....
-00..1....
-11..00...
-00..00...
-101.00...'''.split('\n'),result="")
+            dict(board_rows=[],result="")
         ]
     
-    def init(self,board_rows:List[str]):
+    def init(self,board_rows:List[int]):
         self.state=F4State()
         self.ab=F4Serach()
-        ct=[[],[]]
-        mv=0
-        for _ in range(C.HEIGHT):
-            w=board_rows.pop()
-            if not w:
-                continue
-            for j in range(C.WIDTH):
-                if w[j]=='.':
-                    continue
-                ct[int(w[j])].append(j)
-                mv+=1
-        
-        for i in range(mv):
-            cm=ct[i%2].pop(0)
-            self.state=self.state.put(cm)
-            self.log('---')
-            self.log(self.state.print())    
-                
-    
-        
+        for w in board_rows:
+            self.put(w)
 
-
+    def put(self,w):
+        self.state=self.state.put(w)
+        
+            
     def execute(self):
         self.log(self.state.print())
         self.ab.search(self.state)
-        self.log(self.state.best_action.value)
+        # self.log(self.state.best_action.value)
         return self.state.best_action.col
 
 
     def exec(self):
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
+        self.init("")
         while True:
-            turn_index = int(self.input())  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
+            turn_index = self.input()  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
+            if turn_index is None:
+                return
             board_rows=[]
             for i in range(7):
                 board_rows.append(self.input())  # one row of the board (from top to bottom)
@@ -183,7 +165,8 @@ class Solution(SolutionBase):
                 action = int(self.input())  # a valid column index into which a chip can be dropped
             opp_previous_action = int(self.input())  # opponent's previous chosen column index (will be -1 for first player in the first turn)
             self.error("--frame-flush---")
-            self.init(board_rows)
+            if opp_previous_action!=-1:
+                self.put(opp_previous_action)
             self.output(self.execute())
 
 
