@@ -123,7 +123,7 @@ class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"
     game_id = '70989246b492bcc523436cf43b6090c82395d392'
     agentsIds = [
-        -2,-1
+        -1,-2
     ]
     name = 'f4'
     def get_cases(self):
