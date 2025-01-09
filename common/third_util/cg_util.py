@@ -9,7 +9,6 @@ import json
 class CodingGame(Api):
     def __init__(self,name):
         self.name = name
-        self.log_json = File(f"data/log/cg/{self.name}.json")
         super().__init__()
 
 
@@ -29,20 +28,15 @@ class CodingGame(Api):
         return self.execute(file_path, game_id, "multipleLanguages", dict(testIndex=3))
 
     def pk(self, file_path, game_id, agentsIds):
-        ret = self.execute(file_path, game_id, "multi", dict(
+        return self.execute(file_path, game_id, "multi", dict(
             agentsIds=agentsIds,
             gameOptions=None,
             isSoloLeague=False
         ))
-        self.log_json.write_file(ret)
+        
+
     
-    def get_states(self):
-        states = self.log_json.read_file()
-        lines = []
-        for frame in states['frames']:
-            if 'stderr' in frame:
-                lines.extend(frame['stderr'].split('\n'))
-        return lines
+
 
 
 

@@ -154,17 +154,21 @@ class SolutionBase:
             return self.view_web()
         if exec_names and exec_names[0]=='submit':
             return self.submit()
-        if exec_names and exec_names[0]=='replay':
-            return self.replay()
         self.test([getattr(self,v) for v in exec_names[0].split(',')])
         self.flush_log()
 
     agentsIds=None
     def submit(self):
         if 'codingame' in  self.uri:
-            CodingGame(self.name).pk(
+            ret=CodingGame(self.name).pk(
                 WRITE_PATH,self.game_id,self.agentsIds
             )
+            File(f"data/log/cg/{self.name}.json").write_file(ret)
+            lines = []
+            for frame in ret['frames']:
+                if 'stderr' in frame:
+                    lines.extend(frame['stderr'].split('\n'))
+            File(f"data/log/cg/{self.name}.txt").write_file("\n".join(lines))
         else:
             raise Exception(self.uri)
     def replay(self):

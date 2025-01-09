@@ -50,12 +50,14 @@ def get_winning_moves(pos, mask):
 
 
 class F4State(AbNode):
+    
     def __init__(self,pos=0,mask=0,moves=0,col=0) -> None:
         self.pos = pos
         self.mask = mask
         self.moves = moves
         self.col = col
         super().__init__()
+        self.value = 0
 
     def put(self, col):
         move =  self.mask +  (1 << (col * (C.HEIGHT + 1)))
@@ -67,42 +69,50 @@ class F4State(AbNode):
         )
     
     def calc_value(self, *args):
-        return 0
+        return -self.value
     
     def get_legal_moves(self):
         return (self.mask+C.BOTTOM)&C.FULL     
    
     def get_nexts(self, depth):
-        if depth>4:
+        if depth>4 or self.value!=0:
             return []
+        leagal_move=self.get_legal_moves()
         win_state=get_winning_moves(self.pos,self.mask)
         op_win_state=get_winning_moves(self.pos^self.mask,self.mask)
         ret=[]
         for i,v in enumerate(C.CLOUMN_MASK):
+            if not v&leagal_move:
+                continue
             s=self.put(i)
             if v&win_state:
+                s.value = 100
                 return [s]
             elif v&op_win_state:
+                s.value = -90
                 return [s]
             ret.append(s)
         return ret 
 
     
     def print(self):
+        # from common.util.fp import File
         ret=[]
         for i in range(C.HEIGHT-1,-1,-1):
             tmp=""
             for j in range(C.WIDTH):
                 t=1<<((C.HEIGHT+1)*j+i)
                 if self.mask & t:
-                    if (self.pos&t) and (self.moves%2==0):
-                        tmp+=" X"
-                    else:
+                    if bool(self.pos&t) == bool(self.moves%2==0):
                         tmp+=" O"
+                    else:
+                        tmp+=" X"
                 else:
                     tmp+=" -"
             ret.append(tmp)
+        # File("data/log/cg/f4_grid.txt").write_file("\n".join(ret))
         return "\n".join(ret)
+        #return self
 
 
 
@@ -119,13 +129,13 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             
-            dict(board_rows='''.........
-.........
-.........
-.........
-10.......
-10.......
-10.......'''.split('\n'),result="")
+            dict(board_rows='''11.......
+11.......
+11..0....
+00..1....
+11..00...
+00..00...
+101.00...'''.split('\n'),result="")
         ]
     
     def init(self,board_rows:List[str]):
@@ -144,20 +154,22 @@ class Solution(SolutionBase):
                 mv+=1
         
         for i in range(mv):
-            cm=ct[i%2].pop()
-            self.state=self.state.put(cm)    
+            cm=ct[i%2].pop(0)
+            self.state=self.state.put(cm)
+            self.log('---')
+            self.log(self.state.print())    
                 
-    def test2(self):
-        self.log(self.state.print())
-        
-       
     
+        
 
 
     def execute(self):
+        self.log(self.state.print())
         self.ab.search(self.state)
+        self.log(self.state.best_action.value)
         return self.state.best_action.col
-    
+
+
     def exec(self):
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
@@ -170,7 +182,7 @@ class Solution(SolutionBase):
             for i in range(num_valid_actions):
                 action = int(self.input())  # a valid column index into which a chip can be dropped
             opp_previous_action = int(self.input())  # opponent's previous chosen column index (will be -1 for first player in the first turn)
-            self.error("log")
+            self.error("--frame-flush---")
             self.init(board_rows)
             self.output(self.execute())
 

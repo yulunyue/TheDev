@@ -15,8 +15,8 @@ class SolutionBase:
     def input(self):
         self.inputs.append(input())
         return self.inputs[-1]
-    def error(self,*args):
-        print("\n".join(self.inputs), file=sys.stderr, flush=True)
+    def error(self,msg):
+        print("\n".join([msg]+self.inputs), file=sys.stderr, flush=True)
         self.inputs.clear()
         
     def i1(self):
