@@ -76,7 +76,7 @@ class State:
         ).set_value(value)
     
     def get_nexts(self,depth):
-        return []
+        raise Exception("todo")
     
 class AbNode(State):
     def init(self,*args):

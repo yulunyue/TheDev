@@ -4,34 +4,98 @@ from typing import Dict,List
 from functools import lru_cache
 MOD=(10**9)+7
 inf = float("inf")
-HEIGHT=7
-WIDTH=9
-FOUR=4
+class Constant:
+    HEIGHT=7
+    WIDTH=9
+    FOUR=4
+    def __init__(self) -> None:
+        self.BOTTOM=0
+        self.FULL=0
+        self.HEIGHT_MASK=(1 << self.HEIGHT) - 1
+        self.CLOUMN_MASK=[]
+        self.init_w()
+    def init_w(self):
+        for i in range(self.WIDTH):
+            pos=i*(self.HEIGHT+1)
+            self.BOTTOM += 1<<pos
+            self.FULL+=self.HEIGHT_MASK << pos
+            self.CLOUMN_MASK.append(((1 << self.HEIGHT) - 1) << pos)
+
+C=Constant()
+
+UP=lambda pos, i:pos << i
+DOWN=lambda pos,i:pos >> i
+LEFT=lambda pos,i: pos >> (i * (C.HEIGHT + 1))
+RIGHT=lambda pos, i: pos << (i * (C.HEIGHT + 1))
+UP_LEFT=lambda pos, i: UP(LEFT(pos, i), i)
+DOWN_RIGHT=lambda pos, i: DOWN(RIGHT(pos, i), i)
+UP_RIGHT=lambda pos, i: UP(RIGHT(pos, i), i)
+DOWN_LEFT=lambda pos, i: DOWN(LEFT(pos, i), i)
+def get_winning_moves(pos, mask):
+    res = UP(pos, 1) & UP(pos, 2) & UP(pos, 3)
+    res |= LEFT(pos, 1) & LEFT(pos, 2) & LEFT(pos, 3)
+    res |= RIGHT(pos, 1) & LEFT(pos, 1) & LEFT(pos, 2)
+    res |= RIGHT(pos, 2) & RIGHT(pos, 1) & LEFT(pos, 1)
+    res |= RIGHT(pos, 3) & RIGHT(pos, 2) & RIGHT(pos, 1)
+    res |= UP_LEFT(pos, 1) & UP_LEFT(pos, 2) & UP_LEFT(pos, 3)
+    res |= DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1) & UP_LEFT(pos, 2)
+    res |= DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1)
+    res |= DOWN_RIGHT(pos, 3) & DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1)
+    res |= UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2) & UP_RIGHT(pos, 3)
+    res |= DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2)
+    res |= DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1)
+    res |= DOWN_LEFT(pos, 3) & DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1)
+    return res & (C.FULL ^ mask)
+
 
 
 class F4State(AbNode):
-    def __init__(self,pos=0,mask=0,moves=0) -> None:
+    def __init__(self,pos=0,mask=0,moves=0,col=0) -> None:
         self.pos = pos
         self.mask = mask
         self.moves = moves
+        self.col = col
         super().__init__()
 
-    def put(self, pos):
-        self.pos ^= self.mask
-        self.mask |=self.mask +  1 << (pos * (HEIGHT + 1))
-        self.moves+=1
+    def put(self, col):
+        move =  self.mask +  (1 << (col * (C.HEIGHT + 1)))
+        return F4State(
+            self.pos^self.mask,
+            self.mask|move,
+            self.moves+1,
+            col        
+        )
+    
+    def calc_value(self, *args):
+        return 0
+    
+    def get_legal_moves(self):
+        return (self.mask+C.BOTTOM)&C.FULL     
+   
+    def get_nexts(self, depth):
+        if depth>4:
+            return []
+        win_state=get_winning_moves(self.pos,self.mask)
+        op_win_state=get_winning_moves(self.pos^self.mask,self.mask)
+        ret=[]
+        for i,v in enumerate(C.CLOUMN_MASK):
+            s=self.put(i)
+            if v&win_state:
+                return [s]
+            elif v&op_win_state:
+                return [s]
+            ret.append(s)
+        return ret 
 
-    def make_move(self,move):
-        return F4State(self.pos^self.mask,self.mask|move,self.moves+1)
     
     def print(self):
         ret=[]
-        for i in range(HEIGHT-1,-1,-1):
+        for i in range(C.HEIGHT-1,-1,-1):
             tmp=""
-            for j in range(WIDTH):
-                t=1<<((HEIGHT+1)*j+i)
+            for j in range(C.WIDTH):
+                t=1<<((C.HEIGHT+1)*j+i)
                 if self.mask & t:
-                    if self.pos&t==(self.moves%2==0):
+                    if (self.pos&t) and (self.moves%2==0):
                         tmp+=" X"
                     else:
                         tmp+=" O"
@@ -39,6 +103,8 @@ class F4State(AbNode):
                     tmp+=" -"
             ret.append(tmp)
         return "\n".join(ret)
+
+
 
 class F4Serach(AlphaBateSearch):
     pass
@@ -49,6 +115,7 @@ class Solution(SolutionBase):
     agentsIds = [
         -2,-1
     ]
+    name = 'f4'
     def get_cases(self):
         return [
             
@@ -61,33 +128,36 @@ class Solution(SolutionBase):
 10.......'''.split('\n'),result="")
         ]
     
-    def init(self,board_rows):
-        self.board_rows=board_rows
+    def init(self,board_rows:List[str]):
         self.state=F4State()
+        self.ab=F4Serach()
         ct=[[],[]]
         mv=0
-        for w in self.board_rows[::-1]:
+        for _ in range(C.HEIGHT):
+            w=board_rows.pop()
             if not w:
                 continue
-
-            for j,v in enumerate(w):
-                if v=='.':
+            for j in range(C.WIDTH):
+                if w[j]=='.':
                     continue
-                ct[int(v)].append(j)
+                ct[int(w[j])].append(j)
                 mv+=1
         
         for i in range(mv):
             cm=ct[i%2].pop()
-            self.state.put(cm)    
+            self.state=self.state.put(cm)    
                 
-
-    def search(self):
+    def test2(self):
         self.log(self.state.print())
+        
+       
+    
 
 
     def execute(self):
-        pass
-
+        self.ab.search(self.state)
+        return self.state.best_action.col
+    
     def exec(self):
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
