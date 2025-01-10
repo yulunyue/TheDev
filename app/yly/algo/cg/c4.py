@@ -128,31 +128,35 @@ class Solution(SolutionBase):
     name = 'f4'
     def get_cases(self):
         return [
-            
-            dict(board_rows=[],result="")
+            dict(result=""),
         ]
     
-    def init(self,board_rows:List[int]):
+
+
+    def init(self, stderr=None,stdout=None,back=-2,**kw):
         self.state=F4State()
         self.ab=F4Serach()
-        for w in board_rows:
-            self.put(w)
-
-    def put(self,w):
-        self.state=self.state.put(w)
+        if stdout:
+            # self.log("\n".join(stderr[-1]["inputs"][1:8]))
+            self.log(f'out:{back}-> {stdout[back]}')
+            for v in stdout[:back]:
+                self.state=self.state.put(int(v))
         
+        self.log(self.state.print())
+
             
     def execute(self):
-        self.log(self.state.print())
         self.ab.search(self.state)
         # self.log(self.state.best_action.value)
-        return self.state.best_action.col
-
+        col=self.state.best_action.col
+        self.state=self.state.put(col)
+        return col
+    
 
     def exec(self):
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
-        self.init("")
+        self.init()
         while True:
             turn_index = self.input()  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
             if turn_index is None:
@@ -164,9 +168,9 @@ class Solution(SolutionBase):
             for i in range(num_valid_actions):
                 action = int(self.input())  # a valid column index into which a chip can be dropped
             opp_previous_action = int(self.input())  # opponent's previous chosen column index (will be -1 for first player in the first turn)
-            self.error("--frame-flush---")
-            if opp_previous_action!=-1:
-                self.put(opp_previous_action)
+            self.error(opp_previous_action=opp_previous_action)
+            if opp_previous_action!=1:
+                self.state=self.state.put(opp_previous_action)
             self.output(self.execute())
 
 

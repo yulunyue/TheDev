@@ -1,12 +1,10 @@
 import sys
+import json
 inf = float("inf")
 MOD = (10**9)+7
 
 def fmax(a,b,*args):return a if a>b else b
 def fmin(a,b,*args):return a if a<b else b
-class View:
-    def __init__(self,*args,**kw) -> None:
-        pass
 class SolutionBase:
     DEV = False
     inputs=[]
@@ -15,8 +13,9 @@ class SolutionBase:
     def input(self):
         self.inputs.append(input())
         return self.inputs[-1]
-    def error(self,msg):
-        print("\n".join([msg]+self.inputs), file=sys.stderr, flush=True)
+    def error(self,**kw):
+        kw.update(inputs=self.inputs)
+        print(json.dumps(kw), file=sys.stderr, flush=True)
         self.inputs.clear()
         
     def i1(self):

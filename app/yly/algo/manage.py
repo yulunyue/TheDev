@@ -119,8 +119,17 @@ class SolutionBase:
         self._logs.append(self.action)
 
     def pre(self,input=None,result=None,**kwargs):
-        if input is not None:
-            self.lines=[v for v in input.split('\n') if v]
+        if 'codingame' in  self.uri:
+            data=File(f"data/log/cg/{self.name}.json").read_file()
+            kwargs['stderr']=[]
+            kwargs['stdout']=[]
+            for v in data['frames']:
+                if 'stderr' in v:
+                    kwargs['stderr'].append(json.loads(v['stderr']))
+                if 'stdout' in v:
+                    kwargs['stdout'].append(v['stdout'].split('\n')[0])
+        else:
+            self.lines=[]
         return kwargs
     def gen_file(self):
         lines=[]
@@ -154,6 +163,7 @@ class SolutionBase:
             return self.view_web()
         if exec_names and exec_names[0]=='submit':
             return self.submit()
+
         self.test([getattr(self,v) for v in exec_names[0].split(',')])
         self.flush_log()
 
@@ -164,20 +174,9 @@ class SolutionBase:
                 WRITE_PATH,self.game_id,self.agentsIds
             )
             File(f"data/log/cg/{self.name}.json").write_file(ret)
-            lines = []
-            for frame in ret['frames']:
-                if 'stderr' in frame:
-                    lines.extend(frame['stderr'].split('\n'))
-            File(f"data/log/cg/{self.name}.txt").write_file("\n".join(lines))
         else:
             raise Exception(self.uri)
-    def replay(self):
-        if 'codingame' in  self.uri:
-            self.lines=CodingGame(self.name).get_states()
-            File(f"data/log/cg/{self.name}.txt").write_file("\n".join(self.lines))
-            self.exec()            
-        else:
-            raise Exception(self.uri)
+
     def test(self, func):
         if self.uri.startswith('lc_cls'):
             return self.run_cls()
