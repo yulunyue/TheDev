@@ -13,6 +13,8 @@ class Constant:
         self.FULL=0
         self.HEIGHT_MASK=(1 << self.HEIGHT) - 1
         self.CLOUMN_MASK=[]
+        self.MAX_SCORE = (self.WIDTH * self.HEIGHT + 1) / 2 - 3;
+        self.MIN_SCORE = -(self.WIDTH * self.HEIGHT) / 2 + 3;
         self.init_w()
     def init_w(self):
         for i in range(self.WIDTH):
@@ -31,51 +33,77 @@ UP_LEFT=lambda pos, i: UP(LEFT(pos, i), i)
 DOWN_RIGHT=lambda pos, i: DOWN(RIGHT(pos, i), i)
 UP_RIGHT=lambda pos, i: UP(RIGHT(pos, i), i)
 DOWN_LEFT=lambda pos, i: DOWN(LEFT(pos, i), i)
-def get_winning_moves(pos, mask):
-    res = UP(pos, 1) & UP(pos, 2) & UP(pos, 3)
-    res |= LEFT(pos, 1) & LEFT(pos, 2) & LEFT(pos, 3)
-    res |= RIGHT(pos, 1) & LEFT(pos, 1) & LEFT(pos, 2)
-    res |= RIGHT(pos, 2) & RIGHT(pos, 1) & LEFT(pos, 1)
-    res |= RIGHT(pos, 3) & RIGHT(pos, 2) & RIGHT(pos, 1)
-    res |= UP_LEFT(pos, 1) & UP_LEFT(pos, 2) & UP_LEFT(pos, 3)
-    res |= DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1) & UP_LEFT(pos, 2)
-    res |= DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1)
-    res |= DOWN_RIGHT(pos, 3) & DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1)
-    res |= UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2) & UP_RIGHT(pos, 3)
-    res |= DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2)
-    res |= DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1)
-    res |= DOWN_LEFT(pos, 3) & DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1)
-    return res & (C.FULL ^ mask)
+
 
 
 
 class F4State(AbNode):
-    
-    def __init__(self,pos=0,mask=0,moves=0,col=0) -> None:
+    store_state=dict()
+    def __init__(self,pos=0,mask=0,moves=0) -> None:
         self.pos = pos
         self.mask = mask
         self.moves = moves
-        self.col = col
-        super().__init__()
-        self.value = 0
 
+        super().__init__()
+
+    def can_win_with_one_move(self):
+        return self.get_winning_moves() & self.get_legal_moves()
+    
     def put(self, col):
         move =  self.mask +  (1 << (col * (C.HEIGHT + 1)))
-        return F4State(
-            self.pos^self.mask,
-            self.mask|move,
-            self.moves+1,
-            col        
-        )
+        return self.move(move)
+    def move(self,move):
+        pos = self.pos^self.mask
+        mask = self.mask | move
+        key = pos+mask
+        if key not in F4State.store_state:
+            F4State.store_state[key]=F4State(pos,mask,self.moves+1)
+        return F4State(pos,mask,self.moves+1)
     
     def calc_value(self, *args):
         return -self.value
     
     def get_legal_moves(self):
-        return (self.mask+C.BOTTOM)&C.FULL     
-   
+        return (self.mask+C.BOTTOM)&C.FULL  
+    
+    def get_winning_mvs(self, pos):
+        res = UP(pos, 1) & UP(pos, 2) & UP(pos, 3)
+        res |= LEFT(pos, 1) & LEFT(pos, 2) & LEFT(pos, 3)
+        res |= RIGHT(pos, 1) & LEFT(pos, 1) & LEFT(pos, 2)
+        res |= RIGHT(pos, 2) & RIGHT(pos, 1) & LEFT(pos, 1)
+        res |= RIGHT(pos, 3) & RIGHT(pos, 2) & RIGHT(pos, 1)
+        res |= UP_LEFT(pos, 1) & UP_LEFT(pos, 2) & UP_LEFT(pos, 3)
+        res |= DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1) & UP_LEFT(pos, 2)
+        res |= DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1)
+        res |= DOWN_RIGHT(pos, 3) & DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1)
+        res |= UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2) & UP_RIGHT(pos, 3)
+        res |= DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2)
+        res |= DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1)
+        res |= DOWN_LEFT(pos, 3) & DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1)
+        return res & (C.FULL ^ self.mask)
+    
+    def get_winning_moves(self):
+        return self.get_winning_mvs(self.pos)
+    
+    def get_non_losing_moves(self):
+        oppo_winning_moves = self.get_winning_moves(self.pos^self.mask)
+        legal_moves = self.get_legal_moves()
+        forced_moves = legal_moves & oppo_winning_moves
+        if forced_moves:
+            if forced_moves & forced_moves -1:
+                return 0
+            legal_moves = forced_moves
+    def get_move_scores(self):
+        moves = self.get_non_losing_moves()
+        ret=dict()
+        while moves:
+            move=moves & -moves
+            ret[move]=-self.put(move)
+            moves-=move
+        return ret
+
     def get_nexts(self, depth):
-        if depth>4 or self.value!=0:
+        if depth>0 or self.value!=0:
             return []
         leagal_move=self.get_legal_moves()
         win_state=get_winning_moves(self.pos,self.mask)
@@ -117,7 +145,23 @@ class F4State(AbNode):
 
 
 class F4Serach(AlphaBateSearch):
-    pass
+    def solve(self,b:F4State):
+        if b.can_win_with_one_move():
+            pass
+    
+    def get_move(self,b:F4State):
+        winning_moves = b.get_winning_moves() & b.get_legal_moves()
+        if winning_moves:
+            return winning_moves & -winning_moves
+        move_scores:List[AbNode]=b.get_move_scores()
+        if not move_scores:
+            move = b.get_legal_moves()
+            return move&-move
+        max=C.MIN_SCORE-1
+        for mv in move_scores:
+            if mv.value
+        
+        
 
 class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"

@@ -1,14 +1,13 @@
 from collections import defaultdict
 import heapq
-from typing import List
+from typing import List, NoReturn
 inf = float("inf")
 
 class Graph:
-    def __init__(self,value=inf):
+    def __init__(self):
         self.g = defaultdict(list)
         self.dis = dict()
         self.edges = []
-        self.value = defaultdict(lambda: value)
         self.init()
 
     def load_grid(self,grid,wall_char='#'):
@@ -72,20 +71,19 @@ class Graph:
     
     def __str__(self):
         return f'{self.edges}{self.value}'
-    
-    def dijkstra(self, start,init_value=0):
-        self.value[start] = init_value
-        q = [(init_value, start)]
-        while q:
+    def get_value(self,idx, weight=None,cost=None):
+        raise Exception("gg")
+    def dijkstra(self, start):
+        self.value=dict()
+        self.value[start] = self.get_value(start)
+        q = [(self.value[start], start)]
+        while q: 
             cost, u = heapq.heappop(q)
             if cost > self.value[u]:
                 continue
             for v, idx, weight,*args in self.g[u]:
-                if init_value==0:
-                    target = cost + weight
-                else:
-                    target = cost * weight
-                if target < self.value[v]:
+                target = self.get_value(v,weight,cost)
+                if v not in self.value or target < self.value[v]:
                     self.value[v] = target
                     heapq.heappush(q, (self.value[v], v))
         return self.value
