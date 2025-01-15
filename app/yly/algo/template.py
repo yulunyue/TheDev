@@ -1,4 +1,4 @@
-from app.yly.algo.manage import SolutionBase,View
+from app.yly.algo.manage import SolutionBase,View,np
 from typing import Dict,List
 from functools import lru_cache
 from collections import defaultdict

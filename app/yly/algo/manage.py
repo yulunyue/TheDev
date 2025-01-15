@@ -10,6 +10,7 @@ import os
 import time
 import sys
 import json
+import numpy as np
 sys.setrecursionlimit(10**5+1)
 WRITE_PATH='data/algo/run.py'
 CHANGE_STORE = dict()

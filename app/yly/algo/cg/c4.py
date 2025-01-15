@@ -4,144 +4,72 @@ from typing import Dict,List
 from functools import lru_cache
 MOD=(10**9)+7
 inf = float("inf")
+
+
 class Constant:
     HEIGHT=7
     WIDTH=9
     FOUR=4
     def __init__(self) -> None:
-        self.BOTTOM=0
-        self.FULL=0
-        self.HEIGHT_MASK=(1 << self.HEIGHT) - 1
-        self.CLOUMN_MASK=[]
-        self.MAX_SCORE = (self.WIDTH * self.HEIGHT + 1) / 2 - 3;
-        self.MIN_SCORE = -(self.WIDTH * self.HEIGHT) / 2 + 3;
+        self.INIT_MASK=0
+        self.MASK_FULL_HEIGHT=(1<<(self.HEIGHT+1))-1
+        self.MASK_FULL=(1<<((self.HEIGHT+1)*self.WIDTH))-1
+        self.HEIGHT_MASK0=[]
+        self.HEIGHT_MASK1=[]
+        self.HEIGHT_POS_MASK=[]
         self.init_w()
+
     def init_w(self):
-        for i in range(self.WIDTH):
-            pos=i*(self.HEIGHT+1)
-            self.BOTTOM += 1<<pos
-            self.FULL+=self.HEIGHT_MASK << pos
-            self.CLOUMN_MASK.append(((1 << self.HEIGHT) - 1) << pos)
+        for col in range(self.WIDTH):
+            pos=col*(self.HEIGHT+1)
+            self.INIT_MASK|=1<<pos
+            self.HEIGHT_POS_MASK.append([0,1<<pos])
+            self.HEIGHT_MASK1.append(self.MASK_FULL_HEIGHT<<pos)
+            self.HEIGHT_MASK0.append(self.MASK_FULL-self.HEIGHT_MASK1[-1])
+    def print_str(self,mask):
+        ret=[[" -"]*C.WIDTH for _ in range(self.HEIGHT)]
+        for j in range(C.WIDTH):
+            pos=j*(self.HEIGHT+1)
+            h_mask:int=(mask>>pos)&self.MASK_FULL_HEIGHT
+            l=h_mask.bit_length()-1
+            for i in range(l):
+                if h_mask&(1<<i):
+                    ret[C.HEIGHT-(l-i)][j]=' X'
+                else:
+                    ret[C.HEIGHT-(l-i)][j]=' O'
+            
+        return "\n".join(["".join(v) for v in ret])
 
 C=Constant()
-
-UP=lambda pos, i:pos << i
-DOWN=lambda pos,i:pos >> i
-LEFT=lambda pos,i: pos >> (i * (C.HEIGHT + 1))
-RIGHT=lambda pos, i: pos << (i * (C.HEIGHT + 1))
-UP_LEFT=lambda pos, i: UP(LEFT(pos, i), i)
-DOWN_RIGHT=lambda pos, i: DOWN(RIGHT(pos, i), i)
-UP_RIGHT=lambda pos, i: UP(RIGHT(pos, i), i)
-DOWN_LEFT=lambda pos, i: DOWN(LEFT(pos, i), i)
-
-
-
-
 class F4State(AbNode):
     store_state=dict()
-    def __init__(self,pos=0,mask=0,moves=0) -> None:
-        self.pos = pos
+    def __init__(self,mask,moves) -> None:
         self.mask = mask
         self.moves = moves
-
+        self.score = -inf
+        self.init()
         super().__init__()
+    
+    def init(self):
+        pass
 
-    def can_win_with_one_move(self):
-        return self.get_winning_moves() & self.get_legal_moves()
     
     def put(self, col):
-        move =  self.mask +  (1 << (col * (C.HEIGHT + 1)))
-        return self.move(move)
-    def move(self,move):
-        pos = self.pos^self.mask
-        mask = self.mask | move
-        key = pos+mask
-        if key not in F4State.store_state:
-            F4State.store_state[key]=F4State(pos,mask,self.moves+1)
-        return F4State(pos,mask,self.moves+1)
+        mask = (
+            ((self.mask&C.HEIGHT_MASK1[col])<<1)|C.HEIGHT_POS_MASK[col][self.moves]
+        )|(self.mask&C.HEIGHT_MASK0[col])
+        if mask not in F4State.store_state:
+            F4State.store_state[mask]=F4State(mask,1-self.moves)
+        return F4State.store_state[mask]
+
     
-    def calc_value(self, *args):
-        return -self.value
-    
-    def get_legal_moves(self):
-        return (self.mask+C.BOTTOM)&C.FULL  
-    
-    def get_winning_mvs(self, pos):
-        res = UP(pos, 1) & UP(pos, 2) & UP(pos, 3)
-        res |= LEFT(pos, 1) & LEFT(pos, 2) & LEFT(pos, 3)
-        res |= RIGHT(pos, 1) & LEFT(pos, 1) & LEFT(pos, 2)
-        res |= RIGHT(pos, 2) & RIGHT(pos, 1) & LEFT(pos, 1)
-        res |= RIGHT(pos, 3) & RIGHT(pos, 2) & RIGHT(pos, 1)
-        res |= UP_LEFT(pos, 1) & UP_LEFT(pos, 2) & UP_LEFT(pos, 3)
-        res |= DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1) & UP_LEFT(pos, 2)
-        res |= DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1) & UP_LEFT(pos, 1)
-        res |= DOWN_RIGHT(pos, 3) & DOWN_RIGHT(pos, 2) & DOWN_RIGHT(pos, 1)
-        res |= UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2) & UP_RIGHT(pos, 3)
-        res |= DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1) & UP_RIGHT(pos, 2)
-        res |= DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1) & UP_RIGHT(pos, 1)
-        res |= DOWN_LEFT(pos, 3) & DOWN_LEFT(pos, 2) & DOWN_LEFT(pos, 1)
-        return res & (C.FULL ^ self.mask)
-    
-    def get_winning_moves(self):
-        return self.get_winning_mvs(self.pos)
-    
-    def get_non_losing_moves(self):
-        oppo_winning_moves = self.get_winning_moves(self.pos^self.mask)
-        legal_moves = self.get_legal_moves()
-        forced_moves = legal_moves & oppo_winning_moves
-        if forced_moves:
-            if forced_moves & forced_moves -1:
-                return 0
-            legal_moves = forced_moves
-    def get_move_scores(self):
-        moves = self.get_non_losing_moves()
-        ret=dict()
-        while moves:
-            move=moves & -moves
-            ret[move]=-self.put(move)
-            moves-=move
-        return ret
+  
 
     def get_nexts(self, depth):
         if depth>0 or self.value!=0:
             return []
-        leagal_move=self.get_legal_moves()
-        win_state=get_winning_moves(self.pos,self.mask)
-        op_win_state=get_winning_moves(self.pos^self.mask,self.mask)
-        ret=[]
-        for i,v in enumerate(C.CLOUMN_MASK):
-            if not v&leagal_move:
-                continue
-            s=self.put(i)
-            if v&win_state:
-                s.value = 100
-                return [s]
-            elif v&op_win_state:
-                s.value = -90
-                return [s]
-            ret.append(s)
-        return ret 
-
-    
-    def print(self):
-        # from common.util.fp import File
-        ret=[]
-        for i in range(C.HEIGHT-1,-1,-1):
-            tmp=""
-            for j in range(C.WIDTH):
-                t=1<<((C.HEIGHT+1)*j+i)
-                if self.mask & t:
-                    if bool(self.pos&t) == bool(self.moves%2==0):
-                        tmp+=" O"
-                    else:
-                        tmp+=" X"
-                else:
-                    tmp+=" -"
-            ret.append(tmp)
-        # File("data/log/cg/f4_grid.txt").write_file("\n".join(ret))
-        return "\n".join(ret)
-        #return self
-
+        for col in range(C.WIDTH):
+            pass
 
 
 class F4Serach(AlphaBateSearch):
@@ -150,16 +78,19 @@ class F4Serach(AlphaBateSearch):
             pass
     
     def get_move(self,b:F4State):
-        winning_moves = b.get_winning_moves() & b.get_legal_moves()
-        if winning_moves:
-            return winning_moves & -winning_moves
-        move_scores:List[AbNode]=b.get_move_scores()
+        move = b.get_winning_moves() & b.get_legal_moves()
+        if move:
+            return move & -move
+        move_scores:List[F4State]=b.get_nexts()
         if not move_scores:
             move = b.get_legal_moves()
-            return move&-move
+            return move & -move
         max=C.MIN_SCORE-1
         for mv in move_scores:
-            if mv.value
+            if mv.score>max:
+                max=mv.score
+                move=mv.mask
+        return mv
         
         
 
@@ -177,16 +108,18 @@ class Solution(SolutionBase):
     
 
 
-    def init(self, stderr=None,stdout=None,back=-2,**kw):
-        self.state=F4State()
+    def init(self, stderr=None,stdout=None,back=None,**kw):
+        self.state=F4State(C.INIT_MASK,0)
         self.ab=F4Serach()
-        if stdout:
+        if stdout and back:
             # self.log("\n".join(stderr[-1]["inputs"][1:8]))
-            self.log(f'out:{back}-> {stdout[back]}')
+            # self.log(f'out:{back}-> {stdout[back]}')
             for v in stdout[:back]:
                 self.state=self.state.put(int(v))
-        
-        self.log(self.state.print())
+    
+    def dev(self):
+        self.state:F4State=self.state.put(2).put(3).put(3)
+        self.log(C.print_str(self.state.mask))
 
             
     def execute(self):

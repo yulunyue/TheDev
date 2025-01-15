@@ -1,5 +1,6 @@
 import sys
 import json
+import numpy as np
 inf = float("inf")
 MOD = (10**9)+7
 
