@@ -4,7 +4,7 @@ from typing import Dict,List
 from functools import lru_cache
 MOD=(10**9)+7
 inf = float("inf")
-
+DR=[[0,1],[1,0],[1,1],[1,-1]]
 
 class Constant:
     HEIGHT=7
@@ -18,6 +18,7 @@ class Constant:
         self.HEIGHT_MASK1=[]
         self.HEIGHT_POS_MASK=[]
         self.init_w()
+        self.init_lines()
 
     def init_w(self):
         for col in range(self.WIDTH):
@@ -26,19 +27,27 @@ class Constant:
             self.HEIGHT_POS_MASK.append([0,1<<pos])
             self.HEIGHT_MASK1.append(self.MASK_FULL_HEIGHT<<pos)
             self.HEIGHT_MASK0.append(self.MASK_FULL-self.HEIGHT_MASK1[-1])
-    def print_str(self,mask):
-        ret=[[" -"]*C.WIDTH for _ in range(self.HEIGHT)]
-        for j in range(C.WIDTH):
-            pos=j*(self.HEIGHT+1)
-            h_mask:int=(mask>>pos)&self.MASK_FULL_HEIGHT
-            l=h_mask.bit_length()-1
-            for i in range(l):
-                if h_mask&(1<<i):
-                    ret[C.HEIGHT-(l-i)][j]=' X'
-                else:
-                    ret[C.HEIGHT-(l-i)][j]=' O'
-            
-        return "\n".join(["".join(v) for v in ret])
+    def init_lines(self):
+        self.line_state=[]
+        self.point_line_id=[[
+            [] for _ in range(self.WIDTH)
+        ] for _ in range(self.HEIGHT)]
+        for i in range(self.HEIGHT):
+            for j in range(self.WIDTH):
+                for y,x in DR:
+                    tmp=[]
+                    for k in range(4):
+                        y1,x1=i+k*y,j+k*x
+                        if 0<=y1<self.HEIGHT and 0<=x1<self.WIDTH:
+                            tmp.append([y1,x1,k])
+                    if len(tmp)==4:
+                        for y1,x1,i in tmp:
+                            self.point_line_id[y1][x1].append([i,self.line_state])
+                        self.line_state.append(0)
+                        
+        print(self.point_line_id)
+                 
+                    
 
 C=Constant()
 class F4State(AbNode):
@@ -63,6 +72,20 @@ class F4State(AbNode):
         return F4State.store_state[mask]
 
     
+    def to_str(self):
+        ret=[[" -"]*C.WIDTH for _ in range(C.HEIGHT)]
+        for j in range(C.WIDTH):
+            pos=j*(C.HEIGHT+1)
+            h_mask:int=(self.mask>>pos)&C.MASK_FULL_HEIGHT
+            l=h_mask.bit_length()-1
+            for i in range(l):
+                k=C.HEIGHT-(l-i)
+                if h_mask&(1<<i):
+                    ret[k][j]=' X'
+                else:
+                    ret[k][j]=' O'
+            
+        return "\n".join(["".join(v) for v in ret])
   
 
     def get_nexts(self, depth):
@@ -77,22 +100,7 @@ class F4Serach(AlphaBateSearch):
         if b.can_win_with_one_move():
             pass
     
-    def get_move(self,b:F4State):
-        move = b.get_winning_moves() & b.get_legal_moves()
-        if move:
-            return move & -move
-        move_scores:List[F4State]=b.get_nexts()
-        if not move_scores:
-            move = b.get_legal_moves()
-            return move & -move
-        max=C.MIN_SCORE-1
-        for mv in move_scores:
-            if mv.score>max:
-                max=mv.score
-                move=mv.mask
-        return mv
-        
-        
+
 
 class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"
@@ -118,8 +126,8 @@ class Solution(SolutionBase):
                 self.state=self.state.put(int(v))
     
     def dev(self):
-        self.state:F4State=self.state.put(2).put(3).put(3)
-        self.log(C.print_str(self.state.mask))
+        self.state:F4State=self.state.put(2).put(3).put(3).put(2)
+        self.log(self.state.to_str())
 
             
     def execute(self):
