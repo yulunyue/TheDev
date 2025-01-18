@@ -26,7 +26,7 @@ class Solution(SolutionBase):
         ]
     
     def calc(self,u):
-        pass
+        self.f[u][0] = self.f[u][1] = Node(0,0)
     def solve(self,u):
         while not self.v[u]:
             self.v[u]=1
