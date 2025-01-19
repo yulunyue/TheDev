@@ -19,14 +19,37 @@ class Constant:
         self.HEIGHT_POS_MASK=[]
         self.init_w()
         self.init_lines()
+        self.reset()
 
     def init_w(self):
+        self.state_pos=[]
+        height_mask=(1<<4)-1
+        for i in range(4):
+            self.state_pos.append([
+                height_mask-3<<(i*2),
+                1<<(i*2),
+                1<<(i*2+1)
+            ])
         for col in range(self.WIDTH):
             pos=col*(self.HEIGHT+1)
             self.INIT_MASK|=1<<pos
             self.HEIGHT_POS_MASK.append([0,1<<pos])
             self.HEIGHT_MASK1.append(self.MASK_FULL_HEIGHT<<pos)
             self.HEIGHT_MASK0.append(self.MASK_FULL-self.HEIGHT_MASK1[-1])
+    def reset(self):
+        self.state={0:3<<4}
+        self.pos=[0]*self.WIDTH
+
+    def put(self,x,val):
+        for line_id,k_id in self.point_line_id[self.pos[x]][x]:
+            self.state[self.line_state[line_id]]=self.state.get(self.line_state[line_id],0)-1
+            if val:
+                state=self.line_state[line_id]|self.state_pos[k_id][val]
+            else:
+                state=self.line_state[line_id]&self.state_pos[k_id][0]
+            self.state[state]=self.state.get(state,0)+1
+        self.pos[x]+=1 if val!=0 else -1
+    
     def init_lines(self):
         self.line_state=[]
         self.point_line_id=[[
@@ -41,11 +64,22 @@ class Constant:
                         if 0<=y1<self.HEIGHT and 0<=x1<self.WIDTH:
                             tmp.append([y1,x1,k])
                     if len(tmp)==4:
-                        for y1,x1,i in tmp:
-                            self.point_line_id[y1][x1].append([i,self.line_state])
+                        for y1,x1,idx in tmp:
+                            self.point_line_id[y1][x1].append([
+                                len(self.line_state),idx
+                            ])
                         self.line_state.append(0)
-                        
-        print(self.point_line_id)
+
+    def to_str(self):
+        ret=[]
+        for k1,v in self.state.items():
+            s=["0"]*4
+            k = k1
+            while k:
+                s.append(['0','1','2'][k&3])
+                k=k>>2
+            ret.append(f'{"".join(s[-4:])} -> {v} -> {k1}')
+        return "\n".join(ret)
                  
                     
 
@@ -69,11 +103,13 @@ class F4State(AbNode):
         )|(self.mask&C.HEIGHT_MASK0[col])
         if mask not in F4State.store_state:
             F4State.store_state[mask]=F4State(mask,1-self.moves)
+        C.put(col,self.moves+1)
         return F4State.store_state[mask]
 
     
     def to_str(self):
         ret=[[" -"]*C.WIDTH for _ in range(C.HEIGHT)]
+
         for j in range(C.WIDTH):
             pos=j*(C.HEIGHT+1)
             h_mask:int=(self.mask>>pos)&C.MASK_FULL_HEIGHT
@@ -85,7 +121,7 @@ class F4State(AbNode):
                 else:
                     ret[k][j]=' O'
             
-        return "\n".join(["".join(v) for v in ret])
+        return "\n".join([C.to_str()]+["".join(v) for v in ret])
   
 
     def get_nexts(self, depth):
@@ -126,7 +162,7 @@ class Solution(SolutionBase):
                 self.state=self.state.put(int(v))
     
     def dev(self):
-        self.state:F4State=self.state.put(2).put(3).put(3).put(2)
+        self.state:F4State=self.state.put(0).put(C.WIDTH-1)
         self.log(self.state.to_str())
 
             

@@ -10,8 +10,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-constexpr int HEIGHT = 6;
-constexpr int WIDTH = 7;
+constexpr int HEIGHT = 7;
+constexpr int WIDTH = 9;
 constexpr int MAX_SCORE = (WIDTH * HEIGHT + 1) / 2 - 3;
 constexpr int MIN_SCORE = -(WIDTH * HEIGHT) / 2 + 3;
 
@@ -588,7 +588,7 @@ void printHelpAndExit()
 
 struct Args
 {
-  std::string cmd;
+  std::string cmd ="cg";
   std::string startingMoves;
   int depth = 8;
   std::string scoreTableFile;
@@ -682,7 +682,6 @@ public:
       }
       b = b.make_move(move);
       turn = 1 - turn;
-      sleep(1);
       if (b.moves == HEIGHT * WIDTH)
       {
         std::cout << "draw" << std::endl;
@@ -701,7 +700,7 @@ std::unique_ptr<Agent> makeAgent(Solver &solver, const std::string &name)
   return std::make_unique<AI>(solver, "ai");
 }
 
-int main(int argc, char **argv)
+int main2(int argc, char **argv)
 {
   Args args = parseArgs(argc, argv);
   Table table(args.pinScoreDepthThreshold);
@@ -754,9 +753,42 @@ int main(int argc, char **argv)
     };
     GameRunner().play(b, agents);
   }
-  else
+  else if(args.cmd == "cg")
+  {
+    // AI ai(solver,"ai");
+    BitBoard b(args.startingMoves);
+    int turn_index; 
+    std::string board_row;
+    int action,num_valid_actions;
+    while (1) {
+        // starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
+        std::cin >> turn_index; std::cin.ignore();
+        for (int i = 0; i < 7; i++) {
+             // one row of the board (from top to bottom)
+            std::cin >> board_row; std::cin.ignore();
+        }
+        std::cin >> num_valid_actions; std::cin.ignore();
+        for (int i = 0; i < num_valid_actions; i++) {
+             // a valid column index into which a chip can be dropped
+            std::cin >> action; std::cin.ignore();
+        }
+        int opp_previous_action; // opponent's previous chosen column index (will be -1 for first player in the first turn)
+        std::cin >> opp_previous_action; std::cin.ignore();
+        // if(opp_previous_action!=-1){
+        //   b.make_move(opp_previous_action)
+        // }
+        // Write an action using cout. DON'T FORGET THE "<< endl"
+        // To debug: cerr << "Debug messages..." << endl;
+
+
+        // Output a column index to drop the chip in. Append message to show in the viewer.
+        //std::cout << ai.get_move(b) << std::endl;
+    }
+
+  }else
   {
     printHelpAndExit();
   }
   return 0;
 }
+using namespace std;
