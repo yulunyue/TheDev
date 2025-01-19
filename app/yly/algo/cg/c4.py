@@ -78,7 +78,7 @@ class Constant:
             while k:
                 s.append(['0','1','2'][k&3])
                 k=k>>2
-            ret.append(f'{"".join(s[-4:])} -> {v} -> {k1}')
+            ret.append(f'{"".join(s[:])} -> {v} -> {k1}')
         return "\n".join(ret)
                  
                     
@@ -162,7 +162,7 @@ class Solution(SolutionBase):
                 self.state=self.state.put(int(v))
     
     def dev(self):
-        self.state:F4State=self.state.put(0).put(C.WIDTH-1)
+        self.state:F4State=self.state.put(0).put(1)
         self.log(self.state.to_str())
 
             
