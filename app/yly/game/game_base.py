@@ -20,8 +20,8 @@ class GameBase:
     users:Dict[str,User] = dict()
     def __init__(self,room_id) -> None:
         self.game_id=self.__class__.__name__
+        self.room_id:str=room_id
         self.state:Node = self.get_state()
-        self.room_id=room_id
         self.room_user=set()
         self.reset()
     

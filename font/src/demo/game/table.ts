@@ -7,7 +7,7 @@ import {
 class GameTable extends Game {
     table_ui: Table
     init_node(): void {
-        this.game_id = 'game_table'
+        this.game_id = 'TbGame'
         this.table_ui = this.add_child(new Table())
     }
     init_game(): void {
