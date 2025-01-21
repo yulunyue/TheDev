@@ -1,7 +1,8 @@
 from typing import Dict
 from common.service.http import Node
-from app.yly.game.gus_num.main import GusNum
 from app.yly.game.game_base import GameBase
+from app.yly.game.gus_num.main import GusNum
+from app.yly.game.table.main import TbGame
 from app.yly.game.ab.main import AbGame
 from app.yly.game.connect_four.main import CfGame
 GAME:Dict[str,GameBase]=dict()

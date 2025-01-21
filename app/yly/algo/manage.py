@@ -190,7 +190,7 @@ class SolutionBase:
                     self.log(f'case: {case}; except: {self.ep}')
                     case=self.pre(**case)
                     self.init(**case)
-                    r = fn()
+                    r = fn(**case)
                     self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
                 except Exception as e:
                     import traceback
