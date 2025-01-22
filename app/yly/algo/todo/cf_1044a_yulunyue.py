@@ -9,6 +9,18 @@ class Solution(SolutionBase):
     uri="https://codeforces.com/problemset/problem/1044/A"
     def get_cases(self):
         return [
+            dict(input='''4 7
+1
+2
+3
+4
+1 1000000000 1
+1 1000000000 2
+1 1000000000 3
+1 1000000000 4
+1 1000000000 5
+1 1000000000 6
+1 1000000000 7''',result=7),
             dict(input='''0 2
 1 1000000000 4
 1 1000000000 2''',result=2),
@@ -47,7 +59,7 @@ class Solution(SolutionBase):
             if x1==1:
                 x_max+=x2==X_MAX
                 row_x.append(x2)
-        ans=len(col_x)
+        ans=x_max+len(col_x)
         col_x.sort()
         row_x.sort()
         l=0
@@ -60,7 +72,7 @@ class Solution(SolutionBase):
             # self.log(i,v,row_x[l:],result)
             if result<ans:
                 ans=result
-        return ans+x_max
+        return ans
         
 
 
