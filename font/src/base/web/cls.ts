@@ -43,7 +43,7 @@ export interface Style {
     position?: "absolute" | "relative" | "fixed"
     textAnchor?: 'middle' | 'start' | 'end'
     textOverflow?: 'ellipsis'
-    textAlign?: "center"
+    textAlign?: "center" | "left"
     fontFamily?: string
     dominantBaseline?: 'middle' | 'text-before-edge'
     cursor?: "pointer"

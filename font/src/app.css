@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    user-select: none;
+    /* user-select: none; */
     font-family: 'Times New Roman', serif
 }
 
@@ -10,16 +10,19 @@ p {
     cursor: default;
 }
 
-table tbody {
-    display: block;
-    overflow: auto;
+table {
+    border-collapse: collapse;
+    width: 100%;
 }
 
-table thead,
-tbody tr,
-tfoot tr,
-thead tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
+td,
+th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
 }
