@@ -119,7 +119,7 @@ class SolutionBase:
         self.action = f'{" ".join(str(s1) for s1 in s)}'
         self._logs.append(self.action)
 
-    def pre(self,input=None,result=None,**kwargs):
+    def pre(self,input="",result=None,**kwargs):
         if 'codingame' in  self.uri:
             data=File(f"data/log/cg/{self.name}.json").read_file()
             kwargs['stderr']=[]
@@ -129,8 +129,7 @@ class SolutionBase:
                     kwargs['stderr'].append(json.loads(v['stderr']))
                 if 'stdout' in v:
                     kwargs['stdout'].append(v['stdout'].split('\n')[0])
-        else:
-            self.lines=[]
+        self.lines=[v for v in input.split('\n') if v]
         return kwargs
     def gen_file(self):
         lines=[]
