@@ -23,6 +23,7 @@ import Data from "../tool/data"
 import dialog from "./dom/dialog"
 import web_socket from "../web/web_socket"
 import { mera_util, MeraGraph } from "./svg/comb/mermaid_util"
+import Ct from "../../base/web/constant"
 const DEV_COMPONENT = {
     input, search_dev, Select, select, canca_dev,
     button_dev, table, listdev,
@@ -37,5 +38,5 @@ export {
     Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button, MeraGraph, mera_util,
     DEV_COMPONENT, Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2,
-    to_node, Grid, ListUi, Table
+    to_node, Grid, ListUi, Table, Ct
 }

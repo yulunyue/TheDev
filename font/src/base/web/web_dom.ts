@@ -137,6 +137,12 @@ class WebDom {
             call_back()
         }
     }
+    bind_dbclick(dom: Dom, call_back: any) {
+        dom.ondblclick = (e) => {
+            e.stopPropagation()
+            call_back()
+        }
+    }
     next_frame(callback: any) {
         requestAnimationFrame(callback)
     }
@@ -169,6 +175,7 @@ class WebDom {
     bind_mousedown(dom: Dom, call_back: any) {
         dom.onmousedown = call_back
     }
+
     bind_drag(dom: any, call_back: any) {
         dom.onmousedown = (e: any) => {
             dom._drag_state = true
@@ -230,6 +237,12 @@ class WebDom {
         let metrics = this._text_ctx.measureText(s);
         let actual = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight)
         return Math.max(metrics.width, actual)
+    }
+    get_json(path: string) {
+
+    }
+    put_json(path: string, data: any) {
+
     }
 
 }
