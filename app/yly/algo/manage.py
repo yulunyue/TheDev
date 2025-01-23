@@ -183,6 +183,7 @@ class SolutionBase:
         for fn in func:
             for i, case in enumerate(self.get_cases()):
                 self.ep = case.pop("result")
+                self.results=[]
                 a = time.time()
                 try:
                     self.log(f"begin {self.name}-{fn.__name__}")
@@ -190,6 +191,8 @@ class SolutionBase:
                     case=self.pre(**case)
                     self.init(**case)
                     r = fn(**case)
+                    if r is None:
+                        r="\n".join(self.results)
                     self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
                 except Exception as e:
                     import traceback
@@ -237,7 +240,6 @@ class SolutionBase:
 
     def init(self, *args, **kwargs):
         pass        
-    
     
     def record(self):
         childs = {}

@@ -37,7 +37,10 @@ class SolutionBase:
         pass
 
     def run(self):
-        self.output(self.exec())
+        ret=self.exec()
+        if ret is not None:
+            self.output(ret)
+            
     def run_cls(self):
         pass
     def output(self,*args):

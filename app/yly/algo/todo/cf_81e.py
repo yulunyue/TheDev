@@ -34,16 +34,19 @@ class Solution(SolutionBase):
     
     def calc(self,u,rt):
         self.f[u][0] = self.f[u][1] = Node(0,0)
+        self.g[u]=0
+        self.v[u]=1
         for v in self.c[u]:
             if v==rt:
                 continue
             self.calc(v,rt)
-            self.f[u][0]=self.f[u][0].add(self.f[v][1])
+            self.f[u][0]=self.f[u][0].add(self.f[v][1]) #0 断开
             t=self.f[v][0].sub(self.f[v][1]).add(Node(1,self.s[u]^self.s[v]))
             if self.f[u][1].lt(t):
                 self.f[u][1]=t
                 self.g[u]=v
         self.f[u][1]=self.f[u][0].add(self.f[u][0])
+
     def get(self,u,i,rt):
         for p in self.c[u]:
             if p==rt:
