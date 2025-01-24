@@ -19,7 +19,7 @@ class Node:
         return Node(self.x-b.x,self.y-b.y)
 
 class Solution(SolutionBase):
-    uri='https://www.luogu.com.cn/problem/CF81E'
+    uri='https://codeforces.com/problemset/problem/81/E'
     def get_cases(self):
         return [
             dict(input='''5
