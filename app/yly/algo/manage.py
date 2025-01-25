@@ -260,7 +260,7 @@ class SolutionBase:
     def get_main_view(self):
         return View().add_node(*self.get_watch())
     
-    def init_watch(self,tp):
+    def init_watch(self):
         if self._watch_var is not None:
             return
         node:View=self.get_main_view()
@@ -278,13 +278,13 @@ class SolutionBase:
         File(path).write_file(ret)
         logger.info(path)
 
-    def view(self,case=None,tp='web'):
+    def view(self,case=None):
         if case is None:
             case=self.get_cases()[0]
         CHANGE_STORE.clear()
         self.pre(**case)
         self.init(**case)
-        self.init_watch(tp)
+        self.init_watch()
         ret1,msg=run_watch_fun(self.execute, self.record)
         ret=self.get_main_view().to_json()
         ret['data']=dict(record=ret1)

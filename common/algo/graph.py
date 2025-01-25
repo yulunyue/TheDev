@@ -1,53 +1,41 @@
 from collections import defaultdict
 import heapq
-from typing import List, NoReturn
+from typing import List, Dict
 inf = float("inf")
 
-class Graph:
-    def __init__(self):
-        self.g = defaultdict(list)
-        self.dis = dict()
-        self.edges = []
-        self.init()
-
-    def load_grid(self,grid,wall_char='#'):
-        dr = [[1,0],[0,1]]
-        idx=0
-        for i,row in enumerate(grid):
-            for j,v in enumerate(row):
-                if v==wall_char:
-                    continue
-                for dy,dx in dr:
-                    y,x=dy+i,dx+j
-                    if y<0 or x<0 or y>=len(grid) or x>=len(grid[0]):
-                        continue
-                    if grid[y][x]==wall_char:
-                        continue
-                    self.add_edge(idx,(i,j),(y,x))
-                    idx+=1       
-        return self
-
+class GraphNode:
+    edges=dict()
+    nodes=dict()
+    def __init__(self,key=None):
+        self.key=key
+        self.childs:Dict[str,GraphNode]=dict()
+    
     def init(self):
-        pass
+        self.edges.clear()
+        self.nodes.clear()
+        return self
+    
+    def add_node(self,kid):
+        if kid not in self.nodes:
+            self.nodes[kid]=GraphNode(kid)
+        return self.nodes[kid]
+    
+    def add_edge(self,f,t):
+        fn=self.add_node(f)
+        tn=self.add_node(t)
+        if (f,t) not in self.edges:
+            self.edges
 
     def set_values(self,values):
         for i,v in enumerate(values):
             self.value[i]=v
         return self
 
-
-    def add_edge(self,idx,y,x,valuey=None,valuex=None):
-        self.g[x].append([y,idx,valuey])
-        self.g[y].append([x,idx,valuex])  # 建树
-        self.edges.append([y,x,idx,valuey,valuex])
     
     def load_from_edges(self,edges):
         for i,edge in enumerate(edges):
             self.add_edge(i,*edge)
         return self
-    
-    def key(self,k):
-        return f'graph_{k}'
     
     def get_title_key(self):
         return ['value']
@@ -60,6 +48,7 @@ class Graph:
             bp(k,getattr(self,k)[i],self.key(f'{k}_{i}')) 
             for k in self.get_title_key()
         ])
+    
     def get_edges(self):
         return [[self.key(e[0]),self.key(e[1])]+e[2:] for e in self.edges]
 
@@ -71,8 +60,10 @@ class Graph:
     
     def __str__(self):
         return f'{self.edges}{self.value}'
+    
     def get_value(self,idx, weight=None,cost=None):
         raise Exception("gg")
+    
     def dijkstra(self, start):
         self.value=dict()
         self.value[start] = self.get_value(start)

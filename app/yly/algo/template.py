@@ -1,4 +1,4 @@
-from app.yly.algo.manage import SolutionBase,View,np
+from app.yly.algo.manage import SolutionBase,View
 from typing import Dict,List
 from functools import lru_cache
 from collections import defaultdict
@@ -15,7 +15,7 @@ class Solution(SolutionBase):
         self.init(*args,**kw)
         return self.execute()
         
-    def execute(self):
+    def execute(self,**kw):
         pass
 
 

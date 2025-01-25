@@ -1,23 +1,13 @@
-from app.yly.algo.manage import SolutionBase,View,np
+from app.yly.algo.manage import SolutionBase,View
+from common.algo.graph import GraphNode
 from typing import Dict,List
 from functools import lru_cache
 from collections import defaultdict
 import bisect
 MOD=(10**9)+7
 inf = float("inf")
-class Node:
-    def __init__(self,x,y):
-        self.x=x
-        self.y=y
-    def lt(self,b):
-        return self.y<b.y if self.x==b.x else self.x<b.x
-    
-    def add(self,b):
-        return Node(self.x+b.x,self.y+b.y)
-
-    def sub(self,b):
-        return Node(self.x-b.x,self.y-b.y)
-
+class Node(GraphNode):
+    pass
 class Solution(SolutionBase):
     uri='https://codeforces.com/problemset/problem/81/E'
     def get_cases(self):
@@ -29,7 +19,12 @@ class Solution(SolutionBase):
 2 1
 4 2''',result='''2 2
 5 3
-4 2''')
+2 4''')
+        ]
+    
+    def get_watch(self):
+        return [
+            View("graph")
         ]
     
     def calc(self,u,rt):
@@ -74,22 +69,18 @@ class Solution(SolutionBase):
         self.ans=self.ans.add(r)
 
 
+    def init(self, *args, **kwargs):
+        self.n=self.i1()
+        self.graph = Node().init()
+        for i in range(self.n):
+            self.graph.add_edge(i)
+            self.graphlove_id,sex_type)
+        return super().init(*args, **kwargs)
 
     def exec(self):
-        self.n=self.i1()
-        self.f:List[List[Node]]=[[Node(0,0),Node(0,0)] for _ in range(self.n)]
-        self.in_id=[None]*self.n
-        self.g=[0]*self.n
-        self.rt=0
-        self.s=[0]*self.n
-        self.v=[0]*self.n
-        self.node=[]
-        self.p:List[Node]=[]
-        self.q:List[Node]=[]
-        self.ans = Node(0,0)
+
         self.c=[[] for _ in range(self.n)]
-        for i in range(self.n):
-            love_id,sex_type=self.il()
+
             self.in_id[i]=love_id-1
             self.s[i]=sex_type-1
             self.c[love_id-1].append(i)
