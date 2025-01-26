@@ -20,12 +20,13 @@ class GraphNode:
             self.nodes[kid]=GraphNode(kid)
         return self.nodes[kid]
     
-    def add_edge(self,f,t):
-        fn=self.add_node(f)
-        tn=self.add_node(t)
-        if (f,t) not in self.edges:
-            self.edges
-
+    def add_edge(self,f,t,*args):
+        fn:GraphNode=self.add_node(f)
+        tn:GraphNode=self.add_node(t)
+        self.edges[f,t]=args
+        fn.childs[t]=tn
+        return fn,tn
+    
     def set_values(self,values):
         for i,v in enumerate(values):
             self.value[i]=v

@@ -7,7 +7,8 @@ import bisect
 MOD=(10**9)+7
 inf = float("inf")
 class Node(GraphNode):
-    pass
+    sex=0
+    visite=0
 class Solution(SolutionBase):
     uri='https://codeforces.com/problemset/problem/81/E'
     def get_cases(self):
@@ -24,7 +25,7 @@ class Solution(SolutionBase):
     
     def get_watch(self):
         return [
-            View("graph")
+            View("g")
         ]
     
     def calc(self,u,rt):
@@ -52,10 +53,10 @@ class Solution(SolutionBase):
                 self.p.append(Node(u,p))
                 self.get(p,0,rt)
 
-    def solve(self,u):
-        while not self.v[u]:
-            self.v[u]=1
-            u=self.in_id[u]
+    def solve(self,u:Node):
+        while not u.visite:
+            u=u.visite
+            u=u.childs
         r = Node(0,0)
         for _ in range(2):
             self.calc(u,u)
@@ -71,25 +72,18 @@ class Solution(SolutionBase):
 
     def init(self, *args, **kwargs):
         self.n=self.i1()
-        self.graph = Node().init()
+        self.g = Node().init()
         for i in range(self.n):
-            self.graph.add_edge(i)
-            self.graphlove_id,sex_type)
-        return super().init(*args, **kwargs)
+            love_id,sex=self.il()
+            f,_=self.g.add_edge(i,love_id-1)
+            f.sex=sex-1
+   
 
     def exec(self):
+        for v in self.g.childs.values():
+            if not v.visite:
+                self.solve(v)
 
-        self.c=[[] for _ in range(self.n)]
-
-            self.in_id[i]=love_id-1
-            self.s[i]=sex_type-1
-            self.c[love_id-1].append(i)
-        for i in range(self.n):
-            if not self.v[i]:
-                self.solve(i)
-        self.output(f'{self.ans.x} {self.ans.y}')
-        for p in self.q:
-            self.output(f'{p.x+1} {p.y+1}')
 
 
 if __name__=='__main__':
