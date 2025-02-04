@@ -34,13 +34,12 @@ target =[10,6,6],result=3),
         for v in nums:
             for i in range(len(target)):
                 s=2**i
-                while mx[i] and mx[i][0]<v:
+                while mx[i][0]<v:
                     mx[i].pop(0)
-                if mx[i]:
-                    for m in range(mask,-1,-1):  
+                for m in range(mask,-1,-1):
+                    if m&s==0:
                         f[m|s]=min(f[m|s],f[m]+mx[i][0]-v)
-                    self.log('x',i,f)
-            self.log(v,f)
+                self.log(v,i,f)
         self.log(f)
         return f[mask]
 
