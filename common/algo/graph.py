@@ -4,8 +4,8 @@ from typing import List, Dict
 inf = float("inf")
 
 class GraphNode:
-    edges=dict()
     nodes=dict()
+    edges=dict()
     def __init__(self,key=None):
         self.key=key
         self.childs:Dict[str,GraphNode]=dict()
@@ -20,11 +20,12 @@ class GraphNode:
             self.nodes[kid]=GraphNode(kid)
         return self.nodes[kid]
     
-    def add_edge(self,f,t):
-        fn=self.add_node(f)
+    def add_edge(self,f,t,*args):
+        fn:GraphNode=self.add_node(f)
         tn=self.add_node(t)
-        if (f,t) not in self.edges:
-            self.edges
+        fn.childs[t]=tn
+        self.edges[f,t]=args
+        return self
 
     def set_values(self,values):
         for i,v in enumerate(values):
@@ -59,7 +60,7 @@ class GraphNode:
         ))
     
     def __str__(self):
-        return f'{self.edges}{self.value}'
+        return f'{self.edges}'
     
     def get_value(self,idx, weight=None,cost=None):
         raise Exception("gg")
@@ -141,3 +142,22 @@ class GraphNode:
                 for j in keys:
                     dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j])
         return dis
+    
+
+    def eula_time_visit(self,start=0):
+        tmstamp = 1
+        stk = [start]
+        ls=defaultdict(int)
+        rs=defaultdict(int)
+        c =self
+        while stk:
+            u = stk.pop()
+            if u >= 0:
+                ls[u] = tmstamp
+                tmstamp += 1
+                stk.append(-1-u)
+                for v in c.childs:
+                    stk.append(v)
+            else:
+                rs[-1-u] = tmstamp
+        return ls,rs

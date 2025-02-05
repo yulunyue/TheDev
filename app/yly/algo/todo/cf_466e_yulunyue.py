@@ -1,12 +1,15 @@
 from app.yly.algo.manage import SolutionBase,View,np
 from typing import Dict,List
 from common.algo.unifind import UniFind
+from common.algo.graph import GraphNode
 from functools import lru_cache
 from collections import defaultdict
 import bisect
 MOD=(10**9)+7
 inf = float("inf")
 class Solution(SolutionBase):
+    
+
     def get_cases(self):
         return [
             dict(
@@ -32,8 +35,15 @@ NO
 YES''')
         ]
     
+    
+    def get_watch(self):
+        return [
+            View("g")
+        ]
 
-        
+    def init(self, *args, **kwargs):
+        self.g=GraphNode().init()
+
     def exec(self):
         n,m=self.il()
         edges=[[]]
@@ -42,30 +52,17 @@ YES''')
         p=dict()
         dt=[]
         ct=0
-        g=defaultdict(list)
         for _ in range(m):
             t,x,*args=self.il()
             if t==1:
-                edges[-1].append([x,args[0]])
-                g[args[0]].append(x)
-                p[x]=args[0]
+                self.g.add_edge(x, args[0])
             elif t==2:
                 node_ids.append(x)
                 edges.append([])
             else:
                 dt.append([args[0],x,ct,'NO'])
                 ct+=1
-        self.time_vt=0
-        def dfs(u):
-            self.time_vt+=1
-            lt[u]=self.time_vt
-            for v in g[u]:
-                dfs(v)
-            self.time_vt+=1
-            rt[u]=self.time_vt
-        for i in range(1,n+1):
-            if i not in p:
-                dfs(i)
+        lt,rt=self.g.eula_time_visit()
         dt.sort()
         l=0
         uf=UniFind()
