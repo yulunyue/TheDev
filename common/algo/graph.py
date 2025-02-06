@@ -22,19 +22,11 @@ class GraphNode:
     
     def add_edge(self,f,t,*args):
         fn:GraphNode=self.add_node(f)
-<<<<<<< HEAD
-        tn=self.add_node(t)
-        fn.childs[t]=tn
-        self.edges[f,t]=args
-        return self
-
-=======
         tn:GraphNode=self.add_node(t)
         self.edges[f,t]=args
         fn.childs[t]=tn
         return fn,tn
     
->>>>>>> 28cce18b740a00a67ff9acb42e95ade04d62f6fb
     def set_values(self,values):
         for i,v in enumerate(values):
             self.value[i]=v
