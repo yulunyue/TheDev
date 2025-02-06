@@ -131,16 +131,20 @@ class Comb:
     def comb(self, n: int, k: int) -> int:
         return self.fac[n] * self.inv_fac[k] % self.mod * self.inv_fac[n - k] % self.mod
     
-    def make_array(self,array):
+    def make_split(self,array,num):
         ans=[]
-        def dfs(a,b):
-            if not a:
-                ans.append(b[:])
+        def dfs(i,a,b):
+            if i==len(array):
+                if len(a)==num:
+                    ans.append([a[:],b[:]])
                 return
-            for i in range(len(a)):
-                dfs(a[:i]+a[i+1:],b+[a[i]])
-        dfs(array,[])
+            dfs(i+1,a+[array[i]],b)
+            dfs(i+1,a,b+[array[i]])
+                
+        dfs(0,[],[])
         return ans
+    
+
 
 @lru_cache(None)
 def jc(n):
