@@ -1,10 +1,4 @@
-from app.yly.algo.manage import SolutionBase,View
-from typing import Dict,List
-from functools import lru_cache
-from collections import defaultdict
-import bisect
-MOD=(10**9)+7
-inf = float("inf")
+from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf
 class Solution(SolutionBase):
     def get_cases(self):
         return [
