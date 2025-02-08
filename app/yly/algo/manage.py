@@ -1,6 +1,7 @@
 from common.tool.thread_util import run_watch_fun
 from common.service.http import Node, http_test
-from typing import List
+from typing import List,Dict
+import bisect
 from common.util.module import Module
 from common.util.log import logger
 from common.util.fp import File
@@ -12,6 +13,9 @@ import sys
 import json
 import numpy as np
 sys.setrecursionlimit(10**5+1)
+import bisect
+MOD=(10**9)+7
+inf = float("inf")
 WRITE_PATH='data/algo/run.py'
 CHANGE_STORE = dict()
 class TreeNode:

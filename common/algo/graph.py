@@ -3,27 +3,31 @@ import heapq
 from typing import List, Dict
 inf = float("inf")
 
-class GraphNode:
+class Graph:
     nodes=dict()
     edges=dict()
     def __init__(self,key=None):
         self.key=key
-        self.childs:Dict[str,GraphNode]=dict()
+        self.in_deg=0
+        self.out_deg=0
+        self.childs:Dict[str,Graph]=dict()
     
-    def init(self):
+    def reset(self):
         self.edges.clear()
         self.nodes.clear()
         return self
     
     def add_node(self,kid):
         if kid not in self.nodes:
-            self.nodes[kid]=GraphNode(kid)
+            self.nodes[kid]=Graph(kid)
         return self.nodes[kid]
     
     def add_edge(self,f,t,*args):
-        fn:GraphNode=self.add_node(f)
-        tn:GraphNode=self.add_node(t)
+        fn:Graph=self.add_node(f)
+        tn:Graph=self.add_node(t)
         self.edges[f,t]=args
+        fn.out_deg+=1
+        tn.in_deg+=1
         fn.childs[t]=tn
         return fn,tn
     
@@ -79,7 +83,21 @@ class GraphNode:
                     self.value[v] = target
                     heapq.heappush(q, (self.value[v], v))
         return self.value
+    
+    def tupu_end(self,q):
+        return False
 
+    def tupu(self):
+        q:List[Graph]=[v  for v in self.nodes.values() if v.in_deg==0]
+        while q:
+            if self.tupu_end(q):
+                return False
+            x=q.pop(0)
+            for y in x.childs.values():
+                y.in_deg-=1
+                if y.in_deg==0:
+                    q.append(y)
+        return True
     def bfs(self,start):
         q=[start]
         dis=dict()
