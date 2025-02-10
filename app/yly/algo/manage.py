@@ -115,7 +115,7 @@ class SolutionBase:
 
         ]
     
-    def execute(self):
+    def execute(self,*args,**kw):
         self.exec()
         return "\n".join(self.results)
 
