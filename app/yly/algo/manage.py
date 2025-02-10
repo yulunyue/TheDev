@@ -1,6 +1,6 @@
 from common.tool.thread_util import run_watch_fun
 from common.service.http import Node, http_test
-from typing import List,Dict
+from typing import List,Dict,Optional
 import bisect
 from common.util.module import Module
 from common.util.log import logger
@@ -122,7 +122,9 @@ class SolutionBase:
     def log(self, *s, tp: str = ""):
         self.action = f'{" ".join(str(s1) for s1 in s)}'
         self._logs.append(self.action)
-
+    def log_vals(self,kw,format:str,*args):
+        fs=format.split(',')
+        self.log("; ".join([f'{k}:{kw.get(k)}' for k in fs]),*args)
     def pre(self,input="",result=None,**kwargs):
         if 'codingame' in  self.uri:
             data=File(f"data/log/cg/{self.name}.json").read_file()
@@ -346,6 +348,7 @@ class Route:
                 )
             )
         return ret.to_json()
+
 
     def execute(self, content, case):
         if isinstance(case,str):
