@@ -1,4 +1,5 @@
-from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf
+from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,\
+    Dict,List,MOD,inf,heapq
 class Solution(SolutionBase):
     def get_cases(self):
         return [
