@@ -13,6 +13,7 @@ class Solution(SolutionBase):
         l,r=0,len(nums)-1
         while l<r:
             m=(l+r)//2
+            self.log(l,r)
             if m+1<len(nums) and nums[m]<nums[m+1]:
                 l=m+1
             elif m>=1 and nums[m]<nums[m-1]:

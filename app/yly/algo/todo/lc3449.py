@@ -2,8 +2,10 @@ from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,M
 class Solution(SolutionBase):
     def get_cases(self):
         return [
+            dict(points = [5,3], m = 8,result=12),
+            dict(points = [1,8],m=10,result=5),
             dict(points = [2,4], m = 3,result=4),
-            dict(points = [10,1]+[100000]*200+[20,2,22], m = 1213,result=338),
+            
             
         ]
     
@@ -17,16 +19,15 @@ class Solution(SolutionBase):
         mn=min(points)
         l,r=0,mn*m
         def check(v):
-            m1=0
             l2=[]
+            s2=0
             for i in range(n):
                 c=math.ceil(v/points[i])
-                if len(l2)>=2 and l2[-1]-l2[-2]>c:
-                    c=l2[-1]-l2[-2]
                 l2.append(c)
-                m1+=c
-                if m1>m:
-                    return 1
+                s2+=c
+            if s2>m:
+                return 1
+            self.log(v,l2)
             return 0
         return bisect.bisect_left(range(l,r+1),1,key=check)-1
 
