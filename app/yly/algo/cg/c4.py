@@ -1,5 +1,5 @@
 from app.yly.algo.manage import SolutionBase,View
-from common.algo.absearch import AlphaBateSearch,AbNode
+from common.algo.search.base_search import AlphaBateSearch,AbNode
 from typing import Dict,List
 from functools import lru_cache
 MOD=(10**9)+7
@@ -16,10 +16,16 @@ class Constant:
         self.HEIGHT_MASK0=[]
         self.HEIGHT_MASK1=[]
         self.HEIGHT_POS_MASK=[]
+        self.init_score()
         self.init_w()
         self.init_lines()
         self.reset()
-
+    def init_score(self):
+        self.score=0
+        self.score_map={
+            0x01010101:100,
+            0x10101010:-100
+        }
     def init_w(self):
         self.state_pos=[]
         height_mask=(1<<4)-1
@@ -48,6 +54,7 @@ class Constant:
                 state=old_state|self.state_pos[k_id][val]
             else:
                 state=old_state&self.state_pos[k_id][0]
+            self.score+=self.score_map.get(state,0)-self.score_map.get(old_state,0)
             self.line_state[line_id]=state
             self.state[state]=self.state.get(state,0)+1
         self.pos[x]+=1 if val!=0 else -1
@@ -141,8 +148,7 @@ class F4State(AbNode):
 
 class F4Serach(AlphaBateSearch):
     def solve(self,b:F4State):
-        if b.can_win_with_one_move():
-            pass
+        pass
     
 
 
@@ -170,11 +176,11 @@ class Solution(SolutionBase):
                 self.state=self.state.put(int(v))
     
     def dev(self,**kw):
-        for _ in range(4):
+        for _ in range(3):
             self.state:F4State=self.state.put(1)
             self.state = self.state.put(0)
-  
         self.log(self.state.to_str())
+        # self.log(self.execute())
 
             
     def execute(self,**kw):

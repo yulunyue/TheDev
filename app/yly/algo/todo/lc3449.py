@@ -21,7 +21,12 @@ class Solution(SolutionBase):
                 k = v//u+1-pre
                 if i==n-1 and k<=0:
                     return False
-                
+                if k<=0:
+                    k=1
+                m1-=k*2-1
+                if m1<0:
+                    return True
+                pre = k-1
             return False
         return bisect.bisect_left(range(mn),True,key=check)
 

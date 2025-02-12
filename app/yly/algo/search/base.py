@@ -1,6 +1,6 @@
 
-from common.algo.absearch import AlphaBateSearch, AbNode,State
-from common.algo.mttsearch import MctsNode,MctsSearchTree
+from common.algo.search.base_search import AlphaBateSearch, AbNode,State
+from common.algo.search.mttsearch import MctsNode,MctsSearchTree
 import sys
 from app.yly.algo.manage import SolutionBase,View
 import random

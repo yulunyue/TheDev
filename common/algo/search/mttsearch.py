@@ -1,4 +1,4 @@
-from common.algo.absearch import State
+from common.algo.search.base_search import State
 from typing import List,Dict
 import math
 import random
