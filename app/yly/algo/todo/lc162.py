@@ -2,7 +2,7 @@ from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,M
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-            dict(nums=[3,6,9,1],result=3)
+            dict(nums=[3,6,9,1],result=2)
         ]
     
     def findPeekElement(self,*args,**kw):
