@@ -13,34 +13,17 @@ class Solution(SolutionBase):
         if m<len(points):
             return 0
         n=len(points)
-        mn=min(points)
+        mn=(m+1)//2*min(points)
         def check(v):
-            l=[]
-            lc=0
-            s2=0
-            for i in range(n):
-                c=math.ceil(v/points[i])
-                if i>=1:
-                    ca=c-l[i-1]-lc
-                    if ca<=0:
-                        
-                        ca=0
-                l.append(c)
-                s2+=c
-                if s2>m:
-                    return 1
-            # l.append(0)
-            # self.log('l',v,l,1)
-            # # zero=1
-            # for i in range(n,0,-1):
-            #     if l[i]<l[i+1]+l[i-1]:
-            #         s2+=l[i+1]+l[i-1]-l[i]
-            #         if s2>m:
-            #             return 1
-            #         l[i]=l[i+1]+l[i-1]
-            self.log('r',v,l,0)
-            return 0
-        return bisect.bisect_left(range(0,mn*m),1,key=check)-1
+            m1=m
+            pre=0
+            for i,u in enumerate(points):
+                k = v//u+1-pre
+                if i==n-1 and k<=0:
+                    return False
+                
+            return False
+        return bisect.bisect_left(range(mn),True,key=check)
 
 
     def maxScore(self,*args,**kw):

@@ -4,8 +4,7 @@ from typing import Dict,List
 from functools import lru_cache
 MOD=(10**9)+7
 inf = float("inf")
-DR=[[0,1],[1,0],[1,1],[1,-1]]
-
+DR=[[0,1],[1,0],[1,1],[-1,1]]
 class Constant:
     HEIGHT=7
     WIDTH=9
@@ -49,6 +48,7 @@ class Constant:
                 state=old_state|self.state_pos[k_id][val]
             else:
                 state=old_state&self.state_pos[k_id][0]
+            self.line_state[line_id]=state
             self.state[state]=self.state.get(state,0)+1
         self.pos[x]+=1 if val!=0 else -1
     
@@ -77,11 +77,11 @@ class Constant:
         for k1,v in self.state.items():
             if not v:
                 continue
-            s=["0"]*4
+            s=["-"]*4
             k = k1
             i=0
             while k:
-                s[i]=['0','1','2'][k&3]
+                s[i]=['-','O','X'][k&3]
                 k=k>>2
                 i+=1
             ret.append(f'{"".join(s[:])} -> {k1} -> {v}')
@@ -111,7 +111,7 @@ class F4State(AbNode):
         )|(self.mask&C.HEIGHT_MASK0[col])
         if mask not in F4State.store_state:
             F4State.store_state[mask]=F4State(mask,1-self.moves)
-        C.put(col,self.moves%2+1)
+        C.put(col,self.moves+1)
         return F4State.store_state[mask]
 
     
@@ -170,7 +170,10 @@ class Solution(SolutionBase):
                 self.state=self.state.put(int(v))
     
     def dev(self,**kw):
-        self.state:F4State=self.state.put(1).put(0)
+        for _ in range(4):
+            self.state:F4State=self.state.put(1)
+            self.state = self.state.put(0)
+  
         self.log(self.state.to_str())
 
             
@@ -182,7 +185,7 @@ class Solution(SolutionBase):
         return col
     
 
-    def exec(self):
+    def exec(self,**kw):
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
         self.init()
