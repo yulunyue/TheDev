@@ -12,24 +12,35 @@ class Solution(SolutionBase):
     def execute(self, points: List[int], m: int) -> int:
         if m<len(points):
             return 0
-        '''
-        n[i]=n[i-1]+n[i+1]
-        '''
         n=len(points)
         mn=min(points)
-        l,r=0,mn*m
         def check(v):
-            l2=[]
+            l=[]
+            lc=0
             s2=0
             for i in range(n):
                 c=math.ceil(v/points[i])
-                l2.append(c)
+                if i>=1:
+                    ca=c-l[i-1]-lc
+                    if ca<=0:
+                        
+                        ca=0
+                l.append(c)
                 s2+=c
-            if s2>m:
-                return 1
-            self.log(v,l2)
+                if s2>m:
+                    return 1
+            # l.append(0)
+            # self.log('l',v,l,1)
+            # # zero=1
+            # for i in range(n,0,-1):
+            #     if l[i]<l[i+1]+l[i-1]:
+            #         s2+=l[i+1]+l[i-1]-l[i]
+            #         if s2>m:
+            #             return 1
+            #         l[i]=l[i+1]+l[i-1]
+            self.log('r',v,l,0)
             return 0
-        return bisect.bisect_left(range(l,r+1),1,key=check)-1
+        return bisect.bisect_left(range(0,mn*m),1,key=check)-1
 
 
     def maxScore(self,*args,**kw):

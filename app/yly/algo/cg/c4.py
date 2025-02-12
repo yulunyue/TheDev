@@ -36,17 +36,19 @@ class Constant:
             self.HEIGHT_POS_MASK.append([0,1<<pos])
             self.HEIGHT_MASK1.append(self.MASK_FULL_HEIGHT<<pos)
             self.HEIGHT_MASK0.append(self.MASK_FULL-self.HEIGHT_MASK1[-1])
+
     def reset(self):
         self.state={0:3<<4}
         self.pos=[0]*self.WIDTH
 
     def put(self,x,val):
         for line_id,k_id in self.point_line_id[self.pos[x]][x]:
-            self.state[self.line_state[line_id]]=self.state.get(self.line_state[line_id],0)-1
+            old_state=self.line_state[line_id]
+            self.state[old_state]=self.state.get(old_state,0)-1
             if val:
-                state=self.line_state[line_id]|self.state_pos[k_id][val]
+                state=old_state|self.state_pos[k_id][val]
             else:
-                state=self.line_state[line_id]&self.state_pos[k_id][0]
+                state=old_state&self.state_pos[k_id][0]
             self.state[state]=self.state.get(state,0)+1
         self.pos[x]+=1 if val!=0 else -1
     
@@ -73,12 +75,16 @@ class Constant:
     def to_str(self):
         ret=[]
         for k1,v in self.state.items():
+            if not v:
+                continue
             s=["0"]*4
             k = k1
+            i=0
             while k:
-                s.append(['0','1','2'][k&3])
+                s[i]=['0','1','2'][k&3]
                 k=k>>2
-            ret.append(f'{"".join(s[:])} -> {v} -> {k1}')
+                i+=1
+            ret.append(f'{"".join(s[:])} -> {k1} -> {v}')
         return "\n".join(ret)
                  
                     
@@ -99,11 +105,13 @@ class F4State(AbNode):
     
     def put(self, col):
         mask = (
-            ((self.mask&C.HEIGHT_MASK1[col])<<1)|C.HEIGHT_POS_MASK[col][self.moves]
+            (
+                (self.mask&C.HEIGHT_MASK1[col])<<1
+            )|C.HEIGHT_POS_MASK[col][self.moves]
         )|(self.mask&C.HEIGHT_MASK0[col])
         if mask not in F4State.store_state:
             F4State.store_state[mask]=F4State(mask,1-self.moves)
-        C.put(col,self.moves+1)
+        C.put(col,self.moves%2+1)
         return F4State.store_state[mask]
 
     
@@ -147,7 +155,7 @@ class Solution(SolutionBase):
     name = 'f4'
     def get_cases(self):
         return [
-            dict(result=""),
+            dict(result="xx"),
         ]
     
 
@@ -161,12 +169,12 @@ class Solution(SolutionBase):
             for v in stdout[:back]:
                 self.state=self.state.put(int(v))
     
-    def dev(self):
-        self.state:F4State=self.state.put(0).put(1)
+    def dev(self,**kw):
+        self.state:F4State=self.state.put(1).put(0)
         self.log(self.state.to_str())
 
             
-    def execute(self):
+    def execute(self,**kw):
         self.ab.search(self.state)
         # self.log(self.state.best_action.value)
         col=self.state.best_action.col
