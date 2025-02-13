@@ -16,7 +16,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import requests
 import pip
-
+from urllib3.connectionpool import HTTPConnectionPool
     
 # Creates a table of Q_values (state-action) initialized with zeros
 # Initialize Q(s, a), for all s ∈ S, a ∈ A(s), arbitrarily, and Q(terminal-state, ·) = 0.

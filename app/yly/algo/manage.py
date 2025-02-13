@@ -154,7 +154,7 @@ class SolutionBase:
             elif ln.startswith('from'):
                 data=read_file(ln.split(' ')[1])
                 if data:
-                    lines.extend(data)
+                    lines.extend([d for d in data if not d.startswith('from common')])
                 else:
                     lines.append(ln)
             else:
