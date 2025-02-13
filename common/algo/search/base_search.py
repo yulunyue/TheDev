@@ -5,6 +5,7 @@ class State:
     def __init__(self) -> None:
         self.value = None
         self.depth = 0
+        self.best_state:State=None
     
     def set_depth(self,depth):
         self.depth = depth
@@ -14,35 +15,33 @@ class State:
     def calc_value(self, *args):
         raise Exception("todo")
 
-    def get_nexts(self):
-        pass
+    def get_nexts(self,depth):
+        return []
     
+    def actor(self):
+        pass
+
+    def do(self):
+        raise Exception("do")
+
+    def undo(self):
+        raise Exception("todo")
 
 class TreeSearch:
-    def __init__(self):
-        pass
-    def do(self, *mv):
-        return self
-
-    def undo(self, *mv):
-        return self
-
-    def search(self, last_move:State, depth=0, alpha=-inf, bate=inf,**kw) -> None:
-        mvs:List[State] = last_move.get_nexts(depth)
+    def search(self,state:State,depth=0):
+        mvs:List[State]=state.get_nexts(depth)
         if not mvs:
-            return last_move.calc_value(depth)
-        last_move.alpha, last_move.bate = alpha, bate
+            return state.calc_value()
+        state.value = -inf
         for mv in mvs:
-            self.do(mv)
-            mv.value=-self.search(mv,depth=depth+1,
-                                 alpha=-last_move.bate, bate=-last_move.alpha)
-            self.undo(mv)
-            if mv.value >= last_move.bate:
-                last_move.alpha = last_move.bate
-                last_move.best_action=mv
-                break
-            if mv.value > last_move.alpha:
-                last_move.alpha = mv.value
-                last_move.best_action=mv
-        return last_move.alpha
+            mv.do()
+            value=self.search(mv,depth+1)
+            if value>state.value:
+                state.value=value
+                state.best_state=mv
+            mv.undo()
+        return state.value
+    
+    
+
 
