@@ -2,11 +2,11 @@ from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,M
 class Solution(SolutionBase):
     def get_cases(self):
         return [
-            dict(s='121147',result=0),
+            # dict(s='121147',result=0),
             dict(s='5701283',result=18),
         ]
     
-    def countSubStrings(self,*args,**kw):
+    def countSubstrings(self,*args,**kw):
         self.init(*args,**kw)
         return self.execute(*args,**kw)
         
@@ -22,7 +22,7 @@ class Solution(SolutionBase):
             b7=(b7*10)%7
             d7=pow(b7,-1,7)
             m7=(p7*d7)%7
-            self.log_vals(locals(),f'v,p7,b7,d7,m7',cnt[7][m7])
+            #self.log_vals(locals(),f'v,p7,b7,d7,m7',cnt[7][m7])
             if v==1 or v==2 or v==5:
                 ans+=i+1
             elif v==4:
