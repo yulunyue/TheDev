@@ -118,19 +118,18 @@ class Constant:
 
     def to_str(self):
         ret=[f'score:{self.score}']
-        # for k1,v in self.state.items():
-        #     if v<=0:
-        #         continue
-        #     s=["-"]*4
-        #     k = k1
-        #     i=0
-        #     while k:
-        #         s[i]=['-','O','X','?'][k&3]
-        #         k=k>>2
-        #         i+=1
-        #     ret.append(f'{"".join(s[:])} -> {k1} -> {v}')
-        
-        return "\n".join(ret)
+        for k1,v in self.state.items():
+            if v<=0:
+                continue
+            s=["-"]*4
+            k = k1
+            i=0
+            while k:
+                s[i]=['-','O','X','?'][k&3]
+                k=k>>2
+                i+=1
+            ret.append(f'{"".join(s[:])} -> {k1} -> {v}')
+        return ret
     
 
                     
@@ -145,8 +144,9 @@ class F4State(State):
         super().__init__()
     
     def calc_value(self):
-        return C.score if self.moves==0 else -C.score
-
+        self.value = C.score if self.moves==0 else -C.score
+        return self.value
+    
     def put(self, col):
         mask0=(self.mask&C.HEIGHT_MASK1[col])<<1
         if mask0&C.HEIGHT_POS_MASK[col][0]:
@@ -166,6 +166,7 @@ class F4State(State):
         C.put(self.col,self.moves+1)
         C.pos[self.col]+=1
         # self.out_put(self.moves+1)
+        
 
     def undo(self):
         C.pos[self.col]-=1
@@ -184,15 +185,22 @@ class F4State(State):
                     ret[k][j]=' O'
                 else:
                     ret[k][j]=' X'
-            
-        return "\n".join([C.to_str()]+["".join(v) for v in ret])
+        head = [
+            "-"*12,
+            f'value:{self.value}',
+        ]
+        if self.value:
+            head+=C.to_str()
+        return "\n".join(head+["".join(v) for v in ret]+[
+            "-"*12,
+        ])
     
     def out_put(self,v):
         logger.info(f'put {self.col} {v}\n{self.to_str()}')
 
 
     def get_nexts(self, depth):
-        if depth>1:
+        if depth>=1:
             return []
         ret=[]
         for col in range(C.WIDTH):
@@ -200,6 +208,7 @@ class F4State(State):
             if s:
                 ret.append(s)
         return ret
+
 
 
 
@@ -212,7 +221,7 @@ class Solution(SolutionBase):
     name = 'f4'
     def get_cases(self):
         return [
-            dict(result="xx",num=1000,back=20),
+            dict(result="xx",num=1000,back=100),
         ]
     
 
@@ -221,15 +230,19 @@ class Solution(SolutionBase):
         self.state=F4State(C.INIT_MASK)
         self.seach=TreeSearch()
     
+
     def replay(self,stdout,back=1,**kw):
         i=0
-        # self.log(stdout)
+        self.log(stdout)
         while i<len(stdout):
-            self.state=self.state.put(int(stdout[i]))
+            self.state:State=self.state.put(int(stdout[i]))
             self.state.do()
             if i%2==0 and i+back>=len(stdout):
-                s=self.execute()
-                self.log(f'---mv:{s.moves} search:{s.col} real:{stdout[i+1]}--\n {self.state.to_str()}')
+                self.log(self.state.to_str())
+                self.seach.search(self.state)
+                self.log(f'-{i}-{self.state.best_state.col}-')
+                self.log(self.state.get_end().to_str())
+                
             i+=1
             
         
@@ -246,10 +259,7 @@ class Solution(SolutionBase):
 
 
             
-    def execute(self,**kw)->F4State:
-        self.seach.search(self.state)
-        # self.log(self.state.best_action.value)
-        return self.state.best_state
+
     
 
     def exec(self,**kw):
@@ -268,9 +278,11 @@ class Solution(SolutionBase):
             self.error(opp_previous_action=opp_previous_action)
             if opp_previous_action!=1:
                 self.state=self.state.put(opp_previous_action)
-            self.state = self.execute()
-            self.output(self.state.col)
-            self.state.do()
+                self.state.do()
+            self.seach.search(self.state)
+            self.state.best_state.do()
+            self.output(self.state.best_state.col)
+            
 
 
 

@@ -26,7 +26,14 @@ class State:
 
     def undo(self):
         raise Exception("todo")
-
+    
+    def get_end(self):
+        a=self.best_state
+        while a.best_state:
+            a=a.best_state
+        return a
+    
+    
 class TreeSearch:
     def search(self,state:State,depth=0):
         mvs:List[State]=state.get_nexts(depth)
