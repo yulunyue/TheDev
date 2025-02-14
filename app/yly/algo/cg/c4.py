@@ -223,18 +223,15 @@ class Solution(SolutionBase):
     
     def replay(self,stdout,back=1,**kw):
         i=0
+        # self.log(stdout)
         while i<len(stdout):
-            if i+back>=len(stdout):
-                s=self.execute()
-                self.log(f'---mv:{s.moves} search:{s.col} real:{stdout[i]}--\n {self.state.to_str()}')
             self.state=self.state.put(int(stdout[i]))
             self.state.do()
+            if i%2==0 and i+back>=len(stdout):
+                s=self.execute()
+                self.log(f'---mv:{s.moves} search:{s.col} real:{stdout[i+1]}--\n {self.state.to_str()}')
             i+=1
-        
             
-
-            
-        
         
 
     def dev(self,num=1,**kw):
@@ -261,8 +258,6 @@ class Solution(SolutionBase):
         self.init()
         while True:
             turn_index = self.input()  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
-            if turn_index is None:
-                return
             board_rows=[]
             for i in range(7):
                 board_rows.append(self.input())  # one row of the board (from top to bottom)
