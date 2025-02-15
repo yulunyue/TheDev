@@ -1,11 +1,12 @@
-from typing import List
+from typing import List,Dict
 import random
 inf = float("inf")
 class State:
     def __init__(self) -> None:
         self.value = None
         self.depth = 0
-        self.best_state:State=None
+        self.best_action=None
+        self.next_state:Dict[int,State]=dict()
     
     def set_depth(self,depth):
         self.depth = depth
@@ -21,16 +22,14 @@ class State:
     def actor(self):
         pass
 
-    def do(self):
-        raise Exception("do")
 
-    def undo(self):
-        raise Exception("todo")
     
     def get_end(self):
-        a=self.best_state
-        while a.best_state:
-            a=a.best_state
+        if self.best_action is None:
+            return
+        a=self.next_state[self.best_action]
+        while a.best_action:
+            a=a.next_state[a.best_action]
         return a
     
     
@@ -40,13 +39,11 @@ class TreeSearch:
         if not mvs:
             return state.calc_value()
         state.value = -inf
-        for mv in mvs:
-            mv.do()
-            value=self.search(mv,depth+1)
+        for action,next_state in mvs:
+            value=-self.search(next_state,depth+1)
             if value>state.value:
                 state.value=value
-                state.best_state=mv
-            mv.undo()
+                state.best_action=action
         return state.value
     
     

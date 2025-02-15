@@ -193,19 +193,14 @@ class SolutionBase:
                 self.ep = case.pop("result")
                 self.results=[]
                 a = time.time()
-                try:
-                    self.log(f"begin {self.name}-{fn.__name__}")
-                    self.log(f'case: {case}; except: {self.ep}')
-                    case=self.pre(**case)
-                    self.init(**case)
-                    r = fn(**case)
-                    if r is None:
-                        r="\n".join(self.results)
-                    self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
-                except Exception as e:
-                    import traceback
-                    traceback.print_exc()
-                    r = None
+                self.log(f"begin {self.name}-{fn.__name__}")
+                self.log(f'case: {case}; except: {self.ep}')
+                case=self.pre(**case)
+                self.init(**case)
+                r = fn(**case)
+                if r is None:
+                    r="\n".join(self.results)
+                self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
                 if not self.diff(r, self.ep):
                     self.flush_log()
                     break

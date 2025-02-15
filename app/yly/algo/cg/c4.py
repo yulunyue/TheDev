@@ -1,6 +1,7 @@
 from app.yly.algo.manage import SolutionBase,View,logger
 from common.algo.search.base_search import TreeSearch,State
 from common.algo.search.alphabate_search import ABNode
+
 from typing import Dict,List
 import socket
 from functools import lru_cache
@@ -18,14 +19,12 @@ class Constant:
         self.HEIGHT_MASK0=[]
         self.HEIGHT_MASK1=[]
         self.HEIGHT_POS_MASK=[]
-        
         self.height_mask=(1<<8)-1
-        self.state=dict()
         self.WINSCORE=[0,0]
         self.init_score()
         self.init_w()
         self.init_lines()
-        self.reset()
+
 
     def init_score(self):
         self.score=0
@@ -49,20 +48,15 @@ class Constant:
                 if ct[1]==4:
                     self.WINSCORE[0]=i
             self.score_map[i]=score
-            self.state[i]=0
+     
         # logger.info([bin(self.WINSCORE[0]),bin(self.WINSCORE[1])])
-    def get_state(self):
-        if self.state[self.WINSCORE[0]]:
-            return "O WIN"
-        if self.state[self.WINSCORE[1]]:
-            return "X WIn"
+
         
     def init_w(self):
         self.state_pos=[]
         
         for i in range(4):
             self.state_pos.append([
-                self.height_mask-(3<<(i*2)),
                 1<<(i*2),
                 1<<(i*2+1)
             ])
@@ -79,25 +73,9 @@ class Constant:
             self.HEIGHT_MASK1.append(self.MASK_FULL_HEIGHT<<pos)
             self.HEIGHT_MASK0.append(self.MASK_FULL-self.HEIGHT_MASK1[-1])
 
-    def reset(self):
-        
-        self.pos=[0]*self.WIDTH
 
-    def put(self,x,val):
-        for line_id,k_id in self.point_line_id[self.pos[x]][x]:
-            old_state=self.line_state[line_id]
-            self.state[old_state]=self.state[old_state]-1
-            if val:
-                state=old_state|self.state_pos[k_id][val]
-            else:
-                state=old_state&self.state_pos[k_id][0]
-            self.score+=self.score_map[state]-self.score_map[old_state]
-            self.line_state[line_id]=state
-            self.state[state]=self.state[state]+1
-        
-    
     def init_lines(self):
-        self.line_state=[]
+        self.line_num=0
         self.point_line_id=[[
             [] for _ in range(self.WIDTH)
         ] for _ in range(self.HEIGHT)]
@@ -112,9 +90,9 @@ class Constant:
                     if len(tmp)==4:
                         for y1,x1,idx in tmp:
                             self.point_line_id[y1][x1].append([
-                                len(self.line_state),idx
+                                self.line_num,idx
                             ])
-                        self.line_state.append(0)
+                        self.line_num+=1
 
     def to_str(self):
         ret=[f'score:{self.score}']
@@ -135,20 +113,22 @@ class Constant:
                     
 
 C=Constant()
+STORE_STATE:Dict[int,State]=dict()
 class F4State(State):
-    store_state=dict()
-    def __init__(self,mask,moves=1,col=None) -> None:
+    def __init__(self,mask,moves=0) -> None:
         self.mask = mask
         self.moves = moves
-        self.col=None
+        self.score=0
         super().__init__()
     
+    def init_root(self):
+        self.line_state = [0]*C.line_num
+        self.state = dict()
     def calc_value(self):
-        self.value = C.score if self.moves==0 else -C.score
-        return self.value
+        return self.score if self.moves==1 else -self.score
     
     def put(self, col):
-        mask0=(self.mask&C.HEIGHT_MASK1[col])<<1
+        mask0:int=(self.mask&C.HEIGHT_MASK1[col])<<1
         if mask0&C.HEIGHT_POS_MASK[col][0]:
             return
         mask1 = self.mask&C.HEIGHT_MASK0[col]
@@ -157,24 +137,33 @@ class F4State(State):
         else:
             mask1&=C.HEIGHT_POS_MASK[col][2]
         mask = mask1|mask0
-        if mask not in F4State.store_state:
-            F4State.store_state[mask]=F4State(mask,1-self.moves)
-        F4State.store_state[mask].col=col
-        return F4State.store_state[mask]
+        if mask not in STORE_STATE:
+            STORE_STATE[mask]=F4State(
+                mask,1-self.moves
+            ).init_state(
+                col,(mask0.bit_length()-2)%C.HEIGHT,
+                self.line_state,
+                self.score,
+                self.state
+            )
+        return STORE_STATE[mask]
+    
+    def init_state(self,x,y,line_state:List[int],score,state:dict):
+        self.line_state=line_state.copy()
+        self.state=state.copy()
+        self.score=score
+        for line_id,k_id in C.point_line_id[y][x]:
+            old_state=self.line_state[line_id]
+            self.state[old_state]=self.state.get(old_state,0)-1
+            new_state=old_state|C.state_pos[k_id][self.moves]
+            self.score+=C.score_map[new_state]-C.score_map[old_state]
+            self.line_state[line_id]=new_state
+            self.state[new_state]=self.state.get(new_state,0)+1
+        return self
 
-    def do(self):
-        C.put(self.col,self.moves+1)
-        C.pos[self.col]+=1
-        # self.out_put(self.moves+1)
-        
 
-    def undo(self):
-        C.pos[self.col]-=1
-        C.put(self.col,0)
-
-    def to_str(self):
+    def to_str(self,info="cur"):
         ret=[[" -"]*C.WIDTH for _ in range(C.HEIGHT)]
-
         for j in range(C.WIDTH):
             pos=j*(C.HEIGHT+1)
             h_mask:int=(self.mask>>pos)&C.MASK_FULL_HEIGHT
@@ -182,18 +171,22 @@ class F4State(State):
             for i in range(l):
                 k=C.HEIGHT-(l-i)
                 if h_mask&(1<<i):
-                    ret[k][j]=' O'
-                else:
                     ret[k][j]=' X'
+                else:
+                    ret[k][j]=' O'
         head = [
-            "-"*12,
-            f'value:{self.value}',
-        ]
-        if self.value:
-            head+=C.to_str()
+            f"----{info}--score:{self.score}--value:{self.value}--best:{self.best_action}----",
+        ]        
         return "\n".join(head+["".join(v) for v in ret]+[
             "-"*12,
         ])
+
+    def __str__(self):
+        ret=self.to_str()
+        best:F4State=self.get_end()
+        if best:
+            ret+="\n"+best.to_str("end")
+        return ret
     
     def out_put(self,v):
         logger.info(f'put {self.col} {v}\n{self.to_str()}')
@@ -202,12 +195,12 @@ class F4State(State):
     def get_nexts(self, depth):
         if depth>=1:
             return []
-        ret=[]
-        for col in range(C.WIDTH):
-            s=self.put(col)
-            if s:
-                ret.append(s)
-        return ret
+        if not self.next_state:  
+            for col in range(C.WIDTH):
+                s=self.put(col)
+                if s:
+                    self.next_state[col]=s
+        return self.next_state.items()
 
 
 
@@ -221,46 +214,34 @@ class Solution(SolutionBase):
     name = 'f4'
     def get_cases(self):
         return [
-            dict(result="xx",num=1000,back=100),
+            dict(result="xx",num=1,back=100),
         ]
     
 
 
     def init(self,**kw):
         self.state=F4State(C.INIT_MASK)
+        self.state.init_root()
         self.seach=TreeSearch()
     
 
     def replay(self,stdout,back=1,**kw):
         i=0
-        self.log(stdout)
         while i<len(stdout):
             self.state:State=self.state.put(int(stdout[i]))
-            self.state.do()
             if i%2==0 and i+back>=len(stdout):
-                self.log(self.state.to_str())
                 self.seach.search(self.state)
-                self.log(f'-{i}-{self.state.best_state.col}-')
-                self.log(self.state.get_end().to_str())
-                
+                result=stdout[i+1] if i+1<len(stdout) else None
+                self.log(f'round:{i}-cur:{stdout[i]}-result:{result}\n{self.state}')
             i+=1
             
         
 
     def dev(self,num=1,**kw):
-        for _ in range(num):
-            self.execute()
-            game_state=C.get_state()
-            if game_state:
-                self.log(f"game_over {game_state}")
-                break
-        self.log(self.state.to_str())
-       
-
-
-            
-
-    
+        for i in range(num):
+            self.seach.search(self.state)
+            self.log(f'---round {i}----\n{self.state}')
+            self.state=self.state.next_state[self.state.best_action]
 
     def exec(self,**kw):
         my_id, opp_id = [int(i) for i in self.input().split()]
@@ -277,11 +258,10 @@ class Solution(SolutionBase):
             opp_previous_action = int(self.input())  # opponent's previous chosen column index (will be -1 for first player in the first turn)
             self.error(opp_previous_action=opp_previous_action)
             if opp_previous_action!=1:
-                self.state=self.state.put(opp_previous_action)
-                self.state.do()
+                self.state:F4State=self.state.put(opp_previous_action)
             self.seach.search(self.state)
-            self.state.best_state.do()
-            self.output(self.state.best_state.col)
+            self.output(self.state.best_action)
+            self.state=self.state.next_state[self.state.best_action]
             
 
 
