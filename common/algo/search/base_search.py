@@ -23,21 +23,18 @@ class State:
         pass
 
 
-    
-    def get_end(self):
-        if self.best_action is None:
-            return
-        a=self.next_state[self.best_action]
-        while a.best_action:
-            a=a.next_state[a.best_action]
-        return a
+    def get_bests(self):
+        ret=[self]
+        while ret[-1].best_action is not None:
+            ret.append(ret[-1].next_state[ret[-1].best_action])
+        return ret
     
     
 class TreeSearch:
     def search(self,state:State,depth=0):
         mvs:List[State]=state.get_nexts(depth)
         if not mvs:
-            return state.calc_value()
+            return state.calc_value(depth)
         state.value = -inf
         for action,next_state in mvs:
             value=-self.search(next_state,depth+1)

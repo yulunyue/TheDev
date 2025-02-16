@@ -88,7 +88,7 @@ class Graph:
         return False
 
     def tupu(self):
-        q:List[Graph]=[v  for v in self.nodes.values() if v.in_deg==0]
+        q:List[Graph]=[v for v in self.nodes.values() if v.in_deg==0]
         while q:
             if self.tupu_end(q):
                 return False

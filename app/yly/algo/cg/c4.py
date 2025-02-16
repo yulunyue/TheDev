@@ -1,7 +1,7 @@
 from app.yly.algo.manage import SolutionBase,View,logger
 from common.algo.search.base_search import TreeSearch,State
 from common.algo.search.alphabate_search import ABNode
-
+from collections import defaultdict
 from typing import Dict,List
 import socket
 from functools import lru_cache
@@ -13,24 +13,19 @@ class Constant:
     WIDTH=9
     FOUR=4
     def __init__(self) -> None:
-        self.INIT_MASK=0
-        self.MASK_FULL_HEIGHT=(1<<(self.HEIGHT+1))-1
-        self.MASK_FULL=(1<<((self.HEIGHT+1)*self.WIDTH))-1
-        self.HEIGHT_MASK0=[]
-        self.HEIGHT_MASK1=[]
-        self.HEIGHT_POS_MASK=[]
-        self.height_mask=(1<<8)-1
-        self.WINSCORE=[0,0]
+        
         self.init_score()
         self.init_w()
         self.init_lines()
 
 
     def init_score(self):
-        self.score=0
         self.score_map={}
-        scores=[0,1,10,100,1000]
-        for i in range(self.height_mask+1):
+        self.win_state=dict()
+        self.op_win=dict()
+        self.score_scale=[[10,1],[1,10]]
+        scores=[0,1,20,400,8000]
+        for i in range(1<<8):
             ct=[0]*4
             s=i
             while s>0:
@@ -39,26 +34,33 @@ class Constant:
             if ct[3]:
                 continue
             score=0
+            if ct[1]==4 or ct[2]==4:
+                self.win_state[i]="self"
+            elif (ct[1]==1 and ct[2]==3) or (ct[1]==3 and ct[2]==1):
+                self.win_state[i]="op"
             if ct[1]==0 and ct[2]:
                 score=-scores[ct[2]]
-                if ct[2]==4:
-                    self.WINSCORE[1]=i
             if ct[2]==0 and ct[1]:
                 score=scores[ct[1]]
-                if ct[1]==4:
-                    self.WINSCORE[0]=i
             self.score_map[i]=score
+            self.win_state[i]=None
      
         # logger.info([bin(self.WINSCORE[0]),bin(self.WINSCORE[1])])
 
         
     def init_w(self):
+        self.MASK_FULL_HEIGHT=(1<<self.HEIGHT+1)-1
+        self.MASK_FULL=(1<<((self.HEIGHT+1)*self.WIDTH))-1
         self.state_pos=[]
-        
+        self.INIT_MASK=0
+        self.HEIGHT_MASK0=[]
+        self.HEIGHT_MASK1=[]
+        self.HEIGHT_POS_MASK=[]
         for i in range(4):
             self.state_pos.append([
                 1<<(i*2),
-                1<<(i*2+1)
+                1<<(i*2+1),
+                (1<<8)-1-(3<<(i*2))
             ])
 
         for col in range(self.WIDTH):
@@ -70,6 +72,7 @@ class Constant:
                 pos_state,
                 self.MASK_FULL-pos_state
             ])
+            # logger.info([col,bin(pos_state<<self.HEIGHT)])
             self.HEIGHT_MASK1.append(self.MASK_FULL_HEIGHT<<pos)
             self.HEIGHT_MASK0.append(self.MASK_FULL-self.HEIGHT_MASK1[-1])
 
@@ -94,23 +97,6 @@ class Constant:
                             ])
                         self.line_num+=1
 
-    def to_str(self):
-        ret=[f'score:{self.score}']
-        for k1,v in self.state.items():
-            if v<=0:
-                continue
-            s=["-"]*4
-            k = k1
-            i=0
-            while k:
-                s[i]=['-','O','X','?'][k&3]
-                k=k>>2
-                i+=1
-            ret.append(f'{"".join(s[:])} -> {k1} -> {v}')
-        return ret
-    
-
-                    
 
 C=Constant()
 STORE_STATE:Dict[int,State]=dict()
@@ -124,30 +110,32 @@ class F4State(State):
     def init_root(self):
         self.line_state = [0]*C.line_num
         self.state = dict()
-    def calc_value(self):
-        return self.score if self.moves==1 else -self.score
+
+    def calc_value(self,depth):
+        return self.score if self.moves%2==1 else -self.score
     
     def put(self, col):
         mask0:int=(self.mask&C.HEIGHT_MASK1[col])<<1
         if mask0&C.HEIGHT_POS_MASK[col][0]:
             return
         mask1 = self.mask&C.HEIGHT_MASK0[col]
-        if self.moves:
+        if self.moves%2==1:
             mask1|=C.HEIGHT_POS_MASK[col][1]
         else:
             mask1&=C.HEIGHT_POS_MASK[col][2]
         mask = mask1|mask0
         if mask not in STORE_STATE:
             STORE_STATE[mask]=F4State(
-                mask,1-self.moves
+                mask,self.moves+1
             ).init_state(
-                col,(mask0.bit_length()-2)%C.HEIGHT,
+                col,mask0.bit_length()-col*(C.HEIGHT+1)-2,
                 self.line_state,
                 self.score,
                 self.state
             )
         return STORE_STATE[mask]
-    
+    self_win=False
+    op_win=False
     def init_state(self,x,y,line_state:List[int],score,state:dict):
         self.line_state=line_state.copy()
         self.state=state.copy()
@@ -155,51 +143,74 @@ class F4State(State):
         for line_id,k_id in C.point_line_id[y][x]:
             old_state=self.line_state[line_id]
             self.state[old_state]=self.state.get(old_state,0)-1
-            new_state=old_state|C.state_pos[k_id][self.moves]
+            new_state=old_state|C.state_pos[k_id][self.moves%2]
+            if C.win_state[new_state]=='self':
+                self.self_win=True
+            if C.win_state[new_state]=="op":
+                if new_state&C.state_pos[k_id][2]==0:
+                    self.op_win=True
             self.score+=C.score_map[new_state]-C.score_map[old_state]
             self.line_state[line_id]=new_state
             self.state[new_state]=self.state.get(new_state,0)+1
         return self
+    
+    def score_detail(self):
+        o,x=0,0
+        for k1,v in self.state.items():
+            if v<=0:
+                continue
+            if C.score_map[k1]<0:
+                x-=C.score_map[k1]*v
+            else:
+                o+=C.score_map[k1]*v
+        return f's:{self.score};o:{o};x:{x}'
 
-
-    def to_str(self,info="cur"):
-        ret=[[" -"]*C.WIDTH for _ in range(C.HEIGHT)]
+    def to_str(self,left,ret):
+        info=self.score_detail()
         for j in range(C.WIDTH):
+            ret[0][left+j]=info[j*2:j*2+2]
             pos=j*(C.HEIGHT+1)
             h_mask:int=(self.mask>>pos)&C.MASK_FULL_HEIGHT
             l=h_mask.bit_length()-1
             for i in range(l):
-                k=C.HEIGHT-(l-i)
+                k=C.HEIGHT-(l-i)+1
                 if h_mask&(1<<i):
-                    ret[k][j]=' X'
+                    ret[k][left+j]=' X'
                 else:
-                    ret[k][j]=' O'
-        head = [
-            f"----{info}--score:{self.score}--value:{self.value}--best:{self.best_action}----",
-        ]        
-        return "\n".join(head+["".join(v) for v in ret]+[
-            "-"*12,
-        ])
+                    ret[k][left+j]=' O'
+            for i in range(C.HEIGHT+1):
+                ret[i][left+C.WIDTH]=' '
+                ret[i][left+C.WIDTH+1]=' '
+            
+        return f"[value:{self.value}; best:{self.best_action}]"
 
     def __str__(self):
-        ret=self.to_str()
-        best:F4State=self.get_end()
-        if best:
-            ret+="\n"+best.to_str("end")
-        return ret
+        bests=self.get_bests()
+        ret=[[" -"]*((C.WIDTH+2)*len(bests)) for _ in range(C.HEIGHT+1)]
+        info=""
+        for i,best in enumerate(bests):
+            info+=best.to_str((C.WIDTH+2)*i,ret)
+        return "\n".join([info]+["".join(v)for v in ret])
     
-    def out_put(self,v):
-        logger.info(f'put {self.col} {v}\n{self.to_str()}')
 
 
     def get_nexts(self, depth):
-        if depth>=1:
+        if depth>=4:
             return []
         if not self.next_state:  
+            op1,op2=dict(),dict()
             for col in range(C.WIDTH):
-                s=self.put(col)
-                if s:
-                    self.next_state[col]=s
+                s:F4State=self.put(col)
+                if s is None:
+                    continue
+                if s.self_win:
+                    op1={col:s}
+                    break
+                if s.op_win:
+                    op1[col]=s
+                    continue
+                op2[col]=s
+            self.next_state=op1 if op1 else op2
         return self.next_state.items()
 
 
@@ -209,16 +220,14 @@ class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"
     game_id = '70989246b492bcc523436cf43b6090c82395d392'
     agentsIds = [
-        -2,-1
+        4820019,-1
     ]
     name = 'f4'
     def get_cases(self):
         return [
-            dict(result="xx",num=1,back=100),
+            dict(result="xx",num="mid",back=100),
         ]
     
-
-
     def init(self,**kw):
         self.state=F4State(C.INIT_MASK)
         self.state.init_root()
@@ -233,11 +242,23 @@ class Solution(SolutionBase):
                 self.seach.search(self.state)
                 result=stdout[i+1] if i+1<len(stdout) else None
                 self.log(f'round:{i}-cur:{stdout[i]}-result:{result}\n{self.state}')
+                #self.state=self.state.next_state[self.state.best_action]
             i+=1
             
         
 
-    def dev(self,num=1,**kw):
+    def dev(self,num,**kw):
+        if num=='mid':
+            self.state=self.state.put(3)
+            self.seach.search(self.state)
+            self.log(self.state)
+            return
+        if num=='test_full':
+            for i in range(C.HEIGHT):
+                self.state=self.state.put(0)
+            self.seach.search(self.state)
+            self.log(self.state)
+            return
         for i in range(num):
             self.seach.search(self.state)
             self.log(f'---round {i}----\n{self.state}')
@@ -248,7 +269,7 @@ class Solution(SolutionBase):
         # game loop
         self.init()
         while True:
-            turn_index = self.input()  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
+            turn_index = int(self.input())  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
             board_rows=[]
             for i in range(7):
                 board_rows.append(self.input())  # one row of the board (from top to bottom)
@@ -257,8 +278,11 @@ class Solution(SolutionBase):
                 action = int(self.input())  # a valid column index into which a chip can be dropped
             opp_previous_action = int(self.input())  # opponent's previous chosen column index (will be -1 for first player in the first turn)
             self.error(opp_previous_action=opp_previous_action)
-            if opp_previous_action!=1:
+            if 0<=opp_previous_action<C.WIDTH:
                 self.state:F4State=self.state.put(opp_previous_action)
+            # if my_id==1 and turn_index==1 and 3<=opp_previous_action<=6:
+            #     self.output(-2)
+            #     continue
             self.seach.search(self.state)
             self.output(self.state.best_action)
             self.state=self.state.next_state[self.state.best_action]
