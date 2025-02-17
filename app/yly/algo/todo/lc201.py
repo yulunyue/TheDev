@@ -1,9 +1,9 @@
-from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,\
-    Dict,List,MOD,inf,heapq
+from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq
 class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/bitwise-and-of-numbers-range/submissions/600330795/'
     def get_cases(self):
         return [
+            dict(left = 6, right = 7,result=6),
             dict(left = 3, right = 3,result=3),
             dict(left = 5, right = 7,result=4),
             dict(left = 1, right = 2147483647,result=0),
@@ -20,10 +20,10 @@ class Solution(SolutionBase):
         c=right-left
         while v*2<=left:
             v*=2
-        r=right&v
+        # r=right&v
         ans=0
         while v:
-            if v>=c and v&left and v&r:
+            if v>=c and v&left and v&right:
                 ans+=v
             v=v>>1
         return ans

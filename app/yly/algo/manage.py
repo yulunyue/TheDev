@@ -6,6 +6,7 @@ from common.util.module import Module
 from common.util.log import logger
 from common.util.fp import File
 from collections import defaultdict
+import functools
 from common.third_util.cg_util import CodingGame
 import heapq
 import os

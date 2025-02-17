@@ -3,7 +3,7 @@ import json
 import bisect
 import heapq
 import math
-from functools import lru_cache
+import functools
 from typing import Dict,List,Optional
 from collections import defaultdict
 inf = float("inf")
