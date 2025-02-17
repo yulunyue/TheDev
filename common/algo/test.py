@@ -39,6 +39,9 @@ class TestAlgo(TestBase):
     def test_alphabate(self):
         self.expect(AlphaBate(2).search(), 3)
 
+    def test_str(self):
+        a="ababcaba"
+        self.expect(kmp_array(a),[-1,0,1,2,0,1,2,3])
 
 if __name__ == "__main__":
     TestAlgo().run()

@@ -11,6 +11,9 @@ def kmp_array(s):
     '''
     ret[i]=max(j)
     s[:j+1]==s[i-j:i+1]))
+    
+    a,b,a,b,c,a,b,a
+    -1,0,1,2,0,1,2,3
     '''
     n = len(s)
     pi = [0]*n
@@ -22,6 +25,8 @@ def kmp_array(s):
 
 
 def kmp_search(src, target):
+    if not target:
+        return range(0,len(src))
     pi = kmp_array(target)
     match_idx = []
     m = len(target)
@@ -38,14 +43,6 @@ def z_kmp(s):
     '''
     z[i]=max(j) 
     s[:j+1]==s[i:i+j+1]))
-    z(aaabaab) = [0, 2, 1, 0, 2, 1, 0]
-        aaabaab 
-      1 aabaab 2
-      2 abaab 1
-    z(abacaba) = [0, 0, 1, 0, 3, 0, 1]
-        abacaba
-      2 acaba 1
-      4 aba 
     '''
     n = len(s)
     z = [0]*n

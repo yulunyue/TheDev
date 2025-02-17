@@ -4,7 +4,6 @@ from app.yly.game.game_base import GameBase
 from app.yly.game.gus_num.main import GusNum
 from app.yly.game.table.main import TbGame
 from app.yly.game.ab.main import AbGame
-from app.yly.game.connect_four.main import CfGame
 GAME:Dict[str,GameBase]=dict()
 for cls in GameBase.__subclasses__():
     GAME[cls.__name__]=cls
