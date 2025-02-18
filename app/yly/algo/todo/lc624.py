@@ -1,14 +1,16 @@
 from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
 class Solution(SolutionBase):
+    uri='https://leetcode.cn/problems/maximum-distance-in-arrays/description/?envType=daily-question&envId=2025-02-19'
     def get_cases(self):
         return [
-            dict(nums = [2,3,2],result=3),
+
         ]
     
-    def rob(self,*args,**kw):
+    def xx(self,*args,**kw):
         self.init(*args,**kw)
         return self.execute(*args,**kw)
-    def execute(self, nums: List[int]) -> int:   
+        
+    def execute(self,**kw):
         pass
 
 
