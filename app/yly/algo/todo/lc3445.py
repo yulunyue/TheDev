@@ -1,11 +1,10 @@
-from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,\
-    Dict,List,MOD,inf,heapq
+from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq
 from common.algo.str_util import kmp_array,kmp_search
 class Solution(SolutionBase):
     def get_cases(self):
         return [
             #dict(s="a"*(10**5),p="aa"*(10**2)+"*"+"bb"*(10**4)+"*"+"cc",result=0),
-            dict(s = "madlogic", p = "*adlogi*",reuslt=6),
+            dict(s = "madlogic", p = "*adlogi*",result=6),
             dict(s="abc",p="a*b*c",result=3),
             dict(s='abaacbaecebce',p='"ba*c*ce',result=8),
             dict(s = "baccbaadbc", p = "cc*baa*adb",result=-1),
