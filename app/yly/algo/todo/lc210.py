@@ -20,6 +20,8 @@ class Solution(SolutionBase):
         if not prerequisites:
             return list(range(numCourses))
         g=G().reset()
+        for v in range(numCourses):
+            g.add_node(v)
         for a1,a0 in prerequisites:
             g.add_edge(a0,a1)
         g.tupu()

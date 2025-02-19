@@ -22,16 +22,16 @@ result=11),
         ps=[[len(v),kmp_search(s,v)] for v in p.split('*')]
         l=r=0
         ans=inf
-        # self.log(ps)
+        self.log(ps)
         for v in ps[1][1]:
             while l+1<len(ps[0][1]) and ps[0][0]+ps[0][1][l+1]<=v:
                 l+=1
             if l==len(ps[0][1]) or ps[0][0]+ps[0][1][l]>v:
-                break
+                continue
             while r<len(ps[2][1]) and ps[2][1][r]<v+ps[1][0]:
                 r+=1
             if r==len(ps[2][1]) or ps[2][1][r]<v+ps[1][0]:
-                break
+                continue
             tmp=ps[2][1][r]+ps[2][0]-ps[0][1][l]
             if tmp<ans:
                 ans=tmp
