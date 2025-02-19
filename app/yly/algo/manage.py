@@ -297,6 +297,7 @@ class SolutionBase:
         return case,ret,msg  
 
     def run_cls(self):
+        self.gen_file()
         for case in self.get_cases():
             method,param,result=case['mathods'],case['params'],case['result']
             self.init()

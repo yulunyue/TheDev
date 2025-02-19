@@ -3,7 +3,18 @@ from common.algo.str_util import kmp_array,kmp_search
 class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/shortest-matching-substring/description/'
     def get_cases(self):
+        '''
+        s =
+"cvtrmfmvuhzncqffl"
+p =
+"fl**"
+
+添加到测试用例
+输出
+-1
+        '''
         return [
+            
             dict(s="uwkpnqhynsedqqgdw",
 p ="k**edq",
 result=11),

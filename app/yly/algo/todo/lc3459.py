@@ -3,6 +3,7 @@ class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/length-of-longest-v-shaped-diagonal-segment/description/'
     def get_cases(self):
         return [
+            dict(grid=[[1,1,1,2,0,0],[0,0,0,0,1,2]],result=2),
             dict(grid=[[2,2,1,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]],result=5),
             dict(grid = [[2,2,2,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]],result=4),
         ]
@@ -27,9 +28,9 @@ class Solution(SolutionBase):
                     continue
                 if grid[i][j]+grid[ny][nx]==2:
                     ans=max(ans,dfs(ny,nx,dy,dx,not_use and dy==y and dx==x))
-            ans+=1
+            
             # self.log_vals(locals(),"i,j,y,x,use,ans")
-            return ans
+            return ans+1
         ans=0
         for i in range(n):
             for j in range(m):
