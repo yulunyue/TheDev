@@ -1,8 +1,10 @@
 from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
 class Solution(SolutionBase):
+    uri='https://leetcode.cn/problems/length-of-longest-v-shaped-diagonal-segment/description/'
     def get_cases(self):
         return [
-            dict(grid=[[2,2,1,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]],result=0)
+            dict(grid=[[2,2,1,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]],result=5),
+            dict(grid = [[2,2,2,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]],result=4),
         ]
     
     def lenOfVDiagonal(self,*args,**kw):
@@ -14,16 +16,20 @@ class Solution(SolutionBase):
         dr=[[1,1],[-1,1],[-1,-1],[1,-1]]
 
         @functools.lru_cache(None)
-        def dfs(i,j,y,x,use):            
-            ny,nx=i+y,j+x
-            if ny<0 or nx<0 or ny==n or nx==m:
-                return 0
-            if grid[i][j]+grid[y][x]==2:
-                pass
-            ans=1+dfs(ny)
-            if use==1:
-                pass
-            dfs(i+j)
+        def dfs(i,j,y,x,not_use):       
+            d=[[y,x]]
+            if not_use:
+                d.extend([[1,-1],[-1,1]] if y==x else [[1,1],[-1,-1]])
+            ans=0
+            for dy,dx in d:
+                ny,nx=i+dy,j+dx
+                if ny<0 or nx<0 or ny==n or nx==m:
+                    continue
+                if grid[i][j]+grid[ny][nx]==2:
+                    ans=max(ans,dfs(ny,nx,dy,dx,not_use and dy==y and dx==x))
+            ans+=1
+            # self.log_vals(locals(),"i,j,y,x,use,ans")
+            return ans
         ans=0
         for i in range(n):
             for j in range(m):
@@ -36,7 +42,7 @@ class Solution(SolutionBase):
                     if y<0 or x<0 or y==n or x==m:
                         continue
                     if grid[y][x]==2:
-                        ans=max(ans,dfs(y,x,dy,dx,0)+2)
+                        ans=max(ans,dfs(y,x,dy,dx,True)+1)
         return ans
 
 
