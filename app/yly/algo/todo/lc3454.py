@@ -10,22 +10,15 @@ class Solution(SolutionBase):
     def separateSquares(self,*args,**kw):
         self.init(*args,**kw)
         return self.execute(*args,**kw)
-    def execute(self,squares):
-        n=len(squares)
-        sc=10000
-        mx,mn=-inf,inf
-        for i in range(n):
-            squares[i][1]*=sc
-            mx=max(squares[i][1]+squares[i][2]*sc,mx)
-            mn=min(squares[i][1],mn)
-        def check(h):
-            up,low=0,0
-            for _,y,c in squares:
-                up+=max(y-h+sc*c,0)*c
-                low+=max(h-y,0)*c
-            # self.log(h,low,up)
-            return low>=up-1
-        return (bisect.bisect_left(range(mn,mx),True,key=check)+mn)/sc
+    
+    def execute(self,squares:list):
+        y_line=defaultdict(list)
+        for i,(x,y,c) in enumerate(squares):
+            y_line[y].append([x,x+c,0,i])
+            y_line[y+c].append([x,x+c,1,i])
+        for ly in sorted(y_line.keys()):
+            self.log(ly,y_line[ly])
+
 
 
 

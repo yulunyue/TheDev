@@ -45,6 +45,12 @@ def dp(c: dict, k="", mp=None):
         mp[k].add(c)
     return mp
 
+def str_mid(s:str,size,fill="-"):
+    if len(s)>=size:
+        return s[:size]
+    c=size-len(s)
+    l,y=c//2,c%2
+    return fill*l+s+fill*(l+y)
 
 if __name__ == "__main__":
     print(hash_any(dict(a=3, b=[3, 4], c=dict(e=1))))

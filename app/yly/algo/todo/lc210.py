@@ -19,7 +19,7 @@ prerequisites =
 [[1,0],[1,2],[0,1]]
         '''
         return [
-             dict(numCourses = 3, prerequisites = [[1,0]],result=[2,0,1]),
+            dict(numCourses = 3, prerequisites = [[1,0]],result=[2,0,1]),
             dict(numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]],result=[0,2,1,3]),
         ]
     def execute(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:

@@ -91,8 +91,8 @@ class Api:
         return self.hander_error(method, uri, res, data or param)
 
     def hander_error(self, method, uri, res: requests.Response, data):
-        logger.error(
-            f'{method}:{uri}:{res.status_code}:{res.content[:300]+res.content[-300:]}:{data}')
+        raise Exception(
+            f'{method}:{uri}:{res.status_code}:{res.content[:100]+b"***"+res.content[-100:]}:{str(data)[:40]}')
 
     def parse(self, value):
         return value

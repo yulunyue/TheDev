@@ -3,21 +3,9 @@ from common.algo.str_util import kmp_array,kmp_search
 class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/shortest-matching-substring/description/'
     def get_cases(self):
-        '''
-        s =
-"cvtrmfmvuhzncqffl"
-p =
-"fl**"
-
-添加到测试用例
-输出
--1
-        '''
         return [
-            
-            dict(s="uwkpnqhynsedqqgdw",
-p ="k**edq",
-result=11),
+            dict( s ="cvtrmfmvuhzncqffl",p="fl**",result=2),
+            dict(s="uwkpnqhynsedqqgdw",p ="k**edq",result=11),
             dict(s = "madlogic", p = "*adlogi*",result=6),
             dict(s='abaacbaecebce',p='ba*c*ce',result=8),
             dict(s="abc",p="a*b*c",result=3),
@@ -30,10 +18,15 @@ result=11),
         return self.execute(*args,**kw)
         
     def execute(self,s,p:str):
-        ps=[[len(v),kmp_search(s,v)] for v in p.split('*')]
+        ps=[]
+        for i,v in enumerate(p.split('*')):
+            if not v:
+                ps.append([len(v),range(len(s)+1)])
+            else:
+                ps.append([len(v),kmp_search(s,v)])
         l=r=0
         ans=inf
-        self.log(ps)
+        # self.log(ps)
         for v in ps[1][1]:
             while l+1<len(ps[0][1]) and ps[0][0]+ps[0][1][l+1]<=v:
                 l+=1
@@ -45,6 +38,7 @@ result=11),
                 continue
             tmp=ps[2][1][r]+ps[2][0]-ps[0][1][l]
             if tmp<ans:
+                # self.log(s[ps[0][1][l]:ps[2][1][r]+ps[2][0]])
                 ans=tmp
         return ans if ans!=inf else -1
 

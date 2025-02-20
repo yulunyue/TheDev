@@ -8,9 +8,12 @@ class Graph:
     edges=dict()
     def __init__(self,key=None):
         self.key=key
+
+    def load(self):
         self.in_deg=0
         self.out_deg=0
         self.childs:Dict[str,Graph]=dict()
+        return self
     
     def reset(self):
         self.edges.clear()
@@ -19,7 +22,7 @@ class Graph:
     
     def add_node(self,kid):
         if kid not in self.nodes:
-            self.nodes[kid]=Graph(kid)
+            self.nodes[kid]=Graph(kid).load()
         return self.nodes[kid]
     
     def add_edge(self,f,t,*args):

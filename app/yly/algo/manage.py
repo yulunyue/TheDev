@@ -191,7 +191,7 @@ class SolutionBase:
             return self.run_cls()
         for fn in func:
             for i, case in enumerate(self.get_cases()):
-                self.ep = case.pop("result")
+                self.ep = case.get("result")
                 self.results=[]
                 a = time.time()
                 self.log(f"begin {self.name}-{fn.__name__}")
@@ -202,10 +202,12 @@ class SolutionBase:
                 if r is None:
                     r="\n".join(self.results)
                 self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
-                if not self.diff(r, self.ep):
+                if self.ep is not None and not self.diff(r, self.ep):
                     self.flush_log()
                     break
-                self._logs=[]
+                if self.ep is not None:
+                    self._logs=[]
+        self.flush_log()
                 
                 
             

@@ -31,17 +31,22 @@ class State:
     
     
 class TreeSearch:
-    def search(self,state:State,depth=0):
+    def search_dp(self,state:State,depth=0):
         mvs:List[State]=state.get_nexts(depth)
+        self.state_count+=1
         if not mvs:
             return state.calc_value(depth)
         state.value = -inf
         for action,next_state in mvs:
-            value=-self.search(next_state,depth+1)
+            value=-self.search_dp(next_state,depth+1)
             if value>state.value:
                 state.value=value
                 state.best_action=action
         return state.value
+    
+    def search(self,state):
+        self.state_count=0
+        return self.search_dp(state)
     
     
 

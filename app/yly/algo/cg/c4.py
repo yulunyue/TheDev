@@ -1,6 +1,6 @@
 from app.yly.algo.manage import SolutionBase,View,logger
 from common.algo.search.base_search import TreeSearch,State
-from common.algo.search.alphabate_search import ABNode
+from common.algo.search.alphabate_search import ABNode,AlphaBateSearch
 from collections import defaultdict
 from typing import Dict,List
 import socket
@@ -8,16 +8,21 @@ from functools import lru_cache
 MOD=(10**9)+7
 inf = float("inf")
 DR=[[0,1],[1,0],[1,1],[-1,1]]
+def str_mid(s:str,size,fill="-"):
+    if len(s)>=size:
+        return s[:size]
+    c=size-len(s)
+    l,y=c//2,c%2
+    return fill*l+s+fill*(l+y)
 class Constant:
     HEIGHT=7
     WIDTH=9
     FOUR=4
+    TRUN_INDEX=0
     def __init__(self) -> None:
-        
         self.init_score()
         self.init_w()
         self.init_lines()
-
 
     def init_score(self):
         self.score_map={}
@@ -100,7 +105,7 @@ class Constant:
 
 C=Constant()
 STORE_STATE:Dict[int,State]=dict()
-class F4State(State):
+class F4State(ABNode):
     def __init__(self,mask,moves=0) -> None:
         self.mask = mask
         self.moves = moves
@@ -163,39 +168,37 @@ class F4State(State):
                 x-=C.score_map[k1]*v
             else:
                 o+=C.score_map[k1]*v
-        return f's:{self.score};o:{o};x:{x}'
+        return f'a:{self.best_action};o:{o};x:{x}'
 
-    def to_str(self,left,ret):
-        info=self.score_detail()
+    def to_str(self):
+        ret=[["- "]*C.WIDTH for _ in range(C.HEIGHT)]
+        ret.append([f'{i} ' for i in range(C.WIDTH)])
         for j in range(C.WIDTH):
-            ret[0][left+j]=info[j*2:j*2+2]
             pos=j*(C.HEIGHT+1)
             h_mask:int=(self.mask>>pos)&C.MASK_FULL_HEIGHT
             l=h_mask.bit_length()-1
             for i in range(l):
-                k=C.HEIGHT-(l-i)+1
+                k=C.HEIGHT-(l-i)
                 if h_mask&(1<<i):
-                    ret[k][left+j]=' X'
+                    ret[k][j]='X '
                 else:
-                    ret[k][left+j]=' O'
-            for i in range(C.HEIGHT+1):
-                ret[i][left+C.WIDTH]=' '
-                ret[i][left+C.WIDTH+1]=' '
+                    ret[k][j]='O '
+        return [str_mid(self.score_detail(),C.WIDTH*2)]+["".join(v) for v in ret]
             
-        return f"[value:{self.value}; best:{self.best_action}]"
+
 
     def __str__(self):
         bests=self.get_bests()
-        ret=[[" -"]*((C.WIDTH+2)*len(bests)) for _ in range(C.HEIGHT+1)]
-        info=""
+        tmp=[""]*(C.HEIGHT+2)
         for i,best in enumerate(bests):
-            info+=best.to_str((C.WIDTH+2)*i,ret)
-        return "\n".join([info]+["".join(v)for v in ret])
+            for j,v in  enumerate(best.to_str()):
+                tmp[j]+=" ## "+v
+        return "\n".join(tmp)
     
 
 
     def get_nexts(self, depth):
-        if depth>=4:
+        if depth>=4+(C.TRUN_INDEX//30):
             return []
         if not self.next_state:  
             op1,op2=dict(),dict()
@@ -225,51 +228,53 @@ class Solution(SolutionBase):
     name = 'f4'
     def get_cases(self):
         return [
-            dict(result="xx",num="mid",back=100),
+            #dict(search_type="tree_search",method="replay"),
+            dict(search_type="alpha_bate_search",method="replay"),
         ]
     
-    def init(self,**kw):
+    def init(self, search_type="alpha_bate_search",**kw):
         self.state=F4State(C.INIT_MASK)
         self.state.init_root()
-        self.seach=TreeSearch()
+        self.seach:AlphaBateSearch={
+            'tree_search':TreeSearch,
+            'alpha_bate_search':AlphaBateSearch,
+        }[search_type]()
     
 
-    def replay(self,stdout,back=1,**kw):
-        i=0
-        while i<len(stdout):
-            self.state:State=self.state.put(int(stdout[i]))
-            if i%2==0 and i+back>=len(stdout):
-                self.seach.search(self.state)
-                result=stdout[i+1] if i+1<len(stdout) else None
-                self.log(f'round:{i}-cur:{stdout[i]}-result:{result}\n{self.state}')
-                #self.state=self.state.next_state[self.state.best_action]
-            i+=1
+    def replay(self,stdout,stderr,**kw):
+        C.TRUN_INDEX=0
+        state_num=0
+        while C.TRUN_INDEX<len(stdout):
+            self.seach.search(self.state)
+            action=int(stdout[C.TRUN_INDEX])
+            if C.TRUN_INDEX<len(stdout):
+                self.log("; ".join([
+                    f'round:{C.TRUN_INDEX}',
+                    f'action:{action}',
+                    f'search_best_action:{self.state.best_action}',
+                    f'state_count:{self.seach.state_count}',
+                ]))
+                if action!=self.state.best_action:
+                    self.log(self.state)
+                    # self.log(stderr[C.TRUN_INDEX//2]['state'])
+            state_num+=self.seach.state_count
+            self.state:F4State=self.state.put(action)
+            C.TRUN_INDEX+=1
+        self.log(f'round:{C.TRUN_INDEX},state_num:{state_num}')
+        self.log(self.state)
             
         
 
-    def dev(self,num,**kw):
-        if num=='mid':
-            self.state=self.state.put(3)
-            self.seach.search(self.state)
-            self.log(self.state)
-            return
-        if num=='test_full':
-            for i in range(C.HEIGHT):
-                self.state=self.state.put(0)
-            self.seach.search(self.state)
-            self.log(self.state)
-            return
-        for i in range(num):
-            self.seach.search(self.state)
-            self.log(f'---round {i}----\n{self.state}')
-            self.state=self.state.next_state[self.state.best_action]
+    def dev(self,method,**kw):
+        if method=='replay':
+            self.replay(**kw)
 
     def exec(self,**kw):
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
         self.init()
         while True:
-            turn_index = int(self.input())  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
+            C.TRUN_INDEX = int(self.input())  # starts from 0; As the game progresses, first player gets [0,2,4,...] and second player gets [1,3,5,...]
             board_rows=[]
             for i in range(7):
                 board_rows.append(self.input())  # one row of the board (from top to bottom)
@@ -277,18 +282,18 @@ class Solution(SolutionBase):
             for i in range(num_valid_actions):
                 action = int(self.input())  # a valid column index into which a chip can be dropped
             opp_previous_action = int(self.input())  # opponent's previous chosen column index (will be -1 for first player in the first turn)
-            self.error(opp_previous_action=opp_previous_action)
+           
             if 0<=opp_previous_action<C.WIDTH:
                 self.state:F4State=self.state.put(opp_previous_action)
             # if my_id==1 and turn_index==1 and 3<=opp_previous_action<=6:
             #     self.output(-2)
             #     continue
             self.seach.search(self.state)
+            self.error(opp_previous_action=opp_previous_action,state=str(self.state))
             self.output(self.state.best_action)
             self.state=self.state.next_state[self.state.best_action]
             
-
-
+            
 
 
 if __name__=='__main__':

@@ -1,25 +1,24 @@
 from common.algo.search.base_search import TreeSearch,State,inf
 from typing import List
 class ABNode(State):
-    def __init__(self):
-        super().__init__()
+    alpha=None
+    bate=None
 
-class AlphaBateSearch:
-    def search(self, last_move:State, depth=0, alpha=-inf, bate=inf,**kw) -> None:
-        mvs:List[State] = last_move.get_nexts(depth)
+class AlphaBateSearch(TreeSearch):
+    def search_dp(self, state:ABNode, depth=0, alpha=-inf, bate=inf,**kw) -> None:
+        self.state_count+=1
+        mvs:List[ABNode] = state.get_nexts(depth)
         if not mvs:
-            return last_move.calc_value(depth)
-        last_move.alpha, last_move.bate = alpha, bate
-        for mv in mvs:
-            self.do(mv)
-            mv.value=-self.search(mv,depth=depth+1,
-                                 alpha=-last_move.bate, bate=-last_move.alpha)
-            self.undo(mv)
-            if mv.value >= last_move.bate:
-                last_move.alpha = last_move.bate
-                last_move.best_action=mv
+            return state.calc_value(depth)
+        state.alpha, state.bate = alpha, bate
+        for action,next_state in mvs:
+            next_state.value=-self.search_dp(next_state,depth=depth+1,
+                                 alpha=-state.bate, bate=-state.alpha)
+            if next_state.value >= state.bate:
+                state.alpha = state.bate
+                state.best_action=action
                 break
-            if mv.value > last_move.alpha:
-                last_move.alpha = mv.value
-                last_move.best_action=mv
-        return last_move.alpha
+            if next_state.value > state.alpha:
+                state.alpha = next_state.value
+                state.best_action=action
+        return state.alpha

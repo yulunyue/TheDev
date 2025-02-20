@@ -28,7 +28,7 @@ class WordDictionary(SolutionBase):
             if 'aa' in t and i==len(s):
                 return True
             if i==len(s):
-                return False
+                continue
             if s[i] in t:
                 q.append([i+1,t[s[i]]])
             elif s[i]=='.':
