@@ -125,9 +125,9 @@ class SolutionBase:
     def log(self, *s, tp: str = ""):
         self.action = f'{" ".join(str(s1) for s1 in s)}'
         self._logs.append(self.action)
-    def log_vals(self,kw,format:str,*args):
+    def log_vals(self,kw,format:str,info=""):
         fs=format.split(',')
-        self.log("; ".join([f'{k}:{kw.get(k)}' for k in fs]),*args)
+        self.log(info,"; ".join([f'{k}:{kw.get(k) if isinstance(kw,dict) else getattr(kw,k)}' for k in fs]))
     def pre(self,input="",result=None,**kwargs):
         if 'codingame' in  self.uri:
             data=File(f"data/log/cg/{self.name}.json").read_file()

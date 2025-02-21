@@ -11,18 +11,19 @@ class SegTreeNode:
     def __init__(self,idx=1) -> None:
         self.idx = idx
         self.todo = 0
+        self.value = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
     
-    def get_value(self):
-        pass
+    def get_value(self,*args):
+        return self.value
+    
     def do(self,v):
         pass
     def up(self,*args):
         pass
     def init(self):
         pass
-
     def set_range(self,l,r):
         self.l = l
         self.r = r
@@ -46,7 +47,7 @@ class SegTreeNode:
             ).set_range(self.m+1, self.r)
         return self._right
 
-    def query(self, l, r,fn):
+    def query(self, l, r,fn=None):
         if l <= self.l and self.r <= r:
             return self.get_value()
         res = SegTreeNode.QUERY_DEFAULT
@@ -74,8 +75,7 @@ class SegTreeNode:
         self.right.build(nums)
         self.up()
     
-    def up(self,*args):
-        return self.get_value(*args)
+    
     def query_sum(self,l,r):
         return self.query(l,r,lambda a,b:a+b)
     
@@ -91,17 +91,17 @@ class SegTreeNode:
         if l <=self.l and self.r<= r:
             self.do(value)
             return
-        self.down(value)
+        self.down()
         if self.m >= l:
             self.left.update(l, r,value)
         if self.m < r:
             self.right.update(l, r,value)
-        self.up(value)
+        self.up()
 
-    def down(self,v):
+    def down(self):
         if self.todo:
-            self.left.do(v)
-            self.right.do(v)
+            self.left.do(self.todo)
+            self.right.do(self.todo)
             self.todo = 0
       
     def get_childs(self):

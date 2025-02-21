@@ -198,7 +198,7 @@ class F4State(ABNode):
 
 
     def get_nexts(self, depth):
-        if depth>=4+(C.TRUN_INDEX//30):
+        if depth==0:
             return []
         if not self.next_state:  
             op1,op2=dict(),dict()
@@ -228,11 +228,12 @@ class Solution(SolutionBase):
     name = 'f4'
     def get_cases(self):
         return [
-            #dict(search_type="tree_search",method="replay"),
-            dict(search_type="alpha_bate_search",method="replay"),
+            #dict(search_type="tree_search",method="analyze"),
+            dict(search_type="alpha_bate_search",method="analyze"),
         ]
     
     def init(self, search_type="alpha_bate_search",**kw):
+        self.search_max_depth=4
         self.state=F4State(C.INIT_MASK)
         self.state.init_root()
         self.seach:AlphaBateSearch={
@@ -245,7 +246,7 @@ class Solution(SolutionBase):
         C.TRUN_INDEX=0
         state_num=0
         while C.TRUN_INDEX<len(stdout):
-            self.seach.search(self.state)
+            self.seach.search(self.state,self.search_max_depth)
             action=int(stdout[C.TRUN_INDEX])
             if C.TRUN_INDEX<len(stdout):
                 self.log("; ".join([
@@ -254,7 +255,7 @@ class Solution(SolutionBase):
                     f'search_best_action:{self.state.best_action}',
                     f'state_count:{self.seach.state_count}',
                 ]))
-                if action!=self.state.best_action:
+                if action!=self.state.best_action and C.TRUN_INDEX%2==1:
                     self.log(self.state)
                     # self.log(stderr[C.TRUN_INDEX//2]['state'])
             state_num+=self.seach.state_count
@@ -262,12 +263,23 @@ class Solution(SolutionBase):
             C.TRUN_INDEX+=1
         self.log(f'round:{C.TRUN_INDEX},state_num:{state_num}')
         self.log(self.state)
-            
+    
+    def analyze(self,stdout,**kw):
+        C.TRUN_INDEX=0
+        states=[self.state]
+        while C.TRUN_INDEX<len(stdout):
+            action=int(stdout[C.TRUN_INDEX])
+            states.append(states[-1].put(action))
+            C.TRUN_INDEX+=1
+        while states:
+            s=states.pop()
+            self.log(s,s.self_win,s.op_win)
+            # self.seach.search(s,4)
+            # for b in s.get_bests():
+            #     self.log(b.self_win,b.op_win)
+            # for depth in range(1,15):
+            #     pass
         
-
-    def dev(self,method,**kw):
-        if method=='replay':
-            self.replay(**kw)
 
     def exec(self,**kw):
         my_id, opp_id = [int(i) for i in self.input().split()]
@@ -288,7 +300,7 @@ class Solution(SolutionBase):
             # if my_id==1 and turn_index==1 and 3<=opp_previous_action<=6:
             #     self.output(-2)
             #     continue
-            self.seach.search(self.state)
+            self.seach.search(self.state,self.search_max_depth)
             self.error(opp_previous_action=opp_previous_action,state=str(self.state))
             self.output(self.state.best_action)
             self.state=self.state.next_state[self.state.best_action]
