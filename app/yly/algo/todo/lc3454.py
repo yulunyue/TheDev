@@ -5,13 +5,14 @@ class T(SegTreeNode):
         self.ct=0
     def do(self,v):
         self.ct+=v
-        self.value=0 if self.ct==0 else (self.r-self.l+1)
-        self.todo+=v
-        SolutionBase().log_vals(self,'l,r,ct,value',"do")
+        self.up()
     def up(self):
-        SolutionBase().log_vals(self.left,'l,r,ct,value','up')
-        SolutionBase().log_vals(self.right,'l,r,ct,value','up')
-        self.value=self.left.value+self.right.value
+        if self.ct>0:
+            self.value=self.r-self.l+1
+        elif self.l==self.r:
+            self.value=0
+        else:
+            self.value=self.left.value+self.right.value
 
 class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/separate-squares-ii/description/'
@@ -49,11 +50,11 @@ class Solution(SolutionBase):
                 for x1,x2 in y_line[y][tp]:
                     t.update(x1,x2,tp)
                     w=t.query(mn,mx)
-                    self.log_vals(locals(),"y,x1,x2,tp,w","update")
+                    # self.log_vals(locals(),"y,x1,x2,tp,w","update")
             pre_y=y
         mid=ans[-1][0]/2
         i=bisect.bisect_left(ans,[mid])
-        self.log(ans)
+        # self.log(ans)
         return ans[i][1]-(ans[i][0]-mid)/ans[i][-1]
 
 
