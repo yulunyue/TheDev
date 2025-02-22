@@ -20,7 +20,6 @@ class Solution(SolutionBase):
         return [
             dict(squares = [[0,0,2],[1,1,2]],result=1.5),
             dict(squares = [[0,0,1],[2,2,1]],result=1.00000),
-             
             dict(squares = [[0,0,2],[1,1,1]],result=1.00000)
         ]
     

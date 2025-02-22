@@ -19,17 +19,16 @@ class Constant:
     WIDTH=9
     FOUR=4
     TRUN_INDEX=0
+    O_FOUR=4
+    X_FOUR=8
     def __init__(self) -> None:
         self.init_score()
         self.init_w()
         self.init_lines()
 
     def init_score(self):
-        self.score_map={}
-        self.win_state=dict()
-        self.op_win=dict()
-        self.score_scale=[[10,1],[1,10]]
-        scores=[0,1,20,400,8000]
+        self.score_map=[0]*(1<<8)
+        self.scores=[0,1,30,900,inf,-1,-30,-900,-inf]
         for i in range(1<<8):
             ct=[0]*4
             s=i
@@ -38,17 +37,13 @@ class Constant:
                 s=s>>2
             if ct[3]:
                 continue
-            score=0
-            if ct[1]==4 or ct[2]==4:
-                self.win_state[i]="self"
-            elif (ct[1]==1 and ct[2]==3) or (ct[1]==3 and ct[2]==1):
-                self.win_state[i]="op"
             if ct[1]==0 and ct[2]:
-                score=-scores[ct[2]]
-            if ct[2]==0 and ct[1]:
-                score=scores[ct[1]]
-            self.score_map[i]=score
-            self.win_state[i]=None
+                self.score_map[i]=4+ct[2]
+            elif ct[2]==0 and ct[1]:
+                self.score_map[i]=ct[1]
+            else:
+                self.score_map[i]=0
+        
      
         # logger.info([bin(self.WINSCORE[0]),bin(self.WINSCORE[1])])
 
@@ -114,7 +109,7 @@ class F4State(ABNode):
     
     def init_root(self):
         self.line_state = [0]*C.line_num
-        self.state = dict()
+        self.state = [0]*len(C.scores)
 
     def calc_value(self,depth):
         return self.score if self.moves%2==1 else -self.score
@@ -139,36 +134,23 @@ class F4State(ABNode):
                 self.state
             )
         return STORE_STATE[mask]
-    self_win=False
-    op_win=False
-    def init_state(self,x,y,line_state:List[int],score,state:dict):
+
+    def init_state(self,x,y,line_state:List[int],score,state:list):
         self.line_state=line_state.copy()
         self.state=state.copy()
         self.score=score
         for line_id,k_id in C.point_line_id[y][x]:
             old_state=self.line_state[line_id]
-            self.state[old_state]=self.state.get(old_state,0)-1
             new_state=old_state|C.state_pos[k_id][self.moves%2]
-            if C.win_state[new_state]=='self':
-                self.self_win=True
-            if C.win_state[new_state]=="op":
-                if new_state&C.state_pos[k_id][2]==0:
-                    self.op_win=True
-            self.score+=C.score_map[new_state]-C.score_map[old_state]
             self.line_state[line_id]=new_state
-            self.state[new_state]=self.state.get(new_state,0)+1
+            new_state_id,old_state_id=C.score_map[new_state],C.score_map[old_state]
+            self.score+=C.scores[new_state_id]-C.scores[old_state_id]
+            self.state[old_state_id]=self.state[old_state_id]-1
+            self.state[new_state_id]=self.state[new_state_id]+1
         return self
     
     def score_detail(self):
-        o,x=0,0
-        for k1,v in self.state.items():
-            if v<=0:
-                continue
-            if C.score_map[k1]<0:
-                x-=C.score_map[k1]*v
-            else:
-                o+=C.score_map[k1]*v
-        return f'a:{self.best_action};o:{o};x:{x}'
+        return f'a:{self.best_action};s:{self.score}'
 
     def to_str(self):
         ret=[["- "]*C.WIDTH for _ in range(C.HEIGHT)]
@@ -192,28 +174,19 @@ class F4State(ABNode):
         tmp=[""]*(C.HEIGHT+2)
         for i,best in enumerate(bests):
             for j,v in  enumerate(best.to_str()):
-                tmp[j]+=" ## "+v
-        return "\n".join(tmp)
+                tmp[j]+=" # "+v
+        return "\n"+"\n".join(tmp)
     
 
 
     def get_nexts(self, depth):
         if depth==0:
             return []
-        if not self.next_state:  
-            op1,op2=dict(),dict()
+        if not self.next_state:
             for col in range(C.WIDTH):
                 s:F4State=self.put(col)
                 if s is None:
                     continue
-                if s.self_win:
-                    op1={col:s}
-                    break
-                if s.op_win:
-                    op1[col]=s
-                    continue
-                op2[col]=s
-            self.next_state=op1 if op1 else op2
         return self.next_state.items()
 
 
@@ -222,6 +195,7 @@ class F4State(ABNode):
 class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"
     game_id = '70989246b492bcc523436cf43b6090c82395d392'
+    log_mode = 'debug'
     agentsIds = [
         4820019,-1
     ]
@@ -229,7 +203,7 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             #dict(search_type="tree_search",method="analyze"),
-            dict(search_type="alpha_bate_search",method="analyze"),
+            dict(search_type="alpha_bate_search"),
         ]
     
     def init(self, search_type="alpha_bate_search",**kw):
@@ -271,9 +245,11 @@ class Solution(SolutionBase):
             action=int(stdout[C.TRUN_INDEX])
             states.append(states[-1].put(action))
             C.TRUN_INDEX+=1
-        while states:
-            s=states.pop()
-            self.log(s,s.self_win,s.op_win)
+        for i in range(len(states)-1,-1,-1):
+            s=states[i]
+            if i==1 or i==len(states)-1:
+                self.log(s)
+        
             # self.seach.search(s,4)
             # for b in s.get_bests():
             #     self.log(b.self_win,b.op_win)

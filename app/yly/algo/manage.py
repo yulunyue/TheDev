@@ -104,13 +104,14 @@ def fmax(a,b,*args):return a if a>b else b
 def fmin(a,b,*args):return a if a<b else b
 class SolutionBase:
     uri=""
+    log_mode='test'
     _logs = []
     _has_view = False
     name = "solution"
     _DEV = True
     _tags = []
     _watch_var:List[View] = None
-    action="log"
+    log_str="log"
     game_id=""
     results = []
     def get_cases(self):
@@ -122,12 +123,23 @@ class SolutionBase:
         self.exec()
         return "\n".join(self.results)
 
-    def log(self, *s, tp: str = ""):
-        self.action = f'{" ".join(str(s1) for s1 in s)}'
-        self._logs.append(self.action)
+    def log(self, s, tp: str = ""):
+        s=str(s)
+        if isinstance(tp,str):
+            if tp:
+                raise Exception(tp)
+        else:
+            fs=format.split(',')
+            s="; ".join([f'{k}:{kw.get(k) if isinstance(kw,dict) else getattr(kw,k)}' for k in fs])
+        self.log_str = s
+        if self.log_mode=='debug':
+            logger.info(s)
+        else:
+            self._logs.append(self.log_str)
+
     def log_vals(self,kw,format:str,info=""):
-        fs=format.split(',')
-        self.log(info,"; ".join([f'{k}:{kw.get(k) if isinstance(kw,dict) else getattr(kw,k)}' for k in fs]))
+        pass
+        
     def pre(self,input="",result=None,**kwargs):
         if 'codingame' in  self.uri:
             data=File(f"data/log/cg/{self.name}.json").read_file()
