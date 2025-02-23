@@ -101,7 +101,9 @@ class Algo extends Div {
 
         }, (node: Node) => {
             let py_module = web_dom.get_param("py_module")
-            console.error('py_module is null')
+            if(!py_module){
+                console.error('py_module is null')
+            }
             this.code_select.set_option(node).select(py_module)
             this.run()
 

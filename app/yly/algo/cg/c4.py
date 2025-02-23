@@ -28,7 +28,7 @@ class Constant:
 
     def init_score(self):
         self.score_map=[0]*(1<<8)
-        self.scores=[0,1,30,900,inf,-1,-30,-900,-inf]
+        self.scores=[0,0,2,40,800,0,-1,-20,-400]
         for i in range(1<<8):
             ct=[0]*4
             s=i
@@ -49,6 +49,7 @@ class Constant:
 
         
     def init_w(self):
+        self.COLS=[4,3,5,2,6,1,7,0,8]
         self.MASK_FULL_HEIGHT=(1<<self.HEIGHT+1)-1
         self.MASK_FULL=(1<<((self.HEIGHT+1)*self.WIDTH))-1
         self.state_pos=[]
@@ -96,7 +97,6 @@ class Constant:
                                 self.line_num,idx
                             ])
                         self.line_num+=1
-
 
 C=Constant()
 STORE_STATE:Dict[int,State]=dict()
@@ -175,18 +175,28 @@ class F4State(ABNode):
         for i,best in enumerate(bests):
             for j,v in  enumerate(best.to_str()):
                 tmp[j]+=" # "+v
-        return "\n"+"\n".join(tmp)
+        return "\n".join(tmp)
     
+    def game_over(self):
+        return self.state[C.O_FOUR] or self.state[C.X_FOUR]
 
 
     def get_nexts(self, depth):
         if depth==0:
             return []
-        if not self.next_state:
-            for col in range(C.WIDTH):
+        if self.game_over():
+            return []
+        if self.next_state is None:
+            st1=dict()
+            for col in C.COLS:
                 s:F4State=self.put(col)
                 if s is None:
                     continue
+                if s.game_over():
+                    st1={col:s}
+                    break
+                st1[col]=s
+            self.next_state=st1
         return self.next_state.items()
 
 
@@ -195,7 +205,7 @@ class F4State(ABNode):
 class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"
     game_id = '70989246b492bcc523436cf43b6090c82395d392'
-    log_mode = 'debug'
+    #log_mode = 'debug'
     agentsIds = [
         4820019,-1
     ]
@@ -207,7 +217,7 @@ class Solution(SolutionBase):
         ]
     
     def init(self, search_type="alpha_bate_search",**kw):
-        self.search_max_depth=4
+        self.search_max_depth=5
         self.state=F4State(C.INIT_MASK)
         self.state.init_root()
         self.seach:AlphaBateSearch={
@@ -216,11 +226,13 @@ class Solution(SolutionBase):
         }[search_type]()
     
 
-    def replay(self,stdout,stderr,**kw):
+    def replay(self,stdout:List[str],stderr,**kw):
         C.TRUN_INDEX=0
         state_num=0
         while C.TRUN_INDEX<len(stdout):
             self.seach.search(self.state,self.search_max_depth)
+            if stdout[C.TRUN_INDEX].startswith('None'):
+                break
             action=int(stdout[C.TRUN_INDEX])
             if C.TRUN_INDEX<len(stdout):
                 self.log("; ".join([
@@ -229,9 +241,10 @@ class Solution(SolutionBase):
                     f'search_best_action:{self.state.best_action}',
                     f'state_count:{self.seach.state_count}',
                 ]))
-                if action!=self.state.best_action and C.TRUN_INDEX%2==1:
-                    self.log(self.state)
-                    # self.log(stderr[C.TRUN_INDEX//2]['state'])
+                # if action!=self.state.best_action and C.TRUN_INDEX%2==1:
+                self.log(self.state)
+                if C.TRUN_INDEX%2==1:
+                    self.log(stderr[C.TRUN_INDEX//2]['state'])
             state_num+=self.seach.state_count
             self.state:F4State=self.state.put(action)
             C.TRUN_INDEX+=1
@@ -276,8 +289,11 @@ class Solution(SolutionBase):
             # if my_id==1 and turn_index==1 and 3<=opp_previous_action<=6:
             #     self.output(-2)
             #     continue
-            self.seach.search(self.state,self.search_max_depth)
-            self.error(opp_previous_action=opp_previous_action,state=str(self.state))
+            self.seach.search(self.state, self.search_max_depth)
+            self.error(
+                opp_previous_action=opp_previous_action,
+                state=str(self.state)
+            )
             self.output(self.state.best_action)
             self.state=self.state.next_state[self.state.best_action]
             

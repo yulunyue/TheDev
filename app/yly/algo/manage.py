@@ -129,16 +129,13 @@ class SolutionBase:
             if tp:
                 raise Exception(tp)
         else:
-            fs=format.split(',')
-            s="; ".join([f'{k}:{kw.get(k) if isinstance(kw,dict) else getattr(kw,k)}' for k in fs])
+            fs=s.split(',')
+            s="; ".join([f'{k}:{tp.get(k) if isinstance(tp,dict) else getattr(tp,k)}' for k in fs])
         self.log_str = s
         if self.log_mode=='debug':
             logger.info(s)
         else:
             self._logs.append(self.log_str)
-
-    def log_vals(self,kw,format:str,info=""):
-        pass
         
     def pre(self,input="",result=None,**kwargs):
         if 'codingame' in  self.uri:

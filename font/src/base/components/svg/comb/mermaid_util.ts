@@ -42,14 +42,14 @@ export class MeraUtil extends Div {
     }
     on_load() {
 
-        // let svg = (this.el.children[0] as any)
-        // if (!svg || !svg.clientWidth) {
-        //     return
-        // }
-        // let w = this.el.clientWidth - svg.clientWidth
-        // let h = this.el.clientHeight - svg.clientHeight
-        // svg.style.transform = `translate(${w / 2}px,${h / 2}px)`
-        this.on_load_room()
+        let svg = (this.el.children[0] as any)
+        if (!svg || !svg.clientWidth) {
+            return
+        }
+        let w = this.el.clientWidth - svg.clientWidth
+        let h = this.el.clientHeight - svg.clientHeight
+        svg.style.transform = `translate(${w / 2}px,${h / 2}px)`
+        // this.on_load_room()
         this.load_event()
     }
     load_event(): void {

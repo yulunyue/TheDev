@@ -6,7 +6,7 @@ class State:
         self.value = None
         self.depth = 0
         self.best_action=None
-        self.next_state:Dict[int,State]=dict()
+        self.next_state:Dict[int,State]=None
     
     def set_depth(self,depth):
         self.depth = depth

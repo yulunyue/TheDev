@@ -116,11 +116,12 @@ class SegTreeNode:
         from app.yly.algo.manage import bp
         key = f'seg_tree_{self.idx}'
         return [
-            bp("",self.idx, key),
-            bp('value', self.get_value()),
+            bp("",f'{self.idx}_{self.l}_{self.r}', key),
+            bp('ct', self.ct,key),
+            bp('value', self.value,key),
             bp('todo', self.todo,key),
         ]
-    
+    view_keys=[]
     def tree_view(self):
         return dict(
             data=self.get_data(),
