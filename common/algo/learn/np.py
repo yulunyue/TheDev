@@ -1,4 +1,5 @@
 import random
+
 class Array:
     def set_shape(self,shape):
         self.shape=shape
@@ -13,6 +14,7 @@ class Array:
         return self
     
     def __getitem__(self,v):
+        print(v,self.shape,self.size)
         return self.data[v]
 
 def zeros(shape):

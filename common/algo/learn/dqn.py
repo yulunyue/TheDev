@@ -1,5 +1,5 @@
 from common.algo.learn.env import Env
-from common.algo.learn import np
+import numpy as np
 class Dqn:
     def __init__(self,env:Env,num_episodes=500,gamma_discount=0.9,epsilon=0.1,alpha=0.5):
         self.env:Env=env

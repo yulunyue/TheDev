@@ -9,6 +9,8 @@ class CfEnv(Env):
         self.size=4*12
         self.state = 12*3+0
         return self
+    def do(self):
+        y,x=self.state//12,self.state%12
 
 class Solution(SolutionBase):
     def get_cases(self):
@@ -17,7 +19,7 @@ class Solution(SolutionBase):
         ]
     
     def init(self, *args, **kwargs):
-        self.dqn=Dqn(CfEnv())
+        self.dqn=Dqn(CfEnv().reset())
         
     def execute(self,**kw):
         self.dqn.run()
