@@ -21,6 +21,8 @@ class Constant:
     TRUN_INDEX=0
     O_FOUR=4
     X_FOUR=8
+    O1_X3=9
+    O3_X1=10
     def __init__(self) -> None:
         self.init_score()
         self.init_w()
@@ -28,7 +30,9 @@ class Constant:
 
     def init_score(self):
         self.score_map=[0]*(1<<8)
-        self.scores=[0,0,2,40,800,0,-1,-20,-400]
+        self.scores=[0,1,20,400,80000,-1,-20,-400,-80000,0,0,0,0]
+        self.score2=[0]*15
+        self.score2[self.O3_X1],self.score2[self.O1_X3]=-70000,70000
         for i in range(1<<8):
             ct=[0]*4
             s=i
@@ -37,7 +41,11 @@ class Constant:
                 s=s>>2
             if ct[3]:
                 continue
-            if ct[1]==0 and ct[2]:
+            if ct[1]==1 and ct[2]==3:
+                self.score_map[i]=self.O1_X3
+            elif ct[1]==3 and ct[2]==1:
+                self.score_map[i]=self.O3_X1
+            elif ct[1]==0 and ct[2]:
                 self.score_map[i]=4+ct[2]
             elif ct[2]==0 and ct[1]:
                 self.score_map[i]=ct[1]
@@ -125,7 +133,7 @@ class F4State(ABNode):
             mask1&=C.HEIGHT_POS_MASK[col][2]
         mask = mask1|mask0
         if mask not in STORE_STATE:
-            STORE_STATE[mask]=F4State(
+            STORE_STATE[mask],flag=F4State(
                 mask,self.moves+1
             ).init_state(
                 col,mask0.bit_length()-col*(C.HEIGHT+1)-2,
@@ -133,21 +141,35 @@ class F4State(ABNode):
                 self.score,
                 self.state
             )
+            if flag:
+                self.next_state={col:STORE_STATE[mask]}
         return STORE_STATE[mask]
 
     def init_state(self,x,y,line_state:List[int],score,state:list):
         self.line_state=line_state.copy()
         self.state=state.copy()
-        self.score=score
+        oo=False
         for line_id,k_id in C.point_line_id[y][x]:
             old_state=self.line_state[line_id]
             new_state=old_state|C.state_pos[k_id][self.moves%2]
             self.line_state[line_id]=new_state
             new_state_id,old_state_id=C.score_map[new_state],C.score_map[old_state]
-            self.score+=C.scores[new_state_id]-C.scores[old_state_id]
+            if new_state_id==C.X_FOUR or new_state_id==C.O_FOUR:
+                self.next_state=dict()
+                self.score=C.scores[new_state_id]
+                return self,True
+            if new_state_id==C.O3_X1 and self.moves%2==1:
+                oo=True
+                self.score=C.score2[new_state_id]
+            elif new_state_id==C.O1_X3 and self.moves%2==0:
+                oo=True
+                self.score=C.score2[new_state_id]
+            score+=C.scores[new_state_id]-C.scores[old_state_id]
             self.state[old_state_id]=self.state[old_state_id]-1
             self.state[new_state_id]=self.state[new_state_id]+1
-        return self
+        if not oo:
+            self.score=score
+        return self,oo
     
     def score_detail(self):
         return f'a:{self.best_action};s:{self.score}'
@@ -177,14 +199,11 @@ class F4State(ABNode):
                 tmp[j]+=" # "+v
         return "\n".join(tmp)
     
-    def game_over(self):
-        return self.state[C.O_FOUR] or self.state[C.X_FOUR]
+
 
 
     def get_nexts(self, depth):
         if depth==0:
-            return []
-        if self.game_over():
             return []
         if self.next_state is None:
             st1=dict()
@@ -192,9 +211,6 @@ class F4State(ABNode):
                 s:F4State=self.put(col)
                 if s is None:
                     continue
-                if s.game_over():
-                    st1={col:s}
-                    break
                 st1[col]=s
             self.next_state=st1
         return self.next_state.items()
