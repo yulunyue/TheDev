@@ -8,7 +8,7 @@ class Dqn:
         self.epsilon = epsilon
         self.alpha=alpha
     def run(self):
-        self.q_table=np.zeros((len(self.env.actions),self.env.size))
+        self.q_table=np.zeros((self.env.size,len(self.env.actions)))
         rewards_record=[]
         for episode in range(self.num_episodes):
             self.env.reset()
@@ -32,10 +32,10 @@ class Dqn:
         if decide_explore_exploit<self.epsilon:
             action=np.random.choice(len(actions))
         else:
-            action=np.argmax(self.q_table[:,self.env.state])
+            action=np.argmax(self.q_table[self.env.state])
         return action
     
     def update_qtable(self,state,action,reward,next_reward):
-        alpha_value = reward + (self.gamma_discount * next_reward) - self.q_table[action, state]
-        self.q_table[action,state]+=self.alpha*alpha_value
+        alpha_value = reward + (self.gamma_discount * next_reward) - self.q_table[state,action]
+        self.q_table[state,action]+=self.alpha*alpha_value
 
