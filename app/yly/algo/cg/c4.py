@@ -229,11 +229,11 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             #dict(search_type="tree_search",method="analyze"),
-            dict(search_type="alpha_bate_search", replay_turn=12, search_max_depth=6),
+            dict(search_type="alpha_bate_search"),
         ]
     
-    def init(self, search_type="alpha_bate_search",**kw):
-        self.search_max_depth=5
+    def init(self, search_type="alpha_bate_search",search_max_depth=5,**kw):
+        self.search_max_depth=search_max_depth
         self.state=F4State(C.INIT_MASK)
         self.state.init_root()
         self.seach:AlphaBateSearch={
@@ -243,27 +243,20 @@ class Solution(SolutionBase):
     
 
     def replay(self,stdout:List[str],stderr=None,
-               replay_turn=None,search_max_depth=None,
+               replay_turn=None,
                **kw):
         C.TRUN_INDEX=0
         state_num=0
-        self.search_max_depth = search_max_depth or self.search_max_depth
         while C.TRUN_INDEX<len(stdout):
-            self.seach.search(self.state,self.search_max_depth)
-            if stdout[C.TRUN_INDEX].startswith('None'):
-                break
+            # self.seach.search(self.state,self.search_max_depth)
             action=int(stdout[C.TRUN_INDEX])
-            if replay_turn is None or replay_turn==C.TRUN_INDEX:
-                self.log("; ".join([
-                    f'round:{C.TRUN_INDEX}',
-                    f'action:{action}',
-                    f'search_best_action:{self.state.best_action}',
-                    f'state_count:{self.seach.state_count}',
-                ]))
-                # if action!=self.state.best_action and C.TRUN_INDEX%2==1:
-                self.log(self.state)
-                # if C.TRUN_INDEX%2==1:
-                #     self.log(stderr[C.TRUN_INDEX//2]['state'])
+            self.log("; ".join([
+                f'round:{C.TRUN_INDEX}',
+                f'action:{action}',
+                f'search_best_action:{self.state.best_action}',
+                f'state_count:{self.seach.state_count}',
+            ]))
+            self.log(self.state)
             state_num+=self.seach.state_count
             self.state:F4State=self.state.put(action)
             C.TRUN_INDEX+=1

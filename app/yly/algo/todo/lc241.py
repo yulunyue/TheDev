@@ -3,6 +3,7 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             dict(expression = "2-1-1",result=[0,2]),
+            dict(ex="2*3-4*5",result=[-34,-10,-14,-10,10]),
         ]
     def execute(self, expression: str) -> List[int]:
         op={"+":lambda a,b:a+b,"-":lambda a,b:a-b,"*":lambda a,b:a*b}

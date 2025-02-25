@@ -13,11 +13,11 @@ class Solution(SolutionBase):
         for i in range(2,len(s)):
             c*=(i-1)
             d*=(len(s)-i)
-            a=a+s[i-1]*d//c
-            b=b+s[i]*d//c
+            a=(a+s[i-1]*d//c)%10
+            b=(b+s[i]*d//c)%10
         #     self.log([a,b,c,d])
         # self.log([a,b])
-        return (a%10)==(b%10)
+        return a==b
     def hasSameDigits(self,*args,**kw):
         self.init(*args,**kw)
         return self.execute(*args,**kw)

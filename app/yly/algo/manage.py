@@ -160,7 +160,7 @@ class SolutionBase:
     def pre(self,input="",result=None,name=None,**kwargs):
         if 'codingame' in  self.uri:
             name = name or self.name
-            data=File(f"data/log/cg/{name}.json").read_file()
+            data:dict=File(f"data/log/cg/{name}.json").read_file()
             kwargs['stderr']=[]
             kwargs['stdout']=[]
             for v in data['frames']:
@@ -168,6 +168,7 @@ class SolutionBase:
                     kwargs['stderr'].append(json.loads(v['stderr']))
                 if 'stdout' in v:
                     kwargs['stdout'].append(v['stdout'].split('\n')[0])
+            kwargs.update(data.get("config",{}))
         self.lines=[v for v in input.split('\n') if v]
         return kwargs
 

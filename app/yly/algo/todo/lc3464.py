@@ -4,6 +4,7 @@ class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/maximize-the-distance-between-points-on-a-square/description/'
     def get_cases(self):
         return [
+            dict(side =2,points =[[0,2],[2,0],[2,2],[0,0]],k=4,result=2),
             dict(side=2, points = [[0,0],[1,2],[2,0],[2,2],[2,1]], k = 4,result=1)
         ]
     def execute(self, side: int, points: List[List[int]], k: int) -> int:

@@ -31,6 +31,7 @@ class State:
     
     
 class TreeSearch:
+    state_count=0
     def search_dp(self,state:State,depth=0):
         mvs:List[State]=state.get_nexts(depth)
         self.state_count+=1
