@@ -17,9 +17,29 @@ import json
 import numpy as np
 sys.setrecursionlimit(10**5+1)
 import bisect
-MOD=(10**9)+7
-inf = float("inf")
+from .base import MOD,inf,null,true,false
 WRITE_PATH='data/algo/run.py'
+def gen_file():
+    lines=[]
+    def read_file(md_name:str):
+        path=""
+        if md_name=='app.yly.algo.manage':
+            path='app/yly/algo/base.py'
+        elif md_name.startswith('common.algo'):
+            path=sys.modules[md_name].__file__
+        if path:
+            return File(path).read_line()
+    for ln in File(sys.argv[0]).read_line():
+        if not ln:continue
+        elif ln.startswith('from'):
+            data=read_file(ln.split(' ')[1])
+            if data:
+                lines.extend([d for d in data if not d.startswith('from common')])
+            else:
+                lines.append(ln)
+        else:
+            lines.append(ln)
+    File(WRITE_PATH).write_file("\n".join(lines))
 CHANGE_STORE = dict()
 class TreeNode:
     def __init__(self, x):
@@ -137,9 +157,10 @@ class SolutionBase:
         else:
             self._logs.append(self.log_str)
         
-    def pre(self,input="",result=None,**kwargs):
+    def pre(self,input="",result=None,name=None,**kwargs):
         if 'codingame' in  self.uri:
-            data=File(f"data/log/cg/{self.name}.json").read_file()
+            name = name or self.name
+            data=File(f"data/log/cg/{name}.json").read_file()
             kwargs['stderr']=[]
             kwargs['stdout']=[]
             for v in data['frames']:
@@ -149,34 +170,16 @@ class SolutionBase:
                     kwargs['stdout'].append(v['stdout'].split('\n')[0])
         self.lines=[v for v in input.split('\n') if v]
         return kwargs
-    def gen_file(self):
-        lines=[]
-        def read_file(md_name:str):
-            path=""
-            if md_name=='app.yly.algo.manage':
-                path='app/yly/algo/base.py'
-            elif md_name.startswith('common.algo'):
-                path=sys.modules[md_name].__file__
-            if path:
-                return File(path).read_line()
-        for ln in File(sys.argv[0]).read_line():
-            if not ln:continue
-            elif ln.startswith('from'):
-                data=read_file(ln.split(' ')[1])
-                if data:
-                    lines.extend([d for d in data if not d.startswith('from common')])
-                else:
-                    lines.append(ln)
-            else:
-                lines.append(ln)
-        File(WRITE_PATH).write_file("\n".join(lines))
+
+ 
+
     
     def exec(self):
         pass
     
     def run(self):
         exec_names=sys.argv[1:]
-        self.gen_file()
+        gen_file()
         if exec_names and exec_names[0]=='view_web':
             return self.view_web()
         if exec_names and exec_names[0]=='submit':
@@ -307,25 +310,28 @@ class SolutionBase:
             raise Exception(msg)
         return case,ret,msg  
 
-    def run_cls(self):
-        self.gen_file()
-        for case in self.get_cases():
-            method,param,result=case['mathods'],case['params'],case['result']
-            self.init()
-            self._logs.clear()
+    @classmethod
+    def run_cls(cls):
+        gen_file()
+       
+        for case in cls.get_cases(cls):
+            c=cls(*case["params"][0])
+            method,param,result=case['methods'],case['params'],case['result']
+            c.init()
+            c._logs.clear()
             flag=False
-            self.log(f'{method} {param} {result}')
+            c.log(f'{method} {param} {result}')
             for i in range(1,len(method)):
-                e=getattr(self,method[i])(*param[i])
-                self.log(f'{i} {method[i]} {param[i]} {e}')
+                e=getattr(c,method[i])(*param[i])
+                c.log(f'{method[i]} {param[i]} {e}')
                 if e!=result[i]:
-                    self.log(f'ans:{result[i]}')
+                    c.log(f'ans:{result[i]}')
                     flag=True
                     break
             if flag:
                 break
-            self._logs.clear()
-        self.flush_log()
+            c._logs.clear()
+        cls.flush_log(cls)
 
 
 

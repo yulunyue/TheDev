@@ -1,7 +1,7 @@
 from common.algo.learn.env import Env
 import numpy as np
 class Dqn:
-    def __init__(self,env:Env,num_episodes=500,gamma_discount=0.9,epsilon=0.1,alpha=0.5):
+    def __init__(self,env:Env,num_episodes=1000,gamma_discount=0.9,epsilon=0.1,alpha=0.5):
         self.env:Env=env
         self.num_episodes=num_episodes
         self.gamma_discount=gamma_discount
@@ -12,30 +12,31 @@ class Dqn:
         rewards_record=[]
         for episode in range(self.num_episodes):
             self.env.reset()
-            last_reward=self.env.reward
-            last_state=self.env.state
+            last_state=self.env.init_state
+            action=self.epsilon_greedy_policy(last_state, self.env.get_actions())
             rewards_sum=0
-            game_over=False
+            ct=0
+            game_over=0
             while not game_over:
-                actions=self.env.get_actions()
-                action=self.epsilon_greedy_policy(actions)
-                game_over,reward=self.env.do(action)
+                game_over,reward,next_state=self.env.do(last_state,action)
                 rewards_sum+=reward
-                self.update_qtable(last_state,action,last_reward,reward)
-                last_reward,last_state=reward,self.env.state
-            rewards_record.append(reward)
-        return self.q_table,rewards_record
+                next_action=self.epsilon_greedy_policy(next_state, self.env.get_actions())
+                self.update_qtable(last_state,action,reward,next_state,next_action)
+                action,last_state=next_action,next_state
+                ct+=1
+            rewards_record.append([rewards_sum,ct,game_over])
+        return rewards_record
                 
 
-    def epsilon_greedy_policy(self, actions):
+    def epsilon_greedy_policy(self, state, actions):
         decide_explore_exploit=np.random.random()
         if decide_explore_exploit<self.epsilon:
             action=np.random.choice(len(actions))
         else:
-            action=np.argmax(self.q_table[self.env.state])
+            action=np.argmax(self.q_table[state])
         return action
     
-    def update_qtable(self,state,action,reward,next_reward):
-        alpha_value = reward + (self.gamma_discount * next_reward) - self.q_table[state,action]
-        self.q_table[state,action]+=self.alpha*alpha_value
-
+    def update_qtable(self,state,action,reward,next_state,next_action):
+        next_reward = self.gamma_discount*self.q_table[next_state,next_action]
+        self.q_table[state,action]=self.alpha*(reward+next_reward)+(1-self.alpha)*self.q_table[state,action]
+        

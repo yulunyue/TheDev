@@ -6,8 +6,8 @@ import math
 import functools
 from typing import Dict,List,Optional
 from collections import defaultdict
-inf = float("inf")
-MOD = (10**9)+7
+inf,MOD,null,true,false = float("inf"),(10**9)+7,None,True,False
+
 
 def fmax(a,b,*args):return a if a>b else b
 def fmin(a,b,*args):return a if a<b else b
@@ -46,9 +46,11 @@ class SolutionBase:
         ret=self.exec()
         if ret is not None:
             self.output(ret)
-            
-    def run_cls(self):
+    
+    @classmethod
+    def run_cls(cls):
         pass
+    
     def output(self,*args):
         print(*args)
         sys.stdout.flush()

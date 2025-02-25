@@ -429,7 +429,7 @@ def generate_heatmap(q_table):
     ax = sns.heatmap(np.array(data))
     return ax
     
-def main():
+def main2():
     # Learn state dynamics obtain cumulative rewards for 500 episodes
     #SARSA
     q_table_SARSA, reward_cache_SARSA, step_cache_SARSA = sarsa()
@@ -469,7 +469,8 @@ def main():
         retrieve_environment(q_table_SARSA, 2)
         print("DOWN")
         retrieve_environment(q_table_SARSA, 3)
-    
+def main():
+    q_table_qlearning, reward_cache_qlearning, step_cache_qlearning = qlearning()
 if __name__ == "__main__":
     # call main function to execute grid world
-    main()
+    main2()
