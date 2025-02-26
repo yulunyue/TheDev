@@ -49,7 +49,7 @@ class Graph:
         return ['value']
 
     def get_nodes(self,i):
-        from app.yly.algo.manage import bp
+        from common.algo.manage import bp
         return dict(data=[
             bp('',i,self.key(i)),
         ]+[

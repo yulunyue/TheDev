@@ -41,7 +41,7 @@ class UniFind:
         return set(list(self.p.values()))
     
     def get_node(self,i):
-        from app.yly.algo.manage import bp
+        from common.algo.manage import bp
         return dict(
             title=[
                 bp('',i,f"bcj_{i}"),

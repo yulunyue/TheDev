@@ -1,4 +1,4 @@
-from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
+from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
 from common.algo.segtree import SegTreeNode
 class T(SegTreeNode):
     def init(self):

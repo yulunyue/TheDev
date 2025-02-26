@@ -40,7 +40,7 @@ class Fenwick:
         self.update_value(l+1, lambda a: a+v)
 
     def graph_view(self):
-        from app.yly.algo.manage import bp
+        from common.algo.manage import bp
         nodes={
             f'fen_{i}':dict(data=[
                 bp('',i,f"fenwick__{i}"),

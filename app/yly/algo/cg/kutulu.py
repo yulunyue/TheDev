@@ -1,4 +1,4 @@
-from app.yly.algo.manage import SolutionBase
+from common.algo.manage import SolutionBase
 from common.algo.graph import Graph
 from typing import Dict,List
 from functools import lru_cache

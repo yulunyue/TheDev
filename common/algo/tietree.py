@@ -79,7 +79,7 @@ class TieNode:
         return ['key','depth']
     
     def get_nodes(self):
-        from app.yly.algo.manage import bp
+        from common.algo.manage import bp
         color = '#fff'
         if TieNode.cur==self:
             color='#999'

@@ -1,4 +1,4 @@
-from app.yly.algo.manage import SolutionBase,View,logger
+from common.algo.manage import SolutionBase,View,logger
 from common.algo.search.base_search import TreeSearch,State
 from common.algo.search.alphabate_search import ABNode,AlphaBateSearch
 from collections import defaultdict
@@ -30,9 +30,9 @@ class Constant:
 
     def init_score(self):
         self.score_map=[0]*(1<<8)
-        self.scores=[0,1,20,400,80000,-1,-20,-400,-80000,0,0,0,0]
+        self.scores=[0,1,20,400,8000,-1,-10,-200,-4000,0,0,0,0]
         self.score2=[0]*15
-        self.score2[self.O3_X1],self.score2[self.O1_X3]=-70000,70000
+        self.score2[self.O3_X1],self.score2[self.O1_X3]=-3000,4000
         for i in range(1<<8):
             ct=[0]*4
             s=i
@@ -172,7 +172,7 @@ class F4State(ABNode):
         return self,oo
     
     def score_detail(self):
-        return f'a:{self.best_action};s:{self.score}'
+        return f'{"XO"[self.moves%2]} a:{str(self.best_action)[0]} s:{self.score}'
 
     def to_str(self):
         ret=[["- "]*C.WIDTH for _ in range(C.HEIGHT)]
@@ -248,17 +248,17 @@ class Solution(SolutionBase):
         C.TRUN_INDEX=0
         state_num=0
         while C.TRUN_INDEX<len(stdout):
-            # self.seach.search(self.state,self.search_max_depth)
             action=int(stdout[C.TRUN_INDEX])
+            self.state:F4State=self.state.put(action)
             self.log("; ".join([
-                f'round:{C.TRUN_INDEX}',
+                f'round:{C.TRUN_INDEX} {"OX"[C.TRUN_INDEX%2]}',
                 f'action:{action}',
                 f'search_best_action:{self.state.best_action}',
                 f'state_count:{self.seach.state_count}',
             ]))
+            self.seach.search(self.state,self.search_max_depth)
             self.log(self.state)
             state_num+=self.seach.state_count
-            self.state:F4State=self.state.put(action)
             C.TRUN_INDEX+=1
         self.log(f'round:{C.TRUN_INDEX},state_num:{state_num}')
         self.log(self.state)

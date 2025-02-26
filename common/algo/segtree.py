@@ -1,6 +1,6 @@
-inf=float("inf")
+from common.algo.manage import View,inf
 from typing import List
-class SegTreeNode:
+class SegTreeNode(View):
     '''
                           1[0-6]
             2[0-3]                      3[4-6]
@@ -8,6 +8,7 @@ class SegTreeNode:
 8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     '''
     QUERY_DEFAULT=None
+    VIEW_TYPE="seg_tree"
     def __init__(self,idx=1) -> None:
         self.idx = idx
         self.todo = 0
@@ -15,20 +16,17 @@ class SegTreeNode:
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
     
-    def get_value(self,*args):
-        return self.value
-    
     def do(self,v):
         pass
+
     def up(self,*args):
         pass
-    def init(self):
-        pass
+
+
     def set_range(self,l,r):
         self.l = l
         self.r = r
         self.m = (l+r)//2
-        self.init()
         return self
     
     @property
@@ -49,7 +47,7 @@ class SegTreeNode:
 
     def query(self, l, r,fn=None):
         if l <= self.l and self.r <= r:
-            return self.get_value()
+            return self.value
         res = SegTreeNode.QUERY_DEFAULT
         self.down(self.todo)
         if self.m < r:
@@ -58,14 +56,6 @@ class SegTreeNode:
             res=fn(res,self.left.query(l, r, fn))
         return res
 
-    def query_merge(self, l, r,*args):
-        if l <= self.l and self.r <= r:
-            return self.get_value(*args)
-        if self.m < r:
-            return self.right.query(l, r,*args)
-        if self.m >= l:
-            return self.left.query(l, r,*args)
-        return self.up(*args)
     
     def build(self,nums):
         if self.l==self.r:
@@ -104,36 +94,3 @@ class SegTreeNode:
             self.right.do(self.todo)
             self.todo = 0
       
-    def get_childs(self):
-        ret:List[SegTreeNode] = []
-        if self._left:
-            ret.append(self._left)
-        if self._right:
-            ret.append(self._right)
-        return ret
-    
-    def get_data(self):
-        from app.yly.algo.manage import bp
-        key = f'seg_tree_{self.idx}'
-        return [
-            bp("",f'{self.idx}_{self.l}_{self.r}', key),
-            bp('ct', self.ct,key),
-            bp('value', self.value,key),
-            bp('todo', self.todo,key),
-        ]
-    view_keys=[]
-    def tree_view(self):
-        return dict(
-            data=self.get_data(),
-            childs=[v.tree_view() for v in self.get_childs()],
-            key=f'seg_tree_{self.idx}',
-        )
-    
-    def graph_view(self):
-        return self.tree_view()
-
-    def __str__(self):
-        ret=f'{self.get_value()}{self.todo}'
-        if self._left:ret+=str(self._left)
-        if self._right:ret+=str(self._right)
-        return ret

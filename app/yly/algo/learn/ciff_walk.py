@@ -1,4 +1,4 @@
-from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools,logger
+from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools,logger
 from common.algo.learn.env import Env
 from common.algo.learn.dqn import Dqn
 import numpy as np

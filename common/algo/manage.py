@@ -18,7 +18,6 @@ import json
 import numpy as np
 sys.setrecursionlimit(10**5+1)
 import bisect
-from .base import MOD,inf,null,true,false
 WRITE_PATH='data/algo/run.py'
 def gen_file():
     lines=[]
@@ -30,12 +29,18 @@ def gen_file():
             path=sys.modules[md_name].__file__
         if path:
             return File(path).read_line()
+    def ft(s:str):
+        if s.startswith('from common'):
+            return False
+        if s.startswith('logger=get_log'):
+            return False
+        return True
     for ln in File(sys.argv[0]).read_line():
         if not ln:continue
         elif ln.startswith('from'):
             data=read_file(ln.split(' ')[1])
             if data:
-                lines.extend([d for d in data if not d.startswith('from common')])
+                lines.extend([d for d in data if ft(d)])
             else:
                 lines.append(ln)
         else:
@@ -85,7 +90,7 @@ def wc(title, key, v, change_color,sp='p'):
 
 
 
-class View(Node):
+class View:
     def __init__(self, key="",size=1,**kwargs) -> None:
         type = 'pre' if key else 'div'
         super().__init__(type=type,key=key,size=size,**kwargs)

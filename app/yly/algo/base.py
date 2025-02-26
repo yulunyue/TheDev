@@ -7,8 +7,7 @@ import functools
 from typing import Dict,List,Optional
 from collections import defaultdict
 inf,MOD,null,true,false = float("inf"),(10**9)+7,None,True,False
-
-
+def get_log(*args):pass
 def fmax(a,b,*args):return a if a>b else b
 def fmin(a,b,*args):return a if a<b else b
 class SolutionBase:

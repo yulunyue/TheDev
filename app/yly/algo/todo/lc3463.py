@@ -1,4 +1,4 @@
-from app.yly.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
+from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
 class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/check-if-digits-are-equal-in-string-after-operations-ii/description/'
     def get_cases(self):

@@ -2,7 +2,7 @@ import sys
 from common.service.http import run, MainHander
 from common.tool.cid import install,check,PORT
 from app.yly.game import gm
-from app.yly.algo import manage
+from common.algo import manage
 from app.tool import file
 GS=[gm,manage,file]
 if __name__ == '__main__':
