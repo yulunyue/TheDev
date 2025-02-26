@@ -12,7 +12,7 @@ import signal
 import sys
 import json
 import os
-from common.util.log import logger,File
+from common.util.log import File
 from common.util.tool import uid
 from common.util.module import Module
 HTML_CONTENT_TYPE = dict(
