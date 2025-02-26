@@ -1,7 +1,6 @@
 import os
 from typing import List
 import json
-from common.util.log import logger
 from collections import defaultdict
 
 UK_MAP=dict()

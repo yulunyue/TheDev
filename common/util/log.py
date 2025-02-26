@@ -17,7 +17,6 @@ class Logger(logging.Logger):
    
         self.add_hander(logging.FileHandler(
             self.path, mode=os.environ.get(LOGGER_MODE,'w')), logging.INFO)
-        self.info("\n\n---start---log---\n\n")
         #self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):
@@ -40,15 +39,3 @@ def get_log(name="") -> Logger:
         LOG_MAP[name] = Logger(name)
     return LOG_MAP[name]
 
-
-logger = get_log(Constant.APP_NAME)
-
-
-def test():
-    logger.info("xx")
-    logger.error("abc", stack_info=True)
-    # log.critical("aa", stack_info=True)
-
-
-if __name__ == "__main__":
-    test()

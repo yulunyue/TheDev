@@ -28,6 +28,7 @@ class Solution(SolutionBase):
     def separateSquares(self,*args,**kw):
         self.init(*args,**kw)
         return self.execute(*args,**kw)
+    
     def init(self, squares:list,*args, **kwargs):
         self.y_line=defaultdict(lambda:{-1:[],1:[]})
         self.mx,self.mn=-inf,inf
@@ -39,6 +40,7 @@ class Solution(SolutionBase):
         self.yl=sorted(self.y_line.keys())
         self.t=T().set_range(self.mn,self.mx)
         return super().init(*args, **kwargs)
+    
     def get_watch(self):
         return [
             View().add_node(

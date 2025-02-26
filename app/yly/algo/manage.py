@@ -3,7 +3,8 @@ from common.service.http import Node, http_test
 from typing import List,Dict,Optional
 import bisect
 from common.util.module import Module
-from common.util.log import logger
+from common.util.log import get_log
+logger=get_log("algo")
 from common.util.fp import File
 from collections import defaultdict
 import functools
@@ -143,14 +144,12 @@ class SolutionBase:
         self.exec()
         return "\n".join(self.results)
 
-    def log(self, s, tp: str = ""):
-        s=str(s)
-        if isinstance(tp,str):
-            if tp:
-                raise Exception(tp)
-        else:
+    def log(self, *args, vars=None):
+        if vars is not None:
             fs=s.split(',')
-            s="; ".join([f'{k}:{tp.get(k) if isinstance(tp,dict) else getattr(tp,k)}' for k in fs])
+            s="; ".join([f'{k}:{vars.get(k) if isinstance(vars,dict) else getattr(vars,k)}' for k in fs])
+        else:
+            s=' '.join([str(a) for a in args])
         self.log_str = s
         if self.log_mode=='debug':
             logger.info(s)
@@ -202,8 +201,9 @@ class SolutionBase:
     def test(self, func):
         if self.uri.startswith('lc_cls'):
             return self.run_cls()
+        cases=self.get_cases()
         for fn in func:
-            for i, case in enumerate(self.get_cases()):
+            for i, case in enumerate(cases):
                 self.ep = case.get("result")
                 self.results=[]
                 a = time.time()
@@ -221,6 +221,7 @@ class SolutionBase:
                 if self.ep is not None:
                     self._logs=[]
         self.flush_log()
+        logger.info(f"TEST_FINISH:{len(cases)}")
                 
                 
             

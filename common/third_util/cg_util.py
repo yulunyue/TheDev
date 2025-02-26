@@ -1,7 +1,6 @@
 from common.service.api import Api, StrModel
 import sys
 from common.util.module import Module
-from common.util.log import logger
 from common.util.fp import File
 import json
 

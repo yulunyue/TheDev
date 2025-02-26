@@ -4,7 +4,7 @@ class Solution(SolutionBase):
     uri='https://leetcode.cn/problems/maximize-the-distance-between-points-on-a-square/description/'
     def get_cases(self):
         return [
-            dict(side =2,points =[[0,2],[2,0],[2,2],[0,0]],k=4,result=2),
+            dict(side =2,points =[[0,2],[2,0],[2,2],[0,0]], k=4, result=2),
             dict(side=2, points = [[0,0],[1,2],[2,0],[2,2],[2,1]], k = 4,result=1)
         ]
     def execute(self, side: int, points: List[List[int]], k: int) -> int:
@@ -19,19 +19,22 @@ class Solution(SolutionBase):
             else:
                 p.append(4*side-x)
         p.sort()
-        # self.log(p)
+        self.log(p)
         def check(low):
             for start in p:
                 cur,end=start,start+4*side-low
                 for _ in range(k-1):
-                    i=bisect.bisect_left(p,cur+side)
-                    if i==len(p) or p[i]>end:
+                    cur+=side
+                    i=bisect.bisect_left(p,cur)
+                    if i>=len(p) or p[i]>=end:
                         break
                 else:
+                    # self.log(f'{low} {cur} {end} True')
                     return True
+            # self.log(f'{low} False')
             return False
 
-        return bisect.bisect_left(range(1,side+1),True,key=check)+1
+        return min(bisect.bisect_left(range(1,side+1),True,key=check)+1,side)
 
     def maxDistance(self,*args,**kw):
         self.init(*args,**kw)
