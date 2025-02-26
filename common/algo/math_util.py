@@ -85,6 +85,26 @@ def decomposition_prime_factors(v):
         ret[v] = 1
     return ret
 
+def bei_zen(nums,k:int,cha=2):
+    '''
+    array=[2,3,4,5,7,8,9]
+    ret=[
+          [2,3,4,4,6,7,7]
+          [4,4,6,6,7,7,7]
+          [7,7,7,7,7,7,7]
+    ]
+    '''
+    n=len(nums)
+    m=k.bit_length()
+    ret=[[n]*m for _ in range(n+1)]
+    j=n
+    for i in range(n-1,-1,-1):
+        while nums[j-1]>=nums[i]+cha:
+            j-=1
+        ret[i][0]=j
+        for l in range(1,m):
+            ret[i][l]=ret[ret[i][l-1]][l-1]
+    return ret
 
 def prime_flags(max_v):
     ret = [True]*max_v
