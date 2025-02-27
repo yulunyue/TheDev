@@ -1,33 +1,28 @@
-from common.algo.learn.env import Env
+from common.algo.learn.env import Env,Algo
 import numpy as np
-class Dqn:
-    def __init__(self,env:Env,num_episodes=1000,gamma_discount=0.9,epsilon=0.1,alpha=0.5):
-        self.env:Env=env
-        self.num_episodes=num_episodes
+class Dqn(Algo):
+    def load(self, num_episodes=1000,gamma_discount=0.9,epsilon=0.1,alpha=0.5):
         self.gamma_discount=gamma_discount
-        self.epsilon = epsilon
         self.alpha=alpha
-    def run(self):
         self.q_table=np.zeros((self.env.size,len(self.env.actions)))
-        rewards_record=[]
-        for episode in range(self.num_episodes):
-            self.env.reset()
-            last_state=self.env.init_state
-            action=self.epsilon_greedy_policy(last_state, self.env.get_actions())
-            rewards_sum=0
-            ct=0
-            game_over=0
-            while not game_over:
-                game_over,reward,next_state=self.env.do(last_state,action)
-                rewards_sum+=reward
-                next_action=self.epsilon_greedy_policy(next_state, self.env.get_actions())
-                self.update_qtable(last_state,action,reward,next_state,next_action)
-                action,last_state=next_action,next_state
-                ct+=1
-            rewards_record.append([rewards_sum,ct,game_over])
-        return rewards_record
+        return super().load(num_episodes,epsilon)
+    
+    def run_step(self,episode):
+        last_state=self.env.init_state
+        action=self.epsilon_greedy_policy(last_state, self.env.get_actions())
+        rewards_sum=0
+        ct=0
+        game_over=0
+        while not game_over:
+            game_over,reward,next_state=self.env.do(last_state,action)
+            rewards_sum+=reward
+            next_action=self.epsilon_greedy_policy(next_state, self.env.get_actions())
+            self.update_qtable(last_state,action,reward,next_state,next_action)
+            action,last_state=next_action,next_state
+            ct+=1
+        return rewards_sum,ct,game_over
+        
                 
-
     def epsilon_greedy_policy(self, state, actions):
         decide_explore_exploit=np.random.random()
         if decide_explore_exploit<self.epsilon:

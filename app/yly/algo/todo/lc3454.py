@@ -1,8 +1,7 @@
 from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
 from common.algo.segtree import SegTreeNode
 class T(SegTreeNode):
-    def init(self):
-        self.ct=0
+    ct=0
     def do(self,v):
         self.ct+=v
         # self.todo+=v
@@ -41,13 +40,13 @@ class Solution(SolutionBase):
         self.t=T().set_range(self.mn,self.mx)
         return super().init(*args, **kwargs)
     
-    def get_watch(self):
-        return [
-            View().add_node(
-                View("log_str")
+    def get_view(self):
+        return View(
+            View(
+                View(key="log_str")
             ),
-            View("t",size=6).graph()
-        ]
+            View(key="t")
+        )
     def execute(self,**kw):
         pre_y=self.mn
         ans=[]

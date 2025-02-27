@@ -24,8 +24,6 @@ class CfEnv(Env):
         return 0,-1,s
   
         
-
-
 class D(Dqn):
     def __str__(self):
         def u(i,j):
@@ -44,7 +42,7 @@ class Solution(SolutionBase):
         ]
     
     def init(self, *args, **kwargs):
-        self.dqn=D(CfEnv().reset())
+        self.dqn=D(CfEnv())
         
     def execute(self,**kw):
         records=self.dqn.run()

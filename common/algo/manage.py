@@ -4,6 +4,7 @@ from typing import List,Dict,Optional
 import bisect
 from common.util.module import Module
 from common.util.log import get_log
+from common.util.tool import uid
 logger=get_log("algo")
 from common.util.fp import File
 from collections import defaultdict
@@ -18,6 +19,7 @@ import json
 import numpy as np
 sys.setrecursionlimit(10**5+1)
 import bisect
+inf,MOD,null,true,false = float("inf"),(10**9)+7,None,True,False
 WRITE_PATH='data/algo/run.py'
 def gen_file():
     lines=[]
@@ -88,43 +90,47 @@ def wc(title, key, v, change_color,sp='p'):
         type='p'
     )
 
+class ViewEnum:
+    graph="graph"
+    string="string"
 
+class View(ViewEnum):
+    def __init__(self, *args, key="",type=ViewEnum.string,size=1,**kwargs) -> None:
+        self.key=key or uid("view")
+        self.size=size
+        self.set_type(type)
+        self.childs:List[View]=list(args)
+        self.var=None
 
-class View:
-    def __init__(self, key="",size=1,**kwargs) -> None:
-        type = 'pre' if key else 'div'
-        super().__init__(type=type,key=key,size=size,**kwargs)
-    
-    def tree(self):
-        return self.set_type("tree")
-
-    def grid(self):
-        return self.set_type("grid")
-    
-    def graph(self):
-        return self.set_type("graph")
-    
-    def list(self):
-        return self.set_type("list")
+    def set_type(self,tp):
+        if not hasattr(ViewEnum,tp):
+            raise Exception(tp)
+        self.type=tp
+        return self
     
     def hex_str(self):
         node=getattr(self.ins,self.key,None)
         return str(node)
     
     def set_ins(self,ins):
-        self.ins=ins
+        self.ins = ins
+        self.var = getattr(self.ins,self.key,None)
+        if hasattr(self.var,"VIEW_TYPE"):
+            self.set_type(getattr(self.var,"VIEW_TYPE"))
         return self
     
     def view(self):
         node=getattr(self.ins,self.key)
-        if self.type == 'list':
-            return dict(data=node, type=self.type)
-        if hasattr(node,f'{self.type}_view'):
-            return getattr(node,f'{self.type}_view')()
         return dict(data=bp(self.key,str(node),'self'),type=self.type)
     
-    def to_json(self):
-        return super().to_json(size=self.size)
+    def dump_layout(self):
+        ret=dict(
+            size=self.size,
+            key=self.key,
+            type=self.type,
+            childs=[v.dump_layout() for v in self.childs]
+        )
+        return ret
 
 def fmax(a,b,*args):return a if a>b else b
 def fmin(a,b,*args):return a if a<b else b
@@ -177,8 +183,6 @@ class SolutionBase:
         return kwargs
 
  
-
-    
     def exec(self):
         pass
     
@@ -189,7 +193,6 @@ class SolutionBase:
             return self.view_web()
         if exec_names and exec_names[0]=='submit':
             return self.submit()
-
         self.test([getattr(self,v) for v in exec_names[0].split(',')])
         self.flush_log()
 
@@ -280,25 +283,24 @@ class SolutionBase:
         if flag:
             return childs
     
-    def get_watch(self):
-        return []
-    def get_main_view(self):
-        return View().add_node(*self.get_watch())
+    def get_view(self)->View:
+        return None
     
-    def init_watch(self):
-        if self._watch_var is not None:
-            return
-        node:View=self.get_main_view()
-        self._watch_var = []
-        def dfs(p:View):
-            if not p.childs:
-                self._watch_var.append(p.set_ins(self))
-            for c in p.childs:
-                dfs(c)
-        dfs(node)
+    _main_view:View = None
+    def main_view(self)->View:
+        if self._main_view is None:
+            self._main_view=self.get_view()
+            self._watch_var = []
+            def dfs(p:View):
+                if not p.childs:
+                    self._watch_var.append(p.set_ins(self))
+                for c in p.childs:
+                    dfs(c)
+            dfs(self._main_view)
+        return self._main_view
 
     def view_web(self):
-        _,ret,_ = self.view()
+        ret= self.view()
         path=f'data/algo/{self.name}/record.json'
         File(path).write_file(ret)
         logger.info(path)
@@ -309,18 +311,19 @@ class SolutionBase:
         CHANGE_STORE.clear()
         self.pre(**case)
         self.init(**case)
-        self.init_watch()
-        ret1,msg=run_watch_fun(self.execute, self.record)
-        ret=self.get_main_view().to_json()
-        ret['data']=dict(record=ret1)
+        view=self.main_view()
+        record,msg=run_watch_fun(self.execute, self.record)
         if msg:
             raise Exception(msg)
-        return case,ret,msg  
+        return dict(
+            layout=view.dump_layout(),
+            record=record,
+            msg=msg,   
+        )
 
     @classmethod
     def run_cls(cls):
         gen_file()
-       
         for case in cls.get_cases(cls):
             c=cls(*case["params"][0])
             method,param,result=case['methods'],case['params'],case['result']
