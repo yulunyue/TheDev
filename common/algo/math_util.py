@@ -131,6 +131,33 @@ def stl_2(n, i):
         return 1
     return stl_2(n-1, i-1)+i*stl_2(n-1, i)
 
+def lucas_mod(n,m,mod):
+    '''
+    lucas定理求组合数的
+    '''
+    res=1
+    while n>0 or m>0:
+        ni=n%mod
+        mi=m%mod
+        if mi>ni:
+            return 0
+        res=res*math.comb(ni,mi)%mod
+        n//=mod
+        m//=mod
+    return res
+
+def china_rest_mod(n, m, p):
+    '''
+    中国剩余定理
+    '''
+    mod=1
+    for a in p:
+        mod*=a
+    ans=0
+    for a in p:
+        ans+=lucas_mod(n,m,a)*(mod//a)
+    return ans%mod
+
 
 class Comb:
     def load(self,mod, mx):
@@ -140,16 +167,16 @@ class Comb:
         self.fac = [0] * mx
         self.fac[0] = 1
         for i in range(1, mx):
-            self.fac[i] = self.fac[i - 1] * i % mod
+            self.fac[i] = (self.fac[i - 1] * i) % mod
 
         self.inv_fac = [0] * mx
         self.inv_fac[mx - 1] = pow(self.fac[mx - 1], -1, mod)
         for i in range(mx - 1, 0, -1):
-            self.inv_fac[i - 1] = self.inv_fac[i] * i % mod
+            self.inv_fac[i - 1] = (self.inv_fac[i] * i) % mod
         return self
     
     def comb(self, n: int, k: int) -> int:
-        return self.fac[n] * self.inv_fac[k] % self.mod * self.inv_fac[n - k] % self.mod
+        return ((self.fac[n] * self.inv_fac[k]) % self.mod) * self.inv_fac[n - k] % self.mod
     
     def make_split(self,array,num):
         ans=[]

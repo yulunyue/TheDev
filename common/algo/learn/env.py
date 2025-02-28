@@ -3,6 +3,7 @@ class Env:
         self.actions=[]
         self.size=0
         self.init_state=0
+        self.reset()
     def reset(self):
         return self
 
@@ -11,3 +12,21 @@ class Env:
 
     def do(self,action):
         pass
+
+class Algo:
+    def __init__(self,env):
+        self.env:Env=env
+    
+    def load(self,num_episodes=1000,epsilon=0.1):
+        self.num_episodes=num_episodes
+        self.epsilon=epsilon
+
+    def run_step(self,num):
+        pass
+
+    def run(self):
+        rewards_record=[]
+        for episode in range(self.num_episodes):
+            self.env.reset()
+            rewards_record.append(self.run_step(episode))
+        return rewards_record
