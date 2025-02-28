@@ -211,7 +211,7 @@ class F4State(ABNode):
                     continue
                 st1[col]=s
             self.next_state=st1
-        return self.next_state.items()
+        return self.next_state
 
 
 

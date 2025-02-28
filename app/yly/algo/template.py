@@ -1,4 +1,4 @@
-from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools
+from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools,null,false,true
 class Solution(SolutionBase):
     def get_cases(self):
         return [
@@ -8,9 +8,6 @@ class Solution(SolutionBase):
     def xx(self,*args,**kw):
         self.init(*args,**kw)
         return self.execute(*args,**kw)
-        
-    def execute(self,**kw):
-        pass
 
 
 

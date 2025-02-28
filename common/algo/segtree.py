@@ -57,16 +57,18 @@ class SegTreeNode(View):
         return res
 
     
-    def build(self,nums):
+    def build(self,fn):
         if self.l==self.r:
-            self.do(nums[self.l])
+            self.do(fn(self.l))
             return
-        self.left.build(nums)
-        self.right.build(nums)
+        self.left.build(fn)
+        self.right.build(fn)
         self.up()
+        return self
     
     
     def query_sum(self,l,r):
+        SegTreeNode.QUERY_DEFAULT = 0
         return self.query(l,r,lambda a,b:a+b)
     
     def query_max(self, l, r):

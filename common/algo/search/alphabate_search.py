@@ -11,7 +11,7 @@ class AlphaBateSearch(TreeSearch):
         if not mvs:
             return state.calc_value(depth)
         state.alpha, state.bate = alpha, bate
-        for action,next_state in mvs:
+        for action,next_state in mvs.items():
             next_state.value=-self.search_dp(next_state,depth=depth-1,
                                  alpha=-state.bate, bate=-state.alpha)
             if next_state.value >= state.bate:

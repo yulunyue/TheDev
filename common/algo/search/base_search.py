@@ -16,8 +16,8 @@ class State:
     def calc_value(self, *args):
         raise Exception("todo")
 
-    def get_nexts(self,depth):
-        return []
+    def get_nexts(self,depth):# -> list:
+        return dict()
     
     def actor(self):
         pass
