@@ -25,7 +25,7 @@ def gen_file():
     lines=[]
     def read_file(md_name:str):
         path=""
-        if md_name=='app.yly.algo.manage':
+        if md_name=='common.algo.manage':
             path='app/yly/algo/base.py'
         elif md_name.startswith('common.algo'):
             path=sys.modules[md_name].__file__

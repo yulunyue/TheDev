@@ -172,7 +172,7 @@ class F4State(ABNode):
         return self,oo
     
     def score_detail(self):
-        return f'{"XO"[self.moves%2]} a:{str(self.best_action)[0]} s:{self.score}'
+        return f'a:{str(self.best_action)[0]}{"OX"[self.moves%2]};s:{self.score}'
 
     def to_str(self):
         ret=[["- "]*C.WIDTH for _ in range(C.HEIGHT)]
@@ -200,9 +200,7 @@ class F4State(ABNode):
         return "\n".join(tmp)
     
 
-
-
-    def get_nexts(self, depth):
+    def get_nexts(self, depth=1):
         if depth==0:
             return []
         if self.next_state is None:
@@ -232,7 +230,7 @@ class Solution(SolutionBase):
             dict(search_type="alpha_bate_search"),
         ]
     
-    def init(self, search_type="alpha_bate_search",search_max_depth=5,**kw):
+    def init(self, search_type="alpha_bate_search",search_max_depth=4,**kw):
         self.search_max_depth=search_max_depth
         self.state=F4State(C.INIT_MASK)
         self.state.init_root()
@@ -242,17 +240,14 @@ class Solution(SolutionBase):
         }[search_type]()
     
 
-    def replay(self,stdout:List[str],stderr=None,
-               replay_turn=None,
-               **kw):
+    def replay(self,stdout:List[str],stderr=None,**kw):
         C.TRUN_INDEX=0
         state_num=0
         while C.TRUN_INDEX<len(stdout):
             action=int(stdout[C.TRUN_INDEX])
             self.state:F4State=self.state.put(action)
             self.log("; ".join([
-                f'round:{C.TRUN_INDEX} {"OX"[C.TRUN_INDEX%2]}',
-                f'action:{action}',
+                f'round:{C.TRUN_INDEX} {action}{"OX"[C.TRUN_INDEX%2]}',
                 f'search_best_action:{self.state.best_action}',
                 f'state_count:{self.seach.state_count}',
             ]))
@@ -271,10 +266,7 @@ class Solution(SolutionBase):
             states.append(states[-1].put(action))
             C.TRUN_INDEX+=1
         for i in range(len(states)-1,-1,-1):
-            s=states[i]
-            if i==1 or i==len(states)-1:
-                self.log(s)
-        
+            self.log(states[i].get_nexts(1))
             # self.seach.search(s,4)
             # for b in s.get_bests():
             #     self.log(b.self_win,b.op_win)
