@@ -49,6 +49,9 @@ class TreeSearch:
         self.state_count=0
         return self.search_dp(state,depth)
     
+    def self_play(self):
+        pass
+    
     
 
 

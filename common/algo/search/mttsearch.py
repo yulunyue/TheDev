@@ -1,4 +1,4 @@
-from common.algo.search.base_search import State
+from common.algo.search.base_search import State,TreeSearch
 from typing import List,Dict
 import math
 import random
@@ -25,10 +25,7 @@ class MctsNode(State):
     def __id__(self) -> int:
         return f'{self.value}{self.visits}{self.score}'
 
-class MctsSearchTree:
-    '''
-    https://github.com/haroldsultan/MCTS/blob/master/mcts.py
-    '''
+class MctsSearchTree(TreeSearch):
     def __init__(self) -> None:
         self.scalar=1/(2*math.sqrt(2.0))  #0.353553
         self.explore_ratio = 0

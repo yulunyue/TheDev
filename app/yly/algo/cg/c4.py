@@ -1,6 +1,7 @@
 from common.algo.manage import SolutionBase,View,logger
 from common.algo.search.base_search import TreeSearch,State
 from common.algo.search.alphabate_search import ABNode,AlphaBateSearch
+from common.algo.search.mttsearch import MctsSearchTree,MctsNode
 from collections import defaultdict
 from typing import Dict,List
 import socket
@@ -14,6 +15,7 @@ def str_mid(s:str,size,fill="-"):
     c=size-len(s)
     l,y=c//2,c%2
     return fill*l+s+fill*(l+y)
+
 class Constant:
     HEIGHT=7
     WIDTH=9
@@ -108,7 +110,7 @@ class Constant:
 
 C=Constant()
 STORE_STATE:Dict[int,State]=dict()
-class F4State(ABNode):
+class F4State(MctsNode):
     def __init__(self,mask,moves=0) -> None:
         self.mask = mask
         self.moves = moves
@@ -214,8 +216,6 @@ class F4State(ABNode):
         return self.next_state
 
 
-
-
 class Solution(SolutionBase):
     uri="https://www.codingame.com/ide/puzzle/connect-4"
     game_id = '70989246b492bcc523436cf43b6090c82395d392'
@@ -227,7 +227,8 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             #dict(search_type="tree_search",method="analyze"),
-            dict(search_type="alpha_bate_search"),
+            #dict(search_type="alpha_bate_search"),
+            dict(search_type="mcts")
         ]
     
     def init(self, search_type="alpha_bate_search",search_max_depth=4,**kw):
@@ -237,8 +238,11 @@ class Solution(SolutionBase):
         self.seach:AlphaBateSearch={
             'tree_search':TreeSearch,
             'alpha_bate_search':AlphaBateSearch,
+            'mcts':MctsSearchTree
         }[search_type]()
     
+    def self_play(self):
+        self.seach.self_play(self.state)
 
     def replay(self,stdout:List[str],stderr=None,**kw):
         C.TRUN_INDEX=0
