@@ -18,10 +18,6 @@ class State:
 
     def get_nexts(self,depth):# -> list:
         return dict()
-    
-    def actor(self):
-        pass
-
 
     def get_bests(self):
         ret=[self]
@@ -29,6 +25,8 @@ class State:
             ret.append(ret[-1].next_state[ret[-1].best_action])
         return ret
     
+    def is_game_over(self):
+        raise Exception("todo")
     
 class TreeSearch:
     state_count=0
@@ -49,8 +47,9 @@ class TreeSearch:
         self.state_count=0
         return self.search_dp(state,depth)
     
-    def self_play(self):
-        pass
+    def self_play(self,state:State):
+        while not state.is_game_over():
+            pass
     
     
 
