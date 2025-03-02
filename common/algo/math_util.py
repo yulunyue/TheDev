@@ -133,7 +133,7 @@ def stl_2(n, i):
 
 def lucas_mod(n,m,mod):
     '''
-    lucas定理求组合数的
+    lucas定理求组合数的摸
     '''
     res=1
     while n>0 or m>0:
