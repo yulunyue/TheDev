@@ -87,20 +87,22 @@ class Graph:
                     heapq.heappush(q, (self.value[v], v))
         return self.value
     
-    def tupu_end(self,q):
-        return False
 
-    def tupu(self):
-        q:List[Graph]=[v for v in self.nodes.values() if v.in_deg==0]
+
+    def tupu(self,func=None,indeg_aim=0):
+        q:List[Graph]=[v for v in self.nodes.values() if v.in_deg==indeg_aim]
+
         while q:
-            if self.tupu_end(q):
-                return False
+            if func and func(q):
+                return q
             x=q.pop(0)
             for y in x.childs.values():
                 y.in_deg-=1
-                if y.in_deg==0:
+                if y.in_deg==indeg_aim:
                     q.append(y)
-        return True
+        
+    
+    
     def bfs(self,start):
         q=[start]
         dis=dict()
