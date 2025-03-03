@@ -89,17 +89,19 @@ class Graph:
     
 
 
-    def tupu(self,func=None,indeg_aim=0):
+    def tupu(self,indeg_aim=0):
         q:List[Graph]=[v for v in self.nodes.values() if v.in_deg==indeg_aim]
-
+        ans=[]
         while q:
-            if func and func(q):
-                return q
-            x=q.pop(0)
-            for y in x.childs.values():
-                y.in_deg-=1
-                if y.in_deg==indeg_aim:
-                    q.append(y)
+            ans.clear()
+            q,tmp=[],q
+            for x in tmp:
+                ans.append(x)
+                for y in x.childs.values():
+                    y.in_deg-=1
+                    if y.in_deg==indeg_aim:
+                        q.append(y)
+        return ans
         
     
     
