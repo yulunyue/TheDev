@@ -18,7 +18,6 @@ class Solution(SolutionBase):
             g[f].append(t)
             g[t].append(f)
         def st(v,idx,l=None):
-
             if v<ret[0]:
                 ret[1]=[idx]
                 ret[0]=v
