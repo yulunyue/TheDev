@@ -7,54 +7,30 @@ class Solution(SolutionBase):
         ]
     def execute(self, num: str) -> bool:
         num=[int(v) for v in num]
-        dt=dict()
         n=len(num)
-        for i in range(n):
-            a=0
-            for j in range(i,n):
-                a=a*10+num[j]
-                dt[i,j]=a
-        
-
         @functools.lru_cache(None)
-        def dfs2(i,v):
-            self.log(f'sum0 {num[:i+1]},{v}')
-            b,c=0,1
-            while i>=0:
-                b+=num[i]*c
-                c*=10
-                if b==v:
-                    return i-1
-                if b>v:
-                    return -2 
-                i-=1
+        def dfs1(i1,i2):
+            c=0
+            k=i2-i1
+            i0=i1-k
             
-            return -2
+            for m in range(k):
+                a2,a3=num[i2-m],num[i1-m]-c
+                if a3>a2:
+                    a1=a3-a2
+                    c=0
+                else:
+                    a1=a3+10-a2
+                    c=1
+           
+                return False
+            
+                
         @functools.lru_cache(None)
-        def dfs1(i,v):
-            self.log(f'sum1 {num[:i+1]},{v}')
-            b,c=0,1
-            while i>=0:
-                b+=num[i]*c
-                c*=10
-                if b>v:
-                    return False
-                j=dfs2(i-1,v-b)
-                if j==-1:
+        def dfs0(j):
+            for i in range(j+1):
+                if dfs1(i,j):
                     return True
-                if j>=0 and dfs0(j):
-                    return True
-                i-=1
-        @functools.lru_cache(None)
-        def dfs0(i):
-            self.log(f'sum2 {num[:i+1]}')
-            b,c=0,1
-            while i>=0:
-                b+=num[i]*c
-                c*=10
-                if dfs1(i-1,b):
-                    return True
-                i-=1
             return False
         return dfs0(n-1)
 
