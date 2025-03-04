@@ -27,9 +27,11 @@ class TestAlgo(TestBase):
         for i in range(10**9):
             pass
 
-
     def test_seg_tree(self):
         pass
+
+    def test_str(self):
+        manacher_get_odd_p("aabcbc")
 
 if __name__ == "__main__":
     TestAlgo().run()

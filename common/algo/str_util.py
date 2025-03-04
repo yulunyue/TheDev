@@ -57,11 +57,13 @@ def z_kmp(s):
     return z
 
 
-def manacher_get_odd_p(s):
+def manacher_get_odd_p(u,join_char='#'):
     '''
     ret[i]=max(k) 
     all(s[i-k]==s[i+k])
     '''
+    result=[0]*len(u)
+    s=join_char+join_char.join(u)+join_char
     n = len(s)
     ret = [0]*n
     l, r = 0, -1
@@ -73,8 +75,11 @@ def manacher_get_odd_p(s):
         while k <= i and i+k < n and s[i-k] == s[i+k]:
             k += 1
         ret[i] = k
+        if i>0:
+            result[(i-1)//2]=max(result[(i-1)//2],k-1)
         k -= 1
         if i+k > r:
             l = i-k
             r = i+k
-    return ret
+
+    return result

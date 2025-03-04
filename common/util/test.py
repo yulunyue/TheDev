@@ -1,6 +1,7 @@
 import sys
 import time
-from common.util.log import logger
+from common.util.log import get_log
+logger = get_log("test")
 TEST_FN_PREFIX = 'test_'
 
 
