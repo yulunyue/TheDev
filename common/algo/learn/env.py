@@ -11,11 +11,15 @@ class Env:
         return self.actions
 
     def do(self,action):
-        pass
+        raise Exception(f"{self.__class__}.do not impl")
 
 class Algo:
-    def __init__(self,env):
+    def __init__(self):
+        pass
+    
+    def set_env(self,env):
         self.env:Env=env
+        return self
     
     def load(self,num_episodes=1000,epsilon=0.1):
         self.num_episodes=num_episodes

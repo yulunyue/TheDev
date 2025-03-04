@@ -16,6 +16,7 @@ class Solution(SolutionBase):
             a=(a+c*s[i])%10
             b=(b+c*s[i+1])%10
         return a==b
+    
     def hasSameDigits(self,*args,**kw):
         self.init(*args,**kw)
         return self.execute(*args,**kw)
