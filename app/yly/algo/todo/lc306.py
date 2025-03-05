@@ -22,17 +22,14 @@ class Solution(SolutionBase):
                 else:
                     a1=a3+10-a2
                     c=1
-           
                 return False
             
                 
-        @functools.lru_cache(None)
-        def dfs0(j):
-            for i in range(j+1):
+        for i in range(1,len(num)-1):
+            for j in range(i+1,len(num)):
                 if dfs1(i,j):
                     return True
-            return False
-        return dfs0(n-1)
+        return False
 
     def isAdditiveNumber(self,*args,**kw):
         self.init(*args,**kw)
