@@ -219,7 +219,15 @@ class SolutionBase:
                 self.log(f'case: {case}; except: {self.ep}')
                 case=self.pre(**case)
                 self.init(**case)
-                r = fn(**case)
+                if fn.__name__=='execute':
+                    try:
+                        r = fn(**case)
+                    except:
+                        import traceback
+                        traceback.print_exc()
+                        r=None
+                else:
+                    r = fn(**case)
                 if r is None:
                     r="\n".join(self.results)
                 self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
