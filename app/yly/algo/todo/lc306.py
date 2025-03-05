@@ -10,24 +10,22 @@ class Solution(SolutionBase):
         n=len(num)
         @functools.lru_cache(None)
         def dfs1(i1,i2):
-            c=0
-            k=i2-i1
-            i0=i1-k
-            
-            for m in range(k):
-                a2,a3=num[i2-m],num[i1-m]-c
-                if a3>a2:
-                    a1=a3-a2
-                    c=0
-                else:
-                    a1=a3+10-a2
-                    c=1
-                return False
-            
-                
-        for i in range(1,len(num)-1):
-            for j in range(i+1,len(num)):
-                if dfs1(i,j):
+            i0=2*i1-i2
+            last_c=0
+            for i in range(i2-i1):
+                if i0-i<0:
+                    return False
+                a,b,c=num[i0-i],num[i1-i],num[i2-i]
+                if (a+b)%10!=last_c+c:
+                    return False
+                last_c=1 if a+b>last_c+c else 0
+            return True
+        
+    
+        @functools.lru_cache(None)
+        def dfs0(j):
+            for i in range(j):
+                if dfs1(i,j) and dfs0():
                     return True
         return False
 

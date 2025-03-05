@@ -1,5 +1,7 @@
 from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MOD,inf,heapq,functools,null,false,true
+from common.algo.graph import Graph
 class Solution(SolutionBase):
+    uri='https://leetcode.cn/problems/minimum-height-trees/description/'
     def get_cases(self):
         return [
             dict(n =6,edges =[[3,0],[3,1],[3,2],[3,4],[5,4]],result=[3,4]),
@@ -12,26 +14,10 @@ class Solution(SolutionBase):
         return self.execute(*args,**kw)
 
     def execute(self, n: int, edges: List[List[int]]) -> List[int]:
-        ret=[inf,[]]
-        g=[[] for _ in range(n)]
+        self.g=Graph().reset()
         for f,t in edges:
-            g[f].append(t)
-            g[t].append(f)
-        def st(v,idx,l=None):
-            if v<ret[0]:
-                ret[1]=[idx]
-                ret[0]=v
-            elif v==ret[0]:
-                ret[1].append(idx)
-        l=[]
-        def dfs(u,f=-1,a=0):
-            l=[]
-            for v in g[u]:
-                if v==f:
-                    continue
-                l.append(dfs(v,u,a+1))
-            return a
-        st(dfs(0),0,-1)
-        return ret[1]
+            self.g.add_edge(f,t)
+            self.g.add_edge(t,f)
+        return [v.key for v in self.g.tupu(indeg_aim=1)]
 if __name__=='__main__':
     Solution().run()
