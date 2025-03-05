@@ -8,24 +8,33 @@ class Solution(SolutionBase):
     def execute(self, num: str) -> bool:
         num=[int(v) for v in num]
         n=len(num)
-        @functools.lru_cache(None)
-        def dfs1(i1,i2):
-            i0=2*i1-i2
-            last_c=0
-            for i in range(i2-i1):
-                if i0-i<0:
+
+        def calc(l:list,r:list):
+            x=0
+            ret=[]
+            while l or r:
+                c=(l.pop() if l else 0)+(r.pop() if r else 0)+x
+                x=1 if c>=10 else 0
+                ret.insert(0,c%10)
+            if x:
+                ret.insert(0,x)
+            return ret
+
+        def dfs1(i,j):
+            i1,i2,i3=0,i,j
+            while i3<len(num):
+                s=calc(num[i1:i2],num[i2:i3])
+                if (num[i1]==0 and i2>i1+1) or (num[i2]==0 and i3>i2+1):
                     return False
-                a,b,c=num[i0-i],num[i1-i],num[i2-i]
-                if (a+b)%10!=last_c+c:
+                if s!=num[i3:i3+len(s)]:
                     return False
-                last_c=1 if a+b>last_c+c else 0
+                # self.log(num[i1:i2],num[i2:i3],s)
+                i1,i2,i3=i2,i3,i3+len(s)
             return True
-        
-    
-        @functools.lru_cache(None)
-        def dfs0(j):
-            for i in range(j):
-                if dfs1(i,j) and dfs0():
+                
+        for i in range(1,n):
+            for j in range(i+1,n):
+                if dfs1(i,j):
                     return True
         return False
 
