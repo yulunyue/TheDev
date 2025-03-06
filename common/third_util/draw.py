@@ -1,11 +1,10 @@
 
 import json
 import sys
-
+import matplotlib.pyplot as plt
 
 class Draw:
     def __init__(self) -> None:
-        import matplotlib.pyplot as plt
         self.fig, self.ax = plt.subplots()
 
     def draw_bar_chart(self, lines):
@@ -14,7 +13,18 @@ class Draw:
             [l[1] for l in lines]
         )
         return self
-
+    
+    def draw_line(self,datas,xlabel="x",ylabel="y",title="title"):
+        for y,x,label in datas:
+            if x is None:
+                x=range(len(y))
+            plt.plot(x,y,label=label)
+        plt.title(title)
+        plt.ylabel(ylabel)
+        plt.xlabel(xlabel)
+        plt.legend()
+        return self
+    
     def draw_graph(self, datas):
         import matplotlib.pyplot as plt
         import networkx as nx
@@ -85,6 +95,9 @@ class Draw:
             data.update(json.loads(f.read()))
         self.draw_net_work2(data, out_put)
 
+    def show(self):
+        plt.show()
+        return self
 
 if __name__ == '__main__':
     getattr(Draw(), sys.argv[1])(*sys.argv[2:])
