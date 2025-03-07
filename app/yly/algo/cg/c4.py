@@ -1,5 +1,5 @@
 from common.algo.manage import SolutionBase,View,logger
-from common.algo.search.base_search import TreeSearch,State
+from common.algo.search.state import TreeSearch,State
 from common.algo.search.alphabate_search import ABNode,AlphaBateSearch
 from common.algo.search.mttsearch import MctsSearchTree,MctsNode
 from collections import defaultdict

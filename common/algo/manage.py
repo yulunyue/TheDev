@@ -155,12 +155,15 @@ class SolutionBase:
         self.exec()
         return "\n".join(self.results)
 
+    def str_util(self,v):
+        return str(v)
+
     def log(self, *args, vars=None):
         if vars is not None:
             fs=s.split(',')
             s="; ".join([f'{k}:{vars.get(k) if isinstance(vars,dict) else getattr(vars,k)}' for k in fs])
         else:
-            s=' '.join([str(a) for a in args])
+            s=' '.join([self.str_util(a) for a in args])
         self.log_str = s
         if self.log_mode=='debug':
             logger.info(s)
@@ -210,7 +213,9 @@ class SolutionBase:
         if self.uri.startswith('lc_cls'):
             return self.run_cls()
         cases=self.get_cases()
+        self.load()
         for fn in func:
+            results=[]
             for i, case in enumerate(cases):
                 self.ep = case.get("result")
                 self.results=[]
@@ -228,19 +233,25 @@ class SolutionBase:
                         r=None
                 else:
                     r = fn(**case)
+                results.append(r)
                 if r is None:
                     r="\n".join(self.results)
-                self.log(f"finish {self.name}-{fn.__name__}; result: {r}; use_time: {time.time()-a}")
+                self.log(f"finish {self.name}-{fn.__name__}; result:\n{r}\nuse_time: {time.time()-a}")
                 if self.ep is not None and not self.diff(r, self.ep):
                     self.flush_log()
                     break
                 if self.ep is not None:
                     self._logs=[]
+            self.run_finish(results)
         self.flush_log()
         logger.info(f"TEST_FINISH:{len(cases)}")
                 
-                
-            
+    def run_finish(self,results):
+        pass
+
+    def load(self):
+        pass
+
     def error(self,*args):
         pass
     

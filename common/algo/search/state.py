@@ -2,17 +2,20 @@ from typing import List,Dict
 import random
 inf = float("inf")
 class State:
+    K=0
     def __init__(self) -> None:
         self.value = None
         self.depth = 0
         self.best_action=None
         self.next_state:Dict[int,State]=None
     
+    def reset(self):
+        return self
+
     def set_depth(self,depth):
         self.depth = depth
         return self
     
-
     def calc_value(self, *args):
         raise Exception("todo")
 
@@ -27,30 +30,12 @@ class State:
     
     def is_game_over(self):
         raise Exception("todo")
+
+    def do(self,action):
+        raise Exception(f"{self.__class__}.do not impl")
     
-class TreeSearch:
-    state_count=0
-    def search_dp(self,state:State,depth=0):
-        mvs:List[State]=state.get_nexts(depth)
-        self.state_count+=1
-        if not mvs:
-            return state.calc_value(depth)
-        state.value = -inf
-        for action,next_state in mvs:
-            value=-self.search_dp(next_state,depth-1)
-            if value>state.value:
-                state.value=value
-                state.best_action=action
-        return state.value
-    
-    def search(self,state,depth):
-        self.state_count=0
-        return self.search_dp(state,depth)
-    
-    def self_play(self,state:State):
-        while not state.is_game_over():
-            pass
-    
+    def get_regret(self,action):
+        raise Exception("todo")
     
 
 

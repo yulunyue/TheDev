@@ -1,4 +1,4 @@
-from common.algo.search.base_search import State,TreeSearch
+from common.algo.search.state import State,TreeSearch
 from typing import List,Dict
 import math
 import random
