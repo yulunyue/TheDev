@@ -16,7 +16,7 @@ class Logger(logging.Logger):
             fp.write_file('')
    
         self.add_hander(logging.FileHandler(
-            self.path, mode=os.environ.get(LOGGER_MODE,'w')), logging.INFO)
+            self.path, mode=os.environ.get(LOGGER_MODE,'w'),encoding='utf-8'), logging.INFO)
         #self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def add_hander(self, h: logging.Handler, level):

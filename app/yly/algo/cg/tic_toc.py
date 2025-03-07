@@ -1,5 +1,5 @@
 from collections import defaultdict
-from common.algo.search.base_search import AlphaBateSearch,AbNode,inf
+from common.algo.search.state import AlphaBateSearch,AbNode,inf
 from common.algo.manage import SolutionBase,View
 from typing import List,Dict
 POS = [4, 1, 3, 5, 7, 0, 2, 6, 8]

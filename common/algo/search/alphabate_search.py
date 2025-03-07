@@ -1,4 +1,4 @@
-from common.algo.search.base_search import TreeSearch,State,inf
+from common.algo.search.state import TreeSearch,State,inf
 from typing import List
 class ABNode(State):
     alpha=None
