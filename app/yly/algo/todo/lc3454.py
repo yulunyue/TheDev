@@ -38,6 +38,8 @@ class Solution(SolutionBase):
             self.mn=min(self.mn,x)
         self.yl=sorted(self.y_line.keys())
         self.t=T().set_range(self.mn,self.mx)
+        if 'result' in kwargs:
+            self.t.build()
         return super().init(*args, **kwargs)
     
     def get_view(self):

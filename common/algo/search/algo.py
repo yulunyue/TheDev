@@ -1,5 +1,15 @@
+import numpy as np
+np.set_printoptions(suppress=True,precision=4)
 from typing import List
 from .state import State,inf
+Env=State
+def random_select(states,fn):
+    rand,temp=np.random.rand(),0
+    for s in states:
+        temp+=fn(s)
+        if temp>rand:
+            return s
+        
 class Algo:
     state_count=0
     
