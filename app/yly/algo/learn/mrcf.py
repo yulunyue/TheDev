@@ -117,7 +117,7 @@ class Mdp(Mrp):
         self.V=self.use_policy(self.get_policy1())
         return self.calc_value(3,6)    
     
-    def sample(self,timestep_max=20, number=5):
+    def sample(self,timestep_max=20, number=200):
         S,A,P,R,gamma=self.mdp
         episodes=[]
         Pi=self.get_policy1()
@@ -125,13 +125,31 @@ class Mdp(Mrp):
             episode=[]
             timestep=0
             s=S[np.random.randint(self.K-1)]
-            while s!='S5' and timestep<=timestep_max:
+            while s!='s5' and timestep<=timestep_max:
                 timestep+=1
                 s_a=[f'{s}-{a}' for a in A]
                 a=random_select(s_a,lambda v:Pi.get(v,0))
-                r=R.get(a)
-                s_next=random_select()
+                r=R.get(a,0)
+                s_next=random_select(S,lambda v:P.get(a+"-"+v,0))
+                episode.append((s,a,r,s_next))
+                s=s_next
+            episodes.append(episode)
         return episodes
+    
+    def mc(self):
+        episodes=self.sample()
+        ct=defaultdict(int)
+        vt=defaultdict(int)
+        for episode in episodes:
+            g=0
+            for i in range(len(episode)-1,-1,-1):
+                s,a,r,s_next=episode[i]
+                g=r+g*0.5
+                ct[s]+=1
+                vt[s]=vt[s]+(g-vt[s])/ct[s]
+        return dict(vt)
+
+
 
 
 class Solution(SolutionBase):
@@ -139,7 +157,7 @@ class Solution(SolutionBase):
         return [
             # dict(tp="mrp",method="computer_return", chains=[1,2,3,6],result=-2.5),
             # dict(tp="mrp",method="computer",result=-2.5)
-            dict(tp="mdp",method="use_p1",result='?')
+            dict(tp="mdp",method="mc",result='?')
         ]   
 
     def init(self, tp,*args, **kwargs):
