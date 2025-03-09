@@ -67,26 +67,20 @@ class TreeNode:
                 ret[v//2].right=ret[v]
         return ret[1]
 
-def color(a,b):
-    return '#ccc' if a==b else '#fff'
+
 
 def bp(title, value, key=""):
     return wc(title, key, value, 'blue')
 
 
-def wc(title, key, v, change_color,sp='p'):
+def wc(title, key, v,sp='p'):
     v = str(v)
     k=f'{title}_{key}'
     # font-size:28px
-    color=""
-    if k in CHANGE_STORE and v!=CHANGE_STORE[k]:
-        color=change_color
-    CHANGE_STORE[k] = v
     return dict(
         key=k,
         title=title,
         value=v,
-        color=color,
         type='p'
     )
 
