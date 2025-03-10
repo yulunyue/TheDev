@@ -136,7 +136,7 @@ class Mdp(Mrp):
             episodes.append(episode)
         return episodes
     
-    def mc(self):
+    def mc(self,gamma=0.5):
         episodes=self.sample()
         ct=defaultdict(int)
         vt=defaultdict(int)
@@ -144,10 +144,26 @@ class Mdp(Mrp):
             g=0
             for i in range(len(episode)-1,-1,-1):
                 s,a,r,s_next=episode[i]
-                g=r+g*0.5
+                g=r+g*gamma
                 ct[s]+=1
                 vt[s]=vt[s]+(g-vt[s])/ct[s]
         return dict(vt)
+    
+    def occu(self,s='s4',a='s4-概率前往',gamma=0.5,timestep_max=40):
+        total_time=np.zeros(timestep_max)
+        occur_time=np.zeros(timestep_max)
+        for episode in self.sample():
+            for i in range(len(episode)):
+                s_opt,a_opt,r,s_next=episode[i]
+                total_time[i]+=1
+                if s==s_opt and a==a_opt:
+                    occur_time[i]+=1
+        rbo=0
+        for i in range(timestep_max-1,-1,-1):
+            if total_time[i]:
+                rbo+=gamma**i * occur_time[i]/total_time[i]
+        return (1-gamma)*rbo
+
 
 
 
@@ -157,7 +173,7 @@ class Solution(SolutionBase):
         return [
             # dict(tp="mrp",method="computer_return", chains=[1,2,3,6],result=-2.5),
             # dict(tp="mrp",method="computer",result=-2.5)
-            dict(tp="mdp",method="mc",result='?')
+            dict(tp="mdp",method="occu",result='?')
         ]   
 
     def init(self, tp,*args, **kwargs):

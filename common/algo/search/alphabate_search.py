@@ -1,24 +1,25 @@
-from common.algo.search.state import TreeSearch,State,inf
+from common.algo.search.state import State,inf
+from common.algo.search.algo import Algo
 from typing import List
 class ABNode(State):
     alpha=None
     bate=None
 
-class AlphaBateSearch(TreeSearch):
+class AlphaBateSearch(Algo):
     def search_dp(self, state:ABNode, depth=0, alpha=-inf, bate=inf,**kw) -> None:
         self.state_count+=1
         mvs = state.get_nexts(depth)
         if not mvs:
-            return state.calc_value(depth)
+            return state.calc_value(depth=depth)
         state.alpha, state.bate = alpha, bate
-        for action,next_state in mvs.items():
-            next_state.value=-self.search_dp(next_state,depth=depth-1,
+        for a in mvs:
+            a.state.value=-self.search_dp(a.state,depth=depth-1,
                                  alpha=-state.bate, bate=-state.alpha)
-            if next_state.value >= state.bate:
+            if a.state.value >= state.bate:
                 state.alpha = state.bate
-                state.best_action=action
+                state.best_action=a
                 break
-            if next_state.value > state.alpha:
-                state.alpha = next_state.value
-                state.best_action=action
+            if a.state.value > state.alpha:
+                state.alpha = a.state.value
+                state.best_action=a
         return state.alpha

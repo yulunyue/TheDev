@@ -1,5 +1,6 @@
 from common.algo.manage import SolutionBase,View,logger
-from common.algo.search.state import TreeSearch,State
+from common.algo.search.state import State,Action
+from common.algo.search.algo import Algo,np
 from common.algo.search.alphabate_search import ABNode,AlphaBateSearch
 from common.algo.search.mttsearch import MctsSearchTree,MctsNode
 from collections import defaultdict
@@ -111,18 +112,23 @@ class Constant:
 C=Constant()
 STORE_STATE:Dict[int,State]=dict()
 class F4State(MctsNode):
-    def __init__(self,mask,moves=0) -> None:
+    def __init__(self,mask,moves=-1) -> None:
         self.mask = mask
         self.moves = moves
         self.score=0
         super().__init__()
-    
+
+    @property
+    def key(self):
+        return self.mask
+
     def init_root(self):
         self.line_state = [0]*C.line_num
         self.state = [0]*len(C.scores)
+        return self
 
-    def calc_value(self,depth):
-        return self.score if self.moves%2==1 else -self.score
+    def calc_value(self,**kw):
+        return self.score if self.moves%2==0 else -self.score
     
     def put(self, col):
         mask0:int=(self.mask&C.HEIGHT_MASK1[col])<<1
@@ -144,7 +150,9 @@ class F4State(MctsNode):
                 self.state
             )
             if flag:
-                self.next_state={col:STORE_STATE[mask]}
+                self.next_state=[Action(col,STORE_STATE[mask])]
+            else:
+                self.next_state.append(Action(col,STORE_STATE[mask]))
         return STORE_STATE[mask]
 
     def init_state(self,x,y,line_state:List[int],score,state:list):
@@ -157,7 +165,7 @@ class F4State(MctsNode):
             self.line_state[line_id]=new_state
             new_state_id,old_state_id=C.score_map[new_state],C.score_map[old_state]
             if new_state_id==C.X_FOUR or new_state_id==C.O_FOUR:
-                self.next_state=dict()
+                self.next_state=[]
                 self.score=C.scores[new_state_id]
                 return self,True
             if new_state_id==C.O3_X1 and self.moves%2==1:
@@ -174,7 +182,7 @@ class F4State(MctsNode):
         return self,oo
     
     def score_detail(self):
-        return f'a:{str(self.best_action)[0]}{"OX"[self.moves%2]};s:{self.score}'
+        return f'a:{str(self.best_action)[0]}{"XO"[self.moves%2]};s:{self.score}'
 
     def to_str(self):
         ret=[["- "]*C.WIDTH for _ in range(C.HEIGHT)]
@@ -206,13 +214,9 @@ class F4State(MctsNode):
         if depth==0:
             return []
         if self.next_state is None:
-            st1=dict()
+            self.next_state = []
             for col in C.COLS:
-                s:F4State=self.put(col)
-                if s is None:
-                    continue
-                st1[col]=s
-            self.next_state=st1
+                self.put(col)
         return self.next_state
 
 
@@ -228,21 +232,37 @@ class Solution(SolutionBase):
         return [
             #dict(search_type="tree_search",method="analyze"),
             #dict(search_type="alpha_bate_search"),
-            dict(search_type="mcts")
+            #dict(search_type="mcts"),
+            dict(player1="alpha_bate_search",player2='mcts',max_turn=4)
         ]
     
-    def init(self, search_type="alpha_bate_search",search_max_depth=4,**kw):
-        self.search_max_depth=search_max_depth
-        self.state=F4State(C.INIT_MASK)
-        self.state.init_root()
-        self.seach:AlphaBateSearch={
-            'tree_search':TreeSearch,
+    def get_player(self,search_type)->Algo:
+        return {
+            'tree_search':Algo,
             'alpha_bate_search':AlphaBateSearch,
             'mcts':MctsSearchTree
         }[search_type]()
+
+    def init(self, search_type="alpha_bate_search",search_max_depth=4,**kw):
+        self.search_max_depth=search_max_depth
+        self.state=F4State(C.INIT_MASK).init_root()
+        self.seach:AlphaBateSearch=self.get_player(search_type)
     
-    def self_play(self):
-        self.seach.self_play(self.state)
+    def pk(self,player1,player2,nums=1,max_turn=100,**kw):
+        players=[self.get_player(player1),self.get_player(player2)]
+        for _ in range(nums):
+            state=F4State(C.INIT_MASK).init_root()
+            i=0
+            while i<max_turn: 
+                players[i%2].search(state,self.search_max_depth)
+                if state.best_action is None:
+                    break
+                state=state.best_action.state
+                self.log(state)
+                i+=1
+
+            
+
 
     def replay(self,stdout:List[str],stderr=None,**kw):
         C.TRUN_INDEX=0
@@ -263,20 +283,7 @@ class Solution(SolutionBase):
         self.log(self.state)
     
     def analyze(self,stdout,**kw):
-        C.TRUN_INDEX=0
-        states=[self.state]
-        while C.TRUN_INDEX<len(stdout):
-            action=int(stdout[C.TRUN_INDEX])
-            states.append(states[-1].put(action))
-            C.TRUN_INDEX+=1
-        for i in range(len(states)-1,-1,-1):
-            self.log(states[i].get_nexts(1))
-            # self.seach.search(s,4)
-            # for b in s.get_bests():
-            #     self.log(b.self_win,b.op_win)
-            # for depth in range(1,15):
-            #     pass
-        
+        pass
 
     def exec(self,**kw):
         my_id, opp_id = [int(i) for i in self.input().split()]
@@ -309,4 +316,5 @@ class Solution(SolutionBase):
 
 
 if __name__=='__main__':
+    np.random.seed(1)
     Solution().run()

@@ -1,87 +1,84 @@
-from common.algo.search.state import State,TreeSearch
+from common.algo.search.state import State,Action
+from common.algo.search.algo import Algo
 from typing import List,Dict
 import math
 import random
+import numpy as np
+
 inf=float("inf")
 class MctsNode(State):
-    
     def __init__(self, *args):
         super().__init__(*args)
         self.visits = 0
-        self.expand_nodes:Dict[str,MctsNode]=dict()
         self.score = 0
-    
-    def get_title_keys(self):
-        return [ 'visits','value','score']
-    
-    def expand(self,n:State):
-        self.expand_nodes[n.key]=n
+        self.vt_num=0
+        self.mct_value = 0
+        self.expand_nodes:Dict[str,Action] = {}
 
     def fully_expanded(self):
-        if len(self.expand_nodes) == len(self.childs):
-            return True
-        return False
-    
-    def __id__(self) -> int:
-        return f'{self.value}{self.visits}{self.score}'
+        return self.vt_num>=len(self.get_nexts())
 
-class MctsSearchTree(TreeSearch):
+
+
+
+class MctsSearchTree(Algo):
     def __init__(self) -> None:
         self.scalar=1/(2*math.sqrt(2.0))  #0.353553
         self.explore_ratio = 0
-        self.root:MctsNode=None
 
-    def expand(self, node:MctsNode):
-        next_node=node.get_next()
-        while next_node.has_childs() and next_node.key in node.expand_nodes:
-            next_node=next_node.get_next()
-        node.expand(next_node)
-        return next_node
+    def expand(self, state:MctsNode):
+        action = state.get_random_next()
+        while action.key in state.expand_nodes:
+            # from common.util.fp import File
+            # File('data/log/a.txt').write_file(str(state))
+            action.state.parent=state
+            state=action.state
+            action=state.get_random_next()
+        if action.key not in state.expand_nodes:
+            state.expand_nodes[action.key]=action
+            action.state.parent=state
+            return action.state
+        return action.state
 
     def buck_up(self,node:MctsNode,value):
-        self.root.cur = node
         while True:
-            self.root.cur.visits+=1
-            self.root.cur.value+=value
-            if self.root.cur.parent is None:
+            node.visits+=1
+            node.mct_value+=value
+            if node.parent is None:
                 break
-            self.root.cur=self.root.cur.parent
+            node=node.parent
 
-    def policy(self):
-        self.root.cur = self.root
-        while self.root.cur.has_childs():
-            if not self.root.cur.expand_nodes:
-                return self.expand(self.root.cur)
-            elif random.uniform(0,1)<self.explore_ratio:
-                self.root.cur = self.best_select(self.root.cur,self.scalar)
-            elif not self.root.cur.fully_expanded():
-                return self.expand(self.root.cur)
+    def policy(self,cur:MctsNode):
+        while cur.get_nexts():
+            if not cur.expand_nodes or np.random.rand()>self.explore_ratio:
+                return self.expand(cur)
             else:
-                self.root.cur=self.best_select(self.root.cur,self.scalar)
-        return self.root.cur
+                cur=self.best_select(cur,self.scalar)
+        return cur
 
     def best_select(self,node:MctsNode,scalar):
-        best_score,bestchildren=-inf,[]
-        for key,c in node.expand_nodes.items():
-            c.score=self.get_score(node,c,scalar)
-            if c.score == best_score:
-                bestchildren.append(c)
-            if c.score > best_score:
-                bestchildren = [c]
-                best_score=c.score
-        return bestchildren[0]
+        best_score=-inf
+        for a in node.expand_nodes.values():
+            score=self.get_score(node,a.state,scalar)
+            if node.best_action is None or score is None:
+                node.best_action=a
+            elif score > best_score:
+                node.best_action=a
+                best_score=score
+      
             
     def get_score(self,p:MctsNode, node:MctsNode,scalar):
-        exploit=p.get_value()/p.visits #平均值
-        explore=math.sqrt(2.0*math.log(node.visits)/float(p.visits))    
+        if not p.visits:
+            return None
+        exploit=p.mct_value/p.visits #平均值
+        explore=math.sqrt(2.0*math.log(node.visits)/p.visits)    
         return exploit+scalar*explore
 
-    def uct_seach(self,budget):
+    def uct_seach(self, node, budget):
         for _ in range(budget):
-            front=self.policy()
+            front=self.policy(node)
             self.buck_up(front, front.calc_value())
-        return self.best_select(self.root,0)
+        self.best_select(node,0)
     
     def search(self,root:MctsNode,budget=10,**kw):
-        self.root = root
-        return self.uct_seach(budget)
+        self.uct_seach(root,budget)
