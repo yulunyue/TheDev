@@ -29,8 +29,6 @@ class MctsSearchTree(Algo):
     def expand(self, state:MctsNode):
         action = state.get_random_next()
         while action.key in state.expand_nodes:
-            # from common.util.fp import File
-            # File('data/log/a.txt').write_file(str(state))
             action.state.parent=state
             state=action.state
             action=state.get_random_next()
