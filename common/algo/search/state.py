@@ -33,20 +33,14 @@ class State:
     
     def get_random_next(self)->Action:
         k = len(self.get_nexts())
+        if k==0:
+            return None
         return self.next_state[np.random.randint(0,k)]
     
     def get_bests(self):
         ret=[self]
         return ret
-        n=self
-        while n is not None:
-            ret.append(n)
-            if n.best_action:
-                n=n.best_action.state
-            else:
-                break
-            break
-        return ret
+   
     
     def is_game_over(self):
         raise Exception("todo")

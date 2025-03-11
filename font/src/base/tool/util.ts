@@ -49,6 +49,5 @@ export class UtilCls {
         }
         return res
     }
-
 }
 export default new UtilCls()

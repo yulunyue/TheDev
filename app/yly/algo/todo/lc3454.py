@@ -4,7 +4,6 @@ class T(SegTreeNode):
     ct=0
     def do(self,v):
         self.ct+=v
-        # self.todo+=v
         self.up()
     def up(self):
         if self.ct>0:
@@ -29,19 +28,21 @@ class Solution(SolutionBase):
         return self.execute(*args,**kw)
     
     def init(self, squares:list,*args, **kwargs):
-        self.y_line=defaultdict(lambda:{-1:[],1:[]})
-        self.mx,self.mn=-inf,inf
-        for i,(x,y,c) in enumerate(squares):
-            self.y_line[y+c][-1].append([x,x+c-1])
-            self.y_line[y][1].append([x,x+c-1])
-            self.mx=max(self.mx,x+c)
-            self.mn=min(self.mn,x)
-        self.yl=sorted(self.y_line.keys())
-        self.t=T().set_range(self.mn,self.mx)
-        if 'result' in kwargs:
-            self.t.build()
-        return super().init(*args, **kwargs)
-    
+        xs=[]
+        self.events=[]
+        for lx,y,l in squares:
+            rx=lx+l
+            xs.append(lx)
+            xs.append(rx)
+            self.events.append(y,lx,rx,1)
+            self.events.append(y+l,lx,rx,-1)
+        self.xs=sorted(set(xs))
+        self.x_id=dict()
+        for i,x in enumerate(self.xs):
+            self.x_id[x]=i
+        self.t=T().set_range(0,len(xs)-1)
+        self.events.sort()
+
     def get_view(self):
         return View(
             View(
@@ -49,26 +50,17 @@ class Solution(SolutionBase):
             ),
             View(key="t")
         )
+    
     def execute(self,**kw):
-        pre_y=self.mn
-        ans=[]
-        all_area=0
-        for y in self.yl:
-            w=self.t.query(self.mn,self.mx)
-            if w:
-                all_area+=(y-pre_y)*w
-                ans.append([all_area,y,w])
-            for tp in [-1,1]:
-                for x1,x2 in self.y_line[y][tp]:
-                    self.log('x1,x2,tp',locals())
-                    self.t.update(x1,x2,tp)
-                    w=self.t.query(self.mn,self.mx)
-                    # self.log_vals(locals(),"y,x1,x2,tp,w","update")
-            pre_y=y
-        mid=ans[-1][0]/2
-        i=bisect.bisect_left(ans,[mid])
-        # self.log(ans)
-        return ans[i][1]-(ans[i][0]-mid)/ans[i][-1]
+        records=[]
+        tot_area=0
+        for i in range(1,len(self.events)):
+            y,lx,rx,delta=self.events[i-1]
+            l,r=self.x_id[lx],self.x_id[rx]
+            self.t.update(l,r,delta)
+            s=self.xs[-1]-self.xs[0]-self.t.get_uncover()
+            records.append(tot_area)
+            tot_area+=s*(self.events[i]-y)
 
 
 
