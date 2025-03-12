@@ -233,7 +233,7 @@ class Solution(SolutionBase):
             #dict(search_type="tree_search",method="analyze"),
             #dict(search_type="alpha_bate_search"),
             #dict(search_type="mcts"),
-            dict(player1="alpha_bate_search",player2='mcts',max_turn=4)
+            dict(player1="alpha_bate_search",player2='mcts',max_turn=100)
         ]
     
     def get_player(self,search_type)->Algo:
@@ -252,14 +252,12 @@ class Solution(SolutionBase):
         players=[self.get_player(player1),self.get_player(player2)]
         for _ in range(nums):
             state=F4State(C.INIT_MASK).init_root()
-            i=0
-            while i<max_turn: 
+            for i in range(max_turn): 
                 players[i%2].search(state,self.search_max_depth)
                 if state.best_action is None:
                     break
                 state=state.best_action.state
                 self.log(state)
-                i+=1
 
             
 

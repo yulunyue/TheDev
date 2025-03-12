@@ -238,11 +238,20 @@ class WebDom {
         let actual = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight)
         return Math.max(metrics.width, actual)
     }
-    get_json(path: string) {
-
+    get_json(path: string, call_back: any) {
+        this.get("/app/tool/file/read", { path: path }, (data) => {
+            call_back(data)
+        })
     }
-    put_json(path: string, data: any) {
-
+    get_file(path: string, call_back: any) {
+        this.get("/app/tool/file/read", { path: path }, (data) => {
+            call_back(data)
+        })
+    }
+    put_json(path: string, data: any, call_back: any) {
+        this.get("/app/tool/file/write", { path: path, data: data }, (ret) => {
+            call_back(ret)
+        })
     }
 
 }

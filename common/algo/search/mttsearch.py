@@ -28,15 +28,15 @@ class MctsSearchTree(Algo):
 
     def expand(self, state:MctsNode):
         action = state.get_random_next()
-        while action.key in state.expand_nodes:
+        while action is not None and action.key in state.expand_nodes:
             action.state.parent=state
             state=action.state
             action=state.get_random_next()
-        if action.key not in state.expand_nodes:
+        if action and action.key not in state.expand_nodes:
             state.expand_nodes[action.key]=action
             action.state.parent=state
-            return action.state
-        return action.state
+            state=action.state
+        return state
 
     def buck_up(self,node:MctsNode,value):
         while True:

@@ -4,13 +4,14 @@ import {
     line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory, row1, row2,
     text_area, TextArea, MeraGraph, to_node
 } from "../base/components/export";
+import fun from "../base/tool/fun";
 export class Temaplate extends Div {
 
     init_node(): void {
-        this.set_html("template")
+
     }
     on_mount(): void {
-
+        web_dom.get_json(web_dom.get_param("ts_file"))
     }
 
 }
