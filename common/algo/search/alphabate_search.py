@@ -6,14 +6,14 @@ class ABNode(State):
     bate=None
 
 class AlphaBateSearch(Algo):
-    def search_dp(self, state:ABNode, depth=0, alpha=-inf, bate=inf,**kw) -> None:
+    def search_main(self, state:ABNode, depth=0, alpha=-inf, bate=inf,**kw) -> None:
         self.state_count+=1
         mvs = state.get_nexts(depth)
         if not mvs:
             return state.calc_value(depth=depth)
         state.alpha, state.bate = alpha, bate
         for a in mvs:
-            a.state.value=-self.search_dp(a.state,depth=depth-1,
+            a.state.value=-self.search_main(a.state,depth=depth-1,
                                  alpha=-state.bate, bate=-state.alpha)
             if a.state.value >= state.bate:
                 state.alpha = state.bate

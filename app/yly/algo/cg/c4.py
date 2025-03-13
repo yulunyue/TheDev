@@ -5,6 +5,7 @@ from common.algo.search.alphabate_search import ABNode,AlphaBateSearch
 from common.algo.search.mttsearch import MctsSearchTree,MctsNode
 from collections import defaultdict
 from typing import Dict,List
+
 import socket
 from functools import lru_cache
 MOD=(10**9)+7
@@ -16,7 +17,7 @@ def str_mid(s:str,size,fill="-"):
     c=size-len(s)
     l,y=c//2,c%2
     return fill*l+s+fill*(l+y)
-
+STORE=Algo()
 class Constant:
     HEIGHT=7
     WIDTH=9
@@ -280,8 +281,6 @@ class Solution(SolutionBase):
         self.log(f'round:{C.TRUN_INDEX},state_num:{state_num}')
         self.log(self.state)
     
-    def analyze(self,stdout,**kw):
-        pass
 
     def exec(self,**kw):
         my_id, opp_id = [int(i) for i in self.input().split()]

@@ -1,5 +1,6 @@
 import time
 import sys
+from collections import deque
 def loop1():
     ret=[]
     for i in range(40):
@@ -48,6 +49,16 @@ class A:
 class Study:    
     def loop(self):
         assert test(loop1) > test(loop)
+    def test_1(self):
+        a,b=list(),deque()
+        def c():
+            a.append(0)
+            a.pop(0)
+        def d():
+            b.append(0)
+            b.popleft()
+        print(test(c))
+        print(test(d))
     def calc(self):
         assert test(int_cnt) < test(str_cnt)< test(str_cnt2)
     def class_test(self):

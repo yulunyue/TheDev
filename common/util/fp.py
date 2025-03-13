@@ -93,3 +93,37 @@ class File:
     def dump(self):
         if self.type.startswith('xls'):
             return self.dump_excel()
+        
+class Cache:
+    def __init__(self,name):
+        self.fp=File(f'data/cache/{name}.json')
+        self.store=dict()
+        if self.fp.exists():
+            self.store.update(self.fp.read_file())
+    
+    def set(self,key:str,value):
+        store=self.store
+        keys=key.split('.')
+        last_key=keys.pop()
+        for k in keys:
+            store=store[k]
+        store[last_key]=value
+        return self
+
+    def get(self,key:str):
+        store=self.store
+        for k in key.split('.'):
+            store=store[k]
+        return store
+
+    def exists(self,key):
+        store=self.store
+        for k in key.split('.'):
+            if k in store:
+                return True
+            store=store[k]
+        return False
+
+    def flush(self):
+        self.fp.write_file(self.store)
+        return self
