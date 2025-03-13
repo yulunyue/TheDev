@@ -206,6 +206,10 @@ class F4State(MctsNode):
             for j, v in enumerate(best.to_str()):
                 tmp[j] += " # " + v
         return "\n".join(tmp)
+    
+    def debug(self):
+        from common.util.fp import File
+        File("data/log/c4.txt").write_file(str(self))
 
     def get_actions(self, depth=1):
         if depth == 0:

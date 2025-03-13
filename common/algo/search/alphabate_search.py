@@ -8,7 +8,7 @@ class AlphaBateSearch(Algo):
         self.state_count += 1
         mvs = state.get_actions(depth)
         if not mvs:
-            return state.calc_value(depth=depth)
+            return -state.calc_value(depth=depth)
         for a in mvs:
             value = -self.search_main(
                 a.state, depth=depth - 1, alpha=-bate, bate=-alpha
