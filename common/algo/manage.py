@@ -164,10 +164,10 @@ class SolutionBase:
         else:
             self._logs.append(self.log_str)
         
-    def pre(self,input="",result=None,name=None,**kwargs):
+    def pre(self,input="",result=None,record_name=None,**kwargs):
         if 'codingame' in  self.uri:
-            name = name or self.name
-            data:dict=File(f"data/log/cg/{name}.json").read_file()
+            record_name = record_name or self.name
+            data:dict=File(f"data/log/cg/{record_name}.json").read_file()
             kwargs['stderr']=[]
             kwargs['stdout']=[]
             for v in data['frames']:
