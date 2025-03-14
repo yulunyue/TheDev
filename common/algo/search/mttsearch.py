@@ -4,6 +4,7 @@ from typing import List, Dict
 import math
 import random
 import numpy as np
+import time
 
 inf = float("inf")
 
@@ -70,11 +71,11 @@ class MctsSearchTree(Algo):
         explore = math.sqrt(2.0 * math.log(node.visits) / p.visits)
         return exploit + scalar * explore
 
-    def uct_seach(self, node, budget):
-        for _ in range(budget):
+    def search_main(self, node, budget=float("inf"), max_t=0.1, **kw):
+        t = time.time()
+        ct = 0
+        while ct < budget and time.time() - t < max_t:
             front = self.policy(node)
             self.buck_up(front, front.calc_value())
+            ct += 1
         self.best_select(node, 0)
-
-    def search_main(self, root: MctsNode, budget=10, **kw):
-        self.uct_seach(root, budget)

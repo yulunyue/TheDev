@@ -47,26 +47,17 @@ class Algo:
                 state.best_action = action
         return state.value
 
-    def search_bfs_in_db(self, env: State, max_num=1000):
-        q = deque([env])
-        while q and max_num > 0:
-            c = q.popleft()
-            if 1:
-                pass
-            for d in c.get_nexts():
-                q.append(d)
-            max_num -= 1
-
-    def get_action(self, episode):
-        return self.env.get_action(episode)
+    def search_bfs_in_db(self, env: State):
+        def dfs():
+            pass
 
     def run_one_step(self, episode, action, r):
         return 0
 
-    def search(self, state: State, depth):
+    def search(self, state: State, **kw):
         state.best_action = None
         self.state_count = 0
-        return self.search_main(state, depth)
+        return self.search_main(state, **kw)
 
     def self_play(self, state: State):
         while not state.is_game_over():
