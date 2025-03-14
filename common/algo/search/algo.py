@@ -48,8 +48,19 @@ class Algo:
         return state.value
 
     def search_bfs_in_db(self, env: State):
-        def dfs():
-            pass
+        def dfs(s: State, d=0):
+            if s.done:
+                return s.done
+            done = None
+            for n in s.get_actions():
+                done1 = dfs(n, d + 1)
+                if done is None:
+                    done = done1
+                elif done != done1:
+                    return 0
+            return done
+
+        return dfs(env)
 
     def run_one_step(self, episode, action, r):
         return 0

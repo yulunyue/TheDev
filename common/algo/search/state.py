@@ -48,6 +48,10 @@ class State:
     def get_actions(self, depth=None) -> List[Action]:
         return self.actions
 
+    def set_actions(self, actions):
+        self.actions = actions
+        return self
+
     def get_random_action(self) -> Action:
         k = len(self.get_actions())
         if k == 0:

@@ -72,9 +72,10 @@ class F4State(MctsNode):
             new_state_id, *args = C.scores[self.moves % 2][new_state]
             old_state_id, *args = C.scores[self.moves % 2][old_state]
             if new_state_id == StateEnum.STATE_40:
-                return self.set_done(0)
+                return self.set_done((self.moves % 2) + 1)
             if new_state == StateEnum.STATE_31:
-                return self.set_done(-1)
+                p.set_actions()
+                return self
             self.state[old_state_id] = self.state[old_state_id] - 1
             self.state[new_state_id] = self.state[new_state_id] + 1
         return self
