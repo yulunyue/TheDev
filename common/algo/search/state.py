@@ -19,7 +19,7 @@ class Action:
 
 
 class State:
-    done = None
+    done = -1
 
     def __init__(self) -> None:
         self.state = None

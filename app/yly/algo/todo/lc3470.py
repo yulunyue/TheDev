@@ -2,6 +2,7 @@ from common.algo.manage import SolutionBase,View,bisect,defaultdict,Dict,List,MO
 class Solution(SolutionBase):
     def get_cases(self):
         return [
+            dict(n=2,k=3,result=[]),
             dict(n = 4, k = 6,result=[3,4,1,2]),
             dict(n = 3, k = 2,result=[3,2,1]),
         ]

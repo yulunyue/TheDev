@@ -41,7 +41,7 @@ class Solution(SolutionBase):
             state = F4State(C.INIT_MASK).init_root()
             for i in range(max_turn):
                 players[i % 2].search(
-                    state, depth=self.search_max_depth, max_t=self.max_t
+                    state, depth=1, max_t=self.max_t
                 )
                 if state.best_action is None:
                     break

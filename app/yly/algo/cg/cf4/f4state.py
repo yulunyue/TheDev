@@ -73,9 +73,8 @@ class F4State(MctsNode):
             old_state_id, *args = C.scores[self.moves % 2][old_state]
             if new_state_id == StateEnum.STATE_40:
                 return self.set_done((self.moves % 2) + 1)
-            if new_state == StateEnum.STATE_31:
-                p.set_actions()
-                return self
+            if new_state_id == StateEnum.STATE_31:
+                return self.set_done(-2)
             self.state[old_state_id] = self.state[old_state_id] - 1
             self.state[new_state_id] = self.state[new_state_id] + 1
         return self
@@ -89,21 +88,22 @@ class F4State(MctsNode):
         File("data/log/c4.txt").write_file(str(self))
 
     def get_actions(self, depth=1):
-        if depth == 0 or self.done == 0:
+        if depth == 0 or self.done > 0:
             return []
         if self.actions is None:
-            self.actions = []
-            only_one_flag = False
+            actions = []
+            flag=True
             for col in C.COLS:
                 a = self.get_action(col)
                 if a is None:
                     continue
-                if a.state.done is not None:
-                    if not self.actions or self.actions[0].state.done is None:
-                        self.actions = [a]
-                    elif self.actions[0].state.done < a.state.done:
-                        self.actions = [a]
-                    only_one_flag = True
-                if not only_one_flag:
-                    self.actions.append(a)
+                if a.state.done>0:
+                    actions = [a]
+                    break
+                if a.state.done==-2:
+                    actions=[a]
+                    flag=False
+                if flag:
+                    actions.append(a)
+            self.actions=actions
         return self.actions
