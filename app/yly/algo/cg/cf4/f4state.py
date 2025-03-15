@@ -13,6 +13,7 @@ class F4Action(Action):
 
 class F4State(MctsNode):
     name = "f4state"
+    info = ""
 
     def __init__(self, mask, moves=-1) -> None:
         self.mask = mask
@@ -39,8 +40,8 @@ class F4State(MctsNode):
 
         return "\n".join(
             [
-                f"done:{self.done};  score:{'%.4f'%self.score}",
-                f"cache_done:{self.get_cache_done()}",
+                f"done:{self.done}; score:{'%.4f'%self.score}; actons:{len(self.get_actions())}",
+                f"cache_done:{self.get_cache_done()}; info:{self.info}; check:{C.check_mask(self.mask,self.line_state)}",
                 f"mask:{self.mask};",
             ]
             + ["".join(v) for v in ret]
@@ -54,8 +55,11 @@ class F4State(MctsNode):
         return str(self.mask)
 
     def init_root(self):
-        self.line_state = [0] * C.line_num
-        self.state = [[0] * len(StateEnum) for _ in range(2)]
+        if self.mask == C.INIT_MASK:
+            self.line_state = [0] * C.line_num
+            self.state = [[0] * len(StateEnum) for _ in range(2)]
+        else:
+            pass
         return self
 
     def calc_value(self, **kw):
@@ -63,6 +67,7 @@ class F4State(MctsNode):
 
     def get_action(self, col) -> F4Action:
         mask0: int = (self.mask & C.HEIGHT_MASK1[col]) << 1
+        # self.info += f"\n{col}\n{bin(mask0)}\n{bin(C.HEIGHT_POS_MASK[col][0])}\n"
         if mask0 & C.HEIGHT_POS_MASK[col][0]:
             return
         mask1 = self.mask & C.HEIGHT_MASK0[col]
@@ -81,12 +86,15 @@ class F4State(MctsNode):
     def init_state(self, x, y, p):
         p: F4State = p
         self.line_state = p.line_state.copy()
+        # self.info += f"{x} {y} {bin(self.line_state[87])}"
         self.state = [p.state[0].copy(), p.state[1].copy()]
         player_id = self.moves % 2
         self.score = p.score
         for line_id, k_id in C.point_line_id[y][x]:
+
             old_state = self.line_state[line_id]
             new_state = old_state | C.state_pos[k_id][player_id]
+            # p.info += f"{line_id}:{bin(new_state)}\n"
             self.line_state[line_id] = new_state
             new_state_id, new_score = C.scores[player_id][new_state]
             old_state_id, old_score = C.scores[player_id][old_state]
@@ -96,8 +104,10 @@ class F4State(MctsNode):
                 self.score += (new_score - old_score) * [1, -1][player_id]
             if new_state_id == StateEnum.STATE_40:
                 self.score = [1, -1][player_id]
+                # p.info += f"[set {self.score}]"
                 return self.set_done(player_id + 1)
             if new_state_id == StateEnum.STATE_13:
+                # p.info += "[set -2]"
                 self.set_done(-2)
         if self.score >= 1 or self.score <= -1:
             raise Exception(self.score)
@@ -116,9 +126,11 @@ class F4State(MctsNode):
             flag = True
             for col in C.COLS:
                 a = self.get_action(col)
-                if a is None:
+
+                if a is None or a.state.done == self.op_done:
                     continue
-                if a.state.done > 0:
+                # self.info += f"[{a.key} {a.state.done} {self.win_done}]"
+                if a.state.done == self.win_done:
                     actions = [a]
                     break
                 if a.state.done == -2:

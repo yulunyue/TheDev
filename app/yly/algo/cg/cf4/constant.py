@@ -67,6 +67,7 @@ class Constant:
         self.point_line_id = [
             [[] for _ in range(self.WIDTH)] for _ in range(self.HEIGHT)
         ]
+        self.lines = []
         for i in range(self.HEIGHT):
             for j in range(self.WIDTH):
                 for y, x in DR:
@@ -78,7 +79,14 @@ class Constant:
                     if len(tmp) == 4:
                         for y1, x1, idx in tmp:
                             self.point_line_id[y1][x1].append([self.line_num, idx])
+                        self.lines.append(tmp)
                         self.line_num += 1
+
+    def check_mask(self, mask_dst, lines):
+        masks = 0
+        for i, state in enumerate(lines):
+            for y1, x1, k in self.lines[i]:
+                s = (state >> (k * 2)) & 3
 
 
 C = Constant()

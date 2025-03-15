@@ -14,7 +14,7 @@ from app.yly.algo.cg.cf4.f4state import F4State
 class Solution(SolutionBase):
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
-    # log_mode = 'debug'
+    # log_mode = "debug"
     agentsIds = [4820019, -1]
     name = "f4"
     search_max_depth = 5
@@ -33,6 +33,10 @@ class Solution(SolutionBase):
                 max_turn=100,
             )
         ]
+
+    def test_all(self, **kw):
+        s = F4State(55710130863928836353).init_root()
+        self.log(s)
 
     def get_player(self, search_type) -> Algo:
         return {
@@ -59,11 +63,11 @@ class Solution(SolutionBase):
         state = F4State(C.INIT_MASK).init_root()
         search = self.get_player(player1)
         while C.TRUN_INDEX < len(stdout):
+            action = state.get_action(int(stdout[C.TRUN_INDEX]))
             alpha = search.search(state, **kw)
             self.log(
                 f"put:{state.best_action.key}; num:{search.state_count} best:{alpha}"
             )
-            action = state.get_action(int(stdout[C.TRUN_INDEX]))
             self.log(action)
             state = action.state
             C.TRUN_INDEX += 1
