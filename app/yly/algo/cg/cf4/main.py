@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import C
-from app.yly.algo.cg.cf4.f4state import F4State, action_to_str
+from app.yly.algo.cg.cf4.f4state import F4State
 
 
 class Solution(SolutionBase):
@@ -17,7 +17,7 @@ class Solution(SolutionBase):
     # log_mode = 'debug'
     agentsIds = [4820019, -1]
     name = "f4"
-    search_max_depth = 2
+    search_max_depth = 5
     max_t = 0.1
 
     def get_cases(self):
@@ -25,7 +25,13 @@ class Solution(SolutionBase):
             # dict(search_type="tree_search",method="analyze"),
             # dict(search_type="alpha_bate_search"),
             # dict(search_type="mcts"),
-            dict(player1="alpha_bate_search", player2="alpha_bate_search", max_turn=100)
+            dict(
+                player1="alpha_bate_search",
+                player2="alpha_bate_search",
+                depth=self.search_max_depth,
+                max_t=self.max_t,
+                max_turn=100,
+            )
         ]
 
     def get_player(self, search_type) -> Algo:
@@ -41,39 +47,31 @@ class Solution(SolutionBase):
             state = F4State(C.INIT_MASK).init_root()
             for i in range(max_turn):
                 players[i % 2].search(
-                    state, depth=1, max_t=self.max_t
+                    state, depth=self.search_max_depth, max_t=self.max_t
                 )
                 if state.best_action is None:
                     break
-                self.log(action_to_str(state.best_action))
+                self.log(state.best_action)
                 state = state.best_action.state
 
-    def replay(self, stdout: List[str], stderr=None, **kw):
+    def replay(self, player1, stdout: List[str], stderr=None, **kw):
         C.TRUN_INDEX = 0
-        state_num = 0
+        state = F4State(C.INIT_MASK).init_root()
+        search = self.get_player(player1)
         while C.TRUN_INDEX < len(stdout):
-            action = int(stdout[C.TRUN_INDEX])
-            self.state: F4State = self.state.put(action)
+            alpha = search.search(state, **kw)
             self.log(
-                "; ".join(
-                    [
-                        f'round:{C.TRUN_INDEX} {action}{"OX"[C.TRUN_INDEX%2]}',
-                        f"search_best_action:{self.state.best_action}",
-                        f"state_count:{self.seach.state_count}",
-                    ]
-                )
+                f"put:{state.best_action.key}; num:{search.state_count} best:{alpha}"
             )
-            self.seach.search(self.state, self.search_max_depth)
-            self.log(self.state)
-            state_num += self.seach.state_count
+            action = state.get_action(int(stdout[C.TRUN_INDEX]))
+            self.log(action)
+            state = action.state
             C.TRUN_INDEX += 1
-        self.log(f"round:{C.TRUN_INDEX},state_num:{state_num}")
-        self.log(self.state)
 
     def exec(self, **kw):
+        search, state = AlphaBateSearch(), F4State(C.INIT_MASK).init_root()
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
-        self.init()
         while True:
             C.TRUN_INDEX = int(
                 self.input()
@@ -95,17 +93,22 @@ class Solution(SolutionBase):
             )  # opponent's previous chosen column index (will be -1 for first player in the first turn)
 
             if 0 <= opp_previous_action < C.WIDTH:
-                self.state: F4State = self.state.put(opp_previous_action)
+                state: F4State = state.get_action(opp_previous_action).state
             # if my_id==1 and turn_index==1 and 3<=opp_previous_action<=6:
             #     self.output(-2)
             #     continue
-            self.seach.search(self.state, self.search_max_depth)
+            search.search(state, depth=self.search_max_depth)
             self.error(
                 opp_previous_action=opp_previous_action,
                 # state=str(self.state)
             )
-            self.output(self.state.best_action)
-            self.state = self.state.next_state[self.state.best_action]
+            self.output(state.best_action.key)
+            state = state.best_action.state
+
+    def finish(self):
+        from common.util.fp import get_cache
+
+        # get_cache(F4State.name).flush()
 
 
 if __name__ == "__main__":

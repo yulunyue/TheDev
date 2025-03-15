@@ -8,12 +8,13 @@ DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
 class StateEnum(IntEnum):
     STATE_NULL = 0
     STATE_40 = 1
-    STATE_31 = 2
+    STATE_13 = 2
 
 
 class Constant:
     HEIGHT = 7
     WIDTH = 9
+    TRUN_INDEX = 0
 
     def __init__(self) -> None:
         self.init_score()
@@ -21,7 +22,7 @@ class Constant:
         self.init_lines()
 
     def init_score(self):
-        key2 = {(4, 0): [StateEnum.STATE_40], (3, 1): [StateEnum.STATE_31]}
+        key2 = {(4, 0): [StateEnum.STATE_40, 0.1], (1, 3): [StateEnum.STATE_13, 0.09]}
         self.scores = [[None] * (1 << 8), [None] * (1 << 8)]
         for i in range(1 << 8):
             ct = [0] * 4
@@ -31,8 +32,8 @@ class Constant:
                 s = s >> 2
             if ct[3]:
                 continue
-            self.scores[0][i] = key2.get((ct[1], ct[2]), [StateEnum.STATE_NULL])
-            self.scores[1][i] = key2.get((ct[2], ct[1]), [StateEnum.STATE_NULL])
+            self.scores[0][i] = key2.get((ct[1], ct[2]), [StateEnum.STATE_NULL, 0])
+            self.scores[1][i] = key2.get((ct[2], ct[1]), [StateEnum.STATE_NULL, 0])
 
         # logger.info([bin(self.WINSCORE[0]),bin(self.WINSCORE[1])])
 

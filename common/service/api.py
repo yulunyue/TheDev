@@ -2,35 +2,35 @@ import requests
 from common.util.log import get_log
 from common.util.baseconfig import ConfigBase, StrModel, DictModel
 from common.util.model import NumberModel
+
 logger = get_log("api")
 
 
-
 class Api:
-    CONTENT_TYPE = 'content-type'
-    APPLICATION_JSON = 'application/json;charset=UTF-8'
+    CONTENT_TYPE = "content-type"
+    APPLICATION_JSON = "application/json;charset=UTF-8"
 
     def __init__(self):
-        self.config=ConfigBase("api",self.__class__.__name__)
-        self.endpoint = StrModel("endpoint",self.config)
-        self.cookie = DictModel("cookie",self.config)
-        self.proxy = DictModel("proxy",self.config)
-        self.timeout = NumberModel("timeout",10,self.config)
+        self.config = ConfigBase("api", self.__class__.__name__)
+        self.endpoint = StrModel("endpoint", self.config)
+        self.cookie = DictModel("cookie", self.config)
+        self.proxy = DictModel("proxy", self.config)
+        self.timeout = NumberModel("timeout", 10, self.config)
 
     def get_endpoint(self):
         return self.endpoint.get_value()
 
     def url(self, path):
         if isinstance(path, list):
-            path = '/'.join(path)
+            path = "/".join(path)
         if path.startswith("http"):
             return path
         end_point = self.get_endpoint()
-        if not path.startswith('/') and not end_point.endswith('/'):
-            path = '/'+path
-        if not end_point.startswith('http'):
-            end_point = 'https://'+end_point
-        return f'{end_point}{path}'
+        if not path.startswith("/") and not end_point.endswith("/"):
+            path = "/" + path
+        if not end_point.startswith("http"):
+            end_point = "https://" + end_point
+        return f"{end_point}{path}"
 
     def get(self, url, data=None, headers=None):
         return self.http("GET", url, data=data, headers=headers)
@@ -64,9 +64,9 @@ class Api:
         mock_res = self.get_mock_data(uri)
         if mock_res:
             return mock_res
-        logger.info(f'DO HTTP [{method}] {uri}')
+        logger.info(f"DO HTTP [{method}] {uri} {self.get_proxy()}")
         params = dict()
-        if method == 'GET':
+        if method == "GET":
             params.update(dict(params=data))
         else:
             if param is not None:
@@ -82,7 +82,7 @@ class Api:
             timeout=self.get_timeout(),
             method=method,
             proxies=self.get_proxy(),
-            **params
+            **params,
         )
         if res.status_code <= 300:
             if Api.APPLICATION_JSON in res.headers.get(Api.CONTENT_TYPE):
@@ -92,7 +92,8 @@ class Api:
 
     def hander_error(self, method, uri, res: requests.Response, data):
         raise Exception(
-            f'{method}:{uri}:{res.status_code}:{res.content[:100]+b"***"+res.content[-100:]}:{str(data)[:40]}')
+            f'{method}:{uri}:{res.status_code}:{res.content[:100]+b"***"+res.content[-100:]}:{str(data)[:40]}'
+        )
 
     def parse(self, value):
         return value

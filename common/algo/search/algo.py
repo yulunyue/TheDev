@@ -2,7 +2,7 @@ import numpy as np
 
 np.set_printoptions(suppress=True, precision=4)
 from typing import List
-from .state import State, inf, Action
+from common.algo.search.state import State, inf, Action
 from collections import deque
 
 Env = State
@@ -20,13 +20,6 @@ class Algo:
     state_count = 0
     _cache = None
 
-    def get_cache(self):
-        if self._cache is None:
-            from common.util.fp import Cache
-
-            self._cache = Cache(self.name)
-        return self._cache
-
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
 
@@ -35,7 +28,7 @@ class Algo:
         return self
 
     def search_main(self, state: State, depth=0):
-        mvs: List[State] = state.get_nexts(depth)
+        mvs: List[State] = state.get_actions(depth)
         self.state_count += 1
         if not mvs:
             return state.calc_value(depth)
@@ -46,18 +39,6 @@ class Algo:
                 state.value = value
                 state.best_action = action
         return state.value
-
-    def search_bfs_in_db(self, env: State):
-        def dfs(s: State, d=0):
-            if s.done>=0:
-                return s.done
-            actions=s.get_actions()
-            done = dfs(actions[0],d+1)
-            for n in actions[1:]:
-                if dfs(n, d + 1)!=done:
-                    return -1
-            return done
-        return dfs(env)
 
     def run_one_step(self, episode, action, r):
         return 0

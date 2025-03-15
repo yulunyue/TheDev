@@ -1,19 +1,25 @@
 import os
 import json
 from typing import List
+
+
 def dump_default(v):
     return str(v)
+
+
 def json_dump(oj):
-    return json.dumps(oj,indent=4,ensure_ascii=False,default=dump_default)
+    return json.dumps(oj, indent=4, ensure_ascii=False, default=dump_default)
+
+
 class File:
     def __init__(self, path: str) -> None:
         self.path = path
-        self.dirs = path.split('/')
-        names =  self.dirs.pop().split('.')
+        self.dirs = path.split("/")
+        names = self.dirs.pop().split(".")
         self.name = names[0]
         self.type = names[-1]
         self.m_time = 0
-        self.data = b''
+        self.data = b""
 
     def get_m_time(self):
         return os.path.getmtime(self.path)
@@ -26,28 +32,29 @@ class File:
                 os.mkdir(root_path)
             root_path += "/"
 
-    def write_file(self, data: str, encoding='utf-8'):
+    def write_file(self, data: str, encoding="utf-8"):
         if isinstance(data, dict) or isinstance(data, list):
             data = json_dump(data)
         self.make_dir_if_not_exist()
         if isinstance(data, bytes):
-            with open(self.path, 'wb') as f:
+            with open(self.path, "wb") as f:
                 f.write(data)
         else:
-            with open(self.path, 'w', encoding=encoding) as f:
+            with open(self.path, "w", encoding=encoding) as f:
                 f.write(data)
         return self
+
     def is_json_file(self):
-        return self.path.endswith('.json')
+        return self.path.endswith(".json")
 
     def read_data(self):
-        with open(self.path, 'rb') as f:
+        with open(self.path, "rb") as f:
             return f.read()
-    
+
     def read_line(self):
-        return self.read_data().decode('utf-8').replace('\r','').split('\n')
-    
-    def read_file(self, encoding='utf-8'):
+        return self.read_data().decode("utf-8").replace("\r", "").split("\n")
+
+    def read_file(self, encoding="utf-8"):
         data = self.read_data()
         if self.is_json_file():
             return json.loads(data.decode(encoding))
@@ -62,68 +69,66 @@ class File:
 
     def exists(self):
         return os.path.exists(self.path)
-    
+
     def list_dir(self):
-        return [File(self.path+'/'+f) for f in os.listdir(self.path)]
-    
+        return [File(self.path + "/" + f) for f in os.listdir(self.path)]
+
     def dp_dir(self):
-        ret:List[File]=[]
+        ret: List[File] = []
         for f in self.list_dir():
             if f.is_dir():
                 ret.extend(f.dp_dir())
             else:
                 ret.append(f)
         return ret
-    
+
     def is_dir(self):
         return os.path.isdir(self.path)
-    
+
     def py_module_path(self):
-        return self.path.replace('/', '.').replace('.py', '')
-    
+        return self.path.replace("/", ".").replace(".py", "")
+
     def dump_excel(self):
         import pandas
-        ret=pandas.read_excel(self.path,sheet_name=None)
-        sheets=ret.keys()
-        ret=dict()
+
+        ret = pandas.read_excel(self.path, sheet_name=None)
+        sheets = ret.keys()
+        ret = dict()
         for name in sheets:
-            ret[name]=pandas.read_excel(self.path,sheet_name=name).to_dict()
+            ret[name] = pandas.read_excel(self.path, sheet_name=name).to_dict()
         return ret
-    
+
     def dump(self):
-        if self.type.startswith('xls'):
+        if self.type.startswith("xls"):
             return self.dump_excel()
-        
+
+
 class Cache:
-    def __init__(self,name):
-        self.fp=File(f'data/cache/{name}.json')
-        self.store=dict()
+    def __init__(self, name):
+        self.fp = File(f"data/cache/{name}.json")
+        self.store = dict()
         if self.fp.exists():
             self.store.update(self.fp.read_file())
-    
-    def set(self,key:str,value):
-        store=self.store
-        keys=key.split('.')
-        last_key=keys.pop()
-        for k in keys:
-            store=store[k]
-        store[last_key]=value
+
+    def set(self, key, value):
+        self.store[key] = value
         return self
 
-    def get(self,key:str):
-        store=self.store
-        for k in key.split('.'):
-            store=store[k]
-        return store
+    def get(self, key):
+        return self.store[key]
 
-    def exists(self,key):
-        store=self.store
-        for k in key.split('.'):
-            if k in store:
-                return True
-            store=store[k]
-        return False
+    def exists(self, key):
+        return key in self.store
 
     def flush(self):
         self.fp.write_file(self.store)
         return self
+
+
+CACHE: dict[str, Cache] = dict()
+
+
+def get_cache(name):
+    if name not in CACHE:
+        CACHE[name] = Cache(name)
+    return CACHE[name]
