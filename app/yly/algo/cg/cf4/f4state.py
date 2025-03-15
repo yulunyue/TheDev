@@ -93,6 +93,8 @@ class F4State(MctsNode):
         for line_id, k_id in C.point_line_id[y][x]:
 
             old_state = self.line_state[line_id]
+            if old_state & C.state_pos[k_id][player_id]:
+                raise Exception(C.lines[k_id])
             new_state = old_state | C.state_pos[k_id][player_id]
             # p.info += f"{line_id}:{bin(new_state)}\n"
             self.line_state[line_id] = new_state

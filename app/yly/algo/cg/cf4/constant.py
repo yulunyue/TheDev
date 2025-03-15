@@ -47,9 +47,7 @@ class Constant:
         self.HEIGHT_MASK1 = []
         self.HEIGHT_POS_MASK = []
         for i in range(4):
-            self.state_pos.append(
-                [1 << (i * 2), 1 << (i * 2 + 1), (1 << 8) - 1 - (3 << (i * 2))]
-            )
+            self.state_pos.append([1 << (i * 2), 1 << (i * 2 + 1)])
 
         for col in range(self.WIDTH):
             pos = col * (self.HEIGHT + 1)
@@ -84,9 +82,22 @@ class Constant:
 
     def check_mask(self, mask_dst, lines):
         masks = 0
+        pos_map = dict()
+
+        def set_pos(y, x, v):
+            k = (y, x)
+            if k in pos_map:
+                if pos_map[k] != v:
+                    raise Exception(y, x, v, pos_map[k])
+                return
+            pos_map[k] = v
+
         for i, state in enumerate(lines):
-            for y1, x1, k in self.lines[i]:
+            for y, x, k in self.lines[i]:
                 s = (state >> (k * 2)) & 3
+                if s == 3:
+                    raise Exception(y, x, s)
+                set_pos(y, x, s)
 
 
 C = Constant()
