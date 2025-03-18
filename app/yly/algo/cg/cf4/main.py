@@ -1,7 +1,7 @@
 from common.algo.manage import SolutionBase, View, logger, MOD, inf
-from common.algo.search.state import State, Action
+
 from common.algo.search.mttsearch import MctsSearchTree, MctsNode
-from common.algo.search.algo import Algo, np
+from common.algo.search.algo import Algo, np, RandomAlgo
 from common.algo.search.alphabate_search import AlphaBateSearch
 
 from collections import defaultdict
@@ -18,6 +18,7 @@ class Solution(SolutionBase):
     agentsIds = [4820019, -1]
     name = "f4"
     search_max_depth = 5
+    budget = 1000
     max_t = 0.1
 
     def get_cases(self):
@@ -26,8 +27,8 @@ class Solution(SolutionBase):
             # dict(search_type="alpha_bate_search"),
             # dict(search_type="mcts"),
             dict(
-                player1="alpha_bate_search",
-                player2="alpha_bate_search",
+                player1="mcts",
+                player2="ab",
                 depth=self.search_max_depth,
                 max_t=self.max_t,
                 max_turn=100,
@@ -35,28 +36,38 @@ class Solution(SolutionBase):
         ]
 
     def test_all(self, **kw):
-        s = F4State(55710130863928836353).init_root()
+        s = F4State(37037886146357559553).init_root()
         self.log(s)
 
     def get_player(self, search_type) -> Algo:
         return {
-            "tree_search": Algo,
-            "alpha_bate_search": AlphaBateSearch,
+            "ts": Algo,
+            "ab": AlphaBateSearch,
             "mcts": MctsSearchTree,
+            "rand": RandomAlgo,
         }[search_type]()
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
         players = [self.get_player(player1), self.get_player(player2)]
         for _ in range(nums):
             state = F4State(C.INIT_MASK).init_root()
-            for i in range(max_turn):
+            i = 0
+            while i < max_turn:
                 players[i % 2].search(
-                    state, depth=self.search_max_depth, max_t=self.max_t
+                    state,
+                    depth=self.search_max_depth,
+                    max_t=self.max_t,
+                    budget=self.budget,
                 )
+                self.log(state)
+                self.log("\n\n")
+                self.log(players[i % 2])
                 if state.best_action is None:
                     break
                 self.log(state.best_action)
                 state = state.best_action.state
+                i += 1
+            self.log(f"run {i}")
 
     def replay(self, player1, stdout: List[str], stderr=None, **kw):
         C.TRUN_INDEX = 0

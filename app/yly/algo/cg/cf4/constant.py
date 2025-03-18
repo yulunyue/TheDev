@@ -80,17 +80,19 @@ class Constant:
                         self.lines.append(tmp)
                         self.line_num += 1
 
-    def check_mask(self, mask_dst, lines):
-        masks = 0
+    def lines_to_mask(self, lines):
         pos_map = dict()
+        msgs = dict()
+        pt = [["?"] * self.WIDTH for _ in range(self.HEIGHT)]
 
         def set_pos(y, x, v):
             k = (y, x)
+            pt[y][x] = ("-" + S)[v] + " "
             if k in pos_map:
-                if pos_map[k] != v:
-                    raise Exception(y, x, v, pos_map[k])
+                if pos_map[k][0] != v:
+                    msgs[y, x, v, str(pos_map[k])] = True
                 return
-            pos_map[k] = v
+            pos_map[k] = [v, y, x]
 
         for i, state in enumerate(lines):
             for y, x, k in self.lines[i]:
@@ -98,6 +100,25 @@ class Constant:
                 if s == 3:
                     raise Exception(y, x, s)
                 set_pos(y, x, s)
+
+    def mask_to_line(self, mask):
+        ret = [[0] * C.WIDTH for _ in range(C.HEIGHT)]
+        line_state = [0] * self.line_num
+        state = [[0] * len(StateEnum) for _ in range(2)]
+        for j in range(self.WIDTH):
+            pos = j * (C.HEIGHT + 1)
+            h_mask: int = (mask >> pos) & self.MASK_FULL_HEIGHT
+            l = h_mask.bit_length() - 1
+            for i in range(l):
+                k = C.HEIGHT - (l - i)
+                if h_mask & (1 << i):
+                    ret[k][j] = 2
+                else:
+                    ret[k][j] = 1
+        return line_state, state
+
+    def check_mask(self, mask, lines):
+        return self.mask_to_line(mask)[0] == lines
 
 
 C = Constant()

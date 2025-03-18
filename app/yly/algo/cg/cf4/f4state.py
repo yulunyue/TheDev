@@ -8,7 +8,7 @@ STORE_STATE: Dict[int, State] = dict()
 
 class F4Action(Action):
     def __str__(self):
-        return f"{'*'*18}\ndo:{self.key}{S[self.state.moves%2]}\n{self.state}"
+        return f"<Action key:{self.key}{S[self.state.moves%2]} reward:{self.reward}>"
 
 
 class F4State(MctsNode):
@@ -39,12 +39,13 @@ class F4State(MctsNode):
                     ret[k][j] = S[0] + " "
 
         return "\n".join(
-            [
+            ["**" * C.WIDTH]
+            + ["".join(v) for v in ret]
+            + [
                 f"done:{self.done}; score:{'%.4f'%self.score}; actons:{len(self.get_actions())}",
                 f"cache_done:{self.get_cache_done()}; info:{self.info}; check:{C.check_mask(self.mask,self.line_state)}",
                 f"mask:{self.mask};",
             ]
-            + ["".join(v) for v in ret]
             + [
                 "**" * C.WIDTH,
             ]
@@ -59,10 +60,12 @@ class F4State(MctsNode):
             self.line_state = [0] * C.line_num
             self.state = [[0] * len(StateEnum) for _ in range(2)]
         else:
-            pass
+            self.line_state, self.state = C.mask_to_line(self.mask)
         return self
 
-    def calc_value(self, **kw):
+    def calc_value(self, root=None, **kw):
+        if root:
+            return self.score if root.moves % 2 == 0 else -self.score
         return self.score if self.moves % 2 == 0 else -self.score
 
     def get_action(self, col) -> F4Action:
@@ -107,12 +110,12 @@ class F4State(MctsNode):
             if new_state_id == StateEnum.STATE_40:
                 self.score = [1, -1][player_id]
                 # p.info += f"[set {self.score}]"
-                return self.set_done(player_id + 1)
-            if new_state_id == StateEnum.STATE_13:
+                self.set_done(player_id + 1)
+            if new_state_id == StateEnum.STATE_13 and self.done == -1:
                 # p.info += "[set -2]"
                 self.set_done(-2)
-        if self.score >= 1 or self.score <= -1:
-            raise Exception(self.score)
+        # if self.score >= 1 or self.score <= -1:
+        #     raise Exception(self.score)
         return self
 
     def debug(self):
@@ -129,10 +132,11 @@ class F4State(MctsNode):
             for col in C.COLS:
                 a = self.get_action(col)
 
-                if a is None or a.state.done == self.op_done:
+                if a is None:
                     continue
+
                 # self.info += f"[{a.key} {a.state.done} {self.win_done}]"
-                if a.state.done == self.win_done:
+                if a.state.done == a.state.win_done:
                     actions = [a]
                     break
                 if a.state.done == -2:

@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 np.set_printoptions(suppress=True, precision=4)
 from typing import List
@@ -27,30 +28,19 @@ class Algo:
         self.num_episodes = num_episodes
         return self
 
-    def search_main(self, state: State, depth=0):
-        mvs: List[State] = state.get_actions(depth)
-        self.state_count += 1
-        if not mvs:
-            return state.calc_value(depth)
-        state.value = -inf
-        for action, next_state in mvs:
-            value = -self.search_main(next_state, depth - 1)
-            if value > state.value:
-                state.value = value
-                state.best_action = action
-        return state.value
-
     def run_one_step(self, episode, action, r):
         return 0
+
+    def search_main(self, state, **kw):
+        pass
 
     def search(self, state: State, **kw):
         state.best_action = None
         self.state_count = 0
-        return self.search_main(state, **kw)
-
-    def self_play(self, state: State):
-        while not state.is_game_over():
-            pass
+        self.begin_time = time.time()
+        ret = self.search_main(state, **kw)
+        self.use_time = time.time() - self.begin_time
+        return ret
 
     def run(self, state: State):
         self.regrets_record = []
@@ -71,3 +61,29 @@ class Algo:
 
     def new_state(self, key):
         pass
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} state_all:{self.state_count} user_time:{'%.3f'%self.use_time}>"
+
+
+class Baoli(Algo):
+
+    def search_main(self, state: State, depth=0, **kw):
+        mvs: List[State] = state.get_actions(depth=depth, **kw)
+        self.state_count += 1
+        if not mvs:
+            return state.calc_value(depth=depth, **kw)
+        state.value = -inf
+        for action, next_state in mvs:
+            value = -self.search_main(next_state, depth - 1)
+            if value > state.value:
+                state.value = value
+                state.best_action = action
+        return state.value
+
+
+class RandomAlgo(Algo):
+    def search_main(self, state, **kw):
+        actions = state.get_actions()
+        if actions:
+            state.best_action = np.random.choice(actions)
