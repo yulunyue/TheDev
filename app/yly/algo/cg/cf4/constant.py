@@ -101,24 +101,63 @@ class Constant:
                     raise Exception(y, x, s)
                 set_pos(y, x, s)
 
-    def mask_to_line(self, mask):
-        ret = [[0] * C.WIDTH for _ in range(C.HEIGHT)]
-        line_state = [0] * self.line_num
-        state = [[0] * len(StateEnum) for _ in range(2)]
+    def mask_to_grid(self, mask, fn):
         for j in range(self.WIDTH):
             pos = j * (C.HEIGHT + 1)
             h_mask: int = (mask >> pos) & self.MASK_FULL_HEIGHT
             l = h_mask.bit_length() - 1
             for i in range(l):
-                k = C.HEIGHT - (l - i)
+
                 if h_mask & (1 << i):
-                    ret[k][j] = 2
+                    fn(i, j, 1)
                 else:
-                    ret[k][j] = 1
+                    fn(i, j, 0)
+
+    def set_pos(self, y, x, player_id, line_state, state):
+        score = 0
+        done = -1
+        for line_id, k_id in self.point_line_id[y][x]:
+            old_state = line_state[line_id]
+            # if old_state & C.state_pos[k_id][player_id]:
+            #     raise Exception(C.lines[k_id])
+            new_state = old_state | C.state_pos[k_id][player_id]
+            # p.info += f"{line_id}:{bin(new_state)}\n"
+            line_state[line_id] = new_state
+            new_state_id, new_score = C.scores[player_id][new_state]
+            old_state_id, old_score = C.scores[player_id][old_state]
+            if old_state_id != new_state_id:
+                state[player_id][old_state_id] -= 1
+                state[player_id][new_state_id] += 1
+                score += (new_score - old_score) * [1, -1][player_id]
+            if new_state_id == StateEnum.STATE_40:
+                # p.info += f"[set {self.score}]"
+                done = player_id + 1
+            if new_state_id == StateEnum.STATE_13 and done < 0:
+                # p.info += "[set -2]"
+                done = -2
+        # if self.score >= 1 or self.score <= -1:
+        #     raise Exception(self.score)
+        return score, done
+
+    def mask_to_line(self, mask):
+        line_state = [0] * self.line_num
+        state = [[0] * len(StateEnum) for _ in range(2)]
+
+        def util(i, j, v):
+            self.set_pos(i, j, v, line_state, state)
+
+        self.mask_to_grid(mask, util)
         return line_state, state
 
-    def check_mask(self, mask, lines):
-        return self.mask_to_line(mask)[0] == lines
+    def check_mask(self, mask, dst):
+        src = self.mask_to_line(mask)
+        r = ""
+        info = ""
+        for i, v in enumerate(src):
+            r += "O" if v == dst[i] else "X"
+            if v != dst[i]:
+                info += f"\n{v}\n{dst[i]}\n"
+        return r + info
 
 
 C = Constant()
