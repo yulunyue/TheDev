@@ -63,26 +63,24 @@ class F4State(MctsNode):
         return self.score if self.moves % 2 == 0 else -self.score
 
     def get_action(self, col) -> F4Action:
-        mask0: int = (self.mask & C.HEIGHT_MASK1[col]) << 1
-        y = mask0.bit_length() - col * (C.HEIGHT + 1)
-        # self.info += f"\n{col}\n{bin(mask0)}\n{bin(C.HEIGHT_POS_MASK[col][0])}\n"
-        y1 = y % (C.HEIGHT + 1)
-        if y1 == C.HEIGHT:
+        x = col * (C.HEIGHT + 1)
+        mask0 = self.mask>>x
+        y = (mask0&C.MASK_FULL_HEIGHT).bit_length()-1
+        if y == C.HEIGHT:
             return
         moves = self.moves + 1
         if moves % 2 == 1:
-            mask1 |= C.HEIGHT_POS_MASK[col][1]
+            mask0 |= (2<<y)
         else:
-            mask1 &= C.HEIGHT_POS_MASK[col][2]
-        mask = mask1 | mask0
+            mask0 ^= (3<<y)
+        mask = (mask0<<x) | (self.mask&C.HEIGHT_POS_MASK[col]) 
         if mask not in STORE_STATE:
-            STORE_STATE[mask] = F4State(mask, moves).init_state(col, y1, self)
+            STORE_STATE[mask] = F4State(mask, moves).init_state(col, y, self)
         return F4Action(col, STORE_STATE[mask])
 
     def init_state(self, x, y, p):
         p: F4State = p
         self.line_state = p.line_state.copy()
-        self.info += f"{x} {y} {self.moves % 2}"
         self.state = [p.state[0].copy(), p.state[1].copy()]
         score, self.down = C.set_pos(y, x, self.moves % 2, self.line_state, self.state)
         self.score = p.score + score

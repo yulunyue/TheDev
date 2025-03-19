@@ -43,22 +43,17 @@ class Constant:
         self.MASK_FULL = (1 << ((self.HEIGHT + 1) * self.WIDTH)) - 1
         self.state_pos = []
         self.INIT_MASK = 0
-        self.HEIGHT_MASK0 = []
-        self.HEIGHT_MASK1 = []
         self.HEIGHT_POS_MASK = []
         for i in range(4):
             self.state_pos.append([1 << (i * 2), 1 << (i * 2 + 1)])
-
+        mask0=0
         for col in range(self.WIDTH):
             pos = col * (self.HEIGHT + 1)
-            pos_state = 1 << pos
+
             self.INIT_MASK |= 1 << pos
-            self.HEIGHT_POS_MASK.append(
-                [pos_state << (self.HEIGHT + 1), pos_state, self.MASK_FULL - pos_state]
-            )
+            self.HEIGHT_POS_MASK.append(mask0)
+            mask0=(mask0<<(self.HEIGHT+1))+self.MASK_FULL_HEIGHT
             # logger.info([col,bin(pos_state<<self.HEIGHT)])
-            self.HEIGHT_MASK1.append(self.MASK_FULL_HEIGHT << pos)
-            self.HEIGHT_MASK0.append(self.MASK_FULL - self.HEIGHT_MASK1[-1])
 
     def init_lines(self):
         self.line_num = 0
