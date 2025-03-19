@@ -14,6 +14,9 @@ class Action:
     def get_states(self):
         return [[1, self.state, self.reward]]
 
+    def __str__(self):
+        return f"<Action key:{self.key} reward:{self.reward}>"
+
 
 class State:
     done = -1

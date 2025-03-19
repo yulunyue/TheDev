@@ -71,11 +71,11 @@ class MctsSearchTree(Algo):
         explore = math.sqrt(2.0 * math.log(node.visits) / p.visits)
         return exploit + scalar * explore
 
-    def search_main(self, node, budget=float("inf"), max_t=0.1, **kw):
+    def search_main(self, node, budget=1000, max_t=0.01, **kw):
         t = time.time()
-        ct = 0
-        while ct < budget and time.time() - t < max_t:
+        self.state_count = 0
+        while self.state_count < budget or time.time() - t < max_t:
             front = self.policy(node)
-            self.buck_up(front, front.calc_value())
-            ct += 1
+            self.buck_up(front, front.calc_value(root=node))
+            self.state_count += 1
         self.best_select(node, 0)

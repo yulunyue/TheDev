@@ -8,7 +8,7 @@ STORE_STATE: Dict[int, State] = dict()
 
 class F4Action(Action):
     def __str__(self):
-        return f"{'*'*18}\ndo:{self.key}{S[self.state.moves%2]}\n{self.state}"
+        return f"<Action key:{self.key}{S[self.state.moves%2]} reward:{self.reward}>"
 
 
 class F4State(MctsNode):
@@ -27,24 +27,19 @@ class F4State(MctsNode):
     def to_str(self):
         ret = [["- "] * C.WIDTH for _ in range(C.HEIGHT)]
         ret.append([f"{i} " for i in range(C.WIDTH)])
-        for j in range(C.WIDTH):
-            pos = j * (C.HEIGHT + 1)
-            h_mask: int = (self.mask >> pos) & C.MASK_FULL_HEIGHT
-            l = h_mask.bit_length() - 1
-            for i in range(l):
-                k = C.HEIGHT - (l - i)
-                if h_mask & (1 << i):
-                    ret[k][j] = S[1] + " "
-                else:
-                    ret[k][j] = S[0] + " "
 
+        def util(i, j, v):
+            ret[C.HEIGHT - i - 1][j] = S[v] + " "
+
+        C.mask_to_grid(self.mask, util)
         return "\n".join(
-            [
+            ["**" * C.WIDTH]
+            + ["".join(v) for v in ret]
+            + [
                 f"done:{self.done}; score:{'%.4f'%self.score}; actons:{len(self.get_actions())}",
-                f"cache_done:{self.get_cache_done()}; info:{self.info}; check:{C.check_mask(self.mask,self.line_state)}",
+                f"cache_done:{self.get_cache_done()}; info:{self.info}; check:{C.check_mask(self.mask,[self.line_state,self.state])}",
                 f"mask:{self.mask};",
             ]
-            + ["".join(v) for v in ret]
             + [
                 "**" * C.WIDTH,
             ]
@@ -59,18 +54,21 @@ class F4State(MctsNode):
             self.line_state = [0] * C.line_num
             self.state = [[0] * len(StateEnum) for _ in range(2)]
         else:
-            pass
+            self.line_state, self.state = C.mask_to_line(self.mask)
         return self
 
-    def calc_value(self, **kw):
+    def calc_value(self, root=None, **kw):
+        if root:
+            return self.score if root.moves % 2 == 0 else -self.score
         return self.score if self.moves % 2 == 0 else -self.score
 
     def get_action(self, col) -> F4Action:
         mask0: int = (self.mask & C.HEIGHT_MASK1[col]) << 1
+        y = mask0.bit_length() - col * (C.HEIGHT + 1)
         # self.info += f"\n{col}\n{bin(mask0)}\n{bin(C.HEIGHT_POS_MASK[col][0])}\n"
-        if mask0 & C.HEIGHT_POS_MASK[col][0]:
+        y1 = y % (C.HEIGHT + 1)
+        if y1 == C.HEIGHT:
             return
-        mask1 = self.mask & C.HEIGHT_MASK0[col]
         moves = self.moves + 1
         if moves % 2 == 1:
             mask1 |= C.HEIGHT_POS_MASK[col][1]
@@ -78,41 +76,16 @@ class F4State(MctsNode):
             mask1 &= C.HEIGHT_POS_MASK[col][2]
         mask = mask1 | mask0
         if mask not in STORE_STATE:
-            STORE_STATE[mask] = F4State(mask, moves).init_state(
-                col, mask0.bit_length() - col * (C.HEIGHT + 1) - 2, self
-            )
+            STORE_STATE[mask] = F4State(mask, moves).init_state(col, y1, self)
         return F4Action(col, STORE_STATE[mask])
 
     def init_state(self, x, y, p):
         p: F4State = p
         self.line_state = p.line_state.copy()
-        # self.info += f"{x} {y} {bin(self.line_state[87])}"
+        self.info += f"{x} {y} {self.moves % 2}"
         self.state = [p.state[0].copy(), p.state[1].copy()]
-        player_id = self.moves % 2
-        self.score = p.score
-        for line_id, k_id in C.point_line_id[y][x]:
-
-            old_state = self.line_state[line_id]
-            if old_state & C.state_pos[k_id][player_id]:
-                raise Exception(C.lines[k_id])
-            new_state = old_state | C.state_pos[k_id][player_id]
-            # p.info += f"{line_id}:{bin(new_state)}\n"
-            self.line_state[line_id] = new_state
-            new_state_id, new_score = C.scores[player_id][new_state]
-            old_state_id, old_score = C.scores[player_id][old_state]
-            if old_state_id != new_state_id:
-                self.state[player_id][old_state_id] -= 1
-                self.state[player_id][new_state_id] += 1
-                self.score += (new_score - old_score) * [1, -1][player_id]
-            if new_state_id == StateEnum.STATE_40:
-                self.score = [1, -1][player_id]
-                # p.info += f"[set {self.score}]"
-                return self.set_done(player_id + 1)
-            if new_state_id == StateEnum.STATE_13:
-                # p.info += "[set -2]"
-                self.set_done(-2)
-        if self.score >= 1 or self.score <= -1:
-            raise Exception(self.score)
+        score, self.down = C.set_pos(y, x, self.moves % 2, self.line_state, self.state)
+        self.score = p.score + score
         return self
 
     def debug(self):
@@ -128,11 +101,9 @@ class F4State(MctsNode):
             flag = True
             for col in C.COLS:
                 a = self.get_action(col)
-
-                if a is None or a.state.done == self.op_done:
+                if a is None:
                     continue
-                # self.info += f"[{a.key} {a.state.done} {self.win_done}]"
-                if a.state.done == self.win_done:
+                if a.state.done == a.state.win_done:
                     actions = [a]
                     break
                 if a.state.done == -2:
