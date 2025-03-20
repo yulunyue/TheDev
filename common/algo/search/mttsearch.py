@@ -27,15 +27,15 @@ class MctsSearchTree(Algo):
         self.explore_ratio = 0
 
     def expand(self, state: MctsNode):
-        action = state.get_random_action()
-        while action is not None and action.key in state.expand_nodes:
-            action.state.parent = state
-            state = action.state
-            action = state.get_random_action()
-        if action and action.key not in state.expand_nodes:
-            state.expand_nodes[action.key] = action
-            action.state.parent = state
-            state = action.state
+        a = state.get_random_action()
+        while a is not None and a.action in state.expand_nodes:
+            a.dst.parent = state
+            state = a.dst
+            a = state.get_random_action()
+        if a and a.action not in state.expand_nodes:
+            state.expand_nodes[a.action] = a
+            a.dst.parent = state
+            state = a.dst
         return state
 
     def buck_up(self, node: MctsNode, value):
@@ -57,7 +57,7 @@ class MctsSearchTree(Algo):
     def best_select(self, node: MctsNode, scalar):
         best_score = -inf
         for a in node.expand_nodes.values():
-            score = self.get_score(node, a.state, scalar)
+            score = self.get_score(a.src, a.dst, scalar)
             if node.best_action is None or score is None:
                 node.best_action = a
             elif score > best_score:
@@ -71,7 +71,7 @@ class MctsSearchTree(Algo):
         explore = math.sqrt(2.0 * math.log(node.visits) / p.visits)
         return exploit + scalar * explore
 
-    def search_main(self, node, budget=1000, max_t=0.01, **kw):
+    def search_main(self, node, budget=1000, max_t=0.1, **kw):
         t = time.time()
         self.state_count = 0
         while self.state_count < budget or time.time() - t < max_t:

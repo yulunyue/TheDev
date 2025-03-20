@@ -6,16 +6,20 @@ inf = float("inf")
 
 
 class Action:
-    def __init__(self, action, state, reward=0):
-        self.key = action
-        self.state: State = state
+    WIN_ACTION = 0
+    LOSE_ACTION = 1
+
+    def __init__(self, src, action, dst, reward=0):
+        self.action = action
+        self.src: State = src
+        self.dst: State = dst
         self.reward = reward
 
     def get_states(self):
-        return [[1, self.state, self.reward]]
+        return [[1, self.src, self.dst, self.reward]]
 
     def __str__(self):
-        return f"<Action key:{self.key} reward:{self.reward}>"
+        return f"<Action action:{self.action} reward:{self.reward}>"
 
 
 class State:
@@ -86,40 +90,25 @@ class State:
         def dfs(s: State):
             self.search_num += 1
             if s.done > unknow_state:
-                return s.done
-            if cache and cache.exists(s.key):
-                return cache.get(s.key)
-            if self.search_num >= max_search_num:
-                return unknow_state
+                return s.done, "#"
             actions = s.get_actions()
             if not actions:
-                return 0
-            self_win = op_win = mid_win = un_win = 0
-            done = unknow_state
+                return 0, "#"
+            # if cache and cache.exists(s.key):
+            #     return cache.get(s.key)
+            if self.search_num >= max_search_num:
+                return unknow_state, "?"
+            op_win = 0
             for a in actions:
-                done = dfs(a.state)
-                if done == 0:
-                    mid_win += 1
-                elif done == unknow_state:
-                    un_win += 1
-                elif done == s.win_done:
-                    self_win += 1
-                    break
-                elif done == s.op_done:
+                done, acs = dfs(a.dst)
+                if done == unknow_state or done == a.src.win_done:
+                    return done, str(a.action) + acs
+                elif done == a.src.op_done:
                     op_win += 1
-            if self_win:
-                done = s.win_done
-            elif un_win:
-                done = unknow_state
-            elif mid_win:
-                done = 0
-            else:
-                done = s.op_done
-            if cache and done > unknow_state:
-                cache.set(s.key, done)
-            return done
+            return s.op_done if op_win == len(actions) else 0, str(a.action) + acs
 
-        return dfs(self), self.search_num
+        done, info = dfs(self)
+        return done, self.search_num, info
 
     @property
     def win_done(self):

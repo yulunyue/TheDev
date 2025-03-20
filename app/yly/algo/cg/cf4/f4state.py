@@ -2,18 +2,20 @@ from typing import Dict, List
 from common.algo.search.state import State, Action, inf
 from common.algo.search.mttsearch import MctsSearchTree, MctsNode
 from app.yly.algo.cg.cf4.constant import C, StateEnum, S
+from collections import defaultdict
 
 STORE_STATE: Dict[int, State] = dict()
 
 
 class F4Action(Action):
     def __str__(self):
-        return f"<Action key:{self.key}{S[self.state.moves%2]} reward:{self.reward}>"
+        return f"<Action key:{self.action}{S[self.dst.moves%2]} reward:{self.reward}>"
 
 
 class F4State(MctsNode):
     name = "f4state"
     info = ""
+    action2 = None
 
     def __init__(self, mask, moves=-1) -> None:
         self.mask = mask
@@ -36,7 +38,7 @@ class F4State(MctsNode):
             ["**" * C.WIDTH]
             + ["".join(v) for v in ret]
             + [
-                f"done:{self.done}; score:{'%.4f'%self.score}; actons:{len(self.get_actions())}",
+                f"done:{self.done}; score:{self.score}; actions:{len(self.get_actions())}",
                 f"cache_done:{self.get_cache_done()}; info:{self.info}; check:{C.check_mask(self.mask,[self.line_state,self.state])}",
                 f"mask:{self.mask};",
             ]
@@ -52,7 +54,7 @@ class F4State(MctsNode):
     def init_root(self):
         if self.mask == C.INIT_MASK:
             self.line_state = [0] * C.line_num
-            self.state = [[0] * len(StateEnum) for _ in range(2)]
+            self.state = [defaultdict(int) for _ in range(2)]
         else:
             self.line_state, self.state = C.mask_to_line(self.mask)
         return self
@@ -64,25 +66,27 @@ class F4State(MctsNode):
 
     def get_action(self, col) -> F4Action:
         x = col * (C.HEIGHT + 1)
-        mask0 = self.mask>>x
-        y = (mask0&C.MASK_FULL_HEIGHT).bit_length()-1
+        mask0 = self.mask >> x
+        y = (mask0 & C.MASK_FULL_HEIGHT).bit_length() - 1
         if y == C.HEIGHT:
             return
         moves = self.moves + 1
         if moves % 2 == 1:
-            mask0 |= (2<<y)
+            mask0 |= 2 << y
         else:
-            mask0 ^= (3<<y)
-        mask = (mask0<<x) | (self.mask&C.HEIGHT_POS_MASK[col]) 
+            mask0 ^= 3 << y
+        mask = (mask0 << x) | (self.mask & C.HEIGHT_POS_MASK[col])
         if mask not in STORE_STATE:
             STORE_STATE[mask] = F4State(mask, moves).init_state(col, y, self)
-        return F4Action(col, STORE_STATE[mask])
+        return F4Action(self, col, STORE_STATE[mask])
 
     def init_state(self, x, y, p):
         p: F4State = p
         self.line_state = p.line_state.copy()
         self.state = [p.state[0].copy(), p.state[1].copy()]
-        score, self.down = C.set_pos(y, x, self.moves % 2, self.line_state, self.state)
+        score, self.done = C.set_pos(y, x, self.moves % 2, self.line_state, self.state)
+        if self.done == StateEnum.STATE_13:
+            p.action2 = [Action(p, x, self)]
         self.score = p.score + score
         return self
 
@@ -96,20 +100,16 @@ class F4State(MctsNode):
             return []
         if self.actions is None:
             actions = []
-            flag = True
+            # flag = True
             for col in C.COLS:
                 a = self.get_action(col)
                 if a is None:
                     continue
-                if a.state.done == a.state.win_done:
+                if a.dst.done == a.dst.win_done:
                     actions = [a]
                     break
-                if a.state.done == -2:
-                    actions = [a]
-                    flag = False
-                if flag:
-                    actions.append(a)
-            self.actions = actions
+                actions.append(a)
+            self.actions = self.action2 or actions
         return self.actions
 
     @property

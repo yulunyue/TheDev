@@ -27,7 +27,7 @@ class Solution(SolutionBase):
             # dict(search_type="alpha_bate_search"),
             # dict(search_type="mcts"),
             dict(
-                player1="mcts",
+                player1="rand",
                 player2="ab",
                 depth=self.search_max_depth,
                 max_t=self.max_t,
@@ -36,7 +36,7 @@ class Solution(SolutionBase):
         ]
 
     def test_all(self, **kw):
-        s = F4State(37037886146357559553).init_root()
+        s = F4State(147646293709387072516).init_root()
         self.log(s)
 
     def get_player(self, search_type) -> Algo:
@@ -53,19 +53,19 @@ class Solution(SolutionBase):
             state = F4State(C.INIT_MASK).init_root()
             i = 0
             while i < max_turn:
-                players[i % 2].search(
+                reward = players[i % 2].search(
                     state,
                     depth=self.search_max_depth,
-                    max_t=self.max_t,
+                    # max_t=self.max_t,
                     budget=self.budget,
                 )
                 self.log(state)
-                self.log("\n\n")
                 self.log(players[i % 2])
                 if state.best_action is None:
                     break
+                state.best_action.reward = reward
                 self.log(state.best_action)
-                state = state.best_action.state
+                state = state.best_action.dst
                 i += 1
             self.log(f"run {i}")
 

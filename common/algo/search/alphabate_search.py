@@ -10,9 +10,7 @@ class AlphaBateSearch(Algo):
         if not mvs:
             return -state.calc_value(depth=depth)
         for a in mvs:
-            value = -self.search_main(
-                a.state, depth=depth - 1, alpha=-bate, bate=-alpha
-            )
+            value = -self.search_main(a.dst, depth=depth - 1, alpha=-bate, bate=-alpha)
             if value >= bate:
                 alpha = bate
                 state.best_action = a

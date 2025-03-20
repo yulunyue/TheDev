@@ -7,8 +7,11 @@ DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
 
 class StateEnum(IntEnum):
     STATE_NULL = 0
-    STATE_40 = 1
-    STATE_13 = 2
+    STATE_01 = 1
+    STATE_02 = 20
+    STATE_03 = 400
+    STATE_04 = 8000
+    STATE_13 = -2
 
 
 class Constant:
@@ -22,7 +25,13 @@ class Constant:
         self.init_lines()
 
     def init_score(self):
-        key2 = {(4, 0): [StateEnum.STATE_40, 0.1], (1, 3): [StateEnum.STATE_13, 0.09]}
+        key2 = {
+            (0, 1): StateEnum.STATE_01,
+            (0, 2): StateEnum.STATE_02,
+            (0, 3): StateEnum.STATE_03,
+            (0, 4): StateEnum.STATE_04,
+            (1, 3): StateEnum.STATE_13,
+        }
         self.scores = [[None] * (1 << 8), [None] * (1 << 8)]
         for i in range(1 << 8):
             ct = [0] * 4
@@ -32,8 +41,8 @@ class Constant:
                 s = s >> 2
             if ct[3]:
                 continue
-            self.scores[0][i] = key2.get((ct[1], ct[2]), [StateEnum.STATE_NULL, 0])
-            self.scores[1][i] = key2.get((ct[2], ct[1]), [StateEnum.STATE_NULL, 0])
+            self.scores[1][i] = key2.get((ct[1], ct[2]), StateEnum.STATE_NULL)
+            self.scores[0][i] = key2.get((ct[2], ct[1]), StateEnum.STATE_NULL)
 
         # logger.info([bin(self.WINSCORE[0]),bin(self.WINSCORE[1])])
 
@@ -46,13 +55,13 @@ class Constant:
         self.HEIGHT_POS_MASK = []
         for i in range(4):
             self.state_pos.append([1 << (i * 2), 1 << (i * 2 + 1)])
-        mask0=0
+        mask0 = 0
         for col in range(self.WIDTH):
             pos = col * (self.HEIGHT + 1)
 
             self.INIT_MASK |= 1 << pos
             self.HEIGHT_POS_MASK.append(mask0)
-            mask0=(mask0<<(self.HEIGHT+1))+self.MASK_FULL_HEIGHT
+            mask0 = (mask0 << (self.HEIGHT + 1)) + self.MASK_FULL_HEIGHT
             # logger.info([col,bin(pos_state<<self.HEIGHT)])
 
     def init_lines(self):
@@ -74,27 +83,6 @@ class Constant:
                             self.point_line_id[y1][x1].append([self.line_num, idx])
                         self.lines.append(tmp)
                         self.line_num += 1
-
-    def lines_to_mask(self, lines):
-        pos_map = dict()
-        msgs = dict()
-        pt = [["?"] * self.WIDTH for _ in range(self.HEIGHT)]
-
-        def set_pos(y, x, v):
-            k = (y, x)
-            pt[y][x] = ("-" + S)[v] + " "
-            if k in pos_map:
-                if pos_map[k][0] != v:
-                    msgs[y, x, v, str(pos_map[k])] = True
-                return
-            pos_map[k] = [v, y, x]
-
-        for i, state in enumerate(lines):
-            for y, x, k in self.lines[i]:
-                s = (state >> (k * 2)) & 3
-                if s == 3:
-                    raise Exception(y, x, s)
-                set_pos(y, x, s)
 
     def mask_to_grid(self, mask, fn):
         for j in range(self.WIDTH):
@@ -118,18 +106,17 @@ class Constant:
             new_state = old_state | C.state_pos[k_id][player_id]
             # p.info += f"{line_id}:{bin(new_state)}\n"
             line_state[line_id] = new_state
-            new_state_id, new_score = C.scores[player_id][new_state]
-            old_state_id, old_score = C.scores[player_id][old_state]
-            if old_state_id != new_state_id:
+            new_state_id = C.scores[player_id][new_state]
+            old_state_id = C.scores[player_id][old_state]
+            if old_state_id != new_state_id and new_state_id > 0:
                 state[player_id][old_state_id] -= 1
                 state[player_id][new_state_id] += 1
-                score += (new_score - old_score) * [1, -1][player_id]
-            if new_state_id == StateEnum.STATE_40:
+                score += (new_state_id - old_state_id) * [1, -1][player_id]
+            if new_state_id == StateEnum.STATE_04:
                 # p.info += f"[set {self.score}]"
                 done = player_id + 1
-            if new_state_id == StateEnum.STATE_13 and done < 0:
-                # p.info += "[set -2]"
-                done = -2
+            if new_state_id < done and done < 0:
+                done = new_state_id
         # if self.score >= 1 or self.score <= -1:
         #     raise Exception(self.score)
         return score, done
@@ -145,13 +132,14 @@ class Constant:
         return line_state, state
 
     def check_mask(self, mask, dst):
+        return "O"
         src = self.mask_to_line(mask)
         r = ""
         info = ""
-        for i, v in enumerate(src):
-            r += "O" if v == dst[i] else "X"
-            if v != dst[i]:
-                info += f"\n{v}\n{dst[i]}\n"
+        for i, v in enumerate(dst):
+            r += "O" if v == src[i] else "X"
+            if v != src[i]:
+                info += f"\n{src[i]}\n{v}\n"
         return r + info
 
 
