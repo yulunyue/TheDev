@@ -115,8 +115,13 @@ class Constant:
             if new_state_id == StateEnum.STATE_04:
                 # p.info += f"[set {self.score}]"
                 done = player_id + 1
-            if new_state_id < done and done < 0:
-                done = new_state_id
+            if (
+                old_state_id == StateEnum.STATE_03
+                and new_state_id == StateEnum.STATE_13
+                and done < 0
+                and StateEnum.STATE_13 < done
+            ):
+                done = StateEnum.STATE_13
         # if self.score >= 1 or self.score <= -1:
         #     raise Exception(self.score)
         return score, done

@@ -15,12 +15,12 @@ class F4Action(Action):
 class F4State(MctsNode):
     name = "f4state"
     info = ""
-    action2 = None
 
     def __init__(self, mask, moves=-1) -> None:
         self.mask = mask
         self.moves = moves
         self.score = 0
+        self.action2 = None
         super().__init__()
 
     def __str__(self):
