@@ -4,8 +4,6 @@ from common.algo.search.mttsearch import MctsSearchTree, MctsNode
 from app.yly.algo.cg.cf4.constant import C, StateEnum, S
 from collections import defaultdict
 
-STORE_STATE: Dict[int, State] = dict()
-
 
 class F4Action(Action):
     def __str__(self):
@@ -20,7 +18,7 @@ class F4State(MctsNode):
         self.mask = mask
         self.moves = moves
         self.score = 0
-        self.action2 = None
+
         super().__init__()
 
     def __str__(self):
@@ -55,8 +53,9 @@ class F4State(MctsNode):
         if self.mask == C.INIT_MASK:
             self.line_state = [0] * C.line_num
             self.state = [defaultdict(int) for _ in range(2)]
+            self.pos = [C.HEIGHT + 1] * C.WIDTH
         else:
-            self.line_state, self.state = C.mask_to_line(self.mask)
+            self.line_state, self.state, self.pos = C.mask_to_line(self.mask)
         return self
 
     def calc_value(self, root=None, **kw):
@@ -82,11 +81,13 @@ class F4State(MctsNode):
 
     def init_state(self, x, y, p):
         p: F4State = p
+        self.pos = p.pos.copy()
         self.line_state = p.line_state.copy()
         self.state = [p.state[0].copy(), p.state[1].copy()]
-        score, self.done = C.set_pos(y, x, self.moves % 2, self.line_state, self.state)
-        if self.done == StateEnum.STATE_13:
-            p.action2 = [Action(p, x, self)]
+        score, self.done = C.set_pos(
+            y, x, self.moves % 2, self.line_state, self.state, self.pos
+        )
+        self.info = str(self.pos)
         self.score = p.score + score
         return self
 
@@ -109,7 +110,7 @@ class F4State(MctsNode):
                     actions = [a]
                     break
                 actions.append(a)
-            self.actions = self.action2 or actions
+            self.actions = actions
         return self.actions
 
     @property
@@ -119,3 +120,6 @@ class F4State(MctsNode):
     @property
     def op_done(self):
         return 3 - self.win_done
+
+
+STORE_STATE: Dict[int, F4State] = dict()
