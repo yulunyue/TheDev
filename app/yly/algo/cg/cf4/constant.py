@@ -54,7 +54,7 @@ class Constant:
             ]
 
         # logger.info([bin(self.WINSCORE[0]),bin(self.WINSCORE[1])])
-
+        print(self.scores)
     def init_w(self):
         self.COLS = [4, 3, 5, 2, 6, 1, 7, 0, 8]
         self.MASK_FULL_HEIGHT = (1 << self.HEIGHT + 1) - 1
@@ -125,9 +125,9 @@ class Constant:
                 # p.info += f"[set {self.score}]"
                 done = player_id + 1
             if new_state_id == StateEnum.STATE_03:
-                print(new_to_fill)
-                y1, x1, *args = self.lines[line_id][new_to_fill[0]]
-                pos[x1] = min(y1, pos[x1])
+                if new_to_fill:
+                    y1, x1, *args = self.lines[line_id][new_to_fill[0]]
+                    pos[x1] = min(y1, pos[x1])
         # if self.score >= 1 or self.score <= -1:
         #     raise Exception(self.score)
         return score, done
