@@ -79,37 +79,6 @@ class State:
     def new_state(self, *args):
         return self
 
-    def get_cache_done(self, max_search_num=6000, unknow_state=-1, enable_cache=False):
-        from common.util.fp import get_cache
-
-        cache = None
-        if enable_cache:
-            cache = get_cache(self.name)
-        self.search_num = 0
-
-        def dfs(s: State):
-            self.search_num += 1
-            if s.done > unknow_state:
-                return s.done, "#"
-            actions = s.get_actions()
-            if not actions:
-                return 0, "#"
-            # if cache and cache.exists(s.key):
-            #     return cache.get(s.key)
-            if self.search_num >= max_search_num:
-                return unknow_state, "?"
-            op_win = 0
-            for a in actions:
-                done, acs = dfs(a.dst)
-                if done == unknow_state or done == a.src.win_done:
-                    return done, str(a.action) + acs
-                elif done == a.src.op_done:
-                    op_win += 1
-            return s.op_done if op_win == len(actions) else 0, str(a.action) + acs
-
-        done, info = dfs(self)
-        return done, self.search_num, info
-
     @property
     def win_done(self):
         raise Exception("todo")
