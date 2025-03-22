@@ -27,7 +27,7 @@ class Solution(SolutionBase):
             # dict(search_type="alpha_bate_search"),
             # dict(search_type="mcts"),
             dict(
-                player1="rand",
+                player1="ab",
                 player2="ab",
                 depth=self.search_max_depth,
                 max_t=self.max_t,
@@ -61,7 +61,7 @@ class Solution(SolutionBase):
                 )
                 self.log(state)
                 self.log(players[i % 2])
-                if state.best_action is None:
+                if state.done > 0:
                     break
                 state.best_action.reward = reward
                 self.log(state.best_action)

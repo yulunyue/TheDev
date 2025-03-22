@@ -30,13 +30,13 @@ class Constant:
             (0, 3): StateEnum.STATE_03,
             (0, 4): StateEnum.STATE_04,
         }
-        self.scores = [[None] * (1 << 8), [None] * (1 << 8)]
+        self.scores = [None] * (1 << 8)
         for i in range(1 << 8):
             ct = [0] * 4
             s = i
             j = 0
             to_fill = []
-            while s > 0:
+            for j in range(4):
                 ct[s & 3] += 1
                 if s & 3 == 0:
                     to_fill.append(j)
@@ -44,12 +44,10 @@ class Constant:
                 s = s >> 2
             if ct[3]:
                 continue
-            self.scores[1][i] = [
-                key2.get((ct[1], ct[2]), StateEnum.STATE_NULL),
-                to_fill,
-            ]
-            self.scores[0][i] = [
-                key2.get((ct[2], ct[1]), StateEnum.STATE_NULL),
+
+            k = (min(ct[1], ct[2]), max(ct[1], ct[2]))
+            self.scores[i] = [
+                key2.get(k, StateEnum.STATE_NULL),
                 to_fill,
             ]
 
@@ -105,9 +103,10 @@ class Constant:
                 else:
                     fn(i, j, 0)
 
-    def set_pos(self, y, x, player_id, line_state, state, pos):
+    def set_pos(self, y, x, player_id, line_state, state, end_pos):
         score = 0
         done = -1
+        c = [1, -1][player_id]
         for line_id, k_id in self.point_line_id[y][x]:
             old_state = line_state[line_id]
             # if old_state & C.state_pos[k_id][player_id]:
@@ -115,19 +114,19 @@ class Constant:
             new_state = old_state | C.state_pos[k_id][player_id]
             # p.info += f"{line_id}:{bin(new_state)}\n"
             line_state[line_id] = new_state
-            new_state_id, new_to_fill = C.scores[player_id][new_state]
-            old_state_id, old_to_fill = C.scores[player_id][old_state]
+            new_state_id, new_to_fill = C.scores[new_state]
+            old_state_id, _ = C.scores[old_state]
             if old_state_id != new_state_id and new_state_id > 0:
-                state[player_id][old_state_id] -= 1
-                state[player_id][new_state_id] += 1
-                score += (new_state_id - old_state_id) * [1, -1][player_id]
+                state[old_state_id, player_id] -= 1
+                state[new_state_id, player_id] += 1
+                score += (new_state_id - old_state_id) * c
             if new_state_id == StateEnum.STATE_04:
                 # p.info += f"[set {self.score}]"
                 done = player_id + 1
             if new_state_id == StateEnum.STATE_03:
-                print(new_to_fill)
-                y1, x1, *args = self.lines[line_id][new_to_fill[0]]
-                pos[x1] = min(y1, pos[x1])
+                y1, x1, _ = self.lines[line_id][new_to_fill[0]]
+                end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << player_id)
+
         # if self.score >= 1 or self.score <= -1:
         #     raise Exception(self.score)
         return score, done
