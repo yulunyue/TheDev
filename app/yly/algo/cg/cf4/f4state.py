@@ -8,7 +8,7 @@ import json
 
 class F4Action(Action):
     def __str__(self):
-        return f"<Action key:{self.action}{S[self.dst.moves%2]} reward:{self.reward}>"
+        return f"<Action key:{self.action}{S[(self.src.moves+1)%2]} reward:{self.reward}>"
 
 
 class F4State(MctsNode):
@@ -48,15 +48,15 @@ class F4State(MctsNode):
         state_info = "\n  ".join(state_info)
         from common.algo.search.algo import Baoli
 
-        b = Baoli()
-        bv = b.search(self, depth=20, state_max_num=4000)
+        # b = Baoli()
+        # bv = b.search(self, depth=20, state_max_num=4000)
         return "\n".join(
             ["**" * C.WIDTH]
             + ["".join(v) for v in ret]
             + [
                 f"done:{self.done}; score:{self.score}; actions:{len(self.get_actions())}",
                 # f"state:{state_info}",
-                f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
+                # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
                 f"info:{self.info}; check:{check_info}",
                 f"mask:{self.mask};",
             ]
@@ -64,7 +64,9 @@ class F4State(MctsNode):
                 "**" * C.WIDTH,
             ]
         )
-
+    def get_score(self, **kw):
+        return self.score if self.moves==0 else -self.score
+    
     @property
     def key(self):
         return str(self.mask)
@@ -79,16 +81,6 @@ class F4State(MctsNode):
             self.line_state, self.state, self.end_pos = C.mask_to_line(self.mask)
         return self
 
-    def calc_value(self, root=None, tp="", **kw):
-        if tp == "baoli":
-            if self.done == 1:
-                return 3
-            if self.done == 2:
-                return -2
-            return self.done
-        if root:
-            return self.score if root.moves % 2 == 0 else -self.score
-        return self.score if self.moves % 2 == 0 else -self.score
 
     def get_action(self, col) -> F4Action:
         x = col * (C.HEIGHT + 1)

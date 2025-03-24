@@ -34,7 +34,7 @@ class Algo:
     def search_main(self, state, **kw):
         pass
 
-    def search(self, state: State, use_cache=None, state_max_num=-1, depth=0, **kw):
+    def search(self, state: Action, use_cache=None, state_max_num=-1, depth=0, **kw):
         from common.util.fp import get_cache
 
         cache = get_cache(self.name) if use_cache else None
@@ -46,8 +46,8 @@ class Algo:
         self.use_time = time.time() - self.begin_time
         return ret
 
-    def state_clear(self, state: State):
-        state.best_action = None
+    def state_clear(self, state: Action):
+        state.dst.best_action = None
 
     def new_state(self, key):
         pass
@@ -110,7 +110,7 @@ class SearchBfs(Baoli):
         
 
 class RandomAlgo(Algo):
-    def search_main(self, state: State, **kw):
-        actions = state.get_actions()
+    def search_main(self, a: Action, **kw):
+        actions = a.dst.get_actions()
         if actions:
-            state.best_action = np.random.choice(actions)
+            a.dst.best_action = np.random.choice(actions)

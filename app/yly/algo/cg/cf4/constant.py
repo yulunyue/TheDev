@@ -1,16 +1,16 @@
-from enum import IntEnum
-
+from enum import Enum
+inf=float("inf")
 S = "○●"
 
 DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
 
 
-class StateEnum(IntEnum):
+class StateEnum:
     STATE_NULL = 0
     STATE_01 = 1
-    STATE_02 = 20
-    STATE_03 = 400
-    STATE_04 = 8000
+    STATE_02 = 50
+    STATE_03 = 200
+    STATE_04 = inf
 
 
 class Constant:
