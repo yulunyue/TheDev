@@ -51,8 +51,7 @@ class Constant:
                 to_fill,
             ]
 
-        # logger.info([bin(self.WINSCORE[0]),bin(self.WINSCORE[1])])
-        print(self.scores)
+
     def init_w(self):
         self.COLS = [4, 3, 5, 2, 6, 1, 7, 0, 8]
         self.MASK_FULL_HEIGHT = (1 << self.HEIGHT + 1) - 1

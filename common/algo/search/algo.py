@@ -97,6 +97,17 @@ class Baoli(Algo):
                 best = value
         return best
 
+class SearchBfs(Baoli):
+    def search_main(self, state, depth=0, cache=None, **kw):
+        q=[state]
+        while q and self.state_count<self.state_max_num:
+            s=q
+            q=[]
+            for v in s:
+                for n in v.get_actions():
+                    q.append(v)
+                self.state_count+=1
+        
 
 class RandomAlgo(Algo):
     def search_main(self, state: State, **kw):
