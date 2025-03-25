@@ -8,7 +8,9 @@ import json
 
 class F4Action(Action):
     def __str__(self):
-        return f"<Action key:{self.action}{S[self.dst.moves%2]} reward:{self.reward}>"
+        return (
+            f"<Action key:{self.action}{S[(self.src.moves+1)%2]} reward:{self.reward}>"
+        )
 
 
 class F4State(MctsNode):
@@ -48,7 +50,7 @@ class F4State(MctsNode):
         state_info = "\n  ".join(state_info)
         from common.algo.search.algo import Baoli
 
-        b = Baoli()
+        # b = Baoli()
         # bv = b.search(self, depth=20, state_max_num=4000)
         return "\n".join(
             ["**" * C.WIDTH]
@@ -64,6 +66,9 @@ class F4State(MctsNode):
                 "**" * C.WIDTH,
             ]
         )
+
+    def get_score(self, **kw):
+        return self.score if self.moves == 0 else -self.score
 
     @property
     def key(self):

@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import C
-from app.yly.algo.cg.cf4.f4state import F4State, S
+from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
 
 
 class Solution(SolutionBase):
@@ -50,21 +50,21 @@ class Solution(SolutionBase):
         players = [self.get_player(player1), self.get_player(player2)]
         data = [[0, 0], [0, 0]]
         for _ in range(nums):
-            state = F4State(C.INIT_MASK).init_root()
+            action = F4Action(None, None, F4State(C.INIT_MASK).init_root())
             i = 0
 
             while i < max_turn:
-                reward = players[i % 2].search(
-                    state,
+                players[i % 2].search(
+                    action,
                     depth=self.search_max_depth,
-                    # max_t=self.max_t,
+                    max_t=self.max_t,
                     budget=self.budget,
                 )
                 data[i % 2][0] = max(data[i % 2][0], players[i % 2].use_time)
                 data[i % 2][1] = max(data[i % 2][1], players[i % 2].state_count)
-                self.log(state)
+                self.log(action.dst)
                 self.log(players[i % 2])
-                if state.done > 0:
+                if action.dst.done > 0 or action.dst.best_action is None:
                     break
                 state.best_action.reward = reward
                 self.log(state.best_action)

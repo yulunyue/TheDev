@@ -12,7 +12,7 @@ class Action:
     def __init__(self, src, action, dst, reward=0):
         self.action = action
         self.src: State = src
-        self.dst: State = dst
+        self.dst: State =dst
         self.reward = reward
 
     def get_states(self):
@@ -21,13 +21,17 @@ class Action:
     def __str__(self):
         return f"<Action action:{self.action} reward:{self.reward}>"
 
+    # def get_actions(self,**kg):
+    #     return self.src.get_actions(**kg)
+
+    def get_reward(self,**kwargs):
+        return self.src.get_score(**kwargs)-self.dst.get_score(**kwargs)
 
 class State:
     done = -1
     name = "state"
 
     def __init__(self) -> None:
-        self.state = None
         self.depth = 0
         self.best_action: Action = None
         self.actions: List[Action] = None
@@ -47,7 +51,7 @@ class State:
         self.depth = depth
         return self
 
-    def calc_value(self, *args):
+    def get_score(self,**kw):
         raise Exception("todo")
 
     def get_actions(self, depth=None) -> List[Action]:
@@ -77,7 +81,7 @@ class State:
         raise Exception("todo")
 
     def new_state(self, *args):
-        return self
+        raise Exception("todo")
 
     @property
     def win_done(self):

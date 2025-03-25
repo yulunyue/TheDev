@@ -1,29 +1,29 @@
-from common.algo.search.state import State, inf
+from common.algo.search.state import State, inf, Action
 from common.algo.search.algo import Algo
 from typing import List
 
 
 class AlphaBateSearch(Algo):
     def search_dfs(
-        self, state: State, depth=0, alpha=-inf, bate=inf, budget=0, **kw
+        self, action: Action, depth=0, alpha=-inf, bate=inf, budget=0, **kw
     ) -> None:
         # if budget and self.state_count >= budget:
         #     return inf
         self.state_count += 1
-        mvs = state.get_actions(depth)
+        mvs: List[Action] = action.dst.get_actions(depth=depth)
         if not mvs:
-            return -state.calc_value(depth=depth)
+            return -action.get_reward(depth=depth)
         for a in mvs:
             a.reward = -self.search_dfs(
-                a.dst, depth=depth - 1, alpha=-bate, bate=-alpha, budget=budget
+                a, depth=depth - 1, alpha=-bate, bate=-alpha, budget=budget
             )
             if a.reward >= bate:
                 alpha = bate
-                state.best_action = a
+                action.dst.best_action = a
                 break
             if a.reward > alpha:
                 alpha = a.reward
-                state.best_action = a
+                action.dst.best_action = a
         return alpha
 
     def search_main(self, state, **kw):
