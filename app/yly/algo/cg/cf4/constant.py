@@ -1,36 +1,26 @@
-from enum import Enum
-inf=float("inf")
+from common.algo.search.param import Params, Param
+from typing import List
+
+inf = float("inf")
 S = "○●"
 
 DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
 
 
-class StateEnum:
-    STATE_NULL = 0
-    STATE_01 = 1
-    STATE_02 = 50
-    STATE_03 = 200
-    STATE_04 = inf
+class ParamCt(Param):
+    pass
 
 
-class Constant:
-    HEIGHT = 7
-    WIDTH = 9
-    TRUN_INDEX = 0
-
-    def __init__(self) -> None:
-        self.init_score()
-        self.init_w()
-        self.init_lines()
+class StateEnum(Params):
+    def __init__(self):
+        self.STATE_01 = ParamCt((0, 1)).load_value(1, 3)
+        self.STATE_02 = ParamCt((0, 2)).load_value(10, 100)
+        self.STATE_03 = ParamCt((0, 3)).load_value(200, 600)
+        self.STATE_04 = ParamCt((0, 4)).load_value(800, 8000)
+        super().__init__()
 
     def init_score(self):
-        key2 = {
-            (0, 1): StateEnum.STATE_01,
-            (0, 2): StateEnum.STATE_02,
-            (0, 3): StateEnum.STATE_03,
-            (0, 4): StateEnum.STATE_04,
-        }
-        self.scores = [None] * (1 << 8)
+        self.scores: List[ParamCt] = []
         for i in range(1 << 8):
             ct = [0] * 4
             s = i
@@ -42,15 +32,27 @@ class Constant:
                     to_fill.append(j)
                 j += 1
                 s = s >> 2
-            if ct[3]:
-                continue
-
             k = (min(ct[1], ct[2]), max(ct[1], ct[2]))
-            self.scores[i] = [
-                key2.get(k, StateEnum.STATE_NULL),
-                to_fill,
-            ]
+            param = (
+                self._params[k] if k in self._params else ParamCt(k).load_value(0, 0, 0)
+            )
+            self.scores.append(param.set_args(to_fill).clone())
+        return self
 
+
+SE = StateEnum()
+SE.init_param()
+
+
+class Constant:
+
+    TRUN_INDEX = 0
+
+    def __init__(self, HEIGHT=7, WIDTH=9) -> None:
+        self.HEIGHT = HEIGHT
+        self.WIDTH = WIDTH
+        self.init_w()
+        self.init_lines()
 
     def init_w(self):
         self.COLS = [4, 3, 5, 2, 6, 1, 7, 0, 8]
@@ -102,28 +104,28 @@ class Constant:
                 else:
                     fn(i, j, 0)
 
-    def set_pos(self, y, x, player_id, line_state, state, end_pos):
+    def set_pos(self, y, x, player_id, line_state, state: StateEnum, end_pos):
         score = 0
         done = -1
         c = [1, -1][player_id]
         for line_id, k_id in self.point_line_id[y][x]:
-            old_state = line_state[line_id]
+            old_state: int = line_state[line_id]
             # if old_state & C.state_pos[k_id][player_id]:
             #     raise Exception(C.lines[k_id])
-            new_state = old_state | C.state_pos[k_id][player_id]
+            new_state: int = old_state | C.state_pos[k_id][player_id]
             # p.info += f"{line_id}:{bin(new_state)}\n"
             line_state[line_id] = new_state
-            new_state_id, new_to_fill = C.scores[new_state]
-            old_state_id, _ = C.scores[old_state]
-            if old_state_id != new_state_id and new_state_id > 0:
-                state[old_state_id, player_id] -= 1
-                state[new_state_id, player_id] += 1
-                score += (new_state_id - old_state_id) * c
-            if new_state_id == StateEnum.STATE_04:
+            new_line_state = state.scores[new_state]
+            old_line_state = state.scores[old_state]
+            if new_line_state.key != old_line_state.key:
+                # state[new_line_state.key, player_id] -= 1
+                # state[old_line_state.key, player_id] += 1
+                score += (new_line_state.get_value() - old_line_state.get_value()) * c
+            if new_line_state.key == (0, 4):
                 # p.info += f"[set {self.score}]"
                 done = player_id + 1
-            if new_state_id == StateEnum.STATE_03:
-                y1, x1, _ = self.lines[line_id][new_to_fill[0]]
+            if new_line_state.key == (0, 3):
+                y1, x1, _ = self.lines[line_id][new_line_state.args[0]]
                 end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << player_id)
 
         # if self.score >= 1 or self.score <= -1:
@@ -139,17 +141,6 @@ class Constant:
 
         self.mask_to_grid(mask, util)
         return line_state, state
-
-    def check_mask(self, mask, dst):
-        return "O"
-        src = self.mask_to_line(mask)
-        r = ""
-        info = ""
-        for i, v in enumerate(dst):
-            r += "O" if v == src[i] else "X"
-            if v != src[i]:
-                info += f"\n{src[i]}\n{v}\n"
-        return r + info
 
 
 C = Constant()

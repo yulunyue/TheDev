@@ -24,8 +24,9 @@ class Algo:
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
 
-    def load(self, num_episodes=5000):
+    def load(self, num_episodes=5000, param_dyn=None):
         self.num_episodes = num_episodes
+        self.param_dyn = param_dyn
         return self
 
     def run_one_step(self, episode, action, r):

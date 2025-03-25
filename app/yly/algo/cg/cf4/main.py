@@ -7,7 +7,7 @@ from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
-from app.yly.algo.cg.cf4.constant import C
+from app.yly.algo.cg.cf4.constant import SE, C, StateEnum
 from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
 
 
@@ -22,35 +22,34 @@ class Solution(SolutionBase):
     max_t = 0.1
 
     def get_search_depth(self, turn):
-        if turn < 10:
-            return 3
-        return self.search_max_depth + turn // 20
+        return self.search_max_depth
 
     def get_cases(self):
         return [
             dict(
-                player1="ai",
-                player2="mcts",
+                player1="ab",
+                player2="ab",
                 depth=self.search_max_depth,
                 max_t=self.max_t,
                 max_turn=100,
             )
         ]
 
-    def get_player(self, search_type) -> Algo:
+    def get_player(self, search_type, param_dyn: StateEnum) -> Algo:
+        param_dyn.init_score()
         return {
             "ts": Algo,
             "ai": AbSearchIter,
             "ab": AlphaBateSearch,
             "mcts": MctsSearchTree,
             "rand": RandomAlgo,
-        }[search_type]().load()
+        }[search_type]().load(param_dyn=param_dyn)
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
         players = [self.get_player(player1), self.get_player(player2)]
         data = [[0, 0], [0, 0]]
         for _ in range(nums):
-            action = F4Action(None, None, F4State(C.INIT_MASK).init_root())
+            action = F4Action(None, "init", F4State(C.INIT_MASK).init_root())
             i = 0
 
             while i < max_turn:
@@ -66,9 +65,8 @@ class Solution(SolutionBase):
                 self.log(players[i % 2])
                 if action.dst.done > 0 or action.dst.best_action is None:
                     break
-                state.best_action.reward = reward
-                self.log(state.best_action)
-                state = state.best_action.dst
+                self.log(action.dst.best_action)
+                action = action.dst.best_action
                 i += 1
 
             self.log(f"run:{i} win:{players[(i-1)%2]}{S[(i-1)%2]}")
@@ -76,6 +74,19 @@ class Solution(SolutionBase):
                 self.log(
                     f"{players[i].name[:5]} max_use_time:{'%.4f'%data[i][0]} state_count:{data[i][1]}"
                 )
+
+    def gene(self, player1, **kw):
+        from common.algo.search.gene import Gene
+
+        best_args = (
+            Gene()
+            .load(
+                lambda arg: self.get_player(player1, arg),
+                lambda: F4Action(None, "init", F4State(C.INIT_MASK).init_root()),
+            )
+            .run(SE)
+        )
+        self.log(best_args)
 
     def replay(self, player1, stdout: List[str], stderr=None, **kw):
         C.TRUN_INDEX = 0

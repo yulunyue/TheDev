@@ -40,15 +40,17 @@ class F4State(MctsNode):
                 if (i, j) in self.end_pos:
                     ret[C.HEIGHT - i - 1][j] = f"{self.end_pos[i,j]} "
 
-        check_info = C.check_mask(self.mask, [self.line_state, self.state])
-        state_info = [""]
-        for k, v in self.state.items():
-            s, player_id = k
-            if s == StateEnum.STATE_NULL:
-                continue
-            state_info.append(f"{S[player_id]}:{str(s).split('.').pop()}:{v}")
-        state_info = "\n  ".join(state_info)
-        from common.algo.search.algo import Baoli
+        # check_info = C.check_mask(self.mask, [self.line_state, self.state])
+
+        # state_info = [""]
+        # for k, v in self.state.items():
+        #     s, player_id = k
+        #     if s == StateEnum.STATE_NULL:
+        #         continue
+        #     state_info.append(f"{S[player_id]}:{str(s).split('.').pop()}:{v}")
+        # state_info = "\n  ".join(state_info)
+
+        check_info = ""
 
         # b = Baoli()
         # bv = b.search(self, depth=20, state_max_num=4000)
@@ -116,9 +118,9 @@ class F4State(MctsNode):
         p: F4State = p
         self.end_pos = p.end_pos.copy()
         self.line_state = p.line_state.copy()
-        self.state = p.state.copy()
+        # self.state = p.state.copy()
         score, self.done = C.set_pos(
-            y, x, self.moves % 2, self.line_state, self.state, self.end_pos
+            y, x, self.moves % 2, self.line_state, None, self.end_pos
         )
         self.score = p.score + score
         self.end_pos[x] = y + 1

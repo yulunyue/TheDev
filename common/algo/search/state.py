@@ -12,7 +12,7 @@ class Action:
     def __init__(self, src, action, dst, reward=0):
         self.action = action
         self.src: State = src
-        self.dst: State =dst
+        self.dst: State = dst
         self.reward = reward
 
     def get_states(self):
@@ -24,8 +24,10 @@ class Action:
     # def get_actions(self,**kg):
     #     return self.src.get_actions(**kg)
 
-    def get_reward(self,**kwargs):
-        return self.src.get_score(**kwargs)-self.dst.get_score(**kwargs)
+    def get_reward(self, **kwargs):
+        src_scroe = self.src.get_score(**kwargs) if self.src else 0
+        return self.dst.get_score(**kwargs) - src_scroe
+
 
 class State:
     done = -1
@@ -51,7 +53,7 @@ class State:
         self.depth = depth
         return self
 
-    def get_score(self,**kw):
+    def get_score(self, **kw):
         raise Exception("todo")
 
     def get_actions(self, depth=None) -> List[Action]:
