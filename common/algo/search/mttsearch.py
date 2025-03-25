@@ -22,9 +22,11 @@ class MctsNode(State):
 
 
 class MctsSearchTree(Algo):
-    def __init__(self) -> None:
+
+    def load(self, **kw):
         self.scalar = 1 / (2 * math.sqrt(2.0))  # 0.353553
         self.explore_ratio = 0
+        return self
 
     def expand(self, state: MctsNode):
         a = state.get_random_action()
@@ -76,6 +78,6 @@ class MctsSearchTree(Algo):
         self.state_count = 0
         while self.state_count < budget or time.time() - t < max_t:
             front = self.policy(node)
-            self.buck_up(front, front.calc_value(root=node))
+            self.buck_up(front, front.calc_uct_value(root=node))
             self.state_count += 1
         self.best_select(node, 0)

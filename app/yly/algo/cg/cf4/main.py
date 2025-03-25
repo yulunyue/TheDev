@@ -2,13 +2,13 @@ from common.algo.manage import SolutionBase, View, logger, MOD, inf
 
 from common.algo.search.mttsearch import MctsSearchTree, MctsNode
 from common.algo.search.algo import Algo, np, RandomAlgo
-from common.algo.search.alphabate_search import AlphaBateSearch
+from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 
 from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import C
-from app.yly.algo.cg.cf4.f4state import F4State
+from app.yly.algo.cg.cf4.f4state import F4State, S
 
 
 class Solution(SolutionBase):
@@ -18,40 +18,41 @@ class Solution(SolutionBase):
     agentsIds = [4820019, -1]
     name = "f4"
     search_max_depth = 5
-    budget = 1000
+    budget = 9000
     max_t = 0.1
+
+    def get_search_depth(self, turn):
+        if turn < 10:
+            return 3
+        return self.search_max_depth + turn // 20
 
     def get_cases(self):
         return [
-            # dict(search_type="tree_search",method="analyze"),
-            # dict(search_type="alpha_bate_search"),
-            # dict(search_type="mcts"),
             dict(
-                player1="ab",
-                player2="ab",
+                player1="ai",
+                player2="mcts",
                 depth=self.search_max_depth,
                 max_t=self.max_t,
                 max_turn=100,
             )
         ]
 
-    def test_all(self, **kw):
-        s = F4State(147646293709387072516).init_root()
-        self.log(s)
-
     def get_player(self, search_type) -> Algo:
         return {
             "ts": Algo,
+            "ai": AbSearchIter,
             "ab": AlphaBateSearch,
             "mcts": MctsSearchTree,
             "rand": RandomAlgo,
-        }[search_type]()
+        }[search_type]().load()
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
         players = [self.get_player(player1), self.get_player(player2)]
+        data = [[0, 0], [0, 0]]
         for _ in range(nums):
             state = F4State(C.INIT_MASK).init_root()
             i = 0
+
             while i < max_turn:
                 reward = players[i % 2].search(
                     state,
@@ -59,6 +60,8 @@ class Solution(SolutionBase):
                     # max_t=self.max_t,
                     budget=self.budget,
                 )
+                data[i % 2][0] = max(data[i % 2][0], players[i % 2].use_time)
+                data[i % 2][1] = max(data[i % 2][1], players[i % 2].state_count)
                 self.log(state)
                 self.log(players[i % 2])
                 if state.done > 0:
@@ -67,7 +70,12 @@ class Solution(SolutionBase):
                 self.log(state.best_action)
                 state = state.best_action.dst
                 i += 1
-            self.log(f"run {i}")
+
+            self.log(f"run:{i} win:{players[(i-1)%2]}{S[(i-1)%2]}")
+            for i in range(2):
+                self.log(
+                    f"{players[i].name[:5]} max_use_time:{'%.4f'%data[i][0]} state_count:{data[i][1]}"
+                )
 
     def replay(self, player1, stdout: List[str], stderr=None, **kw):
         C.TRUN_INDEX = 0
@@ -75,16 +83,18 @@ class Solution(SolutionBase):
         search = self.get_player(player1)
         while C.TRUN_INDEX < len(stdout):
             action = state.get_action(int(stdout[C.TRUN_INDEX]))
-            alpha = search.search(state, **kw)
-            self.log(
-                f"put:{state.best_action.key}; num:{search.state_count} best:{alpha}"
-            )
-            self.log(action)
-            state = action.state
+            self.log(state)
+            if C.TRUN_INDEX % 2 == 1:
+                alpha = search.search(
+                    state, depth=self.get_search_depth(C.TRUN_INDEX), budget=self.budget
+                )
+                self.log(search)
+                self.log(state.best_action)
+            state = action.dst
             C.TRUN_INDEX += 1
 
     def exec(self, **kw):
-        search, state = AlphaBateSearch(), F4State(C.INIT_MASK).init_root()
+        search, state = AbSearchIter(), F4State(C.INIT_MASK).init_root()
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
         while True:
@@ -108,17 +118,21 @@ class Solution(SolutionBase):
             )  # opponent's previous chosen column index (will be -1 for first player in the first turn)
 
             if 0 <= opp_previous_action < C.WIDTH:
-                state: F4State = state.get_action(opp_previous_action).state
+                state: F4State = state.get_action(opp_previous_action).dst
             # if my_id==1 and turn_index==1 and 3<=opp_previous_action<=6:
             #     self.output(-2)
             #     continue
-            search.search(state, depth=self.search_max_depth)
+            depth = self.get_search_depth(C.TRUN_INDEX)
+            s_depth = search.search(state, depth=depth, budget=self.budget)
             self.error(
                 opp_previous_action=opp_previous_action,
+                state_count=search.state_count,
+                use_time=search.use_time,
+                depth=s_depth,
                 # state=str(self.state)
             )
-            self.output(state.best_action.key)
-            state = state.best_action.state
+            self.output(state.best_action.action)
+            state = state.best_action.dst
 
     def finish(self):
         from common.util.fp import get_cache

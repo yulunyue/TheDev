@@ -49,14 +49,14 @@ class F4State(MctsNode):
         from common.algo.search.algo import Baoli
 
         b = Baoli()
-        bv = b.search(self, depth=20, state_max_num=4000)
+        # bv = b.search(self, depth=20, state_max_num=4000)
         return "\n".join(
             ["**" * C.WIDTH]
             + ["".join(v) for v in ret]
             + [
                 f"done:{self.done}; score:{self.score}; actions:{len(self.get_actions())}",
                 # f"state:{state_info}",
-                f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
+                # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
                 f"info:{self.info}; check:{check_info}",
                 f"mask:{self.mask};",
             ]
@@ -79,16 +79,17 @@ class F4State(MctsNode):
             self.line_state, self.state, self.end_pos = C.mask_to_line(self.mask)
         return self
 
-    def calc_value(self, root=None, tp="", **kw):
-        if tp == "baoli":
-            if self.done == 1:
-                return 3
-            if self.done == 2:
-                return -2
-            return self.done
-        if root:
-            return self.score if root.moves % 2 == 0 else -self.score
+    def calc_value(self, tp="", **kw):
+        # if tp == "baoli":
+        #     if self.done == 1:
+        #         return 3
+        #     if self.done == 2:
+        #         return -2
+        #     return self.done
         return self.score if self.moves % 2 == 0 else -self.score
+
+    def calc_uct_value(self, root):
+        return self.score if root.moves % 2 == 0 else -self.score
 
     def get_action(self, col) -> F4Action:
         x = col * (C.HEIGHT + 1)

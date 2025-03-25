@@ -35,9 +35,11 @@ class Algo:
         pass
 
     def search(self, state: State, use_cache=None, state_max_num=-1, depth=0, **kw):
-        from common.util.fp import get_cache
+        cache = None
+        if use_cache:
+            from common.util.fp import get_cache
 
-        cache = get_cache(self.name) if use_cache else None
+            cache = get_cache(self.name)
         self.state_clear(state)
         self.state_count = 0
         self.state_max_num = state_max_num
