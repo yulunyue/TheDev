@@ -13,9 +13,7 @@ class Gene:
     def __init__(self):
         pass
 
-    def load(self, players_fun, env_init_fun):
-        self.players_fun = players_fun
-        self.env_init_fun = env_init_fun
+    def load(self):
         return self
 
     def tournament_selection(self, tournament_size):

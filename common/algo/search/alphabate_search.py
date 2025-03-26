@@ -4,8 +4,12 @@ from typing import List
 
 
 class AlphaBateSearch(Algo):
+    def load(self, max_depth, params=None, use_cache=False):
+        self.max_depth=max_depth
+        return super().load(params, use_cache)
+    
     def search_dfs(
-        self, action: Action, depth=0, alpha=-inf, bate=inf, budget=0, **kw
+        self, action: Action, depth, alpha=-inf, bate=inf, budget=0, **kw
     ) -> None:
         # if budget and self.state_count >= budget:
         #     return inf
@@ -27,7 +31,7 @@ class AlphaBateSearch(Algo):
         return alpha
 
     def search_main(self, state, **kw):
-        return self.search_dfs(state, **kw)
+        return self.search_dfs(state,self.max_depth,**kw)
 
 
 class AbSearchIter(AlphaBateSearch):

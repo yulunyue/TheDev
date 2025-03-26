@@ -54,21 +54,14 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             dict(
-                player1="ab",
-                player2="ab",
-                depth=self.search_max_depth,
-                max_t=self.max_t,
-                max_turn=100,
+                player1="ab4",
+                player2="ab4",
             )
         ]
 
     def get_player(self, search_type, params: StateEnum) -> Algo:
-        ret: Algo = {
-            "ts": Algo,
-            "ai": AbSearchIter,
-            "ab4": lambda: AlphaBateSearch().load(),
-            "mcts": MctsSearchTree,
-            "rand": RandomAlgo,
+        ret: Algo = {   
+            "ab4": lambda: AlphaBateSearch().load(4,params=params),
         }[search_type]()
         return ret.load(params=params, max_depth=self.search_max_depth)
 
