@@ -19,26 +19,6 @@ class StateEnum(Params):
         self.STATE_04 = ParamCt((0, 4)).load_value(800, 8000)
         super().__init__()
 
-    def init_score(self):
-        self.scores: List[ParamCt] = []
-        for i in range(1 << 8):
-            ct = [0] * 4
-            s = i
-            j = 0
-            to_fill = []
-            for j in range(4):
-                ct[s & 3] += 1
-                if s & 3 == 0:
-                    to_fill.append(j)
-                j += 1
-                s = s >> 2
-            k = (min(ct[1], ct[2]), max(ct[1], ct[2]))
-            param = (
-                self._params[k] if k in self._params else ParamCt(k).load_value(0, 0, 0)
-            )
-            self.scores.append(param.set_args(to_fill).clone())
-        return self
-
 
 SE = StateEnum()
 SE.init_param()
@@ -52,7 +32,26 @@ class Constant:
         self.HEIGHT = HEIGHT
         self.WIDTH = WIDTH
         self.init_w()
+        self.init_score()
         self.init_lines()
+
+    def init_score(self):
+        self.scores = []
+        for i in range(1 << 8):
+            ct = [0] * 4
+            s = i
+            j = 0
+            to_fill = []
+            for j in range(4):
+                ct[s & 3] += 1
+                if s & 3 == 0:
+                    to_fill.append(j)
+                j += 1
+                s = s >> 2
+            k = (min(ct[1], ct[2]), max(ct[1], ct[2]))
+            param = k if k in SE._params else None
+            self.scores.append([param, to_fill])
+        return self
 
     def init_w(self):
         self.COLS = [4, 3, 5, 2, 6, 1, 7, 0, 8]
@@ -104,8 +103,8 @@ class Constant:
                 else:
                     fn(i, j, 0)
 
-    def set_pos(self, y, x, player_id, line_state, state: StateEnum, end_pos):
-        score = 0
+    def set_pos(self, y, x, player_id, line_state, end_pos):
+        score = {k: 0 for k in SE._params}
         done = -1
         c = [1, -1][player_id]
         for line_id, k_id in self.point_line_id[y][x]:
@@ -115,17 +114,17 @@ class Constant:
             new_state: int = old_state | C.state_pos[k_id][player_id]
             # p.info += f"{line_id}:{bin(new_state)}\n"
             line_state[line_id] = new_state
-            new_line_state = state.scores[new_state]
-            old_line_state = state.scores[old_state]
-            if new_line_state.key != old_line_state.key:
-                # state[new_line_state.key, player_id] -= 1
-                # state[old_line_state.key, player_id] += 1
-                score += (new_line_state.get_value() - old_line_state.get_value()) * c
-            if new_line_state.key == (0, 4):
+            new_line_state, null_pos = C.scores[new_state]
+            old_line_state, _ = C.scores[old_state]
+            if new_line_state is not None:
+                score[new_line_state] += 1
+            if old_line_state is not None:
+                score[old_line_state] -= 1
+            if new_line_state == (0, 4):
                 # p.info += f"[set {self.score}]"
                 done = player_id + 1
-            if new_line_state.key == (0, 3):
-                y1, x1, _ = self.lines[line_id][new_line_state.args[0]]
+            elif new_line_state == (0, 3):
+                y1, x1, _ = self.lines[line_id][null_pos[0]]
                 end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << player_id)
 
         # if self.score >= 1 or self.score <= -1:

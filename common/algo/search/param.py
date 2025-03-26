@@ -29,11 +29,11 @@ class Param:
 
     def gen_value(self, step=None):
         if step is None:
-            self.value = np.random.uniform(self.min_value, self.max_value)
-        elif 0 <= step <= 1:
-            self.value = self.min_value + (self.max_value - self.min_value) * step
+            self.value = np.random.randint(self.min_value, self.max_value)
         elif callable(step):
             self.value = step(self.key)
+        elif 0 <= step <= 1:
+            self.value = self.min_value + (self.max_value - self.min_value) * step
         else:
             raise Exception("todo")
         return self
@@ -62,3 +62,6 @@ class Params:
         for k, v in self._params.items():
             ret._params[k] = v.clone().gen_value(step)
         return ret
+
+    def __str__(self):
+        return str({key: self._params[key].get_value() for key in self._params})

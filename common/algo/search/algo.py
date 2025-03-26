@@ -19,34 +19,32 @@ def random_select(states, fn):
 
 class Algo:
     state_count = 0
-    _cache = None
 
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
 
-    def load(self, num_episodes=5000, param_dyn=None):
-        self.num_episodes = num_episodes
-        self.param_dyn = param_dyn
-        return self
+    def load(self, params=None, use_cache=False):
+        self.params = params
+        self.cache = None
+        self.max_use_time = 0
+        self.max_state_count = 0
+        if use_cache:
+            from common.util.fp import get_cache
 
-    def run_one_step(self, episode, action, r):
-        return 0
+            self.cache = get_cache(self.name)
+        return self
 
     def search_main(self, state, **kw):
         pass
 
-    def search(self, state: Action, use_cache=None, state_max_num=-1, depth=0, **kw):
-        cache = None
-        if use_cache:
-            from common.util.fp import get_cache
-
-            cache = get_cache(self.name)
+    def search(self, state: Action):
         self.state_clear(state)
         self.state_count = 0
-        self.state_max_num = state_max_num
-        self.begin_time = time.time()
-        ret = self.search_main(state, cache=cache, depth=depth, **kw)
-        self.use_time = time.time() - self.begin_time
+        begin_time = time.time()
+        ret = self.search_main(state, depth=self.max_depth)
+        use_time = int((time.time() - begin_time) * 1000)
+        self.max_use_time = max(self.max_use_time, use_time)
+        self.max_state_count = max(self.state_count, self.max_state_count)
         return ret
 
     def state_clear(self, state: Action):
@@ -56,10 +54,13 @@ class Algo:
         pass
 
     def __str__(self):
-        return f"<{self.__class__.__name__} state_all:{self.state_count} user_time:{'%.3f'%self.use_time}>"
+        return f"<{self.__class__.__name__} state_all:{self.max_state_count} user_time:{self.max_use_time} params:{self.params}>"
 
 
 class RunAlgo(Algo):
+    def run_one_step(self, episode, action, r):
+        return 0
+
     def run(self, state: State):
         self.regrets_record = []
         self.rewards_record = []

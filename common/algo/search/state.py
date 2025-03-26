@@ -24,9 +24,8 @@ class Action:
     # def get_actions(self,**kg):
     #     return self.src.get_actions(**kg)
 
-    def get_reward(self, **kwargs):
-        src_scroe = self.src.get_score(**kwargs) if self.src else 0
-        return self.dst.get_score(**kwargs) - src_scroe
+    def get_reward(self, params, **kwargs):
+        raise Exception("error")
 
 
 class State:

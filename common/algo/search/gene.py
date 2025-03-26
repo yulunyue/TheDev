@@ -1,8 +1,12 @@
 from common.algo.search.param import Params
 from common.algo.search.state import Action
 from common.algo.search.algo import Algo
+from common.util.log import get_log
+
+looger = get_log("gene")
 from typing import List
 import numpy as np
+import random
 
 
 class Gene:
@@ -14,8 +18,8 @@ class Gene:
         self.env_init_fun = env_init_fun
         return self
 
-    def tournament_selection(self, tournament_size=5):
-        competitors: List[Params] = np.random.choice(self.population, tournament_size)
+    def tournament_selection(self, tournament_size):
+        competitors: List[Params] = random.sample(self.population, tournament_size)
         competitors.sort(key=lambda x: -x.score)
         return competitors[0]  # 选择锦标赛中表现最优的个体
 
@@ -46,47 +50,30 @@ class Gene:
             ret.append(param.new())
         return ret
 
-    def evaluate_fitness(self, gene: Params, opponents: List[Params], num_games=20):
-        wins = 0
-        for op_gene in opponents:
-            for _ in range(num_games):
-                result1 = self.simulate_match(gene, op_gene, 0)
-                result2 = self.simulate_match(gene, op_gene, 1)
-                wins += result1 + result2
-        return wins / (len(op_gene) * num_games * 2)
-
-    def simulate_match(self, gene: Params, op_gene: Params, cur_player=0):
-        action: Action = self.env_init_fun()
-        ais: List[Algo] = [self.players_fun(gene), self.players_fun(op_gene)]
-        while action.dst.done < 0:
-            ais[cur_player].search(action)
-            if action.dst.best_action is None:
-                action.dst.debug()
-                raise Exception("todo")
-            action = action.dst.best_action
-            cur_player = 1 - cur_player
-        if action.dst.done == 0:
-            return 0.5
-        if action.dst.done == 1:
-            return 1
-        return 0
-
-    def run(self, param: Params, generations=100, pop_size=50):
+    def run(
+        self,
+        param: Params,
+        generations=2,
+        pop_size=6,
+        fict_size=3,
+        new_rate=3,
+        num_games=1,
+        **kw,
+    ):
         self.population: List[Params] = self.initialize_population(param, pop_size)
 
         for i in range(generations):
-
             for gene in self.population:
                 gene.score = self.evaluate_fitness(
-                    gene, np.random.choice(self.population, 5)
+                    gene, np.random.choice(self.population, fict_size), num_games
                 )
             self.population.sort(key=lambda a: -a.score)
             if i == generations - 1:
                 return self.population[0]
-            new_pops = self.population[: int(pop_size * 0.1)]
+            new_pops = self.population[:new_rate]
             while len(new_pops) < pop_size:
-                p1 = self.tournament_selection(self.population)
-                p2 = self.tournament_selection(self.population)
+                p1 = self.tournament_selection(fict_size)
+                p2 = self.tournament_selection(fict_size)
                 c = self.crossover(p1, p2)
                 new_pops.append(self.mutate(c))
             self.population = new_pops

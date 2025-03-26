@@ -12,7 +12,7 @@ class AlphaBateSearch(Algo):
         self.state_count += 1
         mvs: List[Action] = action.dst.get_actions(depth=depth)
         if not mvs:
-            return -action.get_reward(depth=depth)
+            return -action.get_reward(depth=depth, params=self.params)
         for a in mvs:
             a.reward = -self.search_dfs(
                 a, depth=depth - 1, alpha=-bate, bate=-alpha, budget=budget

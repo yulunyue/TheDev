@@ -1,16 +1,9 @@
 from typing import Dict, List
 from common.algo.search.state import State, Action, inf
 from common.algo.search.mttsearch import MctsSearchTree, MctsNode
-from app.yly.algo.cg.cf4.constant import C, StateEnum, S
+from app.yly.algo.cg.cf4.constant import C, SE, S, StateEnum
 from collections import defaultdict
 import json
-
-
-class F4Action(Action):
-    def __str__(self):
-        return (
-            f"<Action key:{self.action}{S[(self.src.moves+1)%2]} reward:{self.reward}>"
-        )
 
 
 class F4State(MctsNode):
@@ -20,7 +13,6 @@ class F4State(MctsNode):
     def __init__(self, mask, moves=-1) -> None:
         self.mask = mask
         self.moves = moves
-        self.score = 0
 
         super().__init__()
 
@@ -58,7 +50,7 @@ class F4State(MctsNode):
             ["**" * C.WIDTH]
             + ["".join(v) for v in ret]
             + [
-                f"done:{self.done}; score:{self.score}; actions:{len(self.get_actions())}",
+                f"done:{self.done}; actions:{len(self.get_actions())}",
                 # f"state:{state_info}",
                 # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
                 f"info:{self.info}; check:{check_info}",
@@ -69,9 +61,6 @@ class F4State(MctsNode):
             ]
         )
 
-    def get_score(self, **kw):
-        return self.score if self.moves == 0 else -self.score
-
     @property
     def key(self):
         return str(self.mask)
@@ -79,26 +68,14 @@ class F4State(MctsNode):
     def init_root(self):
         if self.mask == C.INIT_MASK:
             self.line_state = [0] * C.line_num
-            self.state = defaultdict(int)
+            self.state = {k: 0 for k in SE._params}
             self.end_pos = {x: 0 for x in range(C.WIDTH)}
             # self.pos = [C.HEIGHT + 1] * C.WIDTH
         else:
             self.line_state, self.state, self.end_pos = C.mask_to_line(self.mask)
         return self
 
-    def calc_value(self, tp="", **kw):
-        # if tp == "baoli":
-        #     if self.done == 1:
-        #         return 3
-        #     if self.done == 2:
-        #         return -2
-        #     return self.done
-        return self.score if self.moves % 2 == 0 else -self.score
-
-    def calc_uct_value(self, root):
-        return self.score if root.moves % 2 == 0 else -self.score
-
-    def get_action(self, col) -> F4Action:
+    def get_action(self, col, **kw):
         x = col * (C.HEIGHT + 1)
         mask0 = self.mask >> x
         y = (mask0 & C.MASK_FULL_HEIGHT).bit_length() - 1
@@ -118,11 +95,12 @@ class F4State(MctsNode):
         p: F4State = p
         self.end_pos = p.end_pos.copy()
         self.line_state = p.line_state.copy()
-        # self.state = p.state.copy()
-        score, self.done = C.set_pos(
-            y, x, self.moves % 2, self.line_state, None, self.end_pos
+        self.state = p.state.copy()
+        state, self.done = C.set_pos(
+            y, x, self.moves % 2, self.line_state, self.end_pos
         )
-        self.score = p.score + score
+        for key, v in state.items():
+            self.state[key] += v
         self.end_pos[x] = y + 1
         return self
 
@@ -131,14 +109,14 @@ class F4State(MctsNode):
 
         File("data/log/c4.txt").write_file(str(self))
 
-    def get_actions(self, depth=1):
+    def get_actions(self, depth=1, **kw):
         if depth == 0 or self.done > 0:
             return []
         if self.actions is None:
             actions = []
             flag = True
             for col in C.COLS:
-                a = self.get_action(col)
+                a = self.get_action(col, **kw)
                 if a is None:
                     continue
                 s = self.end_pos.get((self.end_pos[col], col), 0)
@@ -160,6 +138,23 @@ class F4State(MctsNode):
     @property
     def op_done(self):
         return 3 - self.win_done
+
+
+class F4Action(Action):
+    dst: F4State
+    src: F4State
+
+    def __str__(self):
+        return (
+            f"<Action key:{self.action}{S[(self.src.moves+1)%2]} reward:{self.reward}>"
+        )
+
+    def get_reward(self, params: StateEnum, **kwargs):
+        score = 0
+        for k, v1 in self.dst.state.items():
+            v2 = 0 if self.src is None else self.src.state[k]
+            score += params._params[k].get_value() * (v1 - v2)
+        return score
 
 
 STORE_STATE: Dict[int, F4State] = dict()

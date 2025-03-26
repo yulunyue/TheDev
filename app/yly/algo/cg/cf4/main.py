@@ -17,9 +17,36 @@ class Solution(SolutionBase):
     # log_mode = "debug"
     agentsIds = [4820019, -1]
     name = "f4"
-    search_max_depth = 5
+    search_max_depth = 4
     budget = 9000
     max_t = 0.1
+
+    def evaluate_fitness(self, gene: StateEnum, opponents: List[StateEnum], num_games):
+        wins = 0
+        for op_gene in opponents:
+            for _ in range(num_games):
+                result1 = self.simulate_match(gene, op_gene, 0)
+                result2 = self.simulate_match(gene, op_gene, 1)
+                wins += result1 + result2
+        return wins / (len(opponents) * num_games * 2)
+
+    def simulate_match(self, gene: StateEnum, op_gene: StateEnum, first_player=0):
+        action = self.get_init_action()
+        ais: List[Algo] = [self.get_player(gene), self.get_player(op_gene)]
+        cur_player = first_player
+        while action.dst.done < 0:
+            ais[cur_player].search(action)
+            action = action.dst.best_action
+            cur_player = 1 - cur_player
+        if action.dst.done == 1:
+            ret = 1 if first_player == 0 else 0
+        elif action.dst.done == 2:
+            ret = 0 if first_player == 0 else 1
+        else:
+            ret = 0.5
+        logger.info(f"\n [{ais[first_player]}] \npk {ret}\n [{ais[1-first_player]}]")
+        logger.info(f"\n{action.dst}")
+        return ret
 
     def get_search_depth(self, turn):
         return self.search_max_depth
@@ -35,29 +62,28 @@ class Solution(SolutionBase):
             )
         ]
 
-    def get_player(self, search_type, param_dyn: StateEnum) -> Algo:
-        param_dyn.init_score()
-        return {
+    def get_player(self, search_type, params: StateEnum) -> Algo:
+        ret: Algo = {
             "ts": Algo,
             "ai": AbSearchIter,
-            "ab": AlphaBateSearch,
+            "ab4": lambda: AlphaBateSearch().load(),
             "mcts": MctsSearchTree,
             "rand": RandomAlgo,
-        }[search_type]().load(param_dyn=param_dyn)
+        }[search_type]()
+        return ret.load(params=params, max_depth=self.search_max_depth)
+
+    def get_init_action(self):
+        return F4Action(None, "init", F4State(C.INIT_MASK).init_root())
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
-        players = [self.get_player(player1), self.get_player(player2)]
+        players = [self.get_player(player1, SE), self.get_player(player2, SE)]
         data = [[0, 0], [0, 0]]
         for _ in range(nums):
-            action = F4Action(None, "init", F4State(C.INIT_MASK).init_root())
+            action = self.get_init_action()
             i = 0
-
             while i < max_turn:
                 players[i % 2].search(
                     action,
-                    depth=self.search_max_depth,
-                    max_t=self.max_t,
-                    budget=self.budget,
                 )
                 data[i % 2][0] = max(data[i % 2][0], players[i % 2].use_time)
                 data[i % 2][1] = max(data[i % 2][1], players[i % 2].state_count)
@@ -78,14 +104,7 @@ class Solution(SolutionBase):
     def gene(self, player1, **kw):
         from common.algo.search.gene import Gene
 
-        best_args = (
-            Gene()
-            .load(
-                lambda arg: self.get_player(player1, arg),
-                lambda: F4Action(None, "init", F4State(C.INIT_MASK).init_root()),
-            )
-            .run(SE)
-        )
+        best_args = Gene().load().run(SE, **kw)
         self.log(best_args)
 
     def replay(self, player1, stdout: List[str], stderr=None, **kw):
