@@ -60,10 +60,10 @@ class Solution(SolutionBase):
         ]
 
     def get_player(self, search_type, params: StateEnum) -> Algo:
-        ret: Algo = {   
-            "ab4": lambda: AlphaBateSearch().load(4,params=params),
+        ret: Algo = {
+            "ab4": lambda: AlphaBateSearch().load(4),
         }[search_type]()
-        return ret.load(params=params, max_depth=self.search_max_depth)
+        return ret.set_params(params)
 
     def get_init_action(self):
         return F4Action(None, "init", F4State(C.INIT_MASK).init_root())
@@ -75,11 +75,7 @@ class Solution(SolutionBase):
             action = self.get_init_action()
             i = 0
             while i < max_turn:
-                players[i % 2].search(
-                    action,
-                )
-                data[i % 2][0] = max(data[i % 2][0], players[i % 2].use_time)
-                data[i % 2][1] = max(data[i % 2][1], players[i % 2].state_count)
+                players[i % 2].search(action)
                 self.log(action.dst)
                 self.log(players[i % 2])
                 if action.dst.done > 0 or action.dst.best_action is None:

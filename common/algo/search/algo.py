@@ -1,12 +1,19 @@
 import numpy as np
 import time
+import random
 
 np.set_printoptions(suppress=True, precision=4)
 from typing import List
 from common.algo.search.state import State, inf, Action
+from common.algo.search.param import Params
 from collections import deque
 
 Env = State
+
+
+def random_seed(v):
+    np.random.seed(v)
+    random.seed(v)
 
 
 def random_select(states, fn):
@@ -23,8 +30,8 @@ class Algo:
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
 
-    def load(self, params=None, use_cache=False):
-        self.params = params
+    def load(self, use_cache=False):
+
         self.cache = None
         self.max_use_time = 0
         self.max_state_count = 0
@@ -34,6 +41,10 @@ class Algo:
             self.cache = get_cache(self.name)
         return self
 
+    def set_params(self, params):
+        self.params: Params = params
+        return self
+
     def search_main(self, state, **kw):
         pass
 
@@ -41,9 +52,9 @@ class Algo:
         self.state_clear(state)
         self.state_count = 0
         begin_time = time.time()
-        ret = self.search_main(state, depth=self.max_depth)
-        use_time = int((time.time() - begin_time) * 1000)
-        self.max_use_time = max(self.max_use_time, use_time)
+        ret = self.search_main(state)
+        self.use_time = int((time.time() - begin_time) * 1000)
+        self.max_use_time = max(self.max_use_time, self.use_time)
         self.max_state_count = max(self.state_count, self.max_state_count)
         return ret
 
