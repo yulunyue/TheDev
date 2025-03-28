@@ -21,18 +21,37 @@ class Solution(SolutionBase):
     budget = 9000
     max_t = 0.1
 
-    def evaluate_fitness(self, gene: StateEnum, opponents: List[StateEnum], num_games):
+    def evaluate_fitness(
+        self, gene: StateEnum, opponents: List[StateEnum] = None, num_games=4, **kw
+    ):
         wins = 0
+        if not opponents:
+            opponents = [SE]
         for op_gene in opponents:
             for _ in range(num_games):
-                result1 = self.simulate_match(gene, op_gene, 0)
-                result2 = self.simulate_match(gene, op_gene, 1)
+                result1 = self.simulate_match(
+                    gene, op_gene=op_gene, first_player=0, **kw
+                )
+                result2 = self.simulate_match(
+                    gene, op_gene=op_gene, first_player=1, **kw
+                )
                 wins += result1 + result2
         return wins / (len(opponents) * num_games * 2)
 
-    def simulate_match(self, gene: StateEnum, op_gene: StateEnum, first_player=0):
+    def simulate_match(
+        self,
+        gene: StateEnum,
+        player1=None,
+        player2=None,
+        op_gene: StateEnum = None,
+        first_player=0,
+        **kw,
+    ):
         action = self.get_init_action()
-        ais: List[Algo] = [self.get_player(gene), self.get_player(op_gene)]
+        ais: List[Algo] = [
+            self.get_player(gene, search_type=player1),
+            self.get_player(op_gene, search_type=player2),
+        ]
         cur_player = first_player
         while action.dst.done < 0:
             ais[cur_player].search(action)
@@ -55,21 +74,25 @@ class Solution(SolutionBase):
         return [
             dict(
                 player1="ab4",
-                player2="ab4",
+                player2="mcts",
             )
         ]
 
-    def get_player(self, search_type, params: StateEnum) -> Algo:
+    def get_player(self, params: StateEnum, search_type=None) -> Algo:
         ret: Algo = {
             "ab4": lambda: AlphaBateSearch().load(4),
-        }[search_type]()
-        return ret.set_params(params)
+            "mcts": lambda: MctsSearchTree().load(),
+        }[search_type or "ab4"]()
+        return ret.set_params(params or SE)
 
     def get_init_action(self):
-        return F4Action(None, "init", F4State(C.INIT_MASK).init_root())
+        return F4Action(None, "init", F4State(C.INIT_MASK, 0).init_root())
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
-        players = [self.get_player(player1, SE), self.get_player(player2, SE)]
+        players = [
+            self.get_player(SE, search_type=player1),
+            self.get_player(SE, search_type=player2),
+        ]
         data = [[0, 0], [0, 0]]
         for _ in range(nums):
             action = self.get_init_action()
@@ -90,10 +113,13 @@ class Solution(SolutionBase):
                     f"{players[i].name[:5]} max_use_time:{'%.4f'%data[i][0]} state_count:{data[i][1]}"
                 )
 
-    def gene(self, player1, **kw):
+    def gene(self, player1, tp="s", **kw):
         from common.algo.search.gene import Gene
+        from common.algo.search.se import SeOptimize
 
-        best_args = Gene().load().run(SE, **kw)
+        best_args = (
+            dict(g=Gene, s=SeOptimize)[tp]().load(self.evaluate_fitness).run(SE, **kw)
+        )
         self.log(best_args)
 
     def replay(self, player1, stdout: List[str], stderr=None, **kw):
@@ -157,6 +183,13 @@ class Solution(SolutionBase):
         from common.util.fp import get_cache
 
         # get_cache(F4State.name).flush()
+
+    def test_all(self, **kw):
+        f1 = F4State(3148219888733275277781, None).init_root()
+        assert f1.depth == 62
+        f2 = f1.get_action(6).dst
+        assert f2.mask == 3148255917530294241749
+        assert f2.done == 0
 
 
 if __name__ == "__main__":

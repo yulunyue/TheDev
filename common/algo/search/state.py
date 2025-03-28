@@ -31,12 +31,13 @@ class Action:
 class State:
     done = -1
     name = "state"
+    parent = None
 
-    def __init__(self) -> None:
-        self.depth = 0
+    def __init__(self, player_id, depth) -> None:
+        self.depth = depth
+        self.player_id = player_id
         self.best_action: Action = None
         self.actions: List[Action] = None
-        self.parent: State = None
 
     def set_done(self, done):
         self.done = done
@@ -48,14 +49,10 @@ class State:
     def get_action(self, *args) -> Action:
         raise Exception("todo")
 
-    def set_depth(self, depth):
-        self.depth = depth
-        return self
-
     def get_score(self, **kw):
         raise Exception("todo")
 
-    def get_actions(self, depth=None) -> List[Action]:
+    def get_actions(self) -> List[Action]:
         return self.actions
 
     def set_actions(self, actions):

@@ -28,14 +28,14 @@ class Param:
         return self.value
 
     def gen_value(self, step=None):
-        if step is None:
+        if step == "random":
             self.value = np.random.randint(self.min_value, self.max_value)
         elif callable(step):
-            self.value = step(self.key)
+            self.value = step(self)
+        elif step is None:
+            pass
         elif 0 <= step <= 1:
             self.value = self.min_value + (self.max_value - self.min_value) * step
-        else:
-            raise Exception("todo")
         return self
 
 
@@ -56,7 +56,7 @@ class Params:
     def get(self, key):
         return self._params.get(key)
 
-    def new(self, step=None):
+    def clone(self, step=None):
         ret = self.__class__()
         ret._params = dict()
         for k, v in self._params.items():

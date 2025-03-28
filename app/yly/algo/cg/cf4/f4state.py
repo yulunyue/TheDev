@@ -10,11 +10,9 @@ class F4State(MctsNode):
     name = "f4state"
     info = ""
 
-    def __init__(self, mask, moves=-1) -> None:
+    def __init__(self, mask, depth) -> None:
         self.mask = mask
-        self.moves = moves
-
-        super().__init__()
+        super().__init__(depth % 2, depth)
 
     def __str__(self):
         return self.to_str()
@@ -54,7 +52,7 @@ class F4State(MctsNode):
                 # f"state:{state_info}",
                 # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
                 f"info:{self.info}; check:{check_info}",
-                f"mask:{self.mask};",
+                f"mask:{self.mask}; depth:{self.depth}",
             ]
             + [
                 "**" * C.WIDTH,
@@ -81,14 +79,14 @@ class F4State(MctsNode):
         y = (mask0 & C.MASK_FULL_HEIGHT).bit_length() - 1
         if y == C.HEIGHT:
             return
-        moves = self.moves + 1
-        if moves % 2 == 1:
+        depth = self.depth + 1
+        if depth % 2 == 1:
             mask0 |= 2 << y
         else:
             mask0 ^= 3 << y
         mask = (mask0 << x) | (self.mask & C.HEIGHT_POS_MASK[col])
         if mask not in STORE_STATE:
-            STORE_STATE[mask] = F4State(mask, moves).init_state(col, y, self)
+            STORE_STATE[mask] = F4State(mask, depth).init_state(col, y, self)
         return F4Action(self, col, STORE_STATE[mask])
 
     def init_state(self, x, y, p):
@@ -97,7 +95,7 @@ class F4State(MctsNode):
         self.line_state = p.line_state.copy()
         self.state = p.state.copy()
         state, self.done = C.set_pos(
-            y, x, self.moves % 2, self.line_state, self.end_pos
+            y, x, self.player_id, self.line_state, self.end_pos
         )
         for key, v in state.items():
             self.state[key] += v
@@ -133,7 +131,7 @@ class F4State(MctsNode):
 
     @property
     def win_done(self):
-        return 2 if self.moves % 2 else 1
+        return 2 if self.player_id else 1
 
     @property
     def op_done(self):
@@ -145,9 +143,7 @@ class F4Action(Action):
     src: F4State
 
     def __str__(self):
-        return (
-            f"<Action key:{self.action}{S[(self.src.moves+1)%2]} reward:{self.reward}>"
-        )
+        return f"<Action key:{self.action}{S[self.dst.player_id]} reward:{self.reward}>"
 
     def get_reward(self, params: StateEnum, **kwargs):
         score = 0
