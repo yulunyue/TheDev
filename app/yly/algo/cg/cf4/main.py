@@ -1,6 +1,6 @@
 from common.algo.manage import SolutionBase, View, logger, MOD, inf
 
-from common.algo.search.mttsearch import MctsSearchTree, MctsNode
+from common.algo.search.mctssearch import MctsSearchTree, MctsNode
 from common.algo.search.algo import Algo, np, RandomAlgo
 from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 
@@ -73,13 +73,14 @@ class Solution(SolutionBase):
     def get_cases(self):
         return [
             dict(
-                player1="ab4",
-                player2="mcts",
+                player1="ab1",
+                player2="ab1",
             )
         ]
 
     def get_player(self, params: StateEnum, search_type=None) -> Algo:
         ret: Algo = {
+            "ab1": lambda: AlphaBateSearch().load(1),
             "ab4": lambda: AlphaBateSearch().load(4),
             "mcts": lambda: MctsSearchTree().load(),
         }[search_type or "ab4"]()
@@ -138,6 +139,25 @@ class Solution(SolutionBase):
             state = action.dst
             C.TRUN_INDEX += 1
 
+    def ln(self, **kw):
+        from common.algo.learn.ln import Ln
+        from torch import nn
+
+        class DQN(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
+                self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+                self.fc = nn.Linear(64 * 6 * 7, 7)  # 输出7个动作的Q值
+
+            def forward(self, x):
+                x = nn.functional.relu(self.conv1(x))
+                x = nn.functional.relu(self.conv2(x))
+                x = x.view(x.size(0), -1)
+                return self.fc(x)
+
+        self.log(Ln().load(DQN, self.get_init_action).train())
+
     def exec(self, **kw):
         search, state = AbSearchIter(), F4State(C.INIT_MASK).init_root()
         my_id, opp_id = [int(i) for i in self.input().split()]
@@ -185,11 +205,18 @@ class Solution(SolutionBase):
         # get_cache(F4State.name).flush()
 
     def test_all(self, **kw):
-        f1 = F4State(3148219888733275277781, None).init_root()
-        assert f1.depth == 62
+        f1 = F4State(3148219888733275277781, -1).init_root()
+        self.expect(f1.depth, 62)
         f2 = f1.get_action(6).dst
-        assert f2.mask == 3148255917530294241749
-        assert f2.done == 0
+        self.expect(f2.mask, 3148237903131784759765, str(f2))
+        self.expect(f2.done, 0, str(f2))
+
+        f3 = F4State(18519085367618109697, 0).init_root()
+        self.expect(len(f3.get_actions()), 1, str(f3))
+
+    def test_f4(self, **kw):
+        f4 = F4State(18519085367617978625, 0).init_root()
+        self.expect(len(f4.get_actions()), 1, str(f4))
 
 
 if __name__ == "__main__":

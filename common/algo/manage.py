@@ -358,6 +358,11 @@ class SolutionBase:
             c._logs.clear()
         cls.flush_log(cls)
 
+    def expect(self, a, b, info=""):
+        if a == b or str(a) == str(b):
+            return True
+        raise Exception(f"{a}!={b} [{info}]")
+
 
 PATH = "app/yly/algo"
 TMP_PATH = "data/algo/main.py"

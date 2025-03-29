@@ -56,7 +56,7 @@ class Constant:
     def init_w(self):
         self.COLS = [4, 3, 5, 2, 6, 1, 7, 0, 8]
         self.MASK_FULL_HEIGHT = (1 << self.HEIGHT + 1) - 1
-        self.MASK_FULL = (1 << ((self.HEIGHT + 1) * self.WIDTH)) - 1
+        self.MASK_FULL_ALL = 0
         self.state_pos = []
         self.INIT_MASK = 0
         self.HEIGHT_POS_MASK = []
@@ -65,7 +65,7 @@ class Constant:
         mask0 = 0
         for col in range(self.WIDTH):
             pos = col * (self.HEIGHT + 1)
-
+            self.MASK_FULL_ALL |= 1 << ((col + 1) * (self.HEIGHT + 1) - 1)
             self.INIT_MASK |= 1 << pos
             self.HEIGHT_POS_MASK.append(mask0)
             mask0 = (mask0 << (self.HEIGHT + 1)) + self.MASK_FULL_HEIGHT
@@ -106,7 +106,7 @@ class Constant:
     def set_pos(self, y, x, player_id, line_state, end_pos):
         score = {k: 0 for k in SE._params}
         done = -1
-        c = [1, -1][player_id]
+
         for line_id, k_id in self.point_line_id[y][x]:
             old_state: int = line_state[line_id]
             # if old_state & C.state_pos[k_id][player_id]:
@@ -125,21 +125,26 @@ class Constant:
                 done = player_id + 1
             elif new_line_state == (0, 3):
                 y1, x1, _ = self.lines[line_id][null_pos[0]]
-                end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << player_id)
+                end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << (1 - player_id))
 
         # if self.score >= 1 or self.score <= -1:
         #     raise Exception(self.score)
         return score, done
 
-    def mask_to_line(self, mask):
-        line_state = [0] * self.line_num
-        state = [[0] * len(StateEnum) for _ in range(2)]
+    def mask_to_line(self, mask, line_state, state, end_pos):
+        done = -1
+        depth = 0
 
         def util(i, j, v):
-            self.set_pos(i, j, v, line_state, state)
+            nonlocal done, depth
+            pos_state, done = self.set_pos(i, j, 1 - v, line_state, end_pos)
+            end_pos[j] = i + 1
+            for key, v in pos_state.items():
+                state[key] += v
+            depth += 1
 
         self.mask_to_grid(mask, util)
-        return line_state, state
+        return done, depth
 
 
 C = Constant()

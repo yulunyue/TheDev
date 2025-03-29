@@ -1,6 +1,6 @@
 from typing import Dict, List
 from common.algo.search.state import State, Action, inf
-from common.algo.search.mttsearch import MctsSearchTree, MctsNode
+from common.algo.search.mctssearch import MctsSearchTree, MctsNode
 from app.yly.algo.cg.cf4.constant import C, SE, S, StateEnum
 from collections import defaultdict
 import json
@@ -48,11 +48,11 @@ class F4State(MctsNode):
             ["**" * C.WIDTH]
             + ["".join(v) for v in ret]
             + [
-                f"done:{self.done}; actions:{len(self.get_actions())}",
+                f"done:{self.done}; depth:{self.depth}; playerid:{self.player_id}; actions:{len(self.get_actions())}",
                 # f"state:{state_info}",
                 # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
                 f"info:{self.info}; check:{check_info}",
-                f"mask:{self.mask}; depth:{self.depth}",
+                f"mask:{self.mask}",
             ]
             + [
                 "**" * C.WIDTH,
@@ -64,13 +64,14 @@ class F4State(MctsNode):
         return str(self.mask)
 
     def init_root(self):
-        if self.mask == C.INIT_MASK:
-            self.line_state = [0] * C.line_num
-            self.state = {k: 0 for k in SE._params}
-            self.end_pos = {x: 0 for x in range(C.WIDTH)}
-            # self.pos = [C.HEIGHT + 1] * C.WIDTH
-        else:
-            self.line_state, self.state, self.end_pos = C.mask_to_line(self.mask)
+        self.line_state = [0] * C.line_num
+        self.state = {k: 0 for k in SE._params}
+        self.end_pos = {x: 0 for x in range(C.WIDTH)}
+        if self.mask != C.INIT_MASK:
+            self.done, self.depth = C.mask_to_line(
+                self.mask, self.line_state, self.state, self.end_pos
+            )
+            self.player_id = self.depth % 2
         return self
 
     def get_action(self, col, **kw):
@@ -80,13 +81,15 @@ class F4State(MctsNode):
         if y == C.HEIGHT:
             return
         depth = self.depth + 1
-        if depth % 2 == 1:
+        if depth % 2 == 0:
             mask0 |= 2 << y
         else:
             mask0 ^= 3 << y
         mask = (mask0 << x) | (self.mask & C.HEIGHT_POS_MASK[col])
         if mask not in STORE_STATE:
             STORE_STATE[mask] = F4State(mask, depth).init_state(col, y, self)
+            if mask & C.MASK_FULL_ALL == C.MASK_FULL_ALL:
+                STORE_STATE[mask].done = 0
         return F4Action(self, col, STORE_STATE[mask])
 
     def init_state(self, x, y, p):
@@ -123,7 +126,7 @@ class F4State(MctsNode):
                     break
                 if s & self.op_done:
                     actions = [a]
-                    flag = True
+                    flag = False
                 if flag:
                     actions.append(a)
             self.actions = actions
@@ -143,7 +146,9 @@ class F4Action(Action):
     src: F4State
 
     def __str__(self):
-        return f"<Action key:{self.action}{S[self.dst.player_id]} reward:{self.reward}>"
+        return (
+            f"<Action key:{self.action}{S[1-self.dst.player_id]} reward:{self.reward}>"
+        )
 
     def get_reward(self, params: StateEnum, **kwargs):
         score = 0

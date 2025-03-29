@@ -34,7 +34,7 @@ class MctsSearchTree(Algo):
         self.player_size = player_size
         self.scalar = 1 / (2 * math.sqrt(2.0))  # 0.353553
         self.explore_ratio = 0
-        return self
+        return super().load(**kw)
 
     def select(self, node: MctsNode):
         while node.expand_nodes:
@@ -62,10 +62,6 @@ class MctsSearchTree(Algo):
                 return 0
             if cur.done > 0:
                 return 1 if cur.done - 1 == cur.depth % self.player_size else -1
-            if not cur.get_actions():
-                print(cur.parent)
-                print(cur)
-                raise Exception("gg")
             next_step = cur.get_random_action().dst
             next_step.parent = cur
             cur = next_step
