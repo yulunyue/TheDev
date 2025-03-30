@@ -30,8 +30,8 @@ class Algo:
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
 
-    def load(self, use_cache=False):
-
+    def load(self, use_cache=False, num_episodes=0):
+        self.num_episodes = num_episodes
         self.cache = None
         self.max_use_time = 0
         self.max_state_count = 0

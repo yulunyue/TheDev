@@ -140,10 +140,11 @@ class Solution(SolutionBase):
             C.TRUN_INDEX += 1
 
     def ln(self, **kw):
-        from common.algo.learn.ln import Ln
+        # from common.algo.learn.ln import Ln
+        from common.algo.learn.dqn import Dqn
         from torch import nn
 
-        class DQN(nn.Module):
+        class Md(nn.Module):
             def __init__(self):
                 super().__init__()
                 self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
@@ -156,7 +157,11 @@ class Solution(SolutionBase):
                 x = x.view(x.size(0), -1)
                 return self.fc(x)
 
-        self.log(Ln().load(DQN, self.get_init_action).train())
+        self.log(
+            Dqn()
+            .load(env_init_fun=lambda: self.get_init_action().dst, model_fun=Md)
+            .train()
+        )
 
     def exec(self, **kw):
         search, state = AbSearchIter(), F4State(C.INIT_MASK).init_root()
