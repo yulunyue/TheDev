@@ -9,6 +9,7 @@ import json
 class F4State(MctsNode):
     name = "f4state"
     info = ""
+    parent: "F4State"
 
     def __init__(self, mask, depth) -> None:
         self.mask = mask
@@ -17,7 +18,7 @@ class F4State(MctsNode):
     def __str__(self):
         return self.to_str()
 
-    def to_str(self):
+    def to_str(self, info=""):
         ret = [["- "] * C.WIDTH for _ in range(C.HEIGHT)]
         ret.append([f"{i} " for i in range(C.WIDTH)])
 
@@ -51,6 +52,7 @@ class F4State(MctsNode):
                 f"done:{self.done}; depth:{self.depth}; playerid:{self.player_id}; actions:{len(self.get_actions())}",
                 # f"state:{state_info}",
                 # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
+                info,
                 f"info:{self.info}; check:{check_info}",
                 f"mask:{self.mask}",
             ]
@@ -105,16 +107,24 @@ class F4State(MctsNode):
         self.end_pos[x] = y + 1
         return self
 
-    def debug(self):
+    _debug_file = None
+
+    def debug(self, info=""):
         from common.util.fp import File
 
-        File("data/log/c4.txt").write_file(str(self))
+        if not F4State._debug_file:
+            fp = File("data/log/c4.txt").write_file("init\n")
+            F4State._debug_file = open(fp.path, "a", encoding="utf-8")
+        if info.startswith("msg"):
+            F4State._debug_file.write(f"\n-----{info}----\n")
+        else:
+            F4State._debug_file.write(self.to_str(info))
 
     def get_actions(self, depth=1, **kw):
         if depth == 0 or self.done > 0:
             return []
         if self.actions is None:
-            actions = []
+            actions: List[F4Action] = []
             flag = True
             for col in C.COLS:
                 a = self.get_action(col, **kw)
@@ -129,7 +139,9 @@ class F4State(MctsNode):
                     flag = False
                 if flag:
                     actions.append(a)
-            self.actions = actions
+            self.actions = sorted(
+                actions, key=lambda v: v.get_reward(SE) * [-1, 1][v.dst.player_id]
+            )
         return self.actions
 
     @property

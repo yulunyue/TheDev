@@ -27,14 +27,18 @@ class MctsNode(State):
             self._untried_actions = [a.dst for a in self.get_actions()]
         return self._untried_actions
 
+    def get_random_action(self) -> Action:
+        k = len(self.expand_nodes)
+        return self.actions[np.random.randint(0, k)]
+
 
 class MctsSearchTree(Algo):
 
-    def load(self, player_size=2, **kw):
+    def load(self, player_size=2, max_t=-1, num_episodes=1000):
         self.player_size = player_size
         self.scalar = 1 / (2 * math.sqrt(2.0))  # 0.353553
         self.explore_ratio = 0
-        return super().load(**kw)
+        return super().load(max_t=max_t, num_episodes=num_episodes)
 
     def select(self, node: MctsNode):
         while node.expand_nodes:
@@ -43,11 +47,8 @@ class MctsSearchTree(Algo):
 
     def expand(self, node: MctsNode):
         if node.untried_actions:
-            child = node.untried_actions.pop()
-            child.parent = node
+            child = node.untried_actions.pop(0)
             node.expand_nodes.append(child)
-            return child
-        return node
 
     def backpropagate(self, node: MctsNode, value):
         while node:
@@ -57,33 +58,36 @@ class MctsSearchTree(Algo):
             node = node.parent
 
     def simulate(self, cur: MctsNode):
-        while True:
-            if cur.done == 0:
-                return 0
-            if cur.done > 0:
-                return 1 if cur.done - 1 == cur.depth % self.player_size else -1
-            next_step = cur.get_random_action().dst
+        p = cur
+        while cur.done < 0:
+            self.expand(cur)
+            next_step = self.select(cur)
             next_step.parent = cur
             cur = next_step
+        ret = 0
+        if cur.done > 0:
+            if cur.done - 1 == p.depth % self.player_size:
+                ret = 1
+            else:
+                ret = -1
+        return (cur, ret)
 
     def ucb_score(self, node: MctsNode):
-        if not node.visits:
+        if not node.visits or node.parent is None:
             return inf
         exploit = node.mct_value / node.visits  # 平均值
         explore = math.sqrt(2.0 * math.log(node.parent.visits) / node.visits)
         return exploit + self.scalar * explore
 
-    def search_main(self, action: Action, budget=1000, max_t=0.1, **kw):
-        t = time.time()
+    def search_main(self, action: Action):
         self.state_count = 0
-        while self.state_count < budget or time.time() - t < max_t:
-            leaf = self.select(action.dst)
-            expanded_node = self.expand(leaf)
-            result = self.simulate(expanded_node)
-            self.backpropagate(expanded_node, result)
+        while self.state_count < self.num_episodes or (
+            self.max_t > 0 and time.time() - self.begin_time < self.max_t
+        ):
+            node, result = self.simulate(action.dst)
+            self.backpropagate(node, result)
             self.state_count += 1
-        vt = 0
-        for a in action.dst.get_actions():
-            if a.dst.visits > vt:
-                vt = a.dst.visits
-                action.dst.best_action = a
+
+        actions = action.dst.get_actions()
+        actions.sort(key=lambda a: -a.dst.visits)
+        action.dst.best_action = actions[0]

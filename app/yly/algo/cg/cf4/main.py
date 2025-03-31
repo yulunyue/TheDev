@@ -11,6 +11,17 @@ from app.yly.algo.cg.cf4.constant import SE, C, StateEnum
 from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
 
 
+class Mcts(MctsSearchTree):
+
+    def backpropagate(self, node: F4State, value):
+        super().backpropagate(node, value)
+        node.debug("msg:1")
+        while isinstance(node, F4State):
+            str_info = f"visits:{node.visits}; mct_value:{node.mct_value}; ucb_score:{self.ucb_score(node)}"
+            node.debug(str_info)
+            node = node.parent
+
+
 class Solution(SolutionBase):
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
@@ -74,7 +85,7 @@ class Solution(SolutionBase):
         return [
             dict(
                 player1="ab1",
-                player2="ab1",
+                player2="mcts",
             )
         ]
 
@@ -82,12 +93,12 @@ class Solution(SolutionBase):
         ret: Algo = {
             "ab1": lambda: AlphaBateSearch().load(1),
             "ab4": lambda: AlphaBateSearch().load(4),
-            "mcts": lambda: MctsSearchTree().load(),
+            "mcts": lambda: Mcts().load(num_episodes=10),
         }[search_type or "ab4"]()
         return ret.set_params(params or SE)
 
-    def get_init_action(self):
-        return F4Action(None, "init", F4State(C.INIT_MASK, 0).init_root())
+    def get_init_action(self, state=C.INIT_MASK):
+        return F4Action(None, "init", F4State(state, 0).init_root())
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
         players = [
@@ -213,6 +224,13 @@ class Solution(SolutionBase):
 
         f3 = F4State(18519085367618109697, 0).init_root()
         self.expect(len(f3.get_actions()), 1, str(f3))
+
+    def test_mcts(self, **kw):
+        a4 = self.get_init_action(129199548693116682497)
+        p = self.get_player(SE, search_type="mcts")
+        p.search(a4)
+        action = a4.dst.best_action.action
+        self.expect(action in (2, 5), str(a4.dst) + f"\n{action}\n")
 
     def test_f4(self, **kw):
         f4 = F4State(18519085367617978625, 0).init_root()
