@@ -76,6 +76,9 @@ class F4State(MctsNode):
             self.player_id = self.depth % 2
         return self
 
+    def load_form_kangle(self, **kw):
+        return False
+
     def get_action(self, col, **kw):
         x = col * (C.HEIGHT + 1)
         mask0 = self.mask >> x
@@ -139,9 +142,10 @@ class F4State(MctsNode):
                     flag = False
                 if flag:
                     actions.append(a)
-            self.actions = sorted(
-                actions, key=lambda v: v.get_reward(SE) * [-1, 1][v.dst.player_id]
-            )
+            self.actions = actions
+            # self.actions = sorted(
+            #     actions, key=lambda v: v.get_reward(SE) * [-1, 1][v.dst.player_id]
+            # )
         return self.actions
 
     @property

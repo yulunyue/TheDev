@@ -1,6 +1,7 @@
 from common.algo.search.param import Params, Param
 from typing import List
 
+DATA_PATH = "data/cf4"
 inf = float("inf")
 S = "○●"
 

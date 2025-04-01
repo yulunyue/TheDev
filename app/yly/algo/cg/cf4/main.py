@@ -1,4 +1,4 @@
-from common.algo.manage import SolutionBase, View, logger, MOD, inf
+from common.algo.manage import SolutionBase, View, logger, MOD, inf, File
 
 from common.algo.search.mctssearch import MctsSearchTree, MctsNode
 from common.algo.search.algo import Algo, np, RandomAlgo
@@ -7,8 +7,32 @@ from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
-from app.yly.algo.cg.cf4.constant import SE, C, StateEnum
+from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
 from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
+
+
+class Env:
+    connectx = "connectx"
+
+    def __init__(self, env_name, init_state=C.INIT_MASK, **kw):
+        self.env_name = env_name
+        self.state: F4State = F4State(init_state, 0).init_root()
+        if env_name == Env.connectx:
+            from kaggle_environments import make
+
+            self.state = make(env_name, **kw)
+            self.state.reset()
+
+    def run(self, players):
+        self.players = players
+        self.records = self.state.run(players)
+        return self.records
+
+    def render(self, mode=None, **kw):
+        ret = self.state.render(mode=mode, **kw)
+        if mode == "html":
+            File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
+        return ret
 
 
 class Mcts(MctsSearchTree):
