@@ -1,4 +1,4 @@
-from common.algo.manage import SolutionBase, View, logger, MOD, inf, File
+from common.algo.manage import SolutionBase, View, MOD, inf, File, get_log
 
 from common.algo.search.mctssearch import MctsSearchTree, MctsNode
 from common.algo.search.algo import Algo, np, RandomAlgo
@@ -10,40 +10,54 @@ from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
 from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
 
+logger = get_log("cf4")
+
 
 class Env:
     connectx = "connectx"
 
-    def __init__(self, env_name, init_state=C.INIT_MASK, **kw):
+    def get_init_action(self, state=None):
+        state = state or C.INIT_MASK
+        return F4Action(None, "init", F4State(state, 0).init_root())
+
+    def __init__(self, env_name, init_state=None, **kw):
         self.env_name = env_name
-        self.state: F4State = F4State(init_state, 0).init_root()
+
         if env_name == Env.connectx:
             from kaggle_environments import make
 
-            self.state = make(env_name, **kw)
-            self.state.reset()
+            self.env = make(env_name, **kw)
+            self.env.reset()
+            C.load(6, 7)
+        else:
+            self.env = None
+        self.action = self.get_init_action(init_state)
 
     def run(self, players):
         self.players = players
-        self.records = self.state.run(players)
-        return self.records
+        self.actions = []
+        if self.env:
+            from common.util.log import JSON_TMP_FILE
+
+            records = self.env.run(players)
+            JSON_TMP_FILE.write_file(records)
+            idx = 0
+            for a in records[1:]:
+                self.actions.append(a[idx]["action"])
+                idx = 1 - idx
 
     def render(self, mode=None, **kw):
-        ret = self.state.render(mode=mode, **kw)
-        if mode == "html":
+        if self.env and mode == "html":
+            ret = self.env.render(mode=mode, **kw)
             File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
-        return ret
-
-
-class Mcts(MctsSearchTree):
-
-    def backpropagate(self, node: F4State, value):
-        super().backpropagate(node, value)
-        node.debug("msg:1")
-        while isinstance(node, F4State):
-            str_info = f"visits:{node.visits}; mct_value:{node.mct_value}; ucb_score:{self.ucb_score(node)}"
-            node.debug(str_info)
-            node = node.parent
+        cur = self.action
+        for i, a in enumerate(self.actions):
+            if not cur:
+                logger.info(f"{i} {len(self.actions)}")
+                break
+            cur = cur.dst.get_action(a)
+            logger.info(f"put:{a}")
+            logger.info(cur.dst.to_str())
 
 
 class Solution(SolutionBase):
@@ -120,9 +134,6 @@ class Solution(SolutionBase):
             "mcts": lambda: Mcts().load(num_episodes=10),
         }[search_type or "ab4"]()
         return ret.set_params(params or SE)
-
-    def get_init_action(self, state=C.INIT_MASK):
-        return F4Action(None, "init", F4State(state, 0).init_root())
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
         players = [

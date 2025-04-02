@@ -46,19 +46,18 @@ class F4State(MctsNode):
         # b = Baoli()
         # bv = b.search(self, depth=20, state_max_num=4000)
         return "\n".join(
-            ["**" * C.WIDTH]
+            ["", "**" * C.WIDTH]
             + ["".join(v) for v in ret]
             + [
-                f"done:{self.done}; depth:{self.depth}; playerid:{self.player_id}; actions:{len(self.get_actions())}",
+                f"done: {self.done}; depth: {self.depth};",
+                f"playerid: {self.player_id}{S[self.player_id]};",
                 # f"state:{state_info}",
                 # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
                 info,
-                f"info:{self.info}; check:{check_info}",
-                f"mask:{self.mask}",
+                # f"info:{self.info}; check:{check_info}",
+                f"mask: {self.mask}",
             ]
-            + [
-                "**" * C.WIDTH,
-            ]
+            + ["**" * C.WIDTH, ""]
         )
 
     @property
@@ -129,7 +128,7 @@ class F4State(MctsNode):
         if self.actions is None:
             actions: List[F4Action] = []
             flag = True
-            for col in C.COLS:
+            for col in range(C.WIDTH):
                 a = self.get_action(col, **kw)
                 if a is None:
                     continue
