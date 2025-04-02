@@ -1,5 +1,5 @@
 from common.algo.test import TestBase
-from .main import logger, F4State, Env
+from app.yly.algo.cg import logger, F4State, Env, PLAYERS
 
 
 class C4Test(TestBase):
@@ -15,6 +15,9 @@ class C4Test(TestBase):
         env.render(mode="html", width=500, height=450)
         # env.run([cell_swarm, "negamax"])
         # print(env.render(mode="human", width=500, height=450))
+
+    def test_pk(self):
+        players = list(PLAYERS.keys())
 
 
 if __name__ == "__main__":

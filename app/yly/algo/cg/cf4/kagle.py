@@ -10,11 +10,15 @@ class Kagle(Algo):
 
     def get_pattern(self, x, x_fun, y, y_fun, cells_remained):
         pattern = []
+        x = x_fun(x)
+        y = y_fun(y)
+
+        return pattern
 
     def get_patterns(self, state: F4State):
         pass
 
-    def calculate_points(self, cell):
+    def calculate_points(self, state: F4State):
         pass
 
     def evaluate_pattern(self):

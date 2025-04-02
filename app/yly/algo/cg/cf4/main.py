@@ -11,6 +11,11 @@ from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
 from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
 
 logger = get_log("cf4")
+PLAYERS = dict(
+    ab1=lambda: AlphaBateSearch().load(1),
+    ab3=lambda: AlphaBateSearch().load(3),
+    ab5=lambda: AlphaBateSearch().load(5),
+)
 
 
 class Env:
@@ -128,11 +133,7 @@ class Solution(SolutionBase):
         ]
 
     def get_player(self, params: StateEnum, search_type=None) -> Algo:
-        ret: Algo = {
-            "ab1": lambda: AlphaBateSearch().load(1),
-            "ab4": lambda: AlphaBateSearch().load(4),
-            "mcts": lambda: Mcts().load(num_episodes=10),
-        }[search_type or "ab4"]()
+        ret: Algo = [search_type or "ab4"]()
         return ret.set_params(params or SE)
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
