@@ -1,6 +1,8 @@
 from common.algo.search.param import Params, Param
 from typing import List
+import os
 
+DATA_PATH = "data/cf4"
 inf = float("inf")
 S = "○●"
 
@@ -26,14 +28,13 @@ SE.init_param()
 
 class Constant:
 
-    TRUN_INDEX = 0
-
-    def __init__(self, HEIGHT=7, WIDTH=9) -> None:
-        self.HEIGHT = HEIGHT
-        self.WIDTH = WIDTH
+    def load(self, h, w) -> None:
+        self.HEIGHT = h
+        self.WIDTH = w
         self.init_w()
         self.init_score()
         self.init_lines()
+        return self
 
     def init_score(self):
         self.scores = []
@@ -54,7 +55,6 @@ class Constant:
         return self
 
     def init_w(self):
-        self.COLS = [4, 3, 5, 2, 6, 1, 7, 0, 8]
         self.MASK_FULL_HEIGHT = (1 << self.HEIGHT + 1) - 1
         self.MASK_FULL_ALL = 0
         self.state_pos = []

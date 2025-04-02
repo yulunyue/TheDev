@@ -1,8 +1,9 @@
 import sys
 import time
 from common.util.log import get_log
+
 logger = get_log("test")
-TEST_FN_PREFIX = 'test_'
+TEST_FN_PREFIX = "test_"
 
 
 class TestBase:
@@ -13,19 +14,27 @@ class TestBase:
         pass
 
     def run(self):
-        if len(sys.argv) == 1:
-            fns = [getattr(self, k)
-                   for k in dir(self) if k.startswith(TEST_FN_PREFIX)]
+        argvs = []
+        self.kw = dict()
+        for param in sys.argv[1:]:
+            key, *args = param.split("=")
+            if len(args) == 0:
+                argvs.append(param)
+            else:
+                self.kw[key] = "=".join(args)
+        if not argvs:
+            fns = [getattr(self, k) for k in dir(self) if k.startswith(TEST_FN_PREFIX)]
         else:
-            fns = [getattr(self, TEST_FN_PREFIX+k) for k in sys.argv[1:]]
+            fns = [getattr(self, TEST_FN_PREFIX + k) for k in argvs]
         for f in fns:
-            start_time = time.time()*1000
-            logger.info(f'---Test Begin {f.__name__}------')
+            start_time = time.time() * 1000
+            logger.info(f"---Test Begin {f.__name__}------")
             self.ep_cont = 0
             f()
-            end_time = time.time()*1000
+            end_time = time.time() * 1000
             logger.info(
-                f'---Test End {f.__name__} [ut:{end_time-start_time} ms] [ep:{self.ep_cont}]---')
+                f"---Test End {f.__name__} [ut:{end_time-start_time} ms] [ep:{self.ep_cont}]---"
+            )
         self.exit()
 
     def exit(self):
@@ -35,4 +44,4 @@ class TestBase:
         self.ep_cont += 1
         if a == b or str(a) == str(b):
             return True
-        raise Exception(f'{a}!={b} [{info}]')
+        raise Exception(f"{a}!={b} [{info}]")

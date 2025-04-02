@@ -31,7 +31,7 @@ class Action:
 class State:
     done = -1
     name = "state"
-    parent = None
+    parent: "State"
 
     def __init__(self, player_id, depth) -> None:
         self.depth = depth

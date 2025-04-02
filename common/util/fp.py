@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List
+from typing import List, Dict
 
 
 def dump_default(v):
@@ -125,7 +125,7 @@ class Cache:
         return self
 
 
-CACHE: dict[str, Cache] = dict()
+CACHE: Dict[str, Cache] = dict()
 
 
 def get_cache(name):

@@ -1,7 +1,6 @@
-
 from common.service.api import Api
 import tornado
-from typing import Awaitable, List,Dict
+from typing import Awaitable, List, Dict
 from tornado.httputil import HTTPServerRequest
 from tornado.web import Application, RequestHandler
 from tornado.websocket import WebSocketHandler
@@ -12,26 +11,40 @@ import signal
 import sys
 import json
 import os
-from common.util.log import File,get_log
-logger=get_log("http")
+from common.util.log import File, get_log
+
+logger = get_log("http")
 from common.util.tool import uid
 from common.util.module import Module
+
 HTML_CONTENT_TYPE = dict(
     jpg="image/jpeg",
     png="image/png",
     gif="image/gif",
     css="text/css",
     html="text/html",
-    svg='image/svg+xml',
+    svg="image/svg+xml",
     json="application/json",
-    js="application/x-javascript"
+    js="application/x-javascript",
 )
 
+
 class Node:
-    def __init__(self, code=0,type="", key="", title="", size=0,value=None, data=None, option=None, childs=None) -> None:
+    def __init__(
+        self,
+        code=0,
+        type="",
+        key="",
+        title="",
+        size=0,
+        value=None,
+        data=None,
+        option=None,
+        childs=None,
+    ) -> None:
         self.code = code
         self.type = type
-        self.key = key or uid('node')
+        self.key = key or uid("node")
         self.title = title
         self.value = value
         self.size = size
@@ -40,81 +53,104 @@ class Node:
         self.childs: List[Node] = []
         if childs:
             for cd in childs:
-                if isinstance(cd,dict):
+                if isinstance(cd, dict):
                     self.add_child(**cd)
                 else:
                     self.childs.append(cd)
         self.init()
-    def set_value(self,v):
-        self.value=v 
+
+    def set_value(self, v):
+        self.value = v
         return self
+
     def init(self):
         pass
-    def set_type(self,tp):
-        self.type=tp
-        return self
-    
-    def set_key(self,key):
-        self.key=key
-        return self
-    
-    def set_data(self,**kw):
-        for k,v in kw.items():
-            self.data[k]=v
+
+    def set_type(self, tp):
+        self.type = tp
         return self
 
+    def set_key(self, key):
+        self.key = key
+        return self
 
-    def set_option(self,**kwargs):
+    def set_data(self, **kw):
+        for k, v in kw.items():
+            self.data[k] = v
+        return self
+
+    def set_option(self, **kwargs):
         pass
 
-    def add_child(self, code=0, type="", key="", title="", value=None, data=None, option=None, childs=None):
-        ret = Node(code=code, type=type, key=key, title=title,
-                   value=value, data=data, option=option, childs=childs)
+    def add_child(
+        self,
+        code=0,
+        type="",
+        key="",
+        title="",
+        value=None,
+        data=None,
+        option=None,
+        childs=None,
+    ):
+        ret = Node(
+            code=code,
+            type=type,
+            key=key,
+            title=title,
+            value=value,
+            data=data,
+            option=option,
+            childs=childs,
+        )
         self.childs.append(ret)
         ret.parent = self
         return ret
 
-    def add_node(self,*args):
+    def add_node(self, *args):
         for n in args:
             self.childs.append(n)
         return self
 
-    def to_json(self,**kw):
+    def to_json(self, **kw):
         ret = dict(
             type=self.type,
             key=self.key,
             title=self.get_title(),
             value=self.value,
             childs=[c.to_json() for c in self.get_childs()],
-            data=self.get_data()
+            data=self.get_data(),
         )
         ret.update(kw)
         return ret
+
     def get_childs(self):
         return self.childs
-    
+
     def get_title(self):
         return self.title
-    
+
     def get_data(self):
         return self.data
-    
+
+
 class TornadaWebSocketConnectHandler(WebSocketHandler):
-    user_name=""
-    def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
+    user_name = ""
+
+    def open(self, *args: str, **kwargs: str):
         logger.info(f"WebSocket opened {self}")
         return super().open(*args, **kwargs)
-    
-    def hander_msg(self,node:Node):
-        if node.type == 'login':
-            self.user_name=node.data['user_name']
-            WEB_SOCKET_CLIENTS[self.user_name]=self
-            node.title = f'welcom {self.user_name}'
+
+    def hander_msg(self, node: Node):
+        if node.type == "login":
+            self.user_name = node.data["user_name"]
+            WEB_SOCKET_CLIENTS[self.user_name] = self
+            node.title = f"welcom {self.user_name}"
             return node
-        
+
     def on_message(self, message):
         oj = json.loads(message)
-        res = self.hander_msg(Node(type=oj['type'],data=oj['data']))
+        res = self.hander_msg(Node(type=oj["type"], data=oj["data"]))
         if res:
             self.write_message(res.to_json())
 
@@ -122,16 +158,17 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         logger.info(f"WebSocket closed {self}")
         if self.user_name in WEB_SOCKET_CLIENTS:
             WEB_SOCKET_CLIENTS.pop(self.user_name)
-        
+
     def check_origin(self, origin):
         return True
 
 
-WEB_SOCKET_CLIENTS:Dict[str,TornadaWebSocketConnectHandler] = dict()
+WEB_SOCKET_CLIENTS: Dict[str, TornadaWebSocketConnectHandler] = dict()
+
 
 def send_clients_mag(user, data):
     WEB_SOCKET_CLIENTS[user].write_message(data)
- 
+
 
 class ApiCall:
     def __init__(self) -> None:
@@ -143,16 +180,17 @@ class ApiCall:
 
     def call_app(self, path, params):
         if path not in self.fun_map:
-            return dict(code=404, title=f'{path} not in {list(self.fun_map.keys())}')
+            return dict(code=404, title=f"{path} not in {list(self.fun_map.keys())}")
         try:
             ret = self.fun_map[path](**params)
         except Exception as e:
             logger.error(e)
             import traceback
+
             traceback.print_exc()
-            ret = dict(code=500,title=str(e))
+            ret = dict(code=500, title=str(e))
         if isinstance(ret, Node):
-            return json.dumps(ret.to_json(),ensure_ascii=False)
+            return json.dumps(ret.to_json(), ensure_ascii=False)
         return ret
 
     def call(self, path, param):
@@ -164,28 +202,28 @@ class ApiCall:
     def load_module_str(self, key: str, modules: List[str]):
         if key and not os.path.isdir(key):
             raise Exception(key)
-        if modules == '*':
+        if modules == "*":
             modules = os.listdir(key)
-        path_key = key if key.startswith('/') else '/'+key
+        path_key = key if key.startswith("/") else "/" + key
         for moudule_name in modules:
-            m = Module().load_module(moudule_name, key, 'Route')()
-            moudule_name_key = moudule_name.replace('.', '/')
+            m = Module().load_module(moudule_name, key, "Route")()
+            moudule_name_key = moudule_name.replace(".", "/")
             for fun_name in dir(m):
-                if fun_name.startswith('_'):
+                if fun_name.startswith("_"):
                     continue
                 f = getattr(m, fun_name)
-                fun_key = f'{path_key}/{moudule_name_key}/{fun_name}'
+                fun_key = f"{path_key}/{moudule_name_key}/{fun_name}"
                 if callable(f):
                     self.fun_map[fun_key] = f
 
     def load_module(self, cls):
         m = cls.Route()
-        moudule_name_key = cls.__name__.replace('.', '/')
+        moudule_name_key = cls.__name__.replace(".", "/")
         for fun_name in dir(m):
-            if fun_name.startswith('_'):
+            if fun_name.startswith("_"):
                 continue
             f = getattr(m, fun_name)
-            fun_key = f'/{moudule_name_key}/{fun_name}'
+            fun_key = f"/{moudule_name_key}/{fun_name}"
             if callable(f):
                 self.fun_map[fun_key] = f
                 logger.info(f"register {fun_key}")
@@ -202,9 +240,11 @@ class MainHander(RequestHandler):
     GET_API = ApiCall()
     POST_API = ApiCall()
 
-    def __init__(self, application: Application, request: HTTPServerRequest, **kwargs) -> None:
+    def __init__(
+        self, application: Application, request: HTTPServerRequest, **kwargs
+    ) -> None:
         self.path = request.path
-        if request.method.upper() == 'POST':
+        if request.method.upper() == "POST":
             try:
                 self.params = json.loads(request.body)
             except:
@@ -214,35 +254,32 @@ class MainHander(RequestHandler):
         super().__init__(application, request, **kwargs)
 
     def get(self, *args):
-        path = self.path[1:].split('?')[0]
-        ret = f'404 not find {path}'
+        path = self.path[1:].split("?")[0]
+        ret = f"404 not find {path}"
         if os.path.isfile(path):
-            with open(path, 'rb') as f:
+            with open(path, "rb") as f:
                 ret = f.read()
-        logger.info(f'{list(args)}:{len(ret)}')
+        logger.info(f"{list(args)}:{len(ret)}")
         self.out(ret)
 
     def post(self, *args):
         ret = self.POST_API.call(self.path, self.params)
-        logger.info(f'[{self.path}]')
-        self.out(ret,self.params)
+        logger.info(f"[{self.path}]")
+        self.out(ret, self.params)
 
     def options(self, *args):
-        self.out('ok',None)
+        self.out("ok", None)
 
     def out(self, data, params):
         if params:
-            File(f'data/log/http/{self.path}/input.json').write_file(params)
+            File(f"data/log/http/{self.path}/input.json").write_file(params)
         if data:
-            File(f'data/log/http/{self.path}/result.json').write_file(data)
+            File(f"data/log/http/{self.path}/result.json").write_file(data)
         self.send_header()
         self.write(data)
 
     def content_type(self):
-        rt = HTML_CONTENT_TYPE.get(
-            self.path.split(".")[-1],
-            HTML_CONTENT_TYPE['json']
-        )
+        rt = HTML_CONTENT_TYPE.get(self.path.split(".")[-1], HTML_CONTENT_TYPE["json"])
         # print(self.path, rt)
         return rt
 
@@ -255,15 +292,11 @@ class MainHander(RequestHandler):
 DEFAULT_CONF_PATH = "data/setting/http.json"
 
 
-
-
-
-def run(*args,port=8888):
+def run(*args, port=8888):
     MainHander.POST_API.load_modules(list(args))
-    app = Application([
-        (r'/ws', TornadaWebSocketConnectHandler),
-        (r"/(.*)", MainHander)
-    ])
+    app = Application(
+        [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHander)]
+    )
     logger.info(f"listen:{port}")
     app.listen(port, "0.0.0.0")
     IOLoop.instance().start()

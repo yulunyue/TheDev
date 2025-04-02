@@ -30,11 +30,13 @@ class Algo:
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
 
-    def load(self, use_cache=False, num_episodes=0):
-        self.num_episodes = num_episodes
+    def load(self, use_cache=False, max_t=-1, num_episodes=1000):
+
         self.cache = None
         self.max_use_time = 0
         self.max_state_count = 0
+        self.num_episodes = num_episodes
+        self.max_t = max_t
         if use_cache:
             from common.util.fp import get_cache
 
@@ -51,9 +53,9 @@ class Algo:
     def search(self, state: Action):
         self.state_clear(state)
         self.state_count = 0
-        begin_time = time.time()
+        self.begin_time = time.time()
         ret = self.search_main(state)
-        self.use_time = int((time.time() - begin_time) * 1000)
+        self.use_time = int((time.time() - self.begin_time) * 1000)
         self.max_use_time = max(self.max_use_time, self.use_time)
         self.max_state_count = max(self.state_count, self.max_state_count)
         return ret

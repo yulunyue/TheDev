@@ -3,35 +3,21 @@ import logging.handlers
 import os
 from common.constant import Constant
 from common.util.fp import File
+import sys
+import traceback
 
-
+LOG_DIR = "data/log"
+JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
 LOG_MAP = dict()
 LOGGER_MODE = "LOGGER_MODE"
-
-
-class ImmediateFileHandler(logging.FileHandler):
-    def emit(self, record):
-        # 调用父类的emit方法写入日志
-        super().emit(record)
-        # 强制刷新流缓冲区
-        self.stream.flush()
-
-    # def _open(self):
-    #     # 设置buffering=1（行缓冲）或0（无缓冲，需二进制模式）
-    #     return open(self.baseFilename, self.mode, encoding=self.encoding, buffering=0)
 
 
 class Logger(logging.Logger):
     def __init__(self, name) -> None:
         super().__init__(name)
-        self.path = f"./data/log/{name}.log"
-
-        fp = File(self.path)
-        if not fp.exists():
-            fp.write_file("")
-
+        self.path = f"{LOG_DIR}/{name}.log"
         self.add_hander(
-            ImmediateFileHandler(
+            logging.FileHandler(
                 self.path, mode=os.environ.get(LOGGER_MODE, "w"), encoding="utf-8"
             ),
             logging.INFO,
@@ -46,9 +32,9 @@ class Logger(logging.Logger):
                     "[%(asctime)s]",
                     # "levelname",
                     # "process)s:%(threadName",
-                    "[%(pathname)-10s:%(lineno)-3s]",
-                    "[%(funcName)-12s] ",
-                    "%(message)-4s",
+                    "[%(pathname)s:%(lineno)s]",
+                    "[%(funcName)s] ",
+                    "%(message)s",
                 ]
             )
         )
@@ -71,3 +57,22 @@ def get_log(name="", log_class="log") -> Logger:
     if name not in LOG_MAP:
         LOG_MAP[name] = {"default": TheDevLoger, "log": Logger}[log_class](name)
     return LOG_MAP[name]
+
+
+def std_mock():
+    old_std = sys.stdout
+    old_error = sys.stderr
+
+    class Tmp:
+
+        def write(self, data):
+            stack_str = traceback.format_stack()
+            get_log("std").info(f"{stack_str}\n{data}")
+
+        def flush(self):
+            old_error.flush()
+
+    sys.stdout = Tmp()
+
+
+std_mock()
