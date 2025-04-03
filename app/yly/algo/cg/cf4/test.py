@@ -1,5 +1,5 @@
 from common.algo.test import TestBase
-from app.yly.algo.cg import logger, F4State, Env, PLAYERS
+from app.yly.algo.cg.cf4.main import logger, F4State, Env, PLAYERS
 
 
 class C4Test(TestBase):
@@ -17,7 +17,7 @@ class C4Test(TestBase):
         # print(env.render(mode="human", width=500, height=450))
 
     def test_pk(self):
-        players = list(PLAYERS.keys())
+        players = list(PLAYERS)
 
 
 if __name__ == "__main__":
