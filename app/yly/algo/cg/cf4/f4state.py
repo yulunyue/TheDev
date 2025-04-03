@@ -11,7 +11,7 @@ class F4State(MctsNode):
     info = ""
     parent: "F4State"
 
-    def __init__(self, mask, depth) -> None:
+    def __init__(self, mask, depth=0) -> None:
         self.mask = mask
         super().__init__(depth % 2, depth)
 
@@ -64,15 +64,21 @@ class F4State(MctsNode):
     def key(self):
         return str(self.mask)
 
-    def init_root(self):
+    def init_root(self, h, w):
+        C.load(h, w)
         self.line_state = [0] * C.line_num
         self.state = {k: 0 for k in SE._params}
         self.end_pos = {x: 0 for x in range(C.WIDTH)}
+        if self.mask is None:
+            self.mask = C.INIT_MASK
         if self.mask != C.INIT_MASK:
-            self.done, self.depth = C.mask_to_line(
+            self.mask, self.done, self.depth = C.mask_to_line(
                 self.mask, self.line_state, self.state, self.end_pos
             )
             self.player_id = self.depth % 2
+        else:
+            self.depth = 0
+            self.player_id = 0
         return self
 
     def load_form_kangle(self, **kw):
@@ -146,6 +152,9 @@ class F4State(MctsNode):
             #     actions, key=lambda v: v.get_reward(SE) * [-1, 1][v.dst.player_id]
             # )
         return self.actions
+
+    def load_from_board(self, board, rows, columns):
+        pass
 
     @property
     def win_done(self):

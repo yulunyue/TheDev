@@ -44,4 +44,4 @@ class TestBase:
         self.ep_cont += 1
         if a == b or str(a) == str(b):
             return True
-        raise Exception(f"{a}!={b} [{info}]")
+        raise Exception(f"{a}!={b} msg:{info}")

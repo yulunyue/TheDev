@@ -29,7 +29,6 @@ class Action:
 
 
 class State:
-    done = -1
     name = "state"
     parent: "State"
 
@@ -38,10 +37,6 @@ class State:
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: List[Action] = None
-
-    def set_done(self, done):
-        self.done = done
-        return self
 
     def reset(self):
         return self
