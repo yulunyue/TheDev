@@ -53,6 +53,19 @@ class Logger(logging.Logger):
         )
         # self.add_hander(logging.StreamHandler(), logging.INFO)
 
+    def table(self, datas, keys=None):
+        from prettytable import PrettyTable
+
+        tb = PrettyTable()
+        if keys:
+            tb.add_rows(keys)
+        for row in datas:
+            if keys:
+                tb.add_row([row.get(k, None) for k in keys])
+            else:
+                tb.add_row(row)
+        self.info(f"-TABLLE-\n{tb}")
+
     def add_hander(self, h: logging.Handler, level, fmt=None):
         if fmt is None:
             fmt = DEFAULT_FMT

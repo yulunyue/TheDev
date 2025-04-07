@@ -30,9 +30,9 @@ PLAYERS = dict(
 class Env:
     connectx = "connectx"
 
-    def __init__(self, env_name=None, debug=0, height=7, width=9, **kw):
+    def __init__(self, env_name="connectx", debug=0, height=7, width=9, **kw):
         self.env_name = env_name
-
+        self.debug = debug
         if env_name == Env.connectx:
             from kaggle_environments import make
 
@@ -59,7 +59,8 @@ class Env:
                     ),
                 )
                 f.search(a)
-                # a.dst.debug(f"{a.dst.best_action}")
+                if self.debug:
+                    a.dst.debug(f"{a.dst.best_action}")
                 return a.dst.best_action.action
 
             return util
@@ -74,14 +75,25 @@ class Env:
 
             records = self.env.run(self.players)
             JSON_TMP_FILE.write_file(records)
+            board = []
+            bk = "board"
             idx = 0
             for a in records[1:]:
+                board.append(f"xxx-[{a[idx]['action']}]-xxx")
                 self.actions.append(a[idx]["action"])
+                if bk in a[1 - idx]["observation"]:
+                    bkv = a[1 - idx]["observation"][bk]
+                else:
+                    bkv = a[idx]["observation"][bk]
+                for h in range(C.HEIGHT):
+                    board.append(
+                        "".join([str(v) for v in bkv[h * C.WIDTH : (h + 1) * C.WIDTH]])
+                    )
+                board.append("xxxxxx")
                 if a[idx]["status"] == "DONE":
-
                     return -1 if a[idx]["reward"] == 0 else idx % 2
                 idx = 1 - idx
-
+            self.state.debug("msg:\n" + "\n".join(board))
         # else:
         #     self.actions.extend(self.env.run(self.players))
 
