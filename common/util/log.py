@@ -53,17 +53,19 @@ class Logger(logging.Logger):
         )
         # self.add_hander(logging.StreamHandler(), logging.INFO)
 
-    def table(self, datas, keys=None):
+    def table(self, datas: dict, key=None, header_key="table_name"):
         from prettytable import PrettyTable
 
-        tb = PrettyTable()
-        if keys:
-            tb.add_rows(keys)
+        keys = list(datas.keys())
+        datas = list(sorted(datas.values(), key=key))
+        headers = [header_key] + list(datas[0].keys())
+        for i, r in enumerate(datas):
+            r[header_key] = keys[i]
+        rows = []
         for row in datas:
-            if keys:
-                tb.add_row([row.get(k, None) for k in keys])
-            else:
-                tb.add_row(row)
+            rows.append([row[k] for k in headers])
+        tb = PrettyTable(field_names=headers)
+        tb.add_rows(rows)
         self.info(f"-TABLLE-\n{tb}")
 
     def add_hander(self, h: logging.Handler, level, fmt=None):
@@ -117,4 +119,4 @@ def std_mock(with_trace=False):
     sys.stdout = sys.stderr = Tmp()
 
 
-std_mock()
+# std_mock()

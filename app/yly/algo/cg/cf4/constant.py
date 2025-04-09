@@ -124,7 +124,7 @@ class Constant:
                 score[old_line_state] -= 1
             if new_line_state == (0, 4):
                 # p.info += f"[set {self.score}]"
-                done = player_id + 1
+                done = [2, 1][player_id]
             elif new_line_state == (0, 3):
                 y1, x1, _ = self.lines[line_id][null_pos[0]]
                 end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << (1 - player_id))

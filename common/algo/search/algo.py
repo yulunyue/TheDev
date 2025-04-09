@@ -30,6 +30,10 @@ class Algo:
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
 
+    def set_name(self, name):
+        self.name = name
+        return self
+
     def load(self, use_cache=False, max_t=-1, num_episodes=1000):
 
         self.cache = None
@@ -50,18 +54,18 @@ class Algo:
     def search_main(self, state, **kw):
         pass
 
-    def search(self, state: Action):
-        self.state_clear(state)
+    def search(self, action: Action):
+        self.state_clear(action)
         self.state_count = 0
         self.begin_time = time.time()
-        ret = self.search_main(state)
+        ret = self.search_main(action)
         self.use_time = int((time.time() - self.begin_time) * 1000)
         self.max_use_time = max(self.max_use_time, self.use_time)
         self.max_state_count = max(self.state_count, self.max_state_count)
         return ret
 
-    def state_clear(self, state: Action):
-        state.dst.best_action = None
+    def state_clear(self, action: Action):
+        action.dst.best_action = None
 
     def new_state(self, key):
         pass
