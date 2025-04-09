@@ -51,7 +51,9 @@ class C4Test(TestBase):
             else:
                 fight_result[players[state].name]["win"] += 1
                 fight_result[players[1 - state].name]["lose"] += 1
-                logger.info(f"{players[state].name} win {players[1 - state].name}")
+                logger.info(
+                    f"{players[state].name} win[{state}] {players[1 - state].name}"
+                )
             for p in players:
                 fight_result[p.name]["use_time"] += p.use_time
                 fight_result[p.name]["max_time"] = max(

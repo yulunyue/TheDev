@@ -26,7 +26,7 @@ PLAYERS = dict(
     ab1=lambda: AlphaBateSearch().load(1).set_params(SE),
     ab3=lambda: AlphaBateSearch().load(3).set_params(SE),
     ab5=lambda: AlphaBateSearch().load(5).set_params(SE),
-    kd1=lambda: KagleAgent().load(),
+    kd1=lambda: KagleAgent().load().set_params(None),
     # negamax="negamax",
 )
 
