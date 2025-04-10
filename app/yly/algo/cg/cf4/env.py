@@ -30,6 +30,10 @@ class Ab(AlphaBateSearch):
 
     def __call__(self, env: KaggleEnv, conf: KaggleEnv):
         action = F4Action().load_from_kaggle(env, conf)
+        # if env.board != action.dst.grid:
+        #     logger.info("gg")
+        #     logger.info(env.board)
+        #     logger.info(action.dst.grid)
         self.search(action)
         return action.dst.best_action.action
 

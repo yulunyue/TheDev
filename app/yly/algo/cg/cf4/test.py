@@ -9,7 +9,7 @@ class C4Test(TestBase):
 
     def test_pk(self):
         players = [get_player("kd1"), get_player("ab1")]
-        env = Env(debug=1, env_name=Env.connectx)
+        env = Env(debug=1, width=7, height=6)  # , env_name=Env.connectx)
         # Play as the first agent against "negamax" agent.
         result = env.run(players)
         env.render(mode="html", width=500, height=450)

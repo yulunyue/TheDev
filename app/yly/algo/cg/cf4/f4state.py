@@ -74,7 +74,7 @@ class F4State(MctsNode):
             self.mask = C.INIT_MASK
         if self.mask != C.INIT_MASK:
             self.mask, self.done, self.depth = C.mask_to_line(
-                self.mask, self.line_state, self.state, self.end_pos
+                self.mask, self.line_state, self.state, self.end_pos, self.grid
             )
             self.player_id = self.depth % 2
         else:
@@ -113,7 +113,7 @@ class F4State(MctsNode):
             self.state[key] += v
 
         self.end_pos[x] = y + 1
-        self.grid[(C.HEIGHT - self.end_pos[x]) * C.WIDTH + x] = self.player_id + 1
+        self.grid[(C.HEIGHT - self.end_pos[x]) * C.WIDTH + x] = 2 - self.player_id
         return self
 
     _debug_file = None
@@ -198,7 +198,7 @@ class F4Action(Action):
         return self
 
     def dump_to_kaggle(self):
-        c = KaggleEnv(self.dst.grid, C.HEIGHT, C.WIDTH, self.dst.player_id)
+        c = KaggleEnv(self.dst.grid, C.HEIGHT, C.WIDTH, self.dst.player_id + 1)
         return c, c
 
     def load_from_state(self, state=None, height=7, width=9):

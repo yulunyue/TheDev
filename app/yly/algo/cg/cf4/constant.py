@@ -148,15 +148,16 @@ class Constant:
             mask |= m
         return mask
 
-    def mask_to_line(self, mask, line_state, state, end_pos):
+    def mask_to_line(self, mask, line_state, state, end_pos, grid):
         done = -1
         depth = 0
         if isinstance(mask, list):
             mask = self.grid_to_mask(mask)
 
-        def util(i, j, v):
+        def util(i, j, player_id):
             nonlocal done, depth
-            pos_state, done = self.set_pos(i, j, 1 - v, line_state, end_pos)
+            pos_state, done = self.set_pos(i, j, 1 - player_id, line_state, end_pos)
+            grid[(C.HEIGHT - i - 1) * C.WIDTH + j] = player_id + 1
             end_pos[j] = i + 1
             for key, v in pos_state.items():
                 state[key] += v
