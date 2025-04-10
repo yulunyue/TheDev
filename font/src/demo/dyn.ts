@@ -11,7 +11,9 @@ export class Temaplate extends Div {
 
     }
     on_mount(): void {
-        web_dom.get_json(web_dom.get_param("ts_file"))
+        web_dom.get_ts(web_dom.get_param("ts_file", "/font/src/demo/eval.ts"), (data: any) => {
+            console.log(data)
+        })
     }
 
 }

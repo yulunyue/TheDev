@@ -75,4 +75,4 @@ def std_mock():
     sys.stdout = Tmp()
 
 
-std_mock()
+# std_mock()

@@ -1,5 +1,6 @@
 import { Style, Fn1Void, Dom, Node, Fn2Void } from "./cls"
 import Ut from "../tool/util"
+import F from "../tool/fun"
 import Ct from "./constant"
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
@@ -71,10 +72,11 @@ class WebDom {
         if (bk_host.endsWith('github.io')) {
             bk_host = '1.14.93.140'
         }
-        console.log(this.url_param)
+
         this.prefix = 'http://' + bk_host + ":" + this.bk_port
     }
     url(path: string) {
+
         return this.prefix + path
     }
     get_wh_scale() {
@@ -89,7 +91,7 @@ class WebDom {
         }
         let req = new XMLHttpRequest()
         if (method == this.HTTP_GET_METHOD) {
-            req.open(method, Ut.object_to_get_param(data, path));
+            req.open(method, Ut.object_to_get_param(data, url));
             req.send();
         } else if (method == this.HTTP_POST_METHOD) {
             req.open(method, url);
@@ -239,13 +241,16 @@ class WebDom {
         return Math.max(metrics.width, actual)
     }
     get_json(path: string, call_back: any) {
-        this.get("/app/tool/file/read", { path: path }, (data) => {
-            call_back(data)
-        })
+        this.get_file(path, call_back)
     }
     get_file(path: string, call_back: any) {
         this.get("/app/tool/file/read", { path: path }, (data) => {
             call_back(data)
+        })
+    }
+    get_ts(path: string, call_back: any) {
+        this.get("/app/tool/file/read", { path: path }, (data) => {
+            call_back(F.eval_ts(data.value))
         })
     }
     put_json(path: string, data: any, call_back: any) {
