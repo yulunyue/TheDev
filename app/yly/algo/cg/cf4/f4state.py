@@ -74,7 +74,7 @@ class F4State(MctsNode):
             self.mask = C.INIT_MASK
         if self.mask != C.INIT_MASK:
             self.mask, self.done, self.depth = C.mask_to_line(
-                self.mask, self.line_state, self.state, self.end_pos, self.grid
+                self.mask, self.line_state, self.state, self.end_pos
             )
             self.player_id = self.depth % 2
         else:

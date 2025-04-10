@@ -95,7 +95,7 @@ def get_log(name="", log_class="log", fmt=None) -> Logger:
     return LOG_MAP[name]
 
 
-def std_mock(with_trace=False):
+def std_mock(with_trace=True):
     old_std = sys.stdout
     old_error = sys.stderr
     log = get_log("std", fmt="")

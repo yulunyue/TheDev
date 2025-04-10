@@ -8,8 +8,8 @@ class C4Test(TestBase):
         super().__init__()
 
     def test_pk(self):
-        players = [get_player("ab1"), get_player("ab3")]
-        env = Env(debug=1)
+        players = [get_player("kd1"), get_player("ab1")]
+        env = Env(debug=1, env_name=Env.connectx)
         # Play as the first agent against "negamax" agent.
         result = env.run(players)
         env.render(mode="html", width=500, height=450)
@@ -37,32 +37,29 @@ class C4Test(TestBase):
 
         players = [get_player(k) for k in PLAYERS]
         fight_result = {
-            v.name: dict(win=0, draw=0, lose=0, name=v, use_time=0, max_time=0)
-            for v in players
+            v.name: dict(win=0, draw=0, lose=0, use_time=0, max_time=0) for v in players
         }
 
         def update(state: int, players: List[Algo]):
-            if state is None:
-                raise Exception(players)
             if state == -1:
                 fight_result[players[0].name]["draw"] += 1
                 fight_result[players[1].name]["draw"] += 1
+                info = "draw"
                 logger.info(f"{players[0].name} draw {players[1]}")
             else:
                 fight_result[players[state].name]["win"] += 1
                 fight_result[players[1 - state].name]["lose"] += 1
-                logger.info(
-                    f"{players[state].name} win[{state}] {players[1 - state].name}"
-                )
+                info = f"WIN->{players[state].name}{S[state]}"
+            logger.info(f"{players[0].name} pk {players[1].name} {info}")
             for p in players:
                 fight_result[p.name]["use_time"] += p.use_time
                 fight_result[p.name]["max_time"] = max(
                     fight_result[p.name]["max_time"], p.max_use_time
                 )
 
-        for pk_num in range(2):
+        for pk_num in range(1):
             for i in range(len(players)):
-                for j in range(i + 1, len(players)):
+                for j in range(i, len(players)):
                     ps = [players[i], players[j]]
                     update(Env().run(ps), ps)
                     ps.reverse()

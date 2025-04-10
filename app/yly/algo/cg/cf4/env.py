@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
-from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
+from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action, KaggleEnv
 
 
 class KagleAgent(Algo):
@@ -20,12 +20,25 @@ class KagleAgent(Algo):
             cell_swarm(*state.dump_to_kaggle())
         )
 
+    def __call__(self, *args, **kwds):
+        from app.yly.algo.kagle.c4 import cell_swarm
+
+        return cell_swarm(*args, **kwds)
+
+
+class Ab(AlphaBateSearch):
+
+    def __call__(self, env: KaggleEnv, conf: KaggleEnv):
+        action = F4Action().load_from_kaggle(env, conf)
+        self.search(action)
+        return action.dst.best_action.action
+
 
 logger = get_log("cf4")
 PLAYERS = dict(
-    ab1=lambda: AlphaBateSearch().load(1).set_params(SE),
-    ab3=lambda: AlphaBateSearch().load(3).set_params(SE),
-    ab5=lambda: AlphaBateSearch().load(5).set_params(SE),
+    ab1=lambda: Ab().load(1).set_params(SE),
+    ab3=lambda: Ab().load(3).set_params(SE),
+    ab5=lambda: Ab().load(5).set_params(SE),
     kd1=lambda: KagleAgent().load().set_params(None),
     # negamax="negamax",
 )
@@ -94,7 +107,6 @@ class Env:
             if a[idx]["status"] == "DONE":
                 return -1 if a[idx]["reward"] == 0 else idx % 2
             idx = 1 - idx
-        self.state.debug("msg:\n" + "\n".join(board))
 
     def render(self, mode=None, **kw):
         if self.env_name == Env.connectx and mode == "html":

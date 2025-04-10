@@ -38,7 +38,7 @@ class Algo:
 
         self.cache = None
         self.max_use_time = 0
-        self.max_state_count = 0
+        self.use_time = 0
         self.num_episodes = num_episodes
         self.max_t = max_t
         if use_cache:
@@ -59,9 +59,9 @@ class Algo:
         self.state_count = 0
         self.begin_time = time.time()
         ret = self.search_main(action)
-        self.use_time = int((time.time() - self.begin_time) * 1000)
-        self.max_use_time = max(self.max_use_time, self.use_time)
-        self.max_state_count = max(self.state_count, self.max_state_count)
+        use_time = int((time.time() - self.begin_time) * 1000)
+        self.use_time += use_time
+        self.max_use_time = max(self.max_use_time, use_time)
         return ret
 
     def state_clear(self, action: Action):
@@ -71,7 +71,7 @@ class Algo:
         pass
 
     def __str__(self):
-        return f"<{self.__class__.__name__} state_all:{self.max_state_count} user_time:{self.max_use_time} params:{self.params}>"
+        return f"<{self.__class__.__name__}  user_time:{self.max_use_time} params:{self.params}>"
 
 
 class RunAlgo(Algo):
