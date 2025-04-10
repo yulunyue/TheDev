@@ -1,7 +1,5 @@
-from kaggle_environments import evaluate, make, utils
-
-
 def cell_swarm(obs, conf):
+
     def evaluate_cell(cell):
         """evaluate qualities of the cell"""
         cell = get_patterns(cell)

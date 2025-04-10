@@ -1,68 +1,7 @@
-from common.algo.manage import SolutionBase, View, MOD, inf, File, get_log
-
-from common.algo.search.mctssearch import MctsSearchTree, MctsNode
-from common.algo.search.algo import Algo, np, RandomAlgo
-from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
-
-from collections import defaultdict
-from typing import Dict, List
-from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
 from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action
-
-logger = get_log("cf4")
-PLAYERS = dict(
-    ab1=lambda: AlphaBateSearch().load(1),
-    ab3=lambda: AlphaBateSearch().load(3),
-    ab5=lambda: AlphaBateSearch().load(5),
-)
-
-
-class Env:
-    connectx = "connectx"
-
-    def get_init_action(self, state=None):
-        state = state or C.INIT_MASK
-        return F4Action(None, "init", F4State(state, 0).init_root())
-
-    def __init__(self, env_name, init_state=None, **kw):
-        self.env_name = env_name
-
-        if env_name == Env.connectx:
-            from kaggle_environments import make
-
-            self.env = make(env_name, **kw)
-            self.env.reset()
-            C.load(6, 7)
-        else:
-            self.env = None
-        self.action = self.get_init_action(init_state)
-
-    def run(self, players):
-        self.players = players
-        self.actions = []
-        if self.env:
-            from common.util.log import JSON_TMP_FILE
-
-            records = self.env.run(players)
-            JSON_TMP_FILE.write_file(records)
-            idx = 0
-            for a in records[1:]:
-                self.actions.append(a[idx]["action"])
-                idx = 1 - idx
-
-    def render(self, mode=None, **kw):
-        if self.env and mode == "html":
-            ret = self.env.render(mode=mode, **kw)
-            File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
-        cur = self.action
-        for i, a in enumerate(self.actions):
-            if not cur:
-                logger.info(f"{i} {len(self.actions)}")
-                break
-            cur = cur.dst.get_action(a)
-            logger.info(f"put:{a}")
-            logger.info(cur.dst.to_str())
+from common.algo.manage import SolutionBase, View, MOD, inf, File, get_log
+from typing import List
 
 
 class Solution(SolutionBase):
@@ -131,10 +70,6 @@ class Solution(SolutionBase):
                 player2="mcts",
             )
         ]
-
-    def get_player(self, params: StateEnum, search_type=None) -> Algo:
-        ret: Algo = [search_type or "ab4"]()
-        return ret.set_params(params or SE)
 
     def pk(self, player1, player2, nums=1, max_turn=100, **kw):
         players = [
@@ -250,32 +185,6 @@ class Solution(SolutionBase):
             )
             self.output(state.best_action.action)
             state = state.best_action.dst
-
-    def finish(self):
-        from common.util.fp import get_cache
-
-        # get_cache(F4State.name).flush()
-
-    def test_all(self, **kw):
-        f1 = F4State(3148219888733275277781, -1).init_root()
-        self.expect(f1.depth, 62)
-        f2 = f1.get_action(6).dst
-        self.expect(f2.mask, 3148237903131784759765, str(f2))
-        self.expect(f2.done, 0, str(f2))
-
-        f3 = F4State(18519085367618109697, 0).init_root()
-        self.expect(len(f3.get_actions()), 1, str(f3))
-
-    def test_mcts(self, **kw):
-        a4 = self.get_init_action(129199548693116682497)
-        p = self.get_player(SE, search_type="mcts")
-        p.search(a4)
-        action = a4.dst.best_action.action
-        self.expect(action in (2, 5), str(a4.dst) + f"\n{action}\n")
-
-    def test_f4(self, **kw):
-        f4 = F4State(18519085367617978625, 0).init_root()
-        self.expect(len(f4.get_actions()), 1, str(f4))
 
 
 if __name__ == "__main__":

@@ -9,11 +9,12 @@ class Action:
     WIN_ACTION = 0
     LOSE_ACTION = 1
 
-    def __init__(self, src, action, dst, reward=0):
+    def load(self, src, action, dst, reward=0):
         self.action = action
         self.src: State = src
         self.dst: State = dst
         self.reward = reward
+        return self
 
     def get_states(self):
         return [[1, self.src, self.dst, self.reward]]
@@ -29,19 +30,15 @@ class Action:
 
 
 class State:
-    done = -1
     name = "state"
     parent: "State"
+    done = -1
 
     def __init__(self, player_id, depth) -> None:
         self.depth = depth
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: List[Action] = None
-
-    def set_done(self, done):
-        self.done = done
-        return self
 
     def reset(self):
         return self

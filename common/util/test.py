@@ -40,8 +40,8 @@ class TestBase:
     def exit(self):
         pass
 
-    def expect(self, a, b, info=""):
+    def expect(self, a, expect_value, info=""):
         self.ep_cont += 1
-        if a == b or str(a) == str(b):
+        if a == expect_value or str(a) == str(expect_value):
             return True
-        raise Exception(f"{a}!={b} [{info}]")
+        raise Exception(f"{a}!={expect_value} msg:{info}")

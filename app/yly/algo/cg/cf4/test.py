@@ -1,23 +1,71 @@
-from common.algo.test import TestBase
-from app.yly.algo.cg.cf4.main import logger, F4State, Env, PLAYERS
+from common.util.test import TestBase, logger
+from app.yly.algo.cg.cf4.env import F4State, Env, PLAYERS, S, get_player, Algo
+from typing import List
 
 
 class C4Test(TestBase):
     def __init__(self):
         super().__init__()
 
-    def test_ka(self):
-        from app.yly.algo.kagle.c4 import cell_swarm
-
-        env = Env("connectx", debug=False)
-        # Play as the first agent against "negamax" agent.
-        env.run([cell_swarm, cell_swarm])
-        env.render(mode="html", width=500, height=450)
-        # env.run([cell_swarm, "negamax"])
-        # print(env.render(mode="human", width=500, height=450))
-
     def test_pk(self):
-        players = list(PLAYERS)
+        players = [get_player("kd1"), get_player("ab1")]
+        env = Env(debug=1, env_name=Env.connectx)
+        # Play as the first agent against "negamax" agent.
+        result = env.run(players)
+        env.render(mode="html", width=500, height=450)
+        if result >= 0:
+            logger.info(f"[{players[result]}][{S[result]}] win")
+        else:
+            logger.info("no win")
+
+    def test_full(self):
+        e = Env(4432800661633, width=7, height=6)
+        self.expect(e.state.get_action(3), None, e.state.to_str())
+
+    def test_2(self):
+        e = Env(4432997729025, width=7, height=6)
+        self.expect(e.play("ab1"), 0, e.state.to_str())
+
+    def test_table(self):
+        logger.table(dict(a=dict(v=3), b=dict(v=2)), key=lambda a: a["v"])
+
+    def test_fight(self):
+        """
+        所有玩家一起战斗
+        看看谁是第一名
+        """
+
+        players = [get_player(k) for k in PLAYERS]
+        fight_result = {
+            v.name: dict(win=0, draw=0, lose=0, use_time=0, max_time=0) for v in players
+        }
+
+        def update(state: int, players: List[Algo]):
+            if state == -1:
+                fight_result[players[0].name]["draw"] += 1
+                fight_result[players[1].name]["draw"] += 1
+                info = "draw"
+                logger.info(f"{players[0].name} draw {players[1]}")
+            else:
+                fight_result[players[state].name]["win"] += 1
+                fight_result[players[1 - state].name]["lose"] += 1
+                info = f"WIN->{players[state].name}{S[state]}"
+            logger.info(f"{players[0].name} pk {players[1].name} {info}")
+            for p in players:
+                fight_result[p.name]["use_time"] += p.use_time
+                fight_result[p.name]["max_time"] = max(
+                    fight_result[p.name]["max_time"], p.max_use_time
+                )
+
+        for pk_num in range(1):
+            for i in range(len(players)):
+                for j in range(i, len(players)):
+                    ps = [players[i], players[j]]
+                    update(Env().run(ps), ps)
+                    ps.reverse()
+                    update(Env().run(ps), ps)
+
+        logger.table(fight_result, lambda a: [a["win"], a["draw"], a["lose"]])
 
 
 if __name__ == "__main__":

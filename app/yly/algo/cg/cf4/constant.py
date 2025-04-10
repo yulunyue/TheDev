@@ -60,6 +60,7 @@ class Constant:
         self.state_pos = []
         self.INIT_MASK = 0
         self.HEIGHT_POS_MASK = []
+        self.POS_MASK = []
         for i in range(4):
             self.state_pos.append([1 << (i * 2), 1 << (i * 2 + 1)])
         mask0 = 0
@@ -67,6 +68,7 @@ class Constant:
             pos = col * (self.HEIGHT + 1)
             self.MASK_FULL_ALL |= 1 << ((col + 1) * (self.HEIGHT + 1) - 1)
             self.INIT_MASK |= 1 << pos
+            self.POS_MASK.append(1 << pos)
             self.HEIGHT_POS_MASK.append(mask0)
             mask0 = (mask0 << (self.HEIGHT + 1)) + self.MASK_FULL_HEIGHT
             # logger.info([col,bin(pos_state<<self.HEIGHT)])
@@ -122,7 +124,7 @@ class Constant:
                 score[old_line_state] -= 1
             if new_line_state == (0, 4):
                 # p.info += f"[set {self.score}]"
-                done = player_id + 1
+                done = [2, 1][player_id]
             elif new_line_state == (0, 3):
                 y1, x1, _ = self.lines[line_id][null_pos[0]]
                 end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << (1 - player_id))
@@ -131,9 +133,26 @@ class Constant:
         #     raise Exception(self.score)
         return score, done
 
+    def grid_to_mask(self, grids):
+        mask = 0
+        for j in range(self.WIDTH):
+            m = 0
+            for i in range(self.HEIGHT - 1, -1, -1):
+                k = i * self.WIDTH + j
+                h = self.HEIGHT - i - 1
+                if grids[k] == 0:
+                    m |= C.POS_MASK[j] << h
+                    break
+                if grids[k] == 2:
+                    m |= C.POS_MASK[j] << h
+            mask |= m
+        return mask
+
     def mask_to_line(self, mask, line_state, state, end_pos):
         done = -1
         depth = 0
+        if isinstance(mask, list):
+            mask = self.grid_to_mask(mask)
 
         def util(i, j, v):
             nonlocal done, depth
@@ -144,7 +163,7 @@ class Constant:
             depth += 1
 
         self.mask_to_grid(mask, util)
-        return done, depth
+        return mask, done, depth
 
 
 C = Constant()

@@ -11,7 +11,7 @@ class F4State(MctsNode):
     info = ""
     parent: "F4State"
 
-    def __init__(self, mask, depth) -> None:
+    def __init__(self, mask, depth=0) -> None:
         self.mask = mask
         super().__init__(depth % 2, depth)
 
@@ -64,19 +64,23 @@ class F4State(MctsNode):
     def key(self):
         return str(self.mask)
 
-    def init_root(self):
+    def init_root(self, h, w):
+        C.load(h, w)
         self.line_state = [0] * C.line_num
         self.state = {k: 0 for k in SE._params}
         self.end_pos = {x: 0 for x in range(C.WIDTH)}
+        self.grid = [0] * (h * w)
+        if self.mask is None:
+            self.mask = C.INIT_MASK
         if self.mask != C.INIT_MASK:
-            self.done, self.depth = C.mask_to_line(
+            self.mask, self.done, self.depth = C.mask_to_line(
                 self.mask, self.line_state, self.state, self.end_pos
             )
             self.player_id = self.depth % 2
+        else:
+            self.depth = 0
+            self.player_id = 0
         return self
-
-    def load_form_kangle(self, **kw):
-        return False
 
     def get_action(self, col, **kw):
         x = col * (C.HEIGHT + 1)
@@ -94,19 +98,22 @@ class F4State(MctsNode):
             STORE_STATE[mask] = F4State(mask, depth).init_state(col, y, self)
             if mask & C.MASK_FULL_ALL == C.MASK_FULL_ALL:
                 STORE_STATE[mask].done = 0
-        return F4Action(self, col, STORE_STATE[mask])
+        return F4Action().load(self, col, STORE_STATE[mask])
 
     def init_state(self, x, y, p):
         p: F4State = p
         self.end_pos = p.end_pos.copy()
         self.line_state = p.line_state.copy()
         self.state = p.state.copy()
+        self.grid = p.grid.copy()
         state, self.done = C.set_pos(
             y, x, self.player_id, self.line_state, self.end_pos
         )
         for key, v in state.items():
             self.state[key] += v
+
         self.end_pos[x] = y + 1
+        self.grid[(C.HEIGHT - self.end_pos[x]) * C.WIDTH + x] = self.player_id + 1
         return self
 
     _debug_file = None
@@ -147,6 +154,9 @@ class F4State(MctsNode):
             # )
         return self.actions
 
+    def load_from_board(self, board, rows, columns):
+        pass
+
     @property
     def win_done(self):
         return 2 if self.player_id else 1
@@ -156,9 +166,20 @@ class F4State(MctsNode):
         return 3 - self.win_done
 
 
+class KaggleEnv:
+
+    def __init__(self, board, rows, columns, mark):
+        self.board = board
+        self.rows = rows
+        self.columns = columns
+        self.mark = mark
+        self.inarow = 4
+
+
 class F4Action(Action):
     dst: F4State
-    src: F4State
+    src: F4State = None
+    action = None
 
     def __str__(self):
         return (
@@ -171,6 +192,18 @@ class F4Action(Action):
             v2 = 0 if self.src is None else self.src.state[k]
             score += params._params[k].get_value() * (v1 - v2)
         return score
+
+    def load_from_kaggle(self, obs: KaggleEnv, conf: KaggleEnv):
+        self.dst = F4State(obs.board).init_root(conf.rows, conf.columns)
+        return self
+
+    def dump_to_kaggle(self):
+        c = KaggleEnv(self.dst.grid, C.HEIGHT, C.WIDTH, self.dst.player_id)
+        return c, c
+
+    def load_from_state(self, state=None, height=7, width=9):
+        self.dst = F4State(state).init_root(height, width)
+        return self
 
 
 STORE_STATE: Dict[int, F4State] = dict()

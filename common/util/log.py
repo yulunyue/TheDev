@@ -11,35 +11,71 @@ JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
 LOG_MAP = dict()
 LOGGER_MODE = "LOGGER_MODE"
 
+DEFAULT_FMT = "".join(
+    [
+        "[%(asctime)s]",
+        # "levelname",
+        # "process)s:%(threadName",
+        "[%(pathname)s:%(lineno)s]",
+        "[%(funcName)s] ",
+        "%(message)s",
+    ]
+)
+
 
 class Logger(logging.Logger):
-    def __init__(self, name) -> None:
+
+    def __init__(self, name, fmt) -> None:
         super().__init__(name)
         self.path = f"{LOG_DIR}/{name}.log"
         self.add_hander(
             logging.FileHandler(
-                self.path, mode=os.environ.get(LOGGER_MODE, "w"), encoding="utf-8"
+                self.path, mode=os.environ.get(LOGGER_MODE, "a+"), encoding="utf-8"
             ),
             logging.INFO,
+            fmt=fmt,
         )
+        self.first_log = True
 
+    def info(
+        self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
+    ):
+        if self.first_log:
+            File(self.path).write_file("")
+            self.first_log = False
+        return super().info(
+            msg,
+            *args,
+            exc_info=exc_info,
+            stack_info=stack_info,
+            stacklevel=stacklevel,
+            extra=extra,
+        )
         # self.add_hander(logging.StreamHandler(), logging.INFO)
 
-    def add_hander(self, h: logging.Handler, level):
-        fm = logging.Formatter(
-            "".join(
-                [
-                    "[%(asctime)s]",
-                    # "levelname",
-                    # "process)s:%(threadName",
-                    "[%(pathname)s:%(lineno)s]",
-                    "[%(funcName)s] ",
-                    "%(message)s",
-                ]
-            )
-        )
+    def table(self, datas: dict, key=None, header_key="table_name"):
+        from prettytable import PrettyTable
+
+        keys = list(datas.keys())
+        datas = list(sorted(datas.values(), key=key))
+        headers = [header_key] + list(datas[0].keys())
+        for i, r in enumerate(datas):
+            r[header_key] = keys[i]
+        rows = []
+        for row in datas:
+            rows.append([row[k] for k in headers])
+        tb = PrettyTable(field_names=headers)
+        tb.add_rows(rows)
+        self.info(f"-TABLLE-\n{tb}")
+
+    def add_hander(self, h: logging.Handler, level, fmt=None):
+        if fmt is None:
+            fmt = DEFAULT_FMT
+        if fmt:
+            fm = logging.Formatter(fmt)
+            h.setFormatter(fm)
         h.setLevel(level)
-        h.setFormatter(fm)
+        self.main_hander = h
         self.addHandler(h)
 
 
@@ -53,26 +89,34 @@ class TheDevLoger:
         self.fp.flush()
 
 
-def get_log(name="", log_class="log") -> Logger:
+def get_log(name="", log_class="log", fmt=None) -> Logger:
     if name not in LOG_MAP:
-        LOG_MAP[name] = {"default": TheDevLoger, "log": Logger}[log_class](name)
+        LOG_MAP[name] = {"default": TheDevLoger, "log": Logger}[log_class](name, fmt)
     return LOG_MAP[name]
 
 
-def std_mock():
+def std_mock(with_trace=True):
     old_std = sys.stdout
     old_error = sys.stderr
+    log = get_log("std", fmt="")
 
     class Tmp:
+        data = ""
 
-        def write(self, data):
-            stack_str = traceback.format_stack()
-            get_log("std").info(f"{stack_str}\n{data}")
+        def write(self, data: str):
+            self.data += data
+            if self.data.endswith("\n"):
+                if with_trace:
+                    stack_str = traceback.format_stack()
+                    log.info(f"{stack_str}\n{self.data[:-1]}")
+                else:
+                    log.info(self.data[:-1])
+                self.data = ""
 
         def flush(self):
             old_error.flush()
 
-    sys.stdout = Tmp()
+    sys.stdout = sys.stderr = Tmp()
 
 
 # std_mock()
