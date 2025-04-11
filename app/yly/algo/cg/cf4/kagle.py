@@ -1,5 +1,5 @@
 from app.yly.algo.cg.cf4.constant import C
-from app.yly.algo.cg.cf4.f4state import F4State
+from app.yly.algo.cg.cf4.f4state import F4State, F4Action
 from common.algo.search.algo import Algo
 
 
@@ -33,6 +33,6 @@ class Kagle(Algo):
     def choose_best_cell(self, best_state, current_state):
         pass
 
-    def search_main(self, state: F4State, **kw):
+    def search_main(self, state: F4Action, **kw):
         current_action = self.evaluate_cell(state)
-        state.best_action = self.choose_best_cell(state.best_action, current_action)
+        state.dst.best_action = self.choose_best_cell(state.best_action, current_action)

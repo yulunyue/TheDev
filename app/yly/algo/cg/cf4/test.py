@@ -7,27 +7,27 @@ class C4Test(TestBase):
     def __init__(self):
         super().__init__()
 
+    def get_env(self, debug=1):
+        return Env(debug=debug, width=7, height=6, env_name=Env.connectx)
+
+    def test_3(self):
+        f = F4State(4432867770497).init_root(6, 7)
+        self.expect(f.get_action(3), None, f.to_str())
+
     def test_pk(self):
-        players = [get_player("kd1"), get_player("ab1")]
-        env = Env(debug=1, width=7, height=6)  # , env_name=Env.connectx)
-        # Play as the first agent against "negamax" agent.
-        result = env.run(players)
-        env.render(mode="html", width=500, height=450)
-        if result >= 0:
-            logger.info(f"[{players[result]}][{S[result]}] win")
-        else:
-            logger.info("no win")
-
-    def test_full(self):
-        e = Env(4432800661633, width=7, height=6)
-        self.expect(e.state.get_action(3), None, e.state.to_str())
-
-    def test_2(self):
-        e = Env(4432997729025, width=7, height=6)
-        self.expect(e.play("ab1"), 0, e.state.to_str())
-
-    def test_table(self):
-        logger.table(dict(a=dict(v=3), b=dict(v=2)), key=lambda a: a["v"])
+        players = [get_player("ab1"), get_player("ab2")]
+        for _ in range(2):
+            env = self.get_env()  # , env_name=Env.connectx)
+            # Play as the first agent against "negamax" agent.
+            result = env.run(players)
+            env.render(mode="html", width=500, height=450)
+            if result is None:
+                logger.info(f"unknow error")
+            elif result >= 0:
+                logger.info(f"[{players[result].name}][{S[result]}] win")
+            else:
+                logger.info("no win")
+            players.reverse()
 
     def test_fight(self):
         """
@@ -41,15 +41,18 @@ class C4Test(TestBase):
         }
 
         def update(state: int, players: List[Algo]):
+            if state is None:
+                logger.info(f"unknow state {state} {players[0].name} {players[1].name}")
+                return
             if state == -1:
                 fight_result[players[0].name]["draw"] += 1
                 fight_result[players[1].name]["draw"] += 1
-                info = "draw"
-                logger.info(f"{players[0].name} draw {players[1]}")
+                info = "DRAW"
             else:
-                fight_result[players[state].name]["win"] += 1
-                fight_result[players[1 - state].name]["lose"] += 1
-                info = f"WIN->{players[state].name}{S[state]}"
+                w, l = players[state].name, players[1 - state].name
+                fight_result[w]["win"] += 1
+                fight_result[l]["lose"] += 1
+                info = f"WIN->{w}{S[state]} LOSE->{l}{S[1 - state]} "
             logger.info(f"{players[0].name} pk {players[1].name} {info}")
             for p in players:
                 fight_result[p.name]["use_time"] += p.use_time
@@ -59,12 +62,11 @@ class C4Test(TestBase):
 
         for pk_num in range(1):
             for i in range(len(players)):
-                for j in range(i, len(players)):
+                for j in range(i + 1, len(players)):
                     ps = [players[i], players[j]]
-                    update(Env().run(ps), ps)
+                    update(self.get_env().run(ps), ps)
                     ps.reverse()
-                    update(Env().run(ps), ps)
-
+                    update(self.get_env().run(ps), ps)
         logger.table(fight_result, lambda a: [a["win"], a["draw"], a["lose"]])
 
 

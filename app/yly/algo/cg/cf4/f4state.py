@@ -6,6 +6,14 @@ from collections import defaultdict
 import json
 
 
+def board_format(borad):
+    mask = C.grid_to_mask(borad)
+    info = ["", f"---{mask}---"]
+    for i in range(C.HEIGHT):
+        info.append("".join([str(v) for v in borad[i * C.WIDTH : (i + 1) * C.WIDTH]]))
+    return "\n".join(info), mask
+
+
 class F4State(MctsNode):
     name = "f4state"
     info = ""
@@ -85,7 +93,8 @@ class F4State(MctsNode):
     def get_action(self, col, **kw):
         x = col * (C.HEIGHT + 1)
         mask0 = self.mask >> x
-        y = (mask0 & C.MASK_FULL_HEIGHT).bit_length() - 1
+        # y = (mask0 & C.MASK_FULL_HEIGHT).bit_length() - 1
+        y = self.end_pos[col]
         if y == C.HEIGHT:
             return
         depth = self.depth + 1
@@ -195,6 +204,11 @@ class F4Action(Action):
 
     def load_from_kaggle(self, obs: KaggleEnv, conf: KaggleEnv):
         self.dst = F4State(obs.board).init_root(conf.rows, conf.columns)
+        return self
+
+    def laod_from_karord(self, board, action):
+        self.board = board
+        self.action = action
         return self
 
     def dump_to_kaggle(self):

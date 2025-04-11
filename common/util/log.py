@@ -53,19 +53,16 @@ class Logger(logging.Logger):
         )
         # self.add_hander(logging.StreamHandler(), logging.INFO)
 
-    def table(self, datas: dict, key=None, header_key="table_name"):
+    def table(self, datas: dict, key=None, header_key="t_name"):
         from prettytable import PrettyTable
 
-        keys = list(datas.keys())
+        headers = [header_key] + list(list(datas.values())[0].keys())
+        for k, v in datas.items():
+            v[header_key] = k
         datas = list(sorted(datas.values(), key=key))
-        headers = [header_key] + list(datas[0].keys())
-        for i, r in enumerate(datas):
-            r[header_key] = keys[i]
-        rows = []
-        for row in datas:
-            rows.append([row[k] for k in headers])
         tb = PrettyTable(field_names=headers)
-        tb.add_rows(rows)
+        for row in datas:
+            tb.add_row([row[k] for k in headers])
         self.info(f"-TABLLE-\n{tb}")
 
     def add_hander(self, h: logging.Handler, level, fmt=None):

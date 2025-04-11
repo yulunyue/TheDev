@@ -37,8 +37,6 @@ class Algo:
     def load(self, use_cache=False, max_t=-1, num_episodes=1000):
 
         self.cache = None
-        self.max_use_time = 0
-        self.use_time = 0
         self.num_episodes = num_episodes
         self.max_t = max_t
         if use_cache:
@@ -63,6 +61,11 @@ class Algo:
         self.use_time += use_time
         self.max_use_time = max(self.max_use_time, use_time)
         return ret
+
+    def reset(self):
+        self.max_use_time = 0
+        self.use_time = 0
+        return self
 
     def state_clear(self, action: Action):
         action.dst.best_action = None

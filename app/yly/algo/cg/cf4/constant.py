@@ -29,8 +29,9 @@ SE.init_param()
 class Constant:
 
     def load(self, h, w) -> None:
-        self.HEIGHT = h
-        self.WIDTH = w
+        self.rows = self.HEIGHT = h
+        self.columns = self.WIDTH = w
+        self.inarow = 4
         self.init_w()
         self.init_score()
         self.init_lines()
@@ -137,10 +138,10 @@ class Constant:
         mask = 0
         for j in range(self.WIDTH):
             m = 0
-            for i in range(self.HEIGHT - 1, -1, -1):
+            for i in range(self.HEIGHT - 1, -2, -1):
                 k = i * self.WIDTH + j
                 h = self.HEIGHT - i - 1
-                if grids[k] == 0:
+                if h == self.HEIGHT or grids[k] == 0:
                     m |= C.POS_MASK[j] << h
                     break
                 if grids[k] == 2:

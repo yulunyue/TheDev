@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
-from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action, KaggleEnv
+from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action, KaggleEnv, board_format
 
 
 class KagleAgent(Algo):
@@ -30,10 +30,6 @@ class Ab(AlphaBateSearch):
 
     def __call__(self, env: KaggleEnv, conf: KaggleEnv):
         action = F4Action().load_from_kaggle(env, conf)
-        # if env.board != action.dst.grid:
-        #     logger.info("gg")
-        #     logger.info(env.board)
-        #     logger.info(action.dst.grid)
         self.search(action)
         return action.dst.best_action.action
 
@@ -41,7 +37,9 @@ class Ab(AlphaBateSearch):
 logger = get_log("cf4")
 PLAYERS = dict(
     ab1=lambda: Ab().load(1).set_params(SE),
+    ab2=lambda: Ab().load(2).set_params(SE),
     ab3=lambda: Ab().load(3).set_params(SE),
+    ab4=lambda: Ab().load(4).set_params(SE),
     ab5=lambda: Ab().load(5).set_params(SE),
     kd1=lambda: KagleAgent().load().set_params(None),
     # negamax="negamax",
@@ -77,13 +75,13 @@ class Env:
         while cur.dst.done < 0:
             self.players[player_id].search(cur)
             cur = cur.dst.best_action
-            self.actions.append(cur.action)
+            self.actions.append(cur)
             player_id = (player_id + 1) % len(self.players)
         return cur.dst.done - 1
 
-    def run(self, players):
-        self.players = players
-        self.actions = []
+    def run(self, players: List[Algo]):
+        self.players = [p.reset() for p in players]
+        self.actions: List[F4Action] = []
         if self.env_name == Env.connectx:
             return self.run_kagele()
         return self.run_self()
@@ -93,36 +91,32 @@ class Env:
 
         records = self.env.run(self.players)
         JSON_TMP_FILE.write_file(records)
-        board = []
-        bk = "board"
-        idx = 0
-        for a in records[1:]:
-            board.append(f"xxx-[{a[idx]['action']}]-xxx")
-            self.actions.append(a[idx]["action"])
-            if bk in a[1 - idx]["observation"]:
-                bkv = a[1 - idx]["observation"][bk]
-            else:
-                bkv = a[idx]["observation"][bk]
-            for h in range(C.HEIGHT):
-                board.append(
-                    "".join([str(v) for v in bkv[h * C.WIDTH : (h + 1) * C.WIDTH]])
-                )
-            board.append("xxxxxx")
-            if a[idx]["status"] == "DONE":
-                return -1 if a[idx]["reward"] == 0 else idx % 2
-            idx = 1 - idx
+        self.records: List[F4Action] = [
+            F4Action().laod_from_karord(
+                board=d[0]["observation"]["board"],
+                action=d[0]["action"] + d[1]["action"],
+            )
+            for d in records[1:]
+        ]
+        step = records[-1][0]["observation"]["step"]
+        return -1 if records[-1][0]["reward"] == 0 else (step + 1) % 2
 
     def render(self, mode=None, **kw):
         if self.env_name == Env.connectx and mode == "html":
             ret = self.env.render(mode=mode, **kw)
             File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
         cur = self.state.dst
-        for i, a in enumerate(self.actions):
-            if not cur:
-                logger.info(f"{i} {len(self.actions)}")
+        for r in self.records:
+
+            logger.info(f"put: {r.action}{S[cur.player_id]} ")
+            act = cur.get_action(r.action)
+            if not act:
+                logger.info("gg")
                 break
-            logger.info(f"put: {a}{S[cur.player_id]} ")
-            cur = cur.get_action(a).dst
+            cur = act.dst
+            f2 = F4State(C.grid_to_mask(r.board)).init_root(C.HEIGHT, C.WIDTH)
+            if f2.mask != cur.mask:
+                logger.info(f"gbg\n{bin(cur.mask)}\n{bin(f2.mask)}\n" + f2.to_str())
             logger.info(cur.to_str())
 
     def play(self, name):
