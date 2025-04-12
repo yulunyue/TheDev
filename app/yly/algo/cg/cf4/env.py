@@ -10,26 +10,7 @@ from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
 from app.yly.algo.cg.cf4.f4state import F4State, S, board_format
 from app.yly.algo.cg.cf4.f4action import F4Action, KaggleEnv
-from app.yly.algo.cg.cf4.kagle import Kagle
-
-
-class KagleAgent(Algo):
-
-    def search_main(self, state: F4Action, **kw):
-        from app.yly.algo.kagle.c4 import cell_swarm1
-
-        action, grid = cell_swarm1(*state.dump_to_kaggle())
-        a = state.dst.best_action = state.dst.get_action(action)
-        info = grid[a.x][a.y]
-        for k in ["swarm_patterns", "opp_patterns"]:
-            for k1, v in info[k].items():
-                info[k][k1] = "".join([str(v1["mark"]) for v1 in v])
-        state.dst.best_action.set_info(info)
-
-    def __call__(self, *args, **kwds):
-        from app.yly.algo.kagle.c4 import cell_swarm
-
-        return cell_swarm(*args, **kwds)
+from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent
 
 
 class Ab(AlphaBateSearch):
