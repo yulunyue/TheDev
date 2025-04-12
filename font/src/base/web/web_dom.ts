@@ -83,7 +83,7 @@ class WebDom {
         return window.innerWidth / window.innerHeight
     }
     headers = {}
-    xml_http_request(method: string, path: string, data: any, call_back?: Fn1Void<Node>) {
+    xml_http_request(method: string, path: string, data: any, call_back: any) {
         let url = this.url(path)
         let mock_data = Ct.get_mock_data(url, data)
         if (mock_data) {
@@ -111,7 +111,10 @@ class WebDom {
         }
         req.onreadystatechange = (ev: any) => {
             if (req.readyState == this.HTTP_STATE_FINISH) {
-
+                if (method == this.HTTP_GET_METHOD) {
+                    call_back(req.responseText)
+                    return
+                }
                 let data = this.hander_res(JSON.parse(req.responseText))
                 if (data && data.code > 300) {
                     alert(data.code + '->' + data.title)
@@ -240,21 +243,24 @@ class WebDom {
         let actual = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight)
         return Math.max(metrics.width, actual)
     }
-    get_json(path: string, call_back: any) {
-        this.get_file(path, call_back)
-    }
     get_file(path: string, call_back: any) {
-        this.get("/app/tool/file/read", { path: path }, (data) => {
+        this.get(path, {}, (data: any) => {
             call_back(data)
         })
     }
+    get_json(path: string, call_back: any) {
+        this.get_file(path, (data: any) => {
+            call_back(JSON.parse(data))
+        })
+    }
+
     get_ts(path: string, call_back: any) {
-        this.get("/app/tool/file/read", { path: path }, (data) => {
-            call_back(F.eval_ts(data.value))
+        this.get_file(path, (data: any) => {
+            call_back(F.eval_ts(data))
         })
     }
     put_json(path: string, data: any, call_back: any) {
-        this.get("/app/tool/file/write", { path: path, data: data }, (ret) => {
+        this.post("/app/tool/file/write", { path: path, data: data }, (ret) => {
             call_back(ret)
         })
     }

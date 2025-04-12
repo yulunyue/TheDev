@@ -8,17 +8,23 @@ from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
-from app.yly.algo.cg.cf4.f4state import F4State, S, F4Action, KaggleEnv, board_format
+from app.yly.algo.cg.cf4.f4state import F4State, S, board_format
+from app.yly.algo.cg.cf4.f4action import F4Action, KaggleEnv
+from app.yly.algo.cg.cf4.kagle import Kagle
 
 
 class KagleAgent(Algo):
 
     def search_main(self, state: F4Action, **kw):
-        from app.yly.algo.kagle.c4 import cell_swarm
+        from app.yly.algo.kagle.c4 import cell_swarm1
 
-        state.dst.best_action = state.dst.get_action(
-            cell_swarm(*state.dump_to_kaggle())
-        )
+        action, grid = cell_swarm1(*state.dump_to_kaggle())
+        a = state.dst.best_action = state.dst.get_action(action)
+        info = grid[a.x][a.y]
+        for k in ["swarm_patterns", "opp_patterns"]:
+            for k1, v in info[k].items():
+                info[k][k1] = "".join([str(v1["mark"]) for v1 in v])
+        state.dst.best_action.set_info(info)
 
     def __call__(self, *args, **kwds):
         from app.yly.algo.kagle.c4 import cell_swarm
@@ -42,6 +48,7 @@ PLAYERS = dict(
     ab4=lambda: Ab().load(4).set_params(SE),
     ab5=lambda: Ab().load(5).set_params(SE),
     kd1=lambda: KagleAgent().load().set_params(None),
+    kd2=lambda: Kagle().load().set_params(None),
     # negamax="negamax",
 )
 
@@ -75,13 +82,13 @@ class Env:
         while cur.dst.done < 0:
             self.players[player_id].search(cur)
             cur = cur.dst.best_action
-            self.actions.append(cur)
+            self.records.append(cur)
             player_id = (player_id + 1) % len(self.players)
         return cur.dst.done - 1
 
     def run(self, players: List[Algo]):
         self.players = [p.reset() for p in players]
-        self.actions: List[F4Action] = []
+        self.records: List[F4Action] = []
         if self.env_name == Env.connectx:
             return self.run_kagele()
         return self.run_self()
@@ -91,13 +98,14 @@ class Env:
 
         records = self.env.run(self.players)
         JSON_TMP_FILE.write_file(records)
-        self.records: List[F4Action] = [
-            F4Action().laod_from_karord(
-                board=d[0]["observation"]["board"],
-                action=d[0]["action"] + d[1]["action"],
+        for d in records[1:]:
+            self.records.append(
+                F4Action().laod_from_karord(
+                    board=d[0]["observation"]["board"],
+                    action=d[0]["action"] + d[1]["action"],
+                )
             )
-            for d in records[1:]
-        ]
+
         step = records[-1][0]["observation"]["step"]
         return -1 if records[-1][0]["reward"] == 0 else (step + 1) % 2
 
@@ -108,15 +116,15 @@ class Env:
         cur = self.state.dst
         for r in self.records:
 
-            logger.info(f"put: {r.action}{S[cur.player_id]} ")
+            logger.info(f"doaction: {r}")
             act = cur.get_action(r.action)
             if not act:
                 logger.info("gg")
                 break
             cur = act.dst
-            f2 = F4State(C.grid_to_mask(r.board)).init_root(C.HEIGHT, C.WIDTH)
-            if f2.mask != cur.mask:
-                logger.info(f"gbg\n{bin(cur.mask)}\n{bin(f2.mask)}\n" + f2.to_str())
+            # f2 = F4State(C.grid_to_mask(r.board)).init_root(C.HEIGHT, C.WIDTH)
+            # if f2.mask != cur.mask:
+            #     logger.info(f"gbg\n{bin(cur.mask)}\n{bin(f2.mask)}\n" + f2.to_str())
             logger.info(cur.to_str())
 
     def play(self, name):

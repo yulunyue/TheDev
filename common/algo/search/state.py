@@ -6,8 +6,7 @@ inf = float("inf")
 
 
 class Action:
-    WIN_ACTION = 0
-    LOSE_ACTION = 1
+    info = None
 
     def load(self, src, action, dst, reward=0):
         self.action = action
@@ -20,10 +19,14 @@ class Action:
         return [[1, self.src, self.dst, self.reward]]
 
     def __str__(self):
-        return f"<Action action:{self.action} reward:{self.reward}>"
+        return f"<Action action:{self.get_action_str()} reward:{self.reward} info:{self.info}>"
 
-    # def get_actions(self,**kg):
-    #     return self.src.get_actions(**kg)
+    def set_info(self, info):
+        self.info = info
+        return self
+
+    def get_action_str(self):
+        return self.action
 
     def get_reward(self, params, **kwargs):
         raise Exception("error")

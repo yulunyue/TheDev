@@ -260,7 +260,7 @@ class MainHander(RequestHandler):
             with open(path, "rb") as f:
                 ret = f.read()
         logger.info(f"{list(args)}:{len(ret)}")
-        self.out(ret)
+        self.out(ret, self.params)
 
     def post(self, *args):
         ret = self.POST_API.call(self.path, self.params)
@@ -271,10 +271,10 @@ class MainHander(RequestHandler):
         self.out("ok", None)
 
     def out(self, data, params):
-        if params:
-            File(f"data/log/http/{self.path}/input.json").write_file(params)
-        if data:
-            File(f"data/log/http/{self.path}/result.json").write_file(data)
+        # if params:
+        #     File(f"data/log/http/{self.path}/input.json").write_file(params)
+        # if data:
+        #     File(f"data/log/http/{self.path}/result.json").write_file(data)
         self.send_header()
         self.write(data)
 

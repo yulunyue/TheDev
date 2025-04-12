@@ -16,6 +16,17 @@ export class Button extends Div {
         })
     }
 }
+export class Title extends Div {
+    title: Div
+    btns: Button[]
+    init_node(): void {
+        this.title = this.add_child(new Div())
+    }
+    set_btns(btns: Button[]) {
+        this.add_childs(btns)
+        return this
+    }
+}
 export function button() {
     return new Button()
 }

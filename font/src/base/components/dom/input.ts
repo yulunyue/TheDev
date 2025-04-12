@@ -1,4 +1,5 @@
 import { Div } from "./div";
+import { Title, Button } from "./button";
 import Constant from "../../web/constant";
 export class Input extends Div {
     el: HTMLInputElement
@@ -50,6 +51,23 @@ export class TextArea extends Div {
 export function input() {
     return new Input()
 }
+export class TextAreaRich extends Div {
+    area: TextArea
+    title: Title
+
+    init_node(): void {
+        this.title = this.add_child(new Title())
+        this.area = this.add_child(new TextArea())
+    }
+    set_title(s: string) {
+        this.title.title.set_html(s)
+        return this
+    }
+    set_btns(btns: any) {
+        this.title.set_btns(btns)
+        return this
+    }
+}
 export function text_area() {
-    return new TextArea()
+    return new TextAreaRich()
 }

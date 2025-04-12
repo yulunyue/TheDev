@@ -27,7 +27,7 @@ class F4State(MctsNode):
         return self.to_str()
 
     def to_str(self, info=""):
-        ret = [["- "] * C.WIDTH for _ in range(C.HEIGHT)]
+        ret = [["- "] * C.WIDTH for i in range(C.HEIGHT)]
         ret.append([f"{i} " for i in range(C.WIDTH)])
 
         def util(i, j, v):
@@ -55,7 +55,10 @@ class F4State(MctsNode):
         # bv = b.search(self, depth=20, state_max_num=4000)
         return "\n".join(
             ["", "**" * C.WIDTH]
-            + ["".join(v) for v in ret]
+            + [
+                f"{C.HEIGHT-i-1 if i!=C.HEIGHT else ' '} " + "".join(v)
+                for i, v in enumerate(ret)
+            ]
             + [
                 f"done: {self.done}; depth: {self.depth};",
                 f"playerid: {self.player_id}{S[self.player_id]};",
@@ -107,7 +110,9 @@ class F4State(MctsNode):
             STORE_STATE[mask] = F4State(mask, depth).init_state(col, y, self)
             if mask & C.MASK_FULL_ALL == C.MASK_FULL_ALL:
                 STORE_STATE[mask].done = 0
-        return F4Action().load(self, col, STORE_STATE[mask])
+        from app.yly.algo.cg.cf4.f4action import F4Action
+
+        return F4Action().load(self, y, col, STORE_STATE[mask])
 
     def init_state(self, x, y, p):
         p: F4State = p
@@ -142,7 +147,7 @@ class F4State(MctsNode):
         if depth == 0 or self.done > 0:
             return []
         if self.actions is None:
-            actions: List[F4Action] = []
+            actions = []
             flag = True
             for col in range(C.WIDTH):
                 a = self.get_action(col, **kw)
@@ -173,51 +178,6 @@ class F4State(MctsNode):
     @property
     def op_done(self):
         return 3 - self.win_done
-
-
-class KaggleEnv:
-
-    def __init__(self, board, rows, columns, mark):
-        self.board = board
-        self.rows = rows
-        self.columns = columns
-        self.mark = mark
-        self.inarow = 4
-
-
-class F4Action(Action):
-    dst: F4State
-    src: F4State = None
-    action = None
-
-    def __str__(self):
-        return (
-            f"<Action key:{self.action}{S[1-self.dst.player_id]} reward:{self.reward}>"
-        )
-
-    def get_reward(self, params: StateEnum, **kwargs):
-        score = 0
-        for k, v1 in self.dst.state.items():
-            v2 = 0 if self.src is None else self.src.state[k]
-            score += params._params[k].get_value() * (v1 - v2)
-        return score
-
-    def load_from_kaggle(self, obs: KaggleEnv, conf: KaggleEnv):
-        self.dst = F4State(obs.board).init_root(conf.rows, conf.columns)
-        return self
-
-    def laod_from_karord(self, board, action):
-        self.board = board
-        self.action = action
-        return self
-
-    def dump_to_kaggle(self):
-        c = KaggleEnv(self.dst.grid, C.HEIGHT, C.WIDTH, self.dst.player_id + 1)
-        return c, c
-
-    def load_from_state(self, state=None, height=7, width=9):
-        self.dst = F4State(state).init_root(height, width)
-        return self
 
 
 STORE_STATE: Dict[int, F4State] = dict()

@@ -5,15 +5,21 @@ import {
     text_area, TextArea, MeraGraph, to_node
 } from "../base/components/export";
 import fun from "../base/tool/fun";
+import eval_func from "../demo/secmaster/manage"
 export class Temaplate extends Div {
 
     init_node(): void {
-
+        let path = web_dom.get_param("ts_file")
+        if (path) {
+            web_dom.get_ts(path, (fn: any) => {
+                this.add_child(fn())
+            })
+        } else {
+            this.add_child(eval_func())
+        }
     }
     on_mount(): void {
-        web_dom.get_ts(web_dom.get_param("ts_file", "/font/src/demo/eval.ts"), (data: any) => {
-            console.log(data)
-        })
+
     }
 
 }

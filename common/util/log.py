@@ -36,9 +36,10 @@ class Logger(logging.Logger):
             fmt=fmt,
         )
         self.first_log = True
+        self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def info(
-        self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
+        self, msg, *args, exc_info=None, stack_info=False, stacklevel=2, extra=None
     ):
         if self.first_log:
             File(self.path).write_file("")
@@ -51,7 +52,6 @@ class Logger(logging.Logger):
             stacklevel=stacklevel,
             extra=extra,
         )
-        # self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def table(self, datas: dict, key=None, header_key="t_name"):
         from prettytable import PrettyTable

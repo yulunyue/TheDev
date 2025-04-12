@@ -27,9 +27,9 @@ class MctsNode(State):
             self._untried_actions = [a.dst for a in self.get_actions()]
         return self._untried_actions
 
-    def get_random_action(self) -> Action:
-        k = len(self.expand_nodes)
-        return self.actions[np.random.randint(0, k)]
+    # def get_random_action(self) -> Action:
+    #     k = len(self.expand_nodes)
+    #     return self.actions[np.random.randint(0, k)]
 
 
 class MctsSearchTree(Algo):

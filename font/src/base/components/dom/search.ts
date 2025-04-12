@@ -8,11 +8,17 @@ import { ListUi } from "./list";
 export class Search extends Div {
     dialog: Div
     listui: ListUi
-    input:Input
+    input: Input
+    title: Div
     init_node(): void {
-        this.input =  this.add_child(new Input())
+        this.title = this.add_child(new Div())
+        this.input = this.add_child(new Input())
         this.dialog = this.add_child(new Div().hide())
         this.listui = this.dialog.add_child(new ListUi())
+    }
+    set_title(s: string) {
+        this.title.set_html(s)
+        return this
     }
     set_search(url: string) {
         web.bind_click(this.input.el, () => this.emit_search(url))
@@ -50,7 +56,7 @@ export class Search extends Div {
             overflowY: "auto",
             border: "1px solid #000",
             backgroundColor: "white",
-            position:"fixed"
+            position: "fixed"
         }).show()
         web.body_click(() => {
             this.dialog.hide()

@@ -11,7 +11,7 @@ from collections import deque
 Env = State
 
 
-def random_seed(v):
+def random_seed(v=1):
     np.random.seed(v)
     random.seed(v)
 

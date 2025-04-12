@@ -114,6 +114,3 @@ export class Table extends Div {
         return this
     }
 }
-export function table() {
-    return new Table().set_header(Ct.MOCK_NODE_3_5).set_body(Ct.MOCK_NODE_3_5)
-}

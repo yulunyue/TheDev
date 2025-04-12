@@ -163,3 +163,4 @@ node_modules
 font/package-lock.json
 .vscode
 *.out
+font/src/demo/secmaster

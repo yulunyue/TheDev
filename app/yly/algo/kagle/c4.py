@@ -1,4 +1,4 @@
-def cell_swarm(obs, conf):
+def cell_swarm1(obs, conf):
 
     def evaluate_cell(cell):
         """evaluate qualities of the cell"""
@@ -237,4 +237,8 @@ def cell_swarm(obs, conf):
         x = swarm_center_horizontal + shift
 
     # return index of the best cell column
-    return best_cell["x"]
+    return best_cell["x"], swarm
+
+
+def cell_swarm(obs, conf):
+    return cell_swarm1(obs, conf)[0]
