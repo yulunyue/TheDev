@@ -54,7 +54,11 @@ class F4State(MctsNode):
         # b = Baoli()
         # bv = b.search(self, depth=20, state_max_num=4000)
         return "\n".join(
-            ["", "**" * C.WIDTH]
+            [
+                "",
+                "**" * (C.WIDTH + 1),
+                f"mask: {self.mask}",
+            ]
             + [
                 f"{C.HEIGHT-i-1 if i!=C.HEIGHT else ' '} " + "".join(v)
                 for i, v in enumerate(ret)
@@ -64,11 +68,10 @@ class F4State(MctsNode):
                 f"playerid: {self.player_id}{S[self.player_id]};",
                 # f"state:{state_info}",
                 # f"sear:[{bv}][{b.state_count}],{'%.3f'%b.use_time};",
-                info,
+                # info,
                 # f"info:{self.info}; check:{check_info}",
-                f"mask: {self.mask}",
             ]
-            + ["**" * C.WIDTH, ""]
+            + ["**" * (C.WIDTH + 1), ""]
         )
 
     @property

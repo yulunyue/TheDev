@@ -1,5 +1,5 @@
 from common.util.test import TestBase, logger
-from app.yly.algo.cg.cf4.env import F4State, Env, PLAYERS, S, get_player, Algo
+from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo
 from common.algo.search.algo import random_seed
 from typing import List
 
@@ -8,15 +8,18 @@ class C4Test(TestBase):
     def __init__(self):
         super().__init__()
 
-    def get_env(self, debug=1):
-        return Env(debug=debug, width=7, height=6, env_name=None)  # Env.connectx)
+    def get_env(self, debug=1, init_state=None):
+        return Env(
+            debug=debug, width=7, height=6, env_name=None, init_state=init_state
+        )  # Env.connectx)
 
-    def test_3(self):
-        f = F4State(4432867770497).init_root(6, 7)
-        self.expect(f.get_action(3), None, f.to_str())
+    def test_base(self):
+        env = self.get_env(init_state=4432678895745)
+        a = env.play("kd1")
+        self.expect(0, 1, a)
 
     def test_pk(self):
-        players = [get_player("kd1"), get_player("kd2")]
+        players = [get_player("kd2"), get_player("kd1")]
         for _ in range(2):
             env = self.get_env()  # , env_name=Env.connectx)
             # Play as the first agent against "negamax" agent.

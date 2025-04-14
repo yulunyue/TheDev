@@ -46,3 +46,20 @@ class F4Action(Action):
     def load_from_state(self, state=None, height=7, width=9):
         self.dst = F4State(state).init_root(height, width)
         return self
+
+    def set_info_from_kg1(self, grid=None):
+        if grid:
+            info = grid[self.x][C.HEIGHT - 1 - self.y]
+            for k in ["swarm_patterns", "opp_patterns"]:
+                for k1, v in info[k].items():
+                    info[k][k1] = "".join([("?" + S)[v1["mark"]] for v1 in v])
+            info["point_len"] = dict()
+            for y in range(C.HEIGHT - self.y):
+                info["point_len"][y] = len(grid[self.x][y]["points"])
+        else:
+            info = dict()
+            for k, v1 in self.dst.state.items():
+                src = 0 if self.src is None else self.src.state[k]
+                info[k] = v1 - src
+
+        self.set_info(info)

@@ -102,10 +102,12 @@ def std_mock(with_trace=True):
 
         def write(self, data: str):
             self.data += data
+            # raise Exception(data)
             if self.data.endswith("\n"):
                 if with_trace:
                     stack_str = traceback.format_stack()
-                    log.info(f"{stack_str}\n{self.data[:-1]}")
+                    log.info("".join(stack_str), stacklevel=-1)
+                    log.info(f"{self.data[:-1]}", stacklevel=3)
                 else:
                     log.info(self.data[:-1])
                 self.data = ""
@@ -113,7 +115,5 @@ def std_mock(with_trace=True):
         def flush(self):
             old_error.flush()
 
-    sys.stdout = sys.stderr = Tmp()
-
-
-# std_mock()
+    sys.stdout = Tmp()
+    # sys.stderr = sys.stdout

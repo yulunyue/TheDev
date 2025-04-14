@@ -35,7 +35,7 @@ PLAYERS = dict(
 
 
 def get_player(k) -> Algo:
-    return PLAYERS[k]().set_name(k)
+    return PLAYERS[k]().set_name(k).reset()
 
 
 class Env:
@@ -46,7 +46,7 @@ class Env:
     ):
         self.env_name = env_name
         self.debug = debug
-        if env_name == Env.connectx:
+        if init_state is None and env_name == Env.connectx:
             from kaggle_environments import make
 
             self.env = make(env_name, debug=debug, **kw)
@@ -55,7 +55,9 @@ class Env:
             )
             self.env.reset()
         else:
-            self.state = F4Action().load_from_state(height=height, width=width)
+            self.state = F4Action().load_from_state(
+                state=init_state, height=height, width=width
+            )
 
     def run_self(self):
         player_id = 0
@@ -106,8 +108,8 @@ class Env:
             # f2 = F4State(C.grid_to_mask(r.board)).init_root(C.HEIGHT, C.WIDTH)
             # if f2.mask != cur.mask:
             #     logger.info(f"gbg\n{bin(cur.mask)}\n{bin(f2.mask)}\n" + f2.to_str())
-            logger.info(cur.to_str())
+            # logger.info(cur.to_str())
 
     def play(self, name):
-        self.get_player(name).search(F4Action(None, None, self.state))
-        return self.state.best_action.action
+        get_player(name).search(self.state)
+        return self.state.dst.best_action

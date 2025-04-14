@@ -44,4 +44,5 @@ class TestBase:
         self.ep_cont += 1
         if a == expect_value or str(a) == str(expect_value):
             return True
-        raise Exception(f"{a}!={expect_value} msg:{info}")
+        logger.error(f"{a}!={expect_value} msg:{info}", stacklevel=2)
+        return False

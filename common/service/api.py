@@ -2,7 +2,9 @@ import requests
 from common.util.log import get_log
 from common.util.baseconfig import ConfigBase, StrModel, DictModel
 from common.util.model import NumberModel
+import urllib3
 
+urllib3.disable_warnings()
 logger = get_log("api")
 
 
