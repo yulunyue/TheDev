@@ -56,6 +56,7 @@ class F4Action(Action):
             info["point_len"] = dict()
             for y in range(C.HEIGHT - self.y):
                 info["point_len"][y] = len(grid[self.x][y]["points"])
+            self.grid = info["points"]
         else:
             info = dict()
             for k, v1 in self.dst.state.items():
