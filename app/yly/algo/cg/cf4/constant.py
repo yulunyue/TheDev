@@ -1,6 +1,7 @@
-from common.algo.search.param import Params, Param
+from app.yly.algo.cg.cf4.params import SE, StateEnum, ParamCt, INROW
 from typing import List
 import os
+
 
 DATA_PATH = "data/cf4"
 inf = float("inf")
@@ -9,29 +10,13 @@ S = "○●"
 DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
 
 
-class ParamCt(Param):
-    pass
-
-
-class StateEnum(Params):
-    def __init__(self):
-        self.STATE_01 = ParamCt((0, 1)).load_value(1, 3)
-        self.STATE_02 = ParamCt((0, 2)).load_value(10, 100)
-        self.STATE_03 = ParamCt((0, 3)).load_value(200, 600)
-        self.STATE_04 = ParamCt((0, 4)).load_value(800, 8000)
-        super().__init__()
-
-
-SE = StateEnum()
-SE.init_param()
-
-
 class Constant:
 
     def load(self, h, w) -> None:
         self.rows = self.HEIGHT = h
         self.columns = self.WIDTH = w
-        self.inarow = 4
+        self.inarow = INROW
+        self.PLAYER_NUM = 2
         self.init_w()
         self.init_score()
         self.init_lines()
@@ -50,8 +35,13 @@ class Constant:
                     to_fill.append(j)
                 j += 1
                 s = s >> 2
-            k = (min(ct[1], ct[2]), max(ct[1], ct[2]))
-            param = k if k in SE._params else None
+            k1 = (ct[1], ct[2])
+            k2 = (ct[2], ct[1])
+            param = None
+            if k1 in SE._params:
+                param = k1
+            elif k2 in SE._params:
+                param = k2
             self.scores.append([param, to_fill])
         return self
 
@@ -84,11 +74,11 @@ class Constant:
             for j in range(self.WIDTH):
                 for y, x in DR:
                     tmp = []
-                    for k in range(4):
+                    for k in range(INROW):
                         y1, x1 = i + k * y, j + k * x
                         if 0 <= y1 < self.HEIGHT and 0 <= x1 < self.WIDTH:
                             tmp.append([y1, x1, k])
-                    if len(tmp) == 4:
+                    if len(tmp) == INROW:
                         for y1, x1, idx in tmp:
                             self.point_line_id[y1][x1].append([self.line_num, idx])
                         self.lines.append(tmp)
@@ -106,34 +96,6 @@ class Constant:
                 else:
                     fn(i, j, 0)
 
-    def set_pos(self, y, x, player_id, line_state, end_pos):
-        score = {k: 0 for k in SE._params}
-        done = -1
-
-        for line_id, k_id in self.point_line_id[y][x]:
-            old_state: int = line_state[line_id]
-            # if old_state & C.state_pos[k_id][player_id]:
-            #     raise Exception(C.lines[k_id])
-            new_state: int = old_state | C.state_pos[k_id][player_id]
-            # p.info += f"{line_id}:{bin(new_state)}\n"
-            line_state[line_id] = new_state
-            new_line_state, null_pos = C.scores[new_state]
-            old_line_state, _ = C.scores[old_state]
-            if new_line_state is not None:
-                score[new_line_state] += 1
-            if old_line_state is not None:
-                score[old_line_state] -= 1
-            if new_line_state == (0, 4):
-                # p.info += f"[set {self.score}]"
-                done = [2, 1][player_id]
-            elif new_line_state == (0, 3):
-                y1, x1, _ = self.lines[line_id][null_pos[0]]
-                end_pos[y1, x1] = end_pos.get((y1, x1), 0) | (1 << (1 - player_id))
-
-        # if self.score >= 1 or self.score <= -1:
-        #     raise Exception(self.score)
-        return score, done
-
     def grid_to_mask(self, grids):
         mask = 0
         for j in range(self.WIDTH):
@@ -148,24 +110,6 @@ class Constant:
                     m |= C.POS_MASK[j] << h
             mask |= m
         return mask
-
-    def mask_to_line(self, mask, line_state, state, end_pos, grid):
-        done = -1
-        depth = 0
-        if isinstance(mask, list):
-            mask = self.grid_to_mask(mask)
-
-        def util(i, j, player_id):
-            nonlocal done, depth
-            pos_state, done = self.set_pos(i, j, 1 - player_id, line_state, end_pos)
-            grid[(C.HEIGHT - i - 1) * C.WIDTH + j] = player_id + 1
-            end_pos[j] = i + 1
-            for key, v in pos_state.items():
-                state[key] += v
-            depth += 1
-
-        self.mask_to_grid(mask, util)
-        return mask, done, depth
 
 
 C = Constant()

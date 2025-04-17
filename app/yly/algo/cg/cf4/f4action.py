@@ -48,19 +48,46 @@ class F4Action(Action):
         return self
 
     def set_info_from_kg1(self, grid=None):
+        msg = ""
+
+        def u(v: list):
+            s2 = [""]
+            for i in range(0, len(v), 6):
+                s2.append("".join([str(s) for s in v[i : i + 6]]))
+            return "\n".join(s2)
+
         if grid:
             info = grid[self.x][C.HEIGHT - 1 - self.y]
-            for k in ["swarm_patterns", "opp_patterns"]:
-                for k1, v in info[k].items():
-                    info[k][k1] = "".join([("?" + S)[v1["mark"]] for v1 in v])
-            info["point_len"] = dict()
-            for y in range(C.HEIGHT - self.y):
-                info["point_len"][y] = len(grid[self.x][y]["points"])
-            self.grid = info["points"]
-        else:
-            info = dict()
-            for k, v1 in self.dst.state.items():
-                src = 0 if self.src is None else self.src.state[k]
-                info[k] = v1 - src
+            # for k in ["swarm_patterns", "opp_patterns"]:
+            #     for k1, v in info[k].items():
+            #         info[k][k1] = "".join([("?" + S)[v1["mark"]] for v1 in v])
+            # info["point_len"] = dict()
+            # for y in range(C.HEIGHT - self.y):
+            #     info["point_len"][y] = len(grid[self.x][y]["points"])
+            points = self.get_points()
+            msg = "\n".join(
+                [
+                    "",
+                    f'diff:{info["points"]==points}',
+                    f"result:{u(points)}",
+                    f'except:{u(info["points"])}',
+                    f"{self.dst.state}",
+                    "",
+                ]
+            )
 
-        self.set_info(info)
+        else:
+            pass
+            # info = dict()
+            # msg = "diff "
+            # for k, v1 in self.dst.state.items():
+            #     src = 0 if self.src is None else self.src.state[k]
+            #     info[k] = v1 - src
+
+        self.set_info(msg)
+
+    def get_points(self):
+        ret = []
+        # for k, v1 in self.dst.state.items():
+        #     v2 = 0 if self.src is None else self.src.state[k]
+        return ret

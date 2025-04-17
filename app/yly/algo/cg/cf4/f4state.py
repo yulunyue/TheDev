@@ -1,7 +1,7 @@
 from typing import Dict, List
 from common.algo.search.state import State, Action, inf
 from common.algo.search.mctssearch import MctsSearchTree, MctsNode
-from app.yly.algo.cg.cf4.constant import C, SE, S, StateEnum
+from app.yly.algo.cg.cf4.constant import C, SE, S, StateEnum, INROW
 from collections import defaultdict
 import json
 
@@ -78,24 +78,6 @@ class F4State(MctsNode):
     def key(self):
         return str(self.mask)
 
-    def init_root(self, h, w):
-        C.load(h, w)
-        self.line_state = [0] * C.line_num
-        self.state = {k: 0 for k in SE._params}
-        self.end_pos = {x: 0 for x in range(C.WIDTH)}
-        self.grid = [0] * (h * w)
-        if self.mask is None:
-            self.mask = C.INIT_MASK
-        if self.mask != C.INIT_MASK:
-            self.mask, self.done, self.depth = C.mask_to_line(
-                self.mask, self.line_state, self.state, self.end_pos, self.grid
-            )
-            self.player_id = self.depth % 2
-        else:
-            self.depth = 0
-            self.player_id = 0
-        return self
-
     def get_action(self, col, **kw):
         x = col * (C.HEIGHT + 1)
         mask0 = self.mask >> x
@@ -112,10 +94,54 @@ class F4State(MctsNode):
         if mask not in STORE_STATE:
             STORE_STATE[mask] = F4State(mask, depth).init_state(col, y, self)
             if mask & C.MASK_FULL_ALL == C.MASK_FULL_ALL:
-                STORE_STATE[mask].done = 0
+                if STORE_STATE[mask].done == -1:
+                    STORE_STATE[mask].done = C.PLAYER_NUM
         from app.yly.algo.cg.cf4.f4action import F4Action
 
         return F4Action().load(self, y, col, STORE_STATE[mask])
+
+    def set_pos(self, y, x, player_id):
+        for line_id, k_id in C.point_line_id[y][x]:
+            old_state: int = self.line_state[line_id]
+            new_state: int = old_state | C.state_pos[k_id][player_id]
+            new_line_state, null_pos = C.scores[new_state]
+            old_line_state, _ = C.scores[old_state]
+            if new_line_state is not None:
+                self.state[new_line_state] += 1
+            if old_line_state is not None:
+                self.state[old_line_state] -= 1
+            if new_line_state and new_line_state[0] == INROW:
+                self.done = player_id
+        self.end_pos[x] = y + 1
+        self.grid[(C.HEIGHT - self.end_pos[x]) * C.WIDTH + x] = 2 - player_id
+
+    def mask_to_line(self):
+
+        self.depth = 0
+        if isinstance(self.mask, list):
+            self.mask = C.grid_to_mask(self.mask)
+
+        def util(i, j, player_id):
+            self.depth += 1
+            self.set_pos(i, j, 1 - player_id)
+
+        C.mask_to_grid(self.mask, util)
+
+    def init_root(self, h, w):
+        C.load(h, w)
+        self.line_state = [0] * C.line_num
+        self.state = {k: 0 for k in SE._params}
+        self.end_pos = {x: 0 for x in range(C.WIDTH)}
+        self.grid = [0] * (h * w)
+        if self.mask is None:
+            self.mask = C.INIT_MASK
+        if self.mask != C.INIT_MASK:
+            self.mask_to_line()
+            self.player_id = self.depth % 2
+        else:
+            self.depth = 0
+            self.player_id = 0
+        return self
 
     def init_state(self, x, y, p):
         p: F4State = p
@@ -123,14 +149,7 @@ class F4State(MctsNode):
         self.line_state = p.line_state.copy()
         self.state = p.state.copy()
         self.grid = p.grid.copy()
-        state, self.done = C.set_pos(
-            y, x, self.player_id, self.line_state, self.end_pos
-        )
-        for key, v in state.items():
-            self.state[key] += v
-
-        self.end_pos[x] = y + 1
-        self.grid[(C.HEIGHT - self.end_pos[x]) * C.WIDTH + x] = 2 - self.player_id
+        self.set_pos(y, x, self.player_id)
         return self
 
     _debug_file = None

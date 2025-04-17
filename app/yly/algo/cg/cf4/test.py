@@ -1,5 +1,5 @@
 from common.util.test import TestBase, logger
-from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo
+from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, SE
 from common.algo.search.algo import random_seed
 from typing import List
 
@@ -13,10 +13,19 @@ class C4Test(TestBase):
             debug=debug, width=7, height=6, env_name=None, init_state=init_state
         )  # Env.connectx)
 
-    def test_base(self):
-        env = self.get_env(init_state=4432678895745)
+    def get_action(self, init_state=None):
+        return self.get_env(init_state=init_state).state
+
+    def test_env(self):
+        env = self.get_env()
         a = env.play("kd1")
         self.expect(0, 1, a)
+
+    def test_action(self):
+        a = self.get_action()
+        b = a.dst.get_action(0).dst.get_action(1)
+        c = b.dst.get_action(0)
+        self.expect(c.dst.state[SE.STATE_02.key], 1, c)
 
     def test_pk(self):
         players = [get_player("kd2"), get_player("kd1")]

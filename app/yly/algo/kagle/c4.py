@@ -4,8 +4,8 @@ def cell_swarm1(obs, conf):
         """evaluate qualities of the cell"""
         cell = get_patterns(cell)
         cell = calculate_points(cell)
-        for i in range(1, conf.rows):
-            cell = explore_cell_above(cell, i)
+        # for i in range(1, conf.rows):
+        #     cell = explore_cell_above(cell, i)
         return cell
 
     def get_patterns(cell):
