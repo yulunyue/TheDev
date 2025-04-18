@@ -101,17 +101,20 @@ class F4State(MctsNode):
         return F4Action().load(self, y, col, STORE_STATE[mask])
 
     def set_pos(self, y, x, player_id):
-        for line_id, k_id in C.point_line_id[y][x]:
-            old_state: int = self.line_state[line_id]
-            new_state: int = old_state | C.state_pos[k_id][player_id]
-            new_line_state, null_pos = C.scores[new_state]
-            old_line_state, _ = C.scores[old_state]
-            if new_line_state is not None:
-                self.state[new_line_state] += 1
-            if old_line_state is not None:
-                self.state[old_line_state] -= 1
-            if new_line_state and new_line_state[0] == INROW:
-                self.done = player_id
+        for dr, lines in enumerate(C.point_line_id[y][x]):
+            num = op_num = 0
+            for line_id, k_id in lines:
+                old_state: int = self.line_state[line_id]
+                new_state: int = old_state | C.state_pos[k_id][player_id]
+                self.line_state[line_id] = new_state
+                new_line_state, null_pos = C.scores[new_state]
+                old_line_state, _ = C.scores[old_state]
+                if new_line_state is not None:
+                    self.state[new_line_state] += 1
+                if old_line_state is not None:
+                    self.state[old_line_state] -= 1
+                if new_line_state and new_line_state[0] + new_line_state[1] == INROW:
+                    self.done = player_id
         self.end_pos[x] = y + 1
         self.grid[(C.HEIGHT - self.end_pos[x]) * C.WIDTH + x] = 2 - player_id
 

@@ -20,8 +20,16 @@ class F4Action(Action):
         self.y, self.x = y, x
         return super().load(src, x, dst, reward)
 
+    def get_line_info(self):
+        ret = []
+        for k, v in self.dst.state.items():
+            v2 = 0 if self.src is None else self.src.state[k]
+            if v2 or v:
+                ret.append(f"{k[0]}_{k[1]}:{v2}->{v}")
+        return "\n".join(ret)
+
     def get_action_str(self):
-        return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]"
+        return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]\nline_info=\n{self.get_line_info()}\n"
 
     def get_reward(self, params: StateEnum, **kwargs):
         score = 0

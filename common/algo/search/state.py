@@ -16,7 +16,7 @@ class Action:
         return self
 
     def __str__(self):
-        return f"<Action action:{self.get_action_str()} reward:{self.reward} info:{self.info}>state:{self.dst}"
+        return f"<Action action:{self.get_action_str()} reward:{self.reward} info:{self.info}>state:{self.src}"
 
     def set_info(self, info):
         self.info = info

@@ -36,12 +36,9 @@ class Constant:
                 j += 1
                 s = s >> 2
             k1 = (ct[1], ct[2])
-            k2 = (ct[2], ct[1])
             param = None
             if k1 in SE._params:
                 param = k1
-            elif k2 in SE._params:
-                param = k2
             self.scores.append([param, to_fill])
         return self
 
@@ -67,12 +64,13 @@ class Constant:
     def init_lines(self):
         self.line_num = 0
         self.point_line_id = [
-            [[] for _ in range(self.WIDTH)] for _ in range(self.HEIGHT)
+            [[[] for _ in range(len(DR))] for _ in range(self.WIDTH)]
+            for _ in range(self.HEIGHT)
         ]
         self.lines = []
         for i in range(self.HEIGHT):
             for j in range(self.WIDTH):
-                for y, x in DR:
+                for l, (y, x) in enumerate(DR):
                     tmp = []
                     for k in range(INROW):
                         y1, x1 = i + k * y, j + k * x
@@ -80,7 +78,7 @@ class Constant:
                             tmp.append([y1, x1, k])
                     if len(tmp) == INROW:
                         for y1, x1, idx in tmp:
-                            self.point_line_id[y1][x1].append([self.line_num, idx])
+                            self.point_line_id[y1][x1][l].append([self.line_num, idx])
                         self.lines.append(tmp)
                         self.line_num += 1
 

@@ -22,10 +22,9 @@ class C4Test(TestBase):
         self.expect(0, 1, a)
 
     def test_action(self):
-        a = self.get_action()
-        b = a.dst.get_action(0).dst.get_action(1)
-        c = b.dst.get_action(0)
-        self.expect(c.dst.state[SE.STATE_02.key], 1, c)
+        a = self.get_action().dst.get_action(0)
+        a = a.dst.get_action(0)
+        self.expect(a.get_points(), [0, 0, 0, 0, 0, 1], a)
 
     def test_pk(self):
         players = [get_player("kd2"), get_player("kd1")]
@@ -44,8 +43,7 @@ class C4Test(TestBase):
 
     def test_fight(self):
         """
-        所有玩家一起战斗
-        看看谁是第一名
+        所有玩家一起战斗看看谁是第一名
         """
 
         players = [get_player(k) for k in PLAYERS]
