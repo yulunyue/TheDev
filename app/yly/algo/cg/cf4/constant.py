@@ -35,11 +35,12 @@ class Constant:
                     to_fill.append(j)
                 j += 1
                 s = s >> 2
-            k1 = (ct[1], ct[2])
-            param = None
-            if k1 in SE._params:
-                param = k1
-            self.scores.append([param, to_fill])
+            num = 0
+            if ct[1] == 0:
+                num = ct[2]
+            elif ct[2] == 0:
+                num = ct[1]
+            self.scores.append([num, to_fill])
         return self
 
     def init_w(self):
