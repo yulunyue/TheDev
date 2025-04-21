@@ -8,18 +8,22 @@ class C4Test(TestBase):
     def __init__(self):
         super().__init__()
 
-    def get_env(self, debug=1, init_state=None):
-        return Env(
-            debug=debug, width=7, height=6, env_name=None, init_state=init_state
-        )  # Env.connectx)
+    def get_env(self, debug=1):
 
-    def get_action(self, init_state=None):
-        return self.get_env(init_state=init_state).state
+        return Env(
+            debug=debug,
+            width=7,
+            height=6,
+            env_name=Env.connectx,
+        )
 
     def test_env(self):
         env = self.get_env()
-        a = env.play("kd1")
-        self.expect(0, 1, a)
+        for k in PLAYERS:
+            env.play(get_player(k))
+
+    def test_player(self):
+        state_map = {}
 
     def test_action(self):
         a = self.get_action().dst.get_action(0)

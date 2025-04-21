@@ -52,23 +52,24 @@ class Algo:
     def search_main(self, state, **kw):
         pass
 
-    def search(self, action: Action):
-        self.state_clear(action)
+    def set_env_cls(self, cls):
+        self.env_cls = cls
+        return self
+
+    def search(self, *args) -> Action:
+        action = self.env_cls(*args)
         self.state_count = 0
         self.begin_time = time.time()
-        ret = self.search_main(action)
+        self.search_main(action)
         use_time = int((time.time() - self.begin_time) * 1000)
         self.use_time += use_time
         self.max_use_time = max(self.max_use_time, use_time)
-        return ret
+        return action
 
     def reset(self):
         self.max_use_time = 0
         self.use_time = 0
         return self
-
-    def state_clear(self, action: Action):
-        action.dst.best_action = None
 
     def new_state(self, key):
         pass

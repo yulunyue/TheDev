@@ -7,6 +7,11 @@ inf = float("inf")
 
 class Action:
     info = None
+    state_cls = None
+
+    def set_state_cls(self, cls):
+        self.state_cls: State = cls
+        return self
 
     def load(self, src, action, dst, reward=0):
         self.action = action
@@ -32,25 +37,50 @@ class Action:
 class State:
     name = "state"
     parent: "State"
-    done = -1
+    done = None
 
     def __init__(self, player_id, depth) -> None:
         self.depth = depth
         self.player_id = player_id
         self.best_action: Action = None
-        self.actions: List[Action] = None
+        self.actions: Dict[str, Action] = None
 
     def reset(self):
         return self
 
-    def get_action(self, *args) -> Action:
+    def get_action(self, a) -> Action:
+        if self.actions and a in self.actions:
+            return self.actions[a]
+        return self.gen_action(a)
+
+    def gen_action(self):
+        pass
+
+    def get_actions_all(self):
         raise Exception("todo")
 
     def get_score(self, **kw):
         raise Exception("todo")
 
-    def get_actions(self) -> List[Action]:
+    def make_actions(self):
+        self.actions = dict()
+        for action in self.get_actions_all():
+            a = self.get_action(action)
+            if a is None:
+                continue
+            if a.dst.op_done:
+                continue
+            if a.dst.win_done:
+                return {action: a}
+            self.actions[action] = a
         return self.actions
+
+    def get_actions(self, depth=1, **kw):
+        if depth == 0 or self.done is not None:
+            return []
+        if self.actions is not None:
+            return self.actions
+        return self.make_actions()
 
     def set_actions(self, actions):
         self.actions = actions
@@ -80,8 +110,8 @@ class State:
 
     @property
     def win_done(self):
-        raise Exception("todo")
+        return False
 
     @property
     def op_done(self):
-        raise Exception("todo")
+        return False

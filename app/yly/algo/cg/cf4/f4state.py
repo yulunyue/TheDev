@@ -14,14 +14,10 @@ def board_format(borad):
     return "\n".join(info), mask
 
 
-class F4State(MctsNode):
+class F4StateOld(MctsNode):
     name = "f4state"
     info = ""
-    parent: "F4State"
-
-    def __init__(self, mask, depth=0) -> None:
-        self.mask = mask
-        super().__init__(depth % 2, depth)
+    parent: "F4StateOld"
 
     def __str__(self):
         return self.to_str()
@@ -96,25 +92,29 @@ class F4State(MctsNode):
             if mask & C.MASK_FULL_ALL == C.MASK_FULL_ALL:
                 if STORE_STATE[mask].done == -1:
                     STORE_STATE[mask].done = C.PLAYER_NUM
-        from app.yly.algo.cg.cf4.f4action import F4Action
+        from app.yly.algo.cg.cf4.states.f4action import F4Action
 
         return F4Action().load(self, y, col, STORE_STATE[mask])
 
     def set_pos(self, y, x, player_id):
         for dr, lines in enumerate(C.point_line_id[y][x]):
-            num = op_num = 0
+            mx_self = max_op = 0
             for line_id, k_id in lines:
                 old_state: int = self.line_state[line_id]
-                new_state: int = old_state | C.state_pos[k_id][player_id]
-                self.line_state[line_id] = new_state
-                new_line_state, null_pos = C.scores[new_state]
-                old_line_state, _ = C.scores[old_state]
-                if new_line_state is not None:
-                    self.state[new_line_state] += 1
-                if old_line_state is not None:
-                    self.state[old_line_state] -= 1
-                if new_line_state and new_line_state[0] + new_line_state[1] == INROW:
-                    self.done = player_id
+                self.line_state[line_id] = new_self_state = (
+                    old_state | C.state_pos[k_id][player_id]
+                )
+                op_state = old_state | C.state_pos[k_id][1 - player_id]
+                self_num, *args = C.scores[new_self_state]
+                op_num, *args = C.scores[op_state]
+                if self_num > mx_self:
+                    mx_self = self_num
+                if op_num > max_op:
+                    max_op = op_num
+            if mx_self:
+                pass
+            if mx_self == INROW:
+                self.done = player_id
         self.end_pos[x] = y + 1
         self.grid[(C.HEIGHT - self.end_pos[x]) * C.WIDTH + x] = 2 - player_id
 
@@ -130,8 +130,8 @@ class F4State(MctsNode):
 
         C.mask_to_grid(self.mask, util)
 
-    def init_root(self, h, w):
-        C.load(h, w)
+    def init_root(self, h, w, state=None):
+
         self.line_state = [0] * C.line_num
         self.state = {k: 0 for k in SE._params}
         self.end_pos = {x: 0 for x in range(C.WIDTH)}
@@ -145,6 +145,10 @@ class F4State(MctsNode):
             self.depth = 0
             self.player_id = 0
         return self
+
+    def init_grid(self, h, w):
+        C.load(h, w)
+        self.grid = [0] * (h * w)
 
     def init_state(self, x, y, p):
         p: F4State = p
@@ -203,6 +207,3 @@ class F4State(MctsNode):
     @property
     def op_done(self):
         return 3 - self.win_done
-
-
-STORE_STATE: Dict[int, F4State] = dict()

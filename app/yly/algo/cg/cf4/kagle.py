@@ -1,6 +1,16 @@
 from app.yly.algo.cg.cf4.constant import C, S
-from app.yly.algo.cg.cf4.f4action import F4State, F4Action
+from app.yly.algo.cg.cf4.states.f4action import F4State, F4Action
 from common.algo.search.algo import Algo
+
+
+class KaggleEnv:
+
+    def __init__(self, board, rows, columns, mark):
+        self.board = board
+        self.rows = rows
+        self.columns = columns
+        self.mark = mark
+        self.inarow = C.inarow
 
 
 class Kagle(Algo):
@@ -28,9 +38,11 @@ class Kagle(Algo):
 
     def search_main(self, state: F4Action, **kw):
         a: F4Action = state.dst.get_random_action()
-        a.set_info_from_kg1(None)
         state.dst.best_action = a
         # state.dst.best_action = self.evaluate_cell(state.dst)
+
+    def search(self, *args):
+        return super().search(*args)
 
 
 class KagleAgent(Algo):
@@ -38,9 +50,9 @@ class KagleAgent(Algo):
     def search_main(self, state: F4Action, **kw):
         from app.yly.algo.kagle.c4 import cell_swarm1
 
-        action, grid = cell_swarm1(*state.dump_to_kaggle())
-        a = state.dst.best_action = state.dst.get_action(action)
-        a.set_info_from_kg1(grid)
+        obs = KaggleEnv(state.dst.grid, C.HEIGHT, C.WIDTH, state.dst.player_id + 1)
+        action, grid = cell_swarm1(obs, obs)
+        state.dst.best_action = state.dst.get_action(action)
 
     def __call__(self, *args, **kwds):
         from app.yly.algo.kagle.c4 import cell_swarm

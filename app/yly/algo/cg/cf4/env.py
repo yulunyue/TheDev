@@ -7,10 +7,9 @@ from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
-from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
-from app.yly.algo.cg.cf4.f4state import F4State, S, board_format
-from app.yly.algo.cg.cf4.f4action import F4Action, KaggleEnv
-from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent
+from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH, S
+from app.yly.algo.cg.cf4.states.f4action import F4Action, get_action
+from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv
 
 
 class Ab(AlphaBateSearch):
@@ -23,13 +22,13 @@ class Ab(AlphaBateSearch):
 
 logger = get_log("cf4")
 PLAYERS = dict(
-    ab1=lambda: Ab().load(1).set_params(SE),
-    ab2=lambda: Ab().load(2).set_params(SE),
-    ab3=lambda: Ab().load(3).set_params(SE),
-    ab4=lambda: Ab().load(4).set_params(SE),
-    ab5=lambda: Ab().load(5).set_params(SE),
-    kd1=lambda: KagleAgent().load().set_params(None),
-    kd2=lambda: Kagle().load().set_params(None),
+    ab1=lambda: Ab().load(1).set_params(SE).set_env_cls(get_action),
+    ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_action),
+    ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_action),
+    ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_action),
+    ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_action),
+    kd1=lambda: KagleAgent().load().set_params(None).set_env_cls(get_action),
+    kd2=lambda: Kagle().load().set_params(None).set_env_cls(get_action),
     # negamax="negamax",
 )
 
@@ -41,42 +40,40 @@ def get_player(k) -> Algo:
 class Env:
     connectx = "connectx"
 
-    def __init__(
-        self, env_name=None, init_state=None, debug=0, height=7, width=9, **kw
-    ):
+    def __init__(self, env_name=None, debug=0, height=7, width=9, **kw):
         self.env_name = env_name
         self.debug = debug
-        if init_state is None and env_name == Env.connectx:
+        self.width = width
+        self.height = height
+        self.init_state = None
+        if env_name == Env.connectx:
             from kaggle_environments import make
 
             self.env = make(env_name, debug=debug, **kw)
-            self.state = F4Action().load_from_state(
-                height=self.env.configuration.rows, width=self.env.configuration.columns
-            )
+            self.width = self.env.configuration.rows
+            self.height = self.env.configuration.columns
             self.env.reset()
         else:
-            self.state = F4Action().load_from_state(
-                state=init_state, height=height, width=width
-            )
+            self.env = None
+        C.load(h=self.height, w=self.width)
 
-    def run_self(self):
+    def run_self(self, state=None):
         player_id = 0
-        cur = self.state
-        while cur.dst.done < 0:
-            self.players[player_id].search(cur)
-            cur = cur.dst.best_action
-            self.records.append(cur)
+        while True:
+            state = self.players[player_id].search(state)
+            if state is None:
+                return
+            self.records.append(state)
             player_id = (player_id + 1) % len(self.players)
-        return cur.dst.done - 1
 
-    def run(self, players: List[Algo]):
+    def run(self, players: List[Algo], state=None):
         self.players = [p.reset() for p in players]
         self.records: List[F4Action] = []
         if self.env_name == Env.connectx:
-            return self.run_kagele()
-        return self.run_self()
+            return self.run_kagele(state)
+        return self.run_self(state)
 
-    def run_kagele(self):
+    def run_kagele(self, state=None):
         from common.util.log import JSON_TMP_FILE
 
         records = self.env.run(self.players)
@@ -110,6 +107,6 @@ class Env:
             #     logger.info(f"gbg\n{bin(cur.mask)}\n{bin(f2.mask)}\n" + f2.to_str())
             # logger.info(cur.to_str())
 
-    def play(self, name):
-        get_player(name).search(self.state)
-        return self.state.dst.best_action
+    def play(self, player: Algo):
+        action = player.search(self.init_state)
+        return action.dst.best_action
