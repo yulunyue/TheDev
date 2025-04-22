@@ -159,19 +159,6 @@ class F4StateOld(MctsNode):
         self.set_pos(y, x, self.player_id)
         return self
 
-    _debug_file = None
-
-    def debug(self, info=""):
-        from common.util.fp import File
-
-        if not F4State._debug_file:
-            fp = File("data/log/c4.txt").write_file("init\n")
-            F4State._debug_file = open(fp.path, "a", encoding="utf-8")
-        if info.startswith("msg"):
-            F4State._debug_file.write(f"\n-----{info}----\n")
-        else:
-            F4State._debug_file.write(self.to_str(info))
-
     def get_actions(self, depth=1, **kw):
         if depth == 0 or self.done > 0:
             return []

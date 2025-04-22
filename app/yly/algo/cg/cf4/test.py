@@ -14,7 +14,7 @@ class C4Test(TestBase):
             debug=debug,
             width=7,
             height=6,
-            env_name=Env.connectx,
+            # env_name=Env.connectx,
         )
 
     def test_env(self):

@@ -12,7 +12,7 @@ class C4GridState(F4State):
             return
         from app.yly.algo.cg.cf4.states.f4action import F4Action
 
-        return F4Action().load(self, y, x, self.add_child(y, x))
+        return F4Action(self, y, x, self.add_child(y, x))
 
     def add_child(self, y, x):
         r = C4GridState()
@@ -20,6 +20,6 @@ class C4GridState(F4State):
         r.player_id = (self.player_id + 1) % C.PLAYER_NUM
         r.grid = self.grid.copy()
         r.row_idx = self.row_idx.copy()
-        r.row_idx[y] = x
+        r.row_idx[x] = y
         r.grid[y * C.WIDTH + x] = r.player_id + 1
         return r

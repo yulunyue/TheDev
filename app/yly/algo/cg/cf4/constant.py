@@ -1,7 +1,9 @@
 from app.yly.algo.cg.cf4.params import SE, StateEnum, ParamCt, INROW
+from common.algo.manage import get_log
 from typing import List
 import os
 
+logger = get_log("cf4")
 
 DATA_PATH = "data/cf4"
 inf = float("inf")

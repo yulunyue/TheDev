@@ -1,4 +1,4 @@
-from common.algo.manage import SolutionBase, View, MOD, inf, File, get_log
+from common.algo.manage import SolutionBase, View, MOD, inf, File
 
 from common.algo.search.mctssearch import MctsSearchTree, MctsNode
 from common.algo.search.algo import Algo, np, RandomAlgo
@@ -7,7 +7,7 @@ from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
-from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH, S
+from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH, S, logger
 from app.yly.algo.cg.cf4.states.f4action import F4Action, get_action
 from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv
 
@@ -20,7 +20,6 @@ class Ab(AlphaBateSearch):
         return action.dst.best_action.action
 
 
-logger = get_log("cf4")
 PLAYERS = dict(
     ab1=lambda: Ab().load(1).set_params(SE).set_env_cls(get_action),
     ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_action),
@@ -57,14 +56,17 @@ class Env:
             self.env = None
         C.load(h=self.height, w=self.width)
 
-    def run_self(self, state=None):
+    def run_self(self, state=None, max_round=128):
         player_id = 0
-        while True:
-            state = self.players[player_id].search(state)
+        while max_round:
+            state: F4Action = self.players[player_id].search(state)
+            if state:
+                state.debug()
             if state is None:
                 return
             self.records.append(state)
             player_id = (player_id + 1) % len(self.players)
+            max_round -= 1
 
     def run(self, players: List[Algo], state=None):
         self.players = [p.reset() for p in players]
@@ -93,15 +95,9 @@ class Env:
         if self.env_name == Env.connectx and mode == "html":
             ret = self.env.render(mode=mode, **kw)
             File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
-        cur = self.state.dst
-        for r in self.records:
 
-            logger.info(f"doaction: {r}")
-            act = cur.get_action(r.action)
-            if not act:
-                logger.info("gg")
-                break
-            cur = act.dst
+        for r in self.records:
+            logger.info(r)
             # f2 = F4State(C.grid_to_mask(r.board)).init_root(C.HEIGHT, C.WIDTH)
             # if f2.mask != cur.mask:
             #     logger.info(f"gbg\n{bin(cur.mask)}\n{bin(f2.mask)}\n" + f2.to_str())

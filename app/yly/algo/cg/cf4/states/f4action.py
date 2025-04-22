@@ -1,23 +1,24 @@
 from app.yly.algo.cg.cf4.states.base_state import F4State, Action
 from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState
-from app.yly.algo.cg.cf4.constant import StateEnum, C
+from app.yly.algo.cg.cf4.constant import StateEnum, C, S
 from typing import List, Dict
 
 
 class F4Action(Action):
 
-    action = None
+    y = None
+    x = None
 
-    def load(self, src, y, x, dst, reward=0):
+    def __init__(self, src, y, x, dst, reward=0):
         self.y, self.x = y, x
-        return super().load(src, x, dst, reward)
+        super().__init__(src, x, dst, reward)
 
     def get_line_info(self):
         ret = []
-        for k, v in self.dst.state.items():
-            v2 = 0 if self.src is None else self.src.state[k]
-            if v2 or v:
-                ret.append(f"{k[0]}_{k[1]}:{v2}->{v}")
+        # for k, v in self.dst.state.items():
+        #     v2 = 0 if self.src is None else self.src.state[k]
+        #     if v2 or v:
+        #         ret.append(f"{k[0]}_{k[1]}:{v2}->{v}")
         return "\n".join(ret)
 
     def get_action_str(self):
@@ -45,8 +46,22 @@ class F4Action(Action):
         #     v2 = 0 if self.src is None else self.src.state[k]
         return ret
 
+    _debug_file = None
+
+    def debug(self, info=""):
+        from common.util.fp import File
+
+        if not F4Action._debug_file:
+            fp = File("data/log/c4.txt").write_file("init\n")
+            F4Action._debug_file = open(fp.path, "a", encoding="utf-8")
+        if info.startswith("msg"):
+            F4Action._debug_file.write(f"\n-----{info}----\n")
+        else:
+            F4Action._debug_file.write(str(self))
+
 
 def get_action(state):
     if isinstance(state, F4Action):
         return state
-    return F4Action().load_from_state(state=state)
+    state = C4GridState().init_root(state=state)
+    return F4Action(None, None, None, state)

@@ -1,4 +1,4 @@
-from app.yly.algo.cg.cf4.constant import C, S
+from app.yly.algo.cg.cf4.constant import C, S, logger
 from app.yly.algo.cg.cf4.states.f4action import F4State, F4Action
 from common.algo.search.algo import Algo
 
@@ -41,8 +41,8 @@ class Kagle(Algo):
         state.dst.best_action = a
         # state.dst.best_action = self.evaluate_cell(state.dst)
 
-    def search(self, *args):
-        return super().search(*args)
+    def __call__(self, env: KaggleEnv, conf: KaggleEnv):
+        return super().search(*args).action
 
 
 class KagleAgent(Algo):

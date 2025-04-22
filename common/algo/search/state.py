@@ -7,18 +7,17 @@ inf = float("inf")
 
 class Action:
     info = None
-    state_cls = None
+    # state_cls = None
 
-    def set_state_cls(self, cls):
-        self.state_cls: State = cls
-        return self
+    # def set_state_cls(self, cls):
+    #     self.state_cls: State = cls
+    #     return self
 
-    def load(self, src, action, dst, reward=0):
+    def __init__(self, src, action, dst, reward=0):
         self.action = action
         self.src: State = src
         self.dst: State = dst
         self.reward = reward
-        return self
 
     def __str__(self):
         return f"<Action action:{self.get_action_str()} reward:{self.reward} info:{self.info}>state:{self.src}"
