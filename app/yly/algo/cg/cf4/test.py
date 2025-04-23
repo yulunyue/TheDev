@@ -17,13 +17,15 @@ class C4Test(TestBase):
             # env_name=Env.connectx,
         )
 
-    def test_env(self):
+    def test_player_all(self):
         env = self.get_env()
         for k in PLAYERS:
-            env.play(get_player(k))
+            action = env.play(get_player(k))
+            logger.info(k)
+            logger.info(action)
 
-    def test_player(self):
-        state_map = {}
+    def test_player_kd1(self):
+        logger.info(self.get_env().play(get_player("kd1")))
 
     def test_action(self):
         a = self.get_action().dst.get_action(0)
