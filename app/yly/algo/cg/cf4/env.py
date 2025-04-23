@@ -98,10 +98,6 @@ class Env:
 
         for r in self.records:
             logger.info(r)
-            # f2 = F4State(C.grid_to_mask(r.board)).init_root(C.HEIGHT, C.WIDTH)
-            # if f2.mask != cur.mask:
-            #     logger.info(f"gbg\n{bin(cur.mask)}\n{bin(f2.mask)}\n" + f2.to_str())
-            # logger.info(cur.to_str())
 
     def play(self, player: Algo):
         action = player.search(self.init_state)

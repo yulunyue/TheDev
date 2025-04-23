@@ -1,6 +1,7 @@
 import { Input } from "./input";
-import web from "../../web/web_dom"
+import web_dom from "../../web/web_dom"
 import Ct from "../../web/constant"
+import { Title, Button } from "./button";
 import { Node, to_node } from "../../web/cls";
 import { listui } from "./list";
 import { Div } from "./div"
@@ -9,9 +10,11 @@ export class Search extends Div {
     dialog: Div
     listui: ListUi
     input: Input
-    title: Div
+    title: Title
+    search_url: any
+    _value: Node
     init_node(): void {
-        this.title = this.add_child(new Div())
+        this.title = this.add_child(new Title())
         this.input = this.add_child(new Input())
         this.dialog = this.add_child(new Div().hide())
         this.listui = this.dialog.add_child(new ListUi())
@@ -20,23 +23,45 @@ export class Search extends Div {
         this.title.set_html(s)
         return this
     }
+    set_value(value: Node): this {
+        if (this._id && this.local_storge_enable) {
+            web_dom.set_local(this._id, value.dump())
+        }
+        this._value = value
+        this._on_change?.(value)
+        this.input.set_value(value.title)
+        return this
+    }
+    get_value() {
+        return this._value
+    }
+    set_id(id: string): this {
+        super.set_id(id)
+        if (this.local_storge_enable) {
+            this.set_value(web_dom.get_local(id))
+        }
+        return this
+    }
     set_search(url: string) {
-        web.bind_click(this.input.el, () => this.emit_search(url))
+        this.search_url = url
+        web_dom.bind_click(this.input.el, () => this.emit_search())
         // web.bind_input(this.input.el, () => this.filter())
         return this
     }
-    emit_search(url: string) {
-        web.post(url, { value: this.get_value() }, (node: Node) => {
+    emit_search(url?: string) {
+        web_dom.post(this.search_url, { value: this.get_value() }, (node: Node) => {
             this.set_option(node)
             this.show_search_dialog()
         })
+        return this
     }
     filter() {
         this.listui.set_option(
             //to_node(this.option).filter(this.get_value())
             this.option
         ).select((v: any) => {
-            this.set_value(v.title)
+            this.set_value(v)
+
             this.dialog.hide()
         })
     }
@@ -44,6 +69,7 @@ export class Search extends Div {
         if (this.option.data.uri) {
             this.set_search(this.option.data.uri)
         }
+
     }
     show_search_dialog() {
         // console.log(this.get_rect(), this.el)
@@ -51,16 +77,21 @@ export class Search extends Div {
         this.dialog.set_style({
             left: this.get_a_x(),
             top: this.get_a_y() + this.get_height(),
-            width: this.get_width(),
+            width: this.input.get_width(),
             maxHeight: 300,
             overflowY: "auto",
             border: "1px solid #000",
             backgroundColor: "white",
             position: "fixed"
         }).show()
-        web.body_click(() => {
+        web_dom.body_click(() => {
             this.dialog.hide()
         })
+    }
+
+    set_btns(btns: any) {
+        this.title.set_btns(btns)
+        return this
     }
 
 }

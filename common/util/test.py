@@ -1,6 +1,7 @@
 import sys
 import time
 from common.util.log import get_log
+from common.util.tool import argc_parse
 
 logger = get_log("test")
 TEST_FN_PREFIX = "test_"
@@ -13,15 +14,8 @@ class TestBase:
     def prepare(self):
         pass
 
-    def run(self):
-        argvs = []
-        self.kw = dict()
-        for param in sys.argv[1:]:
-            key, *args = param.split("=")
-            if len(args) == 0:
-                argvs.append(param)
-            else:
-                self.kw[key] = "=".join(args)
+    def run(self, args=None):
+        argvs, self.kw = argc_parse(args)
         if not argvs:
             fns = [getattr(self, k) for k in dir(self) if k.startswith(TEST_FN_PREFIX)]
         else:

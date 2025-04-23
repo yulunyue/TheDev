@@ -3,6 +3,7 @@ import { Style, Node, Fn1, to_node, not_null } from "../../web/cls"
 import { Dom } from "../../web/cls"
 import Util from "../../tool/util"
 import Constant from "../../web/constant"
+
 export class DivFactory {
     static fac_map = {}
     static instance = {}
@@ -354,8 +355,7 @@ export class Div {
     }
     set_option(option: Node) {
         this.option.set_option(option)
-        this.set_direction(option.direction)
-        DivFactory.set(this.option.key, this)
+        // this.set_direction(option.direction)
         this.render_option()
         return this
     }
@@ -382,12 +382,13 @@ export class Div {
 
     }
     render_option() {
-        this.set_html(this.option.title)
+
     }
     add_childs(childs: any[]) {
         return this.set_childs(childs)
     }
     set_html(text: string | Fn1<any, string>) {
+
         if (text == null || text == undefined) {
             return this
         }
@@ -395,11 +396,26 @@ export class Div {
             text(this.el)
             return this
         }
+
         this.el.innerHTML = text
         return this
     }
     set_value(value: any) {
+        if (typeof value == "object") {
+            value = JSON.stringify(value, null, 4)
+        }
         (this.el as any).value = value
+        return this
+    }
+    _id: string
+    local_storge_enable = false
+    set_id(id: string) {
+        this._id = id
+        DivFactory.set(this._id, this)
+        return this
+    }
+    enable_local_storge() {
+        this.local_storge_enable = true
         return this
     }
 

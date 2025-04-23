@@ -1,11 +1,11 @@
 from typing import Dict
-from common.service.http import Node
+from common.service.http import Node, MainHander
 from common.util.fp import File
 
 
 class Route:
-    def query_api(self):
-        pass
+    def query_api(self, **kw):
+        return Node(**MainHander.POST_API.to_json())
 
-    def execute_api(self, name, data):
+    def execute_api(self, name, data, **kw):
         pass

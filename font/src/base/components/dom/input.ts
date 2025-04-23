@@ -43,6 +43,7 @@ export class TextArea extends Div {
             overflow: "auto"
         })
     }
+
     get_value() {
         return this.el.value
     }
@@ -62,6 +63,13 @@ export class TextAreaRich extends Div {
     set_title(s: string) {
         this.title.title.set_html(s)
         return this
+    }
+    set_value(value: any): this {
+        this.area.set_value(value)
+        return this
+    }
+    get_value() {
+        return JSON.parse(this.area.get_value())
     }
     set_btns(btns: any) {
         this.title.set_btns(btns)

@@ -1,11 +1,43 @@
 import sys
-from importlib import import_module, invalidate_caches
 import os
+import inspect
+
+from typing import List
+from importlib import import_module, invalidate_caches
+
 from common.util.fp import File
 from common.util.log import get_log
-from typing import List
+
 
 logger = get_log("module")
+
+
+def get_function_info(v):
+    argspec = inspect.getfullargspec(v)
+    kg = {}
+    if argspec.defaults is None:
+        args = argspec.args
+    else:
+        df = argspec.defaults
+        args = argspec.args[0 : -len(df)]
+        kg.update(dict(zip(argspec.args[-len(df) :], df)))
+    for a in args:
+        if a == "self":
+            continue
+        kg[a] = None
+    from common.service.export import Node
+
+    return Node(
+        key=v.__name__,
+        title=v.__name__,
+        data=dict(
+            doc=v.__doc__,
+            args=args,
+            # annotated=str(v.__annotations__),
+            kwargs=kg,
+            # code=str(v),
+        ),
+    )
 
 
 class Module:

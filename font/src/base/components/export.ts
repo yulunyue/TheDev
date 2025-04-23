@@ -1,5 +1,5 @@
-import { input, Input, text_area, TextArea } from "./dom/input"
-import { search } from "./dom/search"
+import { input, Input, text_area, TextArea, TextAreaRich } from "./dom/input"
+import { search, Search } from "./dom/search"
 import { canca_dev } from "./canva/canva"
 import { SvgNode, svg } from "./svg/svg"
 import { button, Button } from "./dom/button"
@@ -35,5 +35,5 @@ export {
     Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button, MeraGraph, mera_util,
     Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2,
-    to_node, Grid, ListUi, Table, Ct, search
+    to_node, Grid, ListUi, Table, Ct, search, Search, TextAreaRich
 }

@@ -15,9 +15,11 @@ export class ListUi extends Div {
     }
     set_option(option: Node) {
         this.clear().add_childs(option.childs.map(v => {
-            return label().set_html(v.title).set_option(v)
+            let l = label().set_html(v.title).set_option(v)
+            return l
         }))
-        return super.set_option(option)
+        return this
+
     }
     select(callback: any) {
         this.childs.map(v => {

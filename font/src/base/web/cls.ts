@@ -153,6 +153,7 @@ export class Node {
     }
     dump() {
         return {
+            key: this.key,
             type: this.type,
             value: this.value,
             title: this.title,

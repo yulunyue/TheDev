@@ -1,4 +1,4 @@
-import { Style, Fn1Void, Dom, Node, Fn2Void } from "./cls"
+import { Style, Fn1Void, Dom, Node, Fn2Void, to_node } from "./cls"
 import Ut from "../tool/util"
 import F from "../tool/fun"
 import Ct from "./constant"
@@ -37,7 +37,7 @@ class WebDom {
         return location.href
     }
     get_local(key: string) {
-        return localStorage.getItem("yly_" + key)
+        return to_node(JSON.parse(localStorage.getItem("yly_" + key)))
     }
     get_param(key: string, defult_value?: any) {
         if (!(key in this.url_param)) {
@@ -49,6 +49,7 @@ class WebDom {
         if (value == undefined || value == null) {
             return
         }
+        console.log("set_local", key, value)
         if (typeof value == "object") {
             localStorage.setItem("yly_" + key, JSON.stringify(value))
         } else {

@@ -1,4 +1,5 @@
 from common.service.api import Api
+from common.service.apicall import ApiCall
 import tornado
 from typing import Awaitable, List, Dict
 from tornado.httputil import HTTPServerRequest
@@ -11,11 +12,11 @@ import signal
 import sys
 import json
 import os
-from common.util.log import File, get_log
+from common.util.export import File, get_log, uid, Module, get_function_info
+from common.service.node import Node
 
 logger = get_log("http")
-from common.util.tool import uid
-from common.util.module import Module
+
 
 HTML_CONTENT_TYPE = dict(
     jpg="image/jpeg",
@@ -27,111 +28,6 @@ HTML_CONTENT_TYPE = dict(
     json="application/json",
     js="application/x-javascript",
 )
-
-
-class Node:
-    def __init__(
-        self,
-        code=0,
-        type="",
-        key="",
-        title="",
-        size=0,
-        value=None,
-        data=None,
-        option=None,
-        childs=None,
-    ) -> None:
-        self.code = code
-        self.type = type
-        self.key = key or uid("node")
-        self.title = title
-        self.value = value
-        self.size = size
-        self.data = data or dict()
-        self.parent = None
-        self.childs: List[Node] = []
-        if childs:
-            for cd in childs:
-                if isinstance(cd, dict):
-                    self.add_child(**cd)
-                else:
-                    self.childs.append(cd)
-        self.init()
-
-    def set_value(self, v):
-        self.value = v
-        return self
-
-    def init(self):
-        pass
-
-    def set_type(self, tp):
-        self.type = tp
-        return self
-
-    def set_key(self, key):
-        self.key = key
-        return self
-
-    def set_data(self, **kw):
-        for k, v in kw.items():
-            self.data[k] = v
-        return self
-
-    def set_option(self, **kwargs):
-        pass
-
-    def add_child(
-        self,
-        code=0,
-        type="",
-        key="",
-        title="",
-        value=None,
-        data=None,
-        option=None,
-        childs=None,
-    ):
-        ret = Node(
-            code=code,
-            type=type,
-            key=key,
-            title=title,
-            value=value,
-            data=data,
-            option=option,
-            childs=childs,
-        )
-        self.childs.append(ret)
-        ret.parent = self
-        return ret
-
-    def add_node(self, *args):
-        for n in args:
-            self.childs.append(n)
-        return self
-
-    def to_json(self, **kw):
-        ret = dict(
-            type=self.type,
-            key=self.key,
-            title=self.get_title(),
-            value=self.value,
-            childs=[c.to_json() for c in self.get_childs()],
-            data=self.get_data(),
-        )
-        ret.update(kw)
-        return ret
-
-    def get_childs(self):
-        return self.childs
-
-    def get_title(self):
-        return self.title
-
-    def get_data(self):
-        return self.data
 
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
@@ -168,72 +64,6 @@ WEB_SOCKET_CLIENTS: Dict[str, TornadaWebSocketConnectHandler] = dict()
 
 def send_clients_mag(user, data):
     WEB_SOCKET_CLIENTS[user].write_message(data)
-
-
-class ApiCall:
-    def __init__(self) -> None:
-        self.fun_map = dict()
-        self.mock_call = []
-
-    def add_hock(self, call):
-        self.mock_call.append(call)
-
-    def call_app(self, path, params):
-        if path not in self.fun_map:
-            return dict(code=404, title=f"{path} not in {list(self.fun_map.keys())}")
-        try:
-            ret = self.fun_map[path](**params)
-        except Exception as e:
-            logger.error(e)
-            import traceback
-
-            traceback.print_exc()
-            ret = dict(code=500, title=str(e))
-        if isinstance(ret, Node):
-            return json.dumps(ret.to_json(), ensure_ascii=False)
-        return ret
-
-    def call(self, path, param):
-        ret = self.call_app(path, param)
-        for mock_fun in self.mock_call:
-            mock_fun(path, param, ret)
-        return ret
-
-    def load_module_str(self, key: str, modules: List[str]):
-        if key and not os.path.isdir(key):
-            raise Exception(key)
-        if modules == "*":
-            modules = os.listdir(key)
-        path_key = key if key.startswith("/") else "/" + key
-        for moudule_name in modules:
-            m = Module().load_module(moudule_name, key, "Route")()
-            moudule_name_key = moudule_name.replace(".", "/")
-            for fun_name in dir(m):
-                if fun_name.startswith("_"):
-                    continue
-                f = getattr(m, fun_name)
-                fun_key = f"{path_key}/{moudule_name_key}/{fun_name}"
-                if callable(f):
-                    self.fun_map[fun_key] = f
-
-    def load_module(self, cls):
-        m = cls.Route()
-        moudule_name_key = cls.__name__.replace(".", "/")
-        for fun_name in dir(m):
-            if fun_name.startswith("_"):
-                continue
-            f = getattr(m, fun_name)
-            fun_key = f"/{moudule_name_key}/{fun_name}"
-            if callable(f):
-                self.fun_map[fun_key] = f
-                logger.info(f"register {fun_key}")
-
-    def load_modules(self, mds):
-        for md in mds:
-            if isinstance(md, str):
-                self.load_module_str(md)
-            else:
-                self.load_module(md)
 
 
 class MainHander(RequestHandler):
@@ -292,8 +122,7 @@ class MainHander(RequestHandler):
 DEFAULT_CONF_PATH = "data/setting/http.json"
 
 
-def run(*args, port=8888):
-    MainHander.POST_API.load_modules(list(args))
+def run(port=8888):
     app = Application(
         [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHander)]
     )
