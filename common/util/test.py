@@ -1,7 +1,7 @@
 import sys
 import time
 from common.util.log import get_log
-from common.util.tool import argc_parse
+from common.util.tool import url_to_json
 
 logger = get_log("test")
 TEST_FN_PREFIX = "test_"
@@ -14,8 +14,8 @@ class TestBase:
     def prepare(self):
         pass
 
-    def run(self, args=None):
-        argvs, self.kw = argc_parse(args)
+    def run(self, args):
+        argvs, self.kw = url_to_json(args)
         if not argvs:
             fns = [getattr(self, k) for k in dir(self) if k.startswith(TEST_FN_PREFIX)]
         else:

@@ -55,10 +55,10 @@ def str_mid(s: str, size, fill="-"):
     return fill * l + s + fill * (l + y)
 
 
-def argc_parse(params=None):
+def url_to_json(params):
     args, kw = [], dict()
-    if params is None:
-        params = sys.argv[1:]
+    if isinstance(params, str):
+        params = params.split("&")
     for param in params:
         idx = param.find("=")
         if idx == -1:

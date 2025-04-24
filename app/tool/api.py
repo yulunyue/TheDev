@@ -9,3 +9,6 @@ class Route:
 
     def execute_api(self, name, data, **kw):
         pass
+
+    def test_add(self, a, b):
+        return dict(code=200, value=a + b)

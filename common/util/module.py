@@ -45,8 +45,8 @@ class Module:
         pass
 
     def load_module(self, module_name, path=None, fun_name=""):
-
         if path and path not in sys.path:
+            logger.info(f"add path {path}")
             sys.path.append(path)
         invalidate_caches()
         ret = import_module(module_name)

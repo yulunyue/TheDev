@@ -403,6 +403,8 @@ export class Div {
     set_value(value: any) {
         if (typeof value == "object") {
             value = JSON.stringify(value, null, 4)
+        } else if (value == null || value == undefined) {
+            value = ""
         }
         (this.el as any).value = value
         return this

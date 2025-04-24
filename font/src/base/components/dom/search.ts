@@ -45,15 +45,21 @@ export class Search extends Div {
     set_search(url: string) {
         this.search_url = url
         web_dom.bind_click(this.input.el, () => this.emit_search())
-        // web.bind_input(this.input.el, () => this.filter())
+        web_dom.bind_input(this.input.el, () => this.filter_local())
         return this
     }
     emit_search(url?: string) {
-        web_dom.post(this.search_url, { value: this.get_value() }, (node: Node) => {
+        web_dom.post(this.search_url, { value: this.input.get_value() }, (node: Node) => {
             this.set_option(node)
             this.show_search_dialog()
         })
         return this
+    }
+    filter_local() {
+        let value = this.input.get_value()
+        this.listui.childs.map((v: Div) => {
+            v.option.title.indexOf(value) != -1 ? v.show() : v.hide()
+        })
     }
     filter() {
         this.listui.set_option(

@@ -36,22 +36,30 @@ class ApiCall:
             mock_fun(path, param, ret)
         return ret
 
-    def load_module_str(self, key: str, modules: List[str]):
-        if key and not os.path.isdir(key):
-            raise Exception(key)
-        if modules == "*":
-            modules = os.listdir(key)
-        path_key = key if key.startswith("/") else "/" + key
+    def load_module_str(self, path: str, modules: List[str]):
+        if not os.path.isdir(path):
+            raise Exception(path)
+
         for moudule_name in modules:
-            m = Module().load_module(moudule_name, key, "Route")()
+            m = Module().load_module(moudule_name, path, "Route")()
             moudule_name_key = moudule_name.replace(".", "/")
             for fun_name in dir(m):
                 if fun_name.startswith("_"):
                     continue
                 f = getattr(m, fun_name)
-                fun_key = f"{path_key}/{moudule_name_key}/{fun_name}"
+                fun_key = f"{path}/{moudule_name_key}/{fun_name}"
                 if callable(f):
-                    self.fun_map[fun_key] = f
+                    self.register(fun_key, f)
+
+    def register(self, key: str, fun):
+        keys = key.split("/")[-5:]
+        if keys[0]:
+            keys[0] = ""
+        key = "/".join(keys)
+        if key in self.fun_map:
+            raise Exception(key, self.fun_map[key])
+        self.fun_map[key] = fun
+        logger.info(f"register {key} {fun.__name__}")
 
     def load_module(self, cls):
         m = cls.Route()
@@ -62,13 +70,12 @@ class ApiCall:
             f = getattr(m, fun_name)
             fun_key = f"/{moudule_name_key}/{fun_name}"
             if callable(f):
-                self.fun_map[fun_key] = f
-                logger.info(f"register {fun_key}")
+                self.register(fun_key, f)
 
     def load_modules(self, mds):
         for md in mds:
-            if isinstance(md, str):
-                self.load_module_str(md)
+            if isinstance(md, dict):
+                self.load_module_str(**md)
             else:
                 self.load_module(md)
 

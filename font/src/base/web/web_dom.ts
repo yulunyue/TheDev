@@ -72,6 +72,8 @@ class WebDom {
         let bk_host = this.web_host
         if (bk_host.endsWith('github.io')) {
             bk_host = '1.14.93.140'
+        } else if (bk_host == '10.159.230.217') {
+            bk_host = "172.28.226.89"
         }
 
         this.prefix = 'http://' + bk_host + ":" + this.bk_port
@@ -92,7 +94,8 @@ class WebDom {
         }
         let req = new XMLHttpRequest()
         if (method == this.HTTP_GET_METHOD) {
-            req.open(method, Ut.object_to_get_param(data, url));
+            let path = Ut.object_to_get_param(data, url)
+            req.open(method, path);
             req.send();
         } else if (method == this.HTTP_POST_METHOD) {
             req.open(method, url);
@@ -245,8 +248,8 @@ class WebDom {
         return Math.max(metrics.width, actual)
     }
     get_file(path: string, call_back: any) {
-        this.get(path, {}, (data: any) => {
-            call_back(data)
+        this.post("/app/tool/file/read", { path: path }, (ret) => {
+            call_back(ret.value)
         })
     }
     get_json(path: string, call_back: any) {

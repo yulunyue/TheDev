@@ -1,5 +1,3 @@
-from common.service.api import Api
-from common.service.apicall import ApiCall
 import tornado
 from typing import Awaitable, List, Dict
 from tornado.httputil import HTTPServerRequest
@@ -12,8 +10,13 @@ import signal
 import sys
 import json
 import os
-from common.util.export import File, get_log, uid, Module, get_function_info
+
+from common.util.export import File, get_log, uid, Module, get_function_info, File
+
+from common.service.api import Api
+from common.service.apicall import ApiCall
 from common.service.node import Node
+
 
 logger = get_log("http")
 
@@ -119,10 +122,14 @@ class MainHander(RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "*")
 
 
-DEFAULT_CONF_PATH = "data/setting/http.json"
+HTTP_CONF_FiLE = File("data/setting/http.json")
 
 
-def run(port=8888):
+def run(gs: list, port=8888):
+    if HTTP_CONF_FiLE.exists():
+        data = HTTP_CONF_FiLE.read_file()
+        gs.extend(data["py_modules"])
+    MainHander.POST_API.load_modules(gs)
     app = Application(
         [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHander)]
     )

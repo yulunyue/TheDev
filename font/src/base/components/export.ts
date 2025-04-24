@@ -30,6 +30,10 @@ DivFactory.register("Div", Div)
 DivFactory.register("pre", pre)
 DivFactory.register("tree", tree)
 DivFactory.register('grid', grid)
+DivFactory.register('search', search)
+DivFactory.register('text_area', text_area)
+// DivFactory.register("web_dom", web_dom)
+DivFactory.register('button', button)
 DivFactory.register('graph', () => new MeraGraph())
 export {
     Select, select, Pre, pre, Row, text_area, TextArea, Util, web_socket, Data, Button, MeraGraph, mera_util,
