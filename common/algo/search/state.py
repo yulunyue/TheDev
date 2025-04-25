@@ -74,9 +74,9 @@ class State:
             self.actions[action] = a
         return self.actions
 
-    def get_actions(self, depth=1, **kw):
+    def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
         if depth == 0 or self.done is not None:
-            return []
+            return {}
         if self.actions is not None:
             return self.actions
         return self.make_actions()
@@ -86,10 +86,11 @@ class State:
         return self
 
     def get_random_action(self) -> Action:
-        k = len(self.get_actions())
+        keys = list(self.get_actions().keys())
+        k = len(keys)
         if k == 0:
             return None
-        return self.actions[np.random.randint(0, k)]
+        return self.actions[keys[np.random.randint(0, k)]]
 
     def is_game_over(self):
         raise Exception("todo")
