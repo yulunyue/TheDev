@@ -4,7 +4,7 @@ from app.yly.algo.cg.cf4.states.base_state import F4State, C
 class C4GridState(F4State):
     def load_root(self):
         self.grid: list = [0] * (C.WIDTH * C.HEIGHT)
-        self.row_idx: list = [0] * C.WIDTH
+        self.row_idx: list = [-1] * C.WIDTH
 
     def get_action(self, x):
         y = self.row_idx[x] + 1
@@ -21,7 +21,9 @@ class C4GridState(F4State):
         r.grid = self.grid.copy()
         r.row_idx = self.row_idx.copy()
         r.row_idx[x] = y
-        r.grid[y * C.WIDTH + x] = r.player_id + 1
+        r.grid[(C.HEIGHT - y - 1) * C.WIDTH + x] = r.player_id + 1
+        if all([v == C.HEIGHT for v in self.row_idx]):
+            r.done = -1
         return r
 
     def get_grid(self):

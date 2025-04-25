@@ -15,10 +15,7 @@ class F4Action(Action):
 
     def get_line_info(self):
         ret = []
-        # for k, v in self.dst.state.items():
-        #     v2 = 0 if self.src is None else self.src.state[k]
-        #     if v2 or v:
-        #         ret.append(f"{k[0]}_{k[1]}:{v2}->{v}")
+
         return "\n".join(ret)
 
     def get_action_str(self):
@@ -26,9 +23,7 @@ class F4Action(Action):
 
     def get_reward(self, params: StateEnum, **kwargs):
         score = 0
-        # for k, v1 in self.dst.state.items():
-        #     v2 = 0 if self.src is None else self.src.state[k]
-        #     score += params._params[k].get_value() * (v1 - v2)
+
         return score
 
     def laod_from_karord(self, board, action):

@@ -56,14 +56,14 @@ class Env:
             self.env = None
         C.load(h=self.height, w=self.width)
 
-    def run_self(self, state=None, max_round=2):
+    def run_self(self, state=None, max_round=128):
         player_id = 0
         while max_round:
             state: F4Action = self.players[player_id].search(state)
             if self.debug:
                 state.debug()
-            if state is None:
-                return
+            if state.dst.done is not None:
+                return state.dst.depth
             self.records.append(state)
             player_id = (player_id + 1) % len(self.players)
             max_round -= 1

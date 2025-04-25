@@ -20,7 +20,7 @@ class Action:
         self.reward = reward
 
     def __str__(self):
-        return f"<Action action:{self.get_action_str()} reward:{self.reward} info:{self.info}>\nstate:{self.src}"
+        return f"<Action action:{self.get_action_str()} reward:{self.reward} info:{self.info}>\nstate:{self.dst}"
 
     def set_info(self, info):
         self.info = info
