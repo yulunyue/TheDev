@@ -69,7 +69,7 @@ export class TextAreaRich extends Div {
         return this
     }
     get_value() {
-        return JSON.parse(this.area.get_value())
+        return this.area.get_value()
     }
     set_btns(btns: any) {
         this.title.set_btns(btns)

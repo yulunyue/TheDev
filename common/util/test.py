@@ -14,7 +14,9 @@ class TestBase:
     def prepare(self):
         pass
 
-    def run(self, args):
+    def run(self, args=None):
+        if args is None:
+            args = sys.argv[1:]
         argvs, self.kw = url_to_json(args)
         if not argvs:
             fns = [getattr(self, k) for k in dir(self) if k.startswith(TEST_FN_PREFIX)]

@@ -23,3 +23,6 @@ class C4GridState(F4State):
         r.row_idx[x] = y
         r.grid[y * C.WIDTH + x] = r.player_id + 1
         return r
+
+    def get_grid(self):
+        return self.grid

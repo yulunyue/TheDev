@@ -22,7 +22,7 @@ class F4Action(Action):
         return "\n".join(ret)
 
     def get_action_str(self):
-        return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]\nline_info=\n{self.get_line_info()}\n"
+        return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]line_info={self.get_line_info()}"
 
     def get_reward(self, params: StateEnum, **kwargs):
         score = 0
