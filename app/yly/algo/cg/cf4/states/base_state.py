@@ -24,7 +24,7 @@ class F4State(State):
         h, w = C.HEIGHT, C.WIDTH
         ret = []
         for i in range(h):
-            tmp = [str(h - i - 1)]
+            tmp = [str(h - i - 1) + " "]
             for j in range(w):
                 v = grid[i * w + j]
                 if isinstance(v, int) and 1 <= v <= 2:
@@ -32,7 +32,7 @@ class F4State(State):
                 else:
                     tmp.append("- ")
             ret.append("".join(tmp))
-        ret.append(" " + " ".join([str(i) for i in range(w)]))
+        ret.append("  " + " ".join([str(i) for i in range(w)]))
         return "\n".join(ret)
 
     def get_grid(self):

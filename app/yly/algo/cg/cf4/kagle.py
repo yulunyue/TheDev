@@ -1,5 +1,5 @@
 from app.yly.algo.cg.cf4.constant import C, S, logger
-from app.yly.algo.cg.cf4.states.f4action import F4State, F4Action
+from app.yly.algo.cg.cf4.states.f4action import F4Action
 from common.algo.search.algo import Algo
 
 
@@ -18,10 +18,10 @@ class Kagle(Algo):
     uri = https://www.kaggle.com/competitions/connectx/data
     """
 
-    def evaluate_cell(self, state: F4State):
+    def evaluate_cell(self, state):
         return 0
 
-    def calculate_points(self, state: F4State):
+    def calculate_points(self, state):
         pass
 
     def evaluate_pattern(self):
