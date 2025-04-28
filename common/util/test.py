@@ -26,10 +26,11 @@ class TestBase:
             start_time = time.time() * 1000
             logger.info(f"---Test Begin {f.__name__}------")
             self.ep_cont = 0
+            self.ok_count = 0
             f()
             end_time = time.time() * 1000
             logger.info(
-                f"---Test End {f.__name__} [ut:{end_time-start_time} ms] [ep:{self.ep_cont}]---"
+                f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
             )
         self.exit()
 
@@ -39,6 +40,7 @@ class TestBase:
     def expect(self, a, expect_value, info=""):
         self.ep_cont += 1
         if a == expect_value or str(a) == str(expect_value):
+            self.ok_count += 1
             return True
         logger.error(f"{a}!={expect_value} msg:{info}", stacklevel=2)
         return False

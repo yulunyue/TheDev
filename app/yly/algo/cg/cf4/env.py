@@ -62,8 +62,10 @@ class Env:
             state: F4Action = self.players[player_id].search(state)
             if state is None:
                 return
+            if self.debug:
+                state.debug()
             if state.dst.done is not None:
-                return state.dst.depth
+                return state.dst.done
             self.records.append(state)
             player_id = (player_id + 1) % len(self.players)
             max_round -= 1

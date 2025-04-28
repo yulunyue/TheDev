@@ -10,6 +10,7 @@ inf = float("inf")
 S = "○●"
 
 DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
+DR2 = [[[0, 1], [0, -1]], [[1, 0]], [[1, 1], [-1, -1]], [[-1, 1], [1, -1]]]
 
 
 class Constant:
@@ -19,8 +20,8 @@ class Constant:
         self.columns = self.WIDTH = w
         self.inarow = INROW
         self.PLAYER_NUM = 2
-        self.init_w()
-        self.init_score()
+        # self.init_w()
+        # self.init_score()
         self.init_lines()
         return self
 
@@ -65,25 +66,25 @@ class Constant:
             # logger.info([col,bin(pos_state<<self.HEIGHT)])
 
     def init_lines(self):
-        self.line_num = 0
-        self.point_line_id = [
-            [[[] for _ in range(len(DR))] for _ in range(self.WIDTH)]
-            for _ in range(self.HEIGHT)
-        ]
+        n = self.WIDTH * self.HEIGHT
+        self.point_line_id = [[] for _ in range(n)]
         self.lines = []
-        for i in range(self.HEIGHT):
-            for j in range(self.WIDTH):
-                for l, (y, x) in enumerate(DR):
-                    tmp = []
-                    for k in range(INROW):
-                        y1, x1 = i + k * y, j + k * x
-                        if 0 <= y1 < self.HEIGHT and 0 <= x1 < self.WIDTH:
-                            tmp.append([y1, x1, k])
-                    if len(tmp) == INROW:
-                        for y1, x1, idx in tmp:
-                            self.point_line_id[y1][x1][l].append([self.line_num, idx])
-                        self.lines.append(tmp)
-                        self.line_num += 1
+        for ii in range(n):
+            i, j = ii // self.WIDTH, ii % self.WIDTH
+            for l, (y, x) in enumerate(DR):
+                tmp = []
+                for k in range(INROW):
+                    y1, x1 = i + k * y, j + k * x
+                    if 0 <= y1 < self.HEIGHT and 0 <= x1 < self.WIDTH:
+                        tmp.append([y1, x1, k, len(self.lines)])
+                if len(tmp) != INROW:
+                    continue
+                for y1, x1, idx, line_id in tmp:
+                    if y1 == 1 and x1 == 0 and idx != 0:
+                        continue
+                    jj = y1 * self.WIDTH + x1
+                    self.point_line_id[jj].append([line_id, l, idx])
+                self.lines.append(tmp)
 
     def mask_to_grid(self, mask, fn):
         for j in range(self.WIDTH):

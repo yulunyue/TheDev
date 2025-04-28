@@ -48,7 +48,7 @@ class F4Action(Action):
 
         if not F4Action._debug_file:
             fp = File("data/log/c4.txt").write_file("init\n")
-            F4Action._debug_file = open(fp.path, "a", encoding="utf-8")
+            F4Action._debug_file = open(fp.path, "w", encoding="utf-8")
         if info.startswith("msg"):
             F4Action._debug_file.write(f"\n-----{info}----\n")
         else:

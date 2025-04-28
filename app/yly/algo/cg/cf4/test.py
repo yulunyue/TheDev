@@ -1,5 +1,5 @@
 from common.util.test import TestBase, logger
-from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, SE
+from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, SE, C
 from common.algo.search.algo import random_seed
 from typing import List
 
@@ -16,6 +16,26 @@ class C4Test(TestBase):
             height=6,
             # env_name=Env.connectx,
         )
+
+    def test_init(self):
+
+        C.load(6, 7)
+        w1, h1 = C.WIDTH - C.inarow + 1, C.HEIGHT - C.inarow + 1
+        self.expect(
+            len(C.lines),
+            C.WIDTH * h1 + C.HEIGHT * w1 + 2 * w1 * h1,
+        )
+        self.expect(
+            C.lines[:4],
+            [
+                [[0, 0, 0, 0], [0, 1, 1, 0], [0, 2, 2, 0], [0, 3, 3, 0]],
+                [[0, 0, 0, 1], [1, 0, 1, 1], [2, 0, 2, 1], [3, 0, 3, 1]],
+                [[0, 0, 0, 2], [1, 1, 1, 2], [2, 2, 2, 2], [3, 3, 3, 2]],
+                [[0, 1, 0, 3], [0, 2, 1, 3], [0, 3, 2, 3], [0, 4, 3, 3]],
+            ],
+        )
+        self.expect(C.point_line_id[0], [[0, 0, 0], [1, 1, 0], [2, 2, 0]])
+        self.expect(C.point_line_id[7 * 6 // 2], [[0, 0, 0], [1, 1, 0], [2, 2, 0]])
 
     def test_player_all(self):
         env = self.get_env()

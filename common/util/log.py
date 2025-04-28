@@ -30,20 +30,18 @@ class Logger(logging.Logger):
         self.path = f"{LOG_DIR}/{name}.log"
         self.add_hander(
             logging.FileHandler(
-                self.path, mode=os.environ.get(LOGGER_MODE, "a+"), encoding="utf-8"
+                self.path, mode=os.environ.get(LOGGER_MODE, "w"), encoding="utf-8"
             ),
             logging.INFO,
             fmt=fmt,
         )
+        File(self.path).make_dir_if_not_exist()
         self.first_log = True
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def info(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=2, extra=None
     ):
-        if self.first_log:
-            File(self.path).write_file("")
-            self.first_log = False
         return super().info(
             msg,
             *args,
