@@ -1,5 +1,6 @@
 from common.util.test import TestBase, logger
 from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, SE, C
+from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState
 from common.algo.search.algo import random_seed
 from typing import List
 
@@ -35,7 +36,15 @@ class C4Test(TestBase):
             ],
         )
         self.expect(C.point_line_id[0], [[0, 0, 0], [1, 1, 0], [2, 2, 0]])
-        self.expect(C.point_line_id[7 * 6 // 2], [[0, 0, 0], [1, 1, 0], [2, 2, 0]])
+        self.expect(
+            C.point_line_id[7 * 6 // 2],
+            [[1, 1, 3], [16, 1, 2], [31, 1, 1], [45, 0, 0], [46, 3, 0]],
+        )
+
+        grid_state = C4GridState().init_root()
+        action = grid_state.get_action(0).dst
+        self.expect(action.line_state, [1])
+        self.expect(action.get_grid(), [1])
 
     def test_player_all(self):
         env = self.get_env()

@@ -8,6 +8,7 @@ class F4Action(Action):
 
     y = None
     x = None
+    dst: C4GridState
 
     def __init__(self, src, y, x, dst, reward=0):
         self.y, self.x = y, x

@@ -10,7 +10,6 @@ inf = float("inf")
 S = "○●"
 
 DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
-DR2 = [[[0, 1], [0, -1]], [[1, 0]], [[1, 1], [-1, -1]], [[-1, 1], [1, -1]]]
 
 
 class Constant:
@@ -21,7 +20,7 @@ class Constant:
         self.inarow = INROW
         self.PLAYER_NUM = 2
         # self.init_w()
-        # self.init_score()
+        self.init_score()
         self.init_lines()
         return self
 
@@ -38,12 +37,7 @@ class Constant:
                     to_fill.append(j)
                 j += 1
                 s = s >> 2
-            num = 0
-            if ct[1] == 0:
-                num = ct[2]
-            elif ct[2] == 0:
-                num = ct[1]
-            self.scores.append([num, to_fill])
+            self.scores.append([ct[1], ct[2], to_fill])
         return self
 
     def init_w(self):
@@ -80,8 +74,8 @@ class Constant:
                 if len(tmp) != INROW:
                     continue
                 for y1, x1, idx, line_id in tmp:
-                    if y1 == 1 and x1 == 0 and idx != 0:
-                        continue
+                    # if y1 == 1 and x1 == 0 and idx != 0:
+                    #     continue
                     jj = y1 * self.WIDTH + x1
                     self.point_line_id[jj].append([line_id, l, idx])
                 self.lines.append(tmp)

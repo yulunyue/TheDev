@@ -50,7 +50,9 @@ class KagleAgent(Algo):
     def search_main(self, state: F4Action, **kw):
         from app.yly.algo.kagle.c4 import cell_swarm1
 
-        obs = KaggleEnv(state.dst.grid, C.HEIGHT, C.WIDTH, state.dst.player_id + 1)
+        obs = KaggleEnv(
+            state.dst.get_grid(), C.HEIGHT, C.WIDTH, state.dst.player_id + 1
+        )
         action, grid = cell_swarm1(obs, obs)
         state.dst.best_action = state.dst.get_action(action)
 
