@@ -1,4 +1,4 @@
-from app.yly.algo.cg.cf4.states.base_state import F4State, Action
+from app.yly.algo.cg.cf4.states.base_state import Action
 from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState
 from app.yly.algo.cg.cf4.constant import StateEnum, C, S
 from typing import List, Dict
@@ -58,5 +58,6 @@ class F4Action(Action):
 def get_action(state):
     if isinstance(state, F4Action):
         return state
+
     state = C4GridState().init_root(state=state)
     return F4Action(None, None, None, state)

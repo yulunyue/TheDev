@@ -60,6 +60,8 @@ class Env:
         player_id = 0
         while max_round:
             state: F4Action = self.players[player_id].search(state)
+            if self.debug:
+                state.debug()
             if state is None:
                 return
             if self.debug:
