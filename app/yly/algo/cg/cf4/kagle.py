@@ -54,7 +54,26 @@ class KagleAgent(Algo):
             state.dst.get_grid(), C.HEIGHT, C.WIDTH, state.dst.player_id + 1
         )
         action, grid = cell_swarm1(obs, obs)
+
         state.dst.best_action = state.dst.get_action(action)
+        info = grid[action][state.dst.row_idx[action]]
+        info2 = ""
+        for name in ["swarm_patterns", "opp_patterns"]:
+            for key, values in info[name].items():
+                s2 = f"{name}_{key}:  "
+                for v in values:
+                    s2 += ("?" + S)[v["mark"]]
+                info2 += s2 + "\n"
+
+        point_sw = info["points"]
+        point_sl = state.dst.best_action.dst.points
+        state.dst.best_action.set_info(
+            f"""
+point_sw:{point_sw}
+point_sl:{point_sl}
+msg:RSW{point_sw==point_sl}
+info2:\n{info2}"""
+        )
 
     def __call__(self, *args, **kwds):
         from app.yly.algo.kagle.c4 import cell_swarm

@@ -9,18 +9,14 @@ class F4Action(Action):
     y = None
     x = None
     dst: C4GridState
+    src: C4GridState
 
     def __init__(self, src, y, x, dst, reward=0):
         self.y, self.x = y, x
         super().__init__(src, x, dst, reward)
 
-    def get_line_info(self):
-        ret = []
-
-        return "\n".join(ret)
-
     def get_action_str(self):
-        return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]line_info={self.get_line_info()}"
+        return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]"
 
     def get_reward(self, params: StateEnum, **kwargs):
         score = 0

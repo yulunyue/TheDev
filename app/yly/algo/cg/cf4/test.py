@@ -22,6 +22,7 @@ class C4Test(TestBase):
 
         C.load(6, 7)
         w1, h1 = C.WIDTH - C.inarow + 1, C.HEIGHT - C.inarow + 1
+        SIZE = C.WIDTH * C.HEIGHT
         self.expect(
             len(C.lines),
             C.WIDTH * h1 + C.HEIGHT * w1 + 2 * w1 * h1,
@@ -42,9 +43,12 @@ class C4Test(TestBase):
         )
 
         grid_state = C4GridState().init_root()
-        action = grid_state.get_action(0).dst
-        self.expect(action.line_state, [1])
-        self.expect(action.get_grid(), [1])
+        action = grid_state.get_action(0).dst.get_action(0).dst
+        # self.expect(action.line_state, [1])
+        grids = action.get_grid()
+        self.expect(len(grids), SIZE)
+        self.expect(grids[-C.WIDTH], 1)
+        self.expect(grids[-2 * C.WIDTH], 2, grids)
 
     def test_player_all(self):
         env = self.get_env()
@@ -62,7 +66,7 @@ class C4Test(TestBase):
         self.expect(a.get_points(), [0, 0, 0, 0, 0, 1], a)
 
     def test_pk(self):
-        players = [get_player("kd1"), get_player("kd1")]
+        players = [get_player("kd2"), get_player("kd1")]
         for _ in range(2):
             env = self.get_env()  # , env_name=Env.connectx)
             # Play as the first agent against "negamax" agent.
