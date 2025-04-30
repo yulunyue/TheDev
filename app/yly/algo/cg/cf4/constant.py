@@ -19,7 +19,8 @@ class Constant:
         self.columns = self.WIDTH = w
         self.inarow = INROW
         self.PLAYER_NUM = 2
-        # self.init_w()
+
+        self.init_w()
         self.init_score()
         self.init_lines()
         return self
@@ -40,7 +41,20 @@ class Constant:
             self.scores.append([ct[1], ct[2], to_fill])
         return self
 
+    def line_fmt(self, v):
+        s2 = ""
+        for j in range(4):
+            s2 += ("?" + S)[v & 3]
+            v = v >> 2
+        return s2
+
     def init_w(self):
+        self.WIDTH_POINTS = [0] * self.WIDTH
+        w = (self.WIDTH - 1) // 2
+        for i in range(self.WIDTH):
+            self.WIDTH_POINTS[i] = -abs(i - w)
+
+    def init_w2(self):
         self.MASK_FULL_HEIGHT = (1 << self.HEIGHT + 1) - 1
         self.MASK_FULL_ALL = 0
         self.state_pos = []
@@ -106,6 +120,25 @@ class Constant:
                     m |= C.POS_MASK[j] << h
             mask |= m
         return mask
+
+    def grid_to_line_state(self, grid):
+        line_state, row_idx = (
+            [0] * len(C.lines),
+            [C.HEIGHT] * C.WIDTH,
+        )
+        for i in range(self.HEIGHT * self.WIDTH):
+            y, x = i // self.WIDTH, i % self.WIDTH
+            if grid[i] == 0:
+                row_idx[x] = min(row_idx[x], y)
+            else:
+                for line_id, l, idx in self.point_line_id[i]:
+                    line_state[line_id] |= grid[i] << (idx * 2)
+
+        return (
+            row_idx,
+            set(x for x in range(self.WIDTH) if row_idx[x] != C.HEIGHT),
+            line_state,
+        )
 
 
 C = Constant()

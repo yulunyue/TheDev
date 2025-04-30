@@ -22,10 +22,10 @@ class Ab(AlphaBateSearch):
 
 PLAYERS = dict(
     ab1=lambda: Ab().load(1).set_params(SE).set_env_cls(get_action),
-    ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_action),
-    ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_action),
-    ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_action),
-    ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_action),
+    # ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_action),
+    # ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_action),
+    # ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_action),
+    # ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_action),
     kd1=lambda: KagleAgent().load().set_params(None).set_env_cls(get_action),
     kd2=lambda: Kagle().load().set_params(None).set_env_cls(get_action),
     # negamax="negamax",
@@ -33,7 +33,10 @@ PLAYERS = dict(
 
 
 def get_player(k) -> Algo:
-    return PLAYERS[k]().set_name(k).reset()
+    player_cls = PLAYERS[k]
+    if isinstance(player_cls, str):
+        return player_cls
+    return player_cls().set_name(k).reset()
 
 
 class Env:
@@ -49,8 +52,8 @@ class Env:
             from kaggle_environments import make
 
             self.env = make(env_name, debug=debug, **kw)
-            self.width = self.env.configuration.rows
-            self.height = self.env.configuration.columns
+            self.height = self.env.configuration.rows
+            self.width = self.env.configuration.columns
             self.env.reset()
         else:
             self.env = None
@@ -73,7 +76,7 @@ class Env:
                 return state.dst.done
 
     def run(self, players: List[Algo], state=None):
-        self.players = [p.reset() for p in players]
+        self.players = [p.reset() if hasattr(p, "reset") else p for p in players]
         self.records: List[F4Action] = []
         if self.env_name == Env.connectx:
             return self.run_kagele(state)
@@ -86,9 +89,8 @@ class Env:
         JSON_TMP_FILE.write_file(records)
         for d in records[1:]:
             self.records.append(
-                F4Action().laod_from_karord(
-                    board=d[0]["observation"]["board"],
-                    action=d[0]["action"] + d[1]["action"],
+                F4Action(x=d[0]["action"] + d[1]["action"]).load_from_state(
+                    d[0]["observation"]["board"]
                 )
             )
 

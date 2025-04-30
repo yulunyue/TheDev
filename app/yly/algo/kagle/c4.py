@@ -99,6 +99,7 @@ def cell_swarm1(obs, conf):
             else:
                 cell["points"].append(swarm_points)
                 cell["points"].append(opp_points)
+        cell["pts"] = cell["points"].copy()
         return cell
 
     def evaluate_pattern(points, pattern, mark, inarow):

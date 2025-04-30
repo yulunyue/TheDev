@@ -11,7 +11,7 @@ class F4Action(Action):
     dst: C4GridState
     src: C4GridState
 
-    def __init__(self, src, y, x, dst, reward=0):
+    def __init__(self, src=None, y=None, x=None, dst=None, reward=0):
         self.y, self.x = y, x
         super().__init__(src, x, dst, reward)
 

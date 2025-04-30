@@ -5,9 +5,14 @@ from app.yly.algo.cg.cf4.constant import C, DR
 class C4GridState(F4State):
     def load_root(self):
         # self.grid: list = [0] * (C.WIDTH * C.HEIGHT)
-        self.row_idx: list = [C.HEIGHT - 1] * C.WIDTH
-        self.can_move = set(range(C.WIDTH))
-        self.line_state = [0] * len(C.lines)
+        if self.state is None:
+            self.row_idx: list = [C.HEIGHT - 1] * C.WIDTH
+            self.can_move = set(range(C.WIDTH))
+            self.line_state = [0] * len(C.lines)
+        elif isinstance(self.state, list):
+            self.row_idx, self.can_move, self.line_state = C.grid_to_line_state(
+                self.state
+            )
 
     def get_action(self, x):
         from app.yly.algo.cg.cf4.states.f4action import F4Action
@@ -18,9 +23,6 @@ class C4GridState(F4State):
 
     def get_actions_all(self):
         return self.can_move
-
-    def get_info(self):
-        return f"points:{self.points}"
 
     def load_from_parent(self, x, p: "C4GridState"):
         self.depth += p.depth + 1
@@ -36,26 +38,62 @@ class C4GridState(F4State):
             self.can_move.remove(x)
         if len(self.can_move) == 0:
             self.done = -1
-        done, self.points = self.get_action_state(k, p.player_id)
-        if done is not None:
-            self.done = done
+        self.update_points(k, p.player_id)
+        self.update_states(k, p.player_id)
+        if self.points[0]:
+            self.done = p.player_id
         return self
 
-    def get_action_state(self, i, player_id):
-        done = None
+    def update_points(self, k, player_id):
+        """
+        POINTS: A04,B04,-B14,-A14,xn(A03,B03),xn(A02,B02),-xn(A12,B12)
+        """
+        self.points = []
+        op = 1
+        for i in range(C.HEIGHT):
+            if k - i * C.WIDTH >= 0:
+                points = self.get_action_points(k - i * C.WIDTH, player_id)
+                if i == 1:
+                    self.points[2:2] = [op * points[1], op * points[0]]
+                    if abs(self.points[4]) < min(points[2], 2):
+                        self.points[4:4] = [op * points[2]]
+                        if abs(self.points[5]) < min(points[3], 2):
+                            self.points[5:5] = [op * points[3]]
+                        else:
+                            self.points[7:7] = [op * points[3]]
+                    else:
+                        self.points[6:6] = [op * points[2], op * points[3]]
+                    self.points.extend([v * op for v in points[4:]])
+                else:
+                    self.points.extend([v * op for v in points])
+                # if i <= 1:
+
+                #     self._info += f"point_sl{i}:{points}\n"
+            else:
+                self.points.extend([0] * 6)
+            op *= -1
+        return self
+
+    def update_states(self, i, player_id):
+        for line_id, l, idx in C.point_line_id[i]:
+            self.line_state[line_id] |= [1, 2][player_id] << (2 * idx)
+
+    def get_action_points(self, i, player_id):
+        """
+        POINT0: A4,A3,A2
+        POINT1: B4,B3,B2
+        POINTS: A4,B4,xn(A3,B3),xn(A2,B2)
+        """
         dr_ct = [[0] * len(DR) for _ in range(2)]
         points = [0] * 6
         for line_id, l, idx in C.point_line_id[i]:
             ct0, ct1, _ = C.scores[self.line_state[line_id]]
-            if ct1 == 0 and ct0 > dr_ct[0][l]:
+            # self._info += f"line:{C.lines[line_id]},l:{[l,ct0,ct1]},state:{C.line_fmt(self.line_state[line_id])}\n"
+            if ct1 == 0 and ct0 > dr_ct[player_id][l]:
                 dr_ct[player_id][l] = ct0
-                if ct0 == 3 and player_id == 0:
-                    done = 0
-            if ct0 == 0 and ct1 > dr_ct[1][l]:
+            if ct0 == 0 and ct1 > dr_ct[1 - player_id][l]:
                 dr_ct[1 - player_id][l] = ct1
-                if ct1 == 3 and player_id == 1:
-                    done = 1
-            self.line_state[line_id] |= [1, 2][player_id] << (2 * idx)
+        # self._info += f"dr_ct:{dr_ct}"
         for j in range(2):
             for i in range(len(DR)):
                 for k in range(1, dr_ct[j][i] + 1):
@@ -64,12 +102,7 @@ class C4GridState(F4State):
             if points[i] < points[j]:
                 points[i], points[j] = points[j], points[i]
 
-        return done, points
-
-    def get_cnt(self, y, x, dy, dx, player_id):
-
-        for i in range(C.inarow):
-            pass
+        return points
 
     def get_grid(self):
         ret = []
@@ -79,3 +112,8 @@ class C4GridState(F4State):
             ret.append(state)
 
         return ret
+
+    _info = ""
+
+    def get_info(self):
+        return self._info

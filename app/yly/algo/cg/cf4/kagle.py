@@ -1,5 +1,6 @@
 from app.yly.algo.cg.cf4.constant import C, S, logger
 from app.yly.algo.cg.cf4.states.f4action import F4Action
+from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState
 from common.algo.search.algo import Algo
 
 
@@ -18,31 +19,23 @@ class Kagle(Algo):
     uri = https://www.kaggle.com/competitions/connectx/data
     """
 
-    def evaluate_cell(self, state):
-        return 0
-
-    def calculate_points(self, state):
-        pass
-
-    def evaluate_pattern(self):
-        pass
-
-    def explore_cell_above(self, cell):
-        pass
-
-    def get_pattern(self, x, x_fun, y, y_fun, cells_remained):
-        pass
-
-    def choose_best_cell(self, best_state, current_state):
-        pass
-
     def search_main(self, state: F4Action, **kw):
-        a: F4Action = state.dst.get_random_action()
-        state.dst.best_action = a
-        # state.dst.best_action = self.evaluate_cell(state.dst)
+        best_action: F4Action = None
+        for k, a in state.dst.get_actions().items():
+            if best_action is None:
+                best_action = a
+            if a.dst.points > best_action.dst.points:
+                best_action = a
+            elif (
+                a.dst.points == best_action.dst.points
+                and C.WIDTH_POINTS[best_action.action] < C.WIDTH_POINTS[k]
+            ):
+                best_action = a
+
+        state.dst.best_action = best_action
 
     def __call__(self, env: KaggleEnv, conf: KaggleEnv):
-        return super().search(*args).action
+        return super().search(env.board).action
 
 
 class KagleAgent(Algo):
@@ -57,6 +50,9 @@ class KagleAgent(Algo):
 
         state.dst.best_action = state.dst.get_action(action)
         info = grid[action][state.dst.row_idx[action]]
+        info1 = None
+        if state.dst.row_idx[action] >= 1:
+            info1 = grid[action][state.dst.row_idx[action] - 1]
         info2 = ""
         for name in ["swarm_patterns", "opp_patterns"]:
             for key, values in info[name].items():
@@ -67,13 +63,16 @@ class KagleAgent(Algo):
 
         point_sw = info["points"]
         point_sl = state.dst.best_action.dst.points
-        state.dst.best_action.set_info(
-            f"""
-point_sw:{point_sw}
-point_sl:{point_sl}
-msg:RSW{point_sw==point_sl}
-info2:\n{info2}"""
-        )
+
+    #         state.dst.best_action.set_info(
+    #             f"""
+    # point_sw0:{info["pts"]},
+    # point_sw1:{info1["pts"] if info1 else None}
+    # point_sw:{point_sw}
+    # point_sl:{point_sl}
+    # msg:RSW{point_sw==point_sl}
+    # info2:\n{info2}"""
+    #         )
 
     def __call__(self, *args, **kwds):
         from app.yly.algo.kagle.c4 import cell_swarm
