@@ -1,6 +1,6 @@
 from common.algo.search.state import State, inf, Action
 from common.algo.search.algo import Algo
-from typing import List
+from typing import List, Dict
 
 
 class AlphaBateSearch(Algo):
@@ -12,10 +12,10 @@ class AlphaBateSearch(Algo):
         # if budget and self.state_count >= budget:
         #     return inf
         self.state_count += 1
-        mvs: List[Action] = action.dst.get_actions(depth=depth)
+        mvs: Dict[str, Action] = action.dst.get_actions(depth=depth)
         if not mvs:
             return -action.get_reward(depth=depth, params=self.params)
-        for a in mvs:
+        for k, a in mvs.items():
             a.reward = -self.search_dfs(a, depth - 1, alpha=-bate, bate=-alpha)
             if a.reward >= bate:
                 alpha = bate

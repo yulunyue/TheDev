@@ -18,10 +18,12 @@ class F4Action(Action):
     def get_action_str(self):
         return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]"
 
-    def get_reward(self, params: StateEnum, **kwargs):
-        score = 0
-
-        return score
+    def get_reward(self, params, **kwargs):
+        reward, c = 0, 1
+        for i, v in enumerate(self.dst.points[::-1]):
+            reward += v * c
+            c *= 10
+        return reward
 
     def laod_from_karord(self, board, action):
         self.board = board
@@ -31,12 +33,6 @@ class F4Action(Action):
     def load_from_state(self, state=None):
         self.dst = C4GridState().init_root(state=state)
         return self
-
-    def get_points(self):
-        ret = []
-        # for k, v1 in self.dst.state.items():
-        #     v2 = 0 if self.src is None else self.src.state[k]
-        return ret
 
     _debug_file = None
 

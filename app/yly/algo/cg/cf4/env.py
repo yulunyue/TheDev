@@ -22,10 +22,10 @@ class Ab(AlphaBateSearch):
 
 PLAYERS = dict(
     ab1=lambda: Ab().load(1).set_params(SE).set_env_cls(get_action),
-    # ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_action),
-    # ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_action),
-    # ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_action),
-    # ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_action),
+    ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_action),
+    ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_action),
+    ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_action),
+    ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_action),
     kd1=lambda: KagleAgent().load().set_params(None).set_env_cls(get_action),
     kd2=lambda: Kagle().load().set_params(None).set_env_cls(get_action),
     # negamax="negamax",
