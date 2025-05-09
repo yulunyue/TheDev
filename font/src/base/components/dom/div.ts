@@ -1,5 +1,5 @@
 import web_dom from "../../web/web_dom"
-import { Style, Node, Fn1, to_node, not_null } from "../../web/cls"
+import { Style, Node, Fn1, to_node, not_null, node } from "../../web/cls"
 import { Dom } from "../../web/cls"
 import Util from "../../tool/util"
 import Constant from "../../web/constant"
@@ -95,7 +95,8 @@ export class Div {
     full() {
         return this.set_style({
             width: 1,
-            height: 1
+            height: 1,
+            position: "absolute"
         })
     }
     flex_veritcal_layout() {
@@ -148,17 +149,19 @@ export class Div {
     set_border() {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
-    set_style_flex2(direction: number) {
+    set_style_flex2(direction: number, use_border?: boolean) {
         this.set_style_flex(direction)
-        this.set_border()
+        if (use_border) {
+            this.set_border()
+        }
         return this
     }
-    set_flex_style(direction: number) {
+    set_flex_style(direction: number, use_border?: boolean) {
         direction = this.get_direction(direction)
         this.set_style_flex2(direction)
         for (var i = 0; i < this.childs.length; i++) {
             if (this.childs[i].set_flex_style) {
-                this.childs[i].set_flex_style(1 - direction)
+                this.childs[i].set_flex_style(1 - direction, use_border)
             }
         }
         return this
@@ -423,6 +426,21 @@ export class Div {
 
 }
 
+export class Container extends Div {
+    set_flex_style(direction: number, use_border?: boolean): this {
+        this.set_style({
+            flexGrow: this.size + "",
+        })
+        return this
+    }
+    set_option(option: Node): this {
+        this.clear().add_child(DivFactory.new_div(option.type, option))
+        return this
+    }
+}
+export function container() {
+    return new Container()
+}
 export function div(node_type?: string) {
     return new Div(node_type, "")
 }

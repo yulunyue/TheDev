@@ -9,7 +9,9 @@ export class Input extends Div {
     init_node() {
 
     }
-
+    set_placeholder(title: string) {
+        return this.set_attr("placeholder", title)
+    }
     init_style(): void {
         this.set_style({
             outline: "none",
@@ -38,8 +40,8 @@ export class TextArea extends Div {
     }
     init_style(): void {
         this.set_style({
-            width: Constant.TEXT_AREA_WIDTH,
-            height: Constant.TEXT_AREA_HEIGHT_1,
+            width: 1,
+            height: 1,
             overflow: "auto"
         })
     }

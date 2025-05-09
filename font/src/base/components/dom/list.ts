@@ -7,6 +7,14 @@ export class ListUi extends Div {
     constructor() {
         super("div", "")
     }
+    init_style(): void {
+        this.set_style({
+            overflowY: "auto"
+        })
+    }
+    set_flex_style(direction: number, use_border?: boolean): this {
+        return this
+    }
     set_path(path: any, data?: any) {
         web_dom.post(path, data, (v: Node) => {
             this.set_option(v)
@@ -15,7 +23,7 @@ export class ListUi extends Div {
     }
     set_option(option: Node) {
         this.clear().add_childs(option.childs.map(v => {
-            let l = label().set_html(v.title).set_option(v)
+            let l = label().set_html(v.title).set_option(v).set_border()
             return l
         }))
         return this

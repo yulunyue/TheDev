@@ -10,17 +10,19 @@ export class Search extends Div {
     dialog: Div
     listui: ListUi
     input: Input
-    title: Title
+
     search_url: any
     _value: Node
+    set_flex_style() {
+        return this
+    }
     init_node(): void {
-        this.title = this.add_child(new Title())
         this.input = this.add_child(new Input())
         this.dialog = this.add_child(new Div().hide())
         this.listui = this.dialog.add_child(new ListUi())
     }
     set_title(s: string) {
-        this.title.set_html(s)
+        this.input.set_placeholder(s)
         return this
     }
     set_value(value: Node): this {
@@ -96,7 +98,6 @@ export class Search extends Div {
     }
 
     set_btns(btns: any) {
-        this.title.set_btns(btns)
         return this
     }
 
