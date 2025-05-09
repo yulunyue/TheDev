@@ -18,7 +18,9 @@ export class Search extends Div {
     }
     init_node(): void {
         this.input = this.add_child(new Input())
-        this.dialog = this.add_child(new Div().hide())
+        this.dialog = this.add_child(new Div().hide().set_style({
+            zIndex:"1"
+        }))
         this.listui = this.dialog.add_child(new ListUi())
     }
     set_title(s: string) {

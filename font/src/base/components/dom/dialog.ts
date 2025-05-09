@@ -53,11 +53,18 @@ export class Dialog extends Div {
     }
 }
 class Dig {
+    dig: Dialog
+    get_dialog() { 
+        if (!this.dig) { 
+            this.dig=new Dialog()
+        }
+        return this.dig
+    }
     open_form(oj: any, call: any) {
-        return this
+        return this.get_dialog().open_form(oj,call)
     }
     open(c: any) {
-        return this
+        return this.get_dialog().open(c)
     }
 }
 export default new Dig()

@@ -21,11 +21,11 @@ export class ListUi extends Div {
         })
         return this
     }
+    get_row(v:Node) { 
+        return label().set_html(v.title).set_option(v).set_border()
+    }
     set_option(option: Node) {
-        this.clear().add_childs(option.childs.map(v => {
-            let l = label().set_html(v.title).set_option(v).set_border()
-            return l
-        }))
+        this.clear().add_childs(option.childs.map(v => this.get_row(v)))
         return this
 
     }
