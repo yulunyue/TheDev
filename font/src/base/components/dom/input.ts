@@ -40,8 +40,8 @@ export class TextArea extends Div {
     }
     init_style(): void {
         this.set_style({
-            width: 1,
-            height: 1,
+            width: 0.95,
+            height: 0.95,
             overflow: "auto"
         })
     }
@@ -75,6 +75,9 @@ export class TextAreaRich extends Div {
     }
     set_btns(btns: any) {
         this.title.set_btns(btns)
+        return this
+    }
+    set_flex_style() { 
         return this
     }
 }
