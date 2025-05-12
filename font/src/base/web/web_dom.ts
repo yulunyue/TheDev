@@ -2,6 +2,7 @@ import { Style, Fn1Void, Dom, Node, Fn2Void, to_node } from "./cls"
 import Ut from "../tool/util"
 import F from "../tool/fun"
 import Ct from "./constant"
+import dlg from "../components/dom/dialog"
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
     HTTP_POST_METHOD: string = "POST"
@@ -87,11 +88,13 @@ class WebDom {
     }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back: any) {
+        
         let url = this.url(path)
         let mock_data = Ct.get_mock_data(url, data)
         if (mock_data) {
             return call_back(mock_data)
         }
+        dlg.open_loading()
         let req = new XMLHttpRequest()
         if (method == this.HTTP_GET_METHOD) {
             let path = Ut.object_to_get_param(data, url)
@@ -127,6 +130,7 @@ class WebDom {
                     // call_back(new Node().set_option(data))
                     call_back(data)
                 }
+                dlg.close()
             }
         }
 

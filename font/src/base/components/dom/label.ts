@@ -49,6 +49,7 @@ export class Pre extends Div {
             //padding: Constant.DEFAULT_PADDING,
 
             //textWrap: "wrap"
+            overflowY:"auto"
         })
     }
     set_text(s: any) {

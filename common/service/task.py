@@ -1,11 +1,10 @@
-from common.util.baseconfig import ConfigBase, DictModel
 from common.util.module import Module
 import _thread
 import time
 
+class TaskConfig:
+    pass
 
-class TaskConfg(ConfigBase):
-    tasks = dict()
 
 
 class Task:
@@ -21,15 +20,18 @@ class Task:
         task_info["task_args"] = task_args
         self.config.save()
         return self
-
+    
+    def load(self,config):
+        pass
+    
     def loop(self):
         # for k, v in self.config.tasks.get_value().items():
         #     self.do_task(k, **v)
         return self
 
-    def do_task(self, task_name, task_type, task_args):
+    def do_task(self, task_name, task_type, task_sleep):
         if task_type == self.PY_MODULE_TYPE:
-            self.do_py_model_task(task_name, *task_args)
+            self.do_py_model_task(task_name)
         else:
             raise Exception("gg")
 

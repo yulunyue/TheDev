@@ -19,7 +19,7 @@ import sys
 import json
 import numpy as np
 
-sys.setrecursionlimit(10**5 + 1)
+
 import bisect
 
 inf, MOD, null, true, false = float("inf"), (10**9) + 7, None, True, False

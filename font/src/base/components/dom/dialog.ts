@@ -66,5 +66,17 @@ class Dig {
     open(c: any) {
         return this.get_dialog().open(c)
     }
+    open_loading() { 
+        return this.open(new Div().set_class("load_gif").set_style({
+            width: 32,
+            height: 32,
+            backgroundSize: "cover",
+            backgroundColor:"#8888"
+            
+        }))
+    }
+    close() { 
+        return this.get_dialog().hide()
+    }
 }
 export default new Dig()

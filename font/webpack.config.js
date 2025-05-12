@@ -20,7 +20,16 @@ module.exports = {
 
             // addition - add source-map support
             { enforce: "pre", test: /\.js$/, exclude: /node_modules/, loader: "source-map-loader" },
-            { test: /\.css$/, use: ["style-loader", "css-loader"], exclude: /node_modules/ }
+            { test: /\.css$/, use: ["style-loader", "css-loader"], exclude: /node_modules/ },
+            {
+                test: /\.(jpg|png|gif)$/,
+                use: {
+                    loader: 'file-loader',
+                    options: {
+                        name: '[path][name].[hash].[ext]',
+                    },
+                },
+            }
         ]
     },
     plugins: [new HtmlWebpackPlugin()],
