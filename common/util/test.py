@@ -18,20 +18,16 @@ class TestBase:
         if args is None:
             args = sys.argv[1:]
         argvs, self.kw = url_to_json(args)
-        if not argvs:
-            fns = [getattr(self, k) for k in dir(self) if k.startswith(TEST_FN_PREFIX)]
-        else:
-            fns = [getattr(self, TEST_FN_PREFIX + k) for k in argvs]
-        for f in fns:
-            start_time = time.time() * 1000
-            logger.info(f"---Test Begin {f.__name__}------")
-            self.ep_cont = 0
-            self.ok_count = 0
-            f()
-            end_time = time.time() * 1000
-            logger.info(
-                f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
-            )
+        f=getattr(self,f"test_{argvs[0]}")
+        start_time = time.time() * 1000
+        logger.info(f"---Test Begin {f.__name__}------")
+        self.ep_cont = 0
+        self.ok_count = 0
+        f(*argvs[1:],**self.kw)
+        end_time = time.time() * 1000
+        logger.info(
+            f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
+        )
         self.exit()
 
     def exit(self):

@@ -122,13 +122,9 @@ class MainHander(RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "*")
 
 
-HTTP_CONF_FiLE = File("data/setting/http.json")
-
 
 def run(gs: list, port=8888):
-    if HTTP_CONF_FiLE.exists():
-        data = HTTP_CONF_FiLE.read_file()
-        gs.extend(data["py_modules"])
+
     MainHander.POST_API.load_modules(gs)
     app = Application(
         [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHander)]

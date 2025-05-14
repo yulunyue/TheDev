@@ -65,8 +65,8 @@ class C4Test(TestBase):
         a = a.dst.get_action(0)
         self.expect(a.get_points(), [0, 0, 0, 0, 0, 1], a)
 
-    def test_pk(self):
-        players = [get_player("ab1"), get_player("ab2")]
+    def test_pk(self,name1,name2):
+        players = [get_player(name1), get_player(name2)]
         for _ in range(2):
             env = self.get_env()  # , env_name=Env.connectx)
             # Play as the first agent against "negamax" agent.

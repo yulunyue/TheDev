@@ -33,6 +33,7 @@ def gen_file():
         mock_map={"common/algo/manage.py": "app/yly/algo/base.py"},
         prefix=["common", "app"],
     )
+    logger.info(WRITE_PATH)
 
 
 CHANGE_STORE = dict()

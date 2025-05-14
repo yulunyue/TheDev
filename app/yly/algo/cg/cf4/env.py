@@ -103,6 +103,7 @@ class Env:
             File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
 
         for r in self.records:
+            r.check()
             logger.info(r)
 
     def play(self, player: Algo):

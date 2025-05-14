@@ -101,30 +101,34 @@ class RunAlgo(Algo):
 
 
 class Baoli(Algo):
-
-    def state_clear(self, state: State):
-        pass
-
-    def search_main(self, state: State, depth=0, cache=None, **kw):
-        actions: List[Action] = state.get_actions(depth=depth, **kw)
+    def search_dfs(self, s: Action, depth):
+        actions: List[Action] = s.dst.get_actions(depth=depth)
+        if not actions or depth == 0:
+            return s.get_reward()
         self.state_count += 1
         if self.state_count >= self.state_max_num:
             return None
-        if not actions or depth == 0:
-            return state.calc_value(tp="baoli")
         best = -inf
+        cur_done = s.dst.player_id
         for a in actions:
-            value = self.search_main(a.dst, depth - 1, cache=cache)
-            if value is None:
-                return None
+            done, value = self.search_dfs(a, depth - 1)
+            if done==a.dst.player_id:
+                return done,value
+            elif done==-1:
+                cur_done=-1
             value = -value
             if value > best:
                 best = value
-        return best
+        return cur_done,best
 
+    def search_dfs_main(self,cur:Action,max_depth=6,state_max_num=3000):
+        self.begin_time=time.time()
+        self.state_count=0
+        self.state_max_num=state_max_num
+        done,value=self.search_bfs(cur,max_depth)
+        return dict(done=done)
 
-class SearchBfs(Baoli):
-    def search_main(self, state, depth=0, cache=None, **kw):
+    def search_bfs(self, state, depth=0, cache=None, **kw):
         q = [state]
         while q and self.state_count < self.state_max_num:
             s = q

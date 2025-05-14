@@ -1,9 +1,15 @@
 import sys
-from common.export import run, MainHander, install, check, PORT, manage
+from common.export import run, MainHander, install, check, PORT, manage, File
 from app.yly.export import gm
-from app.tool.export import api, file
+from app.tool.export import api, file, TASK_MANAGER
 
 GS = [manage, file, api]
+HTTP_CONF_FiLE = File("data/setting/http.json")
+if HTTP_CONF_FiLE.exists():
+    data = HTTP_CONF_FiLE.read_file()
+    GS.extend(data["py_modules"])
+    TASK_MANAGER.load(data["task"]).start()
+
 if __name__ == "__main__":
     if sys.argv[1] == "install":
         install()

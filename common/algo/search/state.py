@@ -7,11 +7,7 @@ inf = float("inf")
 
 class Action:
     info = None
-    # state_cls = None
-
-    # def set_state_cls(self, cls):
-    #     self.state_cls: State = cls
-    #     return self
+    check_info = None
 
     def __init__(self, src, action, dst, reward=0):
         self.action = action
@@ -20,7 +16,12 @@ class Action:
         self.reward = reward
 
     def __str__(self):
-        return f"<Action action:{self.get_action_str()} reward:{self.reward} info:{self.info}>\nstate:{self.dst}"
+        return f"\n".join([
+            f"<Action action:{self.get_action_str()} reward:{self.reward}>",
+            f"info:{self.info}",
+            f"check:{self.check_info}",
+            f"state:{self.dst}"
+        ])
 
     def set_info(self, info):
         self.info = info
@@ -31,6 +32,13 @@ class Action:
 
     def get_reward(self, params, **kwargs):
         raise Exception("error")
+    
+    def check(self):
+        self.check_point=0
+        self.check_max_point=4000
+        self.check_max_t
+        def dfs():
+            pass
 
 
 class State:

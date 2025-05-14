@@ -87,8 +87,11 @@ class Api:
             **params,
         )
         if res.status_code <= 300:
-            if Api.APPLICATION_JSON in res.headers.get(Api.CONTENT_TYPE):
+            content_type=res.headers.get(Api.CONTENT_TYPE)
+            if content_type in Api.APPLICATION_JSON:
                 return res.json()
+            else:
+                logger.info(content_type)
             return res.content
         return self.hander_error(method, uri, res, data or param)
 
