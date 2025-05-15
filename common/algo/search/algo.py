@@ -3,10 +3,11 @@ import time
 import random
 
 np.set_printoptions(suppress=True, precision=4)
-from typing import List
+from typing import List, Dict
 from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
+from collections import defaultdict
 
 Env = State
 
@@ -29,6 +30,7 @@ class Algo:
 
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
+        self.params = None
 
     def set_name(self, name):
         self.name = name
@@ -102,31 +104,41 @@ class RunAlgo(Algo):
 
 class Baoli(Algo):
     def search_dfs(self, s: Action, depth):
-        actions: List[Action] = s.dst.get_actions(depth=depth)
+        actions: Dict[str, Action] = s.dst.get_actions(depth=depth)
         if not actions or depth == 0:
-            return s.get_reward()
+            return s.action, s.dst.done, s.get_reward(self.params)
         self.state_count += 1
         if self.state_count >= self.state_max_num:
-            return None
+            return s.action, -1, inf
         best = -inf
-        cur_done = s.dst.player_id
-        for a in actions:
-            done, value = self.search_dfs(a, depth - 1)
-            if done==a.dst.player_id:
-                return done,value
-            elif done==-1:
-                cur_done=-1
+        best_action = None
+        cur_done = defaultdict(int)
+        for k, a in actions.items():
+            best_a, done, value = self.search_dfs(a, depth - 1)
+            cur_done[done] += 1
             value = -value
             if value > best:
                 best = value
-        return cur_done,best
+                best_action = best_a
+        if cur_done[s.dst.player_id]:
+            result = s.dst.player_id
+        elif cur_done[-1]:
+            result = -1
+        else:
+            result = s.dst.op_player_id
+        return best_action, result, best
 
-    def search_dfs_main(self,cur:Action,max_depth=6,state_max_num=3000):
-        self.begin_time=time.time()
-        self.state_count=0
-        self.state_max_num=state_max_num
-        done,value=self.search_bfs(cur,max_depth)
-        return dict(done=done)
+    def search_dfs_main(self, cur: Action, max_depth, state_max_num):
+        self.begin_time = time.time()
+        self.state_count = 0
+        self.state_max_num = state_max_num
+        best_action, done, value = self.search_dfs(cur, max_depth)
+        return dict(
+            done=done,
+            value=value,
+            state_count=self.state_count,
+            best_action=best_action,
+        )
 
     def search_bfs(self, state, depth=0, cache=None, **kw):
         q = [state]

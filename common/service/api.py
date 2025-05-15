@@ -62,11 +62,16 @@ class Api:
     def http(self, method, path, data=None, headers=None, param=None):
         if headers is None:
             headers = self.get_headers()
+        headers.update(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+            }
+        )
         uri = self.url(path)
         mock_res = self.get_mock_data(uri)
         if mock_res:
             return mock_res
-        logger.info(f"DO HTTP [{method}] {uri} {self.get_proxy()}")
+        logger.info(f"DO HTTP [{method}] {uri}")
         params = dict()
         if method == "GET":
             params.update(dict(params=data))
@@ -75,29 +80,29 @@ class Api:
                 params.update(dict(params=param))
             if data is not None:
                 params.update(dict(json=data))
-
+        cookies = self.cookie.get_value() or {}
         res: requests.Response = requests.request(
             url=uri,
             headers=headers,
             verify=False,
-            cookies=self.cookie.get_value() or {},
+            cookies=cookies,
             timeout=self.get_timeout(),
             method=method,
             proxies=self.get_proxy(),
             **params,
         )
         if res.status_code <= 300:
-            content_type=res.headers.get(Api.CONTENT_TYPE)
+            content_type = res.headers.get(Api.CONTENT_TYPE)
             if content_type in Api.APPLICATION_JSON:
                 return res.json()
             else:
                 logger.info(content_type)
             return res.content
-        return self.hander_error(method, uri, res, data or param)
+        return self.hander_error(method, uri, res, data or param, cookies)
 
-    def hander_error(self, method, uri, res: requests.Response, data):
+    def hander_error(self, method, uri, res: requests.Response, data, cookies):
         raise Exception(
-            f'{method}:{uri}:{res.status_code}:{res.content[:100]+b"***"+res.content[-100:]}:{str(data)[:40]}'
+            f"{method}:{uri}:{res.status_code}:{res.content[:256]}:{str(data)[:40]},{cookies}"
         )
 
     def parse(self, value):

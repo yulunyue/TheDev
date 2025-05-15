@@ -16,12 +16,14 @@ class Action:
         self.reward = reward
 
     def __str__(self):
-        return f"\n".join([
-            f"<Action action:{self.get_action_str()} reward:{self.reward}>",
-            f"info:{self.info}",
-            f"check:{self.check_info}",
-            f"state:{self.dst}"
-        ])
+        return f"\n".join(
+            [
+                f"<Action action:{self.get_action_str()} reward:{self.reward}>",
+                f"info:{self.info}",
+                f"check:{self.check_info}",
+                f"state:{self.dst}",
+            ]
+        )
 
     def set_info(self, info):
         self.info = info
@@ -32,13 +34,11 @@ class Action:
 
     def get_reward(self, params, **kwargs):
         raise Exception("error")
-    
-    def check(self):
-        self.check_point=0
-        self.check_max_point=4000
-        self.check_max_t
-        def dfs():
-            pass
+
+    def analyze(self, max_depth, state_max_num):
+        from common.algo.search.algo import Baoli
+
+        self.check_info = Baoli().search_dfs_main(self, max_depth, state_max_num)
 
 
 class State:
@@ -51,6 +51,10 @@ class State:
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
+
+    @property
+    def op_player_id(self):
+        return 1 - self.player_id
 
     def reset(self):
         return self
@@ -75,10 +79,6 @@ class State:
             a = self.get_action(action)
             if a is None:
                 continue
-            if a.dst.op_done:
-                continue
-            if a.dst.win_done:
-                return {action: a}
             self.actions[action] = a
         return self.actions
 
@@ -115,11 +115,3 @@ class State:
 
     def new_state(self, *args):
         raise Exception("todo")
-
-    @property
-    def win_done(self):
-        return False
-
-    @property
-    def op_done(self):
-        return False

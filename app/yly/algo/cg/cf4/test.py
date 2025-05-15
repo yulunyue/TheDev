@@ -9,16 +9,17 @@ class C4Test(TestBase):
     def __init__(self):
         super().__init__()
 
-    def get_env(self, debug=1):
+    def get_env(self, debug=1, state=None):
 
         return Env(
             debug=debug,
             width=7,
             height=6,
+            state=state,
             # env_name=Env.connectx,
         )
 
-    def test_init(self):
+    def test_init_6_7(self):
 
         C.load(6, 7)
         w1, h1 = C.WIDTH - C.inarow + 1, C.HEIGHT - C.inarow + 1
@@ -43,11 +44,14 @@ class C4Test(TestBase):
         )
 
         grid_state = C4GridState().init_root()
-        action = grid_state.get_action(0).dst.get_action(0).dst
+        state = grid_state.get_action(0).dst.get_action(0).dst
+        mask_except = 0b1000000100000010000001000000100000010000110
+        self.expect(state.get_mask(), mask_except, bin(state.get_mask()))
+        state = C4GridState().init_root(mask_except)
         # self.expect(action.line_state, [1])
-        grids = action.get_grid()
+        grids = state.get_grid()
         self.expect(len(grids), SIZE)
-        self.expect(grids[-C.WIDTH], 1)
+        self.expect(grids[-C.WIDTH], 1, grids)
         self.expect(grids[-2 * C.WIDTH], 2, grids)
 
     def test_player_all(self):
@@ -57,15 +61,11 @@ class C4Test(TestBase):
             logger.info(k)
             logger.info(action)
 
-    def test_player_kd1(self):
-        logger.info(self.get_env().play(get_player("kd1")))
+    def test_player(self, player="ab3"):
+        a = self.get_env(state=4432687285402).play(get_player(player))
+        self.expect(a.src.best_action.action, 3, a.dst)
 
-    def test_action(self):
-        a = self.get_action().dst.get_action(0)
-        a = a.dst.get_action(0)
-        self.expect(a.get_points(), [0, 0, 0, 0, 0, 1], a)
-
-    def test_pk(self,name1,name2):
+    def test_pk(self, name1, name2):
         players = [get_player(name1), get_player(name2)]
         for _ in range(2):
             env = self.get_env()  # , env_name=Env.connectx)

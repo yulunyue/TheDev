@@ -3,7 +3,7 @@ from common.algo.manage import get_log
 from typing import List
 import os
 
-logger = get_log("cf4")
+logger = get_log("cf4", mode="a+")
 
 DATA_PATH = "data/cf4"
 inf = float("inf")
@@ -94,51 +94,95 @@ class Constant:
                     self.point_line_id[jj].append([line_id, l, idx])
                 self.lines.append(tmp)
 
-    def mask_to_grid(self, mask, fn):
+    def mask_to_grid(self, mask):
+        ret = [0] * (self.HEIGHT * self.WIDTH)
+        mask_full = (1 << self.HEIGHT + 1) - 1
         for j in range(self.WIDTH):
             pos = j * (C.HEIGHT + 1)
-            h_mask: int = (mask >> pos) & self.MASK_FULL_HEIGHT
-            l = h_mask.bit_length() - 1
-            for i in range(l):
-
-                if h_mask & (1 << i):
-                    fn(i, j, 1)
+            h_mask: int = (mask >> pos) & mask_full
+            h = h_mask.bit_length() - 2
+            while h >= 0:
+                k = (C.HEIGHT - h - 1) * self.WIDTH + j
+                if h_mask & (1 << h):
+                    ret[k] = 2
                 else:
-                    fn(i, j, 0)
+                    ret[k] = 1
+                h -= 1
+        return ret
+
+    def grid_view(self, grid):
+        h, w = C.HEIGHT, C.WIDTH
+        ret = []
+        for i in range(h):
+            tmp = [f"{i} "]
+            for j in range(w):
+                v = grid[i * w + j]
+                if isinstance(v, int) and 1 <= v <= 2:
+                    tmp.append(f"{S[v-1]} ")
+                else:
+                    tmp.append("- ")
+            ret.append("".join(tmp))
+        pos = ""
+        col = [C.HEIGHT - 1] * C.WIDTH
+        player_id = 1
+        while True:
+            s = ""
+            for i in range(self.WIDTH):
+                k = col[i] * w + i
+                if grid[k] == player_id:
+                    s += str(i + 1)
+                    col[i] -= 1
+                    player_id = 3 - player_id
+            if not s:
+                break
+            pos += s
+        from common.service.api import Api
+
+        a = Api().get(
+            f"https://connect4.gamesolver.org/solve?pos={pos}",
+        )
+        ret.append("  " + " ".join([str(i) for i in range(w)]))
+        ret.append(str(a))
+        return "\n".join(ret)
 
     def grid_to_mask(self, grids):
         mask = 0
         for j in range(self.WIDTH):
-            m = 0
-            for i in range(self.HEIGHT - 1, -2, -1):
-                k = i * self.WIDTH + j
-                h = self.HEIGHT - i - 1
-                if h == self.HEIGHT or grids[k] == 0:
-                    m |= C.POS_MASK[j] << h
+            i = self.HEIGHT - 1
+            while i >= 0:
+                s = grids[i * self.WIDTH + j]
+                pos = C.HEIGHT - i - 1 + j * (self.HEIGHT + 1)
+                if s == 0:
+                    mask |= 1 << pos
                     break
-                if grids[k] == 2:
-                    m |= C.POS_MASK[j] << h
-            mask |= m
+                if s == 2:
+                    mask |= 1 << pos
+                i -= 1
         return mask
 
     def grid_to_line_state(self, grid):
         line_state, row_idx = (
             [0] * len(C.lines),
-            [C.HEIGHT] * C.WIDTH,
+            [-1] * C.WIDTH,
         )
+        player_id = 0
         for i in range(self.HEIGHT * self.WIDTH):
             y, x = i // self.WIDTH, i % self.WIDTH
             if grid[i] == 0:
-                row_idx[x] = min(row_idx[x], y)
+                row_idx[x] = max(row_idx[x], y)
             else:
                 for line_id, l, idx in self.point_line_id[i]:
                     line_state[line_id] |= grid[i] << (idx * 2)
-
+                player_id = 1 - player_id
         return (
             row_idx,
             set(x for x in range(self.WIDTH) if row_idx[x] != C.HEIGHT),
             line_state,
+            player_id,
         )
+
+    def mask_to_line_state(self, mask):
+        return self.grid_to_line_state(self.mask_to_grid(mask))
 
 
 C = Constant()

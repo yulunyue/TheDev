@@ -25,12 +25,12 @@ DEFAULT_FMT = "".join(
 
 class Logger(logging.Logger):
 
-    def __init__(self, name, fmt) -> None:
+    def __init__(self, name, fmt, mode="w") -> None:
         super().__init__(name)
         self.path = f"{LOG_DIR}/{name}.log"
         self.add_hander(
             logging.FileHandler(
-                self.path, mode=os.environ.get(LOGGER_MODE, "w"), encoding="utf-8"
+                self.path, mode=os.environ.get(LOGGER_MODE, mode), encoding="utf-8"
             ),
             logging.INFO,
             fmt=fmt,
@@ -84,9 +84,11 @@ class TheDevLoger:
         self.fp.flush()
 
 
-def get_log(name="", log_class="log", fmt=None) -> Logger:
+def get_log(name="", log_class="log", fmt=None, mode="w") -> Logger:
     if name not in LOG_MAP:
-        LOG_MAP[name] = {"default": TheDevLoger, "log": Logger}[log_class](name, fmt)
+        LOG_MAP[name] = {"default": TheDevLoger, "log": Logger}[log_class](
+            name, fmt, mode=mode
+        )
     return LOG_MAP[name]
 
 

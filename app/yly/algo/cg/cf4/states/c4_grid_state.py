@@ -9,9 +9,14 @@ class C4GridState(F4State):
             self.row_idx: list = [C.HEIGHT - 1] * C.WIDTH
             self.can_move = set(range(C.WIDTH))
             self.line_state = [0] * len(C.lines)
+            self.player_id = 0
         elif isinstance(self.state, list):
-            self.row_idx, self.can_move, self.line_state = C.grid_to_line_state(
-                self.state
+            self.row_idx, self.can_move, self.line_state, self.player_id = (
+                C.grid_to_line_state(self.state)
+            )
+        elif isinstance(self.state, int):
+            self.row_idx, self.can_move, self.line_state, self.player_id = (
+                C.mask_to_line_state(self.state)
             )
 
     def get_action(self, x):

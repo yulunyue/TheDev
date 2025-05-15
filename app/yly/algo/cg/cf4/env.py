@@ -26,6 +26,7 @@ PLAYERS = dict(
     ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_action),
     ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_action),
     ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_action),
+    ab6=lambda: Ab().load(6).set_params(SE).set_env_cls(get_action),
     kd1=lambda: KagleAgent().load().set_params(None).set_env_cls(get_action),
     kd2=lambda: Kagle().load().set_params(None).set_env_cls(get_action),
     # negamax="negamax",
@@ -42,12 +43,12 @@ def get_player(k) -> Algo:
 class Env:
     connectx = "connectx"
 
-    def __init__(self, env_name=None, debug=0, height=7, width=9, **kw):
+    def __init__(self, env_name=None, debug=0, height=7, width=9, state=None, **kw):
         self.env_name = env_name
         self.debug = debug
         self.width = width
         self.height = height
-        self.init_state = None
+        self.init_state = state
         if env_name == Env.connectx:
             from kaggle_environments import make
 
@@ -103,9 +104,9 @@ class Env:
             File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
 
         for r in self.records:
-            r.check()
+            r.analyze(7, 1000)
             logger.info(r)
 
     def play(self, player: Algo):
         action = player.search(self.init_state)
-        return action.dst.best_action
+        return action
