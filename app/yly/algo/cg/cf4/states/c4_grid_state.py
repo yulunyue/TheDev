@@ -122,3 +122,9 @@ class C4GridState(F4State):
 
     def get_info(self):
         return self._info
+
+
+def get_state(state):
+    if isinstance(state, C4GridState):
+        return state
+    return C4GridState().init_root(state=state)

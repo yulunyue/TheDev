@@ -16,14 +16,14 @@ class F4Action(Action):
         super().__init__(src, x, dst, reward)
 
     def get_action_str(self):
-        return f"[y={self.y}][x={self.x}][p={S[1-self.dst.player_id]}]"
+        return f"[y={self.y}][x={self.x}][p={S[self.src.player_id]}]"
 
     def get_reward(self, params, **kwargs):
         reward, c = 0, 1
         for i, v in enumerate(self.dst.points[::-1]):
             reward += v * c
             c *= 10
-        return reward
+        return -reward
 
     def laod_from_karord(self, board, action):
         self.board = board
@@ -46,11 +46,3 @@ class F4Action(Action):
             F4Action._debug_file.write(f"\n-----{info}----\n")
         else:
             F4Action._debug_file.write(str(self))
-
-
-def get_action(state):
-    if isinstance(state, F4Action):
-        return state
-
-    state = C4GridState().init_root(state=state)
-    return F4Action(None, None, None, state)

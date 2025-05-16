@@ -42,8 +42,16 @@ class C4Test(TestBase):
             C.point_line_id[7 * 6 // 2],
             [[1, 1, 3], [16, 1, 2], [31, 1, 1], [45, 0, 0], [46, 3, 0]],
         )
+        c1_mask = 4433249368282
+        c1 = C4GridState().init_root(c1_mask)
+        self.expect(
+            C.get_api_score(c1.get_grid()),
+            ["W:0○10○0○0○0○0○0○", "S:4 0 2 7 8 4 5 "],
+            str(c1) + f"\n{bin(c1_mask)}" + f"\n{C.mask_to_grid(c1_mask)}",
+        )
 
         grid_state = C4GridState().init_root()
+
         state = grid_state.get_action(0).dst.get_action(0).dst
         mask_except = 0b1000000100000010000001000000100000010000110
         self.expect(state.get_mask(), mask_except, bin(state.get_mask()))
@@ -75,7 +83,7 @@ class C4Test(TestBase):
             if result is None:
                 logger.info(f"unknow error")
             elif result >= 0:
-                logger.info(f"[{players[result].name}][{S[result]}] win")
+                logger.info(f"{players} [{players[result].name}][{S[result]}] win")
             else:
                 logger.info("no win")
             players.reverse()
