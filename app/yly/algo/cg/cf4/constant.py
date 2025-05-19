@@ -1,6 +1,7 @@
 from app.yly.algo.cg.cf4.params import SE, StateEnum, ParamCt, INROW
 from common.algo.manage import get_log
 from typing import List
+import math
 import os
 
 logger = get_log("cf4", mode="a+")
@@ -110,61 +111,79 @@ class Constant:
                 h -= 1
         return ret
 
-    def get_api_score(self, grid):
-        ret = ["W:", "S:"]
+    def get_grid_sequence(self, grid):
         pos = []
-        try:
-            zero_num = 0
-            col = [0] * C.WIDTH
-            for i in range(self.WIDTH):
-                while True:
-                    k = col[i] * self.WIDTH + i
-                    if grid[k] != 0:
-                        break
-                    col[i] += 1
-                    zero_num += 1
-            player_id = (C.WIDTH * C.HEIGHT - zero_num + 1) % 2 + 1
-            n = self.WIDTH * self.HEIGHT + 2
-            while n > 0:
-                ct = 0
-                for i in range(self.WIDTH):
-                    if col[i] == self.HEIGHT:
-                        ct += 1
-                        continue
-                    k = col[i] * self.WIDTH + i
-                    if grid[k] == player_id:
-                        pos.append(str(i + 1))
-                        player_id = 3 - player_id
-                        col[i] += 1
-                if ct == self.WIDTH:
+        zero_num = 0
+        col = [0] * C.WIDTH
+        for i in range(self.WIDTH):
+            while col[i] < C.HEIGHT:
+                k = col[i] * self.WIDTH + i
+                if grid[k] != 0:
                     break
-                n -= 1
-            pos.reverse()
-            pos = "".join(pos)
-            from common.service.api import Api
+                col[i] += 1
+                zero_num += 1
+        player_id = (C.WIDTH * C.HEIGHT - zero_num + 1) % 2 + 1
+        while True:
+            j = None
+            for i in range(self.WIDTH):
+                if col[i] == self.HEIGHT:
+                    continue
+                k = col[i] * self.WIDTH + i
+                if grid[k] == player_id:
+                    j = i
+                    k1 = (1 + col[i]) * self.WIDTH + i
+                    if k1 < len(grid) and grid[k1] == 3 - player_id:
+                        break
+            if j is None:
+                break
+            pos.append(str(j + 1))
+            player_id = 3 - player_id
+            col[j] += 1
+        pos.reverse()
+        return "".join(pos)
 
-            score = (
-                Api()
-                .set_cache()
-                .get(
-                    f"https://connect4.gamesolver.org/solve?pos=",
-                )["score"]
-            )
-            for s in score:
-                if s == 100:
-                    ret[0] += "  "
-                    ret[1] += "  "
-                else:
-                    v = abs(s)
-                    ret[0] += str(v // 10) + (S[0] if s > 0 else S[1])
-                    ret[1] += str(v % 10) + " "
-        except Exception as e:
-            logger.exception(e)
-        return [f"P:{pos}"] + ret
+    def sequence_to_grid(self, seq):
+        col = [self.HEIGHT - 1] * self.WIDTH
+        player_id = 1
+        grid = [0] * self.WIDTH * self.HEIGHT
+        for k in seq:
+            k = int(k) - 1
+            i = col[k] * self.WIDTH + k
+            grid[i] = player_id
+            player_id = 3 - player_id
+            col[k] -= 1
+        return grid
+
+    def get_api_score(self, pos):
+
+        move_length = len(pos)
+        from common.service.api import Api
+
+        score = (
+            Api()
+            .set_cache()
+            .get(
+                f"https://connect4.gamesolver.org/solve?pos={pos}",
+            )["score"]
+        )
+        best = -100
+        for s in score:
+            if s == 100:
+                continue
+            best = max(best, s)
+        v = 0
+        if best > 0:
+            v = math.floor((45 - move_length) / 2) - best
+            return f"{S[(move_length+1)%2]} REST {v*2} LOSE"
+        elif best < 0:
+            v = math.floor((44 - move_length) / 2) + best
+            return f"{S[(move_length+1)%2]} REST {v*2+1} WIN"
+        return "NO WIN"
 
     def grid_view(self, grid):
         h, w = C.HEIGHT, C.WIDTH
         ret = []
+        col = [-1] * C.WIDTH
         for i in range(h):
             tmp = [f"{i} "]
             for j in range(w):
@@ -172,10 +191,26 @@ class Constant:
                 if isinstance(v, int) and 1 <= v <= 2:
                     tmp.append(f"{S[v-1]} ")
                 else:
+                    col[j] = max(col[j], i)
                     tmp.append("- ")
             ret.append("".join(tmp))
-        ret[0:0] = self.get_api_score(grid)
         ret.append("  " + " ".join([str(i) for i in range(w)]))
+        pos = self.get_grid_sequence(grid)
+        FLAG_INFO = f"{S[len(pos)%2]}LOSE"
+        for j, v in enumerate(col):
+            if v == -1:
+                continue
+            rest = self.get_api_score(pos + str(j + 1))
+            if "WIN" in rest:
+                FLAG_INFO = f"{S[len(pos)%2]}WIN"
+            elif rest == "NO WIN":
+                FLAG_INFO = "NO WIN"
+                continue
+            if rest:
+                ret.append(f"{j}: {rest}")
+        ret.append(FLAG_INFO)
+        # a = self.sequence_to_grid(pos)
+        # logger.info([f"xx{a==grid}", a, grid])
         return "\n".join(ret)
 
     def grid_to_mask(self, grids):
