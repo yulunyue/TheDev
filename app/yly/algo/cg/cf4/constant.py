@@ -114,24 +114,31 @@ class Constant:
         ret = ["W:", "S:"]
         pos = []
         try:
-            col = [self.HEIGHT] * C.WIDTH
-            player_id = 2
+            zero_num = 0
+            col = [0] * C.WIDTH
             for i in range(self.WIDTH):
-                k = (col[i] - 1) * self.WIDTH + i
-                while col[i] > 0 and grid[k] != 0:
-                    col[i] -= 1
-                    k = (col[i] - 1) * self.WIDTH + i
-                    player_id = 3 - player_id
-
-            while any([v != self.HEIGHT for v in col]):
+                while True:
+                    k = col[i] * self.WIDTH + i
+                    if grid[k] != 0:
+                        break
+                    col[i] += 1
+                    zero_num += 1
+            player_id = (C.WIDTH * C.HEIGHT - zero_num + 1) % 2 + 1
+            n = self.WIDTH * self.HEIGHT + 2
+            while n > 0:
+                ct = 0
                 for i in range(self.WIDTH):
                     if col[i] == self.HEIGHT:
+                        ct += 1
                         continue
                     k = col[i] * self.WIDTH + i
                     if grid[k] == player_id:
                         pos.append(str(i + 1))
                         player_id = 3 - player_id
                         col[i] += 1
+                if ct == self.WIDTH:
+                    break
+                n -= 1
             pos.reverse()
             pos = "".join(pos)
             from common.service.api import Api
