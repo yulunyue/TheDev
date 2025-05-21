@@ -8,7 +8,8 @@ from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH, S, logger
-from app.yly.algo.cg.cf4.states.f4action import F4Action, get_action
+from app.yly.algo.cg.cf4.states.f4action import F4Action
+from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState, get_state
 from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv
 
 
@@ -21,14 +22,14 @@ class Ab(AlphaBateSearch):
 
 
 PLAYERS = dict(
-    ab1=lambda: Ab().load(1).set_params(SE).set_env_cls(get_action),
-    ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_action),
-    ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_action),
-    ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_action),
-    ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_action),
-    ab6=lambda: Ab().load(6).set_params(SE).set_env_cls(get_action),
-    kd1=lambda: KagleAgent().load().set_params(None).set_env_cls(get_action),
-    kd2=lambda: Kagle().load().set_params(None).set_env_cls(get_action),
+    ab1=lambda: Ab().load(1).set_params(SE).set_env_cls(get_state),
+    ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_state),
+    ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_state),
+    ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_state),
+    ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_state),
+    ab6=lambda: Ab().load(6).set_params(SE).set_env_cls(get_state),
+    kd1=lambda: KagleAgent().load().set_params(None).set_env_cls(get_state),
+    kd2=lambda: Kagle().load().set_params(None).set_env_cls(get_state),
     # negamax="negamax",
 )
 
@@ -63,18 +64,13 @@ class Env:
     def run_self(self, state=None, max_round=128):
         player_id = 0
         while max_round:
-            state: F4Action = self.players[player_id].search(state)
-            if self.debug:
-                state.debug()
-            if state is None:
-                return
-            if self.debug:
-                state.debug()
-            self.records.append(state)
+            action: F4Action = self.players[player_id].search(state)
+            self.records.append(action)
+            state = action.dst
             player_id = (player_id + 1) % len(self.players)
             max_round -= 1
-            if state.dst.done is not None:
-                return state.dst.done
+            if state.done is not None:
+                return state.done
 
     def run(self, players: List[Algo], state=None):
         self.players = [p.reset() if hasattr(p, "reset") else p for p in players]
@@ -104,7 +100,6 @@ class Env:
             File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
 
         for r in self.records:
-            r.analyze(7, 1000)
             logger.info(r)
 
     def play(self, player: Algo):

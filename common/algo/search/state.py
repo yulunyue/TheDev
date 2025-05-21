@@ -21,7 +21,7 @@ class Action:
                 f"<Action action:{self.get_action_str()} reward:{self.reward}>",
                 f"info:{self.info}",
                 f"check:{self.check_info}",
-                f"state:{self.dst}",
+                f"state:{self.src}",
             ]
         )
 

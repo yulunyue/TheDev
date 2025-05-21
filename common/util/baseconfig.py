@@ -2,14 +2,15 @@ import json
 from common.util.fp import File
 from typing import List
 from common.util.model import StrModel, BaseModel, EnableModel, EncroyModel, DictModel
-CONFIG_SETTING_DIR = 'data/setting'
+
+CONFIG_SETTING_DIR = "data/setting"
 
 
 class ConfigBase:
 
-    def __init__(self, file_name,config_name) -> None:
+    def __init__(self, file_name, config_name) -> None:
         self._config_name = config_name
-        self._fp = File(f'{CONFIG_SETTING_DIR}/{file_name}.json')
+        self._fp = File(f"{CONFIG_SETTING_DIR}/{file_name}.json")
         self._mtime = 0
         self._params: List[BaseModel] = []
         self._config = dict()
@@ -40,11 +41,6 @@ class ConfigBase:
                 continue
             v.key = key
 
-    def set_key_value(self, key, value):
-        config = self._config.get(self._config_name, {})
-        if value != config.get(key):
-            config[key] = value
-            self.save()
-
     def get_key_value(self, key):
-        return self._config.get(self._config_name, {}).get(key, self._config.get(key))
+        config = self._config.get(self._config_name, self._config)
+        return config.get(key)

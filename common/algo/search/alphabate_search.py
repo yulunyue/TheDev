@@ -8,26 +8,31 @@ class AlphaBateSearch(Algo):
         self.max_depth = max_depth
         return super().load(use_cache=use_cache)
 
-    def search_dfs(self, action: Action, depth, alpha=-inf, bate=inf, **kw) -> None:
-        # if budget and self.state_count >= budget:
-        #     return inf
+    def search_dfs(
+        self, state: State, action: Action = None, depth=0, alpha=-inf, bate=inf, **kw
+    ) -> None:
+
         self.state_count += 1
-        mvs: Dict[str, Action] = action.dst.get_actions(depth=depth)
+        if depth == -1:
+            return action.get_reward(depth=depth, params=self.params)
+        mvs: Dict[str, Action] = state.get_actions(depth=depth)
         if not mvs:
-            return -action.get_reward(depth=depth, params=self.params)
+            return action.get_reward(depth=depth, params=self.params)
         for k, a in mvs.items():
-            a.reward = -self.search_dfs(a, depth - 1, alpha=-bate, bate=-alpha)
+            a.reward = -self.search_dfs(
+                a.dst, action=a, depth=depth - 1, alpha=-bate, bate=-alpha
+            )
             if a.reward >= bate:
                 alpha = bate
-                action.dst.best_action = a
+                state.best_action = a
                 break
             if a.reward > alpha:
                 alpha = a.reward
-                action.dst.best_action = a
+                state.best_action = a
         return alpha
 
     def search_main(self, state, **kw):
-        return self.search_dfs(state, self.max_depth, **kw)
+        return self.search_dfs(state, None, depth=self.max_depth, **kw)
 
 
 class AbSearchIter(AlphaBateSearch):

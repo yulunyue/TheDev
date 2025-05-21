@@ -110,6 +110,58 @@ class Constant:
                 h -= 1
         return ret
 
+    def get_api_score(self, grid):
+        ret = ["W:", "S:"]
+        pos = []
+        try:
+            zero_num = 0
+            col = [0] * C.WIDTH
+            for i in range(self.WIDTH):
+                while True:
+                    k = col[i] * self.WIDTH + i
+                    if grid[k] != 0:
+                        break
+                    col[i] += 1
+                    zero_num += 1
+            player_id = (C.WIDTH * C.HEIGHT - zero_num + 1) % 2 + 1
+            n = self.WIDTH * self.HEIGHT + 2
+            while n > 0:
+                ct = 0
+                for i in range(self.WIDTH):
+                    if col[i] == self.HEIGHT:
+                        ct += 1
+                        continue
+                    k = col[i] * self.WIDTH + i
+                    if grid[k] == player_id:
+                        pos.append(str(i + 1))
+                        player_id = 3 - player_id
+                        col[i] += 1
+                if ct == self.WIDTH:
+                    break
+                n -= 1
+            pos.reverse()
+            pos = "".join(pos)
+            from common.service.api import Api
+
+            score = (
+                Api()
+                .set_cache()
+                .get(
+                    f"https://connect4.gamesolver.org/solve?pos=",
+                )["score"]
+            )
+            for s in score:
+                if s == 100:
+                    ret[0] += "  "
+                    ret[1] += "  "
+                else:
+                    v = abs(s)
+                    ret[0] += str(v // 10) + (S[0] if s > 0 else S[1])
+                    ret[1] += str(v % 10) + " "
+        except Exception as e:
+            logger.exception(e)
+        return [f"P:{pos}"] + ret
+
     def grid_view(self, grid):
         h, w = C.HEIGHT, C.WIDTH
         ret = []
@@ -122,27 +174,8 @@ class Constant:
                 else:
                     tmp.append("- ")
             ret.append("".join(tmp))
-        pos = ""
-        col = [C.HEIGHT - 1] * C.WIDTH
-        player_id = 1
-        while True:
-            s = ""
-            for i in range(self.WIDTH):
-                k = col[i] * w + i
-                if grid[k] == player_id:
-                    s += str(i + 1)
-                    col[i] -= 1
-                    player_id = 3 - player_id
-            if not s:
-                break
-            pos += s
-        from common.service.api import Api
-
-        a = Api().get(
-            f"https://connect4.gamesolver.org/solve?pos={pos}",
-        )
+        ret[0:0] = self.get_api_score(grid)
         ret.append("  " + " ".join([str(i) for i in range(w)]))
-        ret.append(str(a))
         return "\n".join(ret)
 
     def grid_to_mask(self, grids):
@@ -158,6 +191,9 @@ class Constant:
                 if s == 2:
                     mask |= 1 << pos
                 i -= 1
+                if i == -1:
+                    pos = C.HEIGHT + j * (self.HEIGHT + 1)
+                    mask |= 1 << pos
         return mask
 
     def grid_to_line_state(self, grid):

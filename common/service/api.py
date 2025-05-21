@@ -2,6 +2,7 @@ import requests
 from common.util.log import get_log
 from common.util.baseconfig import ConfigBase, StrModel, DictModel
 from common.util.model import NumberModel
+from common.util.tool import hash_any
 import urllib3
 
 urllib3.disable_warnings()
@@ -18,6 +19,14 @@ class Api:
         self.cookie = DictModel("cookie", self.config)
         self.proxy = DictModel("proxy", self.config)
         self.timeout = NumberModel("timeout", 10, self.config)
+        self.cache = None
+
+    def set_cache(self, cache=None):
+        if cache is None:
+            self.cache = DictModel("cache", self.config)
+        else:
+            self.cache = cache
+        return self
 
     def get_endpoint(self):
         return self.endpoint.get_value()
@@ -53,8 +62,11 @@ class Api:
     def get_proxy(self):
         return self.proxy.get_value()
 
-    def get_mock_data(self, key):
-        pass
+    def get_mock_data(self, uri, method, param):
+        k = method + "|" + hash_any(uri) + "|" + hash_any(param)
+        if self.cache and self.cache.get(k):
+            return k, self.cache.get(k)
+        return k, None
 
     def get_timeout(self):
         return self.timeout.get_value()
@@ -68,7 +80,7 @@ class Api:
             }
         )
         uri = self.url(path)
-        mock_res = self.get_mock_data(uri)
+        key, mock_res = self.get_mock_data(uri, method, data or param)
         if mock_res:
             return mock_res
         logger.info(f"DO HTTP [{method}] {uri}")
@@ -93,11 +105,14 @@ class Api:
         )
         if res.status_code <= 300:
             content_type = res.headers.get(Api.CONTENT_TYPE)
+            ret = res.content
             if content_type in Api.APPLICATION_JSON:
-                return res.json()
+                ret = res.json()
             else:
                 logger.info(content_type)
-            return res.content
+            if self.cache:
+                self.cache.set(key, ret)
+            return ret
         return self.hander_error(method, uri, res, data or param, cookies)
 
     def hander_error(self, method, uri, res: requests.Response, data, cookies):
