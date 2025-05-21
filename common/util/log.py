@@ -63,6 +63,11 @@ class Logger(logging.Logger):
             tb.add_row([row[k] for k in headers])
         self.info(f"-TABLLE-\n{tb}")
 
+    def draw_line(self, name, data):
+        from common.tool.draw import Draw
+
+        Draw().draw_line(data).save(f"{LOG_DIR}/{self.name}_{name}.svg")
+
     def add_hander(self, h: logging.Handler, level, fmt=None):
         if fmt is None:
             fmt = DEFAULT_FMT

@@ -9,8 +9,6 @@ from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
 
-Env = State
-
 
 def random_seed(v=1):
     np.random.seed(v)

@@ -1,4 +1,5 @@
-from common.algo.search.algo import Env, Algo, Action, State
+from common.algo.search.algo import Algo, Action, State
+
 import numpy as np
 from torch import nn
 import torch

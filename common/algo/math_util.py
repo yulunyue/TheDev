@@ -3,22 +3,24 @@ import itertools
 from functools import lru_cache
 from collections import defaultdict, deque, Counter
 
+
 @lru_cache(None)
-def gcd(v1,v2):
-    return gcd(v2,v1%v2) if v2>0 else v1    
+def gcd(v1, v2):
+    return gcd(v2, v1 % v2) if v2 > 0 else v1
+
 
 def pi_float(v):
     if isinstance(v, int):
-        return v/180*math.pi
+        return v / 180 * math.pi
     return v
 
 
 def mul_rect(a, b, mod):
-    ans = [[0]*len(b[0]) for _ in range(len(a))]
+    ans = [[0] * len(b[0]) for _ in range(len(a))]
     for i in range(len(a)):
         for j in range(len(b[0])):
             for k in range(len(a[i])):
-                ans[i][j] = (ans[i][j]+a[i][k]*b[k][j]) % mod
+                ans[i][j] = (ans[i][j] + a[i][k] * b[k][j]) % mod
     return ans
 
 
@@ -41,12 +43,12 @@ def clrbit(x, n):
 
 
 def calc_angle(y, x, y1, x1):
-    '''
+    """
     0->2*pi
-    '''
-    a = math.atan2(y1-y, x1-x)
+    """
+    a = math.atan2(y1 - y, x1 - x)
     if a < 0:
-        return 2*math.pi+a
+        return 2 * math.pi + a
     return a
 
 
@@ -74,93 +76,97 @@ def prime_gcds(max_value):
 def decomposition_prime_factors(v):
     ret = dict()
     i = 2
-    while i*i <= v:
+    while i * i <= v:
         while v % i == 0:
             if i not in ret:
                 ret[i] = 0
             ret[i] += 1
-            v = v//i
+            v = v // i
         i += 1
     if v > 1:
         ret[v] = 1
     return ret
 
-def bei_zen(nums,k:int,cha=2):
-    '''
+
+def bei_zen(nums, k: int, cha=2):
+    """
     array=[2,3,4,5,7,8,9]
     ret=[
           [2,3,4,4,6,7,7]
           [4,4,6,6,7,7,7]
           [7,7,7,7,7,7,7]
     ]
-    '''
-    n=len(nums)
-    m=k.bit_length()
-    ret=[[n]*m for _ in range(n+1)]
-    j=n
-    for i in range(n-1,-1,-1):
-        while nums[j-1]>=nums[i]+cha:
-            j-=1
-        ret[i][0]=j
-        for l in range(1,m):
-            ret[i][l]=ret[ret[i][l-1]][l-1]
+    """
+    n = len(nums)
+    m = k.bit_length()
+    ret = [[n] * m for _ in range(n + 1)]
+    j = n
+    for i in range(n - 1, -1, -1):
+        while nums[j - 1] >= nums[i] + cha:
+            j -= 1
+        ret[i][0] = j
+        for l in range(1, m):
+            ret[i][l] = ret[ret[i][l - 1]][l - 1]
     return ret
 
+
 def prime_flags(max_v):
-    ret = [True]*max_v
-    ret[0]=False
-    ret[1]=False
+    ret = [True] * max_v
+    ret[0] = False
+    ret[1] = False
     for i in range(2, max_v):
         if ret[i] == False:
             continue
         ret[i] = True
-        for j in range(i*i, max_v, i):
+        for j in range(i * i, max_v, i):
             ret[j] = False
     return ret
 
 
 @lru_cache(None)
 def stl_2(n, i):
-    '''
+    """
     第二类斯特林数
     n个人 放到i个房间, 不允许房间为空
-    '''
+    """
     if n < i or i == 0:
         return 0
     elif i == n or i == 1:
         return 1
-    return stl_2(n-1, i-1)+i*stl_2(n-1, i)
+    return stl_2(n - 1, i - 1) + i * stl_2(n - 1, i)
 
-def lucas_mod(n,m,mod):
-    '''
+
+def lucas_mod(n, m, mod):
+    """
     lucas定理求组合数的摸
-    '''
-    res=1
-    while n>0 or m>0:
-        ni=n%mod
-        mi=m%mod
-        if mi>ni:
+    """
+    res = 1
+    while n > 0 or m > 0:
+        ni = n % mod
+        mi = m % mod
+        if mi > ni:
             return 0
-        res=res*math.comb(ni,mi)%mod
-        n//=mod
-        m//=mod
+        res = res * math.comb(ni, mi) % mod
+        n //= mod
+        m //= mod
     return res
 
+
 def china_rest_mod(n, m, p):
-    '''
+    """
     中国剩余定理
-    '''
-    mod=1
+    """
+    mod = 1
     for a in p:
-        mod*=a
-    ans=0
+        mod *= a
+    ans = 0
     for a in p:
-        ans+=lucas_mod(n,m,a)*(mod//a)
-    return ans%mod
+        ans += lucas_mod(n, m, a) * (mod // a)
+    return ans % mod
 
 
 class Comb:
-    def load(self,mod, mx):
+    def load(self, mod, mx):
         self.mod = mod
         self.mx = mx
         # 组合数模板
@@ -174,27 +180,41 @@ class Comb:
         for i in range(mx - 1, 0, -1):
             self.inv_fac[i - 1] = (self.inv_fac[i] * i) % mod
         return self
-    
+
     def comb(self, n: int, k: int) -> int:
-        return ((self.fac[n] * self.inv_fac[k]) % self.mod) * self.inv_fac[n - k] % self.mod
-    
-    def make_split(self,array,num):
-        ans=[]
-        def dfs(i,a,b):
-            if i==len(array):
-                if len(a)==num:
-                    ans.append([a[:],b[:]])
+        return (
+            ((self.fac[n] * self.inv_fac[k]) % self.mod)
+            * self.inv_fac[n - k]
+            % self.mod
+        )
+
+    def make_split(self, array, num):
+        ans = []
+
+        def dfs(i, a, b):
+            if i == len(array):
+                if len(a) == num:
+                    ans.append([a[:], b[:]])
                 return
-            dfs(i+1,a+[array[i]],b)
-            dfs(i+1,a,b+[array[i]])
-                
-        dfs(0,[],[])
+            dfs(i + 1, a + [array[i]], b)
+            dfs(i + 1, a, b + [array[i]])
+
+        dfs(0, [], [])
         return ans
-    
+
+
+def sigmoid(x):
+    import numpy as np
+
+    return 1.0 / (1 + np.exp(-float(x)))
+
+
+def atan(x):
+    return math.atan(x) * 2 / math.pi
 
 
 @lru_cache(None)
 def jc(n):
-    if n<=2:
+    if n <= 2:
         return 2
-    return n*jc(n-1)
+    return n * jc(n - 1)

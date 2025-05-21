@@ -15,6 +15,10 @@ class Action:
         self.dst: State = dst
         self.reward = reward
 
+    def set_p(self, p):
+        self.p = p
+        return self
+
     def __str__(self):
         return f"\n".join(
             [
@@ -24,6 +28,9 @@ class Action:
                 f"state:{self.src}",
             ]
         )
+
+    def get_p_states(self):
+        return [[1, self.dst, self.reward]]
 
     def set_info(self, info):
         self.info = info
@@ -45,12 +52,35 @@ class State:
     name = "state"
     parent: "State"
     done = None
+    STATE_STORE: Dict[str, "State"] = None
 
-    def __init__(self, player_id, depth) -> None:
+    def __init__(self, player_id=0, depth=1, state=None) -> None:
+        self.state = state
         self.depth = depth
+        self.value = 0
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
+
+    @classmethod
+    def new_state(cls, key) -> "State":
+        if cls.STATE_STORE is None:
+            cls.STATE_STORE = dict()
+        if key not in cls.STATE_STORE:
+            cls.STATE_STORE[key] = cls(state=key)
+        return cls.STATE_STORE[key]
+
+    @classmethod
+    def all_states(cls) -> List["State"]:
+        return [cls.new_state(v) for v in cls.all_state_num()]
+
+    def set_done(self, done):
+        self.done = done
+        return self
+
+    def set_reward(self, reward):
+        self.reward = reward
+        return self
 
     @property
     def op_player_id(self):
@@ -64,8 +94,8 @@ class State:
             return self.actions[a]
         return self.gen_action(a)
 
-    def gen_action(self):
-        pass
+    def gen_action(self, a):
+        raise Exception("tood")
 
     def get_actions_all(self):
         raise Exception("todo")
@@ -113,5 +143,6 @@ class State:
     def key(self):
         raise Exception("todo")
 
-    def new_state(self, *args):
+    @classmethod
+    def all_state_num(self):
         raise Exception("todo")

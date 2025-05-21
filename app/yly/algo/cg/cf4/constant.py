@@ -174,11 +174,11 @@ class Constant:
         v = 0
         if best > 0:
             v = math.floor((45 - move_length) / 2) - best
-            return f"{S[(move_length+1)%2]} REST {v*2} LOSE"
+            return 1, v * 2
         elif best < 0:
             v = math.floor((44 - move_length) / 2) + best
-            return f"{S[(move_length+1)%2]} REST {v*2+1} WIN"
-        return "NO WIN"
+            return -1, v * 2 + 1
+        return 0, 0
 
     def grid_view(self, grid):
         h, w = C.HEIGHT, C.WIDTH
@@ -196,19 +196,19 @@ class Constant:
             ret.append("".join(tmp))
         ret.append("  " + " ".join([str(i) for i in range(w)]))
         pos = self.get_grid_sequence(grid)
-        FLAG_INFO = f"{S[len(pos)%2]}LOSE"
+        ret.append(f"P: {pos}")
+        max_score = -1
+        INFO = ["NOWIN", "WIN", "LOSE"]
         for j, v in enumerate(col):
             if v == -1:
                 continue
-            rest = self.get_api_score(pos + str(j + 1))
-            if "WIN" in rest:
-                FLAG_INFO = f"{S[len(pos)%2]}WIN"
-            elif rest == "NO WIN":
-                FLAG_INFO = "NO WIN"
-                continue
-            if rest:
-                ret.append(f"{j}: {rest}")
-        ret.append(FLAG_INFO)
+            score, step = self.get_api_score(pos + str(j + 1))
+            score = -score
+            if score != 0:
+                ret.append(f"U: {S[len(pos)%2]} {INFO[score]}, a:{j}, s:{step}")
+            if score > max_score:
+                max_score = score
+        ret.append(f"R: {S[len(pos)%2]} {INFO[max_score]}")
         # a = self.sequence_to_grid(pos)
         # logger.info([f"xx{a==grid}", a, grid])
         return "\n".join(ret)

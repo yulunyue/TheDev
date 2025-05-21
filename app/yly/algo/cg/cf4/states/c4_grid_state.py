@@ -3,8 +3,9 @@ from app.yly.algo.cg.cf4.constant import C, DR
 
 
 class C4GridState(F4State):
-    def load_root(self):
+    def load_root(self, state=None):
         # self.grid: list = [0] * (C.WIDTH * C.HEIGHT)
+        self.state = state
         if self.state is None:
             self.row_idx: list = [C.HEIGHT - 1] * C.WIDTH
             self.can_move = set(range(C.WIDTH))
@@ -18,6 +19,7 @@ class C4GridState(F4State):
             self.row_idx, self.can_move, self.line_state, self.player_id = (
                 C.mask_to_line_state(self.state)
             )
+        return self
 
     def get_action(self, x):
         from app.yly.algo.cg.cf4.states.f4action import F4Action
@@ -127,4 +129,4 @@ class C4GridState(F4State):
 def get_state(state):
     if isinstance(state, C4GridState):
         return state
-    return C4GridState().init_root(state=state)
+    return C4GridState().load_root(state=state)

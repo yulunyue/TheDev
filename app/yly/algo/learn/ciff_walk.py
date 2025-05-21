@@ -1,97 +1,74 @@
-from common.algo.manage import (
-    SolutionBase,
-    View,
-    bisect,
-    defaultdict,
-    Dict,
-    List,
-    MOD,
-    inf,
-    heapq,
-    functools,
-    logger,
-)
-from common.algo.learn.dqn import Dqn, Env, Algo, Action
-from common.algo.learn.dyn import PolicyIteration, ValueIteration
+from common.algo.learn.dqn import Dqn, State, Algo, Action
+from typing import Dict
 import numpy as np
 
 ACTIONS = [[0, -1], [-1, 0], [1, 0], [0, 1]]
 ACS = ["<", "^", "v", ">"]
 
 
-class CfState(Env):
+class CfState(State):
     ncol = 12
     nrow = 4
+    INIT_SATTE = 36
 
-    def __init__(self, key):
-        super().__init__()
-        self.state = key
+    @classmethod
+    def new_one(cls, state=36, done=None, reward=-1) -> "CfState":
+        return cls.new_state(state).set_done(done).set_reward(reward)
 
     def get_nexts(self, *args):
         return self.actions
 
-    def init_state(self):
-        self.actions = []
-        for i, a in enumerate(ACTIONS):
-            y, x = self.state // 12, self.state % 12
-            next_y = min(max(y + a[0], 0), self.nrow - 1)
-            next_x = min(max(x + a[1], 0), self.ncol - 1)
-            reward, done = -1, False
-            next_state = next_y * 12 + next_x
-            if y == self.nrow - 1 and x > 0:
-                next_state, reward, done = self.state, 0, True
-            elif next_y == self.nrow - 1 and next_x > 0:
-                done = True
-                if next_x != self.ncol - 1:
-                    reward = -100
-            self.actions.append(Action(i, get_state(next_state).set_done(done), reward))
+    def get_actions_all(self):
+        return list(range(len(ACTIONS)))
 
-    def new_state(self, i):
-        return get_state(i)
+    def get_action(self, i):
+        a = ACTIONS[i]
+        y, x = self.state // self.ncol, self.state % self.ncol
+        next_y = min(max(y + a[0], 0), self.nrow - 1)
+        next_x = min(max(x + a[1], 0), self.ncol - 1)
+        reward, done = -1, None
+        next_state = next_y * 12 + next_x
+        if y == self.nrow - 1 and x > 0:
+            next_state, reward, done = self.state, 0, 1
+        elif next_y == self.nrow - 1 and next_x > 0:
+            done = 1
+            if next_x != self.ncol - 1:
+                reward = -100
 
+        return Action(
+            self, i, CfState.new_one(state=next_state, done=done, reward=reward)
+        ).set_p(0.25)
 
-ENV_MAP: Dict[str, CfState] = dict()
+    @classmethod
+    def all_state_num(self):
+        return [i for i in range(self.ncol * self.nrow)]
 
+    @classmethod
+    def to_str(cls):
+        ret = [""]
 
-def get_state(s=12 * 3):
-    if s not in ENV_MAP:
-        ENV_MAP[s] = CfState(s)
-        ENV_MAP[s].init_state()
-    return ENV_MAP[s]
+        def vt(info):
+            ret.append(f"----{info}----")
+            for i in range(CfState.nrow):
+                tmp = []
+                for j in range(CfState.ncol):
+                    s = CfState.new_state(i * CfState.ncol + j)
+                    if info == "reward":
+                        tmp.append("%6.6s" % ("%.3f" % s.reward))
+                    elif info == "value":
+                        ps = ["%.2f" % a.p for a in s.get_actions().values()]
+                        tmp.append("%6.6s %s" % ("%.3f" % s.value, ps))
+                    elif info == "p":
+                        mp = 0
+                        t = "N"
+                        for v in s.get_actions().values():
+                            if v.p > mp:
+                                mp = v.p
+                                t = ACS[v.action]
+                        tmp.append(t)
+                ret.append(" ".join(tmp))
 
-
-class Solution(SolutionBase):
-
-    def get_cases(self):
-        return [
-            dict(name="va"),
-        ]
-
-    def get_algo(self, name):
-        return dict(pi=PolicyIteration, dqn=Dqn, va=ValueIteration)[name](name)
-
-    def init(self, name, *args, **kwargs):
-        self.init_state = get_state()
-        self.ai: Algo = self.get_algo(name).load(**kwargs)
-
-    def print(self):
-        self.log("Q_VALUE:")
-        for i in range(CfState.nrow):
-            tmp = []
-            for j in range(CfState.ncol):
-                tmp.append("%6.6s" % ("%.3f" % self.ai.v[i * CfState.ncol + j]))
-            self.log(" ".join(tmp))
-        self.log("ACTIONS")
-        for i in range(CfState.nrow):
-            tmp = []
-            for j in range(CfState.ncol):
-                tmp.append(ACS[np.argmax(self.ai.pi[i * CfState.ncol + j])])
-            self.log(" ".join(tmp))
-
-    def execute(self, **kw):
-        self.log(self.ai.run(self.init_state))
-        self.print()
-
-
-if __name__ == "__main__":
-    Solution().run()
+        vt("reward")
+        vt("value")
+        vt("p")
+        return "\n".join(ret)
