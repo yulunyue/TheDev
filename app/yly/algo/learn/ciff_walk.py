@@ -12,7 +12,7 @@ class CfState(State):
     INIT_SATTE = 36
 
     @classmethod
-    def new_one(cls, state=36, done=None, reward=-1) -> "CfState":
+    def new_one(cls, state=36, done=None, reward=0) -> "CfState":
         return cls.new_state(state).set_done(done).set_reward(reward)
 
     def get_nexts(self, *args):
@@ -35,9 +35,11 @@ class CfState(State):
             if next_x != self.ncol - 1:
                 reward = -100
 
-        return Action(
-            self, i, CfState.new_one(state=next_state, done=done, reward=reward)
-        ).set_p(0.25)
+        return (
+            Action(self, i, CfState.new_one(state=next_state, done=done))
+            .set_p(0.25)
+            .set_reward(reward)
+        )
 
     @classmethod
     def all_state_num(self):

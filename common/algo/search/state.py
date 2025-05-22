@@ -9,11 +9,14 @@ class Action:
     info = None
     check_info = None
 
-    def __init__(self, src, action, dst, reward=0):
+    def __init__(self, src, action, dst):
         self.action = action
         self.src: State = src
         self.dst: State = dst
+
+    def set_reward(self, reward):
         self.reward = reward
+        return self
 
     def set_p(self, p):
         self.p = p
