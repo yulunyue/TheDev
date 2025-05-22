@@ -1,6 +1,7 @@
 from typing import List, Dict
 import numpy as np
 import random
+from common.util.export import logger
 
 inf = float("inf")
 
@@ -65,12 +66,23 @@ class State:
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
 
+    # def __str__(self):
+    #     return f"state:{self.state}"
+
+    def set_value(self, v):
+        self.value = v
+        return self
+
+    def get_reward(self, action):
+        raise Exception("todo")
+
     @classmethod
     def new_state(cls, key) -> "State":
         if cls.STATE_STORE is None:
             cls.STATE_STORE = dict()
         if key not in cls.STATE_STORE:
             cls.STATE_STORE[key] = cls(state=key)
+            logger.info(cls.STATE_STORE[key])
         return cls.STATE_STORE[key]
 
     @classmethod
@@ -101,7 +113,7 @@ class State:
         raise Exception("tood")
 
     def get_actions_all(self):
-        raise Exception("todo")
+        return []
 
     def get_score(self, **kw):
         raise Exception("todo")

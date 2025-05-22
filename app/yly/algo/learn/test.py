@@ -1,6 +1,14 @@
 from common.util.export import TestBase, logger
-from app.yly.algo.learn.ciff_walk import CfState
-from common.algo.export import ValueIteration, PolicyIteration
+from app.yly.algo.learn.export import CfState, Bandit
+from common.algo.export import (
+    ValueIteration,
+    PolicyIteration,
+    EpsilonGreedy,
+    DecayingEpsilonGreedy,
+    Ucb,
+    ThompsonSampling,
+    random_seed,
+)
 
 
 class TestLn(TestBase):
@@ -19,13 +27,18 @@ class TestLn(TestBase):
         states = CfState.all_states()
         cnt, diff_records = p.policy_evaluation(states)
         s = p.policy_improvement(states)
-        logger.info(f"policy_evaluation: {cnt}轮, {s}")
         logger.draw_line("record", diff_records)
-        # logger.info([cnt, values])
-
-    def exit(self):
         logger.info(CfState.to_str())
+
+    def test_ban(self):
+        bs = Bandit()
+        for cls in [EpsilonGreedy, DecayingEpsilonGreedy, Ucb, ThompsonSampling]:
+            c: EpsilonGreedy = cls()
+            c.load().run(bs)
+            self.expect_array(bs.probs, c.estimates)
+            logger.draw_line(f"{cls.__name__}", c.regret_record)
 
 
 if __name__ == "__main__":
+    random_seed(3)
     TestLn().run()

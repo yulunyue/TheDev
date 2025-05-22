@@ -15,19 +15,25 @@ class PolicyIteration(Algo):
         cnt = 0
         diff_result = []
         while max_cnt == -1 or cnt < max_cnt:
+            new_values = []
             max_diff = 0
             for src in states:
                 qsa = 0
                 for action in src.get_actions().values():
                     r1 = self.gamma * action.dst.value
-                    qsa += action.p * (action.reward + action.dst.reward + r1)
+                    if action.dst.done is None:
+                        qsa += action.p * (action.reward + action.dst.reward + r1)
                 max_diff = max(max_diff, abs(qsa - src.value))
-                src.value = qsa
-            cnt += 1
+                # src.set_value(qsa)
+                new_values.append([src, qsa])
+            for src, v in new_values:
+                src.set_value(v)
             # diff_result.append(sigmoid(max_diff))
             diff_result.append(max_diff)
             if max_diff < self.theta:
                 break
+            cnt += 1
+        logger.info(f"policy_evaluation: {cnt}")
         return cnt, diff_result
 
     def policy_improvement(self, states: List[State]):

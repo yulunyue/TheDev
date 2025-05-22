@@ -55,22 +55,19 @@ class CfState(State):
                 tmp = []
                 for j in range(CfState.ncol):
                     s = CfState.new_state(i * CfState.ncol + j)
-                    if info == "reward":
-                        tmp.append("%6.6s" % ("%.3f" % s.reward))
-                    elif info == "value":
-                        ps = ["%.2f" % a.p for a in s.get_actions().values()]
-                        tmp.append("%6.6s %s" % ("%.3f" % s.value, ps))
+                    if info == "value":
+                        tmp.append("%6.6s" % ("%.3f" % s.value))
                     elif info == "p":
-                        mp = 0
-                        t = "N"
-                        for v in s.get_actions().values():
-                            if v.p > mp:
-                                mp = v.p
-                                t = ACS[v.action]
-                        tmp.append(t)
+                        if s.done is not None:
+                            t = "EEEE" if s.state == 35 else "****"
+                        else:
+                            t = [
+                                ACS[v.action] if v.p > 0 else "o"
+                                for v in s.get_actions().values()
+                            ]
+                        tmp.append("".join(t))
                 ret.append(" ".join(tmp))
 
-        vt("reward")
         vt("value")
         vt("p")
         return "\n".join(ret)

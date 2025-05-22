@@ -78,28 +78,6 @@ class Algo:
         return f"<{self.__class__.__name__}  user_time:{self.max_use_time} params:{self.params}>"
 
 
-class RunAlgo(Algo):
-    def run_one_step(self, episode, action, r):
-        return 0
-
-    def run(self, state: State):
-        self.regrets_record = []
-        self.rewards_record = []
-        regret = 0
-        reword = 0
-        for episode in range(self.num_episodes):
-            action = state.get_action(episode)
-            r = state.do(action)
-            reword += r
-            regret += self.run_one_step(episode, r, state, action)
-            self.rewards_record.append(reword)
-            self.regrets_record.append(regret)
-            if action.state.done:
-                break
-            state = action.state
-        return self
-
-
 class Baoli(Algo):
     def search_dfs(self, s: Action, depth):
         actions: Dict[str, Action] = s.dst.get_actions(depth=depth)
