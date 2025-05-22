@@ -18,7 +18,7 @@ class TestLn(TestBase):
         v.run(s)
 
     def test_cf_prun(self):
-        v = PolicyIteration().load()
+        v = PolicyIteration().load(num_episodes=10)
         num = v.run(CfState.all_states())
         logger.info(f"run {num}")
 

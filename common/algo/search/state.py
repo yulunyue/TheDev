@@ -82,7 +82,7 @@ class State:
             cls.STATE_STORE = dict()
         if key not in cls.STATE_STORE:
             cls.STATE_STORE[key] = cls(state=key)
-            logger.info(cls.STATE_STORE[key])
+            # logger.info(cls.STATE_STORE[key])
         return cls.STATE_STORE[key]
 
     @classmethod

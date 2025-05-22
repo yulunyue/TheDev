@@ -1,4 +1,5 @@
 from common.algo.learn.dqn import Dqn, State, Algo, Action
+from common.util.export import logger
 from typing import Dict
 import numpy as np
 
@@ -21,7 +22,7 @@ class CfState(State):
     def get_actions_all(self):
         return list(range(len(ACTIONS)))
 
-    def get_action(self, i):
+    def gen_action(self, i):
         a = ACTIONS[i]
         y, x = self.state // self.ncol, self.state % self.ncol
         next_y = min(max(y + a[0], 0), self.nrow - 1)
@@ -34,7 +35,7 @@ class CfState(State):
             done = 1
             if next_x != self.ncol - 1:
                 reward = -100
-
+        # logger.info([self.state, i, next_state])
         return (
             Action(self, i, CfState.new_one(state=next_state, done=done))
             .set_p(0.25)
