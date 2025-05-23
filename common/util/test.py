@@ -2,6 +2,7 @@ import sys
 import time
 from common.util.log import get_log
 from common.util.tool import url_to_json
+from common.util.difftool import Diff
 
 logger = get_log("test")
 TEST_FN_PREFIX = "test_"
@@ -33,26 +34,14 @@ class TestBase:
     def exit(self):
         pass
 
-    def expect(self, a, expect_value, info=""):
+    def expect(self, a, expect_value, info="", stacklevel=2):
         self.ep_cont += 1
         if a == expect_value or str(a) == str(expect_value):
             self.ok_count += 1
             return True
-        logger.error(f"{a}!={expect_value} msg:{info}", stacklevel=2)
+        logger.error(f"{a}!={expect_value} msg:{info}", stacklevel=stacklevel)
         return False
 
-    def expect_array(self, src, dst, cha=0.001):
-        if len(src) != len(dst):
-            return self.expect(
-                src, dst, info=f"array size is not same {len(src)}  {len(dst)} "
-            )
-        a = 0
-        for i, v in enumerate(src):
-            a += abs(v - dst[i])
-        if a <= cha:
-            return True
-        logger.error(
-            f"{a}>{cha}\nsrc={','.join(['%.2f'%v for v in src])}\ndst={','.join(['%.2f'%v for v in dst])}",
-            stacklevel=2,
-        )
-        return False
+    def expect_dfs(self, src, dst):
+        msg = Diff(src).compare(dst)
+        return self.expect(len(msg), 0, "\n".join(msg), stacklevel=3)

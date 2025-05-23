@@ -16,7 +16,7 @@ class PolicyIteration(Algo):
             r1 = 0  # 后面没有新的状态了，奖励为0
         else:
             r1 = self.gamma * action.dst.value
-        return action.p * (action.reward + action.dst.reward + r1)
+        return action.reward + action.dst.reward + r1
 
     def policy_evaluation(self, states: List[State], max_cnt=-1):
         cnt = 0
@@ -27,13 +27,12 @@ class PolicyIteration(Algo):
             for src in states:
                 qsa = 0
                 for action in src.get_actions().values():
-                    qsa += self.get_action_value(action)
+                    qsa += action.p * self.get_action_value(action)
                 max_diff = max(max_diff, abs(qsa - src.value))
                 # src.set_value(qsa)
-                new_values.append([src, qsa])
-
-            for src, v in new_values:
-                src.set_value(v)
+                new_values.append(qsa)
+            for i, v in enumerate(new_values):
+                states[i].set_value(v)
             diff_result.append(max_diff)
             cnt += 1
             if max_diff < self.theta:
@@ -42,7 +41,25 @@ class PolicyIteration(Algo):
         logger.info(f"policy_evaluation迭代次数: {cnt}")
         return cnt, diff_result
 
-    def policy_improvement(self, states: List[State]):
+    def policy_improvement(self, states: List[State]):  # 策略提升
+        cha = 0
+        for s in states:
+            actions = list(s.get_actions().values())
+            qsa_list = [self.get_action_value(a) for a in actions]
+            maxq = max(qsa_list)
+            cntq = qsa_list.count(maxq)  # 计算有几个动作得到了最大的Q值
+            # 让这些动作均分概率
+            for i, q in enumerate(qsa_list):
+                p = 1 / cntq if q == maxq else 0
+                cha += abs(actions[i].p - p)
+                actions[i].set_p(p)
+                # logger.info(
+                #     f"策略提升 {a.src.state}->{a.action}:{cha} {p} {self.get_action_value(a)} {maxq}"
+                # )
+        logger.info(f"策略提升完成 cha:{cha}")
+        return cha == 0
+
+    def policy_improvement2(self, states: List[State]):
         result = True
         for src in states:
             mx = float("-inf")
@@ -61,13 +78,6 @@ class PolicyIteration(Algo):
                     a.set_p(p)
                     result = False
         return result
-
-    def run(self, state: List[State]):
-        for i in range(10):
-            self.policy_evaluation(state)
-            if self.policy_improvement(state):
-                return i
-        return -1
 
 
 class ValueIteration(PolicyIteration):

@@ -3,8 +3,8 @@ from common.util.export import logger
 from typing import Dict
 import numpy as np
 
-ACTIONS = [[0, -1], [-1, 0], [1, 0], [0, 1]]
-ACS = ["<", "^", "v", ">"]
+ACTIONS = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+ACS = ["^", "v", "<", ">"]
 
 
 class CfState(State):
@@ -41,6 +41,12 @@ class CfState(State):
             .set_p(0.25)
             .set_reward(reward)
         )
+
+    def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
+
+        if self.actions is not None:
+            return self.actions
+        return self.make_actions()
 
     @classmethod
     def all_state_num(self):

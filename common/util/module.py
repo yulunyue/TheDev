@@ -98,3 +98,19 @@ class Module:
 
         lines = file_to_line(src, [])
         File(dst).write_file("\n".join(lines))
+
+    def compile_one(self, src=None, path=None):
+        if path is None:
+            path = "data/algo/run.py"
+        src = inspect.getmodule(self.__class__).__file__
+        self.megre_to_one(
+            src,
+            path,
+            mock_map={
+                "common/util/log.py": "common/mock.py",
+                "common/util/module.py": "common/mock.py",
+                "common/third_util/export.py": "common/mock.py",
+                "common/service/api.py": "common/mock.py",
+            },
+            prefix=["common", "app"],
+        )

@@ -1,11 +1,12 @@
 from common.service.export import Api
+from common.util.export import Module
 import sys
 import json
 
 
-class CodingGame(Api):
-    def __init__(self, name):
-        self.name = name
+class CodingGame(Api, Module):
+    def __init__(self, name=None):
+        self.name = name or self.__class__.__name__
         super().__init__()
 
     def execute(self, file_path, game_id, key, data):
@@ -29,7 +30,3 @@ class CodingGame(Api):
             "multi",
             dict(agentsIds=agentsIds, gameOptions=None, isSoloLeague=False),
         )
-
-
-if __name__ == "__main__":
-    CodingGame().run(sys.argv[1])
