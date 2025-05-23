@@ -1,15 +1,16 @@
-"""
-https://www.codingame.com/ide/puzzle/cultist-wars
-"""
-
-from common.third_util.export import CodingGame
-
 from app.yly.algo.cg.cw.world import World, C
 import sys
 import math
+import json
 
 
-class CgCw(CodingGame):
+class CgCw:
+    """
+    https://www.codingame.com/ide/puzzle/cultist-wars
+    """
+
+    game_id = "72806721d45bcc88f2891a7927b73fbfa911b50b"
+    agentsIds = [-1, 2411205]
 
     def run(self):
 
@@ -40,7 +41,7 @@ class CgCw(CodingGame):
                 w.set_shape(y, x, unit_type, owner=owner, hp=hp, unit_id=unit_id)
 
             # Write an action using print
-            # To debug: print("Debug messages...", file=sys.stderr, flush=True)
+            print(json.dumps(w.to_json()), file=sys.stderr, flush=True)
 
             # WAIT | unitId MOVE x y | unitId SHOOT target| unitId CONVERT target
             print(w.get_action())
