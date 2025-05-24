@@ -71,12 +71,6 @@ class WebDom {
         this.web_port = parseInt(ip_ports[1])
         Ut.extend(this.url_param, Ut.url_to_json(location_href2[1]))
         let bk_host = this.web_host
-        if (bk_host.endsWith('github.io')) {
-            bk_host = '1.14.93.140'
-        } else if (bk_host == '10.159.230.217') {
-            bk_host = "172.28.226.89"
-        }
-
         this.prefix = 'http://' + bk_host + ":" + this.bk_port
     }
     url(path: string) {
@@ -88,7 +82,7 @@ class WebDom {
     }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back: any) {
-        
+
         let url = this.url(path)
         let mock_data = Ct.get_mock_data(url, data)
         if (mock_data) {

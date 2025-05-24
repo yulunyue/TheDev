@@ -87,7 +87,7 @@ class State:
 
     @classmethod
     def all_states(cls) -> List["State"]:
-        return [cls.new_state(v) for v in cls.all_state_num()]
+        return [cls.new_state(v) for v in cls.all_state_key()]
 
     def set_done(self, done):
         self.done = done
@@ -113,7 +113,7 @@ class State:
         raise Exception("tood")
 
     def get_actions_all(self):
-        return []
+        raise Exception("gg")
 
     def get_score(self, **kw):
         raise Exception("todo")
@@ -128,7 +128,7 @@ class State:
         return self.actions
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-        if depth == 0 or self.done is not None:
+        if depth == 0 or self.done:
             return {}
         if self.actions is not None:
             return self.actions
@@ -159,5 +159,9 @@ class State:
         raise Exception("todo")
 
     @classmethod
-    def all_state_num(self):
+    def all_state_key(self):
+        raise Exception("todo")
+
+    @classmethod
+    def to_str(self):
         raise Exception("todo")

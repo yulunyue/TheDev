@@ -1,4 +1,4 @@
-from common.algo.learn.dqn import Dqn, State, Algo, Action
+from common.algo.learn.dqn import State, Action
 from common.util.export import logger
 from typing import Dict
 import numpy as np
@@ -43,13 +43,12 @@ class CfState(State):
         )
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-
         if self.actions is not None:
             return self.actions
         return self.make_actions()
 
     @classmethod
-    def all_state_num(self):
+    def all_state_key(self):
         return [i for i in range(self.ncol * self.nrow)]
 
     @classmethod

@@ -56,8 +56,9 @@ class Algo:
         self.env_cls = cls
         return self
 
-    def search(self, *args) -> Action:
-        s: State = self.env_cls(*args)
+    def search(self, s=None, *args) -> Action:
+        if s is None:
+            s: State = self.env_cls(*args)
         self.state_count = 0
         self.begin_time = time.time()
         self.search_main(s)

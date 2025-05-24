@@ -27,16 +27,22 @@ class Logger(logging.Logger):
 
     def __init__(self, name, fmt, mode="w") -> None:
         super().__init__(name)
-        self.path = f"{LOG_DIR}/{name}.log"
+        self.path = f"{LOG_DIR}/{name}"
         self.add_hander(
             logging.FileHandler(
-                self.path, mode=os.environ.get(LOGGER_MODE, mode), encoding="utf-8"
+                self.path+".log", mode=os.environ.get(LOGGER_MODE, mode), encoding="utf-8"
             ),
             logging.INFO,
             fmt=fmt,
         )
+        self.add_hander(
+            logging.FileHandler(
+                self.path+"_debug.log", mode=os.environ.get(LOGGER_MODE, mode), encoding="utf-8"
+            ),
+            logging.DEBUG,
+            fmt=fmt,
+        )
         File(self.path).make_dir_if_not_exist()
-        self.first_log = True
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def info(
