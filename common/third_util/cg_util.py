@@ -1,13 +1,15 @@
 from common.service.export import Api
-from common.util.export import Module
-import sys
-import json
+from common.util.export import File
 
 
-class CodingGame(Api, Module):
-    def __init__(self, name=None):
-        self.name = name or self.__class__.__name__
+class CodingGame(Api):
+
+    def __init__(self, name):
+        self.name = name
         super().__init__()
+
+    def get_local_path(self, name):
+        return f"data/cg/{self.name}/{name}"
 
     def execute(self, file_path, game_id, key, data):
         code = open(file_path, "r", encoding="utf-8").read()
@@ -23,10 +25,12 @@ class CodingGame(Api, Module):
     def solve(self, file_path, game_id):
         return self.execute(file_path, game_id, "multipleLanguages", dict(testIndex=3))
 
-    def pk(self, file_path, game_id, agentsIds):
-        return self.execute(
-            file_path,
+    def pk(self, path, game_id, agentsIds):
+        ret = self.execute(
+            path,
             game_id,
             "multi",
             dict(agentsIds=agentsIds, gameOptions=None, isSoloLeague=False),
         )
+        File(self.get_local_path("play.json")).write_file(ret)
+        return ret

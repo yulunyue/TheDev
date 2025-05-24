@@ -41,6 +41,9 @@ def get_function_info(v):
 
 
 class Module:
+
+    RUN_TMP_PATH = "data/algo/run.py"
+
     def __init__(self) -> None:
         pass
 
@@ -99,18 +102,17 @@ class Module:
         lines = file_to_line(src, [])
         File(dst).write_file("\n".join(lines))
 
-    def compile_one(self, src=None, path=None):
+    def compile_one(self, src, path=None):
         if path is None:
-            path = "data/algo/run.py"
-        src = inspect.getmodule(self.__class__).__file__
+            path = self.RUN_TMP_PATH
+        if not isinstance(src, str):
+            src = inspect.getmodule(src).__file__
         self.megre_to_one(
             src,
             path,
             mock_map={
-                "common/util/log.py": "common/mock.py",
-                "common/util/module.py": "common/mock.py",
                 "common/third_util/export.py": "common/mock.py",
-                "common/service/api.py": "common/mock.py",
             },
             prefix=["common", "app"],
         )
+        return self.RUN_TMP_PATH

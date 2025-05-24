@@ -18,3 +18,10 @@ class World:
 
     def get_action(self):
         return "WAIT"
+
+    def to_json(self):
+        ret = []
+        for row in self.grid:
+            for col in row:
+                ret.append(col.to_json())
+        return ret
