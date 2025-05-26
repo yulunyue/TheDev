@@ -19,6 +19,10 @@ class Action:
         self.reward = reward
         return self
 
+    def set_value(self, value):
+        self.value = value
+        return self
+
     def set_p(self, p):
         self.p = p
         return self
@@ -61,7 +65,6 @@ class State:
     def __init__(self, player_id=0, depth=1, state=None) -> None:
         self.state = state
         self.depth = depth
-        self.value = 0
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
@@ -164,4 +167,8 @@ class State:
 
     @classmethod
     def to_str(self):
+        raise Exception("todo")
+
+    @classmethod
+    def get_init_state(cls):
         raise Exception("todo")

@@ -35,7 +35,6 @@ class Algo:
         return self
 
     def load(self, use_cache=False, max_t=-1, num_episodes=1000):
-
         self.cache = None
         self.num_episodes = num_episodes
         self.max_t = max_t
@@ -43,6 +42,7 @@ class Algo:
             from common.util.fp import get_cache
 
             self.cache = get_cache(self.name)
+        self.reset()
         return self
 
     def set_params(self, params):

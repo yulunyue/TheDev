@@ -7,3 +7,4 @@ from common.algo.learn.bernoulli import (
     Ucb,
     ThompsonSampling,
 )
+from common.algo.learn.sarsa import Sarsa

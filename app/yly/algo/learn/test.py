@@ -8,14 +8,22 @@ from common.algo.export import (
     Ucb,
     ThompsonSampling,
     random_seed,
+    Sarsa,
+    np,
 )
 
 
 class TestLn(TestBase):
-    def test_cf_value_iteration(self):
-        s = CfState().load()
-        v = ValueIteration().load()
-        v.run(s)
+
+    def test_cfsarsa(self):
+        s = Sarsa().load(num_episodes=50)
+        rewards = []
+        for i in range(10):
+            rewards += s.run(CfState)
+            logger.info(f"---{i}-- rewards:{np.mean(rewards[-10:])}")
+        logger.draw_line("record", rewards)
+        logger.info(len(rewards))
+        logger.info(CfState.to_str())
 
     def test_flv0(self):
         # PolicyIteration().load().run(Flvo)
@@ -54,5 +62,5 @@ class TestLn(TestBase):
 
 
 if __name__ == "__main__":
-    random_seed(3)
+    random_seed(0)
     TestLn().run()

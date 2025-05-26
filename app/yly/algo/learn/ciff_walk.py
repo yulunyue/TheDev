@@ -13,8 +13,12 @@ class CfState(State):
     INIT_SATTE = 36
 
     @classmethod
-    def new_one(cls, state=36, done=None, reward=0) -> "CfState":
-        return cls.new_state(state).set_done(done).set_reward(reward)
+    def new_one(cls, state=36, done=0, reward=-1) -> "CfState":
+        return cls.new_state(state).set_done(done).set_reward(reward).set_value(0)
+
+    @classmethod
+    def get_init_state(cls):
+        return cls.new_one()
 
     def get_nexts(self, *args):
         return self.actions
@@ -37,9 +41,10 @@ class CfState(State):
                 reward = -100
         # logger.info([self.state, i, next_state])
         return (
-            Action(self, i, CfState.new_one(state=next_state, done=done))
+            Action(self, i, CfState.new_one(state=next_state, done=done, reward=reward))
+            .set_value(0)
             .set_p(0.25)
-            .set_reward(reward)
+            .set_reward(0)
         )
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
@@ -60,11 +65,11 @@ class CfState(State):
             for i in range(CfState.nrow):
                 tmp = []
                 for j in range(CfState.ncol):
-                    s = CfState.new_state(i * CfState.ncol + j)
+                    s = CfState.new_one(i * CfState.ncol + j)
                     if info == "value":
                         tmp.append("%6.6s" % ("%.3f" % s.value))
                     elif info == "p":
-                        if s.done is not None:
+                        if s.done:
                             t = "EEEE" if s.state == 35 else "****"
                         else:
                             t = [

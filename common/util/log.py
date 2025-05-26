@@ -30,32 +30,24 @@ class Logger(logging.Logger):
         self.path = f"{LOG_DIR}/{name}"
         self.add_hander(
             logging.FileHandler(
-                self.path+".log", mode=os.environ.get(LOGGER_MODE, mode), encoding="utf-8"
+                self.path + ".log",
+                mode=os.environ.get(LOGGER_MODE, mode),
+                encoding="utf-8",
             ),
             logging.INFO,
             fmt=fmt,
         )
         self.add_hander(
             logging.FileHandler(
-                self.path+"_debug.log", mode=os.environ.get(LOGGER_MODE, mode), encoding="utf-8"
+                self.path + "_debug.log",
+                mode=os.environ.get(LOGGER_MODE, mode),
+                encoding="utf-8",
             ),
             logging.DEBUG,
             fmt=fmt,
         )
         File(self.path).make_dir_if_not_exist()
         self.add_hander(logging.StreamHandler(), logging.INFO)
-
-    def info(
-        self, msg, *args, exc_info=None, stack_info=False, stacklevel=2, extra=None
-    ):
-        return super().info(
-            msg,
-            *args,
-            exc_info=exc_info,
-            stack_info=stack_info,
-            stacklevel=stacklevel,
-            extra=extra,
-        )
 
     def table(self, datas: dict, key=None, header_key="t_name"):
         from prettytable import PrettyTable
@@ -77,11 +69,11 @@ class Logger(logging.Logger):
     def add_hander(self, h: logging.Handler, level, fmt=None):
         if fmt is None:
             fmt = DEFAULT_FMT
-        if fmt:
-            fm = logging.Formatter(fmt)
-            h.setFormatter(fm)
+        elif fmt == "":
+            fmt = "%(message)s"
+        fm = logging.Formatter(fmt)
+        h.setFormatter(fm)
         h.setLevel(level)
-        self.main_hander = h
         self.addHandler(h)
 
 
