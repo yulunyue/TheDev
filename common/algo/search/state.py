@@ -80,11 +80,13 @@ class State:
         raise Exception("todo")
 
     @classmethod
-    def new_state(cls, key) -> "State":
+    def new_state(cls, key, callback=None) -> "State":
         if cls.STATE_STORE is None:
             cls.STATE_STORE = dict()
         if key not in cls.STATE_STORE:
-            cls.STATE_STORE[key] = cls(state=key)
+            if callback is None:
+                callback = cls
+            cls.STATE_STORE[key] = callback(key)
             # logger.info(cls.STATE_STORE[key])
         return cls.STATE_STORE[key]
 

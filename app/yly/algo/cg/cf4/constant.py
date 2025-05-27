@@ -70,18 +70,18 @@ class Constant:
             self.MASK_FULL_ALL |= 1 << ((col + 1) * (self.HEIGHT + 1) - 1)
             self.INIT_MASK |= 1 << pos
             # self.POS_MASK.append(1 << pos)
-            self.HEIGHT_POS_MASK.append(mask0)
             mask0 = (mask0 << (self.HEIGHT + 1)) + self.MASK_FULL_HEIGHT
+            self.HEIGHT_POS_MASK.append(mask0)
             # logger.info([col,bin(pos_state<<self.HEIGHT)])
 
     def mask_to_row(self, mask, col):
         a: int = mask & self.HEIGHT_POS_MASK[col]
-        return a.bit_length() % self.HEIGHT
+        return (a.bit_length() - 1) % self.HEIGHT
 
     def pust_to_mask(self, mask, col, player_id):
         pos = col * (self.HEIGHT + 1) + self.mask_to_row(mask, col)
         m = 1 << pos
-        mask |= 1 << m
+        mask |= m << 1
         if player_id == 0:
             mask &= ~m
         else:

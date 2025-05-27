@@ -8,8 +8,8 @@ class F4State(State):
 
     @classmethod
     def new_state(cls, key):
-        a: F4State = super().new_state(key)
-        return a.load_root()
+        a: F4State = super().new_state(key, lambda a: a.load_root())
+        return a
 
     @classmethod
     def get_init_state(cls):
@@ -46,38 +46,36 @@ class F4State(State):
                 C.mask_to_line_state(self.state)
             )
         else:
-            raise Exception("gg")
+            self.depth += p.depth + 1
+            self.player_id = (p.player_id + 1) % C.PLAYER_NUM
+            # self.grid = p.grid.copy()
+            self.row_idx = p.row_idx.copy()
+            k = self.row_idx[x] * C.WIDTH + x
+            self.line_state = p.line_state.copy()
+            self.can_move = p.can_move.copy()
+            # self.grid[k] = self.player_id + 1
+            self.row_idx[x] -= 1
+            if self.row_idx[x] == -1:
+                self.can_move.remove(x)
+            if len(self.can_move) == 0:
+                self.done = -1
+            self.update_points(k, p.player_id)
+            self.update_states(k, p.player_id)
+            if self.points[0]:
+                self.done = p.player_id
         return self
 
     def get_action(self, x):
         from app.yly.algo.cg.cf4.cf4action import F4Action
 
+        mask = C.pust_to_mask(self.state, x, 1 - self.player_id)
+        s = F4State.new_state(mask)
         line_state = self.line_state.copy()
         # load_from_parent(x, self)
-        return F4Action(self, self.row_idx[x], x, F4State.new_state())
+        return F4Action(self, self.row_idx[x], x, s)
 
     def get_actions_all(self):
         return self.can_move
-
-    def load_from_parent(self, x, p: "F4State"):
-        self.depth += p.depth + 1
-        self.player_id = (p.player_id + 1) % C.PLAYER_NUM
-        # self.grid = p.grid.copy()
-        self.row_idx = p.row_idx.copy()
-        k = self.row_idx[x] * C.WIDTH + x
-        self.line_state = p.line_state.copy()
-        self.can_move = p.can_move.copy()
-        # self.grid[k] = self.player_id + 1
-        self.row_idx[x] -= 1
-        if self.row_idx[x] == -1:
-            self.can_move.remove(x)
-        if len(self.can_move) == 0:
-            self.done = -1
-        self.update_points(k, p.player_id)
-        self.update_states(k, p.player_id)
-        if self.points[0]:
-            self.done = p.player_id
-        return self
 
     def update_points(self, k, player_id):
         """

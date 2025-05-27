@@ -46,12 +46,11 @@ class C4Test(TestBase):
         m2 = 0b1000000100000010000001000000100000010001010
         m3 = 0b1000000100000010000001000000100000010001110
         m1 = C.pust_to_mask(mask_except, 0, 0)
+        self.expect(C.mask_to_row(mask_except, 0), 2)
         self.expect(m1, m2, bin(m1))
         m1 = C.pust_to_mask(mask_except, 0, 1)
         self.expect(m1, m3, bin(m1))
-        return 0
         state = grid_state.get_action(0).dst.get_action(0).dst
-
         self.expect(state.get_mask(), mask_except, bin(state.get_mask()))
         state = F4State.new_state(mask_except)
         grids = state.get_grid()
