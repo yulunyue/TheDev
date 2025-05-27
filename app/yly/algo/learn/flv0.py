@@ -1,4 +1,4 @@
-from common.algo.learn.dqn import State, Action
+from common.algo.export import State, Action
 import gym
 
 

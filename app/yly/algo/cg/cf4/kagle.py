@@ -1,6 +1,6 @@
 from app.yly.algo.cg.cf4.constant import C, S, logger
-from app.yly.algo.cg.cf4.states.f4action import F4Action
-from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState
+from app.yly.algo.cg.cf4.cf4action import F4Action
+from app.yly.algo.cg.cf4.cf4state import F4State
 from common.algo.search.algo import Algo
 
 
@@ -41,7 +41,7 @@ class Kagle(Algo):
 class KagleAgent(Algo):
 
     def search_main(self, state: F4Action, **kw):
-        from app.yly.algo.kagle.c4 import cell_swarm1
+        from app.yly.algo.cg.cf4.kagle_c4 import cell_swarm1
 
         obs = KaggleEnv(
             state.dst.get_grid(), C.HEIGHT, C.WIDTH, state.dst.player_id + 1
@@ -75,6 +75,6 @@ class KagleAgent(Algo):
     #         )
 
     def __call__(self, *args, **kwds):
-        from app.yly.algo.kagle.c4 import cell_swarm
+        from app.yly.algo.cg.cf4.kagle_c4 import cell_swarm
 
         return cell_swarm(*args, **kwds)

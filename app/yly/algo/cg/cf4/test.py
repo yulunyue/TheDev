@@ -1,7 +1,9 @@
-from common.util.test import TestBase, logger
+from common.util.export import TestBase, logger, Module
+from common.algo.export import random_seed
+from common.third_util.export import CodingGame
 from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, SE, C
-from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState
-from common.algo.search.algo import random_seed
+from app.yly.algo.cg.cf4.cf4state import F4State
+from app.yly.algo.cg.cf4.solution import Solution
 from typing import List
 
 
@@ -9,18 +11,7 @@ class C4Test(TestBase):
     def __init__(self):
         super().__init__()
 
-    def get_env(self, debug=1, state=None):
-
-        return Env(
-            debug=debug,
-            width=7,
-            height=6,
-            state=state,
-            # env_name=Env.connectx,
-        )
-
-    def test_init_6_7(self):
-
+    def test_base67(self):
         C.load(6, 7)
         w1, h1 = C.WIDTH - C.inarow + 1, C.HEIGHT - C.inarow + 1
         SIZE = C.WIDTH * C.HEIGHT
@@ -43,35 +34,35 @@ class C4Test(TestBase):
             [[1, 1, 3], [16, 1, 2], [31, 1, 1], [45, 0, 0], [46, 3, 0]],
         )
         c1_mask = 4432678895770
-        c1 = C4GridState().init_root(c1_mask)
+        c1 = F4State.new_state(c1_mask)
         self.expect(
             C.get_grid_sequence(c1.get_grid()),
             "11114",
-            str(c1),
+            c1.to_str(),
         )
 
-        p1 = "34422221111"
-        m1 = 4432687323290
-        c1 = C4GridState().init_root(m1)
-        self.expect(C.grid_view(c1.get_grid()), C.grid_view(C.sequence_to_grid(p1)), c1)
-
-        grid_state = C4GridState().init_root()
-        state = grid_state.get_action(0).dst.get_action(0).dst
+        grid_state = F4State.get_init_state()
         mask_except = 0b1000000100000010000001000000100000010000110
+        m2 = 0b1000000100000010000001000000100000010001010
+        m3 = 0b1000000100000010000001000000100000010001110
+        m1 = C.pust_to_mask(mask_except, 0, 0)
+        self.expect(m1, m2, bin(m1))
+        m1 = C.pust_to_mask(mask_except, 0, 1)
+        self.expect(m1, m3, bin(m1))
+        return 0
+        state = grid_state.get_action(0).dst.get_action(0).dst
+
         self.expect(state.get_mask(), mask_except, bin(state.get_mask()))
-        state = C4GridState().init_root(mask_except)
-        # self.expect(action.line_state, [1])
+        state = F4State.new_state(mask_except)
         grids = state.get_grid()
         self.expect(len(grids), SIZE)
         self.expect(grids[-C.WIDTH], 1, grids)
         self.expect(grids[-2 * C.WIDTH], 2, grids)
+        self.expect(state.depth, 2, state)
 
-    def test_player_all(self):
-        env = self.get_env()
-        for k in PLAYERS:
-            action = env.play(get_player(k))
-            logger.info(k)
-            logger.info(action)
+    def test_player_all(self, name="ab1"):
+        env = Env()
+        action = env.play(get_player(name))
 
     def test_player(self, player="ab3"):
         a = self.get_env(state=4432687285402).play(get_player(player))
@@ -79,57 +70,20 @@ class C4Test(TestBase):
 
     def test_pk(self, name1, name2):
         players = [get_player(name1), get_player(name2)]
-        for _ in range(2):
-            env = self.get_env()  # , env_name=Env.connectx)
-            # Play as the first agent against "negamax" agent.
-            result = env.run(players)
-            env.render(mode="html", width=500, height=450)
-            if result is None:
-                logger.info(f"unknow error")
-            elif result >= 0:
-                logger.info(f"{players} [{players[result].name}][{S[result]}] win")
-            else:
-                logger.info("no win")
-            players.reverse()
+        env = Env()  # , env_name=Env.connectx)
+        # Play as the first agent against "negamax" agent.
+        result = env.run(players)
+        env.render(mode="html", width=500, height=450)
+        if result is None:
+            logger.info(f"unknow error")
+        elif result >= 0:
+            logger.info(f"{players} [{players[result].name}][{S[result]}] win")
+        else:
+            logger.info("no win")
 
-    def test_fight(self):
-        """
-        所有玩家一起战斗看看谁是第一名
-        """
-
-        players = [get_player(k) for k in PLAYERS]
-        fight_result = {
-            v.name: dict(win=0, draw=0, lose=0, use_time=0, max_time=0) for v in players
-        }
-
-        def update(state: int, players: List[Algo]):
-            if state is None:
-                logger.info(f"unknow state {state} {players[0].name} {players[1].name}")
-                return
-            if state == -1:
-                fight_result[players[0].name]["draw"] += 1
-                fight_result[players[1].name]["draw"] += 1
-                info = "DRAW"
-            else:
-                w, l = players[state].name, players[1 - state].name
-                fight_result[w]["win"] += 1
-                fight_result[l]["lose"] += 1
-                info = f"WIN->{w}{S[state]} LOSE->{l}{S[1 - state]} "
-            logger.info(f"{players[0].name} pk {players[1].name} {info}")
-            for p in players:
-                fight_result[p.name]["use_time"] += p.use_time
-                fight_result[p.name]["max_time"] = max(
-                    fight_result[p.name]["max_time"], p.max_use_time
-                )
-
-        for pk_num in range(1):
-            for i in range(len(players)):
-                for j in range(i + 1, len(players)):
-                    ps = [players[i], players[j]]
-                    update(self.get_env().run(ps), ps)
-                    ps.reverse()
-                    update(self.get_env().run(ps), ps)
-        logger.table(fight_result, lambda a: [a["win"], a["draw"], a["lose"]])
+    def test_cg(self):
+        path = Module().compile_one(Solution)
+        CodingGame("cf4").pk(path, Solution.game_id, Solution.agentsIds)
 
 
 if __name__ == "__main__":

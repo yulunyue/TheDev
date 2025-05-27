@@ -62,7 +62,7 @@ class State:
     done = None
     STATE_STORE: Dict[str, "State"] = None
 
-    def __init__(self, player_id=0, depth=1, state=None) -> None:
+    def __init__(self, state, player_id=0, depth=1) -> None:
         self.state = state
         self.depth = depth
         self.player_id = player_id

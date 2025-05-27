@@ -13,10 +13,9 @@ class Draw:
 
     def draw_line(self, datas, xlabel="x", ylabel="y", title="title"):
         if isinstance(datas, dict):
-            for k, (y, x) in datas.items():
-                if x is None:
-                    x = range(len(y))
-                plt.plot(x, y, label=k)
+            for k, dts in datas.items():
+                x = datas.get("x", range(len(dts["y"])))
+                plt.plot(x, dts["y"], label=k)
         elif isinstance(datas, list):
             plt.plot(range(len(datas)), datas, label=title)
         plt.title(title)

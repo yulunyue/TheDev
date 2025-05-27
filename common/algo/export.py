@@ -7,4 +7,4 @@ from common.algo.learn.bernoulli import (
     Ucb,
     ThompsonSampling,
 )
-from common.algo.learn.sarsa import Sarsa
+from common.algo.learn.sarsa import Sarsa, Qlearning

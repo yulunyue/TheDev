@@ -1,5 +1,5 @@
-from app.yly.algo.cg.cf4.states.base_state import Action
-from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState
+from common.algo.export import Action
+from app.yly.algo.cg.cf4.cf4state import F4State
 from app.yly.algo.cg.cf4.constant import StateEnum, C, S
 from typing import List, Dict
 
@@ -8,12 +8,12 @@ class F4Action(Action):
 
     y = None
     x = None
-    dst: C4GridState
-    src: C4GridState
+    dst: F4State
+    src: F4State
 
-    def __init__(self, src=None, y=None, x=None, dst=None, reward=0):
+    def __init__(self, src=None, y=None, x=None, dst=None):
         self.y, self.x = y, x
-        super().__init__(src, x, dst, reward)
+        super().__init__(src, x, dst)
 
     def get_action_str(self):
         return f"[y={self.y}][x={self.x}][p={S[self.src.player_id]}]"
@@ -31,7 +31,7 @@ class F4Action(Action):
         return self
 
     def load_from_state(self, state=None):
-        self.dst = C4GridState().init_root(state=state)
+        self.dst = F4State().init_root(state=state)
         return self
 
     _debug_file = None

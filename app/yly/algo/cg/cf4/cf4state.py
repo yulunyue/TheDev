@@ -1,37 +1,65 @@
-from app.yly.algo.cg.cf4.states.base_state import F4State
 from app.yly.algo.cg.cf4.constant import C, DR
+from common.algo.export import State
 
 
-class C4GridState(F4State):
-    def load_root(self, state=None):
+class F4State(State):
+    def __init__(self, state):
+        super().__init__(state, player_id=0, depth=0)
+
+    @classmethod
+    def new_state(cls, key):
+        a: F4State = super().new_state(key)
+        return a.load_root()
+
+    @classmethod
+    def get_init_state(cls):
+        return cls.new_state(C.grid_to_mask([0] * (C.WIDTH * C.HEIGHT)))
+
+    def get_mask(self):
+        grid = self.get_grid()
+        return C.grid_to_mask(grid)
+
+    def to_str(self):
+        return (
+            "\n"
+            + "\n".join(
+                [
+                    f"done:{self.done},depth:{self.depth}",
+                    f"mask:{self.get_mask()}",
+                    C.grid_view(self.get_grid()),
+                ]
+            )
+            + "\n"
+        )
+
+    def __str__(self):
+        return self.to_str()
+
+    def load_root(self):
         # self.grid: list = [0] * (C.WIDTH * C.HEIGHT)
-        self.state = state
-        if self.state is None:
-            self.row_idx: list = [C.HEIGHT - 1] * C.WIDTH
-            self.can_move = set(range(C.WIDTH))
-            self.line_state = [0] * len(C.lines)
-            self.player_id = 0
-        elif isinstance(self.state, list):
-            self.row_idx, self.can_move, self.line_state, self.player_id = (
+        if isinstance(self.state, list):
+            self.row_idx, self.can_move, self.line_state, self.player_id, self.depth = (
                 C.grid_to_line_state(self.state)
             )
         elif isinstance(self.state, int):
-            self.row_idx, self.can_move, self.line_state, self.player_id = (
+            self.row_idx, self.can_move, self.line_state, self.player_id, self.depth = (
                 C.mask_to_line_state(self.state)
             )
+        else:
+            raise Exception("gg")
         return self
 
     def get_action(self, x):
-        from app.yly.algo.cg.cf4.states.f4action import F4Action
+        from app.yly.algo.cg.cf4.cf4action import F4Action
 
-        return F4Action(
-            self, self.row_idx[x], x, C4GridState().load_from_parent(x, self)
-        )
+        line_state = self.line_state.copy()
+        # load_from_parent(x, self)
+        return F4Action(self, self.row_idx[x], x, F4State.new_state())
 
     def get_actions_all(self):
         return self.can_move
 
-    def load_from_parent(self, x, p: "C4GridState"):
+    def load_from_parent(self, x, p: "F4State"):
         self.depth += p.depth + 1
         self.player_id = (p.player_id + 1) % C.PLAYER_NUM
         # self.grid = p.grid.copy()
@@ -127,6 +155,6 @@ class C4GridState(F4State):
 
 
 def get_state(state):
-    if isinstance(state, C4GridState):
+    if isinstance(state, F4State):
         return state
-    return C4GridState().load_root(state=state)
+    return F4State().load_root(state=state)

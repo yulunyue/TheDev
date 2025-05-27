@@ -10,19 +10,29 @@ from common.algo.export import (
     random_seed,
     Sarsa,
     np,
+    Qlearning,
 )
 
 
 class TestLn(TestBase):
 
     def test_cfsarsa(self):
-        s = Sarsa().load(num_episodes=50)
-        rewards = []
-        for i in range(10):
-            rewards += s.run(CfState)
-            logger.info(f"---{i}-- rewards:{np.mean(rewards[-10:])}")
-        logger.draw_line("record", rewards)
-        logger.info(len(rewards))
+        rewards = dict()
+        for step in [1, 5]:
+            for s in CfState.all_states():
+                for a in s.get_actions().values():
+                    a.set_value(0)
+            s = Sarsa().load(num_episodes=50, n_step=int(step))
+            rewards[step] = dict(y=[])
+            for i in range(10):
+                rewards[step]["y"] += s.run(CfState)
+                logger.info(f"---{i}--- rewards:{np.mean(rewards[step]['y'][-10:])}")
+            logger.info(CfState.to_str())
+        logger.draw_line(f"cfsarsa", rewards)
+
+    def test_cfql(self):
+        q = Qlearning().load(num_episodes=500)
+        logger.draw_line("cfql", q.run(CfState))
         logger.info(CfState.to_str())
 
     def test_flv0(self):

@@ -8,22 +8,21 @@ from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH, S, logger
-from app.yly.algo.cg.cf4.states.f4action import F4Action
-from app.yly.algo.cg.cf4.states.c4_grid_state import C4GridState, get_state
+from app.yly.algo.cg.cf4.cf4action import F4Action
+from app.yly.algo.cg.cf4.cf4state import F4State, get_state
 from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv
 
 
 class Ab(AlphaBateSearch):
 
     def __call__(self, env: KaggleEnv, conf: KaggleEnv):
-        action = F4Action().load_from_kaggle(env, conf)
-        self.search(action)
-        return action.dst.best_action.action
+        state = F4State().load_from_kagele(env, conf)
+        return self.search(state).action
 
 
 PLAYERS = dict(
-    ab1=lambda: Ab().load(1).set_params(SE).set_env_cls(get_state),
-    ab2=lambda: Ab().load(2).set_params(SE).set_env_cls(get_state),
+    ab1=lambda: Ab().load(1),
+    ab2=lambda: Ab().load(2),
     ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_state),
     ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_state),
     ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_state),
@@ -63,6 +62,8 @@ class Env:
 
     def run_self(self, state=None, max_round=128):
         player_id = 0
+        if state is None:
+            state = F4State.get_init_state()
         while max_round:
             action: F4Action = self.players[player_id].search(state)
             self.records.append(action)
