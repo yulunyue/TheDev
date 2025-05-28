@@ -9,7 +9,7 @@ from typing import Dict, List
 from functools import lru_cache
 from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH, S, logger
 from app.yly.algo.cg.cf4.cf4action import F4Action
-from app.yly.algo.cg.cf4.cf4state import F4State, get_state
+from app.yly.algo.cg.cf4.cf4state import F4State
 from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv
 
 
@@ -23,12 +23,12 @@ class Ab(AlphaBateSearch):
 PLAYERS = dict(
     ab1=lambda: Ab().load(1),
     ab2=lambda: Ab().load(2),
-    ab3=lambda: Ab().load(3).set_params(SE).set_env_cls(get_state),
-    ab4=lambda: Ab().load(4).set_params(SE).set_env_cls(get_state),
-    ab5=lambda: Ab().load(5).set_params(SE).set_env_cls(get_state),
-    ab6=lambda: Ab().load(6).set_params(SE).set_env_cls(get_state),
-    kd1=lambda: KagleAgent().load().set_params(None).set_env_cls(get_state),
-    kd2=lambda: Kagle().load().set_params(None).set_env_cls(get_state),
+    ab3=lambda: Ab().load(3),
+    ab4=lambda: Ab().load(4),
+    ab5=lambda: Ab().load(5),
+    ab6=lambda: Ab().load(6),
+    kd1=lambda: KagleAgent(),
+    kd2=lambda: Kagle().load(),
     # negamax="negamax",
 )
 
@@ -43,7 +43,7 @@ def get_player(k) -> Algo:
 class Env:
     connectx = "connectx"
 
-    def __init__(self, env_name=None, debug=0, height=7, width=9, state=None, **kw):
+    def __init__(self, height, width, env_name=None, debug=0, state=None, **kw):
         self.env_name = env_name
         self.debug = debug
         self.width = width

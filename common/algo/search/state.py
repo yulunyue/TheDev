@@ -30,10 +30,8 @@ class Action:
     def __str__(self):
         return f"\n".join(
             [
-                f"<Action action:{self.get_action_str()} reward:{self.reward}>",
-                f"info:{self.info}",
-                f"check:{self.check_info}",
-                f"state:{self.src}",
+                f"<Action action:{self.get_action_str()} reward:{self.get_reward()}>",
+                f"{self.src}",
             ]
         )
 
@@ -47,13 +45,8 @@ class Action:
     def get_action_str(self):
         return self.action
 
-    def get_reward(self, params, **kwargs):
-        raise Exception("error")
-
-    def analyze(self, max_depth, state_max_num):
-        from common.algo.search.algo import Baoli
-
-        self.check_info = Baoli().search_dfs_main(self, max_depth, state_max_num)
+    def get_reward(self, **kwargs):
+        return 0
 
 
 class State:
@@ -76,7 +69,7 @@ class State:
         self.value = v
         return self
 
-    def get_reward(self, action):
+    def get_reward(self):
         raise Exception("todo")
 
     @classmethod

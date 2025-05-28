@@ -18,31 +18,10 @@ class F4Action(Action):
     def get_action_str(self):
         return f"[y={self.y}][x={self.x}][p={S[self.src.player_id]}]"
 
-    def get_reward(self, params, **kwargs):
+    def get_reward(self, params=None, **kwargs):
         reward, c = 0, 1
-        for i, v in enumerate(self.dst.points[::-1]):
-            reward += v * c
-            c *= 10
         return -reward
 
-    def laod_from_karord(self, board, action):
-        self.board = board
-        self.action = action
-        return self
-
-    def load_from_state(self, state=None):
-        self.dst = F4State().init_root(state=state)
-        return self
-
-    _debug_file = None
-
-    def debug(self, info=""):
-        from common.util.fp import File
-
-        if not F4Action._debug_file:
-            fp = File("data/log/c4.txt").write_file("init\n")
-            F4Action._debug_file = open(fp.path, "w", encoding="utf-8")
-        if info.startswith("msg"):
-            F4Action._debug_file.write(f"\n-----{info}----\n")
-        else:
-            F4Action._debug_file.write(str(self))
+    def get_reward_by_c4(self):
+        k = self.y * C.WIDTH + self.x
+        return C.get_c4_points(self.dst.line_state, k, self.dst.player_id)

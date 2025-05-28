@@ -76,7 +76,7 @@ class Constant:
 
     def mask_to_row(self, mask, col):
         a: int = mask & self.HEIGHT_POS_MASK[col]
-        return (a.bit_length() - 1) % self.HEIGHT
+        return (a.bit_length() - 1) % (self.HEIGHT + 1)
 
     def pust_to_mask(self, mask, col, player_id):
         pos = col * (self.HEIGHT + 1) + self.mask_to_row(mask, col)
@@ -91,6 +91,7 @@ class Constant:
     def init_lines(self):
         n = self.WIDTH * self.HEIGHT
         self.point_line_id = [[] for _ in range(n)]
+        line_map = dict()
         self.lines = []
         for ii in range(n):
             i, j = ii // self.WIDTH, ii % self.WIDTH
@@ -99,14 +100,20 @@ class Constant:
                 for k in range(INROW):
                     y1, x1 = i + k * y, j + k * x
                     if 0 <= y1 < self.HEIGHT and 0 <= x1 < self.WIDTH:
-                        tmp.append([y1, x1, k, len(self.lines)])
+                        tmp.append([y1, x1, k])
                 if len(tmp) != INROW:
                     continue
-                for y1, x1, idx, line_id in tmp:
+                key = tmp[0][0], tmp[0][1], tmp[-1][0], tmp[-1][1]
+                if key in line_map:
+                    continue
+                line_map[key] = tmp
+                for line_id, (y1, x1, idx) in enumerate(tmp):
                     # if y1 == 1 and x1 == 0 and idx != 0:
                     #     continue
                     jj = y1 * self.WIDTH + x1
-                    self.point_line_id[jj].append([line_id, l, idx])
+                    self.point_line_id[jj].append(
+                        [len(self.lines), l, line_id, idx, key]
+                    )
                 self.lines.append(tmp)
 
     def mask_to_grid(self, mask):
@@ -126,6 +133,8 @@ class Constant:
         return ret
 
     def get_grid_sequence(self, grid):
+        if isinstance(grid, int):
+            grid = self.mask_to_grid(grid)
         pos = []
         zero_num = 0
         col = [0] * C.WIDTH
@@ -205,14 +214,16 @@ class Constant:
                 continue
             score, step = self.get_api_score(pos + str(j + 1))
             score = -score
-            if score != 0:
-                ret.append(f"U: {S[len(pos)%2]} {INFO[score]}, a:{j}, s:{step}")
+            # if score != 0:
+            ret.append(f"U{j}: {S[len(pos)%2]}:{INFO[score]}, s:{step}")
             if score > max_score:
                 max_score = score
         ret.append(f"R: {S[len(pos)%2]} {INFO[max_score]}")
         return ret
 
     def grid_view(self, grid):
+        if isinstance(grid, int):
+            grid = self.mask_to_grid(grid)
         h, w = C.HEIGHT, C.WIDTH
         ret = []
         col = [-1] * C.WIDTH
@@ -259,7 +270,7 @@ class Constant:
             if grid[i] == 0:
                 row_idx[x] = max(row_idx[x], y)
             else:
-                for line_id, l, idx in self.point_line_id[i]:
+                for line_id, l, idx, *args in self.point_line_id[i]:
                     line_state[line_id] |= grid[i] << (idx * 2)
                 player_id = 1 - player_id
                 depth += 1
@@ -273,6 +284,92 @@ class Constant:
 
     def mask_to_line_state(self, mask):
         return self.grid_to_line_state(self.mask_to_grid(mask))
+
+    def count_line_num(self, num):
+        w1, h1 = max(self.WIDTH - num + 1, 0), max(self.HEIGHT - num + 1, 0)
+        ret = self.WIDTH * h1 + self.HEIGHT * w1 + 2 * w1 * h1
+        # logger.info(f"xxx:{num},{ret}")
+        return ret
+
+    def count_line_all(self):
+        ret = 0
+        for i in range(INROW, 2 * INROW):
+            ret += self.count_line_num(i)
+        return ret
+
+    def get_grid_by_line_state(self, line_state):
+        ret = []
+        for v in C.point_line_id:
+            line_id, l, idx, *args = v[0]
+            state = (line_state[line_id] >> (idx * 2)) & 3
+            ret.append(state)
+        return ret
+
+    def get_c4_points(self, line_state, k, player_id):
+        """
+        POINTS: A04,B04,-B14,-A14,xn(A03,B03),xn(A02,B02),-xn(A12,B12)
+        """
+        points = []
+        op = 1
+        for i in range(C.HEIGHT):
+            if k - i * C.WIDTH >= 0:
+                points = self.get_action_points(line_state, k - i * C.WIDTH, player_id)
+                if i == 1:
+                    points[2:2] = [op * points[1], op * points[0]]
+                    if abs(points[4]) < min(points[2], 2):
+                        points[4:4] = [op * points[2]]
+                        if abs(points[5]) < min(points[3], 2):
+                            points[5:5] = [op * points[3]]
+                        else:
+                            points[7:7] = [op * points[3]]
+                    else:
+                        points[6:6] = [op * points[2], op * points[3]]
+                    points.extend([v * op for v in points[4:]])
+                else:
+                    points.extend([v * op for v in points])
+                # if i <= 1:
+
+                #     self._info += f"point_sl{i}:{points}\n"
+            else:
+                points.extend([0] * 6)
+            op *= -1
+        return points
+
+    def get_point_dr(self, line_state, y, x):
+        i = y * self.WIDTH + x
+        dr_ct = [[0] * (INROW - 2) for _ in range(2)]
+        for line_id, l, idx, *args in C.point_line_id[i]:
+            ct0, ct1, _ = C.scores[line_state[line_id]]
+            # self._info += f"line:{C.lines[line_id]},l:{[l,ct0,ct1]},state:{C.line_fmt(self.line_state[line_id])}\n"
+            if ct1 == 0 and ct0 >= 2:
+                dr_ct[0][ct0 - 2] += 1
+            if ct0 == 0 and ct1 >= 2:
+                dr_ct[1][ct1 - 2] += 1
+        return dr_ct
+
+    def get_action_points(self, line_state, i, player_id):
+        """
+        POINT0: A4,A3,A2
+        POINT1: B4,B3,B2
+        POINTS: A4,B4,xn(A3,B3),xn(A2,B2)
+        """
+        points = [0] * 6
+        dr_ct = self.get_point_dr(line_state, i, player_id)
+        # self._info += f"dr_ct:{dr_ct}"
+        for j in range(2):
+            for i in range(len(DR)):
+                for k in range(1, dr_ct[j][i] + 1):
+                    points[(3 - k) * 2 + j] += 1
+        for i, j in [[2, 3], [4, 5]]:
+            if points[i] < points[j]:
+                points[i], points[j] = points[j], points[i]
+
+        return points
+
+    def calc_reward_from_line_state(self, lines1, lines2, y, x):
+        k = y * self.WIDTH + x
+        for line_id, l, idx, *args in C.point_line_id[k]:
+            c10, c11, *args = lines1[line_id]
 
 
 C = Constant()

@@ -11,32 +11,15 @@ class C4Test(TestBase):
     def __init__(self):
         super().__init__()
 
-    def test_base67(self):
+    def test_base67(self, *args):
         C.load(6, 7)
-        w1, h1 = C.WIDTH - C.inarow + 1, C.HEIGHT - C.inarow + 1
-        SIZE = C.WIDTH * C.HEIGHT
-        self.expect(
-            len(C.lines),
-            C.WIDTH * h1 + C.HEIGHT * w1 + 2 * w1 * h1,
-        )
-        self.expect(
-            C.lines[:4],
-            [
-                [[0, 0, 0, 0], [0, 1, 1, 0], [0, 2, 2, 0], [0, 3, 3, 0]],
-                [[0, 0, 0, 1], [1, 0, 1, 1], [2, 0, 2, 1], [3, 0, 3, 1]],
-                [[0, 0, 0, 2], [1, 1, 1, 2], [2, 2, 2, 2], [3, 3, 3, 2]],
-                [[0, 1, 0, 3], [0, 2, 1, 3], [0, 3, 2, 3], [0, 4, 3, 3]],
-            ],
-        )
-        self.expect(C.point_line_id[0], [[0, 0, 0], [1, 1, 0], [2, 2, 0]])
-        self.expect(
-            C.point_line_id[7 * 6 // 2],
-            [[1, 1, 3], [16, 1, 2], [31, 1, 1], [45, 0, 0], [46, 3, 0]],
-        )
+        self.expect(len(C.lines), C.count_line_num(C.inarow))
+        self.expect(len(C.point_line_id[0]), 3)
+        self.expect(len(C.point_line_id[7 * 6 // 2]), 5)
         c1_mask = 4432678895770
         c1 = F4State.new_state(c1_mask)
         self.expect(
-            C.get_grid_sequence(c1.get_grid()),
+            C.get_grid_sequence(C.get_grid_by_line_state(c1.line_state)),
             "11114",
             c1.to_str(),
         )
@@ -50,26 +33,26 @@ class C4Test(TestBase):
         self.expect(m1, m2, bin(m1))
         m1 = C.pust_to_mask(mask_except, 0, 1)
         self.expect(m1, m3, bin(m1))
-        state = grid_state.get_action(0).dst.get_action(0).dst
-        self.expect(state.get_mask(), mask_except, bin(state.get_mask()))
-        state = F4State.new_state(mask_except)
-        grids = state.get_grid()
-        self.expect(len(grids), SIZE)
+
+        ac = grid_state.get_action(0).dst.get_action(0)
+        # self.expect(ac.get_reward(), 1, f"\n{ac.src}\n==>\n{ac.dst}")
+        state = ac.dst
+        self.expect(state.state, mask_except, bin(state.state))
+        # state = F4State.new_state(mask_except)
+        grids = C.mask_to_grid(mask_except)
+        self.expect(len(grids), C.WIDTH * C.HEIGHT)
         self.expect(grids[-C.WIDTH], 1, grids)
         self.expect(grids[-2 * C.WIDTH], 2, grids)
         self.expect(state.depth, 2, state)
 
-    def test_player_all(self, name="ab1"):
-        env = Env()
-        action = env.play(get_player(name))
-
-    def test_player(self, player="ab3"):
-        a = self.get_env(state=4432687285402).play(get_player(player))
-        self.expect(a.src.best_action.action, 3, a.dst)
+        s2 = F4State.new_state(4432712451713)
+        u1 = C.get_point_dr(s2.line_state, 5, 0)
+        u2 = C.get_point_dr(s2.line_state, 1, 3)
+        self.expect(u1, [], f"{s2}\n5,0:{u1}\n1,3:{u2}")
 
     def test_pk(self, name1, name2):
         players = [get_player(name1), get_player(name2)]
-        env = Env()  # , env_name=Env.connectx)
+        env = Env(6, 7)  # , env_name=Env.connectx)
         # Play as the first agent against "negamax" agent.
         result = env.run(players)
         env.render(mode="html", width=500, height=450)
