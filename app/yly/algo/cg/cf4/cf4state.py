@@ -29,18 +29,14 @@ class F4State(State):
 
     def to_str(self):
         info = []
-        info = C.get_api_score_all(self.state, self.row_idx)
-        return (
-            "\n"
-            + "\n".join(
-                [
-                    f"done:{self.done},depth:{self.depth},s:{S[self.player_id]}",
-                    f"mask:{self.state}",  # ,P:{C.get_grid_sequence(self.state)}",
-                    C.grid_view(self.state),
-                ]
-                + info
-            )
-            + "\n"
+        # info = C.get_api_score_all(self.state, self.row_idx)
+        return "\n".join(
+            [
+                f"done:{self.done},depth:{self.depth},s:{S[self.player_id]}",
+                f"mask:{self.state}",  # ,P:{C.get_grid_sequence(self.state)}",
+                C.grid_view(self.state),
+            ]
+            + info
         )
 
     def __str__(self):
@@ -65,10 +61,10 @@ class F4State(State):
         self.can_move = p.can_move.copy()
         k = self.row_idx[x] * C.WIDTH + x
         for line_id, l, idx, *args in C.point_line_id[k]:
-            self.line_state[line_id] |= [1, 2][self.player_id] << (2 * idx)
+            self.line_state[line_id] |= [1, 2][p.player_id] << (2 * idx)
             ct1, ct2, _ = C.scores[self.line_state[line_id]]
             if ct1 == C.inarow:  # 先手胜
-                self.done = 1
+                self.done = -1
             elif ct2 == C.inarow:  # 后手胜利
                 self.done = 1
         self.row_idx[x] -= 1

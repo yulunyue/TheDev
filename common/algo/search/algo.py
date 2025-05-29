@@ -77,7 +77,7 @@ class Baoli(Algo):
     def search_dfs(self, s: Action, depth):
         actions: Dict[str, Action] = s.dst.get_actions(depth=depth)
         if not actions or depth == 0:
-            return s.action, s.dst.done, s.get_reward(self.params)
+            return s.action, s.dst.done, -s.get_reward(self.params)
         self.state_count += 1
         if self.state_count >= self.state_max_num:
             return s.action, -1, inf
@@ -120,6 +120,10 @@ class Baoli(Algo):
                 for n in v.get_actions():
                     q.append(v)
                 self.state_count += 1
+
+    def dfs(self, s: State, depth=0):
+        for k, a in s.get_actions().items():
+            self.dfs(a.dst, depth - 1)
 
 
 class RandomAlgo(Algo):

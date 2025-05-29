@@ -9,6 +9,7 @@ inf = float("inf")
 class Action:
     info = None
     check_info = None
+    reward = None
 
     def __init__(self, src, action, dst):
         self.action = action
@@ -28,11 +29,16 @@ class Action:
         return self
 
     def __str__(self):
+        info = []
+        if self.info:
+            info.append(str(self.info))
         return f"\n".join(
             [
-                f"<Action action:{self.get_action_str()} reward:{self.get_reward()}>",
+                f"<Action action:{self.get_action_str()}, reward:{self.get_reward()}>",
                 f"{self.src}",
             ]
+            + info
+            + ["-" * 20]
         )
 
     def get_p_states(self):
@@ -46,7 +52,18 @@ class Action:
         return self.action
 
     def get_reward(self, **kwargs):
-        return 0
+        return None
+
+    def get_best_actions(self) -> List["Action"]:
+        p = self
+        ret = []
+        while p:
+            ret.append(p)
+            p = p.dst.best_action
+        return ret
+
+    def get_best_action(self):
+        return self.get_best_actions()[-1]
 
 
 class State:
@@ -167,3 +184,24 @@ class State:
     @classmethod
     def get_init_state(cls):
         raise Exception("todo")
+
+    def get_best_state(self):
+        ret = self
+        while ret.best_action:
+            ret = ret.dst
+        return ret
+
+    def dump_best_tree(self, max_depth):
+        ret = []
+
+        def dfs(s: State, depth):
+
+            for a in s.get_actions().values():
+                if depth == max_depth:
+                    ret.append(f'{" "*depth}- {a.action}: {a.get_reward()} {a.reward}')
+                else:
+                    ret.append(f'{" "*depth}- {a.action}: ')
+                    dfs(a.dst, depth + 1)
+
+        dfs(self, 0)
+        return "\n".join(ret)

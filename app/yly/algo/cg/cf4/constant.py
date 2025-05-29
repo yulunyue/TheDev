@@ -4,13 +4,14 @@ from typing import List
 import math
 import os
 
-logger = get_log("cf4", mode="a+")
+logger = get_log("cf4")
 
 DATA_PATH = "data/cf4"
 inf = float("inf")
 S = "○●"
 
 DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
+CHEN = [10 ** (6 - i) for i in range(7)]
 
 
 class Constant:
@@ -18,6 +19,7 @@ class Constant:
     def load(self, h, w) -> None:
         self.rows = self.HEIGHT = h
         self.columns = self.WIDTH = w
+        self.mid = (self.WIDTH - 1) / 2
         self.inarow = INROW
         self.PLAYER_NUM = 2
 
@@ -335,17 +337,28 @@ class Constant:
             op *= -1
         return points
 
-    def get_point_dr(self, line_state, y, x):
+    def get_point_dr(self, line_state, y, x, player_id, cha=None):
+        if cha is None:
+            cha = CHEN
         i = y * self.WIDTH + x
-        dr_ct = [[0] * (INROW - 2) for _ in range(2)]
+        xv = int(self.mid - abs(x - self.mid))
+        dr_ct = [0] * 6 + [xv]
+        score = xv * cha[6]
         for line_id, l, idx, *args in C.point_line_id[i]:
-            ct0, ct1, _ = C.scores[line_state[line_id]]
+            self_ct, op_ct, _ = C.scores[line_state[line_id]]
+            # logger.info([self_ct, op_ct, l, idx, args])
+            if player_id == 1:
+                self_ct, op_ct = op_ct, self_ct
             # self._info += f"line:{C.lines[line_id]},l:{[l,ct0,ct1]},state:{C.line_fmt(self.line_state[line_id])}\n"
-            if ct1 == 0 and ct0 >= 2:
-                dr_ct[0][ct0 - 2] += 1
-            if ct0 == 0 and ct1 >= 2:
-                dr_ct[1][ct1 - 2] += 1
-        return dr_ct
+            if self_ct == 0 and op_ct:
+                num = (3 - op_ct) * 2 + 1
+                dr_ct[num] += 1
+                score += cha[num]
+            if op_ct == 0 and self_ct:
+                num = (3 - self_ct) * 2
+                dr_ct[num] += 1
+                score += cha[num]
+        return dr_ct, score
 
     def get_action_points(self, line_state, i, player_id):
         """

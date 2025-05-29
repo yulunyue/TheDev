@@ -60,25 +60,26 @@ class Env:
             self.env = None
         C.load(h=self.height, w=self.width)
 
-    def run_self(self, state=None, max_round=128):
+    def run_self(self, state=None, max_round=256, mode=None):
         player_id = 0
-        if state is None:
-            state = F4State.get_init_state()
-        while max_round:
+        while max_round and not state.done:
             action: F4Action = self.players[player_id].search(state)
             self.records.append(action)
             state = action.dst
             player_id = (player_id + 1) % len(self.players)
             max_round -= 1
-            if state.done is not None:
-                return state.done
+        if mode:
+            self.render(mode)
+        return state.done
 
-    def run(self, players: List[Algo], state=None):
+    def run(self, players: List[Algo], state=None, mode=None):
+        if state is None:
+            state = F4State.get_init_state()
         self.players = [p.reset() if hasattr(p, "reset") else p for p in players]
         self.records: List[F4Action] = []
         if self.env_name == Env.connectx:
             return self.run_kagele(state)
-        return self.run_self(state)
+        return self.run_self(state, mode=mode)
 
     def run_kagele(self, state=None):
         from common.util.log import JSON_TMP_FILE
@@ -99,9 +100,13 @@ class Env:
         if self.env_name == Env.connectx and mode == "html":
             ret = self.env.render(mode=mode, **kw)
             File(f"{DATA_PATH}/{self.env_name}.html").write_file(ret)
-
+        fp = File(
+            f"{DATA_PATH}/pk/{self.players[0].name}[vs]{self.players[1].name}.log"
+        )
+        datas = []
         for r in self.records:
-            logger.info(r)
+            datas.append(str(r))
+        fp.write_file("\n".join(datas))
 
     def play(self, player: Algo):
         action = player.search(self.init_state)
