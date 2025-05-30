@@ -27,8 +27,9 @@ class TestAlgo(TestBase):
         self.expect(nodes[7].parents[0].key, 6)
         self.expect(nodes[7].parents[1].key, 5)
         self.expect(nodes[7].parents[2].key, 1)
+        self.expect(nodes[6].parents[2].key, 0)
         self.expect(root.get_k_parent(nodes[7], 5).key, 0)
-        # self.expect(root.get_last_lcm_parent(nodes[4], nodes[7]).key, 3)
+        self.expect(root.get_last_lcm_parent(nodes[4], nodes[7]).key, 3)
 
     def test_math(self):
         self.expect(sin(90), 1)
