@@ -18,13 +18,16 @@ class TestBase:
     def run(self, args=None):
         if args is None:
             args = sys.argv[1:]
-        argvs, self.kw = url_to_json(args)
-        f = getattr(self, f"test_{argvs[0]}")
+        argvs, kw = url_to_json(args)
+        self.run_one_case(argvs[0], argvs[1:], kw)
+
+    def run_one_case(self, name, args, kw):
+        f = getattr(self, f"test_{name}")
         start_time = time.time() * 1000
         logger.info(f"---Test Begin {f.__name__}------")
         self.ep_cont = 0
         self.ok_count = 0
-        f(*argvs[1:], **self.kw)
+        f(*args, **kw)
         end_time = time.time() * 1000
         logger.info(
             f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
