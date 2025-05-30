@@ -55,17 +55,19 @@ class TreeNode(Node):
             t = self.get_k_parent(t, t.depth - f.depth)
         elif f.depth > t.depth:
             f = self.get_k_parent(f, f.depth - t.depth)
-        logger.info([f.key, t.key])
         if f.key == t.key:
             return f
-        l = len(f.parents.keys())
+        ret = f
+        l = len(f.parents.keys()) - 1
         for i in range(l, -1, -1):
             pf, pt = f.parents.get(i), t.parents.get(i)
             if pf is None or pt is None:
                 continue
             if pf.key != pt.key:
                 f, t = pf, pt
-        return f
+            else:
+                ret = pf
+        return ret
 
     def get_dis2node(self, f: "TreeNode", t: "TreeNode"):
         p = self.get_last_lcm_parent(f, t)
