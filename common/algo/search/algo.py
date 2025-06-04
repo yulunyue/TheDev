@@ -72,6 +72,9 @@ class Algo:
     def __str__(self):
         return f"<{self.__class__.__name__}  user_time:{self.max_use_time} params:{self.params}>"
 
+    def get_name(self):
+        return self.name
+
 
 class Baoli(Algo):
     def search_dfs(self, s: Action, depth):

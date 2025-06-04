@@ -27,8 +27,8 @@ PLAYERS = dict(
     ab4=lambda: Ab().load(4),
     ab5=lambda: Ab().load(5),
     ab6=lambda: Ab().load(6),
-    kd1=lambda: KagleAgent(),
-    kd2=lambda: Kagle().load(),
+    k1=lambda: KagleAgent(),
+    k2=lambda: Kagle().load(),
     # negamax="negamax",
 )
 
@@ -62,7 +62,7 @@ class Env:
 
     def run_self(self, state=None, max_round=256, mode=None):
         player_id = 0
-        while max_round and not state.done:
+        while max_round and state.done is None:
             action: F4Action = self.players[player_id].search(state)
             self.records.append(action)
             state = action.dst

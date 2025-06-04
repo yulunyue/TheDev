@@ -37,7 +37,7 @@ class TestBase:
     def exit(self):
         pass
 
-    def expect(self, a, expect_value, info="", stacklevel=2):
+    def expect(self, a, expect_value=True, info="", stacklevel=2):
         self.ep_cont += 1
         if a == expect_value or str(a) == str(expect_value):
             self.ok_count += 1

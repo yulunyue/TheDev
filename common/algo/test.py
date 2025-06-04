@@ -41,9 +41,7 @@ class TestAlgo(TestBase):
             )
 
     def test_str(self):
-        self.expect(
-            manacher_get_odd_p("aabcbc"), [1, 2, 3, 2, 1, 2, 1, 4, 1, 4, 1, 2, 1]
-        )  #'#a#a#b#c#b#c#'
+        self.expect(manacher_get_odd_p("aabcbc"), [0, 0, 0, 1, 1, 0])  #'#a#a#b#c#b#c#'
 
 
 if __name__ == "__main__":

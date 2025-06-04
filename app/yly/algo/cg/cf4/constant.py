@@ -307,15 +307,15 @@ class Constant:
             ret.append(state)
         return ret
 
-    def get_c4_points(self, line_state, k, player_id):
+    def get_c4_points(self, line_state, y, x, player_id):
         """
         POINTS: A04,B04,-B14,-A14,xn(A03,B03),xn(A02,B02),-xn(A12,B12)
         """
         points = []
         op = 1
         for i in range(C.HEIGHT):
-            if k - i * C.WIDTH >= 0:
-                points = self.get_action_points(line_state, k - i * C.WIDTH, player_id)
+            if i <= y:
+                points = self.get_action_points(line_state, i, x, player_id)
                 if i == 1:
                     points[2:2] = [op * points[1], op * points[0]]
                     if abs(points[4]) < min(points[2], 2):
@@ -337,13 +337,9 @@ class Constant:
             op *= -1
         return points
 
-    def get_point_dr(self, line_state, y, x, player_id, cha=None):
-        if cha is None:
-            cha = CHEN
+    def get_point_dr(self, line_state, y, x, player_id):
         i = y * self.WIDTH + x
-        xv = int(self.mid - abs(x - self.mid))
-        dr_ct = [0] * 6 + [xv]
-        score = xv * cha[6]
+        dr_ct = [0] * 6
         for line_id, l, idx, *args in C.point_line_id[i]:
             self_ct, op_ct, _ = C.scores[line_state[line_id]]
             # logger.info([self_ct, op_ct, l, idx, args])
@@ -353,36 +349,36 @@ class Constant:
             if self_ct == 0 and op_ct:
                 num = (3 - op_ct) * 2 + 1
                 dr_ct[num] += 1
-                score += cha[num]
             if op_ct == 0 and self_ct:
                 num = (3 - self_ct) * 2
                 dr_ct[num] += 1
-                score += cha[num]
-        return dr_ct, score
+        return dr_ct
 
-    def get_action_points(self, line_state, i, player_id):
+    def calc_point_value(self, points, cha=None):
+        score = 0
+        if cha is None:
+            cha = CHEN
+        for i, v in enumerate(points):
+            score += CHEN[i] * v
+        return score
+
+    def extend_first_action_scroe(self, points, x):
+        xv = int(self.mid - abs(x - self.mid))
+        return points + [xv]
+
+    def get_action_points(self, line_state, y, x, player_id):
         """
         POINT0: A4,A3,A2
         POINT1: B4,B3,B2
         POINTS: A4,B4,xn(A3,B3),xn(A2,B2)
         """
-        points = [0] * 6
-        dr_ct = self.get_point_dr(line_state, i, player_id)
+        points = self.get_point_dr(line_state, y, x, player_id)
         # self._info += f"dr_ct:{dr_ct}"
-        for j in range(2):
-            for i in range(len(DR)):
-                for k in range(1, dr_ct[j][i] + 1):
-                    points[(3 - k) * 2 + j] += 1
         for i, j in [[2, 3], [4, 5]]:
             if points[i] < points[j]:
                 points[i], points[j] = points[j], points[i]
 
         return points
-
-    def calc_reward_from_line_state(self, lines1, lines2, y, x):
-        k = y * self.WIDTH + x
-        for line_id, l, idx, *args in C.point_line_id[k]:
-            c10, c11, *args = lines1[line_id]
 
 
 C = Constant()

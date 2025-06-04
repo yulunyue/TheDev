@@ -19,10 +19,11 @@ class F4Action(Action):
         return f"[y={self.y}][x={self.x}][p={S[self.src.player_id]}]"
 
     def get_reward(self, params=None, **kwargs):
-        return C.get_point_dr(self.src.line_state, self.y, self.x, self.src.player_id)[
-            1
-        ]
+        point_info = C.get_point_dr(
+            self.src.line_state, self.y, self.x, self.src.player_id
+        )
+        point_info = C.extend_first_action_scroe(point_info, self.x)
+        return C.calc_point_value(point_info)
 
     def get_reward_by_c4(self):
-        k = self.y * C.WIDTH + self.x
-        return C.get_c4_points(self.dst.line_state, k, self.src.player_id)[1]
+        return C.get_c4_points(self.dst.line_state, self.y, self.x, self.src.player_id)
