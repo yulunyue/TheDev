@@ -1,11 +1,17 @@
-from common.util.export import TestBase, Module
+from common.util.export import TestBase, Module, logger
 
 
 class LCTest(TestBase):
     uri = "https://leetcode.cn"
 
-    def run(self, name):
-        pass
+    def test_run(self, name, fun_name):
+        md = Module().load_module(f"app.yly.algo.lc.{name}")
+        Module().compile_one(md)
+        ins = md.Solution()
+        for c in ins.get_cases():
+            s = c.pop("result")
+            r = getattr(ins, fun_name)(**c)
+            self.expect(r, s)
 
 
 if __name__ == "__main__":

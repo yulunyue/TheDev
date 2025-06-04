@@ -79,8 +79,8 @@ class Module:
             for ln in lns:
                 if not ln:
                     continue
-                if ln.startswith("from"):
-                    path = ln.split(" ")[1].replace(".", "/") + ".py"
+                if ln.strip().startswith("from"):
+                    path = ln.strip().split(" ")[1].replace(".", "/") + ".py"
                     for pre in prefix:
                         if path.startswith(pre):
                             ret.extend(file_to_line(path, parents))
@@ -95,7 +95,7 @@ class Module:
             path = mock_map.get(path, path)
             if path in vt_history:
                 return []
-            logger.info(f"{path}, {parents}")
+            # logger.info(f"{path}, {parents}")
             vt_history[path] = True
             return line_to_line(File(path).read_line(), parents + [path])
 
@@ -112,6 +112,7 @@ class Module:
             path,
             mock_map={
                 "common/third_util/export.py": "common/mock.py",
+                "common/util/export.py": "common/mock.py",
             },
             prefix=["common", "app"],
         )

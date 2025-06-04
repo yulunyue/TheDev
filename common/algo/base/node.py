@@ -15,6 +15,7 @@ def load_from_edges(cls, edges):
             Edge(nodes[t], nodes[f]).load(1)
         elif len(args) == 1:
             Edge(nodes[f], nodes[t]).load(args[0])
+            Edge(nodes[t], nodes[f]).load(args[0])
         elif len(args) == 2:
             Edge(nodes[f], nodes[t]).load(args[0])
             Edge(nodes[t], nodes[f]).load(args[1])
