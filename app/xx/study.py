@@ -33,7 +33,7 @@ def str_cnt2():
 def test(func, num=7):
     b = time.time()
     for _ in range(10**num):
-        func()
+        func(_)
     ret = time.time() - b
     print(f"{ret} {func.__name__}")
     return ret

@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger, Module
-from common.algo.export import random_seed
+from common.algo.export import random_seed, ALgoManage
 from common.third_util.export import CodingGame
 
 from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, SE, C
@@ -25,7 +25,6 @@ class C4Test(TestBase):
             "11114",
             c1.to_str(),
         )
-
         s = F4State.get_init_state()
         self.expect(s.player_id, 0)
         mask_except = 0b1000000100000010000001000000100000010000110
@@ -69,7 +68,7 @@ class C4Test(TestBase):
         env = Env(6, 7)  # , env_name=Env.connectx)
         # Play as the first agent against "negamax" agent.
         result = env.run(players, mode="log")
-        if result == -2:
+        if result == 0:
             logger.info("no win")
         elif result == -1:
             logger.info(f"{name1} pk {name2} [{name1}][{S[0]}] win")
@@ -77,6 +76,9 @@ class C4Test(TestBase):
             logger.info(f"{name1} pk {name2} [{name2}][{S[1]}] win")
         else:
             logger.info("unknow state")
+
+    def test_fight(self):
+        pass
 
     def test_cg(self):
         path = Module().compile_one(Solution)
@@ -93,6 +95,17 @@ class C4Test(TestBase):
         self.expect(
             a.action, 4, f"{a}\n{a.src.dump_best_tree(2)}\n{a.get_best_action()}"
         )
+
+    def test_ab3(self):
+        C.load(6, 7)
+        p = get_player("ab3")
+        a = p.search(F4State.new_state(4432687300737))
+        # ds = a.src.dump_best_tree(2)
+        self.expect(a.action in [1, 4], info=a)
+
+    def test_fight(self):
+        env = Env(6, 7)
+        ALgoManage().fight([get_player(k) for k in PLAYERS], env.run)
 
 
 if __name__ == "__main__":

@@ -52,6 +52,7 @@ class Action:
         return self.action
 
     def get_reward(self, **kwargs):
+        """ """
         return None
 
     def get_best_actions(self) -> List["Action"]:
@@ -79,15 +80,9 @@ class State:
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
 
-    # def __str__(self):
-    #     return f"state:{self.state}"
-
     def set_value(self, v):
         self.value = v
         return self
-
-    def get_reward(self):
-        raise Exception("todo")
 
     @classmethod
     def new_state(cls, key, callback=None) -> "State":
@@ -205,3 +200,14 @@ class State:
 
         dfs(self, 0)
         return "\n".join(ret)
+
+    def get_reward(self, **kw):
+        raise Exception("to")
+
+    def get_max_action_reward(self):
+        reward = -inf
+        for a in self.get_actions().values():
+            ar = a.get_reward()
+            if ar > reward:
+                reward = ar
+        return reward

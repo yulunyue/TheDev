@@ -77,4 +77,4 @@ def manacher_get_odd_p(u, join_char="#"):
         if i + k > r:
             l = i - k
             r = i + k
-    return ret
+    return [(ret[i] // 2) - 1 for i in range(len(ret)) if i % 2 == 1]

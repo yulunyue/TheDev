@@ -70,8 +70,8 @@ class F4State(State):
         self.row_idx[x] -= 1
         if self.row_idx[x] == -1:
             self.can_move.remove(x)
-        if len(self.can_move) == 0 and not self.done:
-            self.done = -2
+        if len(self.can_move) == 0 and self.done is None:
+            self.done = 0
 
     def get_action(self, x):
         from app.yly.algo.cg.cf4.cf4action import F4Action
@@ -85,3 +85,6 @@ class F4State(State):
 
     def get_info(self):
         return self._info
+
+    def get_reward(self, **kw):
+        return self.get_max_action_reward()

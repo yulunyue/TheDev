@@ -14,12 +14,12 @@ class AlphaBateSearch(Algo):
 
         self.state_count += 1
         if depth == -1:
-            return -action.get_reward(depth=depth, params=self.params)
+            return -action.dst.get_reward(depth=depth, params=self.params)
         mvs: Dict[str, Action] = state.get_actions(depth=depth)
         if not mvs:
             return -action.get_reward(depth=depth, params=self.params)
         for k, a in mvs.items():
-            a.reward = -self.search_dfs(
+            a.reward = self.search_dfs(
                 a.dst, action=a, depth=depth - 1, alpha=-bate, bate=-alpha
             )
             if a.reward >= bate:
