@@ -5,6 +5,8 @@ from common.algo.export import (
     calc_angle,
     manacher_get_odd_p,
     TreeNode,
+    get_sa_prefix_doubling,
+    get_height_form_sa,
 )
 import math
 import json
@@ -41,7 +43,14 @@ class TestAlgo(TestBase):
             )
 
     def test_str(self):
-        self.expect(manacher_get_odd_p("aabcbc"), [0, 0, 0, 1, 1, 0])  #'#a#a#b#c#b#c#'
+        s = "aabcbc"
+        hi, sa, rk = [0, 1, 0, 2, 0, 1], [0, 1, 4, 2, 5, 3], [0, 1, 3, 5, 2, 4]
+        self.expect(
+            manacher_get_odd_p(s),
+            [1, 2, 2, 1, 2, 1, 4, 1, 3, 1, 1],
+        )  #'a#a#b#c#b#c'
+        self.expect(get_sa_prefix_doubling(s), (sa, rk))
+        self.expect(get_height_form_sa(s)[0], hi)
 
 
 if __name__ == "__main__":

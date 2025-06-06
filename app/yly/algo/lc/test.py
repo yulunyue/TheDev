@@ -11,7 +11,7 @@ class LCTest(TestBase):
         for c in ins.get_cases():
             s = c.pop("result")
             r = getattr(ins, fun_name)(**c)
-            self.expect(r, s)
+            self.expect(r, s, "\n".join(logger.get_tmp_msgs()))
 
 
 if __name__ == "__main__":

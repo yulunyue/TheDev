@@ -1,3 +1,7 @@
+from typing import List
+from common.util.export import logger
+
+
 def kmp_next(l, s, pi, v):
     while l and s[l] != v:
         l = pi[l - 1]
@@ -60,11 +64,15 @@ def manacher_get_odd_p(u, join_char="#"):
     """
     ret[i]=max(k)
     all(s[i-k]==s[i+k])
+    u = 'aabcbc'
+    s = '#a#a#b#c#b#c#'
+    ret= 1232121414121
     """
     s = join_char + join_char.join(u) + join_char
     n = len(s)
     ret = [0] * n
     l, r = 0, -1
+    ridx = [0] * n
     for i in range(n):
         if i > r:
             k = 1
@@ -72,9 +80,94 @@ def manacher_get_odd_p(u, join_char="#"):
             k = min(ret[l + r - i], r - i + 1)
         while k <= i and i + k < n and s[i - k] == s[i + k]:
             k += 1
+        if i % 2 == 0:
+            ridx[]
         ret[i] = k
         k -= 1
         if i + k > r:
             l = i - k
             r = i + k
-    return [(ret[i] // 2) - 1 for i in range(len(ret)) if i % 2 == 1]
+    return ret, ridx
+    # return [max(v, ret[i]) for i in range(0, len(ret), 2)]
+
+
+def sa_pre1(s):
+    n = len(s)
+
+    t = [False] * n
+    for i in range(len(s) - 2, -1, -1):
+        if s[i] < s[i + 1]:
+            t[i] = True
+        elif s[i] > s[i + 1]:
+            t[i] = False
+        else:
+            t[i] = t[i + 1]
+
+
+def get_sa_prefix_doubling(s: List[int]):
+    """
+    s = aabcbc#
+    id   s   rk0 sa1 rk1 sa2 rk2 sa4 rk4
+    0 aabcbc  0   0   0       0   0   0
+    1 abcbc   0   1   1       1   1   1
+    2 bcbc    1   2   2       3   4   3
+    3 cbc     2   4   4       5   2   5
+    4 bc      1   5   2       2   5   2
+    5 c       2   3   3       4   3   4
+    sa[rk[i]]=rk[sa[i]]=i
+    """
+    if isinstance(s[0], str):
+        s = [ord(v) for v in s]
+    n = len(s)
+    sa = list(range(n))
+    rank = s
+    k = 1
+    while k < n:
+        sa = sorted(sa, key=lambda i: [rank[i], rank[i + k] if i + k < n else -1])
+        new_rank = [0] * n
+        for i in range(1, n):
+            pre_rank, cur_rank = [rank[sa[i - 1]]], [rank[sa[i]]]
+            if sa[i - 1] + k < n:
+                pre_rank.append(rank[sa[i - 1] + k])
+            else:
+                pre_rank.append(-1)
+            if sa[i] + k < n:
+                cur_rank.append(rank[sa[i] + k])
+            else:
+                cur_rank.append(-1)
+            new_rank[sa[i]] = new_rank[sa[i - 1]]
+            if pre_rank < cur_rank:
+                new_rank[sa[i]] += 1
+        rank = new_rank
+        # logger.info(f"{k},sa:{sa},rk:{rank}")
+        k *= 2
+    return sa, rank
+
+
+def get_height_form_sa(s, sa: List[int] = None, rank=None):
+    n = len(s)
+    if sa is None:
+        sa, rank = get_sa_prefix_doubling(s)
+    if rank is None:
+        rank = [0] * n
+        for i in range(n):
+            rank[sa[i]] = i  # 构建rank数组
+    lcp = [0] * n
+    k = 0  # 当前匹配长度
+    for i in range(n):
+        if rank[i] == 0:
+            k = 0
+            continue
+
+        j = sa[rank[i] - 1]  # SA中前一个后缀的起始位置
+        # 利用性质：H[i] ≥ H[i-1]-1
+        if k > 0:
+            k -= 1
+
+        # 扩展匹配长度
+        while i + k < n and j + k < n and s[i + k] == s[j + k]:
+            k += 1
+
+        lcp[rank[i]] = k
+
+    return lcp, sa, rank

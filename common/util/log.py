@@ -27,6 +27,7 @@ class Logger(logging.Logger):
 
     def __init__(self, name, fmt, mode="w") -> None:
         super().__init__(name)
+        self.msgs = []
         self.path = f"{LOG_DIR}/{name}"
         self.add_hander(
             logging.FileHandler(
@@ -48,6 +49,15 @@ class Logger(logging.Logger):
         )
         File(self.path).make_dir_if_not_exist()
         self.add_hander(logging.StreamHandler(), logging.INFO)
+
+    def get_tmp_msgs(self):
+        ret = [str(v) for v in self.msgs[:]]
+        self.msgs.clear()
+        return ret
+
+    def pt(self, msg):
+        self.msgs.append(msg)
+        return self
 
     def table(self, datas: dict, key=None, header_key="t_name"):
         from prettytable import PrettyTable
