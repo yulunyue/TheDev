@@ -307,35 +307,37 @@ class Constant:
             ret.append(state)
         return ret
 
-    def get_c4_points(self, line_state, y, x, player_id):
+    def get_c4_points(self, line_state, cy, x, player_id):
         """
         POINTS: A04,B04,-B14,-A14,xn(A03,B03),xn(A02,B02),-xn(A12,B12)
         """
-        points = []
+        pts, ptsrc = [], []
         op = 1
         for i in range(C.HEIGHT):
-            if i <= y:
-                points = self.get_action_points(line_state, i, x, player_id)
+            y = cy - i
+            if y >= 0:
+                points = self.get_action_points(line_state, y, x, player_id)
+                ptsrc.extend(points)
                 if i == 1:
-                    points[2:2] = [op * points[1], op * points[0]]
+                    pts[2:2] = [op * points[1], op * points[0]]
                     if abs(points[4]) < min(points[2], 2):
-                        points[4:4] = [op * points[2]]
+                        pts[4:4] = [op * points[2]]
                         if abs(points[5]) < min(points[3], 2):
-                            points[5:5] = [op * points[3]]
+                            pts[5:5] = [op * points[3]]
                         else:
-                            points[7:7] = [op * points[3]]
+                            pts[7:7] = [op * points[3]]
                     else:
-                        points[6:6] = [op * points[2], op * points[3]]
-                    points.extend([v * op for v in points[4:]])
+                        pts[6:6] = [op * points[2], op * points[3]]
+                    pts.extend([v * op for v in points[4:]])
                 else:
-                    points.extend([v * op for v in points])
+                    pts.extend([v * op for v in points])
                 # if i <= 1:
 
                 #     self._info += f"point_sl{i}:{points}\n"
             else:
-                points.extend([0] * 6)
+                pts.extend([0] * 6)
             op *= -1
-        return points
+        return pts, ptsrc
 
     def get_point_dr(self, line_state, y, x, player_id):
         i = y * self.WIDTH + x

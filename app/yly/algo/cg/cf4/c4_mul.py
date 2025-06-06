@@ -9,8 +9,10 @@ def cell_swarm1(obs, conf):
         """evaluate qualities of the cell"""
         cell = get_patterns(cell)
         cell = calculate_points(cell)
+        cell["pts"] = cell["points"][:]
         for i in range(1, conf.rows):
-            cell = explore_cell_above(cell, i)
+            cell, pts = explore_cell_above(cell, i)
+            cell["pts"].extend(pts)
         return cell
 
     def get_patterns(cell):
@@ -161,8 +163,9 @@ def cell_swarm1(obs, conf):
             else:
                 cell["points"].extend(map(lambda z: z * n, cell_above["points"]))
         else:
+            cell_above = dict(points=[])
             cell["points"].extend([0, 0, 0, 0, 0, 0])
-        return cell
+        return cell, cell_above["points"]
 
     def choose_best_cell(best_cell, current_cell):
         """compare two cells and return the best one"""

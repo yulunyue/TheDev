@@ -18,6 +18,11 @@ class C4Test(TestBase):
         self.expect(len(C.lines), C.count_line_num(C.inarow))
         self.expect(len(C.point_line_id[0]), 3)
         self.expect(len(C.point_line_id[7 * 6 // 2]), 5)
+
+        s = F4State.get_init_state()
+        self.expect(s.player_id, 0)
+        self.expect_dfs(s.get_action(0).get_reward_by_c4(), [0] * 36)
+
         c1_mask = 4432678895770
         c1 = F4State.new_state(c1_mask)
         self.expect(
@@ -25,8 +30,7 @@ class C4Test(TestBase):
             "11114",
             c1.to_str(),
         )
-        s = F4State.get_init_state()
-        self.expect(s.player_id, 0)
+
         mask_except = 0b1000000100000010000001000000100000010000110
         m2 = 0b1000000100000010000001000000100000010001010
         m3 = 0b1000000100000010000001000000100000010001110
@@ -36,7 +40,7 @@ class C4Test(TestBase):
         m1 = C.pust_to_mask(mask_except, 0, 1)
         self.expect(m1, m3, bin(m1))
 
-        ac = s.get_action(0).dst.get_action(0)
+        ac = F4State.get_init_state().get_action(0).dst.get_action(0)
         # self.expect(ac.get_reward(), 1, f"\n{ac.src}\n==>\n{ac.dst}")
         state = ac.dst
         self.expect(state.state, mask_except, bin(state.state))
@@ -55,11 +59,11 @@ class C4Test(TestBase):
             .dst.get_action(3)
             .dst
         )
-        self.expect(C.get_point_dr(s.line_state, 5, 4, 0)[0], [0, 0, 2, 0, 1, 1, 2], s)
-        self.expect(C.get_point_dr(s.line_state, 5, 4, 1)[0], [0, 0, 0, 2, 1, 1, 2], s)
+        self.expect(C.get_point_dr(s.line_state, 5, 4, 0), [0, 0, 2, 0, 1, 1], s)
+        self.expect(C.get_point_dr(s.line_state, 5, 4, 1), [0, 0, 0, 2, 1, 1], s)
         s2 = F4State.new_state(4432712451713)
         u1 = C.get_point_dr(s2.line_state, 5, 0, 1)
-        self.expect(u1[0], [0, 0, 0, 1, 0, 0, 0], s2)
+        self.expect(u1, [0, 0, 0, 1, 0, 0], s2)
 
         s = F4State.get_init_state().get_action(3).dst.get_action(0).dst
 

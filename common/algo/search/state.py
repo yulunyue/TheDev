@@ -31,7 +31,7 @@ class Action:
     def __str__(self):
         info = []
         if self.info:
-            info.append(str(self.info))
+            info.extend(self.info)
         return f"\n".join(
             [
                 f"<Action action:{self.get_action_str()}, reward:{self.get_reward()}>",

@@ -10,6 +10,7 @@ class ALgoManage:
         }
         for _ in range(pk_round):
             for i in range(len(players)):
+                self.pk(pk_fun, players[i], players[i])
                 for j in range(i + 1, len(players)):
                     self.pk(pk_fun, players[i], players[j])
                     self.pk(pk_fun, players[j], players[i])

@@ -41,9 +41,9 @@ class Diff:
         elif isinstance(src, list) and isinstance(dst, list):
             for key in range(max(len(src), len(dst))):
                 k = keys + [str(key)]
-                if key > len(src):
+                if key >= len(src):
                     self.insert(k, dst[key])
-                elif key > len(dst):
+                elif key >= len(dst):
                     self.delete(k, src[key])
                 else:
                     self.diff_any(src[key], dst[key], k)
