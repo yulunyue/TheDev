@@ -1,4 +1,8 @@
-from common.util.export import get_function_info, TestBase
+from common.util.export import get_function_info, TestBase, ThreadManage, logger
+import threading
+import time
+
+thread_local_val = threading.local()
 
 
 class TestCls:
@@ -11,6 +15,26 @@ class TestUtil(TestBase):
         c = TestCls()
         info = get_function_info(c.test_fun)
         self.expect(info.data["kwargs"], dict(a=None, b=2), "")
+
+    def test_thread(self):
+        def fun1(v):
+            time.sleep(v)
+            return v
+
+        t = [0.2, 0.1, 0.15]
+        t1 = ThreadManage().run(fun1, t)
+        self.expect(t1, sorted(t))
+
+        def get_local(*args):
+            logger.info([thread_local_val, hasattr(thread_local_val, "v")])
+            return
+
+        def set_local(v):
+            thread_local_val.v = v
+            logger.info([thread_local_val, hasattr(thread_local_val, "v")])
+            return ThreadManage().run(get_local, t)
+
+        ThreadManage().run(set_local, t)
 
 
 if __name__ == "__main__":

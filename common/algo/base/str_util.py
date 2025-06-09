@@ -60,35 +60,33 @@ def z_kmp(s):
     return z
 
 
-def manacher_get_odd_p(u, join_char="#"):
+def manacher_get_odd_p(s):
     """
     ret[i]=max(k)
     all(s[i-k]==s[i+k])
     u = 'aabcbc'
     s = '#a#a#b#c#b#c#'
-    ret= 1232121414121
+    ret= 0121010303010
     """
-    s = join_char + join_char.join(u) + join_char
+
     n = len(s)
-    ret = [0] * n
-    l, r = 0, -1
-    ridx = [0] * n
-    for i in range(n):
-        if i > r:
-            k = 1
-        else:
-            k = min(ret[l + r - i], r - i + 1)
-        while k <= i and i + k < n and s[i - k] == s[i + k]:
-            k += 1
-        if i % 2 == 0:
-            ridx[]
-        ret[i] = k
-        k -= 1
-        if i + k > r:
-            l = i - k
-            r = i + k
-    return ret, ridx
-    # return [max(v, ret[i]) for i in range(0, len(ret), 2)]
+    result = [0] * (n * 2 + 1)
+    max_l, max_r = 0, -1
+    for i in range(n * 2 + 1):
+        r = (i - 1) // 2
+        l = i - 1 - r
+        if r < max_r:
+            L = min(r + 1 - l + (max_r - r) * 2, result[(max_l + max_r + 1) * 2 - i])
+            r = (i + L - 2) // 2
+            l = i - 1 - r
+        while l - 1 >= 0 and r + 1 < n and s[l - 1] == s[r + 1]:
+            l -= 1
+            r += 1
+        result[i] = r + 1 - l
+        if r > max_r:
+            max_l = l
+            max_r = r
+    return result
 
 
 def sa_pre1(s):

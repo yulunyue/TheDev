@@ -1,5 +1,6 @@
 from common.util.test import TestBase, logger
-from .study import test
+from app.xx.study import test, thread_local_val
+import _thread
 
 
 class XxStudyTest(TestBase):
@@ -19,6 +20,10 @@ class XxStudyTest(TestBase):
 
         test(util)
         test(util1)
+
+    def test_thread(self):
+        def set_local():
+            thread_local_val.a = 1
 
 
 if __name__ == "__main__":

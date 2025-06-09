@@ -1,6 +1,7 @@
 import time
 import sys
 from collections import deque
+import threading
 
 
 def loop1():
@@ -109,7 +110,3 @@ class Study:
         c._d = dict(e=2)
         print(A._d)
         print(c._d)
-
-
-if __name__ == "__main__":
-    getattr(Study(), sys.argv[1])()

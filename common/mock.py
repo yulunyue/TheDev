@@ -2,11 +2,11 @@ def get_log(*args):
     pass
 
 
-class Logger:
+class logger:
     @staticmethod
     def info(*args, **kw):
         pass
 
-
-class CodingGame:
-    pass
+    @staticmethod
+    def pt(*args, **kw):
+        pass

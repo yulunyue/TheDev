@@ -7,6 +7,7 @@ from common.algo.export import (
     TreeNode,
     get_sa_prefix_doubling,
     get_height_form_sa,
+    LazyHeapMinMax,
 )
 import math
 import json
@@ -47,10 +48,19 @@ class TestAlgo(TestBase):
         hi, sa, rk = [0, 1, 0, 2, 0, 1], [0, 1, 4, 2, 5, 3], [0, 1, 3, 5, 2, 4]
         self.expect(
             manacher_get_odd_p(s),
-            [1, 2, 2, 1, 2, 1, 4, 1, 3, 1, 1],
+            [0, 1, 2, 1, 0, 1, 0, 3, 0, 3, 0, 1, 0],
         )  #'a#a#b#c#b#c'
         self.expect(get_sa_prefix_doubling(s), (sa, rk))
         self.expect(get_height_form_sa(s)[0], hi)
+
+    def test_lazy_heap(self):
+        h = LazyHeapMinMax(2, 2)
+        h.adds([1, 3, 5, 7])
+        self.expect(h.min_heap.top(), 5)
+        self.expect(h.max_heap.top(), 3)
+        h.add(6)
+        self.expect(h.min_heap.top(), 6)
+        self.expect(h.max_heap.top(), 5, h)
 
 
 if __name__ == "__main__":

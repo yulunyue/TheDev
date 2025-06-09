@@ -107,6 +107,10 @@ class C4Test(TestBase):
         # ds = a.src.dump_best_tree(2)
         self.expect(a.action in [1, 4], info=a)
 
+    def test_kl1(self):
+        C.load(6, 7)
+        p = get_player("kd1")
+
     def test_fight(self):
         env = Env(6, 7)
         ALgoManage().fight([get_player(k) for k in PLAYERS], env.run)

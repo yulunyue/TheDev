@@ -1,37 +1,30 @@
-
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
 import time
 
 
-class ThreadExecError:
-    def __init__(self, msg) -> None:
-        self.msg = msg
-
-
 class ThreadExec:
+    def load(self, func, args=None):
+        self.func = func
+        self.args = args
+        return self
+
+    def add_to_executor(self, executor: ThreadPoolExecutor):
+        self.future = executor.submit(self.func, self.args)
+        return self.future
+
+
+class ThreadManage:
     def __init__(self) -> None:
         self.executor = ThreadPoolExecutor()
 
-    def run(self, funs):
-        tasks = [self.executor.submit(fun, args) for fun, args in funs]
+    def get_task(self, func, args):
+        return [ThreadExec().load(func, arg) for arg in args]
+
+    def run(self, func, args):
+        self.tasks = self.get_task(func, args)
+        futures = [d.add_to_executor(self.executor) for d in self.tasks]
         ret = []
-        for future in as_completed(tasks):
-            try:
-                ret.append(future.result())
-            except Exception as e:
-                ret.append(ThreadExecError(e))
+        for future in as_completed(futures):
+            ret.append(future.result())
         return ret
-
-
-def test():
-    def util(s):
-        time.sleep(s*0.1)
-        if s == 2:
-            raise Exception("fail")
-        return f'finush {s}'
-    return ThreadExec().run([(util, i) for i in range(1, 7)])
-
-
-if __name__ == "__main__":
-    print(test())
