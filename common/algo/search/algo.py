@@ -39,7 +39,7 @@ class Algo:
         self.num_episodes = num_episodes
         self.max_t = max_t
         if use_cache:
-            from common.util.fp import get_cache
+            from common.util.export import get_cache
 
             self.cache = get_cache(self.name)
         self.reset()

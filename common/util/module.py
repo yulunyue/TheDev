@@ -113,6 +113,8 @@ class Module:
             mock_map={
                 "common/third_util/export.py": "common/mock.py",
                 "common/util/export.py": "common/mock.py",
+                "common/service/export.py": "common/mock.py",
+                "common/algo/export.py": "common/mock.py",
             },
             prefix=["common", "app"],
         )

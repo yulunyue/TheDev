@@ -84,9 +84,10 @@ class C4Test(TestBase):
     def test_fight(self):
         pass
 
-    def test_cg(self):
+    def test_cg(self, mode="submit"):
         path = Module().compile_one(Solution)
-        CodingGame("cf4").pk(path, Solution.game_id, Solution.agentsIds)
+        if mode == "submit":
+            CodingGame("cf4").pk(path, Solution.game_id, Solution.agentsIds)
 
     def test_player(self, name1):
         C.load(6, 7)
