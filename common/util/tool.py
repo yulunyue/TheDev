@@ -3,6 +3,7 @@ from typing import List
 import json
 from collections import defaultdict
 import sys
+import re
 
 UK_MAP = dict()
 
@@ -68,5 +69,5 @@ def url_to_json(params):
     return args, kw
 
 
-if __name__ == "__main__":
-    print(hash_any(dict(a=3, b=[3, 4], c=dict(e=1))))
+def re_search(pattern, s):
+    return re.search(pattern=pattern, string=s)

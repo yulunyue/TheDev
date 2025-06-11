@@ -1,4 +1,10 @@
-from common.util.export import get_function_info, TestBase, ThreadManage, logger
+from common.util.export import (
+    get_function_info,
+    TestBase,
+    ThreadManage,
+    logger,
+    re_search,
+)
 import threading
 import time
 
@@ -35,6 +41,9 @@ class TestUtil(TestBase):
             return ThreadManage().run(get_local, t)
 
         ThreadManage().run(set_local, t)
+
+    def test_re(self):
+        self.expect(re_search(".*ab.*", "aabbcc") is not None)
 
 
 if __name__ == "__main__":

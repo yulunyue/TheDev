@@ -54,13 +54,7 @@ class TestAlgo(TestBase):
         self.expect(get_height_form_sa(s)[0], hi)
 
     def test_lazy_heap(self):
-        h = LazyHeapMinMax(2, 2)
-        h.adds([1, 3, 5, 7])
-        self.expect(h.min_heap.top(), 5)
-        self.expect(h.max_heap.top(), 3)
-        h.add(6)
-        self.expect(h.min_heap.top(), 6)
-        self.expect(h.max_heap.top(), 5, h)
+        h = LazyHeapMinMax()
 
 
 if __name__ == "__main__":

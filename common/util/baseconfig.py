@@ -42,5 +42,5 @@ class ConfigBase:
             v.key = key
 
     def get_key_value(self, key):
-        config = self._config.get(self._config_name, self._config)
-        return config.get(key)
+        config = self._config.get(self._config_name, {})
+        return config.get(key, self._config.get(key))

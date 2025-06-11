@@ -1,5 +1,5 @@
 from app.yly.algo.cg.cf4.params import SE, StateEnum, ParamCt, INROW
-from common.algo.manage import get_log
+from common.util.export import get_log
 from typing import List
 import math
 import os
@@ -194,7 +194,7 @@ class Constant:
     def get_api_score(self, pos):
 
         move_length = len(pos)
-        from common.service.api import Api
+        from common.service.export import Api
 
         score = (
             Api()
