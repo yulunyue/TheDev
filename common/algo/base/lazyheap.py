@@ -63,7 +63,7 @@ class LazyHeapMinMax:
         self.left_max_heap = LazyMaxHeap()
 
     def pushpop(self, v):
-        if self.right_min_heap.size == self.left_max_heap.size:
+        if self.right_min_heap.size >= self.left_max_heap.size:
             self.left_max_heap.push(self.right_min_heap.pushpop(v))
         else:
             self.right_min_heap.push(self.left_max_heap.pushpop(v))

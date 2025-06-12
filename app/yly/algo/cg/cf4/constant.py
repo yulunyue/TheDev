@@ -118,6 +118,18 @@ class Constant:
                     )
                 self.lines.append(tmp)
 
+    def init_line2(self):
+        self.lines = []
+        for ii in range(self.WIDTH * self.HEIGHT):
+            for l, (y, x) in enumerate(DR):
+                i, j = ii // self.WIDTH, ii % self.WIDTH
+                k = 0
+                while k < 2 * INROW:
+                    y1, x1 = i + k * y, j + k * x
+                    if 0 <= y1 < self.HEIGHT and 0 <= x1 < self.WIDTH:
+                        break
+                    k += 1
+
     def mask_to_grid(self, mask):
         ret = [0] * (self.HEIGHT * self.WIDTH)
         mask_full = (1 << self.HEIGHT + 1) - 1
@@ -341,7 +353,8 @@ class Constant:
 
     def get_point_dr(self, line_state, y, x, player_id):
         i = y * self.WIDTH + x
-        dr_ct = [0] * 6
+        rt = [0] * 6
+        dr_ct = [[0, 0, 0, 0], [0, 0, 0, 0]]
         for line_id, l, idx, *args in C.point_line_id[i]:
             self_ct, op_ct, _ = C.scores[line_state[line_id]]
             # logger.info([self_ct, op_ct, l, idx, args])
@@ -349,12 +362,16 @@ class Constant:
                 self_ct, op_ct = op_ct, self_ct
             # self._info += f"line:{C.lines[line_id]},l:{[l,ct0,ct1]},state:{C.line_fmt(self.line_state[line_id])}\n"
             if self_ct == 0 and op_ct:
-                num = (3 - op_ct) * 2 + 1
-                dr_ct[num] += 1
+                #
+                dr_ct[1][l] = max(dr_ct[1][l], op_ct)
             if op_ct == 0 and self_ct:
-                num = (3 - self_ct) * 2
-                dr_ct[num] += 1
-        return dr_ct
+                dr_ct[0][l] = max(dr_ct[0][l], op_ct)
+        for i, ct in enumerate(dr_ct):
+            for v in ct:
+                if v:
+                    j = (3 - v) * 2 + i
+                    rt[j] += 1
+        return rt
 
     def calc_point_value(self, points, cha=None):
         score = 0
