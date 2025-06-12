@@ -49,5 +49,25 @@ export class UtilCls {
         }
         return res
     }
+    uri_join(array: string[]) {
+        let ret = ""
+        for (var v in array) {
+            if (ret.endsWith("/") && v.startsWith("/")) {
+                ret += v.slice(1)
+            } else if (ret.endsWith("/") || v.startsWith("/")) {
+                ret += v
+            } else {
+                ret += "/" + v
+            }
+        }
+        return ret
+    }
+    array(num: number, fun: any) {
+        let ret = []
+        for (var i = 0; i < num; i++) {
+            ret.push(fun(i))
+        }
+        return ret
+    }
 }
 export default new UtilCls()

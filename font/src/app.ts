@@ -9,11 +9,13 @@ import game_ab from "./demo/game/game_ab";
 import game_table from "./demo/game/table"
 import manage from "./demo/secmaster/manage";
 import dev from "./demo/dev";
+import user from "./demo/user";
 import game_connect_four from "./demo/game/game_connect_four";
 import "./app.css"
 constant.init()
 let route = {
     graph, algo, guss_num, game_ab, dyn,
-    game_connect_four, game_table, api, dev,manage
+    game_connect_four, game_table, api, dev,
+    manage, user
 }[constant.get_route('main')]().mount(web_dom.get_body()).emit_mount()
 // constant.init_body(route.div_el)
