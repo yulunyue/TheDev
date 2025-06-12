@@ -12,9 +12,15 @@ export class UtilCls {
         return ret
     }
     extend(a: any, b: any) {
-        for (var key in b) {
-            a[key] = b[key]
+        if (Array.isArray(a)) {
+            return a.concat(b)
         }
+        else {
+            for (var key in b) {
+                a[key] = b[key]
+            }
+        }
+        return a
     }
     object_to_get_param(oj: any, rt?: string) {
         if (rt == undefined) {

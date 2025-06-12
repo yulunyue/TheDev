@@ -49,6 +49,9 @@ class Constant {
 
     KEY_RIGHT = 'ArrowRight'
     KEY_LEFT = 'ArrowLeft'
+
+    NUMBER = "number"
+
     MOCK_NODE_3_20 = fack_data(0, 3, 20)
     MOCK_NODE_3_5 = fack_data(0, 3, 5)
     MOCK_NODE_3_3 = fack_data(0, 3, 3)

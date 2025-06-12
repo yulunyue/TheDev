@@ -20,6 +20,9 @@ export class Input extends Div {
         })
     }
     render_option() {
+        if (this.option.type == Constant.NUMBER) {
+            this.set_width(Constant.INPUT_NUMBER_WIDTH)
+        }
         this.set_value(this.option.value)
     }
     on_click() {
@@ -77,7 +80,7 @@ export class TextAreaRich extends Div {
         this.title.set_btns(btns)
         return this
     }
-    set_flex_style() { 
+    set_flex_style() {
         return this
     }
 }

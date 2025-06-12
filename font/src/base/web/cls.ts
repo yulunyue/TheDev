@@ -5,7 +5,7 @@ export class Point {
 
 export interface Style {
     color?: string
-    backgroundSize?:"cover"
+    backgroundSize?: "cover"
     left?: number | string
     right?: number | string
     bottom?: number | string
@@ -41,7 +41,7 @@ export interface Style {
     borderBottom?: string
     flexDirection?: "row" | "column"
     userSelect?: "none" | "all"
-    position?: "absolute" | "relative" | "fixed"
+    position?: "absolute" | "relative" | "fixed" | "sticky"
     textAnchor?: 'middle' | 'start' | 'end'
     textOverflow?: 'ellipsis'
     textAlign?: "center" | "left"

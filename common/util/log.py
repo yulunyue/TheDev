@@ -51,7 +51,7 @@ class Logger(logging.Logger):
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def get_tmp_msgs(self):
-        ret = [str(v) for v in self.msgs[:]]
+        ret = self.msgs[:]
         self.msgs.clear()
         return ret
 

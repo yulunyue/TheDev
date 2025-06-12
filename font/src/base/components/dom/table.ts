@@ -5,6 +5,7 @@ import { Node, to_node } from "../../web/cls";
 import { Input } from "./input";
 import { Button } from "./button";
 import { Label } from "./label"
+import { Pagination } from "./pagination";
 import Util from "../../tool/util"
 export class Td extends Div {
     ins: Div
@@ -14,6 +15,20 @@ export class Td extends Div {
     render_option(): void {
         let ins = new Label().set_html(this.option.value)
         this.ins = this.clear().add_child(ins)
+    }
+}
+export class Th extends Div {
+    constructor() {
+        super("th", "")
+    }
+    init_style(): void {
+        this.set_style({
+            position: "sticky",
+            top: 0
+        })
+    }
+    render_option(): void {
+        this.set_html(this.option.value)
     }
 }
 export class BodyTd extends Td {
@@ -56,18 +71,19 @@ export class TrBody extends Div {
     }
 
 }
-export class Tr extends Div {
+export class TrHead extends Div {
     constructor() {
         super("tr", "")
     }
     init_style(): void {
         this.set_style({
             border: "1px solid #000"
+
         })
     }
     render_option() {
         this.clear().add_childs(this.option.childs.map(v => {
-            return new Td().set_option(v)
+            return new Th().set_option(v)
         }))
         return this
     }
@@ -98,23 +114,40 @@ export class TBody extends Div {
     }
     render_option() {
         this.clear().add_childs(this.option.childs.map(v => {
-            return new Tr().set_option(v)
+            return new TrHead().set_option(v)
         }))
         return this
     }
 }
 export class Table extends Div {
-    header_tr: Tr
+    header_tr: TrHead
     body_div: TBody
     head_div: Div
+    tail_div: Div
+    table_container: Div
+    pagination: Pagination
     constructor() {
         super("div")
     }
     init_body_div() {
         this.body_div = new TBody()
+        this.header_tr = new TrHead()
+        this.table_container = new Div().add_childs([
+            new Div("table").add_childs([
+                new Thead().add_childs([
+                    this.header_tr
+                ]),
+                this.body_div
+            ])
+        ])
+
     }
-    init_header_tr() {
-        this.header_tr = new Tr()
+
+    init_tail_div() {
+        this.pagination = new Pagination()
+        this.tail_div = new Div().add_childs([
+            this.pagination
+        ])
     }
     init_head_div() {
         this.head_div = new Div().add_childs([
@@ -126,22 +159,23 @@ export class Table extends Div {
     }
     init_node(): void {
         this.init_head_div()
-        this.init_header_tr()
         this.init_body_div()
+        this.init_tail_div()
         this.add_childs([
             this.head_div,
-            new Div("table").add_childs([
-                new Thead().add_childs([
-                    this.header_tr
-                ]),
-                this.body_div
-            ])
+            this.table_container,
+            this.tail_div
         ]).full()
     }
 
     init_style() {
-        this.set_style({
+        this.table_container.set_style({
             textAlign: "left",
+            overflow: "auto",
+            maxHeight: 500,
+        })
+        this.header_tr.set_style({
+
         })
     }
     set_header(items: Node[]) {
