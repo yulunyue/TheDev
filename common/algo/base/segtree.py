@@ -94,9 +94,3 @@ class SegTreeNode(View):
             self.left.do(self.todo)
             self.right.do(self.todo)
             self.todo = 0
-
-
-class SparseTable:
-    """
-    利用倍增的思想求区间值
-    """
