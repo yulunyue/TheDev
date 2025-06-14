@@ -52,7 +52,7 @@ class Algo:
     def search_main(self, state, **kw):
         pass
 
-    def search(self, state: State) -> Action:
+    def search(self, state: "State") -> "Action":
         self.state_count = 0
         self.begin_time = time.time()
         self.search_main(state)

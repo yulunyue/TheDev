@@ -8,8 +8,8 @@ class F4Action(Action):
 
     y = None
     x = None
-    dst: F4State
-    src: F4State
+    dst: "F4State"
+    src: "F4State"
 
     def __init__(self, src=None, y=None, x=None, dst=None):
         self.y, self.x = y, x

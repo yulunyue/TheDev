@@ -83,7 +83,7 @@ class Api:
         key, mock_res = self.get_mock_data(uri, method, data or param)
         if mock_res:
             return mock_res
-        logger.info(f"DO HTTP [{method}] {uri} {self.get_proxy()}")
+        logger.info(f"DO HTTP [{method}] {uri}")
         params = dict()
         if method == "GET":
             params.update(dict(params=data))

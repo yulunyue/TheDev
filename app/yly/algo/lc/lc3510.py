@@ -1,4 +1,4 @@
-from typing import List
+from common.util.export import SortedList, List
 
 
 class Solution:
@@ -10,4 +10,26 @@ class Solution:
         return [dict(nums=[5, 2, 3, 1], result=2)]
 
     def mininumPairRemoval(self, nums: List[int]) -> int:
-        pass
+        sl = SortedList()
+        dec = 0
+        n = len(nums)
+        for i in range(n - 1):
+            dec += nums[i] > nums[i + 1]
+            sl.add([nums[i] + nums[i + 1], i])
+        idx = SortedList(range(n))
+        while dec:
+            s, i = sl.pop(0)
+            k = idx.bisect_left(i)
+            ni = idx[k + 1]
+            if nums[i] > nums[ni]:
+                dec -= 1
+            if k > 0:
+                pi = idx[k - 1]
+                if nums[i] < nums[pi] <= s:
+                    dec -= 1
+                sl.remove([nums[pi] + nums[i], pi])
+                sl.add([nums[pi] + s, pi])
+            if i >= 1:
+                l = nums[i - 1]
+            nums[i] = s
+            idx.remove(ni)

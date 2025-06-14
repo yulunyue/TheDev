@@ -72,34 +72,50 @@ class Module:
     def megre_to_one(self, src, dst, mock_map: dict = None, prefix=None):
         vt_history = dict()
         mock_map = mock_map or dict()
-        prefix = prefix or []
 
-        def line_to_line(lns: List[str], parents):
-            ret = []
+        def file_to_line(path, parent):
+            path = mock_map.get(path, path)
+            if path in vt_history:
+                return vt_history[path]
+            if parent is not None:
+                vt_history[parent]["out_deg"] += 1
+            vt_history[path] = dict(path=path, lines=[], out_deg=0, parent=parent)
+            # paths = []
+            lns = File(path).read_line()
             for ln in lns:
                 if not ln:
                     continue
                 if ln.strip().startswith("from"):
-                    path = ln.strip().split(" ")[1].replace(".", "/") + ".py"
+                    depend_path = ln.strip().split(" ")[1].replace(".", "/") + ".py"
                     for pre in prefix:
-                        if path.startswith(pre):
-                            ret.extend(file_to_line(path, parents))
+                        if depend_path.startswith(pre):
+                            file_to_line(depend_path, path)
                             break
                     else:
-                        ret.append(ln)
+                        vt_history[path]["lines"].append(ln)
                 else:
-                    ret.append(ln)
-            return ret
+                    vt_history[path]["lines"].append(ln)
+            # vt_history[path]["depends"] = paths
+            # logger.info(f'{path}, {parent},{vt_history[path]["out_deg"]}')
+            return vt_history[path]
 
-        def file_to_line(path, parents):
-            path = mock_map.get(path, path)
-            if path in vt_history:
-                return []
-            # logger.info(f"{path}, {parents}")
-            vt_history[path] = True
-            return line_to_line(File(path).read_line(), parents + [path])
+        lines = []
+        file_to_line(src, None)
 
-        lines = file_to_line(src, [])
+        q = [v for v in vt_history.values() if v["out_deg"] == 0]
+        while q:
+            t = q
+            q = []
+            for v in t:
+                lines.extend(v["lines"])
+                if v["parent"] is None:
+                    continue
+                vt_history[v["parent"]]["out_deg"] -= 1
+                # logger.info(
+                #     [v["path"], v["parent"], vt_history[v["parent"]]["out_deg"]]
+                # )
+                if vt_history[v["parent"]]["out_deg"] == 0:
+                    q.append(vt_history[v["parent"]])
         File(dst).write_file("\n".join(lines))
 
     def compile_one(self, src, path=None):

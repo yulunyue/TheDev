@@ -59,6 +59,12 @@ class Logger(logging.Logger):
         self.msgs.append(msg)
         return self
 
+    def map(self, **kw):
+        ret = []
+        for k, v in kw.items():
+            ret.append(f"{'%s'%k}:{v}")
+        self.pt(" ".join(ret))
+
     def table(self, datas: dict, key=None, header_key="t_name"):
         from prettytable import PrettyTable
 
@@ -69,7 +75,7 @@ class Logger(logging.Logger):
         tb = PrettyTable(field_names=headers)
         for row in datas:
             tb.add_row([row[k] for k in headers])
-        self.info(f"-TABLLE-\n{tb}")
+        self.info(f"-TABLLE-\n{tb}", stack_info=2)
 
     def draw_line(self, name, data):
         from common.tool.draw import Draw

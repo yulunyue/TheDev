@@ -53,8 +53,8 @@ class TestAlgo(TestBase):
         self.expect(get_sa_prefix_doubling(s), (sa, rk))
         self.expect(get_height_form_sa(s)[0], hi)
 
-    def test_lazy_heap(self):
-        h = LazyHeapMinMax()
+    def test_math(self):
+        self.expect(math.comb(5, 3), 5 * 4 * 3 / (3 * 2 * 1))
 
 
 if __name__ == "__main__":
