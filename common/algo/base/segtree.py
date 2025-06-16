@@ -1,8 +1,10 @@
-from common.algo.manage import View, inf
-from typing import List
+from typing import NoReturn
 
 
-class SegTreeNode(View):
+inf = float("inf")
+
+
+class SegTreeNode:
     """
                               1[0-6]
                 2[0-3]                      3[4-6]
@@ -10,20 +12,20 @@ class SegTreeNode(View):
     8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     """
 
-    QUERY_DEFAULT = None
-    VIEW_TYPE = "graph"
-
     def __init__(self, idx=1) -> None:
         self.idx = idx
         self.todo = 0
-        self.value = 0
+        self.value = None
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
 
     def do(self, v):
         pass
 
-    def up(self, *args):
+    def up(self):
+        pass
+
+    def merge(self, l, r):
         pass
 
     def set_range(self, l, r):
@@ -46,37 +48,25 @@ class SegTreeNode(View):
             ).set_range(self.m + 1, self.r)
         return self._right
 
-    def query(self, l, r, fn=None):
+    def query(self, l, r):
         if l <= self.l and self.r <= r:
             return self.value
-        res = SegTreeNode.QUERY_DEFAULT
         self.down()
-        if self.m < r:
-            res = fn(res, self.right.query(l, r, fn))
-        if self.m >= l:
-            res = fn(res, self.left.query(l, r, fn))
-        return res
+        if r <= self.m:
+            return self.left.query(l, r)
+        if self.m < l:
+            return self.right.query(l, r)
+        lv = self.left.query(l, r)
+        rv = self.right.query(l, r)
+        return self.merge(lv, rv)
 
-    def build(self, fn):
+    def build(self):
         if self.l == self.r:
-            self.do(fn(self.l))
-            return self
-        self.left.build(fn)
-        self.right.build(fn)
+            self.do()
+            return
+        self.left.build()
+        self.right.build()
         self.up()
-        return self
-
-    def query_sum(self, l, r):
-        SegTreeNode.QUERY_DEFAULT = 0
-        return self.query(l, r, lambda a, b: a + b)
-
-    def query_max(self, l, r):
-        SegTreeNode.QUERY_DEFAULT = -inf
-        return self.query(l, r, lambda a, b: a if a > b else b)
-
-    def query_min(self, l, r):
-        SegTreeNode.QUERY_DEFAULT = inf
-        return self.query(l, r, lambda a, b: a if a < b else b)
 
     def update(self, l, r, value):
         if l <= self.l and self.r <= r:
@@ -94,3 +84,16 @@ class SegTreeNode(View):
             self.left.do(self.todo)
             self.right.do(self.todo)
             self.todo = 0
+
+    def __str__(self):
+        ret = []
+
+        def util(p: SegTreeNode, depth):
+            ret.append(f"{' '*depth}{p.l}-{p.r}:{p.value}")
+            if p.l == p.r:
+                return
+            util(p.left, depth + 2)
+            util(p.right, depth + 2)
+
+        util(self, 0)
+        return "\n".join(ret)
