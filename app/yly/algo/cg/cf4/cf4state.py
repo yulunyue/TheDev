@@ -62,7 +62,7 @@ class F4State(State):
                 self.done = -1
             elif ct2 == C.inarow:  # 后手胜利
                 self.done = 1
-            C.state_change(self.ct, old_state, self.line_state[line_id])
+            C.state_change(self.ct, old_state, self.line_state[line_id], self.player_id)
 
         self.row_idx[x] -= 1
         if self.row_idx[x] == -1:

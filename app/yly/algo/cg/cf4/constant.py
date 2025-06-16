@@ -272,11 +272,17 @@ class Constant:
                     mask |= 1 << pos
         return mask
 
-    def state_change(self, ct, old_state, new_state):
+    def state_change(self, ct, old_state, new_state, player_id):
         new_ct1, new_ct2, _ = C.scores[new_state]
-        old_ct1, old_ct2, _ = C.scores[new_state]
-        if new_ct1 and new_ct2 == 0:
-            pass
+        old_ct1, old_ct2, _ = C.scores[old_state]
+        if new_ct1 > 1 and new_ct2 == 0:
+            ct[2 * (self.inarow - new_ct1) + player_id] += 1
+        if new_ct2 > 1 and new_ct1 == 0:
+            ct[2 * (self.inarow - new_ct2) + 1 - player_id] += 1
+        if old_ct1 > 1 and old_ct2 == 0:
+            ct[2 * (self.inarow - old_ct1) + player_id] -= 1
+        if old_ct2 > 1 and old_ct1 == 0:
+            ct[2 * (self.inarow - old_ct2) + 1 - player_id] -= 1
 
     def grid_to_line_state(self, grid):
         line_state, row_idx = (

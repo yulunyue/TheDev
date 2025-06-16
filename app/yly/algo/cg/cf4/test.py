@@ -51,14 +51,10 @@ class C4Test(TestBase):
         self.expect(grids[-2 * C.WIDTH], 2, grids)
         self.expect(state.depth, 2, state)
 
-        s = (
-            F4State.get_init_state()
-            .get_action(2)
-            .dst.get_action(2)
-            .dst.get_action(3)
-            .dst.get_action(3)
-            .dst
-        )
+        s = F4State.get_init_state().get_action(2).dst.get_action(2).dst
+        s = s.get_action(3).dst
+        self.expect(s.ct, [0, 0, 0, 0, 0, 4], s)
+        s = s.get_action(3).dst
         s2 = F4State.new_state(4432712451713)
         u1 = C.get_point_dr(s2.line_state, 5, 0, 1)
         self.expect(u1, [0, 0, 0, 1, 0, 0], s2)
