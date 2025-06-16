@@ -7,7 +7,7 @@ from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 from collections import defaultdict
 from typing import Dict, List
 from functools import lru_cache
-from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH, S, logger
+from app.yly.algo.cg.cf4.constant import C, DATA_PATH, S, logger
 from app.yly.algo.cg.cf4.cf4action import F4Action
 from app.yly.algo.cg.cf4.cf4state import F4State
 from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv

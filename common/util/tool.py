@@ -4,6 +4,7 @@ import json
 from collections import defaultdict
 import sys
 import re
+import json
 
 UK_MAP = dict()
 
@@ -71,3 +72,12 @@ def url_to_json(params):
 
 def re_search(pattern, s):
     return re.search(pattern=pattern, string=s)
+
+
+def json_dumps(oj, indent=2):
+    def util(v):
+        if isinstance(v, set):
+            return list(v)
+        return v
+
+    return json.dumps(oj, indent=indent, default=util)

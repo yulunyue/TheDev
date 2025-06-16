@@ -24,8 +24,13 @@ def load_from_edges(cls, edges):
 
 class Node:
     depth = 0
-    value = 0
+    path_value = 0
 
     def __init__(self, key):
         self.key = key
         self.edges: List[Edge] = []
+        self.bei_zen_map: Dict[int, Node] = dict()
+        self.path: List[Node] = []
+
+    def __repr__(self):
+        return f"(key:{self.key}, path_value:{self.path_value})"

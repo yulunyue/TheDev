@@ -1,12 +1,27 @@
-def get_log(*args):
+import json
+import sys
+
+
+def get_log(*args, **kw):
     pass
 
 
 class logger:
-    @staticmethod
-    def info(*args, **kw):
-        pass
+    info = get_log
+    map = get_log
+    debug = get_log
 
-    @staticmethod
-    def pt(*args, **kw):
-        pass
+
+class CgMock:
+    inputs = []
+
+    def input(self):
+        ret = input()
+        self.inputs.append(ret)
+        return ret
+
+    def debug(self, **kw):
+        ans = dict(inputs=self.inputs)
+        ans.update(kw)
+        print(json.dumps(ans), file=sys.stderr)
+        self.inputs.clear()

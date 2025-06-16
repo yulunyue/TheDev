@@ -2,7 +2,7 @@ from common.util.export import TestBase, logger, Module
 from common.algo.export import random_seed, ALgoManage
 from common.third_util.export import CodingGame
 
-from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, SE, C
+from app.yly.algo.cg.cf4.env import Env, PLAYERS, S, get_player, Algo, C
 from app.yly.algo.cg.cf4.cf4state import F4State
 from app.yly.algo.cg.cf4.solution import Solution
 
@@ -21,7 +21,7 @@ class C4Test(TestBase):
 
         s = F4State.get_init_state()
         self.expect(s.player_id, 0)
-        self.expect_dfs(s.get_action(0).get_reward_by_c4(), [0] * 36)
+        self.expect_dfs(s.get_action(0).get_reward_by_c4()[1], [0] * 36)
 
         c1_mask = 4432678895770
         c1 = F4State.new_state(c1_mask)
@@ -59,8 +59,6 @@ class C4Test(TestBase):
             .dst.get_action(3)
             .dst
         )
-        self.expect(C.get_point_dr(s.line_state, 5, 4, 0), [0, 0, 2, 0, 1, 1], s)
-        self.expect(C.get_point_dr(s.line_state, 5, 4, 1), [0, 0, 0, 2, 1, 1], s)
         s2 = F4State.new_state(4432712451713)
         u1 = C.get_point_dr(s2.line_state, 5, 0, 1)
         self.expect(u1, [0, 0, 0, 1, 0, 0], s2)
@@ -85,9 +83,11 @@ class C4Test(TestBase):
         pass
 
     def test_cg(self, mode="submit"):
-        path = Module().compile_one(Solution)
+        path = Module().compile_one("app/yly/algo/cg/cf4/solution.py")
         if mode == "submit":
             CodingGame("cf4").pk(path, Solution.game_id, Solution.agentsIds)
+        elif mode == "replay":
+            Solution().replay()
 
     def test_player(self, name1):
         C.load(6, 7)

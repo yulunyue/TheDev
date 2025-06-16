@@ -1,6 +1,6 @@
 from common.algo.export import Action
 from app.yly.algo.cg.cf4.cf4state import F4State
-from app.yly.algo.cg.cf4.constant import StateEnum, C, S
+from app.yly.algo.cg.cf4.constant import C, S
 from typing import List, Dict
 
 

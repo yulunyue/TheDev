@@ -7,7 +7,6 @@ inf = float("inf")
 
 
 class Action:
-    info = None
     check_info = None
     reward = None
 
@@ -28,28 +27,8 @@ class Action:
         self.p = p
         return self
 
-    def __str__(self):
-        info = []
-        if self.info:
-            info.extend(self.info)
-        return f"\n".join(
-            [
-                f"<Action action:{self.get_action_str()}, reward:{self.get_reward()}>",
-                f"{self.src}",
-            ]
-            + info
-            + ["-" * 20]
-        )
-
     def get_p_states(self):
         return [[1, self.dst, self.reward]]
-
-    def set_info(self, info):
-        self.info = info
-        return self
-
-    def get_action_str(self):
-        return self.action
 
     def get_reward(self, **kwargs):
         """ """
@@ -65,6 +44,9 @@ class Action:
 
     def get_best_action(self):
         return self.get_best_actions()[-1]
+
+    def __str__(self):
+        return f"action: {self.action}"
 
 
 class State:
@@ -211,3 +193,25 @@ class State:
             if ar > reward:
                 reward = ar
         return reward
+
+    info = None
+
+    def set_info(self, info):
+        self.info = info
+        return self
+
+    def __str__(self):
+        info = []
+        if self.info:
+            info.extend(self.info)
+        return f"\n".join(
+            ["", "-" * 40]
+            + [
+                f"done:{self.done}, depth:{self.depth}, s:{self.player_id}, reward:{self.get_reward()}",
+                f"mask:{self.state}",
+                self.to_str(),
+                f"{self.best_action}",
+            ]
+            + info
+            + ["-" * 40]
+        )

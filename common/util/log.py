@@ -5,6 +5,7 @@ from common.constant import Constant
 from common.util.fp import File
 import sys
 import traceback
+from common.util.tool import json_dumps
 
 LOG_DIR = "data/log"
 JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
@@ -59,11 +60,14 @@ class Logger(logging.Logger):
         self.msgs.append(msg)
         return self
 
-    def map(self, **kw):
+    def map(self, indent=None, **kw):
         ret = []
         for k, v in kw.items():
             ret.append(f"{'%s'%k}:{v}")
-        self.pt(" ".join(ret))
+        if indent is None:
+            self.info(" ".join(ret), stacklevel=2)
+        else:
+            self.info(json_dumps(kw, indent=indent))
 
     def table(self, datas: dict, key=None, header_key="t_name"):
         from prettytable import PrettyTable
@@ -75,7 +79,7 @@ class Logger(logging.Logger):
         tb = PrettyTable(field_names=headers)
         for row in datas:
             tb.add_row([row[k] for k in headers])
-        self.info(f"-TABLLE-\n{tb}", stack_info=2)
+        self.info(f"-TABLLE-\n{tb}", stacklevel=2)
 
     def draw_line(self, name, data):
         from common.tool.draw import Draw

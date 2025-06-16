@@ -28,24 +28,17 @@ class F4State(State):
         return cls.new_state(C.grid_to_mask([0] * (C.WIDTH * C.HEIGHT)))
 
     def to_str(self):
-        info = []
-        # info = C.get_api_score_all(self.state, self.row_idx)
-        return "\n".join(
-            [
-                f"done:{self.done},depth:{self.depth},s:{S[self.player_id]}",
-                f"mask:{self.state}",  # ,P:{C.get_grid_sequence(self.state)}",
-                C.grid_view(self.state),
-            ]
-            + info
-        )
-
-    def __str__(self):
-        return self.to_str()
+        return C.grid_view(self.state)
 
     def load_from_mask(self, mask):
-        self.row_idx, self.can_move, self.line_state, self.player_id, self.depth = (
-            C.mask_to_line_state(mask)
-        )
+        (
+            self.row_idx,
+            self.can_move,
+            self.line_state,
+            self.player_id,
+            self.depth,
+            self.ct,
+        ) = C.mask_to_line_state(mask)
 
     def load_from_grid(self, grid):
         self.row_idx, self.can_move, self.line_state, self.player_id, self.depth = (
@@ -57,16 +50,20 @@ class F4State(State):
         self.player_id = 1 - p.player_id
         # self.grid = p.grid.copy()
         self.row_idx = p.row_idx.copy()
+        self.ct = p.ct.copy()
         self.line_state = p.line_state.copy()
         self.can_move = p.can_move.copy()
         k = self.row_idx[x] * C.WIDTH + x
         for line_id, l, idx, *args in C.point_line_id[k]:
+            old_state = self.line_state[line_id]
             self.line_state[line_id] |= [1, 2][p.player_id] << (2 * idx)
             ct1, ct2, _ = C.scores[self.line_state[line_id]]
             if ct1 == C.inarow:  # 先手胜
                 self.done = -1
             elif ct2 == C.inarow:  # 后手胜利
                 self.done = 1
+            C.state_change(self.ct, old_state, self.line_state[line_id])
+
         self.row_idx[x] -= 1
         if self.row_idx[x] == -1:
             self.can_move.remove(x)

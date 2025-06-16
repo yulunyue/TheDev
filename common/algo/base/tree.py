@@ -4,9 +4,6 @@ from common.util.export import logger
 
 
 class TreeNode(Node):
-    def __init__(self, key):
-        super().__init__(key)
-        self.parents: Dict[int, TreeNode] = dict()
 
     def set_root(self):
         self.nodes: Dict[int, TreeNode] = dict()
@@ -14,13 +11,13 @@ class TreeNode(Node):
 
         def dfs(t: TreeNode, p: TreeNode = None):
             self.nodes[t.key] = t
-
-            t.parents[0] = p
+            t.bei_zen_map[0] = p
+            t.path = (p.path if p else []) + [t]
             for e in t.edges:
                 if p and p.key == e.dst.key:
                     continue
                 e.dst.depth = e.src.depth + 1
-                e.dst.value = e.value + e.src.value
+                e.dst.path_value = e.src.path_value + e.value
                 dfs(e.dst, e.src)
 
         dfs(self, None)
@@ -33,11 +30,13 @@ class TreeNode(Node):
         while not break_flag:
             break_flag = True
             for k, v in self.nodes.items():
-                if v.parents.get(parent_idx) is None:
+                if v.bei_zen_map.get(parent_idx) is None:
                     continue
                 break_flag = False
-                pk = v.parents[parent_idx].key
-                v.parents[parent_idx + 1] = self.nodes[pk].parents.get(parent_idx)
+                pk = v.bei_zen_map[parent_idx].key
+                v.bei_zen_map[parent_idx + 1] = self.nodes[pk].bei_zen_map.get(
+                    parent_idx
+                )
             parent_idx += 1
         return self
 
@@ -45,7 +44,7 @@ class TreeNode(Node):
         i = 0
         while k > 0 and f:
             if k & 1:
-                f = f.parents.get(i)
+                f = f.bei_zen_map.get(i)
             k = k >> 1
             i += 1
         return f
@@ -58,9 +57,9 @@ class TreeNode(Node):
         if f.key == t.key:
             return f
         ret = f
-        l = len(f.parents.keys()) - 1
+        l = len(f.bei_zen_map.keys()) - 1
         for i in range(l, -1, -1):
-            pf, pt = f.parents.get(i), t.parents.get(i)
+            pf, pt = f.bei_zen_map.get(i), t.bei_zen_map.get(i)
             if pf is None or pt is None:
                 continue
             if pf.key != pt.key:
@@ -71,7 +70,7 @@ class TreeNode(Node):
 
     def get_dis2node(self, f: "TreeNode", t: "TreeNode"):
         p = self.get_last_lcm_parent(f, t)
-        return f.value + t.value - 2 * p.value
+        return f.path_value + t.path_value - 2 * p.path_value
 
     @classmethod
     def load_from_edges(cls, edges) -> Dict[any, "TreeNode"]:

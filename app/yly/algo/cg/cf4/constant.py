@@ -1,4 +1,3 @@
-from app.yly.algo.cg.cf4.params import SE, StateEnum, ParamCt, INROW
 from common.util.export import get_log
 from typing import List
 import math
@@ -12,6 +11,7 @@ S = "○●"
 
 DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
 CHEN = [10 ** (6 - i) for i in range(7)]
+INROW = 4
 
 
 class Constant:
@@ -272,6 +272,12 @@ class Constant:
                     mask |= 1 << pos
         return mask
 
+    def state_change(self, ct, old_state, new_state):
+        new_ct1, new_ct2, _ = C.scores[new_state]
+        old_ct1, old_ct2, _ = C.scores[new_state]
+        if new_ct1 and new_ct2 == 0:
+            pass
+
     def grid_to_line_state(self, grid):
         line_state, row_idx = (
             [0] * len(C.lines),
@@ -279,6 +285,7 @@ class Constant:
         )
         player_id = 0
         depth = 0
+        ct = [0] * 6
         for i in range(self.HEIGHT * self.WIDTH):
             y, x = i // self.WIDTH, i % self.WIDTH
             if grid[i] == 0:
@@ -294,6 +301,7 @@ class Constant:
             line_state,
             player_id,
             depth,
+            ct,
         )
 
     def mask_to_line_state(self, mask):

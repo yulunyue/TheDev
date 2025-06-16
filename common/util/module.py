@@ -7,7 +7,7 @@ from importlib import import_module, invalidate_caches
 
 from common.util.fp import File
 from common.util.log import get_log
-
+from collections import defaultdict
 
 logger = get_log("module")
 
@@ -70,59 +70,59 @@ class Module:
         return ret
 
     def megre_to_one(self, src, dst, mock_map: dict = None, prefix=None):
-        vt_history = dict()
-        mock_map = mock_map or dict()
 
-        def file_to_line(path, parent):
-            path = mock_map.get(path, path)
-            if path in vt_history:
-                return vt_history[path]
-            if parent is not None:
-                vt_history[parent]["out_deg"] += 1
-            vt_history[path] = dict(path=path, lines=[], out_deg=0, parent=parent)
+        mock_map = mock_map or dict()
+        p = defaultdict(set)
+        line_map = defaultdict(list)
+        out = defaultdict(set)
+
+        def file_to_line(path: str, vt: set):
+            if path in out:
+                return
             # paths = []
+            out[path] = set()
+            vt.add(path)
             lns = File(path).read_line()
             for ln in lns:
                 if not ln:
                     continue
                 if ln.strip().startswith("from"):
                     depend_path = ln.strip().split(" ")[1].replace(".", "/") + ".py"
+                    depend_path: str = mock_map.get(depend_path, depend_path)
+                    if depend_path in vt:
+                        continue
                     for pre in prefix:
                         if depend_path.startswith(pre):
-                            file_to_line(depend_path, path)
+                            out[path].add(depend_path)
+                            p[depend_path].add(path)
+                            file_to_line(depend_path, vt)
                             break
                     else:
-                        vt_history[path]["lines"].append(ln)
+                        line_map[path].append(ln)
                 else:
-                    vt_history[path]["lines"].append(ln)
-            # vt_history[path]["depends"] = paths
-            # logger.info(f'{path}, {parent},{vt_history[path]["out_deg"]}')
-            return vt_history[path]
+                    line_map[path].append(ln)
+            vt.remove(path)
 
         lines = []
-        file_to_line(src, None)
-
-        q = [v for v in vt_history.values() if v["out_deg"] == 0]
+        file_to_line(src, set())
+        q = [k for k, v in out.items() if len(v) == 0]
+        # logger.map(p=p, out=out, q=q, indent=2)
         while q:
             t = q
             q = []
             for v in t:
-                lines.extend(v["lines"])
-                if v["parent"] is None:
-                    continue
-                vt_history[v["parent"]]["out_deg"] -= 1
-                # logger.info(
-                #     [v["path"], v["parent"], vt_history[v["parent"]]["out_deg"]]
-                # )
-                if vt_history[v["parent"]]["out_deg"] == 0:
-                    q.append(vt_history[v["parent"]])
+                # logger.info(v)
+                lines.extend(line_map[v])
+                for u in p[v]:
+                    out[u].remove(v)
+                    # logger.map(v=v, u=u, o=out[u])
+                    if len(out[u]) == 0:
+                        q.append(u)
         File(dst).write_file("\n".join(lines))
 
     def compile_one(self, src, path=None):
         if path is None:
             path = self.RUN_TMP_PATH
-        if not isinstance(src, str):
-            src = inspect.getmodule(src).__file__
         self.megre_to_one(
             src,
             path,

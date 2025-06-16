@@ -3,6 +3,7 @@ from app.yly.algo.cg.cf4.cf4action import F4Action
 from app.yly.algo.cg.cf4.cf4state import F4State
 from common.algo.search.algo import Algo
 from typing import List
+from app.yly.algo.cg.cf4.c4_mul import cell_swarm1, cell_swarm
 
 
 def row_point_fmt(pts):
@@ -27,7 +28,6 @@ class Kagle(Algo):
     """
 
     def search_main(self, state: F4State, **kw):
-        from app.yly.algo.cg.cf4.c4_mul import cell_swarm1
 
         actions: List[F4Action] = list(state.get_actions().values())
         state.best_action = None
@@ -59,7 +59,6 @@ class Kagle(Algo):
 
 class KagleAgent(Algo):
     def search_main(self, state: F4State, **kw):
-        from app.yly.algo.cg.cf4.c4_mul import cell_swarm1
 
         obs = KaggleEnv(
             C.mask_to_grid(state.state), C.HEIGHT, C.WIDTH, state.player_id + 1
@@ -77,9 +76,8 @@ class KagleAgent(Algo):
         #         info2.append(s2)
         for i, row in enumerate(grid):
             info2.append(f"points{i}:{row[state.row_idx[i]]['points']}")
-        state.best_action.set_info(info2)
+        state.set_info(info2)
 
     def __call__(self, *args, **kwds):
-        from app.yly.algo.cg.cf4.c4_mul import cell_swarm
 
         return cell_swarm(*args, **kwds)

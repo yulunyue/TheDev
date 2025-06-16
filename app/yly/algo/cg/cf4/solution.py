@@ -1,24 +1,48 @@
-from app.yly.algo.cg.cf4.constant import SE, C, StateEnum, DATA_PATH
 from app.yly.algo.cg.cf4.cf4state import F4State
-from app.yly.algo.cg.cf4.cf4action import F4Action
+from app.yly.algo.cg.cf4.constant import C, logger
 from common.algo.search.alphabate_search import AlphaBateSearch
+from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv
 from typing import List
 import json
 import sys
+from common.mock import CgMock
 
 
-class Solution:
+class Solution(CgMock):
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
-    agentsIds = [4820019, -1]
+    agentsIds = [-1, 4820019]
 
-    def input(self):
-        return input()
+    def __init__(self):
+        C.load(7, 9)
+        self.init_state = F4State.new_state(C.INIT_MASK)
+
+    def get_player(self, name=""):
+        if name == "ab4":
+            return AlphaBateSearch().load(max_depth=4).reset()
+        return KagleAgent().reset()
+
+    def replay(self, name="play"):
+        path = f"data/cg/cf4/{name}.json"
+        player = self.get_player()
+        state = self.init_state
+        for frame in json.loads(open(path, "r").read())["frames"][1:]:
+            if not frame["stdout"]:
+                break
+            if frame["stdout"][0] == "-":
+                continue
+            player.search(state)
+            logger.info(state)
+            a = int(frame["stdout"][:1])
+            logger.info(a)
+            action = state.get_action(a)
+            state = action.dst
 
     def run(self, **kw):
-        search, state = AlphaBateSearch(), F4State.new_state()
+        player = self.get_player()
         my_id, opp_id = [int(i) for i in self.input().split()]
         # game loop
+        state = self.init_state
         while True:
             TRUN_INDEX = int(
                 self.input()
@@ -41,23 +65,15 @@ class Solution:
 
             if 0 <= opp_previous_action < C.WIDTH:
                 state = state.get_action(opp_previous_action).dst
-            # if my_id==1 and turn_index==1 and 3<=opp_previous_action<=6:
-            #     self.output(-2)
-            #     continue
-            search.search(state, depth=4)
-            print(
-                json.dumps(
-                    dict(
-                        opp_previous_action=opp_previous_action,
-                        state_count=search.state_count,
-                        use_time=search.use_time,
-                        # state=str(self.state)
-                    )
-                ),
-                file=sys.stderr,
+            action = player.search(state)
+            # action = state.get_action(opp_previous_action)
+            self.debug(
+                opp_previous_action=opp_previous_action,
+                action=action.action,
+                num_valid_actions=num_valid_actions,
             )
-            print(state.best_action.action)
-            state = state.best_action.dst
+            print(action.action)
+            state = action.dst
 
 
 if __name__ == "__main__":
