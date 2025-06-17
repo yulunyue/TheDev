@@ -26,5 +26,6 @@ class Solution:
         for l in range(n):
             while r < n and s[r][0] - s[l][0] <= maxDiff:
                 r += 1
-            p[l] = r - 1
+            if r - 1 > l:
+                p[l] = r - 1
         logger.map(s=s, t=t, q=q, p=p)

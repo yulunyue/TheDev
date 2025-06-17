@@ -1,5 +1,7 @@
 import json
 import sys
+import bisect
+import functools
 
 
 def get_log(*args, **kw):
