@@ -28,7 +28,8 @@ class Logger(logging.Logger):
 
     def __init__(self, name, fmt, mode="w") -> None:
         super().__init__(name)
-        self.msgs = []
+        self.cache_msgs = []
+        self.cache_enable = False
         self.path = f"{LOG_DIR}/{name}"
         self.add_hander(
             logging.FileHandler(
@@ -51,14 +52,14 @@ class Logger(logging.Logger):
         File(self.path).make_dir_if_not_exist()
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
-    def get_tmp_msgs(self):
-        ret = self.msgs[:]
-        self.msgs.clear()
-        return ret
-
-    def pt(self, msg):
-        self.msgs.append(msg)
+    def enable_cache(self):
+        self.cache_enable = True
         return self
+
+    def get_and_clear_cache(self):
+        ret = self.cache_msgs[:]
+        self.cache_msgs.clear()
+        return "\n".join(ret)
 
     def map(self, indent=None, **kw):
         ret = []
@@ -68,6 +69,21 @@ class Logger(logging.Logger):
             self.info(" ".join(ret), stacklevel=2)
         else:
             self.info(json_dumps(kw, indent=indent))
+
+    def info(
+        self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
+    ):
+        if self.cache_enable:
+            self.cache_msgs.append(msg)
+            return
+        return super().info(
+            msg,
+            *args,
+            exc_info=exc_info,
+            stack_info=stack_info,
+            stacklevel=stacklevel,
+            extra=extra,
+        )
 
     def table(self, datas: dict, key=None, header_key="t_name"):
         from prettytable import PrettyTable

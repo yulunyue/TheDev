@@ -6,12 +6,13 @@ class LCTest(TestBase):
 
     def test_run(self, name, fun_name):
         md = Module().load_module(f"app.yly.algo.lc.{name}")
-        Module().compile_one(md)
+        Module().compile_one(f"app/yly/algo/lc/{name}.py")
         ins: SolotionBase = md.Solution()
+        logger.enable_cache()
         for c in ins.get_cases():
             s = c.pop("result")
             r = getattr(ins, fun_name)(**c)
-            self.expect(r, s, "\n" + "\n".join(logger.get_tmp_msgs()))
+            self.expect(r, s, "\n" + logger.get_and_clear_cache())
 
 
 if __name__ == "__main__":
