@@ -19,6 +19,9 @@ class F4Action(Action):
         return f"[y={self.y}][x={self.x}][p={S[self.src.player_id]}]"
 
     def get_reward(self, params=None, **kwargs):
+        return C.calc_ct(self.dst.ct, self.dst.player_id)
+
+    def get_reward2(self):
         point_info = C.get_point_dr(
             self.src.line_state, self.y, self.x, self.src.player_id
         )

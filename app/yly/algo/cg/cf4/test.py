@@ -53,9 +53,11 @@ class C4Test(TestBase):
 
         s = F4State.get_init_state().get_action(2).dst.get_action(2).dst
         s = s.get_action(3).dst
-        self.expect(s.ct, [0, 0, 0, 0, 0, 4], s)
+        self.expect(s.ct, [0, 0, 0, 0, 3, 0], s)
         s = s.get_action(3).dst
+        self.expect(s.ct, [0, 0, 0, 0, 3, 3], s)
         s2 = F4State.new_state(4432712451713)
+        self.expect(s2.ct, [0, 0, 0, 0, 3, 3], s2)
         u1 = C.get_point_dr(s2.line_state, 5, 0, 1)
         self.expect(u1, [0, 0, 0, 1, 0, 0], s2)
 
