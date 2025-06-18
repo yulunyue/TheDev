@@ -72,6 +72,10 @@ class TreeNode(Node):
         p = self.get_last_lcm_parent(f, t)
         return f.path_value + t.path_value - 2 * p.path_value
 
+    def get_path2node(self, f: "TreeNode", t: "TreeNode"):
+        p = self.get_last_lcm_parent(f, t)
+        return f.path[p.depth + 1 :][::-1] + t.path[p.depth :]
+
     @classmethod
     def load_from_edges(cls, edges) -> Dict[any, "TreeNode"]:
         return load_from_edges(cls, edges)

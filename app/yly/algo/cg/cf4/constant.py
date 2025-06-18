@@ -13,6 +13,11 @@ DR = [[0, 1], [1, 0], [1, 1], [-1, 1]]
 CHEN = [10 ** (6 - i) for i in range(7)]
 INROW = 4
 
+CT_CHEN = [
+    [-900, 1000, -90, 100, -9, 10],
+    [1000, -900, 100, -90, 10, -9],
+]
+
 
 class Constant:
 
@@ -272,17 +277,17 @@ class Constant:
                     mask |= 1 << pos
         return mask
 
-    def state_change(self, ct, old_state, new_state, player_id):
+    def state_change(self, ct, old_state, new_state):
         new_ct1, new_ct2, _ = C.scores[new_state]
         old_ct1, old_ct2, _ = C.scores[old_state]
         if new_ct1 > 1 and new_ct2 == 0:
-            ct[2 * (self.inarow - new_ct1) + player_id] += 1
+            ct[2 * (self.inarow - new_ct1)] += 1
         if new_ct2 > 1 and new_ct1 == 0:
-            ct[2 * (self.inarow - new_ct2) + 1 - player_id] += 1
+            ct[2 * (self.inarow - new_ct2) + 1] += 1
         if old_ct1 > 1 and old_ct2 == 0:
-            ct[2 * (self.inarow - old_ct1) + player_id] -= 1
+            ct[2 * (self.inarow - old_ct1)] -= 1
         if old_ct2 > 1 and old_ct1 == 0:
-            ct[2 * (self.inarow - old_ct2) + 1 - player_id] -= 1
+            ct[2 * (self.inarow - old_ct2) + 1] -= 1
 
     def grid_to_line_state(self, grid):
         line_state, row_idx = (
@@ -301,6 +306,8 @@ class Constant:
                     line_state[line_id] |= grid[i] << (idx * 2)
                 player_id = 1 - player_id
                 depth += 1
+        for l in line_state:
+            C.state_change(ct, 0, l)
         return (
             row_idx,
             set(x for x in range(self.WIDTH) if row_idx[x] != C.HEIGHT),
@@ -412,6 +419,9 @@ class Constant:
                 points[i], points[j] = points[j], points[i]
 
         return points
+
+    def calc_ct(self, points, player_id):
+        return sum(CT_CHEN[player_id][i] * points[i] for i in range(6))
 
 
 C = Constant()

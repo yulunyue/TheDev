@@ -27,8 +27,8 @@ PLAYERS = dict(
     ab4=lambda: Ab().load(4),
     ab5=lambda: Ab().load(5),
     ab6=lambda: Ab().load(6),
-    k1=lambda: KagleAgent(),
-    k2=lambda: Kagle().load(),
+    # k1=lambda: KagleAgent(),
+    # k2=lambda: Kagle().load(),
     # negamax="negamax",
 )
 
@@ -105,7 +105,7 @@ class Env:
         )
         datas = []
         for r in self.records:
-            datas.append(str(r))
+            datas.append(str(r.dst))
         fp.write_file("\n".join(datas))
 
     def play(self, player: Algo):

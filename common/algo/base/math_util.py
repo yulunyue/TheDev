@@ -144,7 +144,8 @@ def china_rest_mod(n, m, p):
 
 
 class Comb:
-    def load(self, mod, mx):
+    def load(self, mx, mod):
+        """(a//fac[i])%MOD == (a*self.inv_fac[i])%MOD"""
         self.mod = mod
         self.mx = mx
         # 组合数模板

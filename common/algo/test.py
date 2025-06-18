@@ -1,4 +1,4 @@
-from common.util.test import TestBase
+from common.util.export import TestBase, json, math
 from common.algo.export import (
     sin,
     cos,
@@ -8,9 +8,8 @@ from common.algo.export import (
     get_sa_prefix_doubling,
     get_height_form_sa,
     LazyHeapMinMax,
+    Comb,
 )
-import math
-import json
 
 
 class TestAlgo(TestBase):
@@ -36,12 +35,15 @@ class TestAlgo(TestBase):
         self.expect(root.get_dis2node(nodes[4], nodes[7]), 4)
 
     def test_math(self):
+        self.expect(math.comb(5, 3), 5 * 4 * 3 / (3 * 2 * 1))
         self.expect(sin(90), 1)
         self.expect(cos(180), -1)
         for i in range(0, 361, 45):
             self.expect(
                 int(calc_angle(0, 0, 3 * sin(i), 3 * cos(i)) / math.pi * 180), i, i
             )
+        c = Comb().load(7, 6)
+        self.expect(c.fac, []),
 
     def test_str(self):
         s = "aabcbc"
@@ -52,9 +54,6 @@ class TestAlgo(TestBase):
         )  #'a#a#b#c#b#c'
         self.expect(get_sa_prefix_doubling(s), (sa, rk))
         self.expect(get_height_form_sa(s)[0], hi)
-
-    def test_math(self):
-        self.expect(math.comb(5, 3), 5 * 4 * 3 / (3 * 2 * 1))
 
 
 if __name__ == "__main__":
