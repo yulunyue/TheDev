@@ -1,5 +1,5 @@
 from typing import NoReturn
-
+from common.util.export import logger
 
 inf = float("inf")
 
@@ -15,7 +15,7 @@ class SegTreeNode:
     def __init__(self, idx=1) -> None:
         self.idx = idx
         self.todo = 0
-        self.value = None
+        self.value = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
 
@@ -23,7 +23,7 @@ class SegTreeNode:
         pass
 
     def up(self):
-        pass
+        self.value = self.merge(self.left.value, self.right.value)
 
     def merge(self, l, r):
         pass
@@ -89,7 +89,7 @@ class SegTreeNode:
         ret = []
 
         def util(p: SegTreeNode, depth):
-            ret.append(f"{' '*depth}{p.l}-{p.r}:{p.value}")
+            ret.append(f"{' '*depth}{p.l}-{p.r}: v={p.value} todo={p.todo}")
             if p.l == p.r:
                 return
             util(p.left, depth + 2)

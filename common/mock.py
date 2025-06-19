@@ -1,5 +1,9 @@
 import json
 import sys
+import functools
+import heapq
+from typing import List, Dict
+import math
 
 
 def get_log(*args, **kw):
@@ -12,16 +16,9 @@ class logger:
     debug = get_log
 
 
-class CgMock:
-    inputs = []
+class Constant:
+    MOD = (10**9) + 7
+    inf = float("inf")
 
-    def input(self):
-        ret = input()
-        self.inputs.append(ret)
-        return ret
 
-    def debug(self, **kw):
-        ans = dict(inputs=self.inputs)
-        ans.update(kw)
-        print(json.dumps(ans), file=sys.stderr)
-        self.inputs.clear()
+C = Constant()
