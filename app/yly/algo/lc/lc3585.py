@@ -1,10 +1,17 @@
 from common.util.export import logger, bisect, List
-from common.algo.export import TreeNode
+from common.algo.base.tree import TreeNode
 
 
 class Solution:
     def get_cases(self):
         return [
+            dict(
+                n=4,
+                edges=[[0, 1, 10], [1, 2, 1], [1, 3, 16]],
+                queries=[[3, 2]],
+                result=[1],
+            ),
+            dict(n=3, edges=[[0, 1, 9], [0, 2, 7]], queries=[[1, 2]], result=[0]),
             dict(n=2, edges=[[0, 1, 7]], queries=[[1, 0], [0, 1]], result=[0, 1]),
             dict(
                 n=5,
@@ -20,7 +27,7 @@ class Solution:
         ans = []
 
         def q(f: TreeNode, mv, lo, chen=0):
-            # logger.map(mv=mv, paths=f.path, chen=chen)
+            logger.map(mv=mv, paths=f.path, chen=chen, lo=lo)
             i = bisect.bisect_left(f.path, x=mv, lo=lo, key=lambda a: a.path_value)
             ans.append(f.path[i - chen].key)
 
@@ -34,8 +41,8 @@ class Solution:
                 q(f, mv, p.depth, 1)
             else:
                 if f.path_value >= t.path_value:
-                    q(f, mv - t.path_value, p.depth, 0)
+                    q(f, mv, p.depth, 1)
                 else:
-                    q(t, mv - f.path_value, p.depth, 0)
+                    q(t, mv, p.depth, 0)
 
         return ans
