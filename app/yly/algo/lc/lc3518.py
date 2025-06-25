@@ -4,7 +4,7 @@ import math
 
 class Solution:
     def get_cases(self):
-        return [dict(s="abba", k=2, result="baab")]
+        return [dict(s="abba", k=2, result="baab"), dict(s="kxk", k=2, result="")]
 
     def smallestPalindrome(self, s: str, k: int) -> str:
         n = len(s) // 2

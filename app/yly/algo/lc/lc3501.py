@@ -37,6 +37,6 @@ class Solution:
             if r + 1 < len(s) and s[r] == "0" and s[r + 1] == "0":
                 tmp = max(tmp, r - a[j][0] + a[j - 1][1] - a[j - 1][0])
             tmp = max(tmp, st.query_cache_max(i, j))
-            logger.pt(f"l:{l}, r:{r}, s:{s[l : r + 1]}, ai:{a[i:j+1]}, sum:{tmp}")
+            logger.info(f"l:{l}, r:{r}, s:{s[l : r + 1]}, ai:{a[i:j+1]}, sum:{tmp}")
             ans.append(tmp + total)
         return ans

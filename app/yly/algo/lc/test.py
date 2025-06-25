@@ -10,8 +10,11 @@ class LCTest(TestBase):
         ins: SolotionBase = md.Solution()
         logger.enable_cache()
         for c in ins.get_cases():
-            s = c.pop("result")
-            r = getattr(ins, fun_name)(**c)
+            s = c.pop("result") if "result" in c else None
+            try:
+                r = getattr(ins, fun_name)(**c)
+            except Exception as e:
+                r = str(e)
             self.expect(r, s, "\n" + logger.get_and_clear_cache())
 
 
