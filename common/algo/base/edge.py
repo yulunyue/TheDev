@@ -4,8 +4,8 @@ class Edge:
 
         self.src: Node = src
         self.dst: Node = dst
-        self.src.edges.append(self)
 
-    def load(self, value):
-        self.value = value
+    def load(self, src_value=1, dst_value=1):
+        self.src_value = src_value
+        self.dst_value = dst_value
         return self
