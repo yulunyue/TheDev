@@ -2,10 +2,10 @@ from collections import defaultdict
 import heapq
 from typing import List, Dict
 
-inf = float("inf")
+from common.algo.base.node import Node
 
 
-class Graph:
+class Graph(Node):
     nodes = dict()
     edges = dict()
 

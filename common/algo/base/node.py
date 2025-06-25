@@ -2,35 +2,27 @@ from typing import List, Dict
 from common.algo.base.edge import Edge
 
 
-def load_from_edges(cls, edges):
+def load_from_edges(cls: "Node", edges):
 
-    nodes = dict()
+    nodes: Dict[str, Node] = dict()
+    edges = []
     for f, t, *args in edges:
         if f not in nodes:
             nodes[f] = cls(f)
         if t not in nodes:
             nodes[t] = cls(t)
-        if len(args) == 0:
-            Edge(nodes[f], nodes[t]).load(1)
-            Edge(nodes[t], nodes[f]).load(1)
-        elif len(args) == 1:
-            Edge(nodes[f], nodes[t]).load(args[0])
-            Edge(nodes[t], nodes[f]).load(args[0])
-        elif len(args) == 2:
-            Edge(nodes[f], nodes[t]).load(args[0])
-            Edge(nodes[t], nodes[f]).load(args[1])
-    return nodes
+        e = Edge(nodes[f], nodes[t]).load(*args)
+        nodes[f].out_edges[t] = nodes[t].out_edges[f] = e
+        edges.append(e)
+    return nodes, edges
 
 
 class Node:
-    depth = 0
-    path_value = 0
 
     def __init__(self, key):
         self.key = key
-        self.edges: List[Edge] = []
-        self.bei_zen_map: Dict[int, Node] = dict()
-        self.path: List[Node] = []
+        self.in_edges: Dict[str, Edge] = {}
+        self.out_edges: Dict[str, Node] = {}
 
     def __repr__(self):
-        return f"(key:{self.key}, path_value:{self.path_value})"
+        return f"(key:{self.key})"

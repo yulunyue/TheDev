@@ -2,6 +2,7 @@ import time
 import sys
 from collections import deque
 import threading
+from dataclasses import dataclass, field, fields
 
 
 def loop1():
