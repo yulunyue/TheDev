@@ -1,6 +1,5 @@
 from typing import List
 from common.util.export import logger, functools, C, math, heapq, defaultdict
-from common.algo.base.graph import Graph
 
 
 class Solution:
@@ -11,19 +10,42 @@ class Solution:
         self, n: int, k: int, m: int, time: List[int], mul: List[float]
     ) -> float:
         mask = (1 << n) - 1
-        ss = defaultdict(list)
-        max_t = dict()
-        for i in range(1, mask + 1):
-            if i.bit_count() > m:
-                continue
+        time.sort()
+        tc = defaultdict(list)
+        for i in range(mask + 1):
             j = i
-            ss[j] = []
-            max_t[i]
-            while i:
-                low_bit = i & -i
-                ss[j].append(low_bit.bit_length() - 1)
-                i -= low_bit
-                max_t
-        h = [[0, 0, 0, 0]]
+            while j:
+                if j.bit_count() <= k:
+                    tc[mask - i].append([mask - (j ^ i), time[j.bit_length() - 1]])
+                j = (j - 1) & i
+
+        # logger.map(tc=dict(tc), mask=mask)
+        ct = defaultdict(lambda: C.inf)
+        h = [(0, 0, 0, 0)]
+        self.ans = C.inf
+
+        def put(s, t, tm, mi, lr):
+            tadd = tm * mul[mi]
+            mi = (mi + math.floor(tadd)) % m
+            t += tadd
+            key = s, mi, lr
+            if t < ct[key]:
+                ct[key] = t
+                if s == mask and lr == 1:
+                    self.ans = t
+                heapq.heappush(h, [t, s, mi, lr])
+
         while h:
-            t, s1, s2, lr = heapq.heappop(h)
+            t, s, mi, lr = heapq.heappop(h)
+            # logger.map(s=f"{s:03b}", t=t, mi=mul[mi], lr=lr)
+            if lr == 0:
+                for s2, tm in tc[s]:
+                    put(s2, t, tm, mi, 1)
+            else:
+                j = s
+                while j:
+                    low_bit = j & -j
+                    put(s - low_bit, t, time[low_bit.bit_length() - 1], mi, 0)
+                    j -= low_bit
+
+        return -1 if self.ans == C.inf else self.ans

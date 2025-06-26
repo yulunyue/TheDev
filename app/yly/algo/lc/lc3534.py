@@ -1,4 +1,5 @@
 from common.util.export import List, logger, C
+from common.algo.base.math_util import bei_zen
 
 
 class Solution:
@@ -21,11 +22,15 @@ class Solution:
         for j, (_, i) in enumerate(s):
             t[i] = j
         q = [[t[u], t[v]] if t[u] < t[v] else [t[v], t[u]] for u, v in queries]
-        r = 1
-        p = [-1] * n
-        for l in range(n):
-            while r < n and s[r][0] - s[l][0] <= maxDiff:
-                r += 1
-            if r - 1 > l:
-                p[l] = r - 1
-        logger.map(s=s, t=t, q=q, p=p)
+        l = 0
+        p = []
+        for r in range(n):
+            while s[r][0] - s[l][0] > maxDiff:
+                l += 1
+            p.append(l)
+        pa = bei_zen(p)
+        ans = []
+        for l, r in q:
+            pass
+        # logger.map(s=s, q=q, p=p)
+        return ans

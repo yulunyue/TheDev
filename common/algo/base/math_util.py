@@ -197,3 +197,33 @@ def jc(n):
     if n <= 2:
         return 2
     return n * jc(n - 1)
+
+
+def low_bits(j):
+    ret = []
+    i = j
+    while i:
+        low_bit = i & -i
+        ret.append(low_bit)
+        i -= low_bit
+    return ret
+
+
+def get_sub_bits(i):
+    j = i
+    ret = []
+    while j:
+        ret.append(j)
+        j = (j - 1) & i
+    return ret
+
+
+def bei_zen(a):
+    n = len(a)
+    m = n.bit_length()
+    pa = [[a[i]] + [0] * (m - 1) for i in range(n)]
+    for i in range(m - 1):
+        for j in range(n):
+            p = pa[i][j]
+            pa[j][i + 1] = pa[p][i]
+    return pa
