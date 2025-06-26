@@ -9,7 +9,7 @@ class Solution:
         """
         return [dict(nums=[5, 2, 3, 1], result=2)]
 
-    def mininumPairRemoval(self, nums: List[int]) -> int:
+    def minimumPairRemoval(self, nums: List[int]) -> int:
         sl = SortedList()
         dec = 0
         n = len(nums)

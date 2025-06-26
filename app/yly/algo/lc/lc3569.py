@@ -17,7 +17,10 @@ class T(SegTreeNode):
 
 class Solution:
     def get_cases(self):
-        return [dict(nums=[2, 1, 3, 1, 2], queries=[[1, 2], [3, 3]], result=[3, 4])]
+        return [
+            dict(nums=[2, 1, 4], queries=[[0, 1]]),
+            dict(nums=[2, 1, 3, 1, 2], queries=[[1, 2], [3, 3]], result=[3, 4]),
+        ]
 
     def maximumCount(self, nums: List[int], queries: List[List[int]]) -> List[int]:
         n = len(nums)
@@ -30,6 +33,7 @@ class Solution:
             if not P[f]:
                 return
             j = bisect.bisect_left(st[f], f)
+            logger.map(f=f, j=j, stf=st[f])
             if len(st[f]) >= 2:
                 root.update(st[f][0], st[f][-1], -1)
             if len(st[f]) == flag:
@@ -40,7 +44,6 @@ class Solution:
                 st[f].insert(j, idx)
             if len(st[f]) >= 2:
                 root.update(st[f][0], st[f][-1], 1)
-            # logger.map(f=f, stf=st[f])
 
         for i, v in enumerate(nums):
             add(i, v)
