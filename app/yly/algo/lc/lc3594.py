@@ -16,15 +16,14 @@ class Solution:
         for i in range(1, mask + 1):
             if i.bit_count() > m:
                 continue
-            j=i
+            j = i
             ss[j] = []
             max_t[i]
             while i:
                 low_bit = i & -i
                 ss[j].append(low_bit.bit_length() - 1)
                 i -= low_bit
-                max_t[]
-            ss[j] = can_go
+                max_t
         h = [[0, 0, 0, 0]]
         while h:
             t, s1, s2, lr = heapq.heappop(h)
