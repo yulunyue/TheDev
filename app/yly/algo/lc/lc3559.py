@@ -1,5 +1,5 @@
 from common.util.export import List, logger, math
-from common.algo.base.tree import TreeNode
+from common.algo.base.tree import BeiZhenTree
 
 
 class Solution:
@@ -15,7 +15,7 @@ class Solution:
     def assignEdgeWeights(
         self, edges: List[List[int]], queries: List[List[int]]
     ) -> List[int]:
-        nodes = TreeNode.load_from_edges(edges)
+        nodes = BeiZhenTree.load_from_edges(edges)
         root = nodes[1].bei_zhen()
         ans = []
         for f, t in queries:

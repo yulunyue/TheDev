@@ -1,24 +1,30 @@
 from typing import List, Dict
 from common.algo.base.node import Node, load_from_edges
-from common.util.export import logger
+from common.util.export import logger, defaultdict
 
 
-class TreeNode(Node):
+class BeiZhenTree(Node):
+    def __init__(self, key):
+        super().__init__(key)
+        self.bei_zen_map: Dict[int, BeiZhenTree] = dict()
+        self.path = []
+        self.path_value = 0
 
     def set_root(self):
-        self.nodes: Dict[int, TreeNode] = dict()
+        self.nodes: Dict[int, BeiZhenTree] = dict()
         self.depth = 0
 
-        def dfs(t: TreeNode, p: TreeNode = None):
+        def dfs(t: BeiZhenTree, p: BeiZhenTree = None):
             self.nodes[t.key] = t
             t.bei_zen_map[0] = p
             t.path = (p.path if p else []) + [t]
-            for e in t.edges:
-                if p and p.key == e.dst.key:
+            for e in t.out_edges.values():
+                dst: BeiZhenTree = e.dst
+                if p and p.key == dst.key:
                     continue
-                e.dst.depth = e.src.depth + 1
-                e.dst.path_value = e.src.path_value + e.value
-                dfs(e.dst, e.src)
+                dst.depth = e.src.depth + 1
+                dst.path_value = t.path_value + e.dst_value
+                dfs(dst, t)
 
         dfs(self, None)
         return self
@@ -26,21 +32,21 @@ class TreeNode(Node):
     def bei_zhen(self):
         self.set_root()
         parent_idx = 0
-        break_flag = False
-        while not break_flag:
-            break_flag = True
-            for k, v in self.nodes.items():
-                if v.bei_zen_map.get(parent_idx) is None:
+        nodes: List[BeiZhenTree] = self.nodes.values()
+        while nodes:
+            q = nodes
+            nodes = []
+            for n in q:
+                pn = n.bei_zen_map.get(parent_idx)
+                if pn is None:
                     continue
-                break_flag = False
-                pk = v.bei_zen_map[parent_idx].key
-                v.bei_zen_map[parent_idx + 1] = self.nodes[pk].bei_zen_map.get(
-                    parent_idx
-                )
+                n.bei_zen_map[parent_idx + 1] = pn.bei_zen_map.get(parent_idx)
+                if n.bei_zen_map[parent_idx + 1]:
+                    nodes.append(n)
             parent_idx += 1
         return self
 
-    def get_k_parent(self, f: "TreeNode", k):
+    def get_k_parent(self, f: "BeiZhenTree", k):
         i = 0
         while k > 0 and f:
             if k & 1:
@@ -49,7 +55,7 @@ class TreeNode(Node):
             i += 1
         return f
 
-    def get_last_lcm_parent(self, f: "TreeNode", t: "TreeNode"):
+    def get_last_lcm_parent(self, f: "BeiZhenTree", t: "BeiZhenTree"):
         if f.depth < t.depth:
             t = self.get_k_parent(t, t.depth - f.depth)
         elif f.depth > t.depth:
@@ -68,14 +74,14 @@ class TreeNode(Node):
                 ret = pf
         return ret
 
-    def get_dis2node(self, f: "TreeNode", t: "TreeNode"):
+    def get_dis2node(self, f: "BeiZhenTree", t: "BeiZhenTree"):
         p = self.get_last_lcm_parent(f, t)
         return f.path_value + t.path_value - 2 * p.path_value
 
-    def get_path2node(self, f: "TreeNode", t: "TreeNode"):
+    def get_path2node(self, f: "BeiZhenTree", t: "BeiZhenTree"):
         p = self.get_last_lcm_parent(f, t)
         return f.path[p.depth + 1 :][::-1] + t.path[p.depth :]
 
     @classmethod
-    def load_from_edges(cls, edges) -> Dict[any, "TreeNode"]:
+    def load_from_edges(cls, edges) -> Dict[any, "BeiZhenTree"]:
         return load_from_edges(cls, edges)

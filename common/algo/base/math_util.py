@@ -216,14 +216,3 @@ def get_sub_bits(i):
         ret.append(j)
         j = (j - 1) & i
     return ret
-
-
-def bei_zen(a):
-    n = len(a)
-    m = n.bit_length()
-    pa = [[a[i]] + [0] * (m - 1) for i in range(n)]
-    for i in range(m - 1):
-        for j in range(n):
-            p = pa[i][j]
-            pa[j][i + 1] = pa[p][i]
-    return pa

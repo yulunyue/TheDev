@@ -1,4 +1,4 @@
-class FenNode(View):
+class FenNode:
     """
                        16
            8
