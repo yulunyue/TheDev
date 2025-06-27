@@ -53,5 +53,5 @@ class Solution:
             add(idx, v)
             nums[idx] = v
             ans.append(self.sum_all + root.query(0, n - 1))
-            logger.info(f"---{nums}\n{root}")
+     
         return ans

@@ -1,5 +1,5 @@
 from common.util.export import logger, bisect, List
-from common.algo.base.tree import TreeNode
+from common.algo.base.tree import BeiZhenTree
 
 
 class Solution:
@@ -22,27 +22,29 @@ class Solution:
         ]
 
     def findMedian(self, n, edges, queries):
-        nodes = TreeNode.load_from_edges(edges)
+        nodes = BeiZhenTree.load_from_edges(edges)
         root = nodes[0].set_root().bei_zhen()
         ans = []
-
-        def q(f: TreeNode, mv, lo, chen=0):
+        def q(f: BeiZhenTree, mv, lo, chen=0):
             logger.map(mv=mv, paths=f.path, chen=chen, lo=lo)
-            i = bisect.bisect_left(f.path, x=mv, lo=lo, key=lambda a: a.path_value)
+            i = bisect.bisect_left([v.path_value for v in f.path], x=mv, lo=lo)
             ans.append(f.path[i - chen].key)
 
         for f, t in queries:
             f, t = nodes[f], nodes[t]
             p = root.get_last_lcm_parent(f, t)
-            mv = (t.path_value + f.path_value) / 2
+            fv = f.path_value-p.path_value
+            tv = t.path_value-p.path_value
+            mv = (fv+tv) / 2
+            logger.map(f=f.path,t=t.path)
             if p.key == f.key:
-                q(t, mv, p.depth, 0)
+                q(t, mv+p.path_value, p.depth, 0)
             elif p.key == t.key:
-                q(f, mv, p.depth, 1)
+                q(f, mv+p.path_value, p.depth, 1)
             else:
                 if f.path_value >= t.path_value:
-                    q(f, mv, p.depth, 1)
+                    q(f, mv-t.path_value, p.depth, 1)
                 else:
-                    q(t, mv, p.depth, 0)
+                    q(t, mv-f.path_value, p.depth, 0)
 
         return ans

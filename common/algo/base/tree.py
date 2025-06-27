@@ -7,7 +7,7 @@ class BeiZhenTree(Node):
     def __init__(self, key):
         super().__init__(key)
         self.bei_zen_map: Dict[int, BeiZhenTree] = dict()
-        self.path = []
+        self.path:List[BeiZhenTree] = []
         self.path_value = 0
 
     def set_root(self):
@@ -54,6 +54,16 @@ class BeiZhenTree(Node):
             k = k >> 1
             i += 1
         return f
+    
+    def get_up_dis(self, f: "BeiZhenTree", d: int) -> int:
+        src = f
+        for i in range(self.m - 1, -1, -1):
+            p = self.pa[x][i]
+            if p != -1 and f.path_value <= d:  # 可以跳至多 d
+                x = p
+        return x
+
+
 
     def get_last_lcm_parent(self, f: "BeiZhenTree", t: "BeiZhenTree"):
         if f.depth < t.depth:
