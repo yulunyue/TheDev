@@ -7,9 +7,42 @@ export class UtilCls {
         var s1 = s.split('&')
         for (var i = 0; i < s1.length; i++) {
             var s2 = s1[i].split('=')
-            ret[s2[0]] = s2[1]
+            if (s2.length == 2) {
+                ret[s2[0]] = s2[1]
+            }
         }
         return ret
+    }
+    filter_json_array(src: any[], s: string) {
+        if (!s) {
+            return src
+        }
+        var sb = this.url_to_json(s)
+        let ret = []
+        console.log(sb)
+        for (var i = 0; i < src.length; i++) {
+            if (Object.keys(sb).length != 0 && !this.match_json_by_json(src[i], sb)) {
+                continue
+            }
+            if (!this.match_json_by_key(src[i], s)) {
+                continue
+            }
+            ret.push(src[i])
+        }
+        return ret
+    }
+    match_json_by_key(src: any, search_key: string) {
+
+        for (var key in src) {
+            let v: string = src[key] + ""
+            if (v.indexOf(search_key) != -1) {
+                return true
+            }
+        }
+        return false
+    }
+    match_json_by_json(src: any, filter: any) {
+        return false
     }
     extend(a: any, b: any) {
         if (Array.isArray(a)) {

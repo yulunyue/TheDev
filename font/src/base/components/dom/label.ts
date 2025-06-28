@@ -5,7 +5,7 @@ export class Label extends Div {
     text: string = null
     change_color: string = null
     constructor() {
-        super("p")
+        super("span")
     }
     init_style(): void {
         this.set_style({
@@ -13,6 +13,10 @@ export class Label extends Div {
             fontSize: Constant.DEFAULT_FONT_SIZE,
             textWrap: "wrap"
         })
+    }
+    set_value(value: any): this {
+        this.set_html(value)
+        return this
     }
     set_change_color(color: string) {
         this.change_color = color
@@ -49,7 +53,7 @@ export class Pre extends Div {
             //padding: Constant.DEFAULT_PADDING,
 
             //textWrap: "wrap"
-            overflowY:"auto"
+            overflowY: "auto"
         })
     }
     set_text(s: any) {

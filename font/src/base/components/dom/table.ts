@@ -7,6 +7,7 @@ import { Button } from "./button";
 import { Label } from "./label"
 import { Pagination } from "./pagination";
 import Util from "../../tool/util"
+import { Constant } from "../export";
 export class Td extends Div {
     ins: Div
     constructor() {
@@ -126,6 +127,7 @@ export class Table extends Div {
     tail_div: Div
     table_container: Div
     pagination: Pagination
+    search_input: Input
     constructor() {
         super("div")
     }
@@ -146,14 +148,16 @@ export class Table extends Div {
     init_tail_div() {
         this.pagination = new Pagination()
         this.tail_div = new Div().add_childs([
+            new Div().set_flex_grow(1),
             this.pagination
-        ])
+        ]).set_style_flex(Constant.VERTICAL)
     }
     init_head_div() {
+        this.search_input = new Input().set_placeholder("关键字搜索")
         this.head_div = new Div().add_childs([
             new Div().set_style({ flexGrow: "1" }),
-            new Input(),
-            new Button().set_html("RUN")
+            this.search_input,
+            new Button().set_html("搜索").click(() => this.filter())
         ]).set_style_flex(Ct.VERTICAL).set_style({ width: 1 })
 
     }
@@ -172,7 +176,7 @@ export class Table extends Div {
         this.table_container.set_style({
             textAlign: "left",
             overflow: "auto",
-            maxHeight: 500,
+            maxHeight: 480,
         })
         this.header_tr.set_style({
 
@@ -182,13 +186,23 @@ export class Table extends Div {
         this.header_tr.set_option(to_node({ childs: items }))
         return this
     }
-    set_body(items: any[]) {
+    filter() {
+        let sv = this.search_input.get_value()
+        this.option.data.rows = Util.filter_json_array(this.option.data.all_rows, sv)
         this.body_div.clear()
-        for (var i = 0; i < items.length; i++) {
-            let td = this.header_tr.new_dom_row().set_data(items[i])
+        this.pagination.set_length(this.option.data.rows.length)
+    }
+    set_body(items: any[]) {
+        this.option.data.all_rows = items
+        this.pagination.on_change(() => this.show_body())
+        this.filter()
+        return this
+    }
+    show_body() {
+        for (var i = 0; i < this.option.data.rows.length; i++) {
+            let td = this.header_tr.new_dom_row().set_data(this.option.data.rows[i])
             this.body_div.add_child(td)
         }
-        return this
     }
     set_data(data: any) {
         this.set_header(data.header)

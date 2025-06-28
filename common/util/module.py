@@ -8,6 +8,7 @@ from importlib import import_module, invalidate_caches
 from common.util.fp import File
 from common.util.log import get_log
 from collections import defaultdict
+import traceback
 
 logger = get_log("module")
 
@@ -38,6 +39,24 @@ def get_function_info(v):
             # code=str(v),
         ),
     )
+
+
+def run_catch_error(f, limit=0, **kw):
+    try:
+        res = f(**kw)
+        return res
+    except Exception as e:
+        frame = inspect.currentframe()
+        local_msgs = []
+        while frame and limit:
+            local_msgs.append(f"异常{frame.f_code.co_name}的局部变量:")
+            for name, value in frame.f_locals.items():
+                print(f"  {name} = {value}")
+            frame = frame.f_back  # 回溯上一帧
+            limit -= 1
+        msgs = "\n".join(local_msgs)
+        stacks_msgs = "".join(traceback.format_exception(e))
+        return f"----stack----:{stacks_msgs}-------\n---locals---\n{msgs}\n----"
 
 
 class Module:

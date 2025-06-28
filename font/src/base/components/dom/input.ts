@@ -34,6 +34,10 @@ export class Input extends Div {
     get_int() {
         return parseInt(this.get_value())
     }
+    on_change(call: any): this {
+        this.el.onchange = call
+        return this
+    }
 
 }
 export class TextArea extends Div {

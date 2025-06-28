@@ -96,4 +96,4 @@ class SegTreeNode:
             util(p.right, depth + 2)
 
         util(self, 0)
-        return "\n".join(ret)
+        return "\n" + "\n".join(ret)

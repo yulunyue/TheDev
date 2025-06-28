@@ -59,7 +59,7 @@ class Logger(logging.Logger):
     def get_and_clear_cache(self):
         ret = self.cache_msgs[:]
         self.cache_msgs.clear()
-        return "\n".join([str(v) for v in ret])
+        return "\n".join([str(v) for v in ret]) + "\n"
 
     def map(self, indent=None, **kw):
         ret = []

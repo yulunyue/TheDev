@@ -59,7 +59,7 @@ class TestBase:
         if a == expect_value or str(a) == str(expect_value):
             self.ok_count += 1
             return True
-        logger.error(f"\n{info}\n {a}!={expect_value}", stacklevel=stacklevel)
+        logger.error(f"info:{info} result:{a}!={expect_value}", stacklevel=stacklevel)
         return False
 
     def expect_dfs(self, src, dst):

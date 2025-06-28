@@ -146,6 +146,11 @@ export class Div {
 
         })
     }
+    set_flex_grow(grow: number) {
+        return this.set_div_style({
+            flexGrow: grow + ""
+        })
+    }
     set_border() {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
@@ -301,6 +306,7 @@ export class Div {
     }
     mount(el: Dom) {
         el.appendChild(this.el)
+        this.on_mount()
         return this
     }
     emit_mount() {

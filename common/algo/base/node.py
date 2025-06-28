@@ -9,8 +9,9 @@ def load_from_edges(cls: "Node", edges):
             nodes[f] = cls(f)
         if t not in nodes:
             nodes[t] = cls(t)
-        e = Edge(nodes[f], nodes[t]).load(*args)
-        nodes[f].out_edges[t] = nodes[t].in_edges[f] = e
+        if len(args) == 1:
+            nodes[f].out_edges[t] = Edge(nodes[f], nodes[t]).load(args[0])
+            nodes[t].out_edges[f] = Edge(nodes[t], nodes[f]).load(args[0])
     return nodes
 
 
@@ -32,7 +33,6 @@ class Edge:
         self.src: Node = src
         self.dst: Node = dst
 
-    def load(self, dst_value=1, src_value=1):
-        self.src_value = src_value
-        self.dst_value = dst_value
+    def load(self, value):
+        self.value = value
         return self

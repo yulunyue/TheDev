@@ -1,4 +1,4 @@
-from common.util.export import TestBase, Module, logger, SolotionBase, format_stack
+from common.util.export import TestBase, Module, logger, SolotionBase, run_catch_error
 
 
 class LCTest(TestBase):
@@ -12,8 +12,7 @@ class LCTest(TestBase):
         for c in ins.get_cases():
             s = c.pop("result") if "result" in c else None
             r = getattr(ins, fun_name)(**c)
-
-            self.expect(r, s, f"input={c} \n" + logger.get_and_clear_cache())
+            self.expect(r, s, f"{c}\n" + logger.get_and_clear_cache())
 
 
 if __name__ == "__main__":
