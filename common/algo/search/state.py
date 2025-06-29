@@ -32,7 +32,7 @@ class Action:
 
     def get_reward(self, **kwargs):
         """ """
-        return None
+        return self.dst.get_reward(**kwargs)
 
     def get_best_actions(self) -> List["Action"]:
         p = self
@@ -45,7 +45,7 @@ class Action:
     def get_best_action(self):
         return self.get_best_actions()[-1]
 
-    def __str__(self):
+    def __repr__(self):
         return f"action: {self.action}"
 
 
@@ -55,12 +55,16 @@ class State:
     done = None
     STATE_STORE: Dict[str, "State"] = None
 
-    def __init__(self, state, player_id=0, depth=1) -> None:
+    def __init__(self, state=None, player_id=0, depth=1) -> None:
         self.state = state
         self.depth = depth
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
+
+    def set_best_action(self, a: Action):
+        self.best_action = a
+        return self
 
     def set_value(self, v):
         self.value = v
@@ -119,8 +123,8 @@ class State:
             self.actions[action] = a
         return self.actions
 
-    def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-        if depth == 0 or self.done:
+    def get_actions(self, **kw) -> Dict[str, Action]:
+        if self.done:
             return {}
         if self.actions is not None:
             return self.actions

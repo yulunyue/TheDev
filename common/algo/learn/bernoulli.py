@@ -5,12 +5,13 @@ from typing import List
 
 
 class EpsilonGreedy(Algo):
+
     def load(self, num_episodes=5000, epsilon=0.01, init_prob=1.0):
         self.init_prob = init_prob
         self.epsilon = epsilon
         return super().load(num_episodes=num_episodes)
 
-    def run(self, state: State):
+    def search_main(self, state: State):
         self.regret_record = [0]
         self.actions = state.get_actions_all()
         self.estimates = [self.init_prob] * len(self.actions)
@@ -21,7 +22,6 @@ class EpsilonGreedy(Algo):
             reword, regret = state.get_reward(action), state.get_regret(action)
             self.regret_record.append(self.regret_record[-1] + regret)
             self.run_one_step(episode, action, reword)
-        return self
 
     def get_action(self, *args):
         if np.random.rand() < self.epsilon:
