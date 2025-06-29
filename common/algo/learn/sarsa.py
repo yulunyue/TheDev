@@ -1,8 +1,6 @@
 from common.algo.search.algo import Algo, Action, State, np
-from common.util.export import get_log
+from common.util.export import get_log, logger
 from typing import List
-
-logger = get_log("ln", fmt="")
 
 
 class Sarsa(Algo):
