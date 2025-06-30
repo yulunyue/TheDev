@@ -182,11 +182,11 @@ export class Table extends Div {
         this.table_container.set_style({
             textAlign: "left",
             overflow: "auto",
-            maxHeight: 480,
+            height: 600,
         })
         this.table.set_style({
             overflow: "auto",
-            maxHeight: 480,
+            height: 600,
         })
         this.header_tr.set_style({
             position: "sticky",
