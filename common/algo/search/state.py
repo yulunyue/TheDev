@@ -8,9 +8,8 @@ inf = float("inf")
 
 class Action:
     check_info = None
-    reward = None
 
-    def __init__(self, src, action, dst):
+    def __init__(self, src, action, dst=None):
         self.action = action
         self.src: State = src
         self.dst: State = dst
@@ -26,6 +25,9 @@ class Action:
     def set_p(self, p):
         self.p = p
         return self
+
+    def do(self, **kw):
+        raise Exception("todo")
 
     def get_p_states(self):
         return [[1, self.dst, self.reward]]
@@ -64,6 +66,10 @@ class State:
 
     def set_value(self, v):
         self.value = v
+        return self
+
+    def set_best_action(self, a):
+        self.best_action = a
         return self
 
     @classmethod
@@ -120,7 +126,7 @@ class State:
         return self.actions
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-        if depth == 0 or self.done:
+        if self.done:
             return {}
         if self.actions is not None:
             return self.actions
@@ -150,13 +156,8 @@ class State:
     def key(self):
         raise Exception("todo")
 
-    @classmethod
-    def all_state_key(self):
-        raise Exception("todo")
-
-    @classmethod
     def to_str(self):
-        raise Exception("todo")
+        return ""
 
     @classmethod
     def get_init_state(cls):
@@ -207,10 +208,10 @@ class State:
         return f"\n".join(
             ["", "-" * 40]
             + [
-                f"done:{self.done}, depth:{self.depth}, s:{self.player_id}, reward:{self.get_reward()}",
+                f"done:{self.done}, depth:{self.depth}, s:{self.player_id}",
                 f"mask:{self.state}",
                 self.to_str(),
-                f"{self.best_action}",
+                f"best_action:{self.best_action}",
             ]
             + info
             + ["-" * 40]

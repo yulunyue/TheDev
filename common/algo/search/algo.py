@@ -75,6 +75,9 @@ class Algo:
     def get_name(self):
         return self.name
 
+    def actor(self):
+        pass
+
 
 class Baoli(Algo):
     def search_dfs(self, s: Action, depth):
