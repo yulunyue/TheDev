@@ -128,19 +128,21 @@ export class Table extends Div {
     table_container: Div
     pagination: Pagination
     search_input: Input
+    table: Div
     constructor() {
         super("div")
     }
     init_body_div() {
         this.body_div = new TBody()
         this.header_tr = new TrHead()
+        this.table = new Div("table").add_childs([
+            new Thead().add_childs([
+                this.header_tr
+            ]),
+            this.body_div
+        ]).set_style({ overflow: "auto" })
         this.table_container = new Div().add_childs([
-            new Div("table").add_childs([
-                new Thead().add_childs([
-                    this.header_tr
-                ]),
-                this.body_div
-            ])
+            this.table
         ])
 
     }
@@ -157,8 +159,12 @@ export class Table extends Div {
         this.head_div = new Div().add_childs([
             new Div().set_style({ flexGrow: "1" }),
             this.search_input,
-            new Button().set_html("搜索").click(() => this.filter())
+            new Button().set_html("搜索").click(() => this.filter()),
+            new Button().set_html("保存").click(() => this.save_all())
         ]).set_style_flex(Ct.VERTICAL).set_style({ width: 1 })
+
+    }
+    save_all() {
 
     }
     init_node(): void {
@@ -178,8 +184,16 @@ export class Table extends Div {
             overflow: "auto",
             maxHeight: 480,
         })
+        this.table.set_style({
+            overflow: "auto",
+            maxHeight: 480,
+        })
         this.header_tr.set_style({
-
+            position: "sticky",
+            top: 0,
+            zIndex: "10",
+            backgroundColor: "#fff",
+            border: "1px solid #000"
         })
     }
     set_header(items: Node[]) {
@@ -189,7 +203,7 @@ export class Table extends Div {
     filter() {
         let sv = this.search_input.get_value()
         this.option.data.rows = Util.filter_json_array(this.option.data.all_rows, sv)
-        this.body_div.clear()
+
         this.pagination.set_length(this.option.data.rows.length)
     }
     set_body(items: any[]) {
@@ -199,8 +213,15 @@ export class Table extends Div {
         return this
     }
     show_body() {
-        for (var i = 0; i < this.option.data.rows.length; i++) {
-            let td = this.header_tr.new_dom_row().set_data(this.option.data.rows[i])
+        this.body_div.clear()
+        let page_size = this.pagination.page_size_select.get_value().value
+        let start = this.pagination.cur_page.get_int() * page_size
+        for (var i = start; i < page_size + start; i++) {
+            let data = this.option.data.rows[i]
+            if (!data) {
+                break
+            }
+            let td = this.header_tr.new_dom_row().set_data(data)
             this.body_div.add_child(td)
         }
     }
