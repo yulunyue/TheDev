@@ -35,7 +35,8 @@ export class Input extends Div {
         return parseInt(this.get_value())
     }
     on_change(call: any): this {
-        this.el.onchange = call
+        // this.el.onchange = call
+        this.el.oninput = call
         return this
     }
 

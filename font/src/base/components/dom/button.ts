@@ -16,6 +16,13 @@ export class Button extends Div {
         })
     }
 }
+export class Buttons extends Div {
+    render_option(): void {
+        this.clear().add_childs(this.option.childs.map(v => {
+            return new Button().set_html(v.title)
+        }))
+    }
+}
 export class Title extends Div {
     title: Div
     btns: Button[]
@@ -29,10 +36,4 @@ export class Title extends Div {
 }
 export function button() {
     return new Button()
-}
-export function button_dev() {
-    return [
-        button().set_html("button"),
-        button().set_option(new Node().set_type("edit"))
-    ]
 }

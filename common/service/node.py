@@ -56,9 +56,6 @@ class Node:
             self.data[k] = v
         return self
 
-    def set_option(self, **kwargs):
-        pass
-
     def add_child(
         self,
         code=0,
