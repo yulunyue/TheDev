@@ -79,12 +79,16 @@ class Qlearning(Base):
     def run_one(self, init_state: State, **kw):
         state: State = init_state.reset()
         action = self.take_action(state)
-        while not action.dst.done:
+        while action:
             action = self.do_action(action)
+
         init_state.set_best_action(self.take_action(init_state))
 
     def do_action(self, a: Action):
-        self.update_action(a.dst)
+        self.reward_tmp_all += a.reward
+        self.update_action(a)
+        if a.dst.done:
+            return None
         return self.take_action(a.dst)
 
     def q_learning(self, a0: Action):

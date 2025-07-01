@@ -74,6 +74,5 @@ class CfState(State):
         return (
             Action(self, i, CfState.new_one(state=next_state).set_done(done))
             .set_value(0)
-            .set_p(0.25)
             .set_reward(reward)
         )

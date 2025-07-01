@@ -100,7 +100,9 @@ class Logger(logging.Logger):
     def draw_line(self, name, data):
         from common.tool.draw import Draw
 
-        Draw().draw_line(data).save(f"{LOG_DIR}/{self.name}_{name}.svg")
+        save_path = f"{LOG_DIR}/line/{self.name}_{name}.svg"
+        Draw().draw_line(data).save(save_path)
+        self.info(f"{save_path} draw {len(data)}")
 
     def add_hander(self, h: logging.Handler, level, fmt=None):
         if fmt is None:

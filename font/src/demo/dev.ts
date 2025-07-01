@@ -19,8 +19,7 @@ export class Dev extends Div {
             this.table
         ])
     }
-    on_mount(): void {
-
+    test_table_data() {
         this.table.set_data({
             header: [{
                 key: "a",
@@ -29,7 +28,8 @@ export class Dev extends Div {
                 key: "b",
                 value: "b",
                 type: "input"
-            }],
+            }, { key: "method", title: "操作", type: "btns", value: ["remove", "add"] }
+            ],
             body: Util.array(27, (i: number) => {
                 return {
                     a: i,
@@ -37,6 +37,10 @@ export class Dev extends Div {
                 }
             })
         })
+    }
+    on_mount(): void {
+        this.test_table_data()
+
     }
 
 }
