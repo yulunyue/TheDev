@@ -13,13 +13,14 @@ class BanditEnv:
         for j in range(1, self.K):
             if self.probs[j] > self.probs[self.max_idx]:
                 self.max_idx = j
-
+        return self
+    
     def calc_reward(self, a):
         # return 1 if random.random() < BAN_ENV.probs[a] else 0
         return self.probs[a]
 
 
-BAN_ENV = BanditEnv()
+BAN_ENV = BanditEnv().load()
 
 
 class BanAction(Action):

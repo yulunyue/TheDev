@@ -11,27 +11,26 @@ from common.algo.export import (
     Sarsa,
     np,
     Qlearning,
-    AlphaBateSearch,
+
+    Algo,
 )
 
 
 class TestBan(TestBase):
-    def __init__(self):
-        super().__init__()
-        self.bs = Bandit(state="")
-        BAN_ENV.load(10)
 
-    def test_eg(self):
-        eg = EpsilonGreedy().load()
-        a = eg.search(self.bs)
-        self.expect(a.action, BAN_ENV.max_idx)
 
-    def test_ab(self, use_ab="use_ab"):
+    def test_all(self):
+        self.test_algo(EpsilonGreedy().load())
+
+        
+
+    def test_dev(self, use_ab="use_ab"):
         ab = AlphaBateSearch().load(2, use_alpha_bate=use_ab == "use_ab")
         self.expect(ab.search(self.bs).action, BAN_ENV.max_idx, BAN_ENV.probs)
 
-    def test_mc(self):
-        pass
+    def test_algo(self, algo:Algo):
+        a = algo.search(Bandit())
+        self.expect(a.action, BAN_ENV.max_idx)
 
 
 if __name__ == "__main__":

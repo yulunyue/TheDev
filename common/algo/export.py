@@ -2,6 +2,7 @@ from common.algo.learn.dyn import PolicyIteration, ValueIteration
 from common.algo.search.state import State, Action
 from common.algo.search.algo import Algo, random_seed, np, Baoli
 from common.algo.search.mctssearch import MctsSearchTree, MctsNode
+from common.algo.search.alphabate_search import AlphaBateSearch
 from common.algo.learn.bernoulli import (
     EpsilonGreedy,
     DecayingEpsilonGreedy,
