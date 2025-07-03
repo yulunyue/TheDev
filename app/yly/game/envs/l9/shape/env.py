@@ -141,7 +141,7 @@ class L9Env:
             ret[y + 1][x + 1] = "XY"[i]
 
         mask_down(board, util)
-        return "\n".join([" ".join(v) for v in ret])
+        return "\n" + "\n".join([" ".join(v) for v in ret]) + "\n"
 
 
 L9ENV = L9Env().load()
