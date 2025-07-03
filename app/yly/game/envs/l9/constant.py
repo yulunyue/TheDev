@@ -1,5 +1,5 @@
 class Constant:
-    PLAY_URI = "http://ninemensmorris.ist.tugraz.at:8080/"
+    PLAY_URI = "http://ninemensmorris.ist.tugraz.at:8080"
     PLACES = [
         "A1",
         "A4",
@@ -49,6 +49,13 @@ class Constant:
     PLACES_MAX_TURN = 18
     PLACE = "PLACE"
     NULL_CHESS_KEY = 0
+    PLACE_NUM = len(PLACES)
+    PLACE_MASK1 = (1 << PLACE_NUM + 1) - 1
+    PLACE_MASK2 = (1 << (2 * PLACE_NUM + 1)) - 1
+    INIT_STATE = 0
+
+    def get_excepts(self):
+        return {self.INIT_STATE: "PLACE;A3"}
 
 
 C = Constant()

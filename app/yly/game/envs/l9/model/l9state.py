@@ -7,18 +7,33 @@ from typing import Dict, List
 
 
 class L9State(State):
-    STATE_STORE: Dict[str, "State"] = None
+    STATE_STORE: Dict[str, "State"] = dict()
+    boards = None
+
+    def set_boards(self, boards):
+        self.boards = boards
+        return self
 
     @classmethod
     def new_state(cls, key):
         if key in cls.STATE_STORE:
             return cls.STATE_STORE[key]
-        if isinstance(key, str):
-            boards = [int(v) for v in key[:24]]
-            depth = int(key[24:])
-            actions = L9ENV
-            cls.STATE_STORE[key] = L9State(key, player_id=depth % 2, depth=depth)
+        board, depth = key & C.PLACE_MASK2, key >> (C.PLACE_NUM * 2)
+        s = L9State(key, player_id=depth % 2 + 1, depth=depth).set_boards(board)
+        cls.STATE_STORE[key] = s
         return cls.STATE_STORE[key]
 
-    def gen_action(self, a):
-        a = L9Action(self, a)
+    def get_actions(self, **kw):
+        if self.actions:
+            return self.actions
+        actions = L9ENV.load_from_board(self.boards).get_actions(self.depth)
+        self.actions = dict()
+        for a in actions:
+            key = a.pop("board") + (self.depth + 1) << (C.PLACE_NUM * 2)
+            state = L9State.new_state(key)
+            action = L9Action(self, state).load(**a)
+            self.actions[action.action] = action
+        return self.actions
+
+    def to_str(self):
+        return L9ENV.print_board(self.boards)

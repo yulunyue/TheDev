@@ -4,25 +4,42 @@ from app.yly.game.envs.l9.shape.line import Line
 from typing import List, Dict
 
 
+def mask_down(mask, func):
+    while mask:
+        low_bit: int = mask & -mask
+        i = low_bit.bit_length() - 1
+        func(i)
+        mask -= low_bit
+
+
 class L9Env:
+
     def load(self):
-        self.INIT_STATE = "0" * (len(C.PLACES) + 1)
-        self.chess_array = []
-        self.chess_map = dict()
-        self.chess_player_map: List[Dict[int, Chess]] = [dict(), dict(), dict()]
-        for i, name in enumerate(C.PLACES):
-            c = Chess(i, name)
-            self.chess_map[c.name] = c
-            self.chess_player_map[0][i] = c
-            self.chess_array.append(c)
+        self.INIT_STATE = 0
+        self.chess_map: Dict[str, Chess] = dict()
+        for i, key in enumerate(C.PLACES):
+            c = Chess(key, i)
+            self.chess_map[c.key] = c
         self.lines: List[Line] = []
         for ln_str in C.LINES:
             ln = Line([self.chess_map[v] for v in ln_str.split(" ")])
             self.lines.append(ln)
         return self
 
-    def dump(self):
-        pass
+    def dump(
+        self,
+        method,
+        src_chess: Chess,
+        remove_chess: Chess = None,
+        dst_chess: Chess = None,
+    ):
+        return dict(
+            method=method,
+            src_key=src_chess.key,
+            board=self.board,
+            remove_key=remove_chess.key if remove_chess else None,
+            dst_key=dst_chess.key if dst_chess else None,
+        )
 
     def set_chess_player_id(self, c: Chess, player_id):
         can_remove = False
@@ -37,7 +54,6 @@ class L9Env:
                 can_remove = True
                 for c2 in ln.chess_array:
                     c2.in_line += 1 if new_chess_num == -2 or new_chess_num == 3 else -1
-
             ln.chess_num = new_chess_num
 
         c = self.chess_player_map[c.player_id].pop(c.key)
@@ -48,9 +64,26 @@ class L9Env:
     def release_chess(self, c: Chess):
         return self.set_chess_player_id(c, 0)
 
-    def load_from_board(self, boards):
-        for i, v in enumerate(boards):
-            self.chess_player_map[v][i] = self.chess_array[i]
+    def reset(self):
+        self.chess_player_map: List[Dict[int, Chess]] = [
+            self.chess_map.copy(),
+            dict(),
+            dict(),
+        ]
+        for ln in self.lines:
+            ln.reset()
+        for c in self.chess_map.values():
+            c.reset()
+
+    def load_from_board(self, board):
+        self.reset()
+        self.board = board
+
+        def util(x):
+            i, j = x // C.PLACE_NUM, x % C.PLACE_NUM
+            self.set_chess_player_id(self.chess_map[C.PLACES[j]], i),
+
+        mask_down(board, util)
         return self
 
     def get_actions(self, depth):
@@ -59,16 +92,17 @@ class L9Env:
         return self.get_move_actions(depth % 2 + 1)
 
     def get_place_actions(self, player_id):
-        chesss: List[Chess] = self.chess_player_map[player_id].values()
+        chesss: List[Chess] = list(self.chess_player_map[0].values())
         ret = []
         for c in chesss:
             can_remove = self.set_chess_player_id(c, player_id)
             if can_remove:
                 for rc in self.get_can_removes_chess(2 - player_id):
-                    ret.append([c.key, rc.key])
+                    ret.append(self.dump(C.PLACE, c, remove_chess=rc))
             else:
-                ret.append([c.key, None])
+                ret.append(self.dump(C.PLACE, c))
             self.release_chess(c)
+        return ret
 
     def get_can_removes_chess(self, player_id):
         chess: List[Chess] = self.chess_player_map[player_id].values()
@@ -82,8 +116,32 @@ class L9Env:
     def get_move_actions(self, player_id):
         pass
 
-    def get_excepts(self):
-        return {self.INIT_STATE: "PLACE A3"}
+    def dump_board(self, mask):
+        board = [0] * C.PLACE_NUM
+
+        def util(x):
+            i, j = x // C.PLACE_NUM, x % C.PLACE_NUM
+            board[j] = i + 1
+
+        mask_down(mask, util)
+        return board
+
+    def print_board(self, board):
+        ret = [[" "] + [str(i + 1) for i in range(7)]]
+        for i in range(7):
+            ret.append([" "] * 8)
+            ret[-1][0] = chr(ord("A") + i)
+        for c in self.chess_map.values():
+            y, x = c.get_pos()
+            ret[y + 1][x + 1] = "O"
+
+        def util(v):
+            i, j = v // C.PLACE_NUM, v % C.PLACE_NUM
+            y, x = self.chess_map[C.PLACE[j]].get_pos()
+            ret[y + 1][x + 1] = "XY"[i]
+
+        mask_down(board, util)
+        return "\n".join([" ".join(v) for v in ret])
 
 
 L9ENV = L9Env().load()

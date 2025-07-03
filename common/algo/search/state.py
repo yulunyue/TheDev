@@ -205,7 +205,7 @@ class State:
                 f"done:{self.done}, depth:{self.depth}, s:{self.player_id}",
                 f"mask:{self.state}",
                 self.to_str(),
-                f"best_action:{self.best_action}",
+                f"best_action:\n{self.best_action}",
             ]
             + info
             + ["-" * 40]

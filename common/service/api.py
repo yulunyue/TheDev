@@ -1,5 +1,5 @@
 import requests
-from common.util.log import get_log
+from common.util.export import get_log, File
 from common.util.baseconfig import ConfigBase, StrModel, DictModel
 from common.util.model import NumberModel
 from common.util.tool import hash_any
@@ -116,6 +116,7 @@ class Api:
         return self.hander_error(method, uri, res, data or param, cookies)
 
     def hander_error(self, method, uri, res: requests.Response, data, cookies):
+        File("data/log/http/http_error.html").write_file(res.content)
         raise Exception(
             f"{method}:{uri}:{res.status_code}:{res.content[:256]}:{str(data)[:40]},{cookies}"
         )

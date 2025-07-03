@@ -2,8 +2,9 @@ from common.util.export import TestBase, Module
 from common.third_util.export import CodingGame
 from common.algo.export import Algo, AlphaBateSearch
 from .cg import Cgl9
+from .api import L9Api
 from .model.l9state import L9State, L9Action
-from .shape.env import L9ENV
+from .shape.env import L9ENV, C
 
 
 class TestL9(TestBase):
@@ -14,14 +15,20 @@ class TestL9(TestBase):
         elif mode == "replay":
             Cgl9().replay()
 
-    def test_dev(self):
+    def test_1(self):
+        self.test_algo(L9Api())
+
+    def test_debug(self):
         self.test_algo(AlphaBateSearch().load(max_depth=1))
 
+    def test_dev(self):
+        pass
+
     def test_algo(self, algo: Algo):
-        for k, v in L9ENV.get_excepts().items():
+        for k, v in C.get_excepts().items():
             s = L9State.new_state(k)
             a: L9Action = algo.search(s)
-            self.expect(a.action, v)
+            self.expect(a.action, v, f"algo:{algo.get_name()},s:{s}")
 
 
 if __name__ == "__main__":
