@@ -81,7 +81,7 @@ class Logger(logging.Logger):
             *args,
             exc_info=exc_info,
             stack_info=stack_info,
-            stacklevel=stacklevel,
+            stacklevel=stacklevel + 1,
             extra=extra,
         )
 
@@ -102,7 +102,6 @@ class Logger(logging.Logger):
 
         save_path = f"{LOG_DIR}/line/{self.name}_{name}.svg"
         Draw().draw_line(data).save(save_path)
-        self.info(f"{save_path} draw {len(data)}")
 
     def add_hander(self, h: logging.Handler, level, fmt=None):
         if fmt is None:

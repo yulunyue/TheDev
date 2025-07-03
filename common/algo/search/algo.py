@@ -34,16 +34,23 @@ class Algo:
         self.name = name
         return self
 
-    def load(self, use_cache=False, max_t=-1, num_episodes=1000):
+    def load(self, use_cache=False, max_t=-1, num_episodes=1000, epsilon=1):
         self.cache = None
         self.num_episodes = num_episodes
         self.max_t = max_t
+        self.epsilon = epsilon
         if use_cache:
             from common.util.export import get_cache
 
             self.cache = get_cache(self.name)
         self.reset()
         return self
+
+    def time_out(self):
+        return self.max_t > 0 and time.time() - self.begin_time >= self.max_t
+
+    def can_epsilon(self):
+        return np.random.random() < self.epsilon
 
     def set_params(self, params):
         self.params: Params = params
@@ -55,11 +62,25 @@ class Algo:
     def search(self, state: "State") -> "Action":
         self.state_count = 0
         self.begin_time = time.time()
-        self.search_main(state)
+        self.search_main(state.reset_env().reset())
         use_time = int((time.time() - self.begin_time) * 1000)
         self.use_time += use_time
         self.max_use_time = max(self.max_use_time, use_time)
         return state.best_action
+
+    def search_main(self, state: State):
+        self.rewards_record = []
+        for _ in range(self.num_episodes):
+            self.reward_tmp_all = 0
+            self.run_one(state)
+            self.rewards_record.append(self.reward_tmp_all)
+        state.set_best_action(self.get_max_action(state))
+
+    def get_max_action(self, state: State):
+        raise Exception("todo")
+
+    def run_one(self, state: State):
+        pass
 
     def reset(self):
         self.max_use_time = 0
@@ -133,7 +154,7 @@ class Baoli(Algo):
 
 
 class RandomAlgo(Algo):
-    def search_main(self, a: Action, **kw):
-        actions = a.dst.get_actions()
+    def search_main(self, a: State, **kw):
+        actions = a.get_actions()
         if actions:
             a.dst.best_action = np.random.choice(actions)

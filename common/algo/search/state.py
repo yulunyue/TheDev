@@ -13,6 +13,14 @@ class Action:
         self.action = action
         self.src: State = src
         self.dst: State = dst
+        self.data = dict()
+
+    def get_data(self, key):
+        return self.data[key]
+
+    def set_data(self, key, value):
+        self.data[key] = value
+        return self
 
     def set_reward(self, reward):
         self.reward = reward
@@ -104,6 +112,9 @@ class State:
         return 1 - self.player_id
 
     def reset(self):
+        return self
+
+    def reset_env(self):
         return self
 
     def get_action(self, a) -> Action:
@@ -205,7 +216,7 @@ class State:
         self.info = info
         return self
 
-    def __str__(self):
+    def __repr__(self):
         info = []
         if self.info:
             info.extend(self.info)

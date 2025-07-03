@@ -12,82 +12,79 @@ inf = float("inf")
 class MctsNode(State):
     FIRST_PLAYER = 0
 
-    def __init__(self, player_id, depth):
-        super().__init__(player_id, depth)
-        self.visits = 0
-        self.vt_num = 0
-        self.mct_value = 0  # 累计胜利值（玩家视角）
-        self.expand_nodes: List[MctsNode] = []
-        self.parent: MctsNode = None
-        self._untried_actions: List[MctsNode] = None
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+        self.reset()
 
-    @property
-    def untried_actions(self):
-        if self._untried_actions is None:
-            self._untried_actions = [a.dst for a in self.get_actions()]
+    def get_untried_actions(self):
+        if self.untried_actions is None:
+            self._untried_actions = list(self.get_actions().values())
         return self._untried_actions
 
-    # def get_random_action(self) -> Action:
-    #     k = len(self.expand_nodes)
-    #     return self.actions[np.random.randint(0, k)]
+    def reset(self):
+        self.visite_num = 0
+        self.is_visite = False
+        self.vt_num = 0
+        self.mct_value = 0  # 累计胜利值（玩家视角）
+        self.expand_actions: List[Action] = []
+        self.untried_actions: List[Action] = None
+        return super().reset()
 
 
-class MctsSearchTree(Algo):
+class MctsSearch(Algo):
 
-    def load(self, player_size=2, max_t=-1, num_episodes=1000):
-        self.player_size = player_size
+    def load(self, **kw):
         self.scalar = 1 / (2 * math.sqrt(2.0))  # 0.353553
-        self.explore_ratio = 0
-        return super().load(max_t=max_t, num_episodes=num_episodes)
+        return super().load(**kw)
 
-    def select(self, node: MctsNode):
-        while node.expand_nodes:
-            node = max(node.expand_nodes, key=lambda v: self.ucb_score(v))
-        return node
+    def select(self, node: MctsNode, visite_actions: List[Action]):
+        score = 0
+        while node.expand_actions:
+            action = max(node.expand_actions, key=lambda v: self.ucb_score(v))
+            visite_actions.append(node)
+            score += action.reward
+            node = action.dst
+        return node, score
 
-    def expand(self, node: MctsNode):
-        if node.untried_actions:
-            child = node.untried_actions.pop(0)
-            node.expand_nodes.append(child)
+    def expand(self, node: MctsNode, visite_actions: List[Action]):
+        untried_actions = node.get_untried_actions()
+        i = random.randint(0, len(untried_actions) - 1)
+        child = untried_actions.pop(i)
+        node.expand_actions.append(child)
+        visite_actions.append(child)
+        return child.dst, child.reward
 
-    def backpropagate(self, node: MctsNode, value):
-        while node:
-            node.visits += 1
-            if node.depth % self.player_size == node.player_id:
-                node.mct_value += value
-            node = node.parent
+    def backpropagate(self, actions: List[Action], score):
+        for a in actions:
+            a.dst.visite_num += 1
+            a.dst.mct_value += score
+            self.reward_tmp_all += a.reward
 
     def simulate(self, cur: MctsNode):
-        p = cur
-        while cur.done < 0:
-            self.expand(cur)
-            next_step = self.select(cur)
-            next_step.parent = cur
-            cur = next_step
-        ret = 0
-        if cur.done > 0:
-            if cur.done - 1 == p.depth % self.player_size:
-                ret = 1
+        value = 0
+        visite_actions: List[Action] = []
+        while not cur.done:
+            if not cur.is_visite:
+                cur.is_visite = True
+                cur, score = self.expand(cur, visite_actions)
+            elif self.can_epsilon() and cur.get_untried_actions():
+                cur, score = self.expand(cur, visite_actions)
             else:
-                ret = -1
-        return (cur, ret)
+                cur, score = self.select(cur, visite_actions)
+            value += score
+        return visite_actions, value
 
-    def ucb_score(self, node: MctsNode):
-        if not node.visits or node.parent is None:
-            return inf
-        exploit = node.mct_value / node.visits  # 平均值
-        explore = math.sqrt(2.0 * math.log(node.parent.visits) / node.visits)
-        return exploit + self.scalar * explore
+    def ucb_score(self, a: Action):
+        exploit = a.dst.mct_value / a.dst.visite_num  # 平均值
+        explore = math.sqrt(2.0 * math.log(a.src.visite_num) / a.src.visite_num)
+        a.value = exploit + self.scalar * explore
+        return a.value
 
-    def search_main(self, action: Action):
-        self.state_count = 0
-        while self.state_count < self.num_episodes or (
-            self.max_t > 0 and time.time() - self.begin_time < self.max_t
-        ):
-            node, result = self.simulate(action.dst)
-            self.backpropagate(node, result)
-            self.state_count += 1
+    def run_one(self, init_state: MctsNode):
+        visite_actions, score = self.simulate(init_state)
+        self.backpropagate(visite_actions, score)
 
-        actions = action.dst.get_actions()
-        actions.sort(key=lambda a: -a.dst.visits)
-        action.dst.best_action = actions[0]
+    def get_max_action(self, state: MctsNode):
+        actions = list(state.get_actions().values())
+        actions.sort(key=lambda a: a.dst.visite_num)
+        return actions[-1]

@@ -1,6 +1,6 @@
 from common.algo.manage import SolutionBase, View, MOD, inf, File
 
-from common.algo.search.mctssearch import MctsSearchTree, MctsNode
+from common.algo.search.mctssearch import MctsSearch, MctsNode
 from common.algo.search.algo import Algo, np, RandomAlgo
 from common.algo.search.alphabate_search import AlphaBateSearch, AbSearchIter
 

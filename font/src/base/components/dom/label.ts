@@ -40,6 +40,9 @@ export class Label extends Div {
 function lb() {
     return new Label().set_change_color(Constant.COLOR_BLUE)
 }
+export function label() {
+    return new Label()
+}
 export class Pre extends Div {
 
     constructor() {
@@ -76,9 +79,7 @@ export class Pre extends Div {
         this.set_text(this.option.data)
     }
 }
-export function label() {
-    return new Label()
-}
+
 export function pre() {
     return new Pre()
 }

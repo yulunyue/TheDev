@@ -6,29 +6,45 @@ from common.algo.export import (
     DynaQ,
     Algo,
     random_seed,
-    MctsSearchTree,
+    MctsSearch,
+    MctsEasy,
+    np,
+    RandomEpisode,
 )
 
 
 class Test(TestBase):
-    def __init__(self):
-        super().__init__()
-        self.state = CfState.new_one()
 
     def test_dev(self):
-        algo = DynaQ().load(n_planning=4)
-        self.test_algo(algo)
+        self.test_algo(MctsSearch().load())
+
+    def test_debug(self):
+        pass
 
     def test_base(self):
+        self.test_algo(MctsEasy().load())
         self.test_algo(Qlearning().load())
-        # self.test_algo(MctsSearchTree().load())
+        self.test_algo(DynaQ().load())
+        self.test_algo(Sarsa().load())
+
+    def test_all(self):
+        self.test_all()
 
     def test_algo(self, algo: Sarsa):
-        for s, a in ENV.get_expects():
-            state = CfState.new_one(s)
-            self.expect(algo.search(state).action, a, f"s:{s}\n {ENV.to_str()}")
-            logger.draw_line(f"{algo.get_name()}_{s}_{a}", algo.rewards_record)
-        logger.info(ENV.to_str())
+        for y, x, a in ENV.get_expects():
+            state = CfState.new_one(y * ENV.ncol + x)
+            self.expect(
+                algo.search(state).action,
+                a,
+                f"algo:{algo.get_name()} y:{y},x:{x}\n {ENV.to_str()}",
+            )
+            key = f"{algo.get_name()}_{y}_{x}_{a}"
+            logger.map(
+                key=key,
+                avg=np.mean(algo.rewards_record),
+                var=np.var(algo.rewards_record),
+            )
+            logger.draw_line(key, algo.rewards_record)
 
 
 if __name__ == "__main__":
