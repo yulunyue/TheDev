@@ -10,6 +10,7 @@ class Chess:
         from app.yly.game.envs.l9.shape.line import Line
 
         self.lines: List[Line] = []
+        self.nexts: List[Chess]=[]
         self.reset()
 
     def get_pos(self):

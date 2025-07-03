@@ -30,4 +30,10 @@ class L9Api(Api):
             0 if s.depth < C.PLACES_MAX_TURN else 1,
         )
         error, moveInfos = data["error"], data["moveInfos"]
-        logger.info(data)
+        if error:
+            raise Exception(error,moveInfos)
+        def util(a:L9Action):
+            return [a.src_key,a.dst_key,a.remove_key]
+        idx = min(range(len(moveInfos)),key=lambda v:moveInfos)
+        actions = sorted(s.get_actions().values(),key=util)
+        s.set_best_action(actions[idx])        

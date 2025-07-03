@@ -91,16 +91,20 @@ class L9Env:
             return self.get_place_actions(depth % 2 + 1)
         return self.get_move_actions(depth % 2 + 1)
 
+    def add_actions(self,can_remove,player_id,c:Chess):
+        ret = []
+        if can_remove:
+            for rc in self.get_can_removes_chess(2 - player_id):
+                ret.append(self.dump(C.PLACE, c, remove_chess=rc))
+        else:
+            ret.append(self.dump(C.PLACE, c))
+        return ret
     def get_place_actions(self, player_id):
-        chesss: List[Chess] = list(self.chess_player_map[0].values())
+        chesss: List[Chess] = self.chess_player_map[0].values()
         ret = []
         for c in chesss:
             can_remove = self.set_chess_player_id(c, player_id)
-            if can_remove:
-                for rc in self.get_can_removes_chess(2 - player_id):
-                    ret.append(self.dump(C.PLACE, c, remove_chess=rc))
-            else:
-                ret.append(self.dump(C.PLACE, c))
+            ret.extend(self.add_actions(c,can_remove,player_id))
             self.release_chess(c)
         return ret
 
@@ -112,9 +116,18 @@ class L9Env:
                 continue
             not_in_line3_chess.append(c)
         return not_in_line3_chess if not_in_line3_chess else chess
-
-    def get_move_actions(self, player_id):
+    def move(self,c1:Chess,c2:Chess):
         pass
+    def get_move_actions(self, player_id:int):
+        chesss:List[Chess] = self.chess_player_map[player_id].values()
+        for c in chesss:
+            for nc in c.nexts:
+                if nc.player_id:
+                    continue
+                can_move=self.move(c,nc)
+                if can_move:
+                    pass
+                self.move(nc,c)
 
     def dump_board(self, mask):
         board = [0] * C.PLACE_NUM
