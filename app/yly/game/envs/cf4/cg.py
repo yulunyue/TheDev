@@ -1,7 +1,7 @@
-from app.yly.algo.cg.cf4.cf4state import F4State
-from app.yly.algo.cg.cf4.constant import C, logger
+from .cf4state import F4State
+from .constant import C, logger
 from common.algo.search.alphabate_search import AlphaBateSearch
-from app.yly.algo.cg.cf4.kagle import Kagle, KagleAgent, KaggleEnv
+from .kagle import Kagle, KagleAgent, KaggleEnv
 from typing import List
 import json
 import sys

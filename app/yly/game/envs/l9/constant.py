@@ -1,4 +1,5 @@
 class Constant:
+    PLAY_URI = "http://ninemensmorris.ist.tugraz.at:8080/"
     PLACES = [
         "A1",
         "A4",
@@ -44,6 +45,10 @@ class Constant:
         "F2 F4 F6",
         "E3 E4 E5",
     ]
+
+    PLACES_MAX_TURN = 18
+    PLACE = "PLACE"
+    NULL_CHESS_KEY = 0
 
 
 C = Constant()

@@ -1,4 +1,4 @@
-from common.util.test import TestBase, logger
+from common.util.export import TestBase, logger, List, Dict
 from app.xx.study import test
 import _thread
 
@@ -20,6 +20,10 @@ class XxStudyTest(TestBase):
 
         test(util)
         test(util1)
+
+    def test_isinstace(self):
+        b = []
+        self.expect(isinstance(b, List[int]), True)
 
 
 if __name__ == "__main__":

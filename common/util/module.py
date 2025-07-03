@@ -153,4 +153,4 @@ class Module:
             },
             prefix=["common", "app"],
         )
-        return self.RUN_TMP_PATH
+        return self

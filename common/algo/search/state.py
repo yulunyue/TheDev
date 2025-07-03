@@ -62,7 +62,6 @@ class State:
     name = "state"
     parent: "State"
     done = None
-    STATE_STORE: Dict[str, "State"] = None
 
     def __init__(self, state=None, player_id=0, depth=1) -> None:
         self.state = state
@@ -83,21 +82,6 @@ class State:
         self.best_action = a
         return self
 
-    @classmethod
-    def new_state(cls, key, callback=None) -> "State":
-        if cls.STATE_STORE is None:
-            cls.STATE_STORE = dict()
-        if key not in cls.STATE_STORE:
-            if callback is None:
-                callback = cls
-            cls.STATE_STORE[key] = callback(key)
-            # logger.info(cls.STATE_STORE[key])
-        return cls.STATE_STORE[key]
-
-    @classmethod
-    def all_states(cls) -> List["State"]:
-        return [cls.new_state(v) for v in cls.all_state_key()]
-
     def set_done(self, done):
         self.done = done
         return self
@@ -105,10 +89,6 @@ class State:
     def set_reward(self, reward):
         self.reward = reward
         return self
-
-    @property
-    def op_player_id(self):
-        return 1 - self.player_id
 
     def reset(self):
         return self
