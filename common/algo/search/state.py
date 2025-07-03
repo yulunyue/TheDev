@@ -41,8 +41,7 @@ class Action:
         return [[1, self.dst, self.reward]]
 
     def get_reward(self, **kwargs):
-        """ """
-        return self.dst.get_reward(**kwargs)
+        return self.reward
 
     def get_best_actions(self) -> List["Action"]:
         p = self

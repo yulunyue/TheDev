@@ -56,9 +56,6 @@ class Algo:
         self.params: Params = params
         return self
 
-    def search_main(self, state, **kw):
-        pass
-
     def search(self, state: "State") -> "Action":
         self.state_count = 0
         self.begin_time = time.time()
@@ -76,11 +73,15 @@ class Algo:
             self.rewards_record.append(self.reward_tmp_all)
         state.set_best_action(self.get_max_action(state))
 
+    def reward_change(self, v):
+        self.reward_tmp_all += v
+        return self
+
     def get_max_action(self, state: State):
         raise Exception("todo")
 
     def run_one(self, state: State):
-        pass
+        raise Exception("todo")
 
     def reset(self):
         self.max_use_time = 0
