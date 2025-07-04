@@ -30,7 +30,7 @@ class L9Api(Api):
 
 
 class ApiAlgo(Algo):
-    def search_main(self, s: L9State):
+    def get_max_actions(self,s:L9State):
         boards = L9ENV.dump_board(s.board)
         place_move = max(14 - s.place_move, 0)
         data = L9Api.new().get_moveinfo(
@@ -39,21 +39,28 @@ class ApiAlgo(Algo):
             place_move,
         )
         error, moveInfos = data["error"], data["moveInfos"]
+        if len(moveInfos)==0:
+            return
         if error:
             raise Exception(error, moveInfos)
 
+        def u(i,v):
+            if v==0:
+                return [1,-v,i]
+            if v%2==0:
+                return [0,v,i]
+            return [2,-v,i]
+        return sorted([u(i,v) for i,v in enumerate(moveInfos)])
+
+    def search_main(self, s: L9State):
         def util(a: L9Action):
             return [a.src_key, a.dst_key, a.remove_key]
-
-        actions = sorted(s.get_actions().values(), key=util)
-        if len(moveInfos) != len(actions):
+        actions = list(sorted(s.get_actions().values(), key=util))
+        move_infos = self.get_max_actions(s)
+        if len(move_infos) != len(actions):
             raise Exception(
-                s, len(moveInfos), len(actions), actions, data, boards, place_move
+                s,move_infos,actions
             )
-        idx = min(
-            range(len(moveInfos)), key=lambda i: moveInfos[i] if moveInfos[i] else 10000
-        )
-        if idx < len(actions):
-            s.set_best_action(actions[idx])
-        else:
-            raise Exception(s, actions, data, boards)
+       
+        s.set_best_action(actions[move_infos[0][2]])
+

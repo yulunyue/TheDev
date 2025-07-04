@@ -141,18 +141,19 @@ class L9Env:
 
     def move(self, player_id, c1: Chess, c2: Chess):
         self.release_chess(c1)
-        self.set_chess_player_id(c2, player_id)
+        return self.set_chess_player_id(c2, player_id)
 
     def get_move_actions(self, player_id: int, place_move):
         chesss: List[Chess] = list(self.chess_player_map[player_id].values())
         ret = []
-        can_moves = []
-        if len(chesss) == 3:
-            can_moves = list(self.chess_player_map[0].values())
+        can_null_moves = []
+        if len(chesss) <= 3:
+            can_null_moves = list(self.chess_player_map[0].values())
 
         for c in chesss:
-            if not can_moves:
-                can_moves = c.nexts
+            can_moves = c.nexts
+            if can_null_moves:
+                can_moves = can_null_moves
             for nc in can_moves:
                 if nc.player_id:
                     continue
@@ -182,11 +183,11 @@ class L9Env:
 
         for c in self.chess_map.values():
             y, x = c.get_pos()
-            ret[y][x + 1] = "?"
+            ret[y][x + 1] = " "
 
         def util(i, v):
             y, x = self.chess_map[C.PLACES[i]].get_pos()
-            ret[6 - y][x + 1] = "?*#"[v]
+            ret[6 - y][x + 1] = " *#"[v]
 
         mask_down(board, util)
         ret.append([" "] + [chr(ord("A") + i) for i in range(7)])

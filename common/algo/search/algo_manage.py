@@ -40,11 +40,12 @@ class ALgoManage:
 
     def actor(self, players: List[Algo], s: State, max_turn=-1):
         player_idx = 0
-        actions: List[Action] = []
         while not s.done and max_turn != 0:
+            logger.info(s)
             a = players[player_idx].search(s)
-            logger.info(s.best_action)
+            if a is None:
+                return player_idx
             player_idx = (player_idx + 1) % len(players)
             max_turn -= 1
             s = a.dst
-        return actions
+        return player_idx, max_turn

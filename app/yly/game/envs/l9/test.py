@@ -35,8 +35,12 @@ class TestL9(TestBase):
         s = s.get_action("PLACE;A1").dst
         logger.info(s)
 
+    def test_dev5(self):
+        s=L9State.new_state(2500898089577)
+        logger.info(s)
+
     def test_debug(self):
-        self.test_dev2()
+        self.test_dev5()
 
     def test_algo(self, algo: Algo):
         for k, v in C.get_excepts().items():
@@ -45,8 +49,8 @@ class TestL9(TestBase):
             self.expect(a.action, v, f"algo:{algo.get_name()},s:{s}")
 
     def test_pk(self, algo1: Algo, algo2: Algo, s: L9State):
-        ALgoManage().actor([get_player(algo1), get_player(algo2)], s, max_turn=200)
-
+        ans=ALgoManage().actor([get_player(algo1), get_player(algo2)], s, max_turn=200)
+        logger.info(ans)
     def exit(self):
         L9Api.new().cache.flush()
 
