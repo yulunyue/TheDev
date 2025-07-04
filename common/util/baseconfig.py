@@ -1,7 +1,6 @@
 import json
 from common.util.fp import File
 from typing import List
-from common.util.model import StrModel, BaseModel, EnableModel, EncroyModel, DictModel
 
 CONFIG_SETTING_DIR = "data/setting"
 
@@ -12,6 +11,8 @@ class ConfigBase:
         self._config_name = config_name
         self._fp = File(f"{CONFIG_SETTING_DIR}/{file_name}.json")
         self._mtime = 0
+        from common.util.model import BaseModel
+
         self._params: List[BaseModel] = []
         self._config = dict()
         self.init_param()
@@ -33,6 +34,8 @@ class ConfigBase:
 
     def init(self):
         self._config = self.get_config()
+        from common.util.model import BaseModel
+
         for key in dir(self):
             if key.startswith("_"):
                 continue

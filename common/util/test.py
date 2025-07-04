@@ -33,10 +33,15 @@ class TestBase:
         pass
 
     def run(self, args=None):
-        if args is None:
-            args = sys.argv[1:]
-        argvs, kw = url_to_json(args)
-        self.run_one_case(argvs[0], argvs[1:], kw)
+        try:
+            if args is None:
+                args = sys.argv[1:]
+            argvs, kw = url_to_json(args)
+            self.run_one_case(argvs[0], argvs[1:], kw)
+        except Exception as e:
+            raise e
+        finally:
+            self.exit()
 
     def run_one_case(self, name, args, kw):
         f = getattr(self, f"test_{name}")
@@ -49,7 +54,6 @@ class TestBase:
         logger.info(
             f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
         )
-        self.exit()
 
     def exit(self):
         pass

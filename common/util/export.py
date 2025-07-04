@@ -1,6 +1,6 @@
 from common.util.log import File, get_log
 from common.util.module import Module, get_function_info
-from common.util.tool import uid, re_search
+from common.util.tool import uid, re_search, hash_any
 from common.util.test import TestBase, logger, SolotionBase
 from common.util.fp import File, get_cache
 from common.util.module import Module, run_catch_error
@@ -16,3 +16,6 @@ import bisect
 import math
 import traceback
 import heapq
+from common.util.baseconfig import ConfigBase
+from common.util.model import NumberModel, StrModel, DictModel
+from common.util.singleton_util import SingletonUtil

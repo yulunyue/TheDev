@@ -1,15 +1,22 @@
 import requests
-from common.util.export import get_log, File
-from common.util.baseconfig import ConfigBase, StrModel, DictModel
-from common.util.model import NumberModel
-from common.util.tool import hash_any
+from common.util.export import (
+    get_log,
+    File,
+    get_cache,
+    hash_any,
+    ConfigBase,
+    StrModel,
+    DictModel,
+    NumberModel,
+    SingletonUtil,
+)
 import urllib3
 
 urllib3.disable_warnings()
 logger = get_log("api")
 
 
-class Api:
+class Api(SingletonUtil):
     CONTENT_TYPE = "content-type"
     APPLICATION_JSON = "application/json;charset=UTF-8"
 
@@ -23,7 +30,9 @@ class Api:
 
     def set_cache(self, cache=None):
         if cache is None:
-            self.cache = DictModel("cache", self.config)
+            self.cache = get_cache(
+                self.get_endpoint().replace(":", "_").replace("/", "_")
+            )
         else:
             self.cache = cache
         return self
@@ -64,7 +73,7 @@ class Api:
 
     def get_mock_data(self, uri, method, param):
         k = method + "|" + hash_any(uri) + "|" + hash_any(param)
-        if self.cache and self.cache.get(k):
+        if self.cache and self.cache.exists(k):
             return k, self.cache.get(k)
         return k, None
 
@@ -80,7 +89,7 @@ class Api:
             }
         )
         uri = self.url(path)
-        key, mock_res = self.get_mock_data(uri, method, data or param)
+        key, mock_res = self.get_mock_data(path, method, data or param)
         if mock_res:
             return mock_res
         logger.info(f"DO HTTP [{method}] {uri}")

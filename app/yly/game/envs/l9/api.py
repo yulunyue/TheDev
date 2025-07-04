@@ -1,4 +1,5 @@
 from common.service.export import Api
+from common.algo.export import Algo
 from common.util.export import logger
 from app.yly.game.envs.l9.constant import C
 from app.yly.game.envs.l9.model.l9state import L9State, L9Action, L9ENV
@@ -10,6 +11,10 @@ class L9Api(Api):
 
     def get_endpoint(self):
         return C.PLAY_URI
+
+    @classmethod
+    def new(cls):
+        return super().new().set_cache()
 
     def get_moveinfo(self, board, player, placedPieces):
         return self.post_data(
@@ -23,17 +28,32 @@ class L9Api(Api):
             ),
         )
 
-    def search(self, s: L9State):
-        data = self.get_moveinfo(
-            L9ENV.dump_board(s.boards),
+
+class ApiAlgo(Algo):
+    def search_main(self, s: L9State):
+        boards = L9ENV.dump_board(s.board)
+        place_move = 0 if s.place_move > 0 else 1
+        data = L9Api.new().get_moveinfo(
+            boards,
             s.player_id - 1,
-            0 if s.depth < C.PLACES_MAX_TURN else 1,
+            place_move,
         )
         error, moveInfos = data["error"], data["moveInfos"]
         if error:
-            raise Exception(error,moveInfos)
-        def util(a:L9Action):
-            return [a.src_key,a.dst_key,a.remove_key]
-        idx = min(range(len(moveInfos)),key=lambda v:moveInfos)
-        actions = sorted(s.get_actions().values(),key=util)
-        s.set_best_action(actions[idx])        
+            raise Exception(error, moveInfos)
+
+        def util(a: L9Action):
+            return [a.src_key, a.dst_key, a.remove_key]
+
+        idx = min(
+            range(len(moveInfos)), key=lambda i: moveInfos[i] if moveInfos[i] else 10000
+        )
+        actions = sorted(s.get_actions().values(), key=util)
+        if len(moveInfos) != len(actions):
+            raise Exception(
+                s, len(moveInfos), len(actions), actions, data, boards, place_move
+            )
+        if idx < len(actions):
+            s.set_best_action(actions[idx])
+        else:
+            raise Exception(s, actions, data, boards)

@@ -1,5 +1,6 @@
 from typing import List
 from common.algo.search.algo import Algo
+from common.algo.search.state import State, Action
 from common.util.export import logger
 
 
@@ -36,3 +37,14 @@ class ALgoManage:
             raise Exception(player1, player2)
         logger.info(s)
         return self
+
+    def actor(self, players: List[Algo], s: State, max_turn=-1):
+        player_idx = 0
+        actions: List[Action] = []
+        while not s.done and max_turn != 0:
+            a = players[player_idx].search(s)
+            logger.info(s)
+            player_idx = (player_idx + 1) % len(players)
+            max_turn -= 1
+            s = a.dst
+        return actions

@@ -47,15 +47,21 @@ class Constant:
     ]
 
     PLACES_MAX_TURN = 18
-    PLACE = "PLACE"
+    PLACE_ACTION = "PLACE"
+    MOVE_ACTION = "MOVE"
     NULL_CHESS_KEY = 0
     PLACE_NUM = len(PLACES)
-    PLACE_MASK1 = (1 << PLACE_NUM + 1) - 1
-    PLACE_MASK2 = (1 << (2 * PLACE_NUM + 1)) - 1
-    INIT_STATE = 0
+    PLACE_MASK2 = (1 << 2 * PLACE_NUM) - 1
+    INIT_STATE = PLACES_MAX_TURN * (1 << (2 * PLACE_NUM + 1))
 
     def get_excepts(self):
         return {self.INIT_STATE: "PLACE;A3"}
+
+    def get_mask(self, idx):
+        pos = idx * 2
+        mask_2 = 1 << pos
+        mask_1 = self.PLACE_MASK2 - 3 * mask_2
+        return mask_1, mask_2
 
 
 C = Constant()

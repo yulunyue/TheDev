@@ -1,10 +1,11 @@
-from common.util.export import TestBase, Module
+from common.util.export import TestBase, Module, logger
 from common.third_util.export import CodingGame
-from common.algo.export import Algo, AlphaBateSearch
+from common.algo.export import Algo, AlphaBateSearch, ALgoManage
 from .cg import Cgl9
-from .api import L9Api
+from .api import L9Api, ApiAlgo
 from .model.l9state import L9State, L9Action
 from .shape.env import L9ENV, C
+from .util import get_player, PM
 
 
 class TestL9(TestBase):
@@ -15,20 +16,34 @@ class TestL9(TestBase):
         elif mode == "replay":
             Cgl9().replay()
 
-    def test_1(self):
+    def test_dev1(self):
         self.test_algo(L9Api())
 
-    def test_debug(self):
-        self.test_algo(AlphaBateSearch().load(max_depth=1))
+    def test_dev2(self):
+        self.test_pk(PM.api, PM.api, L9State.new_state(C.INIT_STATE))
 
-    def test_dev(self):
-        pass
+    def test_dev3(self):
+        s = L9State.new_state(C.INIT_STATE)
+        self.expect(s.place_move, C.PLACES_MAX_TURN, s)
+        a1 = s.get_action("PLACE;A1")
+        self.expect(a1.dst.place_move, C.PLACES_MAX_TURN - 1, a1.dst)
+        a2 = a1.dst.get_action("PLACE;A4")
+        self.expect(a2.dst.place_move, C.PLACES_MAX_TURN - 2, a2.dst)
+
+    def test_debug(self):
+        self.test_dev2()
 
     def test_algo(self, algo: Algo):
         for k, v in C.get_excepts().items():
             s = L9State.new_state(k)
             a: L9Action = algo.search(s)
             self.expect(a.action, v, f"algo:{algo.get_name()},s:{s}")
+
+    def test_pk(self, algo1: Algo, algo2: Algo, s: L9State):
+        ALgoManage().actor([get_player(algo1), get_player(algo2)], s, max_turn=200)
+
+    def exit(self):
+        L9Api.new().cache.flush()
 
 
 if __name__ == "__main__":
