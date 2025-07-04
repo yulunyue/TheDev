@@ -30,6 +30,11 @@ class TestL9(TestBase):
         a2 = a1.dst.get_action("PLACE;A4")
         self.expect(a2.dst.place_move, C.PLACES_MAX_TURN - 2, a2.dst)
 
+    def test_dev4(self):
+        s = L9State.new_state(C.INIT_STATE)
+        s = s.get_action("PLACE;A1").dst
+        logger.info(s)
+
     def test_debug(self):
         self.test_dev2()
 

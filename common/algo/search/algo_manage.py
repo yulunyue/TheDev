@@ -43,7 +43,7 @@ class ALgoManage:
         actions: List[Action] = []
         while not s.done and max_turn != 0:
             a = players[player_idx].search(s)
-            logger.info(s)
+            logger.info(s.best_action)
             player_idx = (player_idx + 1) % len(players)
             max_turn -= 1
             s = a.dst

@@ -15,8 +15,8 @@ class Chess:
         self.reset()
 
     def get_pos(self):
-        y = ord(self.key[0]) - ord("A")
-        x = int(self.key[1]) - 1
+        x = ord(self.key[0]) - ord("A")
+        y = int(self.key[1]) - 1
         return y, x
 
     def reset(self):

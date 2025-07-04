@@ -107,12 +107,12 @@ class L9Env:
     ):
         ret = []
         if can_remove:
-            for rc in self.get_can_removes_chess(2 - player_id):
+            for rc in self.get_can_removes_chess(3 - player_id):
                 self.release_chess(rc)
                 ret.append(
                     self.dump(method + "&TAKE", src, dst, rc, place_move, player_id)
                 )
-                self.set_chess_player_id(rc, 2 - player_id)
+                self.set_chess_player_id(rc, 3 - player_id)
         else:
             ret.append(self.dump(method, src, dst, None, place_move, player_id))
         return ret
@@ -175,20 +175,21 @@ class L9Env:
         return board
 
     def print_board(self, board):
-        ret = [[" "] + [str(i + 1) for i in range(7)]]
-        for i in range(7):
+        ret = []
+        for i in range(7, 0, -1):
             ret.append([" "] * 8)
-            ret[-1][0] = chr(ord("A") + i)
+            ret[-1][0] = str(i)
 
         for c in self.chess_map.values():
             y, x = c.get_pos()
-            ret[y + 1][x + 1] = "?"
+            ret[y][x + 1] = "?"
 
         def util(i, v):
             y, x = self.chess_map[C.PLACES[i]].get_pos()
-            ret[y + 1][x + 1] = "?*#"[v]
+            ret[6 - y][x + 1] = "?*#"[v]
 
         mask_down(board, util)
+        ret.append([" "] + [chr(ord("A") + i) for i in range(7)])
         return "\n" + "\n".join([" ".join(v) for v in ret]) + "\n"
 
 

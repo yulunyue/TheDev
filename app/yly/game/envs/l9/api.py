@@ -32,10 +32,10 @@ class L9Api(Api):
 class ApiAlgo(Algo):
     def search_main(self, s: L9State):
         boards = L9ENV.dump_board(s.board)
-        place_move = 0 if s.place_move > 0 else 1
+        place_move = max(14 - s.place_move, 0)
         data = L9Api.new().get_moveinfo(
             boards,
-            s.player_id - 1,
+            s.player_id,
             place_move,
         )
         error, moveInfos = data["error"], data["moveInfos"]
@@ -45,14 +45,14 @@ class ApiAlgo(Algo):
         def util(a: L9Action):
             return [a.src_key, a.dst_key, a.remove_key]
 
-        idx = min(
-            range(len(moveInfos)), key=lambda i: moveInfos[i] if moveInfos[i] else 10000
-        )
         actions = sorted(s.get_actions().values(), key=util)
         if len(moveInfos) != len(actions):
             raise Exception(
                 s, len(moveInfos), len(actions), actions, data, boards, place_move
             )
+        idx = min(
+            range(len(moveInfos)), key=lambda i: moveInfos[i] if moveInfos[i] else 10000
+        )
         if idx < len(actions):
             s.set_best_action(actions[idx])
         else:

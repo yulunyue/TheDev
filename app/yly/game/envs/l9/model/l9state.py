@@ -31,10 +31,13 @@ class L9State(State):
         actions = L9ENV.load_from_board(self.board).get_actions(
             self.player_id, self.place_move
         )
+        if len(actions) == 0:
+            self.set_done(self.player_id)
+            return {}
         self.actions = dict()
         for a in actions:
             place_move = self.place_move
-            if place_move > 1:
+            if place_move >= 1:
                 place_move -= 1
             key = (2 * place_move + 2 - self.player_id) << (C.PLACE_NUM * 2)
             s = L9State.new_state(a["board"] + key).set_done(a["done"])
@@ -46,4 +49,4 @@ class L9State(State):
         return self.get_actions()[a]
 
     def to_str(self):
-        return L9ENV.print_board(self.board)
+        return f"place_move: {self.place_move}" + L9ENV.print_board(self.board)
