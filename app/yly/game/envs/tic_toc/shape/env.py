@@ -11,9 +11,10 @@ class Env(Cell9):
     CLS_TYPE = Cell9
 
     def get_actions(self, last_pos: int):
-        idx1, _ = last_pos // 9, last_pos % 9
-        if idx1 < len(self.cells) and self.cells[idx1].value == 0:
-            actions = self.cells[idx1].get_actions()
+        y, x = last_pos // 9, last_pos % 9
+        idx = y * 2 + x
+        if idx < len(self.cells) and self.cells[idx].value == 0:
+            actions = self.cells[idx].get_actions()
             if actions:
                 return actions
         actions = []
@@ -29,7 +30,7 @@ class Env(Cell9):
         for i in range(C.ALL_SIZE1):
             tmp = [f"{i}"]
             for j in range(C.ALL_SIZE1):
-                tmp.append(" OX"[self.cells[i].cells[j].state])
+                tmp.append("#OX"[self.cells[i].cells[j].state])
             ret.append(" ".join(tmp))
         ret.append("  " + " ".join([str(i) for i in range(C.ALL_SIZE1)]))
         return "\n".join(ret)

@@ -155,7 +155,9 @@ class Baoli(Algo):
 
 
 class RandomAlgo(Algo):
-    def search_main(self, a: State, **kw):
-        actions = a.get_actions()
-        if actions:
-            a.dst.best_action = np.random.choice(actions)
+    def search_main(self, s: State, **kw):
+        actions = list(s.get_actions().values())
+        if not actions:
+            return
+        a = np.random.choice(actions)
+        s.set_best_action(a)
