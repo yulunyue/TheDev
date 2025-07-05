@@ -6,15 +6,18 @@ from .line import Line, LINES
 class Cell:
     def __init__(self, key):
         self.key = key
-        self.value = self.state = 0
+        self.value  = 0
         self.p_lines: List[Line] = []
+    
+    def set_state(self,value):
+        return self.set_value(value)
 
-    def set_state(self, state):
-        if state == self.state:
+    def set_value(self, value):
+        if self.value == value:
             return self
         for l in self.p_lines:
-            l.change(self.state, state)
-        self.state = state
+            l.change(self.value, value)
+        self.value = value
         return self
 
 
@@ -25,7 +28,7 @@ class Cell9(Cell):
 
     def __init__(self, pos):
         super().__init__(pos)
-
+        self.state=0
         self.cells: List[Cell] = []
         for i in range(C.ALL_SIZE1):
             self.cells.append(self.__class__.CLS_TYPE(i))
@@ -54,16 +57,18 @@ class Cell9(Cell):
         self.ct[player_id][src] -= 1
         self.ct[player_id][dst] += 1
         if self.ct[1][3]:
-            self.value = 1
+            self.set_value(1)
         elif self.ct[2][3]:
-            self.value = 2
+            self.set_value(2)
         else:
-            self.value = 0
+            self.set_value(0)
 
     def get_actions(self):
+        if self.value:
+            return []
         ret = []
         for c in self.cells:
-            if c.state:
+            if c.value:
                 continue
-            ret.append(c.key * 9 + self.key)
+            ret.append(dict(pos1=self.key,pos2=c.key))
         return ret
