@@ -38,7 +38,7 @@ class ALgoManage:
         logger.info(s)
         return self
 
-    def actor(self, players: List[Algo], s: State, max_turn=-1):
+    def actor(self, players: List[Algo], s: State, max_turn=4):
         player_idx = 0
         while not s.done and max_turn != 0:
             logger.info(s)

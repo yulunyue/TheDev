@@ -34,14 +34,6 @@ def pow_mul_rect(a, n, f0, mod):
     return res
 
 
-def setbit(x, n):
-    return x | 1 << n
-
-
-def clrbit(x, n):
-    return x & ~(1 << n)
-
-
 def calc_angle(y, x, y1, x1):
     """
     0->2*pi
@@ -197,22 +189,3 @@ def jc(n):
     if n <= 2:
         return 2
     return n * jc(n - 1)
-
-
-def low_bits(j):
-    ret = []
-    i = j
-    while i:
-        low_bit = i & -i
-        ret.append(low_bit)
-        i -= low_bit
-    return ret
-
-
-def get_sub_bits(i):
-    j = i
-    ret = []
-    while j:
-        ret.append(j)
-        j = (j - 1) & i
-    return ret

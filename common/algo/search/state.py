@@ -63,7 +63,7 @@ class State:
     parent: "State"
     done = None
 
-    def __init__(self, state=None, player_id=0, depth=1) -> None:
+    def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
         self.depth = depth
         self.player_id = player_id
@@ -76,6 +76,10 @@ class State:
 
     def set_value(self, v):
         self.value = v
+        return self
+
+    def set_depth(self, depth):
+        self.depth = depth
         return self
 
     def set_best_action(self, a):

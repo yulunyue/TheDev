@@ -2,6 +2,14 @@ from common.mock import CgMock
 
 
 class TicTocCg(CgMock):
+    uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
+    gameid = "6246186678d52f83e9a2d47885d4b6f60900eed7"
+    agentsIds = [
+        # 5604295,
+        -2,
+        -1,
+    ]
+
     def run(self):
         while True:
             opponent_row, opponent_col = [int(i) for i in self.input().split()]
