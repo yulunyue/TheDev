@@ -19,6 +19,20 @@ class Constant:
             pos = pos1 * 9 + pos2
             board = set_mask(board, pos * 2, pos * 2 + 2, player_id)
         return encode_data([board, 3 - player_id, pos2], [2, 4])
-
+    
+    def op_pos(self,y,x):
+        y1,y2=y//3,y%3
+        x1,x2=x//3,x%3
+        return (y1*3+x1)+y2*3+x2
+    
+    def pos_op(self,pos):
+        y,x=pos//9,pos%9
+        y1, x1, y2, x2 = (
+            y // 3,
+            y % 3,
+            x // 3,
+            x % 3,
+        )
+        return y1*3+y2,x1*3+x2
 
 C = Constant()
