@@ -13,28 +13,34 @@ class Env(Cell9):
     def get_actions(self, idx: int):
         actions = []
         if idx < len(self.cells) and self.cells[idx].value == 0:
-            actions = self.cells[idx].get_actions()
-        if not actions:
-            for c in self.cells:
-                actions.extend(c.get_actions())
+            self.cells[idx].put_all_actions(actions)
+        else:
+            self.put_all_actions(actions)
         return actions
 
-    def to_str(self, board,info=""):
+    def to_str(self, board, info=""):
         self.set_state(board)
-        ret = [info]
-        s3="*" + "".join([str(i)+('*' if i%3==2 else ' ') for i in range(C.ALL_SIZE1)])
+        ret = []
+        for i in range(11):
+            tmp = []
+            num2 = 17
+            if i % 4 == 3:
+                ret.append(["#" if j % 2 == 0 else " " for j in range(num2)])
+                continue
+            for j in range(num2):
+                tmp.append("#" if j % 6 == 5 else " ")
+            ret.append(tmp)
         for i in range(C.ALL_SIZE1):
-            tmp = [f"{i}"]
+            g = self.cells[i]
+            y, x = (g.key // 3) * 4, (g.key % 3) * 3
+            if g.value:
+                ret[y + 1][(x + 1) * 2] = str(g.value)
+                continue
             for j in range(C.ALL_SIZE1):
-                p1=(i//3)*3+(j//3)
-                p2=(i%3)*3+(j%3)
-                s2 = " OX"[self.cells[p1].cells[p2].value]
-                s2+=("*" if j%3==2 else " ")
-                tmp.append(s2)
-            ret.append("".join(tmp))
-            if i%3==2:
-                ret.append(s3)
-        return "\n".join(ret)
+                c = g.cells[j]
+                dy, dx = c.key // 3, c.key % 3
+                ret[y + dy][(x + dx) * 2] = " XO"[c.value]
+        return info + "\n" + "\n".join(["".join(row) for row in ret])
 
 
-E = Env(None)
+E = Env(0, None)

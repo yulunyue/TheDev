@@ -19,7 +19,7 @@ class Line:
         self.shapes: List[Cell] = [shap1, shape2, shape3]
         for s in self.shapes:
             s.p_lines.append(self)
-        self.nums = [3, 0, 0]
+        self.nums = [3, 0, 0, 0]
 
     def change(self, f, t):
         self.p.add_line_count(f, self.nums[f], self.nums[f] - 1)

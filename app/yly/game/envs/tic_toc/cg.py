@@ -1,4 +1,7 @@
 from common.mock import CgMock
+from common.algo.search.alphabate_search import AlphaBateSearch
+from app.yly.game.envs.tic_toc.model.ttstate import TtState
+from app.yly.game.envs.tic_toc.constant import C
 
 
 class TicTocCg(CgMock):
@@ -10,14 +13,20 @@ class TicTocCg(CgMock):
         -1,
     ]
 
+    def get_search(self):
+        return AlphaBateSearch().load(4)
+
     def run(self):
+        s = self.get_search()
+        state = TtState.new_state(C.INIT_SATTE)
         while True:
             opponent_row, opponent_col = [int(i) for i in self.input().split()]
             valid_action_count = int(self.input())
             for i in range(valid_action_count):
                 row, col = [int(j) for j in self.input().split()]
             if opponent_row != -1 and opponent_col == -1:
-                self.mv = self.do(opponent_row, opponent_col)
+                a = opponent_row * 9 + opponent_col
+                state = state.get_action(a).dst
             if self.mv:
                 self.search.search(self.mv)
                 self.mv = self.mv.best_action
