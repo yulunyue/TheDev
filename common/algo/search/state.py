@@ -204,7 +204,7 @@ class State:
         if not self.data:
             self.data = dict()
         self.data[key] = value
-        return self
+        return value
 
     def __repr__(self):
         info = []

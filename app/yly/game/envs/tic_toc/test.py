@@ -35,7 +35,7 @@ class TestTicToc(TestBase):
         ).fight()
 
     def test_debug(self):
-        self.test_dev4()
+        self.test_dev5()
 
     def test_dev3(self):
         s = TtState.new_state(98)
