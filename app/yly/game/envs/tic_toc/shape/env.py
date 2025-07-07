@@ -11,8 +11,7 @@ class Env(Cell9):
     CLS_TYPE = Cell9
 
     def get_actions(self, last_pos: int):
-        y, x = last_pos // 9, last_pos % 9
-        idx = y * 2 + x
+        idx, _ = last_pos // 9, last_pos % 9
         if idx < len(self.cells) and self.cells[idx].value == 0:
             actions = self.cells[idx].get_actions()
             if actions:
@@ -24,9 +23,10 @@ class Env(Cell9):
             actions.extend(c.get_actions())
         return actions
 
-    def to_str(self, board):
+    def to_str(self, board, last_pos):
         self.set_state(board)
-        ret = [""]
+        p2, p1 = last_pos // 9, last_pos % 9
+        ret = [f"p1: {p1}; p2: {p2}"]
         for i in range(C.ALL_SIZE1):
             tmp = [f"{i}"]
             for j in range(C.ALL_SIZE1):

@@ -7,7 +7,7 @@ class Constant:
     ALL_SIZE1 = ROW_SIZE * COL_SIZE
     ALL_SIZE2 = ALL_SIZE1 * ALL_SIZE1
 
-    INIT_SATTE = 81 + (1 << 7)
+    INIT_SATTE = 90 + (1 << 7)
 
     def decode_state(self, v):
         return decode_data(v, [2, 7])

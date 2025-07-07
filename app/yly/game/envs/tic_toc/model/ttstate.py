@@ -39,4 +39,4 @@ class TtState(State):
         return self.get_actions()[a]
 
     def to_str(self):
-        return E.to_str(self.board)
+        return E.to_str(self.board, self.last_pos)
