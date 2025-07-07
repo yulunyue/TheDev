@@ -214,3 +214,6 @@ class State:
             + info
             + ["-" * 40]
         )
+
+    def get_win_player(self):
+        raise Exception("xx")

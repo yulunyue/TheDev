@@ -5,7 +5,7 @@ from common.util.export import logger
 
 
 class AlphaBateSearch(Algo):
-    def load(self, max_depth, use_cache=False, use_alpha_bate=True):
+    def load(self, max_depth, use_cache=False, use_alpha_bate=False):
         self.max_depth = max_depth
         self.use_alpha_bate = use_alpha_bate
         return super().load(use_cache=use_cache)

@@ -1,21 +1,30 @@
 from app.yly.game.envs.tic_toc.constant import C
-from typing import List, Dict
+from typing import List, Dict, Any
 from .line import Line, LINES
 
 
 class Cell:
-    def __init__(self, key):
+    def __init__(self, key, p):
         self.key = key
-        self.value = self.state = 0
+        self.p: Cell9 = p
+        self.value = 0
         self.p_lines: List[Line] = []
 
-    def set_state(self, state):
-        if state == self.state:
+    def set_state(self, value):
+        return self.set_value(value)
+
+    def set_value(self, value):
+        if self.value == value:
             return self
-        for l in self.p_lines:
-            l.change(self.state, state)
-        self.state = state
+        if self.p:
+            self.p.value_change(self, value)
+            for l in self.p_lines:
+                l.change(self.value, value)
+        self.value = value
         return self
+
+    def put_all_actions(self, actions: List):
+        actions.append(dict(pos1=self.p.key, pos2=self.key))
 
 
 class Cell9(Cell):
@@ -23,21 +32,22 @@ class Cell9(Cell):
     MASK = 3
     CLS_TYPE = Cell
 
-    def __init__(self, pos):
-        super().__init__(pos)
-
+    def __init__(self, pos, p):
+        super().__init__(pos, p)
+        self.state = 0
         self.cells: List[Cell] = []
+        self.value = 0
+        self.ct0 = 9
+        self.cell_map: List[Dict[int, Cell9]] = [dict(), dict(), dict(), dict()]
         for i in range(C.ALL_SIZE1):
-            self.cells.append(self.__class__.CLS_TYPE(i))
+            c = self.__class__.CLS_TYPE(i, self)
+            self.cells.append(c)
+            self.cell_map[0][c.key] = c
         self.c_lines = []
         for a, b, c in LINES:
             ln = Line(self, self.cells[a], self.cells[b], self.cells[c])
             self.c_lines.append(ln)
-
-        self.reset()
-
-    def reset(self):
-        self.ct = [[0] * 4 for _ in range(3)]
+        self.ct = [[0] * 4 for _ in range(4)]
 
     def set_state(self, state):
         if self.state == state:
@@ -50,20 +60,27 @@ class Cell9(Cell):
             i += 1
         return self
 
+    def value_change(self, s: Cell, dst):
+        if dst == 0:
+            self.ct0 += 1
+        if s.value == 0:
+            self.ct0 -= 1
+        c = self.cell_map[s.value].pop(s.key)
+        self.cell_map[dst][s.key] = c
+
     def add_line_count(self, player_id, src, dst):
         self.ct[player_id][src] -= 1
         self.ct[player_id][dst] += 1
         if self.ct[1][3]:
-            self.value = 1
+            self.set_value(1)
         elif self.ct[2][3]:
-            self.value = 2
+            self.set_value(2)
+        elif self.ct0 == 0:
+            self.set_value(3)
         else:
-            self.value = 0
+            self.set_value(0)
 
-    def get_actions(self):
-        ret = []
-        for c in self.cells:
-            if c.state:
-                continue
-            ret.append(c.key * 9 + self.key)
-        return ret
+    def put_all_actions(self, actions):
+        cells = list(self.cell_map[0].values())
+        for c in cells:
+            c.put_all_actions(actions)

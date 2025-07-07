@@ -7,15 +7,33 @@ class Constant:
     ALL_SIZE1 = ROW_SIZE * COL_SIZE
     ALL_SIZE2 = ALL_SIZE1 * ALL_SIZE1
 
-    INIT_SATTE = 90 + (1 << 7)
+    INIT_SATTE = 10 + (1 << 4)
+
+    MAX_SCORE = 1000
 
     def decode_state(self, v):
-        return decode_data(v, [2, 7])
+        return decode_data(v, [2, 4])
 
-    def encode_state(self, board, player_id, last_pos):
-        if last_pos < C.INIT_SATTE:
-            board = set_mask(board, last_pos * 2, last_pos * 2 + 2, player_id)
-        return encode_data([board, 3 - player_id, last_pos], [2, 7])
+    def encode_state(self, board, player_id, pos1, pos2):
+        if pos2 < C.INIT_SATTE:
+            pos = pos1 * 9 + pos2
+            board = set_mask(board, pos * 2, pos * 2 + 2, player_id)
+        return encode_data([board, 3 - player_id, pos2], [2, 4])
+
+    def op_pos(self, y, x):
+        y1, y2 = y // 3, y % 3
+        x1, x2 = x // 3, x % 3
+        return (y1 * 3 + x1) + y2 * 3 + x2
+
+    def pos_op(self, pos):
+        y, x = pos // 9, pos % 9
+        y1, x1, y2, x2 = (
+            y // 3,
+            y % 3,
+            x // 3,
+            x % 3,
+        )
+        return y1 * 3 + y2, x1 * 3 + x2
 
 
 C = Constant()

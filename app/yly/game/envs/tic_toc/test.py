@@ -1,27 +1,37 @@
-from common.util.export import TestBase, logger
+from common.util.export import TestBase, logger, Module
 from common.algo.export import ALgoManage, Algo, State, random_seed
+from common.third_util.export import CodingGame
 from .util import Pm
 from .model.ttstate import TtState
 from .constant import C
-
-
-def fight(p1: Algo, p2: Algo, state: State):
-    ALgoManage().actor([p1, p2], state, max_turn=10)
+from .cg import TicTocCg
 
 
 class TestTicToc(TestBase):
-    def test_dev1(self):
-        fight(Pm.rn, Pm.rn, TtState.new_state(C.INIT_SATTE))
+    def test_cg(self, mode="submit"):
+        Module().compile_one("app/yly/game/envs/l9/cg.py")
+        if mode == "submit":
+            CodingGame("cf4").pk(
+                Module.RUN_TMP_PATH, TicTocCg.game_id, TicTocCg.agentsIds
+            )
+        elif mode == "replay":
+            TicTocCg().replay()
 
-    def test_dev2(self):
-        a = TtState.new_state(C.INIT_SATTE)
-        s = a.get_action(2 * 9 + 2)
-        self.expect(False, True, s.dst)
-        s1 = s.dst.get_action(8 * 9 + 3)
-        self.expect(False, True, s1.dst)
+    def test_actor(self):
+        s = TtState.new_state(C.INIT_SATTE)
+        ans = ALgoManage().actor([Pm.ab1, Pm.ab1], s, max_turn=100)
+        logger.info(f"lose:{ans}")
+
+    def test_fight(self):
+        s = TtState.new_state(C.INIT_SATTE)
+        ALgoManage().fight([Pm.ab1, Pm.ab2, Pm.ab3, Pm.ab4], s)
 
     def test_debug(self):
-        self.test_dev2()
+        self.test_actor()
+
+    def test_dev3(self):
+        s = TtState.new_state(98)
+        logger.info(s)
 
 
 if __name__ == "__main__":

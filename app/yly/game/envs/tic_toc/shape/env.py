@@ -10,30 +10,37 @@ class Env(Cell9):
     cells: List[Cell9]
     CLS_TYPE = Cell9
 
-    def get_actions(self, last_pos: int):
-        idx, _ = last_pos // 9, last_pos % 9
-        if idx < len(self.cells) and self.cells[idx].value == 0:
-            actions = self.cells[idx].get_actions()
-            if actions:
-                return actions
+    def get_actions(self, idx: int):
         actions = []
-        for c in self.cells:
-            if c.value:
-                continue
-            actions.extend(c.get_actions())
+        if idx < len(self.cells) and self.cells[idx].value == 0:
+            self.cells[idx].put_all_actions(actions)
+        else:
+            self.put_all_actions(actions)
         return actions
 
-    def to_str(self, board, last_pos):
+    def to_str(self, board, info=""):
         self.set_state(board)
-        p2, p1 = last_pos // 9, last_pos % 9
-        ret = [f"p1: {p1}; p2: {p2}"]
+        ret = []
+        for i in range(11):
+            tmp = []
+            num2 = 17
+            if i % 4 == 3:
+                ret.append(["#" if j % 2 == 0 else " " for j in range(num2)])
+                continue
+            for j in range(num2):
+                tmp.append("#" if j % 6 == 5 else " ")
+            ret.append(tmp)
         for i in range(C.ALL_SIZE1):
-            tmp = [f"{i}"]
+            g = self.cells[i]
+            y, x = (g.key // 3) * 4, (g.key % 3) * 3
+            if g.value:
+                ret[y + 1][(x + 1) * 2] = str(g.value)
+                continue
             for j in range(C.ALL_SIZE1):
-                tmp.append("#OX"[self.cells[i].cells[j].state])
-            ret.append(" ".join(tmp))
-        ret.append("  " + " ".join([str(i) for i in range(C.ALL_SIZE1)]))
-        return "\n".join(ret)
+                c = g.cells[j]
+                dy, dx = c.key // 3, c.key % 3
+                ret[y + dy][(x + dx) * 2] = " XO"[c.value]
+        return info + "\n" + "\n".join(["".join(row) for row in ret])
 
 
-E = Env(None)
+E = Env(0, None)
