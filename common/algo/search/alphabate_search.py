@@ -83,13 +83,11 @@ class AlphaBateSearch(Algo):
                 done = dfs(a.dst, depth + 1)
                 ret.append(f'{" "*depth}- {a}: {done}')
 
-            # for k, value in ct.items():
-            #     if k == state.player_id and value:
-            #         ret.extend(value)
-            #         return k
-            #     elif k and len(value) == len(mvs):
-            #         ret.extend(value)
-            #         return k
+            for k, value in ct.items():
+                if k == state.player_id and value:
+                    return k
+                elif k and len(value) == len(mvs):
+                    return k
             return None
 
         dfs(s)
