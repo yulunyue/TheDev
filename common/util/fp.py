@@ -102,6 +102,14 @@ class File:
         if self.type.startswith("xls"):
             return self.dump_excel()
 
+    WITHE_FILE_HANDER = dict()
+
+    def get_writer(self):
+        if self.path in self.WITHE_FILE_HANDER:
+            return self.WITHE_FILE_HANDER[self.path]
+        self.WITHE_FILE_HANDER[self.path] = open(self.path, "w")
+        return self.WITHE_FILE_HANDER[self.path]
+
 
 class Cache:
     def __init__(self, name):

@@ -101,59 +101,6 @@ class Algo:
         pass
 
 
-class Baoli(Algo):
-    def search_dfs(self, s: Action, depth):
-        actions: Dict[str, Action] = s.dst.get_actions(depth=depth)
-        if not actions or depth == 0:
-            return s.action, s.dst.done, -s.get_reward(self.params)
-        self.state_count += 1
-        if self.state_count >= self.state_max_num:
-            return s.action, -1, inf
-        best = -inf
-        best_action = None
-        cur_done = defaultdict(int)
-        for k, a in actions.items():
-            best_a, done, value = self.search_dfs(a, depth - 1)
-            cur_done[done] += 1
-            value = -value
-            if value > best:
-                best = value
-                best_action = best_a
-        if cur_done[s.dst.player_id]:
-            result = s.dst.player_id
-        elif cur_done[-1]:
-            result = -1
-        else:
-            result = s.dst.op_player_id
-        return best_action, result, best
-
-    def search_dfs_main(self, cur: Action, max_depth, state_max_num):
-        self.begin_time = time.time()
-        self.state_count = 0
-        self.state_max_num = state_max_num
-        best_action, done, value = self.search_dfs(cur, max_depth)
-        return dict(
-            done=done,
-            value=value,
-            state_count=self.state_count,
-            best_action=best_action,
-        )
-
-    def search_bfs(self, state, depth=0, cache=None, **kw):
-        q = [state]
-        while q and self.state_count < self.state_max_num:
-            s = q
-            q = []
-            for v in s:
-                for n in v.get_actions():
-                    q.append(v)
-                self.state_count += 1
-
-    def dfs(self, s: State, depth=0):
-        for k, a in s.get_actions().items():
-            self.dfs(a.dst, depth - 1)
-
-
 class RandomAlgo(Algo):
     def search_main(self, s: State, **kw):
         actions = list(s.get_actions().values())

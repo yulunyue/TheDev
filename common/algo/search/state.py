@@ -1,13 +1,14 @@
 from typing import List, Dict
 import numpy as np
 import random
-from common.util.export import logger
+from common.util.export import logger, json_dumps, defaultdict
 
 inf = float("inf")
 
 
 class Action:
     check_info = None
+    reward = None
 
     def __init__(self, src, action, dst=None):
         self.action = action
@@ -69,6 +70,9 @@ class State:
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
+
+    def get_done(self):
+        return self.done
 
     def set_best_action(self, a: Action):
         self.best_action = a
@@ -171,15 +175,16 @@ class State:
         ret = []
 
         def dfs(s: State, depth):
-
-            for a in s.get_actions().values():
-                if depth == max_depth:
-                    ret.append(f'{" "*depth}- {a.action}: {a.get_reward()} {a.reward}')
-                else:
-                    ret.append(f'{" "*depth}- {a.action}: ')
-                    dfs(a.dst, depth + 1)
+            if s.get_done() or depth == max_depth:
+                return s.get_done()
+            actions = list(s.get_actions().values())
+            for a in actions:
+                done = dfs(a.dst, depth + 1)
+                ret.append(f'{" "*depth}- {a}: {done}')
+            return None
 
         dfs(self, 0)
+        ret.reverse()
         return "\n".join(ret)
 
     def get_reward(self, **kw):
@@ -193,16 +198,18 @@ class State:
                 reward = ar
         return reward
 
-    info = None
+    data = None
 
-    def set_info(self, info):
-        self.info = info
+    def set_data(self, key, value):
+        if not self.data:
+            self.data = dict()
+        self.data[key] = value
         return self
 
     def __repr__(self):
         info = []
-        if self.info:
-            info.extend(self.info)
+        if self.data:
+            info.append(json_dumps(self.data))
         return f"\n".join(
             ["", "-" * 40]
             + [

@@ -5,6 +5,7 @@ import heapq
 from typing import List, Dict
 import math
 from sortedcontainers import SortedDict, SortedList, SortedSet
+from collections import defaultdict
 
 
 def get_log(*args, **kw):

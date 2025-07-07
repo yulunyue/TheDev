@@ -1,5 +1,5 @@
-from app.yly.game.envs.tic_toc.constant import C
-from typing import List, Dict, Any
+from app.yly.game.envs.tic_toc.constant import C, logger
+from common.util.export import List, Dict
 from .line import Line, LINES
 
 
@@ -24,7 +24,7 @@ class Cell:
         return self
 
     def put_all_actions(self, actions: List):
-        actions.append(dict(pos1=self.p.key, pos2=self.key))
+        actions.append(dict(pos=self.key * 9 + self.p.key))
 
 
 class Cell9(Cell):
@@ -53,11 +53,10 @@ class Cell9(Cell):
         if self.state == state:
             return self
         self.state = state
-        i = 0
-        while state:
+        for i in range(len(self.cells)):
             self.cells[i].set_state(state & self.MASK)
             state = state >> self.MASK_NUM
-            i += 1
+
         return self
 
     def value_change(self, s: Cell, dst):

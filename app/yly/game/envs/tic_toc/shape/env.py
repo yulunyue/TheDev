@@ -12,6 +12,7 @@ class Env(Cell9):
 
     def get_actions(self, idx: int):
         actions = []
+        idx = idx // 9
         if idx < len(self.cells) and self.cells[idx].value == 0:
             self.cells[idx].put_all_actions(actions)
         else:

@@ -78,7 +78,8 @@ def json_dumps(oj, indent=2):
     def util(v):
         if isinstance(v, set):
             return list(v)
-        return v
+        if isinstance(v, (str, int, list, dict)):
+            return v
+        return str(v)
 
     return json.dumps(oj, indent=indent, default=util)
-

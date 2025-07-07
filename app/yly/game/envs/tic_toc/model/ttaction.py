@@ -3,7 +3,14 @@ from app.yly.game.envs.tic_toc.constant import C
 
 
 class TtAction(Action):
-    def get_reward(self, player_id, **kwargs):
+    def __init__(self, src, action, dst=None):
+        from app.yly.game.envs.tic_toc.model.ttstate import TtState
+
+        self.src: TtState = src
+        self.dst: TtState = dst
+        self.action: int = action
+
+    def get_reward(self, player_id=None, **kwargs):
         value = 0
         if self.dst.done == 1 or self.dst.done == 2:
             value = C.MAX_SCORE
@@ -11,4 +18,4 @@ class TtAction(Action):
 
     def __repr__(self):
         y, x = self.action // 9, self.action % 9
-        return f"action->a:{self.action} y:{y} x:{x}"
+        return f"{x},{y}"

@@ -10,7 +10,7 @@ def encode_data(array, pos):
     return ans
 
 
-def decode_data(mask, pos: List[int]):
+def decode_data(mask, pos: List[int]) -> List[int]:
     ans = []
     while pos:
         i = pos.pop()
