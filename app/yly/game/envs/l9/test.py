@@ -36,7 +36,7 @@ class TestL9(TestBase):
         logger.info(s)
 
     def test_dev5(self):
-        s=L9State.new_state(2500898089577)
+        s = L9State.new_state(2500898089577)
         logger.info(s)
 
     def test_debug(self):
@@ -49,8 +49,13 @@ class TestL9(TestBase):
             self.expect(a.action, v, f"algo:{algo.get_name()},s:{s}")
 
     def test_pk(self, algo1: Algo, algo2: Algo, s: L9State):
-        ans=ALgoManage().actor([get_player(algo1), get_player(algo2)], s, max_turn=200)
+        ans = (
+            ALgoManage("l9")
+            .set_init_state(s)
+            .actor([get_player(algo1), get_player(algo2)], max_turn=200)
+        )
         logger.info(ans)
+
     def exit(self):
         L9Api.new().cache.flush()
 

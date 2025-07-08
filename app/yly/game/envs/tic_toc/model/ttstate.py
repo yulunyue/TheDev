@@ -19,9 +19,6 @@ class TtState(State):
             return TtState.STATE_STORE[key]
 
         board, player_id, last_pos = C.decode_state(key)
-        # logger.map(
-        #     l=board.bit_count(), p=player_id, pos1=last_pos % 9, pos2=last_pos // 9
-        # )
         TtState.STATE_STORE[key] = TtState(key, board, last_pos, player_id=player_id)
         return TtState.STATE_STORE[key]
 
@@ -65,8 +62,14 @@ class TtState(State):
             return self.done
         return None
 
-    def get_reward(self, **kw):
-        return 0
+    def get_reward(self, player_id, **kwargs):
+        value = 0
+        done = self.get_done()
+        if done == 1:
+            value = -C.MAX_SCORE
+        elif done == 2:
+            value = C.MAX_SCORE
+        return value if player_id == done else -value
 
     def get_done(self):
         if self.done is None:

@@ -23,7 +23,7 @@ class AlphaBateSearch(Algo):
         player_id=None,
         **kw,
     ) -> None:
-        if depth == self.max_depth:
+        if depth == self.max_depth or state.get_done():
             return action.get_reward(
                 depth=depth, params=self.params, player_id=player_id
             )
@@ -53,18 +53,20 @@ class AlphaBateSearch(Algo):
     def search_dfs(
         self, state: State, action: Action = None, depth=0, player_id=None, **kw
     ):
-        if depth == self.max_depth:
-            return action.get_reward(
-                depth=depth, params=self.params, player_id=player_id
+        if depth == self.max_depth or state.get_done():
+            return state.get_depth_reward(
+                depth, player_id=player_id, params=self.params, action=action
             )
         mvs: Dict[str, Action] = state.get_actions(depth=depth)
         if not mvs:
-            return action.get_reward(
-                depth=depth, params=self.params, player_id=player_id
+            return state.get_depth_reward(
+                depth, player_id=player_id, params=self.params, action=action
             )
         best_reward = -inf
         for k, a in mvs.items():
-            reward = self.search_dfs(a.dst, action=a, depth=depth + 1)
+            reward = -self.search_dfs(
+                a.dst, action=a, depth=depth + 1, player_id=player_id
+            )
             if reward > best_reward:
                 state.set_best_action(a)
                 best_reward = reward
@@ -76,20 +78,21 @@ class AlphaBateSearch(Algo):
         def dfs(state: State, depth=0):
             done = state.get_done()
             if done or depth == self.max_depth:
-                return state.set_data("done",done)
+                return state.set_data("done", done)
             mvs = list(state.get_actions(depth=depth).values())
             ct = defaultdict(int)
             for a in mvs:
                 done = dfs(a.dst, depth + 1)
-                ct[done]+=1
+                ct[done] += 1
 
             for k, value in ct.items():
                 if k == state.player_id and value:
-                    return state.set_data("done",k)
+                    return state.set_data("done", k)
                 elif k and ct[done] == len(mvs):
-                    return state.set_data("done",k)
-            return state.set_data("done",0)
-        def dfs2(state:State,depth=0):
+                    return state.set_data("done", k)
+            return state.set_data("done", 0)
+
+        def dfs2(state: State, depth=0):
             done = state.get_done()
             if done or depth == self.max_depth:
                 return
@@ -97,13 +100,12 @@ class AlphaBateSearch(Algo):
             for a in mvs:
                 if not a.dst.data["done"]:
                     continue
-                s=f'{" "*depth}- {a}: {a.dst.data["done"]}'
+                s = f'{" "*depth}- {a}: {a.dst.data["done"]}'
                 ret.append(s)
-                dfs2(a.dst,depth+1)
+                dfs2(a.dst, depth + 1)
 
         dfs(s)
         dfs2(s)
-        # ret.reverse()
         return "\n" + "\n".join(ret)
 
     def search_main(self, state: State, **kw):

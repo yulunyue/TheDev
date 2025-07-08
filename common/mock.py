@@ -4,7 +4,11 @@ import functools
 import heapq
 from typing import List, Dict
 import math
-from sortedcontainers import SortedDict, SortedList, SortedSet
+
+try:
+    from sortedcontainers import SortedDict, SortedList, SortedSet
+except Exception as e:
+    pass
 from collections import defaultdict
 
 
@@ -24,15 +28,21 @@ class Constant:
 
 
 class CgMock:
+    msgs = []
+
     def input(self):
         r = input()
+        self.msgs.append(r)
         return r
 
     def replay(self):
         pass
 
-    def debug(self, action):
-        print(f"Debug messages...:{action}", file=sys.stderr, flush=True)
+    def debug(self, **kw):
+        debug_map = dict(inputs=self.msgs)
+        debug_map.update(kw)
+        print(json.dumps(debug_map), file=sys.stderr, flush=True)
+        self.msgs.clear()
 
 
 C = Constant()

@@ -10,49 +10,59 @@ from .cg import TicTocCg
 class TestTicToc(TestBase):
     def test_cg(self, mode="submit"):
         Module().compile_one("app/yly/game/envs/tic_toc/cg.py")
+        c = CodingGame("tc")
         if mode == "submit":
-            CodingGame("tc").pk(
-                Module.RUN_TMP_PATH, TicTocCg.game_id, TicTocCg.agentsIds
-            )
+            c.pk(Module.RUN_TMP_PATH, TicTocCg.game_id, TicTocCg.agentsIds)
         elif mode == "replay":
-            TicTocCg().replay()
+            s = TtState.new_state(C.INIT_SATTE)
+            for f in c.get_replay_json():
+                action = C.op_pos(int(f.stdout[0]), int(f.stdout[2]))
+                logger.info(s)
+                a = s.get_action(action)
+                s = a.dst
+            TicTocCg().replay(c.get_replay_json())
 
     def test_actor(self):
         s = TtState.new_state(C.INIT_SATTE)
-        ans = ALgoManage().set_init_state(s).actor([Pm.ab4, Pm.ab1], max_turn=101)
+        ans = ALgoManage().set_init_state(s).actor([Pm.ab3, Pm.ab1], max_turn=101)
         logger.info(f"lose: {ans}")
 
     def test_search(self):
-        s = TtState.new_state(C.INIT_SATTE)
-        b: TtAction = Pm.ab1.search(s)
+        s = TtState.new_state(C.INIT_SATTE).get_action(40).dst
+        b: TtAction = Pm.ab2.search(s)
         logger.info(s)
         logger.info(b.dst)
 
     def test_fight(self):
         s = TtState.new_state(C.INIT_SATTE)
         ALgoManage().set_init_state(s).set_players(
-            [Pm.ab1, Pm.ab2, Pm.ab3, Pm.ab4, Pm.rn]
+            [Pm.ab1, Pm.ab2, Pm.ab3, Pm.rd1]
         ).fight()
 
     def test_debug(self):
-        self.test_dev5()
+        self.test_dev4()
 
     def test_dev3(self):
         s = TtState.new_state(98)
         logger.info(s)
 
     def test_dev4(self):
-        self.test_ec(Pm.bl1)
+        self.test_ec_wrong(Pm.ab2)
 
-    def test_ec(self, algo: Algo):
-        for k, v in C.get_except().items():
-            a = algo.search(TtState.new_state(k))
-            self.expect(a.action, v, a.src)
+    def test_ec_wrong(self, algo: Algo):
+        for k, v in C.get_except_wrong().items():
+            s = TtState.new_state(k)
+            a = algo.search(s)
+            self.expect(a.action not in v, True, f"{s}\n{a.action} not in {v}")
 
     def test_dev5(self):
         s = TtState.new_state(SC.SC1)
         Pm.bl1.search(s)
         logger.info(s.data["records"])
+
+    def test_util(self):
+        self.expect(C.op_pos(4, 4), 40)
+        self.expect(C.pos_op(4), (3, 3))
 
 
 if __name__ == "__main__":

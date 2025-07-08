@@ -31,20 +31,16 @@ class Constant:
     def op_pos(self, y, x):
         y1, y2 = y // 3, y % 3
         x1, x2 = x // 3, x % 3
-        return (y1 * 3 + x1) + y2 * 3 + x2
+        return (y2 * 3 + x2) * 9 + (y1 * 3 + x1)
 
     def pos_op(self, pos):
-        y, x = pos // 9, pos % 9
-        y1, x1, y2, x2 = (
-            y // 3,
-            y % 3,
-            x // 3,
-            x % 3,
-        )
-        return y1 * 3 + y2, x1 * 3 + x2
+        pos2, pos1 = pos // 9, pos % 9
+        pos2y, pos2x = pos2 // 3, pos2 % 3
+        pos1y, pos1x = pos1 // 3, pos1 % 3
+        return pos1y * 3 + pos2y, pos1x * 3 + pos2x
 
-    def get_except(self):
-        return {SC.SC1: 6 * 9 + 1}
+    def get_except_wrong(self):
+        return {SC.SC1: [24, 33, 42, 51]}
 
 
 C = Constant()

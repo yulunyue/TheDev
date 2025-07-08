@@ -4,6 +4,9 @@ from common.util.export import logger, File, List, defaultdict
 
 
 class ALgoManage:
+    def __init__(self, name):
+        self.name = name
+
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
         self.fight_result = defaultdict(
@@ -60,7 +63,7 @@ class ALgoManage:
 
     def info(self, players: List[Algo], msg):
         file_name = "_pk_".join([v.get_name() for v in players])
-        file_path = f"data/log/algo_pk/{file_name}.log"
+        file_path = f"data/log/algo_pk/{self.name}/{file_name}.log"
         fp = File(file_path).get_writer()
         fp.write(f"{msg}\n")
         fp.flush()

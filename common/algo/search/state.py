@@ -42,7 +42,7 @@ class Action:
         return [[1, self.dst, self.reward]]
 
     def get_reward(self, **kwargs):
-        return self.reward
+        raise Exception("todo")
 
     def get_best_actions(self) -> List["Action"]:
         p = self
@@ -181,7 +181,6 @@ class State:
             for a in actions:
                 done = dfs(a.dst, depth + 1)
                 ret.append(f'{" "*depth}- {a}: {done}')
-            return None
 
         dfs(self, 0)
         ret.reverse()
@@ -223,4 +222,8 @@ class State:
         )
 
     def get_win_player(self):
-        raise Exception("xx")
+        return self.done
+
+    def get_depth_reward(self, depth, **kw):
+        reward = self.get_reward(**kw)
+        return -reward if depth % 2 == 1 else reward

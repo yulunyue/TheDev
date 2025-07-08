@@ -1,5 +1,15 @@
 from common.service.export import Api
-from common.util.export import File
+from common.util.export import File, List
+import json
+
+
+class CGFrames:
+    def load(self, stdout, stderr=None, **kw):
+        self.stdout = stdout[:-1]
+        self.stderr = dict()
+        if stderr:
+            self.stderr.update(json.loads(stderr[:-1]))
+        return self
 
 
 class CodingGame(Api):
@@ -33,4 +43,13 @@ class CodingGame(Api):
             dict(agentsIds=agentsIds, gameOptions=None, isSoloLeague=False),
         )
         File(self.get_local_path("play.json")).write_file(ret)
+        return ret
+
+    def get_replay_json(self) -> List[CGFrames]:
+        data = File(self.get_local_path("play.json")).read_file()
+        ret = []
+        for d in data["frames"]:
+            if "stdout" not in d:
+                continue
+            ret.append(CGFrames().load(**d))
         return ret

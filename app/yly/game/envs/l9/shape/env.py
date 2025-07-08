@@ -183,11 +183,11 @@ class L9Env:
 
         for c in self.chess_map.values():
             y, x = c.get_pos()
-            ret[y][x + 1] = " "
+            ret[y][x + 1] = "."
 
         def util(i, v):
             y, x = self.chess_map[C.PLACES[i]].get_pos()
-            ret[6 - y][x + 1] = " *#"[v]
+            ret[6 - y][x + 1] = ".OX"[v]
 
         mask_down(board, util)
         ret.append([" "] + [chr(ord("A") + i) for i in range(7)])

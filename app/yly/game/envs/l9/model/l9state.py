@@ -49,4 +49,7 @@ class L9State(State):
         return self.get_actions()[a]
 
     def to_str(self):
-        return f"place_move: {self.place_move}, actions: {len(self.get_actions().values())}" + L9ENV.print_board(self.board)
+        return (
+            f"place_move: {self.place_move}, actions: {len(self.get_actions().values())}"
+            + L9ENV.print_board(self.board)
+        )
