@@ -8,7 +8,7 @@ class Line:
     def __init__(self, drx):
         self.drx = drx
         self.pts: List[Point] = [None] * 4
-        self.value_ct = [0, 0, 4]
+        self.value_ct = [0, 0]
 
     @staticmethod
     def new_line(y, x, drx):
@@ -22,21 +22,17 @@ class Line:
         pt.lines[self.drx, idx] = self
         return self
 
-    def change_value(self, pt: Point, pos_idx, last_value, value):
-        self.value_ct[value] += 1
-        self.value_ct[last_value] -= 1
-        player_id, change_value = value, -1
-        if value == 2:
-            player_id, change_value = last_value, 1
+    def change_value(self, pt: Point, pos_idx, player_id, num):
 
-        if self.value_ct[1 - player_id] == 0 and self.value_ct[player_id]:
-            pt.g.line_state_change(
-                self,
-                pos_idx,
-                player_id,
-                self.value_ct[player_id] + change_value,
-                self.value_ct[player_id],
-            )
+        pt.g.line_state_change(
+            self,
+            pos_idx,
+            player_id,
+            self.value_ct[player_id],
+            self.value_ct[player_id] + num,
+            self.value_ct[1 - player_id],
+        )
+        self.value_ct[player_id] += num
 
     def __str__(self):
         r = []

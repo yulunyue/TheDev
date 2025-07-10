@@ -33,10 +33,8 @@ class C4Test(TestBase):
     def test_dev2(self):
         s = F4State.new_state(C.init_masks[GRID_ENV])
         # logger.info(s)
-        a = s.get_action(0)
+        a = s.get_action(0).dst.get_action(0)
         logger.info(a.dst)
-        # a = a.dst.get_action(0)
-        # logger.info(a.dst)
 
     def test_dev3(self):
         s = F4State.new_state(17730707194377)

@@ -19,7 +19,10 @@ class Point:
             return
         last_value, self.value = self.value, value
         for (dri, pos_idx), ln in self.lines.items():
-            ln.change_value(self, pos_idx, last_value, value)
+            if value == 2:
+                ln.change_value(self, pos_idx, last_value, -1)
+            else:
+                ln.change_value(self, pos_idx, value, 1)
 
         return self
 

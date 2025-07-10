@@ -13,7 +13,7 @@ class Grid:
         self.height, self.width = C.SHAPES[shape]
         self.columns: List[Column] = []
         self.board = 0
-        self.line_ct = [0, 0, 0, 0, 0, 0]
+        self.line_ct = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         for i in range(self.width):
             self.columns.append(Column(self, i, self.height))
         self.load_lines()
@@ -39,11 +39,13 @@ class Grid:
             Grid.GIRD_MAP[shape] = Grid().load(shape)
         return Grid.GIRD_MAP[shape]
 
-    def line_state_change(self, ln: Line, pos_idx, player_id, f, t):
-        if f > 1:
-            self.line_ct[2 * (4 - f) + player_id] -= 1
-        if t > 1:
-            self.line_ct[2 * (4 - t) + player_id] += 1
+    def line_state_change(self, ln: Line, pos_idx, player_id, f, t, op_num):
+        # if f > 1:
+        if op_num != 0:
+            return
+        self.line_ct[2 * (4 - f) + player_id] -= 1
+        # if t > 1:
+        self.line_ct[2 * (4 - t) + player_id] += 1
         logger.map(
             ln=ln, pt=ln.pts[pos_idx], player_id=player_id, f=f, t=t, ct=self.line_ct
         )
@@ -52,7 +54,7 @@ class Grid:
         self.done = 0
         if self.board == board:
             return self
-
+        logger.map(src_board=self.board, dst_borad=board)
         self.board = board
         for c in self.columns:
             c.set_state(board & c.mask)
