@@ -78,7 +78,8 @@ class AlphaBateSearch(Algo):
         def dfs(state: State, depth=0):
             done = state.get_done()
             if done or depth == self.max_depth:
-                return state.set_data("done", done)
+                state.set_data(done=done)
+                return done
             mvs = list(state.get_actions(depth=depth).values())
             ct = defaultdict(int)
             for a in mvs:
@@ -87,10 +88,13 @@ class AlphaBateSearch(Algo):
 
             for k, value in ct.items():
                 if k == state.player_id and value:
-                    return state.set_data("done", k)
+                    state.set_data(done=k)
+                    return k
                 elif k and ct[done] == len(mvs):
-                    return state.set_data("done", k)
-            return state.set_data("done", 0)
+                    state.set_data(done=k)
+                    return k
+            state.set_data(done=0)
+            return 0
 
         def dfs2(state: State, depth=0):
             done = state.get_done()
@@ -115,7 +119,7 @@ class AlphaBateSearch(Algo):
             )
         elif self.search_type == AlphaBateSearch.BR_TYPE:
             records = self.search_with_done(state)
-            state.set_data("records", records)
+            state.set_data(records=records)
             return
         return self.search_dfs(
             state, action=None, depth=0, player_id=state.player_id, **kw

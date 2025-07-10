@@ -1,5 +1,5 @@
 """
-https://www.kaggle.com/competitions/connectx/submissions?#
+https://www.kaggle.com/competitions/connectx
 """
 
 

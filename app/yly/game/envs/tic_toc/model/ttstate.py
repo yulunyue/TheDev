@@ -23,7 +23,7 @@ class TtState(State):
         return TtState.STATE_STORE[key]
 
     def get_actions(self, depth=1, **kw):
-        if self.actions:
+        if self.actions is not None:
             return self.actions
         self.actions = dict()
         e = E.set_state(self.board)

@@ -1,14 +1,11 @@
-from .cf4state import F4State
-from .constant import C, logger
 from common.algo.search.alphabate_search import AlphaBateSearch
-from .kagle import Kagle, KagleAgent, KaggleEnv
 from typing import List
 import json
 import sys
 from common.mock import CgMock
 
 
-class Solution(CgMock):
+class CgMuiltCf4(CgMock):
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
     agentsIds = [-1, 4820019]

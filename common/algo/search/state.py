@@ -105,48 +105,23 @@ class State:
         return self
 
     def get_action(self, a) -> Action:
-        if self.actions and a in self.actions:
+        actions = self.get_actions()
+        if a in self.actions:
             return self.actions[a]
-        return self.gen_action(a)
-
-    def gen_action(self, a):
-        raise Exception("tood")
-
-    def get_actions_all(self):
-        raise Exception("gg")
+        raise Exception(a, list(actions.keys()))
 
     def get_score(self, **kw):
         raise Exception("todo")
 
-    def make_actions(self):
-        self.actions = dict()
-        for action in self.get_actions_all():
-            a = self.get_action(action)
-            if a is None:
-                continue
-            self.actions[action] = a
-        return self.actions
-
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-        if self.done:
-            return {}
-        if self.actions is not None:
-            return self.actions
-        return self.make_actions()
-
-    def set_actions(self, actions):
-        self.actions = actions
-        return self
+        raise Exception("todo")
 
     def get_random_action(self) -> Action:
-        keys = list(self.get_actions().keys())
-        k = len(keys)
-        if k == 0:
+        actions = self.get_actions()
+        values = list(actions.keys())
+        if not values:
             return None
-        return self.actions[keys[np.random.randint(0, k)]]
-
-    def is_game_over(self):
-        raise Exception("todo")
+        return values[np.random.randint(0, len(values) - 1)]
 
     def do(self, action):
         raise Exception(f"{self.__class__}.do not impl")
@@ -165,13 +140,7 @@ class State:
     def get_init_state(cls):
         raise Exception("todo")
 
-    def get_best_state(self):
-        ret = self
-        while ret.best_action:
-            ret = ret.dst
-        return ret
-
-    def dump_best_tree(self, max_depth):
+    def dump_tree(self, max_depth):
         ret = []
 
         def dfs(s: State, depth):
@@ -187,7 +156,7 @@ class State:
         return "\n".join(ret)
 
     def get_reward(self, **kw):
-        raise Exception("to")
+        return 0
 
     def get_max_action_reward(self):
         reward = -inf
@@ -199,26 +168,26 @@ class State:
 
     data = None
 
-    def set_data(self, key, value):
+    def set_data(self, **kw):
         if not self.data:
             self.data = dict()
-        self.data[key] = value
-        return value
+        self.data.update(kw)
+        return self
 
     def __repr__(self):
         info = []
         if self.data:
-            info.append(json_dumps(self.data))
+            for key, value in self.data.items():
+                info.append(f"{key}: {value}")
         return f"\n".join(
             ["", "-" * 40]
             + [
                 f"done:{self.done}, depth:{self.depth}, player:{self.player_id}",
                 f"mask:{self.state}",
                 self.to_str(),
-                f"best_action:\n{self.best_action}",
             ]
             + info
-            + ["-" * 40]
+            + [f"best_action:\n{self.best_action}", "-" * 40]
         )
 
     def get_win_player(self):

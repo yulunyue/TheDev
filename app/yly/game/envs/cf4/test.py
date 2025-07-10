@@ -3,75 +3,47 @@ from common.algo.export import random_seed, ALgoManage
 from common.third_util.export import CodingGame
 
 
-from app.yly.algo.cg.cf4.cf4state import F4State
-from app.yly.algo.cg.cf4.solution import Solution
-
+from app.yly.game.envs.cf4.model.cf4state import F4State, F4Action
+from app.yly.game.envs.cf4.cg import CgMuiltCf4
+from app.yly.game.envs.cf4.model.constant import C
+from .util import Pm
 from typing import List
 
-"""
-.......
-.......
-.......
-.......
-..222..
-..111..
-"""
+GRID_ENV = 0
 
 
 class C4Test(TestBase):
-    def __init__(self):
-        super().__init__()
 
-    def test_pk(self, name1, name2):
-        players = [get_player(name1), get_player(name2)]
-        env = Env(6, 7)  # , env_name=Env.connectx)
-        # Play as the first agent against "negamax" agent.
-        result = env.run(players, mode="log")
-        if result == 0:
-            logger.info("no win")
-        elif result == -1:
-            logger.info(f"{name1} pk {name2} [{name1}][{S[0]}] win")
-        elif result == 1:
-            logger.info(f"{name1} pk {name2} [{name2}][{S[1]}] win")
-        else:
-            logger.info("unknow state")
+    def test_cases(self):
+        for k, v in C.get_cases().items():
+            k = C.any_to_mask(k, GRID_ENV)
+            s = F4State.new_state(k)
+            a = Pm.ab1.search(s)
+            self.expect(a.action, v, s)
 
-    def test_fight(self):
-        pass
-
-    def test_cg(self, mode="submit"):
+    def test_cgplay(self):
         path = Module().compile_one("app/yly/algo/cg/cf4/solution.py")
-        if mode == "submit":
-            CodingGame("cf4").pk(path, Solution.game_id, Solution.agentsIds)
-        elif mode == "replay":
-            Solution().replay()
+        CodingGame("cf4").pk(path, CgMuiltCf4.game_id, CgMuiltCf4.agentsIds)
 
-    def test_player(self, name1):
-        C.load(6, 7)
-        p = get_player(name1)
+    def test_dev1(self):
+        s = F4State.new_state(C.any_to_mask(C.S1, GRID_ENV))
+        Pm.bl1.search(s)
+        logger.info(s)
 
-        a = p.search(F4State.new_state(4432691478663))
-        self.expect(a.action, 3, a)
+    def test_dev2(self):
+        s = F4State.new_state(C.init_masks[GRID_ENV])
+        # logger.info(s)
+        a = s.get_action(0)
+        logger.info(a.dst)
+        # a = a.dst.get_action(0)
+        # logger.info(a.dst)
 
-        a = p.search(F4State.new_state(4432687300737))
-        self.expect(
-            a.action, 4, f"{a}\n{a.src.dump_best_tree(2)}\n{a.get_best_action()}"
-        )
+    def test_dev3(self):
+        s = F4State.new_state(17730707194377)
+        logger.info(s)
 
-    def test_ab3(self):
-        C.load(6, 7)
-        p = get_player("ab3")
-        a = p.search(F4State.new_state(4432687300737))
-        # ds = a.src.dump_best_tree(2)
-        self.expect(a.action in [1, 4], info=a)
-
-    def test_kl1(self):
-        C.load(6, 7)
-        p = get_player("kd1")
-
-    def test_fight(self):
-        env = Env(6, 7)
-        ALgoManage().fight([get_player(k) for k in PLAYERS], env.run)
+    def test_debug(self):
+        self.test_dev2()
 
 
 if __name__ == "__main__":
