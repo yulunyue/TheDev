@@ -15,11 +15,6 @@ GRID_ENV = 0
 
 class C4Test(TestBase):
 
-    def test_cases(self):
-        for k, v in C.get_cases().items():
-            a, b = CgSolve().excecute(k)
-            self.expect(a, v, b)
-
     def test_cgplay(self):
         Module().compile_one("app/yly/game/envs/cf4/cg_pullzy.py")
         CodingGame("cf4").pk(
@@ -28,6 +23,9 @@ class C4Test(TestBase):
 
     def test_solve(self, idx=1):
         Module().compile_one("app/yly/game/envs/cf4/cg_solve.py")
+        for k, v in C.get_cases().items():
+            a, b = CgSolve().excecute(k)
+            self.expect(a, v, b)
         CodingGame("cf4").solve(Module.RUN_TMP_PATH, CgSolve.game_id, text_idx=int(idx))
 
     def test_dev1(self):

@@ -9,39 +9,31 @@ logger = get_log("test")
 TEST_FN_PREFIX = "test_"
 
 
-class SolotionBase:
-    _msg = []
-
-    def get_cases(self) -> List[Dict]:
-        return []
-
-    def log(self, *args):
-        msgs = " ".join([str(a) for a in args])
-        self._msg.append(msgs)
-
-    def get_msgs(self):
-        ret = self._msg[:]
-        self._msg.clear()
-        return ret
-
-
 class TestBase:
     def __init__(self) -> None:
         self.prepare()
 
-    def prepare(self):
+    def prepare(self, args=None):
         pass
 
     def run(self, args=None):
         try:
             if args is None:
                 args = sys.argv[1:]
-            argvs, kw = url_to_json(args)
-            self.run_one_case(argvs[0], argvs[1:], kw)
+            self.argvs, self.kw = url_to_json(args)
+            self.prepare_case(*self.argvs)
+            self.run_one_case(self.argvs[0], self.argvs[1:], self.kw)
+            self.after_case(*self.argvs)
         except Exception as e:
             raise e
         finally:
             self.exit()
+
+    def prepare_case(self, *args):
+        pass
+
+    def after_case(self, *args):
+        pass
 
     def run_one_case(self, name, args, kw):
         f = getattr(self, f"test_{name}")

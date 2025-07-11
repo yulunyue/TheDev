@@ -29,11 +29,18 @@ class Constant:
 
 class CgMock:
     msgs = []
+    inputs = None
 
     def input(self):
-        r = input()
+        if self.inputs is None:
+            r = input()
+        else:
+            r = self.inputs.pop(0)
         self.msgs.append(r)
         return r
+
+    def ii(self):
+        return [int(v) for v in self.input().split(" ")]
 
     def replay(self):
         pass
@@ -43,6 +50,19 @@ class CgMock:
         debug_map.update(kw)
         print(json.dumps(debug_map), file=sys.stderr, flush=True)
         self.msgs.clear()
+
+    def run(self):
+        pass
+
+    def main(self):
+        print(self.run())
+
+    def get_cases(self):
+        return {}
+
+    def set_inputs(self, inputs: str):
+        self.inputs = inputs.split("\n")
+        return self
 
 
 C = Constant()
