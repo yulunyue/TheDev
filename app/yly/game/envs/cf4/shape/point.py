@@ -22,6 +22,8 @@ class Point:
             if value == 2:
                 ln.change_value(self, pos_idx, last_value, -1)
             else:
+                if last_value != 2:
+                    ln.change_value(self, pos_idx, last_value, -1)
                 ln.change_value(self, pos_idx, value, 1)
 
         return self

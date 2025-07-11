@@ -23,22 +23,29 @@ class F4State(State):
     def load(self):
         self.g.set_board(self.board)
         self.set_done(self.g.done)
-        self.set_data(line_ct=self.g.line_ct[:])
+        self.set_data(line_ct=dict(self.g.line_ct))
         return self
+
+    def get_done(self):
+        self.load()
+        return self.done
+
+    def get_player_actions(self, player_id) -> Dict[str, F4Action]:
+        actions = dict()
+        if not self.get_done():
+            action_array = self.g.get_actions(player_id)
+            for a in action_array:
+                actions[a["action"]] = F4Action(
+                    self, a["action"], F4State.new_state(a["mask"])
+                )
+            if not action_array:
+                self.set_done(2)
+        return actions
 
     def get_actions(self, **kw):
         if self.actions is not None:
             return self.actions
-        self.actions = dict()
-        self.load()
-        if not self.done:
-            actions = self.g.get_actions(self.player_id)
-            for a in actions:
-                self.actions[a["action"]] = F4Action(
-                    self, a["action"], F4State.new_state(a["mask"])
-                )
-            if not actions:
-                self.set_done(3)
+        self.actions = self.get_player_actions(self.player_id)
         return self.actions
 
     def get_reward(self, **kw):

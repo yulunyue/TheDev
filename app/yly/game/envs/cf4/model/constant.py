@@ -2,18 +2,38 @@ from common.algo.base.bin_util import decode_data, encode_data, set_mask
 
 
 class Constant:
-    S1 = """.......
+    S1 = """
+.......
 .......
 .......
 .......
 ..222..
-..111.."""
-    S2 = """.......
+..111..
+"""
+    S2 = """
 .......
 .......
 .......
-2......
-1......"""
+12.....
+12.....
+12.....
+"""
+    S3 = """
+.......
+.......
+.......
+..121..
+21212..
+12121..
+"""
+    S4 = """
+.......
+.......
+..121..
+..122.2
+11211.1
+2211222
+"""
     SHAPES = [[7, 7], [8, 9]]
     DR = [[0, 1], [1, 0], [1, -1], [1, 1]]
     IN_ROW = 4
@@ -27,7 +47,12 @@ class Constant:
             self.init_masks.append((tmp << 2) + (j << 1))
 
     def get_cases(self):
-        return {self.S1: [1, 5]}
+        return {
+            self.S1: "1 5\nNONE",
+            self.S2: "0\n1",
+            self.S3: "3\n4",
+            self.S4: "5\n5",
+        }
 
     def any_to_mask(self, s, shape):
         if isinstance(s, str):
@@ -38,10 +63,12 @@ class Constant:
             for i in range(w):
                 for j in range(h - 1):
                     k = h - 2 - j
-                    if s[k][i] == ".":
+                    if s[k + 1][i] == ".":
                         break
                     pos = i * h + j
-                    ans = set_mask(ans, pos + 2, pos + 4, 2 if s[k][i] == "1" else 3)
+                    ans = set_mask(
+                        ans, pos + 2, pos + 4, 2 if s[k + 1][i] == "1" else 3
+                    )
         else:
             ans = s
         return ans

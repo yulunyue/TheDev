@@ -1,7 +1,7 @@
 from app.yly.game.envs.cf4.shape.line import Line
 from app.yly.game.envs.cf4.shape.colunm import Point, Column
 from common.algo.base.bin_util import low_bits, set_mask
-from common.util.export import List, logger
+from common.util.export import List, logger, defaultdict
 from app.yly.game.envs.cf4.model.constant import C
 
 
@@ -13,7 +13,7 @@ class Grid:
         self.height, self.width = C.SHAPES[shape]
         self.columns: List[Column] = []
         self.board = 0
-        self.line_ct = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.line_ct = defaultdict(int)
         for i in range(self.width):
             self.columns.append(Column(self, i, self.height))
         self.load_lines()
@@ -39,30 +39,27 @@ class Grid:
             Grid.GIRD_MAP[shape] = Grid().load(shape)
         return Grid.GIRD_MAP[shape]
 
-    def line_state_change(self, ln: Line, pos_idx, player_id, f, t, op_num):
-        # if f > 1:
-        if op_num != 0:
-            return
-        self.line_ct[2 * (4 - f) + player_id] -= 1
-        # if t > 1:
-        self.line_ct[2 * (4 - t) + player_id] += 1
-        logger.map(
-            ln=ln, pt=ln.pts[pos_idx], player_id=player_id, f=f, t=t, ct=self.line_ct
-        )
+    def line_state_change(self, ln: Line, pos_idx, player_id, f0, t0, f1, t1):
+        self.line_ct[f0, t0] -= 1
+        self.line_ct[f1, t1] += 1
+        # logger.map(
+        #     ln=ln, pt=ln.pts[pos_idx], player_id=player_id, ct=dict(self.line_ct)
+        # )
 
     def set_board(self, board):
-        self.done = 0
+
         if self.board == board:
             return self
-        logger.map(src_board=self.board, dst_borad=board)
+        # logger.map(src_board=self.board, dst_borad=board)
+        self.done = None
         self.board = board
         for c in self.columns:
             c.set_state(board & c.mask)
             board = board >> self.height
-        if self.line_ct[0]:
+        if self.line_ct[4, 0]:
+            self.done = 0
+        elif self.line_ct[0, 4]:
             self.done = 1
-        elif self.line_ct[1]:
-            self.done = 2
         return self
 
     def get_actions(self, player_id):
@@ -80,5 +77,5 @@ class Grid:
         for i in range(self.width):
             co = self.columns[i]
             for j in range(co.top - 1, -1, -1):
-                ret[self.height - j - 1][i] = str(co.pts[j].value + 1)
+                ret[self.height - j - 1][i] = str(co.pts[j].value)
         return "\n".join([" ".join(s) for s in ret] + ["-" * (2 * self.width - 1)])

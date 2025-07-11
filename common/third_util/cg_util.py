@@ -21,19 +21,28 @@ class CodingGame(Api):
     def get_local_path(self, name):
         return f"data/cg/{self.name}/{name}"
 
-    def execute(self, file_path, game_id, key, data):
+    def execute(self, file_path, game_id, key=None, data=None, play_type="play"):
         code = open(file_path, "r", encoding="utf-8").read()
         info = dict(code=code, programmingLanguageId="Python3")
-        info[key] = data
+        if key:
+            info[key] = data
         player_data = [game_id, info]
-        ret = self.post("/services/TestSession/play", player_data)
+        if play_type == "submit":
+            player_data.append(None)
+        ret = self.post(f"/services/TestSession/{play_type}", player_data)
+        File(self.get_local_path(f"{play_type}.json")).write_file(ret)
         return ret
+
+    def submit(self, file_path, game_id):
+        return self.execute(file_path, game_id, play_type="submit")
 
     def get_endpoint(self):
         return "www.codingame.com"
 
-    def solve(self, file_path, game_id):
-        return self.execute(file_path, game_id, "multipleLanguages", dict(testIndex=3))
+    def solve(self, file_path, game_id, text_idx=1):
+        return self.execute(
+            file_path, game_id, "multipleLanguages", dict(testIndex=text_idx)
+        )
 
     def pk(self, path, game_id, agentsIds):
         ret = self.execute(
@@ -42,7 +51,6 @@ class CodingGame(Api):
             "multi",
             dict(agentsIds=agentsIds, gameOptions=None, isSoloLeague=False),
         )
-        File(self.get_local_path("play.json")).write_file(ret)
         return ret
 
     def get_replay_json(self) -> List[CGFrames]:

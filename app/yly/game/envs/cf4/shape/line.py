@@ -23,16 +23,11 @@ class Line:
         return self
 
     def change_value(self, pt: Point, pos_idx, player_id, num):
-
-        pt.g.line_state_change(
-            self,
-            pos_idx,
-            player_id,
-            self.value_ct[player_id],
-            self.value_ct[player_id] + num,
-            self.value_ct[1 - player_id],
-        )
+        l0, l1 = self.value_ct
         self.value_ct[player_id] += num
+        pt.g.line_state_change(
+            self, pos_idx, player_id, l0, l1, self.value_ct[0], self.value_ct[1]
+        )
 
     def __str__(self):
         r = []
