@@ -1,10 +1,10 @@
-from common.mock import CgMock
+from common.mock import MockBase
 from app.yly.game.envs.cf4.model.constant import C
 from app.yly.game.envs.cf4.model.cf4state import F4State
 from common.util.export import logger
 
 
-class CgSolve(CgMock):
+class CgSolve(MockBase):
     game_id = "70989184688f3ec2cf6e1e24a36c1ea631ab8523"
 
     def excecute(self, su):

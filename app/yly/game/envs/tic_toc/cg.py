@@ -1,10 +1,10 @@
-from common.mock import CgMock
+from common.mock import MockBase
 from common.algo.search.alphabate_search import AlphaBateSearch
 from app.yly.game.envs.tic_toc.model.ttstate import TtState
 from app.yly.game.envs.tic_toc.constant import C
 
 
-class TicTocCg(CgMock):
+class TicTocCg(MockBase):
     uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
     game_id = "6246186678d52f83e9a2d47885d4b6f60900eed7"
     agentsIds = [

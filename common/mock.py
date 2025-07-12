@@ -4,12 +4,15 @@ import functools
 import heapq
 from typing import List, Dict
 import math
+from collections import defaultdict
 
 try:
     from sortedcontainers import SortedDict, SortedList, SortedSet
 except Exception as e:
     pass
-from collections import defaultdict
+
+
+from common.tool.io import Io, IoTxtFile
 
 
 def get_log(*args, **kw):
@@ -27,35 +30,32 @@ class Constant:
     inf = float("inf")
 
 
-class CgMock:
-    msgs = []
-    inputs = None
+class MockBase:
+    io = Io()
 
-    def input(self):
-        if self.inputs is None:
-            r = input()
-        else:
-            r = self.inputs.pop(0)
-        self.msgs.append(r)
-        return r
-
-    def ii(self):
-        return [int(v) for v in self.input().split(" ")]
+    def __init__(self):
+        self.msgs = []
+        self.inputs = None
+        self.result = []
+        self.dev = False
 
     def replay(self):
         pass
 
-    def debug(self, **kw):
-        debug_map = dict(inputs=self.msgs)
-        debug_map.update(kw)
-        print(json.dumps(debug_map), file=sys.stderr, flush=True)
-        self.msgs.clear()
+    def main(self):
+        raise Exception("main_todo")
 
     def run(self):
-        pass
-
-    def main(self):
-        print(self.run())
+        self.result.clear()
+        ans = self.main()
+        if ans is None:
+            return
+        if isinstance(ans, list):
+            self.io.output(len(ans))
+            for d in ans:
+                self.io.output(d)
+        else:
+            self.io.output(ans)
 
     def get_cases(self):
         return {}
