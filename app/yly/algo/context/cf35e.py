@@ -1,41 +1,36 @@
-from common.mock import MockBase, IoTxtFile
-from common.util.export import logger, heapq, defaultdict
+import heapq
+from collections import defaultdict
 
 
-class Solution(MockBase):
-    yawn_path = "0710"
+class Solution:
 
-    def __init__(self):
-        super().__init__()
-        self.io = IoTxtFile()
-
-    def main(self):
-
-        n, *args = self.io.ii()
+    def run(self):
+        inputs=open("input.txt","r").read()
+        ins=inputs.split("\n")
+        n=int(ins.pop(0))
+        wt=open("output.txt","w")
         ans = []
-        area = []
+        area = defaultdict(lambda:[0,0])
         for _ in range(n):
             y, l, r = self.io.ii()
-            area.append([l, y, 1])
-            area.append([r, y, -1])
-        area.sort()
-        lazy_remove = dict()
+            area[l][0]=max(area[l][0],y)
+            area[r][1]=max(area[r][1],y)
+        keys=sorted(area)
         hq = [0]
-        for x, y, tp in area:
-            if tp == 1:
+        for x in keys:
+            y=area[x][0]
+            if y:
                 if hq and y > -hq[0]:
                     ans.append(f"{x} {-hq[0]}")
                     ans.append(f"{x} {y}")
                 heapq.heappush(hq, -y)
-                lazy_remove[y] = lazy_remove.get(y, 0) + 1
-            if tp == -1:
-                lazy_remove[y] = lazy_remove.get(y, 0) - 1
+            y=area[x][1]
+            if y:
                 if hq and -hq[0] == y:
-                    ans.append(f"{x} {y}")
-                    while hq and lazy_remove.get(-hq[0]) == 0:
-                        heapq.heappop(hq)
-                    ans.append(f"{x} {-hq[0]}")
-        return ans
+                    wt.write(f"{x} {y}")
+                    heapq.heappop(hq)
+                    wt.write(f"{x} {-hq[0]}")
+        wt.flush()
 
 
 if __name__ == "__main__":
