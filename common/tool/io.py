@@ -16,7 +16,6 @@ class Io:
         debug_map = dict(inputs=self.msgs)
         debug_map.update(kw)
         print(json.dumps(debug_map), file=sys.stderr, flush=True)
-        self.msgs.clear()
 
 
 class IoTxtFile(Io):

@@ -5,14 +5,12 @@ import heapq
 from typing import List, Dict
 import math
 from collections import defaultdict
+import os
 
 try:
     from sortedcontainers import SortedDict, SortedList, SortedSet
 except Exception as e:
     pass
-
-
-from common.tool.io import Io, IoTxtFile
 
 
 def get_log(*args, **kw):
@@ -31,8 +29,6 @@ class Constant:
 
 
 class MockBase:
-    io = Io()
-
     def __init__(self):
         self.msgs = []
         self.inputs = None
@@ -42,27 +38,46 @@ class MockBase:
     def replay(self):
         pass
 
-    def main(self):
-        raise Exception("main_todo")
-
     def run(self):
+        raise Exception("run_todo")
+
+    def main(self):
         self.result.clear()
-        ans = self.main()
+        ans = self.run()
         if ans is None:
             return
         if isinstance(ans, list):
-            self.io.output(len(ans))
+            self.output(len(ans))
             for d in ans:
-                self.io.output(d)
+                self.output(d)
         else:
-            self.io.output(ans)
+            self.output(ans)
 
     def get_cases(self):
-        return {}
+        raise Exception("todo")
 
     def set_inputs(self, inputs: str):
         self.inputs = inputs.split("\n")
         return self
+
+
+class MockCf(MockBase):
+    def input(self):
+        if os.path.exists("input.txt") and self.inputs is None:
+            self.inputs = open("input.txt").read().split("\n")
+        if self.inputs:
+            return self.inputs.pop(0)
+        return input()
+
+    def ii(self):
+        return [int(v) for v in self.input().split(" ")]
+
+    _o = None
+
+    def output(self, s):
+        if self._o is None:
+            self._o = open("output.txt", "w")
+        self._o.write(f"{s}\n")
 
 
 C = Constant()
