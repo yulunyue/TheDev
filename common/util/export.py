@@ -19,3 +19,4 @@ import heapq
 from common.util.baseconfig import ConfigBase
 from common.util.model import NumberModel, StrModel, DictModel
 from common.util.singleton_util import SingletonUtil
+import random
