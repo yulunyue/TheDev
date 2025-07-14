@@ -1,4 +1,3 @@
-
 from common.util.log import logger
 
 
@@ -34,7 +33,7 @@ class BaseData:
         return self.value
 
     def log(self, op, v, result):
-        logger.info(f'{self} {op} {v}->{result}', stacklevel=2)
+        logger.info(f"{self} {op} {v}->{result}", stacklevel=2)
 
     def __ge__(self, value):
         ret = self.value > get_value(value)
@@ -51,7 +50,7 @@ class BaseData:
         return self.__class__(self.key).set_value(-self.value)
 
     def __str__(self) -> str:
-        return f'{self.key}:{self.value}'
+        return f"{self.key}:{self.value}"
 
 
 class Number(BaseData):

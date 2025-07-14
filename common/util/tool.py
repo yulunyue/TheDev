@@ -83,3 +83,24 @@ def json_dumps(oj, indent=2):
         return str(v)
 
     return json.dumps(oj, indent=indent, default=util)
+
+
+def merge_dict(src, dst):
+    record = []
+
+    def util(f, t, keys):
+        if isinstance(f, dict) and isinstance(t, dict):
+            for k, v in t.items():
+                if k not in f:
+                    f[k] = v
+                    record.append(dict(method="insert", dst=v, keys=keys))
+                else:
+                    f[k] = util(f[k], t[k], keys + [k])
+            return f
+        else:
+            if f != t:
+                record.append(dict(method="update", src=f, dst=t, keys=keys))
+            return t
+
+    util(src, dst, [])
+    return src, record

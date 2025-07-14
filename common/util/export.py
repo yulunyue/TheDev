@@ -16,6 +16,7 @@ import bisect
 import math
 import traceback
 import heapq
-from common.util.baseconfig import ConfigBase
-from common.util.model import NumberModel, StrModel, DictModel
+from common.tool.base_class.baseconfig import ConfigBase
+from common.tool.base_class.model import NumberModel, StrModel, DictModel
 from common.util.singleton_util import SingletonUtil
+import random

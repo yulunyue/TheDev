@@ -60,10 +60,10 @@ class TestBase:
             self.ok_count += 1
             return True
         logger.error(
-            f"info:{info} result:{a}!=expect:{expect_value}", stacklevel=stacklevel
+            f"info:{info}\nresult:{a}\nexpect:{expect_value}", stacklevel=stacklevel
         )
         return False
 
-    def expect_dfs(self, src, dst):
+    def expect_dfs(self, src, dst, info=""):
         msg = Diff(src).compare(dst)
-        return self.expect(len(msg), 0, "\n".join(msg), stacklevel=3)
+        return self.expect(len(msg), 0, info + "\n".join(msg), stacklevel=3)

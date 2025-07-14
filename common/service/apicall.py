@@ -75,7 +75,8 @@ class ApiCall:
     def load_modules(self, mds):
         for md in mds:
             if isinstance(md, dict):
-                self.load_module_str(**md)
+                if md.get("enbale") != False:
+                    self.load_module_str(**md)
             else:
                 self.load_module(md)
 
