@@ -1,148 +1,17 @@
-import { Div } from "./div";
-import Ct from "../../web/constant"
-import web from "../../web/web_dom"
-import { Node, to_node } from "../../web/cls";
-import { Input } from "./input";
-import { Button, Buttons } from "./button";
-import { Label } from "./label"
-import { Pagination } from "./pagination";
-import Util from "../../tool/util"
-import { Constant } from "../export";
-export class Td extends Div {
-    ins: Div
-    constructor() {
-        super("td", "")
-    }
-    render_option(): void {
-        let ins = new Label().set_html(this.option.value)
-        this.ins = this.clear().add_child(ins)
-    }
-}
-export class Th extends Div {
-    constructor() {
-        super("th", "")
-    }
-    init_style(): void {
-        this.set_style({
-            position: "sticky",
-            top: 0
-        })
-    }
-    render_option(): void {
-        this.set_html(this.option.title || this.option.value)
-    }
-}
-export class BodyTd extends Td {
-    row_idx: number
-    set_row_idx(idx: number) {
-        this.row_idx = idx
-        return this
-    }
-    init_style(): void {
-
-    }
-    render_option(): void {
-        let ins = null
-        if (this.option.type == "input") {
-            ins = new Input().set_value(this.option.value)
-        }
-        else if (this.option.type == 'btns') {
-            ins = new Buttons().set_option(to_node({
-                childs: this.option.value.map((v: any) => {
-                    return { title: v }
-                })
-            }))
-        }
-        else {
-            ins = new Label().set_html(this.option.title || this.option.value)
-        }
-        this.ins = this.clear().add_child(ins).on_change(() => {
-            this._on_change({ idx: this.row_idx, key: this.option.key, value: this.ins.get_value() })
-        })
-    }
-    set_value(value: any) {
-        this.ins.set_value(value)
-        return this
-    }
-
-}
-export class TrBody extends Div {
-    field_map: object
-    constructor() {
-        super("tr", "")
-    }
-    row_idx: number
-    set_row_idx(idx: number) {
-        this.row_idx = idx
-        return this
-    }
-    render_option(): void {
-        this.field_map = {}
-
-        this.clear().add_childs(this.option.childs.map(v => {
-            this.field_map[v.key] = new BodyTd().set_row_idx(
-                this.row_idx
-            ).on_change(this._on_change).set_option(v)
-            return this.field_map[v.key]
-        }))
-    }
-    set_data(data: any) {
-        for (var key in this.field_map) {
-            this.field_map[key].set_value(data[key])
-        }
-        return this
-    }
-
-}
-export class TrHead extends Div {
-    constructor() {
-        super("tr", "")
-    }
-    init_style(): void {
-        this.set_style({
-            border: "1px solid #000"
-
-        })
-    }
-    render_option() {
-        this.clear().add_childs(this.option.childs.map(v => {
-            return new Th().set_option(v)
-        }))
-        return this
-    }
-
-    new_dom_row(idx: number) {
-        return new TrBody().set_row_idx(idx).on_change(this._on_change).set_option(this.option)
-    }
-
-}
-export class Thead extends Div {
-    constructor() {
-        super("thead", "")
-    }
-    init_style(): void {
-
-    }
-
-}
-export class TBody extends Div {
-    constructor() {
-        super("tbody", "")
-    }
-    init_style(): void {
-        this.set_style({
-            height: 400,
-            overflowY: "auto"
-        })
-    }
-    render_option() {
-        this.clear().add_childs(this.option.childs.map(v => {
-            let tr = new TrHead().set_option(v)
-            return tr.on_change(this._on_change)
-        }))
-        return this
-    }
-}
+import { Div } from "../div";
+import Ct from "../../../web/constant"
+import web from "../../../web/web_dom"
+import { Node, to_node } from "../../../web/cls";
+import { Input } from "../input";
+import { Button, Buttons } from "../button";
+import { Label } from "../label"
+import { Pagination } from "../pagination";
+import Util from "../../../tool/util"
+import { Constant } from "../../export";
+import { TrHead } from "./trhead";
+import { TrBody } from "./trbody";
+import { TBody } from "./tbody";
+import { Thead } from "./thead";
 export class Table extends Div {
     header_tr: TrHead
     body_div: TBody
@@ -197,6 +66,7 @@ export class Table extends Div {
 
     }
     add() {
+        this.header_tr.add_one_row()
         return this
     }
     save_all() {
@@ -224,13 +94,6 @@ export class Table extends Div {
         this.table.set_style({
             overflow: "auto",
             height: 600,
-        })
-        this.header_tr.set_style({
-            position: "sticky",
-            top: 0,
-            zIndex: "10",
-            backgroundColor: "#fff",
-            border: "1px solid #000"
         })
     }
     set_header(items: Node[]) {

@@ -29,13 +29,14 @@ class LCTest(TestBase):
                 input_param = c
             else:
                 input_param, except_result = c
-            msg = f"{c}\n" + logger.get_and_clear_cache()
+
             if isinstance(input_param, str):
                 ins.set_inputs(input_param)
                 r = getattr(ins, fun_name)()
                 msg = f"\nii-----:\n{input_param}\nio----:\n{except_result}\nloger:\n{logger.get_and_clear_cache()}"
             else:
                 r = getattr(ins, fun_name)(**input_param)
+                msg = f"{c}\n" + logger.get_and_clear_cache()
             if isinstance(except_result, str) and isinstance(r, list):
                 self.expect_dfs(r, except_result.split("\n")[1:], msg)
             else:

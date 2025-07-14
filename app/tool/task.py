@@ -1,5 +1,6 @@
-from common.util.export import Module,get_log
-logger=get_log("task")
+from common.util.export import Module, get_log
+
+logger = get_log("task")
 import _thread
 import time
 from typing import Dict, List
@@ -7,7 +8,7 @@ from typing import Dict, List
 
 class TaskConfig:
 
-    def load(self, module_name, fun_name, root_path, args=None, wait_time=30):
+    def load(self, module_name, fun_name, root_path, args=None, wait_time=-1):
         self.wait_time = wait_time
         self.module_name = module_name
         self.fun_name = fun_name
@@ -24,7 +25,7 @@ class TaskConfig:
 
     def exec(self):
         t = time.time()
-        if t - self.last_finish_t < self.wait_time:
+        if self.wait_time == -1 or t - self.last_finish_t < self.wait_time:
             return
         self.last_begin_t = t
         try:

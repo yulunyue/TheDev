@@ -11,7 +11,7 @@ class ConfigBase:
         self._config_name = config_name
         self._fp = File(f"{CONFIG_SETTING_DIR}/{file_name}.json")
         self._mtime = 0
-        from common.util.model import BaseModel
+        from common.tool.base_class.model import BaseModel
 
         self._params: List[BaseModel] = []
         self._config = dict()
@@ -34,7 +34,7 @@ class ConfigBase:
 
     def init(self):
         self._config = self.get_config()
-        from common.util.model import BaseModel
+        from common.tool.base_class.model import BaseModel
 
         for key in dir(self):
             if key.startswith("_"):

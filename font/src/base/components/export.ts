@@ -8,8 +8,8 @@ import { gnode, GNode } from "./svg/gnode"
 import { progress_dev, progress, Progress } from "./svg/comb/progress"
 import { tree } from "./svg/comb/tree"
 import { grid, Grid } from './svg/comb/grid'
-import { Table } from "./dom/table"
-import { label, pre, Pre,Label } from "./dom/label"
+import { Table } from "./dom/table/main"
+import { label, pre, Pre, Label } from "./dom/label"
 import { listui, ListUi } from "./dom/list"
 import { dagre_d3_dev } from "../../third/third_util"
 import Constant from "../../base/web/constant"
@@ -41,5 +41,5 @@ export {
     Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, line, Line, gnode, GNode, button, input, tree, Form, form, node, row1, row2,
     to_node, Grid, ListUi, Table, Ct, search, Search, TextAreaRich, label,
-    Container, container,Label
+    Container, container, Label
 }

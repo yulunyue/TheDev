@@ -5,7 +5,7 @@ import json
 class BaseModel:
     def __init__(self, key, default_value=None, data_source=None) -> None:
         self.default_value = default_value
-        from common.util.baseconfig import ConfigBase
+        from common.tool.base_class.baseconfig import ConfigBase
 
         self.data_source: ConfigBase = data_source
 
