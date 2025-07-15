@@ -58,7 +58,7 @@ export class Progress extends Div {
             this.input_line,
             button().set_html("go").click(() => this.set_value(this.input_line.get_int())),
             button().set_html(">>").click(() => this.set_value(this.value.value + 1)),
-        ]).set_direction(Constant.VERTICAL)
+        ])
         web_dom.bind_key((tp: string, e: KeyboardEvent) => {
             if (tp == 'keydown' && e.key == Constant.KEY_RIGHT) {
                 this.set_value(this.value.value + 1)

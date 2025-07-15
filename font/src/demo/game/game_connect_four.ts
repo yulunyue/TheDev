@@ -39,7 +39,7 @@ class GameConnectFour extends Game {
         }).add_child(this.m)
     }
     init_event(): void {
-        this.m.select((v: any) => {
+        this.m.do_select((v: any) => {
             this.hander_select(v)
         })
     }

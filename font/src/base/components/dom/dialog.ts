@@ -15,7 +15,7 @@ export class Dialog extends Div {
 
     init_style(): void {
         this.set_style_ab_full().set_style({
-            zIndex: "2",
+            zIndex: "100",
             backgroundColor: "#8888"
 
         })
@@ -54,28 +54,28 @@ export class Dialog extends Div {
 }
 class Dig {
     dig: Dialog
-    get_dialog() { 
-        if (!this.dig) { 
-            this.dig=new Dialog()
+    get_dialog() {
+        if (!this.dig) {
+            this.dig = new Dialog()
         }
         return this.dig
     }
     open_form(oj: any, call: any) {
-        return this.get_dialog().open_form(oj,call)
+        return this.get_dialog().open_form(oj, call)
     }
     open(c: any) {
         return this.get_dialog().open(c)
     }
-    open_loading() { 
+    open_loading() {
         return this.open(new Div().set_class("load_gif").set_style({
             width: 32,
             height: 32,
             backgroundSize: "cover",
-            backgroundColor:"#8888"
-            
+            backgroundColor: "#8888"
+
         }))
     }
-    close() { 
+    close() {
         return this.get_dialog().hide()
     }
 }

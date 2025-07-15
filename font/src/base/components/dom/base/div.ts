@@ -12,13 +12,11 @@ export class Div {
     option: Node
     index: number
     on_mount_call: any
-    direction: number = -1
-    layout_type: number = 0
     size: number = 0
     _on_change: any = null
     _on_select: any = null
-    do_change() {
-        this._on_change?.()
+    do_change(src?: any, dst?: any) {
+        this._on_change?.(src, dst)
         return this
     }
     on_change(call: any) {
@@ -41,35 +39,12 @@ export class Div {
             color: s
         })
     }
-    set_direction(direction: number) {
-        if (direction != 0 && direction != -1 && direction != 1) {
-            return this
-        }
-        this.direction = direction
-        return this
-    }
-    get_content_divs() {
-        let ret = []
-        return ret
-    }
-    get_direction(direction: number) {
-        if (this.direction != -1) {
-            return this.direction
-        }
-        return direction
-    }
     get_child(idx: number, call: any) {
         if (this.childs[idx]) {
             return this.childs[idx]
         }
         this.childs[idx] = this.add_child(call())
         return this.childs[idx]
-    }
-    flex_horizontal_layout() {
-        this.set_size(1)
-        return this.set_flex_style(
-            Constant.HORIZONTAL
-        ).full()
     }
     full() {
         return this.set_style({
@@ -78,53 +53,10 @@ export class Div {
             position: "absolute"
         })
     }
-    flex_veritcal_layout() {
-        this.set_size(1)
-        return this.set_flex_style(Constant.VERTICAL).full()
-    }
 
-    set_abs_style(option: Node, direction: number) {
-        this.clear().full()
-        function dfs(node: Div, option: Node, direction: number) {
-            node.set_border()
-            let lt = 0
-            for (var i = 0; i < option.childs.length; i++) {
-                let tmp = DivFactory.new_div(option.childs[i].type, option.childs[i])
-                let style: Style = {
-                    left: 0,
-                    top: 0,
-                    width: 1,
-                    height: 1,
-                    display: "flex",
-                    flexDirection: direction == Constant.VERTICAL ? "column" : "row",
-                }
-                if (direction == Constant.VERTICAL) {
-                    style.left = lt / option.size_calc
-                    style.width = option.childs[i].size_calc / option.size_calc
-                } else {
-                    style.top = lt / option.size_calc
-                    style.height = option.childs[i].size_calc / option.size_calc
-                }
-                lt += option.childs[i].size_calc
-                tmp.set_style(style)
-                dfs(tmp, option.childs[i], 1 - direction)
-                node.add_child(tmp)
-            }
-        }
-        dfs(this, to_node(option).calc_size(), direction)
-        return this
 
-    }
-    set_style_flex(direction: number) {
-        return this.set_div_style({
-            flexDirection: direction == Constant.VERTICAL ? "row" : "column",
-            display: "flex",
-            justifyContent: "center",
-            alignContent: "center",
-            flexGrow: this.size + "",
 
-        })
-    }
+
     set_flex_grow(grow: number) {
         return this.set_div_style({
             flexGrow: grow + ""
@@ -133,24 +65,8 @@ export class Div {
     set_border() {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
-    set_style_flex2(direction: number, use_border?: boolean) {
-        this.set_style_flex(direction)
-        if (use_border) {
-            this.set_border()
-        }
-        return this
-    }
-    set_flex_style(direction: number, use_border?: boolean) {
-        direction = this.get_direction(direction)
-        this.set_style_flex2(direction)
-        for (var i = 0; i < this.childs.length; i++) {
-            if (this.childs[i].set_flex_style) {
-                this.childs[i].set_flex_style(1 - direction, use_border)
-            }
-        }
-        return this
 
-    }
+
     constructor(node_type: string = 'div', parent_node_type: string = "div") {
         this.childs = []
         this.on_mount_call = {}
@@ -268,6 +184,15 @@ export class Div {
             transform: "translate(-50%,-50%)"
         })
     }
+    set_style_flex(direction: number) {
+        return this.set_div_style({
+            flexDirection: direction == Constant.VERTICAL ? "row" : "column",
+            display: "flex",
+            justifyContent: "center",
+            alignContent: "center",
+            flexGrow: this.size + "",
+        })
+    }
     init_style() {
 
     }
@@ -338,9 +263,7 @@ export class Div {
         info.reverse()
         return info
     }
-    select(v: any) {
-        return this
-    }
+
     set_option(option: Node) {
         this.option.set_option(option)
         // this.set_direction(option.direction)

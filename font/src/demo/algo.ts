@@ -53,7 +53,7 @@ class Algo extends Div {
                 this.pro,
                 button().set_html("setting").click(() => this.open_setting()),
             ]).set_height(Constant.DEFAULT_LINE_HEIGHT)
-        ]).flex_horizontal_layout()
+        ])
     }
     init_event(): void {
         this.code_select.on_change(() => {
@@ -77,7 +77,7 @@ class Algo extends Div {
     }
 
     render_option() {
-        this.div.set_abs_style(this.option, Constant.VERTICAL)
+
     }
     goto() {
         let idx = this.pro.get_value()
@@ -101,7 +101,7 @@ class Algo extends Div {
 
         }, (node: Node) => {
             let py_module = web_dom.get_param("py_module")
-            if(!py_module){
+            if (!py_module) {
                 console.error('py_module is null')
             }
             this.code_select.set_option(node).select(py_module)

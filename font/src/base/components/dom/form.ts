@@ -11,7 +11,7 @@ export class Row extends Div {
     body: Div
     input: Div
     static input_string: string = 'input'
-    static text_area_string: string ='text_area'
+    static text_area_string: string = 'text_area'
     init_style(): void {
         this.set_style({ margin: 4, fontSize: 20 })
     }
@@ -62,7 +62,7 @@ export class Row extends Div {
         return this
     }
     select(v: any) {
-        this.input.select(v)
+        this.input.do_select(v)
         return this
     }
 }

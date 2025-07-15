@@ -58,11 +58,10 @@ export class Select extends Div {
         for (var i = 0; i < this.childs.length; i++) {
             let so = this.childs[i]
             if (so.option.key == key) {
-                so.select(true)
-
+                so.do_select(true)
                 this.do_change()
             } else {
-                so.select(false)
+                so.do_select(false)
             }
         }
         return this

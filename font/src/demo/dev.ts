@@ -1,7 +1,7 @@
 
 import {
     Div, search, Search, button, TextAreaRich, text_area,
-    Table, Util
+    Table, Util, dialog
 } from "../base/components/export";
 export class Dev extends Div {
     search: Search
@@ -17,7 +17,12 @@ export class Dev extends Div {
         this.add_childs([
             this.search,
             this.table
-        ])
+        ]).full()
+    }
+    test_open_edit_dialog() {
+        dialog.open_form({ a: "input" }, (v: any) => {
+            console.log(v)
+        })
     }
     test_table_data() {
         this.table.set_data({
@@ -40,7 +45,7 @@ export class Dev extends Div {
     }
     on_mount(): void {
         this.test_table_data()
-
+        //this.test_open_edit_dialog()
     }
 
 }
