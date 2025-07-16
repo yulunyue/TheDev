@@ -1,33 +1,44 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form, dialog, Row, node, Select, select, Pre, pre,
-    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory, row1, row2,
-    text_area, TextAreaRich, MeraGraph, to_node, search, Search
+    Div, Constant, Node, web_dom, oj_to_node, Form, to_node, Search, Container
 } from "../base/components/export";
+const URIKEYID = "api_key"
 export class Api extends Div {
-    search: Search
-    input: TextAreaRich
-    result: TextAreaRich
+    uri: Search
+    input: Form
+    result: Container
     init_node(): void {
-        this.input = text_area().set_title("输入")
-        this.search = search().set_title("APIKEY").set_search(
-            "/app/tool/api/query_api"
-        ).enable_local_storge().on_change((node: Node) => {
-            this.input.set_value(node.data.kwargs)
-        }).set_id("api_key").set_btns([
-            button().set_html("执行").click(() => { this.execute() })
-        ])
-        this.result = text_area().set_title("输出")
-        this.add_childs([this.search, this.input, this.result])
+        this.input = new Form()
+        this.uri = new Search().set_option(to_node({
+            url: "/app/tool/api/query_api",
+            id: URIKEYID,
+            title: "APIKEY",
+            type: Constant.DATA_SOURCE_DYN
+        }))
+
+        this.result = new Container()
+        this.add_childs([
+            new Div().add_childs(
+                [this.uri, this.input]),
+            this.result
+        ]).set_style_flex(
+            Constant.VERTICAL
+        ).full()
+    }
+    init_event(): void {
+        this.uri.on_change((src: Node, dst: Node) => {
+            this.input.set_option(oj_to_node(dst.data.kwargs))
+        })
     }
     execute() {
-        let info = this.search.get_value()
+        let info = this.uri.get_value()
         web_dom.post(info.key, this.input.get_value(), (v: Node) => {
             this.result.set_value(v)
         })
     }
     on_mount(): void {
-        //this.search.emit_search()
+        web_dom.get_local(URIKEYID, (v: any) => this.uri.set_value(v))
+
     }
 
 }

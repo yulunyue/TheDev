@@ -1,6 +1,6 @@
 import { Div, div } from "./div";
 import web_dom from "../../web/web_dom"
-import { form, Row, row1 } from "./form";
+
 import { Node } from "../../web/cls";
 export class Dialog extends Div {
     container: Div
@@ -19,7 +19,7 @@ export class Dialog extends Div {
             backgroundColor: "#8888"
 
         })
-        this.main.set_style_ab_center().set_style({
+        this.main.set_style_center_by_position().set_style({
             backgroundColor: "#fff",
         })
         this.hide()
@@ -28,17 +28,17 @@ export class Dialog extends Div {
 
     }
     open_form(oj: any, call: any) {
-        let rows = []
-        for (var key in oj) {
-            rows.push(
-                row1().set_option(new Node().set_type(
-                    oj[key]
-                ).set_title(
-                    key
-                ).set_key(key))
-            )
-        }
-        return this.open(form().set_rows(rows).ok(call))
+        // let rows = []
+        // for (var key in oj) {
+        //     rows.push(
+        //         row1().set_option(new Node().set_type(
+        //             oj[key]
+        //         ).set_title(
+        //             key
+        //         ).set_key(key))
+        //     )
+        // }
+        // return this.open(form().set_rows(rows).ok(call))
     }
     open(c: any) {
         this.container.clear().add_child(c)

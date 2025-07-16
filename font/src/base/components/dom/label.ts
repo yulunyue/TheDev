@@ -5,7 +5,7 @@ export class Label extends Div {
     text: string = null
     change_color: string = null
     constructor() {
-        super("span")
+        super("p")
     }
     init_style(): void {
         this.set_style({
@@ -22,7 +22,7 @@ export class Label extends Div {
         this.change_color = color
         return this
     }
-    click(call_back: any) {
+    on_click(call_back: any) {
         web.bind_mouseenter(this.el, () => {
             this.set_style({
                 backgroundColor: "green"
@@ -33,7 +33,7 @@ export class Label extends Div {
                 backgroundColor: "white"
             })
         })
-        return super.click(call_back)
+        return super.on_click(call_back)
     }
 
 }

@@ -1,4 +1,5 @@
 import { Div } from "./div";
+import web_dom from "../../web/web_dom"
 import { Title, Button } from "./button";
 import Constant from "../../web/constant";
 export class Input extends Div {
@@ -8,6 +9,10 @@ export class Input extends Div {
     }
     init_node() {
 
+    }
+    on_input(call: any) {
+        web_dom.bind_input(this.el, call)
+        return this
     }
     set_placeholder(title: string) {
         return this.set_attr("placeholder", title)
@@ -23,10 +28,11 @@ export class Input extends Div {
         if (this.option.type == Constant.NUMBER) {
             this.set_width(Constant.INPUT_NUMBER_WIDTH)
         }
-        this.set_value(this.option.value)
+        //this.set_value(this.option.value)
     }
-    on_click() {
-
+    set_value(value: any) {
+        this.el.value = value
+        return this
     }
     get_value() {
         return this.el.value

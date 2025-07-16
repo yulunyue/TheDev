@@ -43,7 +43,7 @@ export class BodyTd extends HeadTd {
             ins = new Label().set_html(this.option.title || this.option.value)
         }
         this.ins = this.clear().add_child(ins).on_change(() => {
-            this._on_change({ idx: this.row_idx, key: this.option.key, value: this.ins.get_value() })
+            //this._on_change({ idx: this.row_idx, key: this.option.key, value: this.ins.get_value() })
         })
     }
     set_value(value: any) {

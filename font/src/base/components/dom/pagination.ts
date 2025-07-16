@@ -19,11 +19,11 @@ export class Pagination extends Div {
         this.render_page_size()
         this.add_child(this.page_size_select)
         this.add_childs([
-            new Button().set_html("<<").click(() => this.add(-1)),
+            new Button().set_html("<<").on_click(() => this.add(-1)),
             this.cur_page,
             this.page_info,
-            new Button().set_html("go").click(() => this.jump(this.cur_page.get_int())),
-            new Button().set_html(">>").click(() => this.add(1)),
+            new Button().set_html("go").on_click(() => this.jump(this.cur_page.get_int())),
+            new Button().set_html(">>").on_click(() => this.add(1)),
         ])
     }
     add(v: number) {
@@ -37,7 +37,7 @@ export class Pagination extends Div {
 
         this.option.data.cur_page = v
         this.render_option()
-        this._on_change?.()
+        // this._on_change?.()
         return this
     }
     set_length(length: number) {

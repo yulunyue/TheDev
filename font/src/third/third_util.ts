@@ -39,8 +39,6 @@ class ThirdUtil {
 }
 let third_util = new ThirdUtil()
 export function dagre_d3_dev() {
-    return new SvgNode().mount_html((el: any) => {
-        third_util.dagre_d3(el)
-    })
+    return new SvgNode()
 }
 export default third_util

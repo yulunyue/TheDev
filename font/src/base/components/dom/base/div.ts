@@ -11,24 +11,27 @@ export class Div {
     parent: Div
     option: Node
     index: number
-    on_mount_call: any
     size: number = 0
-    _on_change: any = null
-    _on_select: any = null
+    _value: any = null
+    event_hander: any
     do_change(src?: any, dst?: any) {
-        this._on_change?.(src, dst)
+        this.event_hander[Constant.CHANGE_EVENT]?.(src, dst)
         return this
     }
     on_change(call: any) {
-        this._on_change = call
+        this.event_hander[Constant.CHANGE_EVENT] = call
+        return this
+    }
+    on_click(call_back: any) {
+        web_dom.bind_click(this.el, call_back)
         return this
     }
     do_select(arg: any) {
-        this._on_select?.(arg)
+        this.event_hander[Constant.SELECT_ENVENT]?.(arg)
         return this
     }
     on_select(call: any) {
-        this._on_select = call
+        this.event_hander[Constant.SELECT_ENVENT] = call
         return this
     }
     set_class(name: string) {
@@ -54,9 +57,6 @@ export class Div {
         })
     }
 
-
-
-
     set_flex_grow(grow: number) {
         return this.set_div_style({
             flexGrow: grow + ""
@@ -65,15 +65,12 @@ export class Div {
     set_border() {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
-
-
     constructor(node_type: string = 'div', parent_node_type: string = "div") {
         this.childs = []
-        this.on_mount_call = {}
+        this.event_hander = {}
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         this.parent = null
-
         this.option = new Node()
         this.init_node()
         this.init_style()
@@ -119,12 +116,9 @@ export class Div {
         return this
     }
     get_value(): any {
-        return this.el.innerHTML
+        return this._value
     }
-    click(call_back: any) {
-        web_dom.bind_click(this.el, call_back)
-        return this
-    }
+
     get_x() {
         return this.el.clientLeft
     }
@@ -176,7 +170,7 @@ export class Div {
         web_dom.set_el_style(this.el, style)
         return this
     }
-    set_style_ab_center() {
+    set_style_center_by_position() {
         return this.set_style({
             position: "fixed",
             top: "50%",
@@ -199,7 +193,7 @@ export class Div {
     init_event() {
 
     }
-    set_center() {
+    set_style_text_center() {
         this.set_style({ textAlign: "center" })
     }
     create_element(name: string): any {
@@ -214,14 +208,10 @@ export class Div {
         return this
     }
     emit_mount() {
-        for (var key in this.on_mount_call) {
-            this[key].apply(this, this.on_mount_call[key])
-        }
         for (var i = 0; i < this.childs.length; i++) {
             this.childs[i].emit_mount()
         }
         this.on_render()
-        this.on_mount()
         return this
     }
     on_render() {
@@ -229,12 +219,6 @@ export class Div {
     }
     on_mount() {
 
-    }
-    mount_html(call: any) {
-        this.on_mount_call["set_html"] = [() => {
-            return call(this.el)
-        }]
-        return this
     }
     add_child(c: any) {
         c.mount(this.el)
@@ -263,10 +247,17 @@ export class Div {
         info.reverse()
         return info
     }
-
+    set_title(s: string) {
+        return this
+    }
     set_option(option: Node) {
         this.option.set_option(option)
-        // this.set_direction(option.direction)
+        if (this.option.title) {
+            this.set_title(this.option.title)
+        }
+        if (this.option.id) {
+            DivFactory.set(this.option.id, this)
+        }
         this.render_option()
         return this
     }
@@ -299,7 +290,6 @@ export class Div {
         return this.set_childs(childs)
     }
     set_html(text: string | Fn1<any, string>) {
-
         if (text == null || text == undefined) {
             return this
         }
@@ -307,29 +297,17 @@ export class Div {
             text(this.el)
             return this
         }
-
         this.el.innerHTML = text
         return this
     }
     set_value(value: any) {
-        if (typeof value == "object") {
-            value = JSON.stringify(value, null, 4)
-        } else if (value == null || value == undefined) {
-            value = ""
+        if (this.option.id && this.option.local_storge_enable) {
+            web_dom.set_local(this.option.id, value.dump())
         }
-        (this.el as any).value = value
+        this.event_hander[Constant.CHANGE_EVENT]?.(this._value, value)
+        this._value = value
         return this
     }
-    _id: string
-    local_storge_enable = false
-    set_id(id: string) {
-        this._id = id
-        DivFactory.set(this._id, this)
-        return this
-    }
-    enable_local_storge() {
-        this.local_storge_enable = true
-        return this
-    }
+
 
 }

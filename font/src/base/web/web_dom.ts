@@ -37,8 +37,12 @@ class WebDom {
     get_location() {
         return location.href
     }
-    get_local(key: string) {
-        return to_node(JSON.parse(localStorage.getItem("yly_" + key)))
+    get_local(key: string, call?: any) {
+        let ret = to_node(JSON.parse(localStorage.getItem("yly_" + key)))
+        if (ret) {
+            call?.(ret)
+        }
+        return ret
     }
     get_param(key: string, defult_value?: any) {
         if (!(key in this.url_param)) {
@@ -117,8 +121,8 @@ class WebDom {
                     return
                 }
                 let data = this.hander_res(JSON.parse(req.responseText))
-                if (data && data.code > 300) {
-                    alert(data.code + '->' + data.title)
+                if (data && data.statu > 300) {
+                    alert(data.statu + '->' + data.title)
                 }
                 else if (data) {
                     // call_back(new Node().set_option(data))

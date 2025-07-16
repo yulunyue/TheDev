@@ -41,17 +41,9 @@ class ApiCall:
             return
         if not os.path.isdir(path):
             raise Exception(path)
-
-        for moudule_name in modules:
-            m = Module().load_module_object(moudule_name, path)()
-            moudule_name_key = moudule_name.replace(".", "/")
-            for fun_name in dir(m):
-                if fun_name.startswith("_"):
-                    continue
-                f = getattr(m, fun_name)
-                fun_key = f"{path}/{moudule_name_key}/{fun_name}"
-                if callable(f):
-                    self.register(fun_key, f)
+        return [
+            Module().load_module_object(moudule_name, path) for moudule_name in modules
+        ]
 
     def register(self, key: str, fun):
         keys = key.split("/")[-5:]
@@ -66,9 +58,7 @@ class ApiCall:
     def load_module(self, cls):
         m = cls()
 
-        moudule_name_key = (
-            (cls.__module__ + "." + cls.__name__).lower().replace(".", "/")
-        )
+        moudule_name_key = cls.API_ROUTE
         for fun_name in dir(m):
             if fun_name.startswith("_"):
                 continue
@@ -80,7 +70,7 @@ class ApiCall:
     def load_modules(self, mds):
         for md in mds:
             if isinstance(md, dict):
-                self.load_module_str(**md)
+                self.load_modules(self.load_module_str(**md))
             else:
                 self.load_module(md)
 

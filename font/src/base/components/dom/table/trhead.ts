@@ -31,7 +31,10 @@ export class TrHead extends Div {
     }
 
     new_dom_row(idx: number) {
-        return new TrBody().set_row_idx(idx).on_change(this._on_change).set_option(this.option)
+        return new TrBody().set_row_idx(idx).on_change(
+            //this._on_change
+            null
+        ).set_option(this.option)
     }
     add_one_row() {
 

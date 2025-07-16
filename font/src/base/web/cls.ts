@@ -29,7 +29,7 @@ export interface Style {
     padding?: number | string
     fontSize?: number | string
     zIndex?: string
-    display?: "flex" | "none" | "" | "initial"
+    display?: "flex" | "none" | "" | "initial" | "inline-block" | "inline"
     outline?: "none"
     whiteSpace?: "pre-line" | "nowrap" | "pre-wrap"
     wordWrap?: "break-word"
@@ -75,7 +75,9 @@ export interface Fn1<P1, T> {
 export type Dom = HTMLElement
 
 export class Node {
-    code?: number = 0
+    id?: string = ""
+    url?: string = ""
+    statu?: number = 0
     type?: string = ""
     key?: string = ""
     title?: string = ""
@@ -90,8 +92,8 @@ export class Node {
     y?: number = 0
     el?: any = null
     size?: number = 0
-    size_calc?: number = 0
     color?: string = ""
+    local_storge_enable?: boolean = false
     constructor(key?: string) {
         this.childs = []
         this.data = {}
@@ -146,7 +148,7 @@ export class Node {
             if (k == 'childs') {
                 this.set_childs(data[k])
             }
-            else {
+            else if (data[k]) {
                 this[k] = data[k]
             }
         }
@@ -195,14 +197,7 @@ export class Node {
         return ret
     }
     calc_size() {
-        this.size_calc = 0
-        if (this.childs.length == 0) {
-            this.size_calc = Math.max(this.size, 1)
-        }
-        for (var i = 0; i < this.childs.length; i++) {
-            this.size_calc += this.childs[i].calc_size().size_calc
-        }
-        return this
+        return this.size
     }
     set_type(type: string) {
         this.type = type
@@ -219,6 +214,13 @@ export function to_node(n: any) {
         return n
     }
     return new Node().set_option(n)
+}
+export function oj_to_node(oj: any) {
+    let ret = new Node()
+    for (var key in oj) {
+        ret.add_child(new Node().set_key(key).set_value(oj[key]))
+    }
+    return ret
 }
 export function node(key?: string) {
     return new Node(key)

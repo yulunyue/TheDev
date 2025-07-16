@@ -1,7 +1,7 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form, dialog, Row, node, Select, select, Pre, pre,
-    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory, row1, row2,
+    Div, Svg, svg, Constant, Node, web_dom, tree, Form, dialog, Row, node, Select, select, Pre, pre,
+    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory,
     text_area, TextArea
 } from "../base/components/export";
 
@@ -18,28 +18,28 @@ class Algo extends Div {
         this.set_style_ab_full()
     }
     init_edit_dialog() {
-        this.code_select = row1().set_input(
-            select()
-        ).set_title(
-            "py_module"
-        )
-        this.code_pre = row1().set_input(text_area().set_style({
-            height: Constant.TEXT_AREA_HEIGHT_3,
-        }))
-        this.case_select = row1().set_input(
-            select()
-        ).set_title(
-            "case"
-        )
-        this.case_pre = row1().set_input(text_area())
-        this.dialog_div = form().set_rows([
-            this.code_select,
-            this.code_pre,
-            this.case_select,
-            this.case_pre,
-        ]).ok(() => {
-            this.run()
-        })
+        // this.code_select = row1().set_input(
+        //     select()
+        // ).set_title(
+        //     "py_module"
+        // )
+        // this.code_pre = row1().set_input(text_area().set_style({
+        //     height: Constant.TEXT_AREA_HEIGHT_3,
+        // }))
+        // this.case_select = row1().set_input(
+        //     select()
+        // ).set_title(
+        //     "case"
+        // )
+        // this.case_pre = row1().set_input(text_area())
+        // this.dialog_div = form().set_rows([
+        //     this.code_select,
+        //     this.code_pre,
+        //     this.case_select,
+        //     this.case_pre,
+        // ]).ok(() => {
+        //     this.run()
+        // })
     }
     init_node() {
         this.init_edit_dialog()
@@ -51,7 +51,7 @@ class Algo extends Div {
             this.div.set_size(1),
             div().add_childs([
                 this.pro,
-                button().set_html("setting").click(() => this.open_setting()),
+                button().set_html("setting").on_click(() => this.open_setting()),
             ]).set_height(Constant.DEFAULT_LINE_HEIGHT)
         ])
     }

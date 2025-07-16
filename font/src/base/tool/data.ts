@@ -1,4 +1,4 @@
-import { dialog, form } from "../components/export"
+import { dialog } from "../components/export"
 import web_dom from "../web/web_dom"
 export class Data {
     get_user_name(call_back: any) {

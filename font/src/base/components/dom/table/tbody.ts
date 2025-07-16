@@ -22,7 +22,7 @@ export class TBody extends Div {
     render_option() {
         this.clear().add_childs(this.option.childs.map(v => {
             let tr = new TrHead().set_option(v)
-            return tr.on_change(this._on_change)
+            return tr.on_change(null)
         }))
         return this
     }

@@ -4,6 +4,7 @@ from common.util.fp import File
 
 
 class FileManage:
+    API_ROUTE = "/app/tool/file"
 
     def read(self, path="", **kw):
         value = File(path).read_file()
@@ -11,18 +12,6 @@ class FileManage:
             return Node().set_data(**value)
         return Node().set_value(value)
 
-    def check(self, **kw):
-        pass
-
-    def save_all(self, path="", **kw):
+    def write(self, path="", **kw):
         File(path).write_file(kw)
         return Node()
-
-    def save_one(self, **kw):
-        pass
-
-    def add(self, **kw):
-        pass
-
-    def get(self, **kw):
-        return self.read(**kw)

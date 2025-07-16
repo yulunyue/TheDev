@@ -54,10 +54,10 @@ export class Progress extends Div {
         this.input_line = input().set_width(Constant.INPUT_NUMBER_WIDTH)
         this.add_childs([
             svg().add_childs([this.min_g]).set_width(1),
-            button().set_html("<<").click(() => this.set_value(this.value.value - 1)),
+            button().set_html("<<").on_click(() => this.set_value(this.value.value - 1)),
             this.input_line,
-            button().set_html("go").click(() => this.set_value(this.input_line.get_int())),
-            button().set_html(">>").click(() => this.set_value(this.value.value + 1)),
+            button().set_html("go").on_click(() => this.set_value(this.input_line.get_int())),
+            button().set_html(">>").on_click(() => this.set_value(this.value.value + 1)),
         ])
         web_dom.bind_key((tp: string, e: KeyboardEvent) => {
             if (tp == 'keydown' && e.key == Constant.KEY_RIGHT) {
@@ -92,7 +92,7 @@ export class Progress extends Div {
         }
         this.input_line.set_value(value)
         this.value.set_value(value, Math.min(pos + this.margin, this.width))
-        this._on_change(value)
+        // this._on_change(value)
         return this
     }
     init_event() {

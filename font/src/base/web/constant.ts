@@ -55,6 +55,13 @@ class Constant {
     MOCK_NODE_3_20 = fack_data(0, 3, 20)
     MOCK_NODE_3_5 = fack_data(0, 3, 5)
     MOCK_NODE_3_3 = fack_data(0, 3, 3)
+
+    Z_INDEX_1 = "1"
+
+    DATA_SOURCE_DYN = "data_source_dyn"
+    CHANGE_EVENT = "change_event"
+    SELECT_ENVENT = "select_event"
+
     get_mock_data(s: string, param: any) {
         if (web_dom.web_host.endsWith('github.io')) {
             return this.get_ts_data(s, param)
