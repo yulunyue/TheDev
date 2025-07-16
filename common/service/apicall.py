@@ -36,12 +36,14 @@ class ApiCall:
             mock_fun(path, param, ret)
         return ret
 
-    def load_module_str(self, path: str, modules: List[str]):
+    def load_module_str(self, path: str, modules: List[str], enable=True):
+        if not enable:
+            return
         if not os.path.isdir(path):
             raise Exception(path)
 
         for moudule_name in modules:
-            m = Module().load_module(moudule_name, path, "Route")()
+            m = Module().load_module_object(moudule_name, path)()
             moudule_name_key = moudule_name.replace(".", "/")
             for fun_name in dir(m):
                 if fun_name.startswith("_"):
@@ -62,8 +64,11 @@ class ApiCall:
         logger.info(f"register {key} {fun.__name__}")
 
     def load_module(self, cls):
-        m = cls.Route()
-        moudule_name_key = cls.__name__.replace(".", "/")
+        m = cls()
+
+        moudule_name_key = (
+            (cls.__module__ + "." + cls.__name__).lower().replace(".", "/")
+        )
         for fun_name in dir(m):
             if fun_name.startswith("_"):
                 continue
@@ -75,8 +80,7 @@ class ApiCall:
     def load_modules(self, mds):
         for md in mds:
             if isinstance(md, dict):
-                if md.get("enbale") != False:
-                    self.load_module_str(**md)
+                self.load_module_str(**md)
             else:
                 self.load_module(md)
 

@@ -80,6 +80,11 @@ class Module:
         # sys.path.pop()
         return ret
 
+    def load_module_object(self, module_name: str, path: str):
+        rpaths = module_name.replace("/", ".").split(".")
+        object_name = rpaths.pop()
+        return self.load_module(".".join(rpaths), path=path, fun_name=object_name)
+
     def run(self, path, module_name, fun_name):
         old_pwd = os.getcwd()
         os.chdir(path)

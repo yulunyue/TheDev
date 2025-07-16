@@ -66,7 +66,3 @@ class Task:
 
 
 TASK_MANAGER = Task()
-
-
-class Route:
-    pass
