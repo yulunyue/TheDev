@@ -1,5 +1,5 @@
 from common.service.export import Api
-from common.util.export import File, List
+from common.util.export import File, List, logger
 import json
 
 
@@ -30,7 +30,9 @@ class CodingGame(Api):
         if play_type == "submit":
             player_data.append(None)
         ret = self.post(f"/services/TestSession/{play_type}", player_data)
-        File(self.get_local_path(f"{play_type}.json")).write_file(ret)
+        tmp_path = self.get_local_path(f"{play_type}.json")
+        logger.info(tmp_path)
+        File(tmp_path).write_file(ret)
         return ret
 
     def submit(self, file_path, game_id):
