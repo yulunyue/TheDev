@@ -35,7 +35,7 @@ class Constant {
     COLOR_GRAY = '#888'
     COLOR_TANS = 'transparent'
     DEFAULT_FONT_FAMILY = "'Times New Roman', serif"
-    DEFAULT_FONT_SIZE = "20px"
+    DEFAULT_FONT_SIZE = "12px"
     DIALOG_COLOR = '#8888'
 
 
@@ -59,9 +59,12 @@ class Constant {
     Z_INDEX_1 = "1"
 
     DATA_SOURCE_DYN = "data_source_dyn"
-    CHANGE_EVENT = "change_event"
-    SELECT_ENVENT = "select_event"
 
+    EVENT_CHANGE = "event_change"
+
+    DOM_TYPE_INPUT = "input"
+    DOM_TYPE_MERA_GRAPH = "graph"
+    DOM_TYPE_PRE = "pre"
     get_mock_data(s: string, param: any) {
         if (web_dom.web_host.endsWith('github.io')) {
             return this.get_ts_data(s, param)

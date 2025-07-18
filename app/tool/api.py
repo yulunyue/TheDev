@@ -4,7 +4,7 @@ from common.util.fp import File
 
 
 class ApiGlobal:
-    API_ROUTE = "/app/tool/api"
+    API_ROUTE = "/app/api"
 
     def query_api(self, **kw):
         return Node(**MainHander.POST_API.to_json())

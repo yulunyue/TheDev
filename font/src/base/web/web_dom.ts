@@ -92,7 +92,7 @@ class WebDom {
         if (mock_data) {
             return call_back(mock_data)
         }
-        dlg.open_loading()
+        // dlg.open_loading()
         let req = new XMLHttpRequest()
         if (method == this.HTTP_GET_METHOD) {
             let path = Ut.object_to_get_param(data, url)
@@ -120,15 +120,15 @@ class WebDom {
                     call_back(req.responseText)
                     return
                 }
-                let data = this.hander_res(JSON.parse(req.responseText))
-                if (data && data.statu > 300) {
-                    alert(data.statu + '->' + data.title)
+                let data:any = this.hander_res(JSON.parse(req.responseText))
+                if (data && data.code > 300) {
+                    alert(data.code + '->' + data.title)
                 }
                 else if (data) {
                     // call_back(new Node().set_option(data))
                     call_back(data)
                 }
-                dlg.close()
+                // dlg.close()
             }
         }
 

@@ -4,7 +4,7 @@ from common.util.fp import File
 
 
 class FileManage:
-    API_ROUTE = "/app/tool/file"
+    API_ROUTE = "/app/file"
 
     def read(self, path="", **kw):
         value = File(path).read_file()

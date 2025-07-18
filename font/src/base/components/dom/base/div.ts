@@ -15,11 +15,11 @@ export class Div {
     _value: any = null
     event_hander: any
     do_change(src?: any, dst?: any) {
-        this.event_hander[Constant.CHANGE_EVENT]?.(src, dst)
+        this.event_hander[Constant.EVENT_CHANGE]?.(src, dst)
         return this
     }
     on_change(call: any) {
-        this.event_hander[Constant.CHANGE_EVENT] = call
+        this.event_hander[Constant.EVENT_CHANGE] = call
         return this
     }
     on_click(call_back: any) {
@@ -27,11 +27,12 @@ export class Div {
         return this
     }
     do_select(arg: any) {
-        this.event_hander[Constant.SELECT_ENVENT]?.(arg)
+        this.event_hander[Constant.EVENT_CHANGE]?.(this._value, arg)
+        this._value = arg
         return this
     }
     on_select(call: any) {
-        this.event_hander[Constant.SELECT_ENVENT] = call
+        this.event_hander[Constant.EVENT_CHANGE] = call
         return this
     }
     set_class(name: string) {
@@ -231,11 +232,20 @@ export class Div {
         this.parent = p
         return this
     }
-    set_childs(childs: Div[]) {
+    set_childs(childs: Node[], cls: any) {
         for (var i = 0; i < childs.length; i++) {
-            this.add_child(childs[i])
+            let c = this.childs[i]
+            if (c) {
+                c.set_option(childs[i])
+            } else {
+                this.add_child(cls().set_option(childs[i]))
+            }
+        }
+        for (var i = childs.length; i < this.childs.length; i++) {
+            this.childs[i].hide()
         }
         return this
+
     }
     get_tree_infos() {
         let p: Div = this
@@ -262,23 +272,8 @@ export class Div {
         return this
     }
     update_option(option: Node, cls: any) {
-        this.set_option(option)
-
-        for (var i = 0; i < this.childs.length; i++) {
-            if (option.childs[i]) {
-                this.childs[i].set_option(option.childs[i])
-            }
-        }
-        console.log(this.childs.length, option.childs.length)
-        for (var i = this.childs.length; i < option.childs.length; i++) {
-            this.add_child(new cls()).set_option(option.childs[i])
-        }
-        let childs_l = this.childs.length;
-        for (var i = option.childs.length; i < childs_l; i++) {
-            // console.log(i)
-            // let n = this.childs.splice(i, 1)
-            // this.el.removeChild(n[0].el)
-        }
+        // this.set_childs(option.childs,cls)
+        // this.set_option(option)
     }
     remove(i: number) {
 
@@ -287,7 +282,10 @@ export class Div {
 
     }
     add_childs(childs: any[]) {
-        return this.set_childs(childs)
+        for (var i = 0; i < childs.length; i++) {
+            this.add_child(childs[i])
+        }
+        return this
     }
     set_html(text: string | Fn1<any, string>) {
         if (text == null || text == undefined) {
@@ -301,11 +299,11 @@ export class Div {
         return this
     }
     set_value(value: any) {
+        console.log(this.option.id,this.option.local_storge_enable,value)
         if (this.option.id && this.option.local_storge_enable) {
             web_dom.set_local(this.option.id, value.dump())
         }
-        this.event_hander[Constant.CHANGE_EVENT]?.(this._value, value)
-        this._value = value
+        this.do_select(value)
         return this
     }
 

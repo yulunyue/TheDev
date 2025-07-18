@@ -18,6 +18,9 @@ export class Label extends Div {
         this.set_html(value)
         return this
     }
+    render_option(): void {
+        this.set_html(this.option.title||this.option.value)
+    }
     set_change_color(color: string) {
         this.change_color = color
         return this
@@ -37,14 +40,11 @@ export class Label extends Div {
     }
 
 }
-function lb() {
-    return new Label().set_change_color(Constant.COLOR_BLUE)
-}
+
 export function label() {
     return new Label()
 }
 export class Pre extends Div {
-
     constructor() {
         super("pre")
     }
@@ -59,24 +59,8 @@ export class Pre extends Div {
             overflowY: "auto"
         })
     }
-    set_text(s: any) {
-        if (Array.isArray(s)) {
-            this.set_titles(s)
-        } else {
-            this.set_titles([s])
-        }
-    }
-    set_titles(s: Node[]) {
-        for (var i = 0; i < s.length; i++) {
-            let title = s[i].value
-            if (s[i].title) {
-                title = s[i].title + ' : ' + s[i].value
-            }
-            this.get_child(i, lb).set_html(title).set_color(s[i].color)
-        }
-    }
     render_option() {
-        this.set_text(this.option.data)
+        this.set_html(this.option.value)
     }
 }
 

@@ -46,7 +46,7 @@ class ApiCall:
         ]
 
     def register(self, key: str, fun):
-        keys = key.split("/")[-5:]
+        keys = key.split("/")[-4:]
         if keys[0]:
             keys[0] = ""
         key = "/".join(keys)

@@ -94,24 +94,26 @@ export class Node {
     size?: number = 0
     color?: string = ""
     local_storge_enable?: boolean = false
+    filter_key?: string = ""
+    
     constructor(key?: string) {
         this.childs = []
         this.data = {}
         this.key = key
         this.title = key
     }
-    set_title(title: string = "") {
+    set_title?(title: string = "") {
         this.title = title
         return this
     }
-    set_key(key: any) {
+    set_key?(key: any) {
         if (key == undefined || key == null) {
             return this
         }
         this.key = key
         return this
     }
-    set_data(data: any) {
+    set_data?(data: any) {
         if (data == undefined || data == null) {
             return this
         }
@@ -120,11 +122,11 @@ export class Node {
         }
         return this
     }
-    set_value(value: any) {
+    set_value?(value: any) {
         this.value = value
         return this
     }
-    set_childs(childs: any[]) {
+    set_childs?(childs: any[]) {
         this.childs = []
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Node) {
@@ -135,15 +137,15 @@ export class Node {
         }
         return this
     }
-    set_size(size: number) {
+    set_size?(size: number) {
         this.size = size
         return this
     }
-    set_direction(direction: number) {
+    set_direction?(direction: number) {
         this.direction = direction
         return this
     }
-    set_option(data: any) {
+    set_option?(data: any) {
         for (var k in data) {
             if (k == 'childs') {
                 this.set_childs(data[k])
@@ -154,7 +156,7 @@ export class Node {
         }
         return this
     }
-    dump() {
+    dump?() {
         return {
             key: this.key,
             type: this.type,
@@ -163,19 +165,18 @@ export class Node {
             data: this.data
         }
     }
-    add_child(v: any) {
+    add_child?(v: any) {
         this.childs.push(v)
         v.parent = this
         return v
     }
-
-    filter(key: string) {
+    filter?(key: string) {
         let ret = new Node().set_childs(this.childs.filter(v => {
             return v.title.indexOf(key) != -1
         }))
         return ret
     }
-    init_tree_layout() {
+    init_tree_layout?() {
         let ret = { y: this.title ? 0 : -1, x: 0 }
         this.x = 0
         function dfs(node: Node, p: Node) {
@@ -196,16 +197,16 @@ export class Node {
         ret.x -= 1
         return ret
     }
-    calc_size() {
+    calc_size?() {
         return this.size
     }
-    set_type(type: string) {
+    set_type?(type: string) {
         this.type = type
         return this
     }
 
-    get_title() {
-        return this.title
+    get_title?() {
+        return this.title || this.value
     }
 }
 

@@ -1,4 +1,5 @@
 import { Style, Node, Fn1, to_node, not_null, node } from "../../../web/cls"
+import { Div } from "./div"
 
 export class DivFactory {
     static fac_map = {}
@@ -16,8 +17,8 @@ export class DivFactory {
         DivFactory.fac_map[key] = fun
     }
 
-    static new_div(key: string, option: Node) {
+    static new_div(key: string): Div {
         // console.log(key, DivFactory.fac_map)
-        return this.fac_map[key]().set_option(option)
+        return this.fac_map[key]()
     }
 }

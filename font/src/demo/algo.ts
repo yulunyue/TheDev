@@ -63,7 +63,7 @@ class Algo extends Div {
                 o.data.cases.map((v: any, i: number) => {
                     return new Node().set_value(v).set_title('case ' + i).set_key(i)
                 })
-            )).select(web_dom.get_param('case', 0))
+            ))//select(web_dom.get_param('case', 0))
         })
         this.case_select.on_change(() => {
             let o = this.case_select.get_value()
@@ -104,7 +104,7 @@ class Algo extends Div {
             if (!py_module) {
                 console.error('py_module is null')
             }
-            this.code_select.set_option(node).select(py_module)
+            this.code_select.set_option(node)//.select(py_module)
             this.run()
 
         })

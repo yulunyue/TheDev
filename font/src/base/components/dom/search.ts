@@ -23,7 +23,8 @@ export class Search extends Div {
     }
     init_event(): void {
         this.input.on_click(() => this.emit_search())
-        this.input.on_input(() => this.filter_local())
+        this.input.on_input(() => this.listui.filter(this.input.get_value()))
+        this.listui.on_change((src:any,dst:any)=>this.set_value(dst))
     }
     set_title(s: string) {
         this.input.set_placeholder(s)
@@ -32,38 +33,22 @@ export class Search extends Div {
     set_value(value: Node): this {
         super.set_value(value)
         this.input.set_value(value.title)
+        this.dialog.hide()
         return this
     }
     emit_search() {
         web_dom.post(this.option.url, {
             value: this.input.get_value()
         }, (node: Node) => {
-            this.set_option(node)
+            this.listui.set_option(node)
             this.show_search_dialog()
         })
         return this
     }
-    filter_local() {
-        let value = this.input.get_value()
-        this.listui.childs.map((v: Div) => {
-            v.option.title.indexOf(value) != -1 ? v.show() : v.hide()
-        })
-    }
-    filter() {
-        this.listui.set_option(
-            this.option
-        ).select((v: any) => {
-            this.set_value(v)
-            this.dialog.hide()
-        })
-    }
-    render_option(): void {
 
-
-    }
     show_search_dialog() {
         // console.log(this.get_rect(), this.el)
-        this.filter()
+
         this.dialog.set_style({
             left: this.get_a_x(),
             top: this.get_a_y() + this.get_height(),

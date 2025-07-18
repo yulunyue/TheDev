@@ -28,7 +28,7 @@ export class Input extends Div {
         if (this.option.type == Constant.NUMBER) {
             this.set_width(Constant.INPUT_NUMBER_WIDTH)
         }
-        //this.set_value(this.option.value)
+        this.set_value(this.option.value)
     }
     set_value(value: any) {
         this.el.value = value

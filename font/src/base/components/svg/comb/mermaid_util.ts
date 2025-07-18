@@ -16,7 +16,28 @@ mermaid.initialize({
 
     // sequenceDiagram: { actorMargin: 300 } // deprecated
 })
-export class MeraUtil extends Div {
+function node_to_grapth_lines(node: Node) {
+    let ret = [node.value]
+    function arrow(f: string) {
+        if (f) {
+            return `--->|${f}|`
+        }
+        return '-----'
+    }
+    for (var key in node.data) { 
+        let edges = node.data[key]
+        if (edges) {
+            for (var j = 0; j < edges.length; j++) {
+                ret.push(`${key} ${arrow(edges[j][1])} ${edges[j][0]}`)
+            }
+        } else {
+            ret.push(key)
+        }
+    }
+    console.log(ret.join("\n"))
+    return ret.join("\n")
+}
+export class MeraGraph extends Div {
 
     constructor() {
         super("pre")
@@ -49,7 +70,7 @@ export class MeraUtil extends Div {
         let w = this.el.clientWidth - svg.clientWidth
         let h = this.el.clientHeight - svg.clientHeight
         svg.style.transform = `translate(${w / 2}px,${h / 2}px)`
-        // this.on_load_room()
+        this.on_load_room()
         this.load_event()
     }
     load_event(): void {
@@ -75,90 +96,20 @@ export class MeraUtil extends Div {
             suppressErrors: true
         });
     }
-    set_graph(lines: string[]) {
+    set_graph(lines: string) {
         this.el.removeAttribute("data-processed")
-        this.set_html(lines.join("\n"))
+        this.set_html(lines)
         web_dom.next_frame(() => this.mermaid_run())
     }
     on_mount(): void {
     }
-}
-export class MeraGraph extends MeraUtil {
-    render_tmp_store: any
-    render_edges(edges: any, lines: string[]) {
-        for (var i = 0; i < edges.length; i++) {
-            lines.push([
-                this.get_title(edges[i][0]),
-                this.get_line_text(edges[i][1], edges[i][2], edges[i][3], edges[i][4]),
-
-            ].join(" "))
-        }
-    }
-    get_edges() {
-        let edges = []
-        this.option.data.nodes = {}
-
-        let dfs = (op: Node) => {
-            this.option.data.nodes[op.key] = op.data
-            for (var i = 0; i < op.childs.length; i++) {
-                edges.push([op.key, op.childs[i].key])
-                dfs(op.childs[i])
-            }
-        }
-        dfs(this.option)
-        return edges
-    }
     render_option(): void {
-        this.render_tmp_store = {}
-        let dire = this.option.data.direction || 'TD'
-        let lines = ['graph ' + dire]
-        let edges = this.option.data.edges
-        if (edges) {
-            this.render_edges(edges, lines)
-        } else (
-            this.render_edges(this.get_edges(), lines)
-        )
-        //console.error(lines.join("\n"))
+        let lines = node_to_grapth_lines(this.option)
         this.set_graph(lines)
     }
-
-    get_line_text(ss: string, s: any, s1: any, s2: any) {
-        if (ss == undefined || ss == null) {
-            return ""
-        }
-        let line_text = "-->"
-        if (s != null) {
-            line_text = '-->|' + s + '|'
-        }
-        return line_text + this.get_title(ss)
-    }
-    get_title(key: any) {
-        if (key in this.render_tmp_store || !this.option.data.nodes) {
-            return key
-        }
-        let data = this.option.data.nodes[key]
-        if (data == undefined || data == null) {
-            return key
-        }
-        if (!Array.isArray(data)) {
-            data = [data]
-        }
-        let lines = [`<div name="${key}" style="width:90px">`]
-        for (var i = 0; i < data.length; i++) {
-            let title = data[i].title
-            if (title) {
-                title += ':'
-            }
-            lines.push(`<p>${title}
-                <span style='color:${data[i].color};margin-left:4px'>${data[i].value}
-                </span>
-            </p>`)
-        }
-        lines.push('</div>')
-        this.render_tmp_store[key] = `${key}(${lines.join("")})`
-        return this.render_tmp_store[key]
-    }
 }
+
+
 export function mera_util() {
     return new MeraGraph()
 }
