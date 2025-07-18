@@ -42,7 +42,6 @@ export class Line extends GNode {
         return this.set_attr("d", ds)
     }
     mount_d(pts: string | any[]) {
-        this.on_mount_call["set_d"] = [pts]
         return this
     }
     render_option(): void {

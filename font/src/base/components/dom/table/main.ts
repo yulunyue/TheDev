@@ -59,9 +59,9 @@ export class Table extends Div {
         this.head_div = new Div().add_childs([
             new Div().set_style({ flexGrow: "1" }),
             this.search_input,
-            new Button().set_html("搜索").click(() => this.filter()),
-            new Button().set_html("添加").click(() => this.add()),
-            new Button().set_html("保存").click(() => this.save_all())
+            new Button().set_html("搜索").on_click(() => this.filter()),
+            new Button().set_html("添加").on_click(() => this.add()),
+            new Button().set_html("保存").on_click(() => this.save_all())
         ]).set_style_flex(Ct.VERTICAL).set_style({ width: 1 })
 
     }

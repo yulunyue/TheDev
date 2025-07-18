@@ -37,8 +37,12 @@ class WebDom {
     get_location() {
         return location.href
     }
-    get_local(key: string) {
-        return to_node(JSON.parse(localStorage.getItem("yly_" + key)))
+    get_local(key: string, call?: any) {
+        let ret = to_node(JSON.parse(localStorage.getItem("yly_" + key)))
+        if (ret) {
+            call?.(ret)
+        }
+        return ret
     }
     get_param(key: string, defult_value?: any) {
         if (!(key in this.url_param)) {
@@ -88,7 +92,7 @@ class WebDom {
         if (mock_data) {
             return call_back(mock_data)
         }
-        dlg.open_loading()
+        // dlg.open_loading()
         let req = new XMLHttpRequest()
         if (method == this.HTTP_GET_METHOD) {
             let path = Ut.object_to_get_param(data, url)
@@ -116,7 +120,7 @@ class WebDom {
                     call_back(req.responseText)
                     return
                 }
-                let data = this.hander_res(JSON.parse(req.responseText))
+                let data:any = this.hander_res(JSON.parse(req.responseText))
                 if (data && data.code > 300) {
                     alert(data.code + '->' + data.title)
                 }
@@ -124,7 +128,7 @@ class WebDom {
                     // call_back(new Node().set_option(data))
                     call_back(data)
                 }
-                dlg.close()
+                // dlg.close()
             }
         }
 

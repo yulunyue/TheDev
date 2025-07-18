@@ -1,7 +1,7 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, Form, form, dialog, Row, node, Select, select, Pre, pre,
-    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory, row1, row2,
+    Div, Svg, svg, Constant, Node, web_dom, tree, Form, dialog, Row, node, Select, select, Pre, pre,
+    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory,
     text_area, TextArea, MeraGraph, to_node
 } from "../base/components/export";
 import fun from "../base/tool/fun";

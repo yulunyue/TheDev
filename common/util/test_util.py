@@ -23,6 +23,9 @@ class TestUtil(TestBase):
         info = get_function_info(c.test_fun)
         self.expect(info.data["kwargs"], dict(a=None, b=2), "")
 
+    def test_cls(self):
+        self.expect(TestCls.__module__, "??")
+
     def test_thread(self):
         def fun1(v):
             time.sleep(v)

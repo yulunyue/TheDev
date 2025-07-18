@@ -4,16 +4,12 @@ import graph from "./demo/graph";
 import algo from "./demo/algo";
 import dyn from "./demo/dyn";
 import api from "./demo/api";
-import game_ab from "./demo/game/game_ab";
 import manage from "./demo/secmaster/manage";
 import dev from "./demo/dev";
-import user from "./demo/user";
-import game_connect_four from "./demo/game/game_connect_four";
 import "./app.css"
 constant.init()
 let route = {
-    graph, algo, game_ab, dyn,
-    game_connect_four, api, dev,
-    manage, user
+    graph, algo, dyn, api, dev,
+    manage
 }[constant.get_route('main')]().mount(web_dom.get_body()).emit_mount()
 // constant.init_body(route.div_el)

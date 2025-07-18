@@ -4,7 +4,6 @@ import util from "../../tool/util"
 import { Div } from "../dom/div"
 export class GNode extends Div {
     el: any
-    on_mount_call: any
     parent: any
     childs: any[]
     x: number
@@ -16,7 +15,6 @@ export class GNode extends Div {
         this.el = this.create_element(name)
         this.parent = null
         this.childs = []
-        this.on_mount_call = {}
         this.x = 0
         this.y = 0
         this.option = new Node()
