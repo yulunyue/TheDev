@@ -29,21 +29,29 @@ class Constant:
     inf = float("inf")
 
 
-class MockBase:
+class MockCf:
+    dev = False
+
     def __init__(self):
-        self.msgs = []
-        self.inputs = None
-        self.result = []
-        self.dev = False
+        self.inputs = []
 
-    def replay(self):
-        pass
+    def set_inputs(self, inputs: str):
+        self.inputs = inputs.split("\n")
+        return self
 
-    def run(self):
-        raise Exception("run_todo")
+    def input(self):
+        if os.path.exists("input.txt") and self.inputs is None:
+            self.inputs = open("input.txt").read().split("\n")
+        if self.dev:
+            return self.inputs.pop(0)
+        self.inputs.append(input())
+        return self.inputs[-1]
+
+    def ii(self):
+        return [int(v) for v in self.input().split(" ")]
 
     def main(self):
-        self.result.clear()
+
         ans = self.run()
         if ans is None:
             return
@@ -54,31 +62,26 @@ class MockBase:
         else:
             self.output(ans)
 
-    def get_cases(self):
-        raise Exception("todo")
-
-    def set_inputs(self, inputs: str):
-        self.inputs = inputs.split("\n")
-        return self
-
-
-class MockCf(MockBase):
-    def input(self):
-        if os.path.exists("input.txt") and self.inputs is None:
-            self.inputs = open("input.txt").read().split("\n")
-        if self.inputs:
-            return self.inputs.pop(0)
-        return input()
-
-    def ii(self):
-        return [int(v) for v in self.input().split(" ")]
-
     _o = None
 
     def output(self, s):
         if self._o is None:
             self._o = open("output.txt", "w")
         self._o.write(f"{s}\n")
+
+
+class MockCg(MockCf):
+    def __init__(self):
+        super().__init__()
+        self.msgs = []
+
+    def log(self, **kw):
+        info = dict(inputs=self.inputs)
+        info.update(kw)
+        print(json.dumps(info), file=sys.stderr)
+
+    def output(self, s):
+        print(s)
 
 
 C = Constant()
