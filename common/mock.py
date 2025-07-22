@@ -79,6 +79,7 @@ class MockCg(MockCf):
         info = dict(inputs=self.inputs)
         info.update(kw)
         print(json.dumps(info), file=sys.stderr)
+        self.inputs.clear()
 
     def output(self, s):
         print(s)
