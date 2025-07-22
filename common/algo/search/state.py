@@ -121,7 +121,7 @@ class State:
         values = list(actions.keys())
         if not values:
             return None
-        return values[np.random.randint(0, len(values) - 1)]
+        return actions[np.random.randint(0, len(values) - 1)]
 
     def do(self, action):
         raise Exception(f"{self.__class__}.do not impl")

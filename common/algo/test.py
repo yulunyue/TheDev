@@ -4,11 +4,12 @@ from common.algo.export import (
     cos,
     calc_angle,
     manacher_get_odd_p,
-    TreeNode,
     get_sa_prefix_doubling,
     get_height_form_sa,
     LazyHeapMinMax,
     Comb,
+    encode_data,
+    decode_data,
 )
 
 
@@ -54,6 +55,13 @@ class TestAlgo(TestBase):
         )  #'a#a#b#c#b#c'
         self.expect(get_sa_prefix_doubling(s), (sa, rk))
         self.expect(get_height_form_sa(s)[0], hi)
+
+    def test_bin(self):
+        a = [1, 1, 1]
+        p = [1, 2, 2]
+        s = encode_data(a, p)
+        self.expect(bin(s), "0b10101")
+        self.expect(decode_data(s, p), a)
 
 
 if __name__ == "__main__":
