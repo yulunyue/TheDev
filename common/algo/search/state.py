@@ -9,17 +9,19 @@ inf = float("inf")
 class Action:
     check_info = None
     reward = None
+    data = None
 
     def __init__(self, src, action, dst=None):
         self.action = action
         self.src: State = src
         self.dst: State = dst
-        self.data = dict()
 
     def get_data(self, key):
         return self.data[key]
 
     def set_data(self, key, value):
+        if not self.data:
+            self.data = dict()
         self.data[key] = value
         return self
 
@@ -27,19 +29,8 @@ class Action:
         self.reward = reward
         return self
 
-    def set_value(self, value):
-        self.value = value
-        return self
-
-    def set_p(self, p):
-        self.p = p
-        return self
-
     def do(self, **kw):
         raise Exception("todo")
-
-    def get_p_states(self):
-        return [[1, self.dst, self.reward]]
 
     def get_reward(self, **kwargs):
         raise Exception("todo")
@@ -129,10 +120,6 @@ class State:
     def get_regret(self, action):
         raise Exception("todo")
 
-    @property
-    def key(self):
-        raise Exception("todo")
-
     def to_str(self):
         return ""
 
@@ -155,8 +142,8 @@ class State:
         ret.reverse()
         return "\n".join(ret)
 
-    def get_reward(self, **kw):
-        return 0
+    def get_reward(self, **kw) -> int:
+        raise Exception("todo")
 
     def get_max_action_reward(self):
         reward = -inf
@@ -192,7 +179,3 @@ class State:
 
     def get_win_player(self):
         return self.done
-
-    def get_depth_reward(self, depth, **kw):
-        reward = self.get_reward(**kw)
-        return -reward if depth % 2 == 1 else reward

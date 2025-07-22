@@ -23,7 +23,7 @@ class Rooms(State):
     def new_room(play_id, boards):
         return Rooms.new(C.encode_data(play_id, boards))
 
-    def get_actions(self):
+    def get_actions(self, *args, **kw):
         if self.actions is not None:
             return self.actions
         self.actions = dict()
@@ -36,12 +36,17 @@ class Rooms(State):
             for k in range(boards[j]):
                 pos.append((k + 1 + j) % C.ROOM_NUM)
                 boards[pos[-1]] += 1
+            rv_num = 0
             while pos and 2 <= boards[pos[-1]] <= 3:
-                boards[pos.pop()] = 0
+                idx = pos.pop()
+                if 0 <= idx - self.player_id * C.SELF_NUM < C.SELF_NUM:
+                    break
+                rv_num += boards[idx]
+                boards[idx] = 0
             boards[j] = 0
             self.actions[i] = Action(
                 self, i, Rooms.new_room(1 - self.player_id, boards)
-            )
+            ).set_reward(rv_num)
         return self.actions
 
     def to_str(self):
@@ -56,3 +61,9 @@ class Rooms(State):
                 ts.append(str(self.boards[k]))
             s.append(" ".join(ts))
         return "\n".join(s)
+
+    def get_reward(self, actions: List[Action], **kw):
+        r = 0
+        for i, a in enumerate(actions):
+            r += a.reward if i % 2 == 0 else -a.reward
+        return r

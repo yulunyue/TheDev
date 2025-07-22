@@ -5,7 +5,7 @@ class Constant:
     ROOM_NUM = 12
     SELF_NUM = ROOM_NUM // 2
     OR_NUM = 4
-    MASK_POSS = [1] + [3] * ROOM_NUM
+    MASK_POSS = [1] + [6] * ROOM_NUM
 
     def __init__(self):
         self.INIT_MASK = self.encode_data(0, [self.OR_NUM] * self.ROOM_NUM)
@@ -15,6 +15,9 @@ class Constant:
 
     def decode_data(self, state):
         return decode_data(state, self.MASK_POSS)
+
+    def get_cases(self):
+        return {}
 
 
 C = Constant()

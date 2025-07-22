@@ -16,6 +16,10 @@ def uid(s):
     return f"{s}_{UK_MAP[s]}"
 
 
+def ii(s: str):
+    return [int(v) for v in s.split(" ")]
+
+
 def os_system(s: str):
     ret = os.system(s)
     if ret != 0:

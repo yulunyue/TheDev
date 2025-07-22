@@ -1,7 +1,7 @@
-from common.util.export import TestBase, logger, Module
+from common.util.export import TestBase, logger, Module, ii
 from common.third_util.export import CodingGame
-from common.algo.export import AlphaBateSearch, ALgoManage
-from app.yly.game.envs.oa.cg import CgOa, Rooms, C
+from common.algo.export import AlphaBateSearch, ALgoManage, Algo
+from app.yly.game.envs.oa.cg import CgOa, Rooms, C, PM
 
 
 class CwTest(TestBase):
@@ -15,13 +15,27 @@ class CwTest(TestBase):
         # a = AlphaBateSearch().search(r)
         logger.info(r)
 
-    def test_replay(self):
-        s = Rooms.new(C.INIT_MASK)
-        for a in CodingGame(CgOa.name).get_replay_json():
-            if not a.stdout:
-                break
-            s = s.get_action(int(a.stdout)).dst
-            logger.info(s)
+    def test_case(self, algo: Algo):
+        for a, v in C.get_cases().items():
+            s = Rooms.new(a)
+            a = algo.search(s)
+            self.expect(str(a), v, s)
+
+    def test_dev(self):
+        self.test_case(PM.ab1)
+
+    def test_dev1(self):
+        s2 = ii("1 8 7 6 6 4 4 4 4 4 0 0")
+        s = Rooms.new_room(0, s2)
+        self.expect(s.boards, s2, s)
+
+    def test_debug(self):
+        self.test_dev()
+
+    def test_fight(self):
+        ALgoManage(CgOa.name).set_players(
+            [PM.ab1, PM.ab2, PM.ab3, PM.ab4]
+        ).set_init_state(Rooms.new(C.INIT_MASK)).fight()
 
 
 if __name__ == "__main__":

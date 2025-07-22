@@ -26,6 +26,8 @@ class File:
         return os.path.getmtime(self.path)
 
     def make_dir_if_not_exist(self):
+        if self.exists():
+            return
         root_path = ""
         for p in self.dirs:
             root_path += p
@@ -111,6 +113,7 @@ class File:
     def get_writer(self):
         if self.path in self.WITHE_FILE_HANDER:
             return self.WITHE_FILE_HANDER[self.path]
+        self.make_dir_if_not_exist()
         self.WITHE_FILE_HANDER[self.path] = open(self.path, "w")
         return self.WITHE_FILE_HANDER[self.path]
 

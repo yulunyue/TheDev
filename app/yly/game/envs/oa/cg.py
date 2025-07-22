@@ -2,6 +2,14 @@ from common.util.export import logger
 from app.yly.game.envs.oa.model.state import Rooms
 from common.mock import MockCg
 from app.yly.game.envs.oa.model.constant import C
+from common.algo.search.alphabate_search import AlphaBateSearch
+
+
+class PM:
+    ab1 = AlphaBateSearch("ab1").load(1)
+    ab2 = AlphaBateSearch("ab2").load(2)
+    ab3 = AlphaBateSearch("ab3").load(3)
+    ab4 = AlphaBateSearch("ab4").load(4)
 
 
 class CgOa(MockCg):
@@ -19,7 +27,7 @@ class CgOa(MockCg):
         while True:
             s = Rooms.new_room(0, self.ii())
             a = self.get_action(s)
-            self.log(state=s.state, action=a)
+            self.log(state=s.state, action=a, board=s.boards)
             self.output(a)
 
 
