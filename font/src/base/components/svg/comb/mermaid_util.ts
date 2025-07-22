@@ -16,15 +16,15 @@ mermaid.initialize({
 
     // sequenceDiagram: { actorMargin: 300 } // deprecated
 })
-function node_to_grapth_lines(node: Node) {
-    let ret = [node.value]
+function flow(node: Node) {
+    let ret = []
     function arrow(f: string) {
         if (f) {
             return `--->|${f}|`
         }
         return '-----'
     }
-    for (var key in node.data) { 
+    for (var key in node.data) {
         let edges = node.data[key]
         if (edges) {
             for (var j = 0; j < edges.length; j++) {
@@ -34,11 +34,36 @@ function node_to_grapth_lines(node: Node) {
             ret.push(key)
         }
     }
-    console.log(ret.join("\n"))
-    return ret.join("\n")
+    return ret
+}
+function xy_chart(node: Node) {
+    let x = []
+    let y = []
+    for (var i = 0; i < node.data.length; i++) {
+        x.push(node.data[i][0])
+        y.push(node.data[i][1])
+    }
+    let ret = [
+        "title xy",
+
+        `line [${x}]`
+
+    ]
+    console.log(ret)
+    return ret
+}
+function node_to_grapth_lines(node: Node) {
+    let type: string = node.value
+    let lines = []
+    if (type.startsWith(MeraGraph.TYPE_XY)) {
+        lines = xy_chart(node)
+    } else {
+        lines = flow(node)
+    }
+    return [type].concat(lines).join("\n")
 }
 export class MeraGraph extends Div {
-
+    static TYPE_XY: string = "xychart-beta"
     constructor() {
         super("pre")
     }

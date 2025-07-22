@@ -6,23 +6,23 @@ from common.util.export import (
     File,
     run_catch_error,
 )
-from common.mock import MockBase
+from common.mock import MockCf
 
 
 class LCTest(TestBase):
     uri = "https://leetcode.cn"
 
-    def get_ins(self, file_name):
-        file_name = self.argvs[1]
+    def get_ins(self):
+        file_name = self.argvs[0]
         md = Module().load_module(f"app.yly.algo.context.{file_name}")
         Module().compile_one(f"app/yly/algo/context/{file_name}.py")
         logger.enable_cache()
-        ins: MockBase = md.Solution()
+        ins: MockCf = md.Solution()
         ins.dev = True
         return ins
 
-    def test_exec(self, name, fun_name="run"):
-        ins: MockBase = self.get_ins(name)
+    def run_one_case(self, file_name, fun_name, *args, **kw):
+        ins: MockCf = self.get_ins()
         for c in ins.get_cases():
             if isinstance(c, dict):
                 except_result = c.pop("result") if "result" in c else None

@@ -1,4 +1,4 @@
-class FenNode:
+class FenWickTree:
     """
                        16
            8
@@ -23,7 +23,7 @@ class FenNode:
 
     def query_value(self, i, f):
         ret = 0
-        self.i = i
+        self.i = i + 1
         while self.i > 0:
             ret = f(ret, self.array[self.i])
             self.i &= self.i - 1

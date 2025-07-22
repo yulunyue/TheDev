@@ -50,17 +50,25 @@ export class Dev extends Div {
     }
     test_graph() {
         let node = to_node({
-            value:"flowchart TD",
+            value: "flowchart TD",
             data: {
                 A: [["B", "a"]]
             }
+        })
+
+        this.add_child(new MeraGraph().set_option(node))
+    }
+    test_graph_xy() {
+        let node = to_node({
+            value: MeraGraph.TYPE_XY,
+            data: [[-32, 12], [-32, -94], [-32, -15], [-30, 88]]
         })
         this.add_child(new MeraGraph().set_option(node))
     }
     on_mount(): void {
         //this.test_table_data()
         //this.test_open_edit_dialog()
-        this.test_graph()
+        this.test_graph_xy()
     }
 
 }
