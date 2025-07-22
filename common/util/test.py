@@ -24,7 +24,7 @@ class TestBase:
             self.prepare_case(*self.argvs)
             self.ep_cont = 0
             self.ok_count = 0
-            self.run_one_case(self.argvs[0], *self.argvs[1:], self.kw)
+            self.run_one_case(self.argvs[0], *self.argvs[1:], **self.kw)
             self.after_case(*self.argvs)
         except Exception as e:
             raise e
@@ -37,12 +37,12 @@ class TestBase:
     def after_case(self, *args):
         pass
 
-    def run_one_case(self, name, args, kw):
+    def run_one_case(self, name, *args, **kw):
         f = getattr(self, f"test_{name}")
         start_time = time.time() * 1000
         logger.info(f"---Test Begin {f.__name__}------")
 
-        f(args, **kw)
+        f(*args, **kw)
         end_time = time.time() * 1000
         logger.info(
             f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"

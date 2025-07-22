@@ -1,6 +1,7 @@
 import os
 import json
 from typing import List, Dict
+import zipfile
 
 
 def dump_default(v):
@@ -70,17 +71,20 @@ class File:
     def exists(self):
         return os.path.exists(self.path)
 
-    def list_dir(self):
-        return [File(self.path + "/" + f) for f in os.listdir(self.path)]
-
-    def dp_dir(self):
-        ret: List[File] = []
-        for f in self.list_dir():
+    def list_dir(self, depth=1) -> List["File"]:
+        if depth == 0:
+            return []
+        ret = []
+        for name in os.listdir(self.path):
+            f = File(self.path + "/" + name)
             if f.is_dir():
-                ret.extend(f.dp_dir())
+                ret.extend(f.list_dir(depth - 1))
             else:
                 ret.append(f)
         return ret
+
+    def list_tree_file(self):
+        return self.list_dir(-1)
 
     def is_dir(self):
         return os.path.isdir(self.path)
@@ -109,6 +113,20 @@ class File:
             return self.WITHE_FILE_HANDER[self.path]
         self.WITHE_FILE_HANDER[self.path] = open(self.path, "w")
         return self.WITHE_FILE_HANDER[self.path]
+
+    def zip(self):
+        with zipfile.ZipFile(self.path + ".zip", "w", zipfile.ZIP_DEFLATED) as f:
+            for c in self.list_tree_file():
+                arc_name = os.path.relpath(c.path, self.path)
+                f.write(c.path, arcname=arc_name)
+        f.close()
+        return self
+
+    def unzip(self):
+        output_dir = self.path.replace(".zip", "")
+        with zipfile.ZipFile(self.path) as zf:
+            for member in zf.namelist():
+                zf.extract(member, path=output_dir)
 
 
 class Cache:

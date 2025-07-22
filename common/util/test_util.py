@@ -5,6 +5,7 @@ from common.util.export import (
     logger,
     re_search,
     Module,
+    File,
 )
 import threading
 import time
@@ -48,6 +49,11 @@ class TestUtil(TestBase):
 
     def test_re(self):
         self.expect(re_search(".*ab.*", "aabbcc") is not None)
+
+    def test_file(self):
+        path = "data/temp/zip_test"
+        File(path).zip()
+        File(path + ".zip").unzip()
 
 
 if __name__ == "__main__":

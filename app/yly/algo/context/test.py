@@ -21,7 +21,7 @@ class LCTest(TestBase):
         ins.dev = True
         return ins
 
-    def run_one_case(self, file_name, fun_name, *args, **kw):
+    def run_one_case(self, file_name, *args, fun_name="run", **kw):
         ins: MockCf = self.get_ins()
         for c in ins.get_cases():
             if isinstance(c, dict):

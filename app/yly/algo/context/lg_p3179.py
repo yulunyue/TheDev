@@ -11,19 +11,28 @@ s1 = """3
 o1 = """Yes
 No"""
 
+s2 = """12
+1
+2
+1 2"""
+
+o2 = """YES"""
+
 
 class Solution(MockCf):
     uri = """https://www.luogu.com.cn/problem/P3179#ide"""
 
     def get_cases(self):
-        return [[s1, o1]]
+        return [
+            # [s1, o1],
+            [s2, o2]
+        ]
 
     def run(self):
         n, *args = self.ii()
         m, *args = self.ii()
         i, j = 1, 0
-        idx = 0
-        z = defaultdict(int)
+        z = []
         mex = defaultdict(int)
         s = defaultdict(lambda: [0, 0])
 
@@ -34,10 +43,10 @@ class Solution(MockCf):
 
         while i <= n:
             j = n // (n // i)
-            idx += 1
-            z[idx] = j
+            z.append(j)
             i = j + 1
-        for t in range(idx, 0, -1):
+
+        for t in range(len(z) - 1, 0, -1):
             yh = 0
             mex[yh] = t
             i = z[t] * 2
