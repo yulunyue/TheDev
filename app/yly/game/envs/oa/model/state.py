@@ -78,3 +78,10 @@ class Rooms(State):
         for i, a in enumerate(actions):
             r += a.reward if i % 2 == 0 else -a.reward
         return r
+
+    def get_win_player(self, rewards, *args, **kw):
+        if rewards[0] < rewards[1]:
+            return 1
+        if rewards[0] > rewards[1]:
+            return 0
+        return -1

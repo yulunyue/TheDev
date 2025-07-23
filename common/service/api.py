@@ -9,6 +9,7 @@ from common.util.export import (
     DictModel,
     NumberModel,
     SingletonUtil,
+    ThreadManage,
 )
 import urllib3
 

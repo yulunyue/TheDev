@@ -54,9 +54,8 @@ class ALgoManage:
             a = players[player_idx].search(s)
             self.info(players, s)
             if a is None:
-                player_idx = (player_idx + 1) % len(players)
                 self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
-                return player_idx if s.get_win_player() else -1
+                return s.get_win_player(rewards, (player_idx + 1) % len(players))
             rewards[player_idx] += a.reward
             self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
             player_idx = (player_idx + 1) % len(players)
@@ -65,7 +64,7 @@ class ALgoManage:
         if s:
             self.info(players, s)
             self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
-        return player_idx if s.get_win_player() else -1
+        return s.get_win_player(rewards, player_idx)
 
     def info(self, players: List[Algo], msg):
         file_name = "_pk_".join([v.get_name() for v in players])

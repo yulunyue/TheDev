@@ -13,12 +13,11 @@ class PM:
 
 
 class CgOa(MockCg):
-    uri = "https://www.codingame.com/ide/puzzle/oware-abapa"
     game_id = "7180187268449801570b2e5cd61f1efefe076e42"
     agentsIds = [-1, -2]
     name = "cgcw"
 
-    def get_action(self, s: Rooms, name="ab1"):
+    def get_action(self, s: Rooms, name="ab2"):
         if not name:
             actions = list(s.get_actions().values())
             return actions[0].action

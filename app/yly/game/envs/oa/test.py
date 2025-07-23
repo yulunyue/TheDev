@@ -37,6 +37,15 @@ class CwTest(TestBase):
             [PM.ab1, PM.ab2, PM.ab3, PM.ab4]
         ).set_init_state(Rooms.new(C.INIT_MASK)).fight()
 
+    def test_pk(self):
+        players = [PM.ab1, PM.ab2]
+        win_idx = (
+            ALgoManage(CgOa.name)
+            .set_init_state(Rooms.new(C.INIT_MASK))
+            .actor(players, 200)
+        )
+        logger.map(win_idx=win_idx)
+
     def test_rule(self):
         s = Rooms.new(74939897936884006912)
         self.expect(list(s.get_actions().keys()), [5], s)
