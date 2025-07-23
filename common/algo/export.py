@@ -12,7 +12,7 @@ from common.algo.learn.bernoulli import (
 from common.algo.learn.sarsa import Sarsa, Qlearning, DynaQ, RandomEpisode, MctsEasy
 from common.algo.learn.dqn import Dqn
 from common.algo.search.algo_manage import ALgoManage
-from common.algo.base.math_util import sin, cos, calc_angle, Comb
+from common.algo.base.math_util import sin, cos, calc_angle, Comb, solve_xyz
 from common.algo.base.str_util import (
     manacher_get_odd_p,
     get_sa_prefix_doubling,

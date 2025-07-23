@@ -5,7 +5,7 @@ from app.yly.game.envs.oa.cg import CgOa, Rooms, C, PM
 
 
 class CwTest(TestBase):
-    def test_pk(self):
+    def test_cg(self):
         Module().compile_one("app/yly/game/envs/oa/cg.py")
         CodingGame(CgOa.name).pk(Module.RUN_TMP_PATH, CgOa.game_id, CgOa.agentsIds)
 
@@ -30,12 +30,16 @@ class CwTest(TestBase):
         self.expect(s.boards, s2, s)
 
     def test_debug(self):
-        self.test_dev()
+        self.test_fight()
 
     def test_fight(self):
         ALgoManage(CgOa.name).set_players(
             [PM.ab1, PM.ab2, PM.ab3, PM.ab4]
         ).set_init_state(Rooms.new(C.INIT_MASK)).fight()
+
+    def test_rule(self):
+        s = Rooms.new(74939897936884006912)
+        self.expect(list(s.get_actions().keys()), [5], s)
 
 
 if __name__ == "__main__":

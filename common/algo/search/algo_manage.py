@@ -52,16 +52,19 @@ class ALgoManage:
         rewards = [0] * len(players)
         while not s.get_done() and max_turn != 0:
             a = players[player_idx].search(s)
-            if a:
-                rewards[player_idx] += a.reward
-            self.info(players, f"turn: {max_turn} reward: {rewards} {s}")
-            player_idx = (player_idx + 1) % len(players)
+            self.info(players, s)
             if a is None:
+                player_idx = (player_idx + 1) % len(players)
+                self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
                 return player_idx if s.get_win_player() else -1
+            rewards[player_idx] += a.reward
+            self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
+            player_idx = (player_idx + 1) % len(players)
             max_turn -= 1
             s = a.dst
         if s:
-            self.info(players, f"last_turn: {max_turn} {s}")
+            self.info(players, s)
+            self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
         return player_idx if s.get_win_player() else -1
 
     def info(self, players: List[Algo], msg):

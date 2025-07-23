@@ -61,7 +61,8 @@ class TestBase:
             self.ok_count += 1
             return True
         logger.error(
-            f"info:{info}\nresult:{a}\nexpect:{expect_value}", stacklevel=stacklevel
+            f"\ninfo:\n{info}\nresult:\n{a}\nexpect:\n{expect_value}",
+            stacklevel=stacklevel,
         )
         return False
 

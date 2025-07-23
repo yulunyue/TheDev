@@ -21,7 +21,7 @@ class LCTest(TestBase):
         ins.dev = True
         return ins
 
-    def run_one_case(self, file_name, *args, fun_name="run", **kw):
+    def run_one_case(self, file_name, *args, **kw):
         ins: MockCf = self.get_ins()
         for c in ins.get_cases():
             if isinstance(c, dict):
@@ -32,11 +32,11 @@ class LCTest(TestBase):
 
             if isinstance(input_param, str):
                 ins.set_inputs(input_param)
-                r = getattr(ins, fun_name)()
+                r = getattr(ins, args[0])()
                 msg = f"\nii-----:\n{input_param}\nio----:\n{except_result}\nloger:\n{logger.get_and_clear_cache()}"
             else:
-                r = getattr(ins, fun_name)(**input_param)
-                msg = f"{c}\n" + logger.get_and_clear_cache()
+                r = getattr(ins, args[0])(**input_param)
+                msg = f"{c}\nlogger:\n{logger.get_and_clear_cache()}"
             if isinstance(except_result, str) and isinstance(r, list):
                 self.expect_dfs(r, except_result.split("\n")[1:], msg)
             else:

@@ -1,4 +1,4 @@
-from common.algo.search.state import State
+from common.algo.search.state import State, Action
 from common.algo.search.state import Action
 from common.util.export import List
 from app.yly.game.envs.oa.model.constant import C
@@ -27,6 +27,9 @@ class Rooms(State):
         if self.actions is not None:
             return self.actions
         self.actions = dict()
+
+        self_start = self.player_id * C.SELF_NUM
+        self_end = self_start + C.SELF_NUM
         for i in range(C.SELF_NUM):
             j = self.player_id * C.SELF_NUM + i
             if self.boards[j] == 0:
@@ -34,15 +37,23 @@ class Rooms(State):
             boards = self.boards.copy()
             pos = []
             for k in range(boards[j]):
-                pos.append((k + 1 + j) % C.ROOM_NUM)
-                boards[pos[-1]] += 1
+                idx = (k + 1 + j) % C.ROOM_NUM
+                boards[idx] += 1
+                pos.append(idx)
             rv_num = 0
             while pos and 2 <= boards[pos[-1]] <= 3:
                 idx = pos.pop()
-                if 0 <= idx - self.player_id * C.SELF_NUM < C.SELF_NUM:
+                if self_start <= idx < self_end:
                     break
                 rv_num += boards[idx]
                 boards[idx] = 0
+            op_board_num = (
+                sum(boards[: C.SELF_NUM])
+                if self.player_id == 1
+                else sum(boards[C.SELF_NUM :])
+            )
+            if op_board_num == 0:
+                continue
             boards[j] = 0
             self.actions[i] = Action(
                 self, i, Rooms.new_room(1 - self.player_id, boards)

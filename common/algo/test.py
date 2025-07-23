@@ -10,6 +10,7 @@ from common.algo.export import (
     Comb,
     encode_data,
     decode_data,
+    solve_xyz,
 )
 
 
@@ -43,8 +44,7 @@ class TestAlgo(TestBase):
             self.expect(
                 int(calc_angle(0, 0, 3 * sin(i), 3 * cos(i)) / math.pi * 180), i, i
             )
-        c = Comb().load(7, 6)
-        self.expect(c.fac, []),
+        self.expect(solve_xyz(4074, 9819, 23712), (1, 2))
 
     def test_str(self):
         s = "aabcbc"

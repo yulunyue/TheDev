@@ -47,7 +47,7 @@ class Action:
         return self.get_best_actions()[-1]
 
     def __repr__(self):
-        return f"action: {self.action}"
+        return f"action: {self.action}, reward: {self.reward}"
 
 
 class State:

@@ -135,6 +135,52 @@ def china_rest_mod(n, m, p):
     return ans % mod
 
 
+def extended_gcd(a, b):
+    if b == 0:
+        return 1, 0
+    s0, t0 = extended_gcd(b, a % b)
+    s = t0
+    t = s0 - (a // b) * t0
+    return s, t
+
+
+def solve_xyz(x, y, z):
+    # 计算最大公约数
+    d = math.gcd(x, y)
+    if z % d != 0:
+        return None, None  # 无解
+
+    # 缩放方程
+    z0 = z // d
+    x0 = x // d
+    y0 = y // d
+
+    # 求特解 (s, t) 满足 s*x0 + t*y0 = 1
+    s, t = extended_gcd(x0, y0)
+    a0 = s * z0
+    b0 = t * z0
+
+    # 求 k 的范围
+    k_min = math.floor(-a0 / y0) + 1
+    k_max = math.ceil(b0 / x0) - 1
+    if k_min > k_max:
+        return None, None  # 无正整数解
+
+    # 根据系数 c 选择 k
+    c = y0 - x0  # c = (y - x) / d
+    if c > 0:
+        k = k_min
+    elif c < 0:
+        k = k_max
+    else:  # c = 0
+        k = k_min  # 任意 k 均可
+
+    # 计算最终解
+    a = a0 + k * y0
+    b = b0 - k * x0
+    return a, b
+
+
 class Comb:
     def load(self, mx, mod):
         """(a//fac[i])%MOD == (a*self.inv_fac[i])%MOD"""
