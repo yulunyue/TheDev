@@ -5,11 +5,13 @@ from typing import List
 
 
 class EpsilonGreedy(Algo):
+
     def load(self, use_cache=False, max_t=-1, num_episodes=5000, epsilon=0.1):
+        self.total_count = 1
         return super().load(use_cache, max_t, num_episodes, epsilon)
 
     def take_action(self, state: State):
-        if np.random.rand() < self.epsilon:
+        if np.random.rand() < self.epsilon / self.total_count:
             actions = list(state.get_actions().values())
             k = np.random.randint(0, len(actions))
             return actions[k]
@@ -28,15 +30,10 @@ class EpsilonGreedy(Algo):
 
 
 class DecayingEpsilonGreedy(EpsilonGreedy):
-    total_count = 0
 
     def take_action(self, state: State):
         self.total_count += 1
-        if np.random.rand() < self.epsilon / self.total_count:
-            actions = list(state.get_actions().values())
-            k = np.random.randint(0, len(actions))
-            return actions[k]
-        return self.get_max_action(state)
+        return super().take_action(state)
 
 
 class Ucb(EpsilonGreedy):

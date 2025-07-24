@@ -17,7 +17,15 @@ def uid(s):
 
 
 def ii(s: str):
-    return [int(v) for v in s.split(" ")]
+    ans = []
+    for v in s.replace("\n", " ").split(" "):
+        if not v:
+            continue
+        try:
+            ans.append(int(v))
+        except Exception as e:
+            break
+    return ans
 
 
 def os_system(s: str):

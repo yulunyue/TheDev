@@ -2,7 +2,14 @@ from common.mock import MockCg
 from app.yly.game.envs.mpr.constant import C
 
 
+class AiMode:
+    TESTX = "TESTX"
+    POWER_100 = "POWER_100"
+
+
 class Ai:
+    MODE = "MOCK_MODE"
+
     def __init__(self):
         self.speed_x = None
         self.last_x = None
@@ -27,11 +34,13 @@ class Ai:
         self.speed_x = x - self.last_x
         self.speed_y = y - self.last_y
         self.e_t = next_checkpoint_dist
-        power = self.pid()
+        power = self.get_power()
         self.last_x, self.last_y = x, y
         return next_checkpoint_x, next_checkpoint_y, min(int(power), 100)
 
-    def pid(self):
+    def get_power(self):
+        if self.MODE == AiMode.POWER_100:
+            return 100
         return self.pi * self.e_t
 
     def get_info(self):  # -> dict[str, Any]:
@@ -75,7 +84,12 @@ class Mpr(MockCg):
                 y=y,
                 dst_x=dst_x,
                 dst_y=dst_y,
+                next_x=next_checkpoint_x,
+                next_y=next_checkpoint_y,
+                next_ang=next_checkpoint_angle,
                 dist=next_checkpoint_dist,
+                opponent_x=opponent_x,
+                opponent_y=opponent_y,
                 power=power,
                 **ai.get_info(),
             )

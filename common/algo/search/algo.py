@@ -67,8 +67,8 @@ class Algo:
 
     def search_main(self, state: State):
         self.rewards_record = []
+        self.reward_tmp_all = 0
         for _ in range(self.num_episodes):
-            self.reward_tmp_all = 0
             self.run_one(state)
             self.rewards_record.append(self.reward_tmp_all)
         state.set_best_action(self.get_max_action(state))

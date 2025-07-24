@@ -130,20 +130,22 @@ class State:
     def dump_tree(self, max_depth):
         ret = []
 
-        def dfs(s: State, depth):
+        def dfs(s: State, depth, stacks):
             if s.get_done() or depth == max_depth:
                 return s.get_done()
             actions = list(s.get_actions().values())
             for a in actions:
-                done = dfs(a.dst, depth + 1)
-                ret.append(f'{" "*depth}- {a}: {done}')
+                done = dfs(a.dst, depth + 1, stacks + [a])
+                ret.append(
+                    f'{" "*depth}- {a}: reward:{a.dst.get_reward(actions=stacks)}, down:{done}'
+                )
 
-        dfs(self, 0)
+        dfs(self, 0, [])
         ret.reverse()
-        return "\n".join(ret)
+        return "\n" + "\n".join(ret)
 
     def get_reward(self, **kw) -> int:
-        raise Exception("todo")
+        raise Exception("todo", kw)
 
     def get_max_action_reward(self):
         reward = -inf

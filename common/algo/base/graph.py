@@ -6,7 +6,7 @@ from common.algo.base.node import Node
 
 
 class Graph(Node):
-    nodes = dict()
+    nodes: Dict[str, "Node"] = Node
     edges = dict()
 
     def __init__(self, key=None):
@@ -20,7 +20,7 @@ class Graph(Node):
 
     def reset(self):
         self.edges.clear()
-        self.nodes.clear()
+        Graph.nodes = {}
         return self
 
     def add_node(self, kid):
@@ -37,45 +37,10 @@ class Graph(Node):
         fn.childs[t] = tn
         return fn, tn
 
-    def set_values(self, values):
-        for i, v in enumerate(values):
-            self.value[i] = v
-        return self
-
     def load_from_edges(self, edges):
         for i, edge in enumerate(edges):
             self.add_edge(i, *edge)
         return self
-
-    def get_title_key(self):
-        return ["value"]
-
-    def get_nodes(self, i):
-        from common.algo.manage import bp
-
-        return dict(
-            data=[
-                bp("", i, self.key(i)),
-            ]
-            + [
-                bp(k, getattr(self, k)[i], self.key(f"{k}_{i}"))
-                for k in self.get_title_key()
-            ]
-        )
-
-    def get_edges(self):
-        return [[self.key(e[0]), self.key(e[1])] + e[2:] for e in self.edges]
-
-    def graph_view(self):
-        return dict(
-            data=dict(
-                edges=self.get_edges(),
-                nodes={self.key(k): self.get_nodes(k) for k in self.g},
-            )
-        )
-
-    def __str__(self):
-        return f"{self.edges}"
 
     def get_value(self, idx, weight=None, cost=None):
         raise Exception("gg")
@@ -109,30 +74,28 @@ class Graph(Node):
                         q.append(y)
         return ans
 
-    def bfs(self, start):
-        q = [start]
-        dis = dict()
-        l = 0
-        dis[start] = l
+    dis = None
+
+    def bfs(self):
+        q: List[Node] = [self]
+        self.dis = dict()
+        self.dis[self.key] = 0
         while q:
             tmp = q
             q = []
             for c in tmp:
-                for n, *args in self.g[c]:
-                    if n in dis:
+                for n in c.childs.values():
+                    if n.key in self.dis:
                         continue
-                    dis[n] = l + 1
+                    self.dis[n.key] = self.dis[c.key] + 1
                     q.append(n)
-            l += 1
-        return dis
+
+        return self.dis
 
     def get_dis(self, y, x):
-        if y in self.dis:
-            return self.dis[y].get(x, inf)
-        if x in self.dis:
-            return self.dis[x].get(y, inf)
-        self.dis[y] = self.bfs(y)
-        return self.dis[y].get(x)
+        if self.nodes[y].dis is None:
+            self.nodes[y].bfs()
+        return self.nodes[y].dis[x]
 
     def tarjan(self, b, init_ct=0):
         low = defaultdict(lambda: init_ct)

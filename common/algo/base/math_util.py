@@ -65,6 +65,11 @@ def prime_gcds(max_value):
     return ret
 
 
+def mean(array):
+    s = sum(array) / len(array)
+    return sum([(v - s) ** 2 for v in array])
+
+
 def decomposition_prime_factors(v):
     ret = dict()
     i = 2

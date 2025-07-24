@@ -1,5 +1,5 @@
 from common.algo.export import State, Action
-from common.util.export import logger
+from common.util.export import logger, List, Dict
 import random
 from typing import List
 
@@ -30,21 +30,36 @@ BAN_ENV = BanditEnv()
 
 
 class Bction(Action):
+    value = 0
+
     def get_reward(self, **kw):
         return BAN_ENV.calc_reward(self.action)
 
+    def __repr__(self):
+        return str(self.action)
+
 
 class Bandit(State):
-    reward = 0
 
     def __init__(self, state="", player_id=0, depth=1):
         super().__init__(state, player_id, depth)
 
-    def gen_action(self, a):
-        return Bction(self, a, Bandit(self.state + str(a))).set_value(0)
+    def get_actions(self, **kw) -> Dict[int, Bction]:
+        if self.actions:
+            return self.actions
+        self.actions = dict()
+        for action in range(BAN_ENV.K):
+            a = Bction(self, action, self)
+            self.actions[action] = a
+        return self.actions
 
-    def get_actions_all(self):
-        return list(range(BAN_ENV.K))
+    def get_reward(self, actions: List[Bction], **kw):
+        return sum([BAN_ENV.calc_reward(v.action) for i, v in enumerate(actions)])
 
     def __repr__(self):
         return str([v.value for v in self.get_actions().values()])
+
+    def reset_env(self):
+        for a in self.get_actions().values():
+            a.value = 0
+        return self

@@ -4,28 +4,29 @@ from app.yly.game.envs.kululu.model.grid import Grid
 
 
 class Kululu(MockCg):
-    name = "kutulu"
+    name = "kululu"
     uri = "https://www.codingame.com/ide/puzzle/code-of-kutulu"
     game_id = "59755350863a5f654a8f27dc827b976824254c5b"
     agentsIds = [-1, 5751943, 3995777, 4762568]
 
     def main(self):
-        g = Grid(int(self.input()), int(self.input()))
-        g.load([self.input() for _ in range(g.height)])
+        g = Grid().load_size(int(self.input()), int(self.input()))
+        g.load_map([self.input() for _ in range(g.height)])
 
         # sanity_loss_lonely: how much sanity you lose every turn when alone, always 3 until wood 1
         # sanity_loss_group: how much sanity you lose every turn when near another player, always 1 until wood 1
         # wanderer_spawn_time: how many turns the wanderer take to spawn, always 3 until wood 1
         # wanderer_life_time: how many turns the wanderer is on map after spawning, always 40 until wood 1
-        g.load(self.ii())
+        g.load_param(self.ii())
         # game loop
         while True:
-            g.reset()
             entity_count, *args = self.ii()
+            players = []
             for _ in range(entity_count):
-                g.add_player(*self.input().split())
-            self.log()
-            info = None
+                players.append(self.input().split())
+            g.set_players(players)
+            self.log(**g.dump())
+            info = g.get_action()
             if info:
                 self.output(f"MOVE {info[1]} {info[0]}")
             else:

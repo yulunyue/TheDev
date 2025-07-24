@@ -4,8 +4,12 @@ import json
 
 
 class CGFrames:
-    def load(self, stdout, stderr=None, **kw):
+    def load(
+        self, stdout="", stderr=None, agentId=None, gameInformation=None, **kw
+    ) -> "CGFrames":
         self.stdout = stdout[:-1]
+        self.gameInformation = gameInformation
+        self.agent_id = agentId
         self.stderr = dict()
         if stderr:
             self.stderr.update(json.loads(stderr[:-1]))
@@ -55,11 +59,12 @@ class CodingGame(Api):
         )
         return ret
 
-    def get_replay_json(self) -> List[CGFrames]:
-        data = File(self.get_local_path("play.json")).read_file()
+    def get_cg_frames(self, name="play") -> List[CGFrames]:
+        data = File(self.get_local_path(f"{name}.json")).read_file()
         ret = []
         for d in data["frames"]:
-            if "stdout" not in d:
+            fr = CGFrames().load(**d)
+            if fr.agent_id == -1:
                 continue
-            ret.append(CGFrames().load(**d))
+            ret.append(fr)
         return ret

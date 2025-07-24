@@ -34,12 +34,7 @@
 ![](doc/algo/game/mpr/image.png)
 ### 一些web小游戏
 ### 一些杂七杂八的工具
-## Todo
-```
-python -m app.yly.game.envs.oa.test
-python -m app.yly.game.envs.mpr.test debug
-
-```
+## [Todo](doc\todo.md)
 
 ## 编程
 1. 尽量扩展代码，少新增代码。感觉不好的东西就该删除

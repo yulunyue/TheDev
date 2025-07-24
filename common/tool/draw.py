@@ -1,6 +1,7 @@
 import json
 import sys
 import matplotlib.pyplot as plt
+from common.util.export import List, defaultdict, File
 
 
 class Draw:
@@ -13,11 +14,29 @@ class Draw:
 
     def draw_line(self, datas, xlabel="x", ylabel="y", title="title"):
         if isinstance(datas, dict):
-            for k, dts in datas.items():
-                x = datas.get("x", range(len(dts["y"])))
-                plt.plot(x, dts["y"], label=k)
+            plt.plot(datas["x"], datas["y"], label=datas.get(title, ""))
         elif isinstance(datas, list):
             plt.plot(range(len(datas)), datas, label=title)
+        else:
+            raise Exception(datas)
+        return self.show_line(xlabel, ylabel, title)
+
+    def draw_lines(self, datas: List, xlabel="x", ylabel="y", title="title"):
+        lines = datas
+        if isinstance(datas[0], dict):
+            tmp_data = defaultdict(list)
+            lines = []
+            for data in datas:
+                for k, v in data.items():
+                    tmp_data[k].append(v)
+            for k, values in tmp_data.items():
+                lines.append([values, None, k])
+        for y, x, ti in lines:
+            x = x or range(len(y))
+            plt.plot(x, y, label=ti)
+        return self.show_line(xlabel, ylabel, title)
+
+    def show_line(self, xlabel, ylabel, title):
         plt.title(title)
         plt.ylabel(ylabel)
         plt.xlabel(xlabel)
@@ -25,7 +44,6 @@ class Draw:
         return self
 
     def draw_graph(self, datas):
-        import matplotlib.pyplot as plt
         import networkx as nx
 
         plt.figure(figsize=(8, 8))
@@ -78,8 +96,7 @@ class Draw:
         g.render(format="png")
 
     def save(self, path):
-        import matplotlib.pyplot as plt
-
+        File(path).make_dir_if_not_exist()
         plt.savefig(path)
         return self
 
@@ -93,7 +110,3 @@ class Draw:
     def show(self):
         plt.show()
         return self
-
-
-if __name__ == "__main__":
-    getattr(Draw(), sys.argv[1])(*sys.argv[2:])

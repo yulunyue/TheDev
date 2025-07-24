@@ -71,6 +71,8 @@ class MockCf:
 
 
 class MockCg(MockCf):
+    name = ""
+
     def __init__(self):
         super().__init__()
         self.msgs = []
@@ -83,6 +85,14 @@ class MockCg(MockCf):
 
     def output(self, s):
         print(s)
+
+    @classmethod
+    def main_py(cls):
+        return f"app/yly/game/envs/{cls.name}/cg.py"
+
+    @classmethod
+    def tmp_dir(cls):
+        return f"data/cg/{cls.name}"
 
 
 C = Constant()

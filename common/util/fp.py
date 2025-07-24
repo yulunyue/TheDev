@@ -131,6 +131,13 @@ class File:
             for member in zf.namelist():
                 zf.extract(member, path=output_dir)
 
+    def replace(self, info: dict):
+        data = self.read_file()
+        for k, v in info.items():
+            data = data.replace(k, v)
+        self.write_file(data)
+        return self
+
 
 class Cache:
     def __init__(self, name):
