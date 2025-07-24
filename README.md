@@ -25,10 +25,12 @@
 ##### CodingGame OwareAlpha
 [文档](doc\algo\game\oa\readme.md)
 [游戏链接](https://www.codingame.com/ide/puzzle/oware-abapa)
+
 ![](doc/algo/game/oa/image.png)
 ##### CodingGame mad-pod-racing
 [文档](doc\algo\game\mpr\readme.md)
 [游戏链接](https://www.codingame.com/ide/puzzle/mad-pod-racing)
+
 ![](doc/algo/game/mpr/image.png)
 ### 一些web小游戏
 ### 一些杂七杂八的工具
