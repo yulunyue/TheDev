@@ -73,10 +73,6 @@ class Algo:
             self.rewards_record.append(self.reward_tmp_all)
         state.set_best_action(self.get_max_action(state))
 
-    def reward_change(self, v):
-        self.reward_tmp_all += v
-        return self
-
     def get_max_action(self, state: State):
         raise Exception("todo")
 

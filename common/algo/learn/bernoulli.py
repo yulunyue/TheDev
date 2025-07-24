@@ -6,7 +6,7 @@ from typing import List
 
 class EpsilonGreedy(Algo):
 
-    def load(self, use_cache=False, max_t=-1, num_episodes=5000, epsilon=0.1):
+    def load(self, use_cache=False, max_t=-1, num_episodes=5000, epsilon=0.01):
         self.total_count = 1
         return super().load(use_cache, max_t, num_episodes, epsilon)
 
@@ -24,16 +24,16 @@ class EpsilonGreedy(Algo):
 
     def run_one(self, state: State):
         a = self.take_action(state)
-        reward = a.get_reward()
-        a.value += reward
-        self.reward_change(reward)
+        regrat = a.get_reward()
+        self.reward_tmp_all += regrat
 
 
 class DecayingEpsilonGreedy(EpsilonGreedy):
 
     def take_action(self, state: State):
+        r = super().take_action(state)
         self.total_count += 1
-        return super().take_action(state)
+        return r
 
 
 class Ucb(EpsilonGreedy):

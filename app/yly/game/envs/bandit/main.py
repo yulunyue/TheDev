@@ -16,13 +16,7 @@ class BanditEnv:
                 self.max_idx = j
         return self
 
-    def use_pro(self, pro):
-        self.pro = pro
-        return self
-
     def calc_reward(self, a):
-        if not self.pro:
-            return BAN_ENV.probs[a]
         return 1 if random.random() < BAN_ENV.probs[a] else 0
 
 
@@ -30,10 +24,18 @@ BAN_ENV = BanditEnv()
 
 
 class Bction(Action):
-    value = 0
 
     def get_reward(self, **kw):
-        return BAN_ENV.calc_reward(self.action)
+        r = BAN_ENV.calc_reward(self.action)
+        regret = BAN_ENV.probs[self.action] - BAN_ENV.probs[BAN_ENV.max_idx]
+        self.value = (self.value * self.count + r) / (self.count + 1)
+        self.count += 1
+        return regret
+
+    def reset(self):
+        self.count = 0
+        self.value = 1
+        return self
 
     def __repr__(self):
         return str(self.action)
@@ -57,9 +59,9 @@ class Bandit(State):
         return sum([BAN_ENV.calc_reward(v.action) for i, v in enumerate(actions)])
 
     def __repr__(self):
-        return str([v.value for v in self.get_actions().values()])
+        return str(["%.2f" % v.value for v in self.get_actions().values()])
 
     def reset_env(self):
         for a in self.get_actions().values():
-            a.value = 0
+            a.reset()
         return self
