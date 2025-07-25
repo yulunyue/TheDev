@@ -24,8 +24,16 @@ class EpsilonGreedy(Algo):
 
     def run_one(self, state: State):
         a = self.take_action(state)
-        regrat = a.get_reward()
-        self.reward_tmp_all += regrat
+        regrat, r = a.get_reward()
+        a.value = (a.value * a.count + r) / (a.count + 1)
+        a.count += 1
+        self.reward_tmp_all -= regrat
+
+    def search(self, state: State):
+        for a in state.get_actions().values():
+            a.value = 1
+            a.count = 0
+        return super().search(state)
 
 
 class DecayingEpsilonGreedy(EpsilonGreedy):
@@ -37,31 +45,50 @@ class DecayingEpsilonGreedy(EpsilonGreedy):
 
 
 class Ucb(EpsilonGreedy):
-    total_count = 0
 
     def load(self, num_episodes=5000, coef=1):
         self.coef = coef
         return super().load(num_episodes=num_episodes)
 
-    def get_action(self, *args):
-        self.total_count += 1
-        ucb = np.array(self.estimates) + self.coef * np.sqrt(
-            np.log(self.total_count) / (2 * (np.array(self.counts) + 1))
+    def run_one(self, state: State):
+        a = self.get_max_action(state)
+        regrat, r = a.get_reward()
+        a.value = (a.value * a.count + r) / (a.count + 1)
+        a.count += 1
+        self.reward_tmp_all -= regrat
+
+    def get_max_action(self, state):
+        actions = [v for v in state.get_actions().values()]
+        estimates = [v.value for v in actions]
+        counts = [v.count for v in state.get_actions().values()]
+        ucb = np.array(estimates) + self.coef * np.sqrt(
+            np.log(self.total_count) / (2 * (np.array(counts) + 1))
         )
-        return np.argmax(ucb)
+        self.total_count += 1
+        return actions[np.argmax(ucb)]
 
 
-class ThompsonSampling(EpsilonGreedy):
+class ThompsonSampling(Algo):
 
-    def get_action(self, *args):
-        samples = np.random.beta(self.a, self.b)
-        return np.argmax(samples)
+    def load(self, use_cache=False, max_t=-1, num_episodes=5000, epsilon=0.01):
+        return super().load(use_cache, max_t, num_episodes, epsilon)
 
-    def run_one_step(self, episode, action, reward):
-        self.a[action] += reward
-        self.b[action] += 1 - reward
+    def run_one(self, state: State):
+        a = self.get_max_action(state)
+        regrat, reward = a.get_reward()
+        self.reward_tmp_all -= regrat
+        a.value[0] += reward
+        a.value[1] += 1 - reward
 
-    def run(self, state: State):
-        self.a = np.ones(len(state.get_actions_all()))
-        self.b = np.ones(len(state.get_actions_all()))
-        return super().run(state)
+    def search(self, state: State):
+        for a in state.get_actions().values():
+            a.value = [1, 1]
+        return super().search(state)
+
+    def get_max_action(self, state):
+        actions = [state.get_action(i) for i in range(state.action_size())]
+        a = [ac.value[0] for ac in actions]
+        b = [ac.value[1] for ac in actions]
+        samples = np.random.beta(a, b)
+        k = np.argmax(samples)
+        return actions[k]

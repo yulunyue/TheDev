@@ -22,8 +22,8 @@ class TestBan(TestBase):
     def test_all(self):
         self.test_de()
         self.test_eg()
-        self.test_algo(Ucb().load())
-        self.test_algo(ThompsonSampling().load())
+        self.test_ucb()
+        self.test_ts()
         self.d.save(f"data/game/bandit/all.svg")
 
     def test_eg(self):
@@ -31,6 +31,12 @@ class TestBan(TestBase):
 
     def test_de(self):
         self.test_algo(DecayingEpsilonGreedy().load(epsilon=0.1))
+
+    def test_ucb(self):
+        self.test_algo(Ucb().load())
+
+    def test_ts(self):
+        self.test_algo(ThompsonSampling().load())
 
     def test_algo(self, algo: Algo):
         a = algo.search(self.b)

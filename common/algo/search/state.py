@@ -65,6 +65,9 @@ class State:
     def get_done(self):
         return self.done
 
+    def action_size(self):
+        raise Exception("tood")
+
     def set_best_action(self, a: Action):
         self.best_action = a
         return self
