@@ -29,11 +29,8 @@ class Action:
         self.reward = reward
         return self
 
-    def do(self, **kw):
-        raise Exception("todo")
-
     def get_reward(self, **kwargs):
-        raise Exception("todo")
+        return self.reward
 
     def get_best_actions(self) -> List["Action"]:
         p = self

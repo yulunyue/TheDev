@@ -1,45 +1,46 @@
 from common.algo.export import Action, State
-
-
-class CartPoleEnv:
-    env = None
-
-    def load(self):
-        if self.env is None:
-            import gymnasium as gym
-
-            self.env = gym.make("CartPole-v1")
-        return self.env.reset()[0]
-
-    def step(self, a):
-        return self.env.step(a)
-
-    def __str__(self):
-        return f"state_dim:{self.env.observation_space.shape[0]},action_dim:{self.env.action_space.n}"
-
-
-CP_ENV = CartPoleEnv()
+from common.util.export import logger
 
 
 class CartAction(Action):
-    def do(self, **kw):
-        self.dst.state, reward, done, *args = CP_ENV.step(self.action)
-        self.dst.set_done(done)
-        self.set_reward(reward)
-        return self
+    pass
 
 
 class CartPoleState(State):
-    @classmethod
-    def get_init_state(cls):
-        return CartPoleState(CP_ENV.load())
+    _env = None
 
-    def gen_action(self, a):
-        return CartAction(self, a, CartPoleState(None)).set_value(0)
+    def __init__(self, state=None, player_id=0, depth=0):
+        if CartPoleState._env is None:
+            import gymnasium as gym
+            from gymnasium.envs.classic_control.cartpole import CartPoleEnv
 
-    def get_actions_all(self):
-        return list(range(CP_ENV.env.action_space.n))
+            CartPoleState._env = gym.make("CartPole-v1", render_mode="human")
+            CartPoleState._env_ins: CartPoleEnv = CartPoleState._env.env.env.env
+        if state is None:
+            state, _ = CartPoleState._env.reset()
+        self.done = False
+        super().__init__(state, player_id, depth)
+
+    def get_actions(self, depth=1, **kw):
+        if self.actions:
+            return self.actions
+        self.actions = dict()
+        for i in range(CartPoleState._env.action_space.n):
+            CartPoleState._env_ins.state = self.state
+            next_state, reward, terminated, _, _ = CartPoleState._env.step(i)
+            CartPoleState._env_ins.steps_beyond_terminated = None
+            self.actions[i] = CartAction(
+                self, i, CartPoleState(next_state).set_done(terminated)
+            ).set_reward(reward)
+        return self.actions
+
+    def to_str(self):
+        return f"{self.state}"
+
+    def render(self):
+        CartPoleState._env.state = self.state
+        return CartPoleState._env.render()
 
     def reset(self):
-        self.state = CP_ENV.load()
-        return self
+        self.state, _ = CartPoleState._env.reset()
+        return super().reset()

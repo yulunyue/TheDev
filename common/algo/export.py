@@ -9,7 +9,8 @@ from common.algo.learn.bernoulli import (
     Ucb,
     ThompsonSampling,
 )
-from common.algo.learn.sarsa import Sarsa, Qlearning, DynaQ, RandomEpisode, MctsEasy
+from common.algo.learn.sarse.sarse import Sarsa
+from common.algo.learn.sarse.qlearning import Qlearning
 from common.algo.learn.dqn import Dqn
 from common.algo.search.algo_manage import ALgoManage
 from common.algo.base.math_util import sin, cos, calc_angle, Comb, solve_xyz

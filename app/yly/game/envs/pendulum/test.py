@@ -1,21 +1,22 @@
-from .env import CartPoleState
+from .env import PenduState
 from common.util.export import TestBase, logger
 from common.algo.export import Dqn, Qlearning, np
 
 
-class TestCart(TestBase):
+class TestPen(TestBase):
 
     def test_dqn(self):
-        dqn = Dqn(4, 128, 2).load(cache="data/game/cart/main.pt")
-        dqn.search(CartPoleState())
+        p = PenduState()
+        dqn = Dqn().load(p.state_size(), 128, 11, cache="data/game/pen/main.pt")
+        dqn.search(p)
 
     def test_debug(self):
         self.test_dqn()
 
     def test_base(self):
-        s = CartPoleState()
+        s = PenduState()
         logger.info(s)
 
 
 if __name__ == "__main__":
-    TestCart().run()
+    TestPen().run()
