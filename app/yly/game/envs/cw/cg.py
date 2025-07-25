@@ -27,6 +27,7 @@ class CgCw(MockCg):
         # game loop
         while True:
             num_of_units = int(input())  # The total number of units on the board
+            shapes = []
             for i in range(num_of_units):
                 # unit_id: The unit's ID
                 # unit_type: The unit's type: 0 = Cultist, 1 = Cult Leader
@@ -34,8 +35,8 @@ class CgCw(MockCg):
                 # x: X coordinate of the unit
                 # y: Y coordinate of the unit
                 # owner: id of owner player
-                unit_id, unit_type, hp, x, y, owner = [int(j) for j in input().split()]
-                w.set_shape(y, x, unit_type, owner=owner, hp=hp, unit_id=unit_id)
+                shapes.append(self.ii())
+            w.set_shapes(shapes)
 
             # Write an action using print
             self.log(**w.to_json())

@@ -1,14 +1,14 @@
-from common.algo.learn import Algo
+from common.algo.learn.base import Base
 from common.algo.search.state import State, Action
 import numpy as np
 from typing import List
 
 
-class EpsilonGreedy(Algo):
+class EpsilonGreedy(Base):
 
-    def load(self, use_cache=False, max_t=-1, num_episodes=5000, epsilon=0.01):
+    def load(self, num_episodes=5000, epsilon=0.1):
         self.total_count = 1
-        return super().load(use_cache, max_t, num_episodes, epsilon)
+        return super().load(num_episodes=num_episodes, epsilon=epsilon)
 
     def take_action(self, state: State):
         if np.random.rand() < self.epsilon / self.total_count:
@@ -68,10 +68,10 @@ class Ucb(EpsilonGreedy):
         return actions[np.argmax(ucb)]
 
 
-class ThompsonSampling(Algo):
+class ThompsonSampling(Base):
 
-    def load(self, use_cache=False, max_t=-1, num_episodes=5000, epsilon=0.01):
-        return super().load(use_cache, max_t, num_episodes, epsilon)
+    def load(self, num_episodes=5000, epsilon=0.01):
+        return super().load(num_episodes=num_episodes, epsilon=epsilon)
 
     def run_one(self, state: State):
         a = self.get_max_action(state)

@@ -39,6 +39,9 @@ class CodingGame(Api):
         File(tmp_path).write_file(ret)
         return ret
 
+    def get_timeout(self):
+        return 30
+
     def submit(self, file_path, game_id):
         return self.execute(file_path, game_id, play_type="submit")
 
@@ -68,3 +71,11 @@ class CodingGame(Api):
                 continue
             ret.append(fr)
         return ret
+
+    _log = None
+
+    def log(self, msg):
+        if self._log is None:
+            self._log = File(self.get_local_path("replay.log")).get_writer()
+        self._log.write(f"{msg}\n")
+        self._log.flush()
