@@ -1,32 +1,29 @@
-from app.yly.algo.cg.cw.world import World, C
-import sys
-import math
-import json
+from app.yly.game.envs.cw.model.world import World, C
+from common.mock import MockCg
 
 
-class CgCw:
+class CgCw(MockCg):
     """
     https://www.codingame.com/ide/puzzle/cultist-wars
     """
 
+    name = "cw"
     game_id = "72806721d45bcc88f2891a7927b73fbfa911b50b"
     agentsIds = [-1, 2411205]
 
-    def run(self):
+    def main(self):
 
-        my_id = int(
-            input()
+        pleayer_id, *args = (
+            self.ii()
         )  # 0 - you are the first player, 1 - you are the second player
         # width: Width of the board
         # height: Height of the board
-        width, height = [int(i) for i in input().split()]
-        w = World(width=width, height=height)
+        width, height = self.ii()
+        maps = []
+
         for i in range(height):
-            for j, x in enumerate(
-                input()
-            ):  # A y of the board: "." is empty, "x" is obstacle
-                if x == "x":
-                    w.set_shape(i, j, C.obstacle)
+            maps.append(self.input())
+        w = World().load(width=width, height=height, maps=maps)
         # game loop
         while True:
             num_of_units = int(input())  # The total number of units on the board
@@ -41,11 +38,11 @@ class CgCw:
                 w.set_shape(y, x, unit_type, owner=owner, hp=hp, unit_id=unit_id)
 
             # Write an action using print
-            print(json.dumps(w.to_json()), file=sys.stderr, flush=True)
+            self.log(**w.to_json())
 
             # WAIT | unitId MOVE x y | unitId SHOOT target| unitId CONVERT target
-            print(w.get_action())
+            self.output(w.get_action())
 
 
 if __name__ == "__main__":
-    CgCw().run()
+    CgCw().main()

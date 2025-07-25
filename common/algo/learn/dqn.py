@@ -1,8 +1,9 @@
-from .sarsa import Qlearning, Action, State, np
+from common.algo.learn.sarse.qlearning import Qlearning, Action, State, np
 import torch
 import torch.nn.functional as F
 import collections
 import random
+from common.util.fp import File
 
 
 class Qnet(torch.nn.Module):
@@ -41,23 +42,24 @@ class ReplayBuffer:
 
 
 class Dqn(Qlearning):
-    def load(self, learning_rate=2e-3, **kw):
-        self.q_net = Qnet(4, 128, 2)
-        self.target_q_net = Qnet(4, 128, 2)
+    def load(
+        self, state_dim, hidden_dim, action_dim, learning_rate=2e-3, **kw
+    ) -> "Dqn":
+        super().load(**kw)
+        self.q_net = Qnet(state_dim, hidden_dim, action_dim)
+        self.target_q_net = Qnet(state_dim, hidden_dim, action_dim)
+        if self.cache and File(self.cache).exists():
+            data = torch.load(self.cache)
+            self.target_q_net.load_state_dict(data)
+            self.q_net.load_state_dict(data)
         self.optimizer = torch.optim.Adam(self.q_net.parameters(), lr=learning_rate)
-        self.count = 0
         self.replay_buffer = ReplayBuffer(10000)
-        return super().load(**kw)
+        return self
 
-    def do_action(self, a):
-        a.do()
-        self.reward_tmp_all += a.reward
+    def update_action(self, a: Action):
         self.replay_buffer.add(a.src.state, a.action, a.reward, a.dst.state, a.dst.done)
-        if self.replay_buffer.size() > 400:
+        if self.replay_buffer.size() > 500:
             self.update_net(**self.replay_buffer.sample(64))
-        if a.dst.done:
-            return a
-        return self.take_action(a.dst)
 
     def get_max_action(self, state: State):
         s = torch.tensor(np.array([state.state]), dtype=torch.float)
@@ -78,6 +80,11 @@ class Dqn(Qlearning):
         self.optimizer.zero_grad()  # PyTorch中默认梯度会累积,这里需要显式将梯度置为0
         dqn_loss.backward()  # 反向传播更新参数
         self.optimizer.step()
-        if self.count % 10:
+        if self.state_count % 10:
             self.target_q_net.load_state_dict(self.q_net.state_dict())
-        self.count += 1
+
+    def run_one(self, state):
+        if self.cache:
+            File(self.cache).make_dir_if_not_exist()
+            torch.save(self.q_net.state_dict(), self.cache)
+        return super().run_one(state)

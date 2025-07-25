@@ -9,5 +9,8 @@ KuLulu
 python -m app.yly.game.envs.kululu.test debug
 
 gym 冰壶
+pass
+
+python -m app.yly.game.envs.cw.test debug
 
 ```

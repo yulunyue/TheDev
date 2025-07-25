@@ -28,14 +28,7 @@ class Bction(Action):
     def get_reward(self, **kw):
         r = BAN_ENV.calc_reward(self.action)
         regret = BAN_ENV.probs[self.action] - BAN_ENV.probs[BAN_ENV.max_idx]
-        self.value = (self.value * self.count + r) / (self.count + 1)
-        self.count += 1
-        return regret
-
-    def reset(self):
-        self.count = 0
-        self.value = 1
-        return self
+        return regret, r
 
     def __repr__(self):
         return str(self.action)
@@ -59,9 +52,7 @@ class Bandit(State):
         return sum([BAN_ENV.calc_reward(v.action) for i, v in enumerate(actions)])
 
     def __repr__(self):
-        return str(["%.2f" % v.value for v in self.get_actions().values()])
+        return str([v.value for v in self.get_actions().values()])
 
-    def reset_env(self):
-        for a in self.get_actions().values():
-            a.reset()
-        return self
+    def action_size(self):
+        return BAN_ENV.K

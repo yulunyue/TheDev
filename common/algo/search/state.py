@@ -29,11 +29,8 @@ class Action:
         self.reward = reward
         return self
 
-    def do(self, **kw):
-        raise Exception("todo")
-
     def get_reward(self, **kwargs):
-        raise Exception("todo")
+        return self.reward
 
     def get_best_actions(self) -> List["Action"]:
         p = self
@@ -64,6 +61,9 @@ class State:
 
     def get_done(self):
         return self.done
+
+    def action_size(self):
+        raise Exception("tood")
 
     def set_best_action(self, a: Action):
         self.best_action = a
