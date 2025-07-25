@@ -1,4 +1,4 @@
-from common.algo.search.algo import Algo
+from common.algo.learn import Algo
 from common.algo.search.state import State, Action
 import numpy as np
 from typing import List

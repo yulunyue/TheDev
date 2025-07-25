@@ -14,7 +14,7 @@ from common.algo.export import (
 class TestBan(TestBase):
     def prepare(self):
         BAN_ENV.load()
-        self.prob_format = ",  ".join(["%.2f" % v for v in BAN_ENV.probs])
+        self.prob_format = ", ".join(["%.2f" % v for v in BAN_ENV.probs])
         self.b = Bandit()
         self.d = Draw()
         logger.info(self.prob_format)
