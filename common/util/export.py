@@ -20,3 +20,4 @@ from common.tool.base_class.baseconfig import ConfigBase
 from common.tool.base_class.model import NumberModel, StrModel, DictModel
 from common.util.singleton_util import SingletonUtil
 import random
+from copy import deepcopy

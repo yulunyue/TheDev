@@ -3,15 +3,7 @@ import threading
 import time
 from types import FrameType
 import traceback
-
-
-def test_fun(n):
-    RECORD_ENABLE = True
-    time.sleep(2)
-    ret = 0
-    for i in range(n):
-        ret += i
-    return ret
+from common.util.export import logger
 
 
 class FmInfo:
@@ -24,13 +16,17 @@ class FmInfo:
 
 class ThreadRecord(threading.Thread):
 
-    def __init__(self, target, record_fun) -> None:
-        super().__init__(target=target)
-        self.record_fun = record_fun
+    def __init__(self) -> None:
+        super().__init__(target=self.exec)
         self.records = []
         self.error_msg = ""
+        self.result = None
+
+    def init(self):
+        pass
 
     def run(self) -> None:
+        self.state = 0
         sys.settrace(self.globaltrace)
         try:
             super().run()
@@ -39,39 +35,44 @@ class ThreadRecord(threading.Thread):
             traceback.print_exc()
         self.state = 1
 
+    def exec(self):
+        self.result = self.exec_main(*self.args, **self.kw)
+
     def hander_frame(info: FmInfo):
         print(info.frame.f_code)
 
     def globaltrace(self, frame, event, arg):
         return self.localtrace
 
+    _last_state = None
+
     def localtrace(self, frame, event, arg):
         if event == "return":
             return self.localtrace
-        info = self.record_fun()
-        if info:
-            self.records.append(info)
+        print(frame, event, arg)
+        state = str(self)
+        if state != self._last_state:
+            # print(f"{state},{self._last_state},{self.to_josn()}")
+            self.records.append(self.to_josn())
+        self._last_state = state
         return self.localtrace
 
-    def get_record(self):
+    def execute(self, *args, **kw):
         self.state = 0
+        self.args = args
+        self.kw = kw
+        self.init()
         self.start()
         while not self.state:
             time.sleep(0.1)
-        return self.records
+        return self.result
 
-    def test(self):
-        pass
+    def exec_main(self, *args, **kw):
+        raise Exception("todo")
 
+    def to_josn(self):
+        raise Exception("todo")
 
-def run_watch_fun(exec_fun, record_fun):
-    u = ThreadRecord(exec_fun, record_fun)
-    return u.get_record(), u.error_msg
-
-
-def test():
-    return run_watch_fun(test_fun, n=4)
-
-
-if __name__ == "__main__":
-    print(test())
+    def log(self):
+        for r in self.records:
+            logger.map(**r)

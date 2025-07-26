@@ -7,6 +7,7 @@ import math
 from collections import defaultdict
 import os
 import random
+from common.tool.export import ThreadRecord
 
 try:
     from sortedcontainers import SortedDict, SortedList, SortedSet
@@ -29,11 +30,9 @@ class Constant:
     inf = float("inf")
 
 
-class MockCf:
+class MockCf(ThreadRecord):
     dev = False
-
-    def __init__(self):
-        self.inputs = []
+    inputs = None
 
     def set_inputs(self, inputs: str):
         self.inputs = inputs.split("\n")
@@ -49,18 +48,6 @@ class MockCf:
 
     def ii(self):
         return [int(v) for v in self.input().split(" ")]
-
-    def main(self):
-
-        ans = self.run()
-        if ans is None:
-            return
-        if isinstance(ans, list):
-            self.output(len(ans))
-            for d in ans:
-                self.output(d)
-        else:
-            self.output(ans)
 
     _o = None
 

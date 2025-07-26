@@ -111,15 +111,3 @@ def M(_node_tmp_name, *args, **kwargs):
 
     util(list(args))
     return dict(node=_node_tmp_name, children=ag, attr=kwargs)
-
-
-def test1():
-    c = XmlUtil(M("a1", M("ff:b", "abc"), c=1))
-    c.save("data/test.xml")
-    # c.save("data/test.xml")
-    c1 = XmlUtil("data/test.xml")
-    # function.log(c1["0"])
-
-
-if __name__ == "__main__":
-    test1()

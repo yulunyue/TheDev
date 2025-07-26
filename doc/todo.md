@@ -13,4 +13,7 @@ gym 冰壶
 python -m app.yly.game.envs.bandit.test debug
 python -m app.yly.game.envs.cw.test debug
 
+
+python -m app.yly.algo.context.test lg_p3179 calc
+
 ```
