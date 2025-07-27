@@ -7,7 +7,6 @@ import math
 from collections import defaultdict
 import os
 import random
-from common.tool.export import ThreadRecord
 
 try:
     from sortedcontainers import SortedDict, SortedList, SortedSet
@@ -30,7 +29,7 @@ class Constant:
     inf = float("inf")
 
 
-class MockCf(ThreadRecord):
+class MockCf:
     dev = False
     inputs = None
 
@@ -43,6 +42,8 @@ class MockCf(ThreadRecord):
             self.inputs = open("input.txt").read().split("\n")
         if self.dev:
             return self.inputs.pop(0)
+        if self.inputs is None:
+            self.inputs = []
         self.inputs.append(input())
         return self.inputs[-1]
 
@@ -82,4 +83,4 @@ class MockCg(MockCf):
         return f"data/cg/{cls.name}"
 
 
-C = Constant()
+CT = Constant()

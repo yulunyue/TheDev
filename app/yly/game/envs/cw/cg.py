@@ -13,7 +13,7 @@ class CgCw(MockCg):
 
     def main(self):
 
-        pleayer_id, *args = (
+        player_id, *args = (
             self.ii()
         )  # 0 - you are the first player, 1 - you are the second player
         # width: Width of the board
@@ -23,7 +23,7 @@ class CgCw(MockCg):
 
         for i in range(height):
             maps.append(self.input())
-        w = World().load(width=width, height=height, maps=maps)
+        w = World().load(width=width, height=height, maps=maps).set_player_id(player_id)
         # game loop
         while True:
             num_of_units = int(input())  # The total number of units on the board
