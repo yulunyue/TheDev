@@ -1,31 +1,51 @@
-from common.util.export import List
+from common.util.export import List, Dict, logger
 
 
 class Solution:
     def get_cases(self):
-        return [dict(nums=[2, 3, 6, 7], result=15)]
+        return [
+            dict(nums=[2, 3, 6, 7], result=15),
+            dict(nums=[625, 165, 454, 598], result=1834.1),
+        ]
 
     def maximizeXorAndXor(self, nums: List[int]) -> int:
         n = len(nums)
-
-        def u(nums):
-            a = [0]
-            c = 0
-            for v in nums:
-                c ^= v
-                a.append(c)
-            return a
-
-        a = u(nums)
-        c = u(nums[::-1])[::-1]
-        mx = a[-1]
+        ct = {(n, n): 0}
+        on = [0]
+        for i, v in enumerate(nums):
+            on.append(on[-1] ^ v)
+            ct[i, i], ct[i, i + 1] = 0, v
+            for j in range(i + 2, n + 1):
+                ct[i, j] = ct[i, j - 1] & nums[j - 1]
+        mx = 0
         for i in range(n):
-            mx = max(mx, a[i] + c[i])
-            b = 0
-            for j in range(i, n):
-                b &= nums[j]
-                mx = max(mx, a[i] + b + c[j + 1])
+            for j in range(i, n + 1):
+                o0i = on[0] ^ on[i]
+                ojn = on[j] ^ on[n]
+                oij = on[i] ^ on[j]
+                a = o0i + oij + ct[j, n]
+                b = o0i + ct[i, j] + ojn
+                c = ct[0, i] + oij + ojn
+                logger.map(
+                    o0i=o0i, oij=oij, ojn=ojn, c0i=ct[0, i], cij=ct[i, j], cjn=ct[j, n]
+                )
+                mx = max(mx, a, b, c)
         return mx
+
+    def test(self, nums):
+        def and_fun():
+            pass
+
+        def xor_fun():
+            pass
+
+        mx = 0
+        n = len(nums)
+        for i in range(n):
+            for j in range(i, n):
+                a1 = and_fun(0, i) + xor_fun(i + 1, j) + xor_fun(j + 1, n - 1)
+                a2 = and_fun(0, i) + xor_fun(i + 1, j) + xor_fun(j + 1, n - 1)
+                a3 = and_fun(0, i) + xor_fun(i + 1, j) + xor_fun(j + 1, n - 1)
 
     def execute(self, *args, **kw):
         return self.maximizeXorAndXor(*args, **kw)

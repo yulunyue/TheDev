@@ -1,5 +1,5 @@
 from common.util.export import TestBase
-from common.tool.export import Draw, ThreadRecord
+from common.tool.export import Draw, ThreadRecord, OsUtil
 
 
 class ToolTest(TestBase):
@@ -12,6 +12,10 @@ class ToolTest(TestBase):
         Draw().draw_lines([dict(a=1, b=2), dict(a=4, b=5)]).save(
             f"{line_tmp_path}/line3.svg"
         )
+
+    def test_os(self):
+        b = OsUtil().check_output("ls")
+        self.expect(b, "")
 
     def test_thread_record(self):
         class Test(ThreadRecord):
