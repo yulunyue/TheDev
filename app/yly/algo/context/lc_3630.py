@@ -18,7 +18,7 @@ class Solution:
             for j in range(i + 2, n + 1):
                 ct[i, j] = ct[i, j - 1] & nums[j - 1]
         mx = 0
-        for i in range(n):
+        for i in range(n + 1):
             for j in range(i, n + 1):
                 o0i = on[0] ^ on[i]
                 ojn = on[j] ^ on[n]
@@ -33,19 +33,29 @@ class Solution:
         return mx
 
     def test(self, nums):
-        def and_fun():
-            pass
+        def and_fun(l, r, tp=0):
+            if l == r:
+                return 0
+            a = nums[l]
+            for v in range(l + 1, r):
+                if tp == 0:
+                    a &= nums[v]
+                else:
+                    a ^= nums[v]
+            return a
 
-        def xor_fun():
-            pass
+        def xor_fun(l, r):
+            return and_fun(l, r, 1)
 
         mx = 0
         n = len(nums)
-        for i in range(n):
-            for j in range(i, n):
-                a1 = and_fun(0, i) + xor_fun(i + 1, j) + xor_fun(j + 1, n - 1)
-                a2 = and_fun(0, i) + xor_fun(i + 1, j) + xor_fun(j + 1, n - 1)
-                a3 = and_fun(0, i) + xor_fun(i + 1, j) + xor_fun(j + 1, n - 1)
+        for i in range(n + 1):
+            for j in range(i, n + 1):
+                a1 = and_fun(0, i) + xor_fun(i, j) + xor_fun(j, n)
+                a2 = xor_fun(0, i) + and_fun(i, j) + xor_fun(j, n)
+                a3 = xor_fun(0, i) + xor_fun(i, j) + and_fun(j, n)
+                mx = max(mx, a1, a2, a3)
+        return mx
 
     def execute(self, *args, **kw):
         return self.maximizeXorAndXor(*args, **kw)
