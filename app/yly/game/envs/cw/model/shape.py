@@ -8,21 +8,25 @@ class ShapeBase:
     unit_id = None
     owner = C.OWNER_NEUTRAL
 
-    def __init__(self, g):
+    def __init__(self, g, shape_type):
         from app.yly.game.envs.cw.model.world import World
 
+        self.unit_type = self.shape_type = shape_type
         self.g: World = g
 
-    def load(self, y, x, shape_type):
+    def load(self, unit_id, unit_type, hp, x, y, owner):
         self.y: int = y
         self.x: int = x
-        self.unit_type = shape_type
-        return self
-
-    def set_info(self, owner, hp, unit_id):
+        self.unit_type = unit_type
         self.owner = owner
         self.hp = hp
         self.unit_id = unit_id
+        return self
+
+    def reset(self):
+        self.unit_type = self.shape_type
+        self.owner = 2
+        self.unit_id = None
         return self
 
     def view(self):
@@ -39,7 +43,7 @@ class ShapeBase:
         return f"{self.unit_type}"
 
     def __repr__(self):
-        return f"id:{self.unit_id}, type:{self.shape_type}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}"
+        return f"id:{self.unit_id}, type:{self.view()}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}"
 
     @property
     def k(self):
@@ -58,6 +62,8 @@ class ShapeBase:
         return ret
 
     def get_dis(self, aim: "ShapeBase"):
+        if self.unit_type != C.TYPE_NULL:
+            raise Exception(self)
         return self.g.path_info[self.k].shpae_dis[aim.k]
 
     def bfs_find_action(self, player_id):

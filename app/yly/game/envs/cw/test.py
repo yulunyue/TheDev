@@ -16,12 +16,13 @@ class CwTest(TestBase):
         Util().replay(self.c)
 
     def test_debug(self):
-        self.test_base(-1)
+        self.test_base(0)
 
     def test_base(self, aim_id=-1):
         g = Util().replay(self.c, aim_id=int(aim_id)).set_player_id(0)
         logger.info(g)
-        self.expect(g.get_action(), "", g)
+        max_score, action = g.get_action()
+        self.expect(action, max_score, g)
 
 
 if __name__ == "__main__":

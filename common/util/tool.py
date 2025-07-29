@@ -131,7 +131,6 @@ GLOBAL_ADD = 0
 def auto(v=None):
     global GLOBAL_ADD
     if v is not None:
-        ret = GLOBAL_ADD = v
-    else:
-        ret, GLOBAL_ADD = GLOBAL_ADD, GLOBAL_ADD + 1
+        GLOBAL_ADD = v
+    ret, GLOBAL_ADD = GLOBAL_ADD, GLOBAL_ADD + 1
     return ret

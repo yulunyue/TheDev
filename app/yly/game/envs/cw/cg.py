@@ -9,7 +9,7 @@ class CgCw(MockCg):
 
     name = "cw"
     game_id = "72806721d45bcc88f2891a7927b73fbfa911b50b"
-    agentsIds = [-1, 2411205]
+    agentsIds = [-1, -2]
 
     def main(self):
 
@@ -42,7 +42,7 @@ class CgCw(MockCg):
             self.log(**w.to_json())
 
             # WAIT | unitId MOVE x y | unitId SHOOT target| unitId CONVERT target
-            self.output(w.get_action())
+            self.output(w.get_action()[1])
 
 
 if __name__ == "__main__":

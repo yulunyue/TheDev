@@ -14,13 +14,13 @@ class World:
         self.height = height
         self.maps = maps
         self.grid: List[List[ShapeBase]] = []
-        self.shapes: List[ShapeBase] = [ShapeBase(self) for _ in range(C.UNITS_NUM)]
-        self.cultists: List[Dict[int, ShapeBase]] = [dict(), dict(), dict()]
-        self.cult_leaders: List[ShapeBase] = [None, None]
+        self.null_shapes: List[ShapeBase] = []
         for i in range(height):
             tmp = []
             for j in range(width):
-                s = ShapeBase(self).load(i, j, maps[i][j])
+                s = ShapeBase(self, maps[i][j]).load(None, maps[i][j], None, i, j, None)
+                if s.shape_type == C.TYPE_NULL:
+                    self.null_shapes.append(s)
                 tmp.append(s)
             self.grid.append(tmp)
         self.set_shapes(shapes)
@@ -34,25 +34,18 @@ class World:
     def set_shapes(self, shapes: List[List[int]]):
         if shapes is None:
             return
+        self.cultists: List[Dict[int, ShapeBase]] = [dict(), dict(), dict()]
+        self.cult_leaders: List[ShapeBase] = [None, None]
         self.units = shapes
         self.path_info: Dict[str, Path] = dict()
+        for s in self.null_shapes:
+            s.reset()
         for unit_id, unit_type, hp, x, y, owner in shapes:
-            s = self.shapes[unit_id]
-            if s.x == -1:
-                s.load(y, x, unit_type)
-                self.grid[y][x] = s
-                self.cultists[owner][unit_id] = s
-            else:
-                if s.x != x or s.y != y:
-                    self.grid[s.y][s.x] = self.grid[y][x]
-                    self.grid[y][x].load(s.y, s.x, C.TYPE_NULL)
-                    self.grid[y][x] = s
-                    s.load(y, x, unit_type)
-                if s.owner != owner:
-                    self.cultists[owner][unit_id] = self.cultists[s.owner].pop(unit_id)
+            s = self.grid[y][x]
+            s.load(unit_id, unit_type, hp, x, y, owner)
+            self.cultists[owner][unit_id] = s
             if unit_type == C.TYPE_CULT_LEADER:
                 self.cult_leaders[owner] = s
-            s.set_info(owner, hp, unit_id)
         for g in self.cultists[self.player_id].values():
             for s in g.get_nexts_tiles():
                 if s.k in self.path_info:
@@ -61,20 +54,18 @@ class World:
 
     def get_action(self):
         max_score = None
-        best_action: Action = None
+        best_action = C.ACTION_WAIT
         for src in self.cultists[self.player_id].values():
             srcs = src.get_nexts_tiles()
             for dst in srcs:
+
                 if src.owner == dst.owner:
                     continue
-                action = Action(self, src, dst)
-                score = action.calc()
-                if score is None:
-                    continue
+                score, action = Action(self, src, dst).calc()
                 if max_score is None or score > max_score:
                     max_score = score
                     best_action = action
-        return best_action.get_action() if best_action is not None else C.ACTION_WAIT
+        return max_score, best_action
 
     def to_json(self):
         return dict(
@@ -84,7 +75,7 @@ class World:
     def __repr__(self):
 
         s = [
-            f"hp0:{self.cult_leaders[0].hp} hp1: {self.cult_leaders[1].hp}",
+            f"p0:{self.cult_leaders[0]} p1: {self.cult_leaders[1]}",
             ["#"] * (self.width + 2),
         ]
         for i, row in enumerate(self.grid):
