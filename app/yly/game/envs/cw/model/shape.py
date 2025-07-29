@@ -16,7 +16,7 @@ class ShapeBase:
     def load(self, y, x, shape_type):
         self.y: int = y
         self.x: int = x
-        self.shape_type = shape_type
+        self.unit_type = shape_type
         return self
 
     def set_info(self, owner, hp, unit_id):
@@ -26,17 +26,17 @@ class ShapeBase:
         return self
 
     def view(self):
-        if self.shape_type == C.TYPE_OBS:
+        if self.unit_type == C.TYPE_OBS:
             return "#"
-        if self.shape_type == C.TYPE_NULL:
+        if self.unit_type == C.TYPE_NULL:
             return f" "
-        if self.shape_type == 1:
+        if self.unit_type == C.TYPE_CULT_LEADER:
             return "A" if self.owner == 0 else "B"
-        if self.shape_type == C.TYPE_CULTIST:
+        if self.unit_type == C.TYPE_CULTIST:
             o = "DEC"[self.owner]
             return f"{o}"
         # print(self.shape_type)
-        return f"{self.shape_type}"
+        return f"{self.unit_type}"
 
     def __repr__(self):
         return f"id:{self.unit_id}, type:{self.shape_type}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}"
@@ -52,33 +52,36 @@ class ShapeBase:
             if y < 0 or x < 0 or y >= self.g.height or x >= self.g.width:
                 continue
             p = self.g.grid[y][x]
-            if p.shape_type == C.TYPE_OBS:
+            if p.unit_type == C.TYPE_OBS:
                 continue
             ret.append(p)
         return ret
 
-    def get_dis(self, dst: "ShapeBase"):
-        return self.g.path_info.get((self.k, dst.k))
+    def get_dis(self, aim: "ShapeBase"):
+        return self.g.path_info[self.k].shpae_dis[aim.k]
 
-    def bfs_find_action(self):
+    def bfs_find_action(self, player_id):
         q: List[ShapeBase] = [self]
         vt = dict()
         l = 0
-        info = {C.TYPE_CULT_LEADER: [], C.TYPE_CULTIST: []}
+        from .path import Path
+
+        path = Path()
         while q:
             tmp = q
             q = []
             for s in tmp:
                 for p in s.get_nexts_tiles():
-                    if p.shape_type == C.TYPE_NULL:
-                        if p.k not in vt:
-                            vt[p.k] = l
-                            q.append(p)
+                    if p.k in vt:
+                        continue
+                    vt[p.k] = l
+                    if p.unit_type == C.TYPE_NULL:
+                        q.append(p)
                     else:
-                        if p.shape_type == self.shape_type:
+                        if p.unit_type == self.unit_type:
                             continue
-                        if p.owner == self.owner:
+                        if p.owner == player_id:
                             continue
-                        info[p.unit_type].append([l, p])
+                        path.add_shape(l, p)
             l += 1
-        self.g.path_info[self.k] = info
+        return path

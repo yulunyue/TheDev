@@ -9,8 +9,9 @@ KuLulu
 python -m app.yly.game.envs.kululu.test debug
 
 gym 冰壶
-
 python -m app.yly.game.envs.bandit.test debug
+cw
+
 python -m app.yly.game.envs.cw.test debug
 
 

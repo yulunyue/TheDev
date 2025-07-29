@@ -3,6 +3,7 @@ from app.yly.game.envs.cw.model.constant import C
 from app.yly.game.envs.cw.model.action import Action
 from common.util.export import List, Dict, logger
 import random
+from .path import Path
 
 
 class World:
@@ -15,6 +16,7 @@ class World:
         self.grid: List[List[ShapeBase]] = []
         self.shapes: List[ShapeBase] = [ShapeBase(self) for _ in range(C.UNITS_NUM)]
         self.cultists: List[Dict[int, ShapeBase]] = [dict(), dict(), dict()]
+        self.cult_leaders: List[ShapeBase] = [None, None]
         for i in range(height):
             tmp = []
             for j in range(width):
@@ -33,7 +35,7 @@ class World:
         if shapes is None:
             return
         self.units = shapes
-        self.path_info = dict()
+        self.path_info: Dict[str, Path] = dict()
         for unit_id, unit_type, hp, x, y, owner in shapes:
             s = self.shapes[unit_id]
             if s.x == -1:
@@ -48,48 +50,31 @@ class World:
                     s.load(y, x, unit_type)
                 if s.owner != owner:
                     self.cultists[owner][unit_id] = self.cultists[s.owner].pop(unit_id)
+            if unit_type == C.TYPE_CULT_LEADER:
+                self.cult_leaders[owner] = s
             s.set_info(owner, hp, unit_id)
-        for s in self.shapes:
-            if s.owner == self.player_id:
-                s.bfs_find_action()
+        for g in self.cultists[self.player_id].values():
+            for s in g.get_nexts_tiles():
+                if s.k in self.path_info:
+                    continue
+                self.path_info[s.k] = s.bfs_find_action(g.owner)
 
     def get_action(self):
         max_score = None
         best_action: Action = None
         for src in self.cultists[self.player_id].values():
             srcs = src.get_nexts_tiles()
-            if src.unit_type == C.TYPE_CULTIST:
-                srcs.append(self.cult_leaders[1 - self.player_id])
             for dst in srcs:
                 if src.owner == dst.owner:
                     continue
-                a = Action(self, src, dst).calc()
-                if a.score is None:
+                action = Action(self, src, dst)
+                score = action.calc()
+                if score is None:
                     continue
-                if max_score is None or a.score > max_score:
-                    max_score = a.score
-                    best_action = a
+                if max_score is None or score > max_score:
+                    max_score = score
+                    best_action = action
         return best_action.get_action() if best_action is not None else C.ACTION_WAIT
-
-    def get_best_action(self):
-        p = self.cult_leaders[self.player_id]
-        mn = float("inf")
-        dst: ShapeBase = None
-        for n in p.get_nexts_tiles():
-            if n.shape_type == C.TYPE_CULTIST and n.owner != self.player_id:
-                return f"{p.unit_id} CONVERT {n.unit_id}"
-            nodes, dis = n.bfs_find_action()
-            if not dis:
-                continue
-            if dis[0] < mn:
-                mn = dis[0]
-                dst = n
-        if dst is None:
-            p, dst = self.cultists_get_best()
-        if dst is not None:
-            return f"{p.unit_id} MOVE {dst.x} {dst.y}"
-        # logger.map(nodes=nodes, dis=dis)
-        return "WAIT"
 
     def to_json(self):
         return dict(
@@ -97,7 +82,11 @@ class World:
         )
 
     def __repr__(self):
-        s = [["#"] * (self.width + 2)]
+
+        s = [
+            f"hp0:{self.cult_leaders[0].hp} hp1: {self.cult_leaders[1].hp}",
+            ["#"] * (self.width + 2),
+        ]
         for i, row in enumerate(self.grid):
             tmp = ["#"]
             for j, c in enumerate(row):

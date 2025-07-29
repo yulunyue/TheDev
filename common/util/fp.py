@@ -104,6 +104,18 @@ class File:
             ret[name] = pandas.read_excel(self.path, sheet_name=name).to_dict()
         return ret
 
+    def get_relative_path(self, path: str):
+        if path.startswith("/"):
+            return path
+        path_prefix = self.path.split("/")
+        p_idx = 0
+        while p_idx < len(path) and path[p_idx] == ".":
+            path_prefix.pop()
+            p_idx += 1
+        if p_idx == 0:
+            return self.path + "/" + path
+        return "/".join(path_prefix + path[p_idx:].split("/"))
+
     def dump(self):
         if self.type.startswith("xls"):
             return self.dump_excel()

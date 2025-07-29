@@ -1,3 +1,6 @@
+from common.util.tool import auto
+
+
 class Constant:
     obstacle = "obstacle"
     ACTION_WAIT = "WAIT"
@@ -16,4 +19,15 @@ class Constant:
     DR = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
 
+class ValueEnum:
+    NULL_STATE = auto(0)
+    LEADER_NEAR_SELF_CULT = auto()
+    CULT_SHOOT_OP_CULT = auto()
+    CULT_NEAR_OP_LEADER = auto()
+    LEADER_INFECT_NEUTRAL_CULT = auto()
+    CULT_SHOOT_OP_LEADER = auto()
+    LEADER_AVOID_OP_CULT = auto()
+
+
+VE = ValueEnum()
 C = Constant()

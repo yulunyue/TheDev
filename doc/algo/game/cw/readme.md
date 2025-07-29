@@ -1,2 +1,8 @@
+由于地图中每回合都有单位会移动，所以每回合都应该对自己的可移动单位用bfs更新最短路径
 策略
-先一直感染
+    LEADER_NEAR_SELF_CULT
+    CULT_SHOOT_OP_CULT
+    CULT_NEAR_OP_LEADER
+    LEADER_INFECT_NEUTRAL_CULT
+    CULT_SHOOT_OP_LEADER
+    LEADER_AVOID_OP_CULT

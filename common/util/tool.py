@@ -116,3 +116,22 @@ def merge_dict(src, dst):
 
     util(src, dst, [])
     return src, record
+
+
+def str_prefix_match(key: str, prefixs: List[str]):
+    for p in prefixs:
+        if key.startswith(p):
+            return True
+    return False
+
+
+GLOBAL_ADD = 0
+
+
+def auto(v=None):
+    global GLOBAL_ADD
+    if v is not None:
+        ret = GLOBAL_ADD = v
+    else:
+        ret, GLOBAL_ADD = GLOBAL_ADD, GLOBAL_ADD + 1
+    return ret
