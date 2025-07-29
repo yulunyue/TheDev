@@ -75,7 +75,8 @@ class World:
     def __repr__(self):
 
         s = [
-            f"p0:{self.cult_leaders[0]} p1: {self.cult_leaders[1]}",
+            f"p0: {self.cult_leaders[0]}",
+            f"p1: {self.cult_leaders[1]}",
             ["#"] * (self.width + 2),
         ]
         for i, row in enumerate(self.grid):
