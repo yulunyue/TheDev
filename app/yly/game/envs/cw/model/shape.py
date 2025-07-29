@@ -57,10 +57,14 @@ class ShapeBase:
             ret.append(p)
         return ret
 
+    def get_dis(self, dst: "ShapeBase"):
+        return self.g.path_info.get((self.k, dst.k))
+
     def bfs_find_action(self):
         q: List[ShapeBase] = [self]
         vt = dict()
         l = 0
+        info = {C.TYPE_CULT_LEADER: [], C.TYPE_CULTIST: []}
         while q:
             tmp = q
             q = []
@@ -75,5 +79,6 @@ class ShapeBase:
                             continue
                         if p.owner == self.owner:
                             continue
-                        self.g.path_info[self.k, p.k] = l
+                        info[p.unit_type].append([l, p])
             l += 1
+        self.g.path_info[self.k] = info

@@ -22,7 +22,7 @@ class World:
                 tmp.append(s)
             self.grid.append(tmp)
         self.set_shapes(shapes)
-        self.path_info = dict()
+
         return self
 
     def set_player_id(self, player_id):
@@ -33,6 +33,7 @@ class World:
         if shapes is None:
             return
         self.units = shapes
+        self.path_info = dict()
         for unit_id, unit_type, hp, x, y, owner in shapes:
             s = self.shapes[unit_id]
             if s.x == -1:
@@ -48,13 +49,12 @@ class World:
                 if s.owner != owner:
                     self.cultists[owner][unit_id] = self.cultists[s.owner].pop(unit_id)
             s.set_info(owner, hp, unit_id)
-        self.path_info.clear()
         for s in self.shapes:
             if s.owner == self.player_id:
                 s.bfs_find_action()
 
     def get_action(self):
-        max_score = float("-inf")
+        max_score = None
         best_action: Action = None
         for src in self.cultists[self.player_id].values():
             srcs = src.get_nexts_tiles()
@@ -63,8 +63,10 @@ class World:
             for dst in srcs:
                 if src.owner == dst.owner:
                     continue
-                a = Action(src, dst).calc()
-                if a.score > max_score:
+                a = Action(self, src, dst).calc()
+                if a.score is None:
+                    continue
+                if max_score is None or a.score > max_score:
                     max_score = a.score
                     best_action = a
         return best_action.get_action() if best_action is not None else C.ACTION_WAIT

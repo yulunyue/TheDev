@@ -2,12 +2,15 @@ from app.yly.game.envs.cw.model.shape import ShapeBase, C
 
 
 class Action:
-    def __init__(self, src: ShapeBase, dst: ShapeBase):
+    def __init__(self, g, src: ShapeBase, dst: ShapeBase):
+        from app.yly.game.envs.cw.model.world import World
+
+        self.g: World = g
         self.src: ShapeBase = src
         self.dst: ShapeBase = dst
 
     def calc(self):
-        self.score = 0
+        self.score = None
         if self.src.unit_type == C.TYPE_CULTIST:
             self.calc_cultist()
         else:
@@ -18,7 +21,8 @@ class Action:
         pass
 
     def calc_cult_leader(self):
-        pass
+        for node in self.g.cultists[2]:
+            self.score = [self.dst]
 
     def get_action(self):
         ans = [str(self.src.unit_id)]
