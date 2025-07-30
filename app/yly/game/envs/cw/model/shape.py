@@ -30,17 +30,20 @@ class ShapeBase:
         return self
 
     def view(self):
+        def f(s):
+            return f"{s}{self.unit_id%10}"
+
         if self.unit_type == C.TYPE_OBS:
-            return "#"
+            return "##"
         if self.unit_type == C.TYPE_NULL:
-            return f" "
+            return f"  "
         if self.unit_type == C.TYPE_CULT_LEADER:
-            return "A" if self.owner == 0 else "B"
+            return f("A" if self.owner == 0 else "B")
         if self.unit_type == C.TYPE_CULTIST:
             o = "DEC"[self.owner]
-            return f"{o}"
+            return f(o)
         # print(self.shape_type)
-        return f"{self.unit_type}"
+        return f(self.unit_type)
 
     def __repr__(self):
         return f"id:{self.unit_id}, type:{self.view()}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}"
@@ -69,7 +72,7 @@ class ShapeBase:
     def bfs_find_action(self, player_id):
         q: List[ShapeBase] = [self]
         vt = dict()
-        l = 0
+        l = 1
         from .path import Path
 
         path = Path()

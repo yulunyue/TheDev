@@ -49,10 +49,10 @@ class Action:
             op_min_shape = path.op_shapes[0]
             shoot_dis = self.get_shoot_dis(op_min_shape)
             if shoot_dis > 0:
-                return [VE.LEADER_AVOID_OP_CULT, shoot_dis]
+                return [VE.LEADER_AVOID_OP_CULT, -shoot_dis]
         if path.neutral_shapes:
             return [
-                VE.LEADER_NEAR_SELF_CULT,
+                VE.LEADER_NEAR_NEUTRAL_CULT,
                 -self.dst.get_dis(path.neutral_shapes[0]),
             ]
         return [VE.NULL_STATE]
@@ -63,12 +63,12 @@ class Action:
             ans = [C.ACTION_WAIT]
         elif dst.unit_type == C.TYPE_NULL:
             ans.extend([C.ACTION_MOVE, str(dst.x), str(dst.y)])
-        elif dst.unit_type == C.TYPE_CULT_LEADER:
-            ans.extend([C.ACTION_SHOOT, str(dst.unit_id)])
         elif (
             self.src.unit_type == C.TYPE_CULT_LEADER and dst.unit_type == C.TYPE_CULTIST
         ):
             ans.extend([C.ACTION_CONVERT, str(dst.unit_id)])
+        elif self.src.unit_type == C.TYPE_CULTIST:
+            ans.extend([C.ACTION_SHOOT, str(dst.unit_id)])
         else:
-            raise Exception(self.src, dst)
+            raise Exception(self.src, self.dst)
         return " ".join(ans)

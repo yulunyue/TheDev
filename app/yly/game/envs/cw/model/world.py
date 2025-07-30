@@ -36,6 +36,7 @@ class World:
             return
         self.cultists: List[Dict[int, ShapeBase]] = [dict(), dict(), dict()]
         self.cult_leaders: List[ShapeBase] = [None, None]
+        self.hp = [0, 0, 0]
         self.units = shapes
         self.path_info: Dict[str, Path] = dict()
         for s in self.null_shapes:
@@ -44,6 +45,7 @@ class World:
             s = self.grid[y][x]
             s.load(unit_id, unit_type, hp, x, y, owner)
             self.cultists[owner][unit_id] = s
+            self.hp[owner] += hp
             if unit_type == C.TYPE_CULT_LEADER:
                 self.cult_leaders[owner] = s
         for g in self.cultists[self.player_id].values():
@@ -75,15 +77,14 @@ class World:
     def __repr__(self):
 
         s = [
-            f"p0: {self.cult_leaders[0]}",
-            f"p1: {self.cult_leaders[1]}",
-            ["#"] * (self.width + 2),
+            f"hp0: {self.hp[0]}, hp1: {self.hp[1]}",
+            [C.WALL_S] * (self.width + 1),
         ]
         for i, row in enumerate(self.grid):
-            tmp = ["#"]
+            tmp = ["*"]
             for j, c in enumerate(row):
                 tmp.append(c.view())
-            tmp.append("#")
+            tmp.append("*")
             s.append(tmp)
-        s.append(["#"] * (self.width + 2))
+        s.append([C.WALL_S] * (self.width + 1))
         return "\n".join(["".join(r) for r in s])

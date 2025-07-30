@@ -1,4 +1,4 @@
-from common.util.tool import auto
+from common.util.tool import auto, EnumAuto
 
 
 class Constant:
@@ -17,11 +17,12 @@ class Constant:
     OWNER_PLAYER2 = 1
     TYPE_CULT_LEADER = 1
     DR = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    WALL_S = "**"
 
 
-class ValueEnum:
+class ValueEnum(EnumAuto):
     NULL_STATE = auto(0)
-    LEADER_NEAR_SELF_CULT = auto()
+    LEADER_NEAR_NEUTRAL_CULT = auto()
     CULT_SHOOT_OP_CULT = auto()
     CULT_NEAR_OP_LEADER = auto()
     LEADER_INFECT_NEUTRAL_CULT = auto()

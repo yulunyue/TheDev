@@ -10,19 +10,19 @@ class CwTest(TestBase):
         Module().compile_one(CgCw.main_py())
 
     def test_pk(self):
-        self.c.pk(Module.RUN_TMP_PATH, CgCw.game_id, CgCw.agentsIds)
+        CodingGame(CgCw.name).pk(Module.RUN_TMP_PATH, CgCw.game_id, CgCw.agentsIds)
 
     def test_replay(self):
         Util().replay(self.c)
 
     def test_debug(self):
-        self.test_base(0)
+        self.test_base(91)
 
     def test_base(self, aim_id=-1):
         g = Util().replay(self.c, aim_id=int(aim_id)).set_player_id(0)
         logger.info(g)
         max_score, action = g.get_action()
-        self.expect(action, max_score, g)
+        self.expect(action, max_score)
 
 
 if __name__ == "__main__":
