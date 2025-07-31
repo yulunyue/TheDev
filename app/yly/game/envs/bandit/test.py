@@ -30,7 +30,7 @@ class TestBan(TestBase):
         self.test_algo(EpsilonGreedy().load())
 
     def test_de(self):
-        self.test_algo(DecayingEpsilonGreedy().load(epsilon=0.1))
+        self.test_algo(DecayingEpsilonGreedy().load(epsilon=0.2))
 
     def test_ucb(self):
         self.test_algo(Ucb().load())
@@ -53,5 +53,5 @@ class TestBan(TestBase):
 
 
 if __name__ == "__main__":
-    random_seed(3)
+    # random_seed(2)
     TestBan().run()
