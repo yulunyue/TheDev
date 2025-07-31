@@ -36,20 +36,22 @@ class World(State):
 
     def set_shapes(self, shapes: str):
         self.cultists: List[Dict[int, ShapeBase]] = [dict(), dict(), dict()]
-        self.cult_leaders: List[ShapeBase] = [None, None]
         self.hp = [0, 0, 0]
         self.shapes = shapes
-        self.path_info: Dict[str, Path] = dict()
         for s in self.null_shapes:
             s.reset()
         shapes_int = [[int(v) for v in s.split(" ")] for s in shapes.split(",")]
+        nodes: List[ShapeBase] = []
         for unit_id, unit_type, hp, x, y, owner in shapes_int:
             s = self.grid[y][x]
+            nodes.append(s)
             s.load(unit_id, unit_type, hp, x, y, owner)
             self.cultists[owner][unit_id] = s
             self.hp[owner] += hp
-            if unit_type == C.TYPE_CULT_LEADER:
-                self.cult_leaders[owner] = s
+        for s in nodes:
+            s.bfs_find_action()
+            for dst in s.get_nexts_tiles():
+                dst.bfs_find_action()
         return self
 
     def get_actions(self, depth=1, **kw):
@@ -57,7 +59,7 @@ class World(State):
 
         def add_action(src, method, dst):
             a = CwAction(self, src, method, dst, self)
-            if not a.action:
+            if a.reward is None:
                 return
             self.actions[a.action] = a
 
@@ -65,11 +67,19 @@ class World(State):
             for dst in src.get_nexts_tiles():
                 if dst.unit_type == C.TYPE_NULL:
                     add_action(src, C.ACTION_MOVE, dst)
-                elif src.unit_type == C.TYPE_CULT_LEADER:
+                elif (
+                    dst.unit_type == C.TYPE_CULTIST
+                    and dst.owner == C.OWNER_NEUTRAL
+                    and src.unit_type == C.TYPE_CULT_LEADER
+                ):
                     add_action(src, C.ACTION_CONVERT, dst)
             if src.shape_type == C.TYPE_CULTIST:
-                for dst in src.get_op_shapes():
+                for dst in src.path.shapes[1 - self.player_id]:
                     add_action(src, C.ACTION_SHOOT, dst)
+                if src.path.leaders[1 - self.player_id]:
+                    add_action(
+                        src, C.ACTION_SHOOT, src.path.leaders[1 - self.player_id]
+                    )
         return self.actions
 
     def to_json(self):

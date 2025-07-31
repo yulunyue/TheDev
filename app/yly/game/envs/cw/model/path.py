@@ -4,16 +4,17 @@ from .shape import ShapeBase, C
 
 class Path:
     def __init__(self):
-        self.neutral_shapes: List[ShapeBase] = []
-        self.op_shapes: List[ShapeBase] = []
-        self.shpae_dis = dict()
-        self.op_leader: ShapeBase = None
+        self.shapes: List[List[ShapeBase]] = [[], [], []]
+        self.shpae_dis: Dict[str, int] = dict()
+        self.leaders: List[ShapeBase] = [None, None]
 
     def add_shape(self, dis, s: "ShapeBase"):
         if s.unit_type == C.TYPE_CULT_LEADER:
-            self.op_leader = s
-        elif s.owner == C.OWNER_NEUTRAL:
-            self.neutral_shapes.append(s)
+            self.leaders[s.owner] = s
         else:
-            self.op_shapes.append(s)
+            self.shapes[s.owner].append(s)
         self.shpae_dis[s.k] = dis
+
+    def get_near(self, player_id: int):
+        a = self.shapes[player_id]
+        return a[0] if a else None

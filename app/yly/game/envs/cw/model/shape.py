@@ -24,6 +24,7 @@ class ShapeBase:
         return self
 
     def reset(self):
+        self.path = None
         self.unit_type = self.shape_type
         self.owner = 2
         self.unit_id = None
@@ -65,17 +66,17 @@ class ShapeBase:
         return ret
 
     def get_dis(self, aim: "ShapeBase"):
-        if self.unit_type != C.TYPE_NULL:
-            raise Exception(self)
-        return self.g.path_info[self.k].shpae_dis[aim.k]
+        return self.path.shpae_dis[aim.k]
 
-    def bfs_find_action(self, player_id):
+    def bfs_find_action(self):
+        if self.path:
+            return
         q: List[ShapeBase] = [self]
         vt = dict()
         l = 1
         from .path import Path
 
-        path = Path()
+        self.path = Path()
         while q:
             tmp = q
             q = []
@@ -87,10 +88,5 @@ class ShapeBase:
                     if p.unit_type == C.TYPE_NULL:
                         q.append(p)
                     else:
-                        if p.unit_type == self.unit_type:
-                            continue
-                        if p.owner == player_id:
-                            continue
-                        path.add_shape(l, p)
+                        self.path.add_shape(l, p)
             l += 1
-        return path

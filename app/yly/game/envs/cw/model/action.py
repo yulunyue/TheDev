@@ -10,58 +10,36 @@ class CwAction(Action):
         self.f: ShapeBase = f
         self.t: ShapeBase = t
         self.method = method
-        self.action = self.get_action_str()
+        self.reward = self.get_reward()
+        self.action = " ".join(self.ans)
 
-    def calc(self):
-        if self.f.unit_type == C.TYPE_CULTIST:
-            ret, dst = self.calc_cultist()
-        else:
-            ret = self.calc_cult_leader()
-        return self
-
-    def calc_cultist(self):
-        path = self.g.path_info[self.dst.k]
-        if self.dst.unit_type != C.TYPE_NULL:
-            return [VE.NULL_STATE], None
-        if path.op_leader is not None:
-            if self.get_shoot_dis(path.op_leader) > 0:
-                return [VE.CULT_SHOOT_OP_LEADER], path.op_leader
-            else:
-                return [
-                    VE.CULT_NEAR_OP_LEADER,
-                    -self.dst.get_dis(path.op_leader),
-                ], self.dst
-        if path.op_shapes:
-            s = path.op_shapes[0]
-            if self.get_shoot_dis(s) > 3:
-                return [VE.CULT_SHOOT_OP_CULT], s
-        return [VE.NULL_STATE], None
-
-    def get_shoot_dis(self, s: ShapeBase):
-        dis_shot = self.dst.get_dis(s)
-        damage = C.VALUE_DAMAGE_MAX - dis_shot
-        return damage
-
-    def calc_cult_leader(self):
-        if self.dst.unit_type == C.TYPE_CULTIST:
-            return [VE.LEADER_INFECT_NEUTRAL_CULT]
-        path = self.g.path_info[self.dst.k]
-        if path.op_shapes:
-            op_min_shape = path.op_shapes[0]
-            shoot_dis = self.get_shoot_dis(op_min_shape)
-            if shoot_dis > 0:
-                return [VE.LEADER_AVOID_OP_CULT, -shoot_dis]
-        if path.neutral_shapes:
-            return [
-                VE.LEADER_NEAR_NEUTRAL_CULT,
-                -self.dst.get_dis(path.neutral_shapes[0]),
-            ]
-        return [VE.NULL_STATE]
-
-    def get_action_str(self):
-        ans = [str(self.f.unit_id), self.method]
+    def get_reward(self):
+        self.ans = [str(self.f.unit_id), self.method]
         if self.method == C.ACTION_MOVE:
-            ans.extend([str(self.t.x), str(self.t.y)])
+            self.ans.extend([str(self.t.x), str(self.t.y)])
+            if self.f.unit_type == C.TYPE_CULT_LEADER:
+                near = self.t.path.get_near(1 - self.f.owner)
+                if near and self.t.get_dis(near) <= C.VALUE_DAMAGE_MAX:
+                    return [VE.LEADER_IN_OP_CULT_RANGE]
+                near = self.t.path.get_near(2)
+                if near:
+                    return [VE.LEADER_NEAR_NEUTRAL_CULT, self.t.get_dis(near)]
+            elif self.f.unit_type == C.TYPE_CULTIST:
+                op_leader = self.t.path.leaders[1 - self.f.owner]
+                if op_leader:
+                    return [VE.CULT_NEAR_OP_LEADER, self.t.get_dis(op_leader)]
+        elif self.method == C.ACTION_SHOOT:
+            self.ans.extend([str(self.t.unit_id)])
+            if self.t.owner == 2:
+                return
+            if self.f.get_dis(self.t) >= C.VALUE_DAMAGE_MAX:
+                return
+            if self.t.unit_type == C.TYPE_CULT_LEADER:
+                return [VE.CULT_SHOOT_OP_LEADER, -self.f.get_dis(self.t)]
+            if self.t.unit_type == C.TYPE_CULTIST:
+                return [VE.CULT_SHOOT_OP_CULT, -self.f.get_dis(self.t)]
+        elif self.method == C.ACTION_CONVERT:
+            return [VE.LEADER_INFECT_NEUTRAL_CULT]
         else:
-            ans.extend([str(self.t.unit_id)])
-        return " ".join(ans)
+            self.ans = [C.ACTION_WAIT]
+            return [VE.NULL_STATE]

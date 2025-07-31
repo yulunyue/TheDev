@@ -21,7 +21,8 @@ class Constant:
 
 
 class ValueEnum(EnumAuto):
-    NULL_STATE = auto(0)
+    LEADER_IN_OP_CULT_RANGE = auto(0)
+    NULL_STATE = auto()
     LEADER_NEAR_NEUTRAL_CULT = auto()
     CULT_SHOOT_OP_CULT = auto()
     CULT_NEAR_OP_LEADER = auto()

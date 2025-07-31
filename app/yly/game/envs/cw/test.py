@@ -22,7 +22,7 @@ class CwTest(TestBase):
         ).actor([Util.ab1], len(frames))
 
     def test_debug(self):
-        self.test_base(91)
+        self.test_replay()
 
     def test_base(self, aim_id=-1):
         frames = self.c.get_cg_frames_stderror()

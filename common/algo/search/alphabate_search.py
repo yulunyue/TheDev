@@ -7,7 +7,6 @@ from common.util.export import logger, defaultdict
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
     BR_TYPE = "brutal"
-    MAX_VALUE = "max_value"
     SERACH_DFS = "search_dfs"
 
     def load(self, max_depth, cache=None, search_type=""):

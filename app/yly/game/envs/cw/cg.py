@@ -46,7 +46,7 @@ class CgCw(MockCg):
             self.log(**w.to_json())
 
             # WAIT | unitId MOVE x y | unitId SHOOT target| unitId CONVERT target
-            self.output("WAIT")
+            self.output(algo.search(w).action)
 
 
 if __name__ == "__main__":
