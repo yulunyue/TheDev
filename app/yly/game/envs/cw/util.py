@@ -2,15 +2,16 @@ from common.third_util.export import CGFrames, CodingGame
 from common.util.export import List, File
 from .cg import World, CgCw
 from .model.constant import VE
+from common.algo.search.alphabate_search import AlphaBateSearch
 
 
 class Util:
-    def get_frames(self):
-        return CodingGame(CgCw.name).get_cg_frames()
+    ab1 = AlphaBateSearch("ab1").load(1)
 
-    def replay(self, c: CodingGame, player_id=0):
+    def replay(self, player_id=0):
         idx = 0
         g = World().set_player_id(player_id)
+        c = self.get_frames()
         for f in self.get_frames():
             idx += 1
             if not f.stderr:

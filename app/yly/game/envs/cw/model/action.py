@@ -1,22 +1,23 @@
 from app.yly.game.envs.cw.model.shape import ShapeBase, C
 from .constant import VE
+from common.algo.search.state import Action
 
 
-class Action:
-    def __init__(self, g, src: ShapeBase, dst: ShapeBase):
-        from app.yly.game.envs.cw.model.world import World
+class CwAction(Action):
 
-        self.g: World = g
-        self.src: ShapeBase = src
-        self.dst: ShapeBase = dst
+    def __init__(self, src, f, method, t, dst: ShapeBase):
+        super().__init__(src, "", dst)
+        self.f: ShapeBase = f
+        self.t: ShapeBase = t
+        self.method = method
+        self.action = self.get_action_str()
 
     def calc(self):
-        dst = self.dst
-        if self.src.unit_type == C.TYPE_CULTIST:
+        if self.f.unit_type == C.TYPE_CULTIST:
             ret, dst = self.calc_cultist()
         else:
             ret = self.calc_cult_leader()
-        return ret, self.get_action(dst)
+        return self
 
     def calc_cultist(self):
         path = self.g.path_info[self.dst.k]
@@ -57,18 +58,10 @@ class Action:
             ]
         return [VE.NULL_STATE]
 
-    def get_action(self, dst: "ShapeBase"):
-        ans = [str(self.src.unit_id)]
-        if dst is None:
-            ans = [C.ACTION_WAIT]
-        elif dst.unit_type == C.TYPE_NULL:
-            ans.extend([C.ACTION_MOVE, str(dst.x), str(dst.y)])
-        elif (
-            self.src.unit_type == C.TYPE_CULT_LEADER and dst.unit_type == C.TYPE_CULTIST
-        ):
-            ans.extend([C.ACTION_CONVERT, str(dst.unit_id)])
-        elif self.src.unit_type == C.TYPE_CULTIST:
-            ans.extend([C.ACTION_SHOOT, str(dst.unit_id)])
+    def get_action_str(self):
+        ans = [str(self.f.unit_id), self.method]
+        if self.method == C.ACTION_MOVE:
+            ans.extend([str(self.t.x), str(self.t.y)])
         else:
-            raise Exception(self.src, self.dst)
+            ans.extend([str(self.t.unit_id)])
         return " ".join(ans)

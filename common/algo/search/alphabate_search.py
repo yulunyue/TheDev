@@ -7,11 +7,13 @@ from common.util.export import logger, defaultdict
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
     BR_TYPE = "brutal"
+    MAX_VALUE = "max_value"
+    SERACH_DFS = "search_dfs"
 
-    def load(self, max_depth, use_cache=False, search_type=""):
+    def load(self, max_depth, cache=None, search_type=""):
         self.max_depth = max_depth
         self.search_type = search_type
-        return super().load(use_cache=use_cache)
+        return super().load(cache=cache)
 
     def search_ab(
         self,
@@ -132,11 +134,23 @@ class AlphaBateSearch(Algo):
         dfs2(s)
         return "\n" + "\n".join(ret)
 
+    def search_max(self, s: State):
+        max_action = None
+        max_reward = None
+        for a in s.get_actions().values():
+            reward = s.get_reward(a)
+            if max_reward is None or reward > max_reward:
+                max_reward = reward
+                max_action = a
+        if max_action is not None:
+            s.set_best_action(max_action)
+
     def search_main(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
             return self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
         elif self.search_type == AlphaBateSearch.BR_TYPE:
             records = self.search_with_done(state)
-            state.set_data(records=records)
-            return
-        return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
+            return state.set_data(records=records)
+        elif self.search_type == AlphaBateSearch.SERACH_DFS:
+            return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
+        return self.search_max(state)

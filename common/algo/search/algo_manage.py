@@ -14,9 +14,15 @@ class ALgoManage:
         )
         return self
 
-    def set_init_state(self, state):
+    def set_state(self, state, pre_hander=None):
         self.state: State = state
+        self.pre_hander = pre_hander
         return self
+
+    def get_state(self, state: State, idx) -> State:
+        if self.pre_hander:
+            return self.pre_hander(state, idx)
+        return state
 
     def fight(self, pk_round=1):
         for _ in range(pk_round):
@@ -43,30 +49,35 @@ class ALgoManage:
         logger.info(s)
         return self
 
-    def actor(self, players: List[Algo], max_turn=-1):
+    def actor(self, players: List[Algo], max_turn=200):
         """
         返还输的玩家ID
         """
-        s = self.state
+
         player_idx = 0
-        rewards = [0] * len(players)
-        while not s.get_done() and max_turn != 0:
+        self.turn_idx = 0
+        s = self.state
+        self.rewards = [0] * len(players)
+        while not s.get_done() and self.turn_idx < max_turn:
+            s = self.get_state(s, self.turn_idx)
             a = players[player_idx].search(s)
             self.info(players, s)
             if a is None:
-                self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
-                return s.get_win_player(rewards, (player_idx + 1) % len(players))
-            rewards[player_idx] += a.reward
-            self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
+                self.info(players)
+                return s.get_win_player(self.rewards, (player_idx + 1) % len(players))
+            self.rewards[player_idx] = a.reward
+            self.info(players)
             player_idx = (player_idx + 1) % len(players)
-            max_turn -= 1
+            self.turn_idx += 1
             s = a.dst
         if s:
             self.info(players, s)
-            self.info(players, f"turn: {max_turn}; reward_all: {rewards};")
-        return s.get_win_player(rewards, player_idx)
+            self.info(players)
+        return s.get_win_player(self.rewards, player_idx)
 
-    def info(self, players: List[Algo], msg):
+    def info(self, players: List[Algo], msg=None):
+        if msg is None:
+            msg = f"turn: {self.turn_idx}; reward_all: {self.rewards};"
         file_name = "_pk_".join([v.get_name() for v in players])
         file_path = f"data/log/algo_pk/{self.name}/{file_name}.log"
         fp = File(file_path).get_writer()

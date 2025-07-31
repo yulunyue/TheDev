@@ -10,9 +10,9 @@ class CGFrames:
         self.stdout = stdout[:-1]
         self.gameInformation = gameInformation
         self.agent_id = agentId
-        self.stderr = dict()
+        self.stderr = None
         if stderr:
-            self.stderr.update(json.loads(stderr[:-1]))
+            self.stderr = json.loads(stderr[:-1])
         return self
 
 
@@ -62,15 +62,18 @@ class CodingGame(Api):
         )
         return ret
 
-    def get_cg_frames(self, name="play") -> List[CGFrames]:
+    def get_cg_frames(self, name="play", filter=None) -> List[CGFrames]:
         data = File(self.get_local_path(f"{name}.json")).read_file()
         ret = []
         for d in data["frames"]:
-            fr = CGFrames().load(**d)
-            if fr.agent_id == -1:
+            if filter and filter(d):
                 continue
+            fr = CGFrames().load(**d)
             ret.append(fr)
         return ret
+
+    def get_cg_frames_stderror(self, name="play") -> List[CGFrames]:
+        return self.get_cg_frames(name, filter=lambda a: a.get("stderr") is None)
 
     _log = None
 

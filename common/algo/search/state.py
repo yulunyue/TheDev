@@ -144,8 +144,8 @@ class State:
         ret.reverse()
         return "\n" + "\n".join(ret)
 
-    def get_reward(self, **kw) -> int:
-        raise Exception("todo", kw)
+    def get_reward(self, *args, **kw) -> int:
+        raise Exception("todo", args, kw)
 
     def get_max_action_reward(self):
         reward = -inf
@@ -179,5 +179,5 @@ class State:
             + [f"best_action:\n{self.best_action}", "-" * 40]
         )
 
-    def get_win_player(self):
+    def get_win_player(self, *args, **kw):
         return self.done

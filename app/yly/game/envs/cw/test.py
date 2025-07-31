@@ -2,6 +2,7 @@ from common.util.export import TestBase, logger, Module
 from common.third_util.export import CodingGame
 from app.yly.game.envs.cw.cg import CgCw, World
 from .util import Util
+from common.algo.export import ALgoManage
 
 
 class CwTest(TestBase):
@@ -13,14 +14,19 @@ class CwTest(TestBase):
         CodingGame(CgCw.name).pk(Module.RUN_TMP_PATH, CgCw.game_id, CgCw.agentsIds)
 
     def test_replay(self):
-        Util().replay(self.c)
+        frames = self.c.get_cg_frames_stderror()
+        state = World(frames[0].stderr["state"], 0)
+        ALgoManage(CgCw.name).set_state(
+            state,
+            lambda _, i: state.set_shapes(frames[i].stderr["state"].split("|").pop()),
+        ).actor([Util.ab1], len(frames))
 
     def test_debug(self):
         self.test_base(91)
 
     def test_base(self, aim_id=-1):
-        g = Util().replay(self.c, aim_id=int(aim_id)).set_player_id(0)
-        logger.info(g)
+        frames = self.c.get_cg_frames_stderror()
+        state = World(frames[0].stderr["state"], 0)
         max_score, action = g.get_action()
         self.expect(action, max_score)
 
