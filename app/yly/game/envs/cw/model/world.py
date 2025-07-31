@@ -4,9 +4,10 @@ from app.yly.game.envs.cw.model.action import Action
 from common.util.export import List, Dict, logger
 import random
 from .path import Path
+from common.algo.search.state import State
 
 
-class World:
+class World(State):
     maps = None
 
     def load(self, width=13, height=7, maps=None, shapes=None, **kw):
@@ -74,7 +75,7 @@ class World:
             width=self.width, height=self.height, maps=self.maps, shapes=self.units
         )
 
-    def __repr__(self):
+    def to_str(self):
 
         s = [
             f"hp0: {self.hp[0]}, hp1: {self.hp[1]}",

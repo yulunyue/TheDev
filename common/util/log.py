@@ -26,11 +26,16 @@ DEFAULT_FMT = "".join(
 
 class Logger(logging.Logger):
 
-    def __init__(self, name, fmt, mode="w") -> None:
+    def __init__(self, name, fmt=None, mode="w") -> None:
         super().__init__(name)
         self.cache_msgs = []
         self.cache_enable = False
         self.path = f"{LOG_DIR}/{name}"
+        File(self.path).make_dir_if_not_exist()
+        self.add_file_hander(fmt, mode)
+        self.add_hander(logging.StreamHandler(), logging.INFO)
+
+    def add_file_hander(self, fmt, mode):
         self.add_hander(
             logging.FileHandler(
                 self.path + ".log",
@@ -40,17 +45,6 @@ class Logger(logging.Logger):
             logging.INFO,
             fmt=fmt,
         )
-        self.add_hander(
-            logging.FileHandler(
-                self.path + "_debug.log",
-                mode=os.environ.get(LOGGER_MODE, mode),
-                encoding="utf-8",
-            ),
-            logging.DEBUG,
-            fmt=fmt,
-        )
-        File(self.path).make_dir_if_not_exist()
-        self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def enable_cache(self):
         self.cache_enable = True

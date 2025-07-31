@@ -11,6 +11,8 @@ from common.algo.learn.bernoulli import (
 )
 from common.algo.learn.sarse.sarse import Sarsa
 from common.algo.learn.sarse.qlearning import Qlearning
+from common.algo.learn.sarse.dyn import DynaQ
+from common.algo.learn.sarse.mcts import MctsEasy
 from common.algo.learn.dqn import Dqn
 from common.algo.search.algo_manage import ALgoManage
 from common.algo.base.math_util import sin, cos, calc_angle, Comb, solve_xyz

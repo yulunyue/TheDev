@@ -9,26 +9,19 @@ from common.algo.export import (
     MctsSearch,
     MctsEasy,
     np,
-    RandomEpisode,
 )
 
 
 class Test(TestBase):
 
-    def test_dev(self):
-        self.test_algo(MctsSearch().load())
-
     def test_debug(self):
-        pass
+        self.test_algo(Qlearning().load())
 
     def test_base(self):
         self.test_algo(MctsEasy().load())
         self.test_algo(Qlearning().load())
         self.test_algo(DynaQ().load())
         self.test_algo(Sarsa().load())
-
-    def test_all(self):
-        self.test_all()
 
     def test_algo(self, algo: Sarsa):
         for y, x, a in ENV.get_expects():

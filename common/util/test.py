@@ -53,10 +53,7 @@ class TestBase:
 
     def expect(self, a, expect_value=True, info="", stacklevel=2):
         self.ep_cont += 1
-        if not isinstance(a, list) and isinstance(expect_value, list):
-            is_eq = a in expect_value
-        else:
-            is_eq = a == expect_value or str(a) == str(expect_value)
+        is_eq = a == expect_value or str(a) == str(expect_value)
         if is_eq:
             self.ok_count += 1
             return True
