@@ -36,21 +36,7 @@ export class Select extends Div {
             this.do_change()
         })
     }
-    set_uri(uri: string) {
-        web.post(uri, {}, (node: Node) => {
-            this.option.childs = to_node(node).childs
-            this.render_child()
-        })
-        return this
-    }
-    render_child() {
-        this.clear()
-        for (var i = 0; i < this.option.childs.length; i++) {
-            let op = this.option.childs[i]
-            let so = new SeOption().set_option(op).set_value(i)
-            this.add_child(so)
-        }
-    }
+
     select(key: string) {
         if (key == null || key == undefined) {
             return this
@@ -68,13 +54,20 @@ export class Select extends Div {
 
     }
     get_value() {
-        return this.option.childs[this.el.value]
+        for (var i = 0; i < this.option.childs.length; i++) {
+            if (this.option.childs[i].key == this.el.value) {
+                return this.option.childs[i]
+            }
+        }
     }
     render_option(): void {
-        if (this.option.data.uri) {
-            this.set_uri(this.option.data.uri)
+        if (this.option.url) {
+            web.post(this.option.url, {}, (node: Node) => {
+                this.option.childs = to_node(node).childs
+                this.set_childs(this.option.childs, (v: any) => new SeOption().set_option(v))
+            })
         } else if (this.option.childs) {
-            this.render_child()
+            this.set_childs(this.option.childs, (v: any) => new SeOption().set_option(v))
         }
     }
 }

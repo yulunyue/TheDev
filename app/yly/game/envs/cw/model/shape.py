@@ -47,7 +47,8 @@ class ShapeBase:
         return f(self.unit_type)
 
     def __repr__(self):
-        return f"id:{self.unit_id}, type:{self.view()}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}"
+        return f"{self.view()},{self.hp}"
+        return f"[id:{self.unit_id}, type:{self.view()}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}]"
 
     @property
     def k(self):

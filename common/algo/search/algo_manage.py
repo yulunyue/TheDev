@@ -61,23 +61,19 @@ class ALgoManage:
         while not s.get_done() and self.turn_idx < max_turn:
             s = self.get_state(s, self.turn_idx)
             a = players[player_idx].search(s)
-            self.info(players, s)
             if a is None:
-                self.info(players)
                 return s.get_win_player(self.rewards, (player_idx + 1) % len(players))
             self.rewards[player_idx] = a.reward
-            self.info(players)
+            self.info(players, s)
             player_idx = (player_idx + 1) % len(players)
             self.turn_idx += 1
             s = a.dst
         if s:
             self.info(players, s)
-            self.info(players)
         return s.get_win_player(self.rewards, player_idx)
 
     def info(self, players: List[Algo], msg=None):
-        if msg is None:
-            msg = f"turn: {self.turn_idx}; reward_all: {self.rewards};"
+        msg = f"turn: {self.turn_idx}; reward_all: {self.rewards};{msg}"
         file_name = "_pk_".join([v.get_name() for v in players])
         file_path = f"data/log/algo_pk/{self.name}/{file_name}.log"
         fp = File(file_path).get_writer()

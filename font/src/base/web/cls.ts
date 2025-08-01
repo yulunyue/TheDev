@@ -95,7 +95,7 @@ export class Node {
     color?: string = ""
     local_storge_enable?: boolean = false
     filter_key?: string = ""
-    
+
     constructor(key?: string) {
         this.childs = []
         this.data = {}
@@ -131,8 +131,10 @@ export class Node {
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Node) {
                 this.add_child(childs[i])
-            } else {
+            } else if (childs[i] instanceof Object) {
                 this.add_child(new Node().set_option(childs[i]))
+            } else {
+                this.add_child(new Node().set_title(childs[i]).set_value(childs[i]).set_key(childs[i]))
             }
         }
         return this
@@ -150,7 +152,7 @@ export class Node {
             if (k == 'childs') {
                 this.set_childs(data[k])
             }
-            else if (data[k]) {
+            else {
                 this[k] = data[k]
             }
         }
@@ -204,7 +206,15 @@ export class Node {
         this.type = type
         return this
     }
-
+    toJSON?() {
+        return {
+            type: this.type,
+            key: this.key,
+            title: this.type,
+            value: this.value,
+            childs: this.childs.map(v => v.toJSON())
+        }
+    }
     get_title?() {
         return this.title || this.value
     }
@@ -219,7 +229,11 @@ export function to_node(n: any) {
 export function oj_to_node(oj: any) {
     let ret = new Node()
     for (var key in oj) {
-        ret.add_child(new Node().set_key(key).set_value(oj[key]))
+        if (oj[key] instanceof Object) {
+            ret.add_child(new Node().set_key(key).set_option(oj[key]))
+        } else {
+            ret.add_child(new Node().set_key(key).set_value(oj[key]))
+        }
     }
     return ret
 }

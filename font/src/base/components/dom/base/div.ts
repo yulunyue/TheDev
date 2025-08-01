@@ -236,7 +236,7 @@ export class Div {
         for (var i = 0; i < childs.length; i++) {
             let c = this.childs[i]
             if (c) {
-                c.set_option(childs[i])
+                c.set_option(childs[i]).show()
             } else {
                 this.add_child(cls().set_option(childs[i]))
             }
@@ -299,7 +299,7 @@ export class Div {
         return this
     }
     set_value(value: any) {
-        console.log(this.option.id,this.option.local_storge_enable,value)
+        // console.log(this.option.id, this.option.local_storge_enable, value)
         if (this.option.id && this.option.local_storge_enable) {
             web_dom.set_local(this.option.id, value.dump())
         }

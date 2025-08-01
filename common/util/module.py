@@ -27,6 +27,16 @@ def get_function_info(v):
         if a == "self":
             continue
         kg[a] = None
+
+    def a_help(key, default_value):
+        cls = argspec.annotations.get(key, None)
+        ret = dict(key=key, default_value=default_value, type=None)
+        if hasattr(cls, "type_info"):
+            ret.update(cls.type_info)
+        elif cls is not None:
+            ret.update(type=cls.__name__)
+        return ret
+
     from common.service.export import Node
 
     return Node(
@@ -36,7 +46,7 @@ def get_function_info(v):
             doc=v.__doc__,
             args=args,
             # annotated=str(v.__annotations__),
-            kwargs=kg,
+            kwargs={k: a_help(k, v) for k, v in kg.items()},
             # code=str(v),
         ),
     )

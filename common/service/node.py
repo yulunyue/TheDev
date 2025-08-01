@@ -1,6 +1,4 @@
-from typing import List
-from common.util.export import uid
-import json
+from common.util.export import uid, List, json, C
 
 
 class Node:
@@ -109,3 +107,18 @@ class Node:
 
     def __str__(self):
         return json.dumps(self.to_json(), indent=4, ensure_ascii=False)
+
+
+def cls_util(tp, **kw):
+    class T:
+        type_info = dict(type=tp, **kw)
+
+    return T
+
+
+def enum_cls(enums):
+    return cls_util(C.CLS_TYPE_ENUM, childs=enums)
+
+
+def search_cls(url):
+    return cls_util(C.CLS_TYPE_SEARCH, url=url)

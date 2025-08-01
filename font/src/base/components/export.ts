@@ -28,6 +28,8 @@ import Ct from "../../base/web/constant"
 DivFactory.register(Ct.DOM_TYPE_INPUT, () => new Input())
 DivFactory.register(Ct.DOM_TYPE_MERA_GRAPH, () => new MeraGraph())
 DivFactory.register(Ct.DOM_TYPE_PRE, () => new Pre())
+DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())
+DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
 export {
     Select, select, Pre, pre, FormRow as Row, text_area, TextArea, Util, web_socket, Data, Button, MeraGraph, mera_util,
     Div, div, SvgNode as Svg, svg, progress, Progress, Input, web_dom, dialog, DivFactory,

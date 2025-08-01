@@ -6,6 +6,8 @@ from common.util.export import (
     re_search,
     Module,
     File,
+    TypeVar,
+    List,
 )
 import threading
 import time
@@ -13,16 +15,31 @@ import time
 thread_local_val = threading.local()
 
 
-class TestCls:
-    def test_fun(self, a: int, b=2):
+class D:
+    def get_value(self):
         pass
+
+
+def cls_gen(info) -> TypeVar(D):
+    class C(D):
+        type_info = dict(type="select", info=info)
+
+    return C
+
+
+class TestCls:
+    def test_fun(self, a: int, c: cls_gen("xx"), b=2):
+        return a + b + c
 
 
 class TestUtil(TestBase):
     def test_fun(self):
         c = TestCls()
         info = get_function_info(c.test_fun)
-        self.expect(info.data["kwargs"], dict(a=None, b=2), "")
+        self.expect(info.data["kwargs"], dict(a=None, b=2))
+
+    def test_debug(self):
+        self.test_fun()
 
     def test_cls(self):
         self.expect(TestCls.__module__, "??")

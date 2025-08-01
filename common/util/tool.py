@@ -139,7 +139,10 @@ class EnumAuto:
                 self._format[v] = name
 
     def to_str(self, v):
-        return self._format[v]
+        try:
+            return self._format[v]
+        except Exception as e:
+            raise Exception(self._format, v)
 
 
 def auto(v=None):

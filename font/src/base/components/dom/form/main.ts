@@ -30,8 +30,13 @@ export class Form extends Div {
     }
     get_value() {
         let ret = {}
+        console.log(this)
         for (var i = 0; i < this.option.childs.length; i++) {
-            ret[this.option.childs[i].key] = (this.body.childs[i] as FormRow).container.get_value()
+            let value = (this.body.childs[i] as FormRow).container.get_value()
+            if (value == undefined) {
+                value = null
+            }
+            ret[this.option.childs[i].key] = value
         }
         return ret
     }

@@ -35,6 +35,7 @@ export class Input extends Div {
         return this
     }
     get_value() {
+        console.log(this.el.value)
         return this.el.value
     }
     get_int() {

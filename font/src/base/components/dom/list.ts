@@ -12,17 +12,17 @@ export class ListUi extends Div {
             overflowY: "auto"
         })
     }
-    filter(s:any) { 
-        this.set_option({filter_key:s})
+    filter(s: any) {
+        this.set_option({ filter_key: s })
     }
     get_row() {
-        let lb =label().set_border()
+        let lb = label().set_border()
         return lb.on_click(() => this.set_value(lb.option))
     }
     render_option(): void {
-        console.log(this.option)
-        if (this.option.childs) { 
+        if (this.option.childs) {
             let childs = this.option.childs.filter((v: Node) => v.title.indexOf(this.option.filter_key) != -1)
+            console.log(childs, this.option.childs, this.option.filter_key)
             this.set_childs(childs, () => this.get_row())
         }
     }

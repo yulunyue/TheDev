@@ -27,7 +27,7 @@ class World(State):
         for i in range(self.height):
             tmp = []
             for j in range(self.width):
-                s = ShapeBase(self, maps[i][j]).load(None, maps[i][j], None, i, j, None)
+                s = ShapeBase(self, maps[i][j]).load(None, maps[i][j], None, j, i, None)
                 if s.shape_type == C.TYPE_NULL:
                     self.null_shapes.append(s)
                 tmp.append(s)

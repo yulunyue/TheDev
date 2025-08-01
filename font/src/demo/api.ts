@@ -16,7 +16,7 @@ export class Api extends Div {
             id: URIKEYID,
             title: "APIKEY",
             type: Constant.DATA_SOURCE_DYN,
-            local_storge_enable:true
+            local_storge_enable: true
         }))
         this.exec_btn = new Button().set_html("执行")
         this.result = new Container()
@@ -39,7 +39,9 @@ export class Api extends Div {
     }
     init_event(): void {
         this.uri.on_change((src: Node, dst: Node) => {
-            this.input.set_option(oj_to_node(dst.data.kwargs))
+            let kw = oj_to_node(dst.data.kwargs)
+            console.log(kw, dst.data.kwargs)
+            this.input.set_option(kw)
         })
         this.exec_btn.on_click(() => this.execute())
     }

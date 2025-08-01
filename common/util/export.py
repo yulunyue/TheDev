@@ -5,7 +5,7 @@ from common.util.test import TestBase, logger
 from common.util.fp import File, get_cache
 from common.util.module import Module, run_catch_error
 from common.util.thread_poll import ThreadManage, ThreadExec
-from typing import List, Dict
+from typing import List, Dict, TypeVar
 from collections import defaultdict
 import functools
 import json
@@ -19,3 +19,4 @@ from common.tool.base_class.model import NumberModel, StrModel, DictModel
 from common.util.singleton_util import SingletonUtil
 import random
 from copy import deepcopy
+from ..constant import C

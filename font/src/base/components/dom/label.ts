@@ -19,7 +19,7 @@ export class Label extends Div {
         return this
     }
     render_option(): void {
-        this.set_html(this.option.title||this.option.value)
+        this.set_html(this.option.title || this.option.value)
     }
     set_change_color(color: string) {
         this.change_color = color
@@ -56,11 +56,12 @@ export class Pre extends Div {
             //padding: Constant.DEFAULT_PADDING,
 
             //textWrap: "wrap"
+            height: 1,
             overflowY: "auto"
         })
     }
     render_option() {
-        this.set_html(this.option.value)
+        this.set_html(JSON.stringify(this.option, null, 2))
     }
 }
 
