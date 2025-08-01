@@ -12,6 +12,7 @@ class CwTest(TestBase):
 
     def test_pk(self):
         CodingGame(CgCw.name).pk(Module.RUN_TMP_PATH, CgCw.game_id, CgCw.agentsIds)
+        self.test_replay()
 
     def test_replay(self):
         frames = self.c.get_cg_frames_stderror()
@@ -22,13 +23,13 @@ class CwTest(TestBase):
         ).actor([Util.ab1], len(frames))
 
     def test_debug(self):
-        self.test_replay()
+        self.test_base()
 
-    def test_base(self, aim_id=-1):
-        frames = self.c.get_cg_frames_stderror()
-        state = World(frames[0].stderr["state"], 0)
-        max_score, action = g.get_action()
-        self.expect(action, max_score)
+    def test_base(self, aim_id=1):
+        frame = self.c.get_cg_frames_stderror()[int(aim_id)]
+        s = World(frame.stderr["state"], 0)
+        a = Util.ab1.search(s)
+        self.expect(a.action, "", s)
 
 
 if __name__ == "__main__":

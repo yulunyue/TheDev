@@ -20,34 +20,32 @@ class CwAction(Action):
             self.ans.extend([str(self.t.x), str(self.t.y)])
             if self.f.unit_type == C.TYPE_CULT_LEADER:
                 self.aim = self.t.path.get_near(1 - self.f.owner)
-                if self.aim and self.t.get_dis(self.aim) <= C.VALUE_DAMAGE_MAX:
-                    return [VE.LEADER_IN_OP_CULT_RANGE]
+                if self.aim:
+                    if self.t.get_dis(self.aim) == C.VALUE_DAMAGE_MAX - 1:
+                        return [VE.LEADER_IN_OP_CULT_RANGE]
+                    # fv = self.f.get_dis(self.aim)
+                    # if fv <= self.t.get_dis(self.aim) and fv <= C.VALUE_DAMAGE_MAX:
+                    #     return [VE.LEADER_AVOID_OP_CULT]
                 self.aim = self.t.path.get_near(2)
                 if self.aim:
                     return [VE.LEADER_NEAR_NEUTRAL_CULT, -self.t.get_dis(self.aim)]
             elif self.f.unit_type == C.TYPE_CULTIST:
-                self.aim = self.t.path.get_near(1 - self.f.owner)
-                if self.aim and self.t.get_dis(self.aim) <= C.VALUE_DAMAGE_MAX:
-                    return [VE.CULT_IN_OP_CULT_RANGE]
                 self.aim = self.t.path.leaders[1 - self.f.owner]
                 if self.aim:
                     return [VE.CULT_NEAR_OP_LEADER, -self.t.get_dis(self.aim)]
+                return [VE.NULL_STATE]
         elif self.method == C.ACTION_SHOOT:
             self.ans.extend([str(self.t.unit_id)])
-            if self.t.owner == 2:
-                return
-            if self.f.get_dis(self.t) >= C.VALUE_DAMAGE_MAX:
-                return
-            if self.t.unit_type == C.TYPE_CULT_LEADER:
-                return [VE.CULT_SHOOT_OP_LEADER, -self.f.get_dis(self.t)]
-            if self.t.unit_type == C.TYPE_CULTIST:
-                return [VE.CULT_SHOOT_OP_CULT, -self.f.get_dis(self.t)]
+            if self.f.get_dis(self.t) < C.VALUE_DAMAGE_MAX:
+                if self.t.unit_type == C.TYPE_CULT_LEADER:
+                    return [VE.CULT_SHOOT_OP_LEADER, -self.f.get_dis(self.t)]
+                if self.t.unit_type == C.TYPE_CULTIST:
+                    return [VE.CULT_SHOOT_OP_CULT, -self.f.get_dis(self.t)]
         elif self.method == C.ACTION_CONVERT:
             self.ans.extend([str(self.t.unit_id)])
             return [VE.LEADER_INFECT_NEUTRAL_CULT]
-        else:
-            self.ans = [C.ACTION_WAIT]
-            return [VE.NULL_STATE]
+        self.ans = [C.ACTION_WAIT]
+        return [VE.WAIT_STATE]
 
     def __repr__(self):
         action = self.action

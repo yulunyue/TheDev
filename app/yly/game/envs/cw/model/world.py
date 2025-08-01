@@ -58,6 +58,9 @@ class World(State):
         self.actions: Dict[str, CwAction] = dict()
 
         def add_action(src, method, dst):
+            if dst is None:
+                return
+
             a = CwAction(self, src, method, dst, self)
             if a.reward is None:
                 return
@@ -73,13 +76,9 @@ class World(State):
                     and src.unit_type == C.TYPE_CULT_LEADER
                 ):
                     add_action(src, C.ACTION_CONVERT, dst)
-            if src.shape_type == C.TYPE_CULTIST:
-                for dst in src.path.shapes[1 - self.player_id]:
-                    add_action(src, C.ACTION_SHOOT, dst)
-                if src.path.leaders[1 - self.player_id]:
-                    add_action(
-                        src, C.ACTION_SHOOT, src.path.leaders[1 - self.player_id]
-                    )
+            if src.unit_type == C.TYPE_CULTIST:
+                add_action(src, C.ACTION_SHOOT, src.path.get_near(1 - self.player_id))
+                add_action(src, C.ACTION_SHOOT, src.path.leaders[1 - self.player_id])
         return self.actions
 
     def to_json(self):
