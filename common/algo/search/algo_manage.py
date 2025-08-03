@@ -14,15 +14,14 @@ class ALgoManage:
         )
         return self
 
-    def set_state(self, state, pre_hander=None):
+    def set_state(self, state):
         self.state: State = state
-        self.pre_hander = pre_hander
         return self
 
-    def get_state(self, state: State, idx) -> State:
-        if self.pre_hander:
-            return self.pre_hander(state, idx)
-        return state
+    def get_state(self, idx, dst=None) -> State:
+        if callable(self.state):
+            return self.state(idx)
+        return dst
 
     def fight(self, pk_round=1):
         for _ in range(pk_round):
@@ -56,10 +55,9 @@ class ALgoManage:
 
         player_idx = 0
         self.turn_idx = 0
-        s = self.state
+        s = self.get_state(0)
         self.rewards = [0] * len(players)
         while not s.get_done() and self.turn_idx < max_turn:
-            s = self.get_state(s, self.turn_idx)
             a = players[player_idx].search(s)
             if a is None:
                 return s.get_win_player(self.rewards, (player_idx + 1) % len(players))
@@ -67,7 +65,7 @@ class ALgoManage:
             self.info(players, s)
             player_idx = (player_idx + 1) % len(players)
             self.turn_idx += 1
-            s = a.dst
+            s = self.get_state(self.turn_idx, a.dst)
         if s:
             self.info(players, s)
         return s.get_win_player(self.rewards, player_idx)

@@ -5,9 +5,16 @@ import json
 
 class CGFrames:
     def load(
-        self, stdout="", stderr=None, agentId=None, gameInformation=None, **kw
+        self,
+        stdout="",
+        stderr=None,
+        agentId=None,
+        summary="",
+        gameInformation=None,
+        **kw,
     ) -> "CGFrames":
         self.stdout = stdout[:-1]
+        self.summary = summary.replace("\n", ",")
         self.gameInformation = gameInformation
         self.agent_id = agentId
         self.stderr = None

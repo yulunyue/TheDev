@@ -19,28 +19,36 @@ class CwAction(Action):
         if self.method == C.ACTION_MOVE:
             self.ans.extend([str(self.t.x), str(self.t.y)])
             if self.f.unit_type == C.TYPE_CULT_LEADER:
-                self.aim = self.t.path.get_near(1 - self.f.owner)
+                self.aim = self.f.path.get_near(1 - self.f.owner)
+                aim2 = self.f.path.get_near(2)
+                aim2_dis = float("inf")
+                if aim2:
+                    aim2_dis = aim2.get_dis(self.t)
                 if self.aim:
-                    if self.t.get_dis(self.aim) == C.VALUE_DAMAGE_MAX - 1:
-                        return [VE.LEADER_IN_OP_CULT_RANGE]
-                    # fv = self.f.get_dis(self.aim)
-                    # if fv <= self.t.get_dis(self.aim) and fv <= C.VALUE_DAMAGE_MAX:
-                    #     return [VE.LEADER_AVOID_OP_CULT]
-                self.aim = self.t.path.get_near(2)
-                if self.aim:
-                    return [VE.LEADER_NEAR_NEUTRAL_CULT, -self.t.get_dis(self.aim)]
+                    aim = self.f.get_shoot(self.aim)
+                    aim2 = self.t.get_shoot(self.aim)
+                    if aim and aim.owner == 1 - self.f.owner:
+                        if aim2 and aim2.owner != self.aim.owner:
+                            return [VE.LEADER_OUT_OP_CULT_RANGE, -aim2_dis]
+                        if self.t.get_abs_dis(self.aim) > self.f.get_abs_dis(self.aim):
+                            return [VE.LEADER_AWAY_OP_CULT_RANGE, -aim2_dis]
+                    if aim2 and aim2.owner == 1 - self.f.owner:
+                        return [VE.LEADER_IN_OP_CULT_RANGE, -aim2_dis]
+                self.aim = aim2
+                return [VE.LEADER_NEAR_NEUTRAL_CULT, -aim2_dis]
             elif self.f.unit_type == C.TYPE_CULTIST:
-                self.aim = self.t.path.leaders[1 - self.f.owner]
+                self.aim = self.f.path.leaders[1 - self.f.owner]
                 if self.aim:
-                    return [VE.CULT_NEAR_OP_LEADER, -self.t.get_dis(self.aim)]
+                    return [VE.CULT_NEAR_OP_LEADER, -self.aim.get_dis(self.t)]
                 return [VE.NULL_STATE]
         elif self.method == C.ACTION_SHOOT:
             self.ans.extend([str(self.t.unit_id)])
-            if self.f.get_dis(self.t) < C.VALUE_DAMAGE_MAX:
+            self.aim = self.f.get_shoot(self.t)
+            if self.aim and self.aim.unit_id == self.t.unit_id:
                 if self.t.unit_type == C.TYPE_CULT_LEADER:
-                    return [VE.CULT_SHOOT_OP_LEADER, -self.f.get_dis(self.t)]
+                    return [VE.CULT_SHOOT_OP_LEADER, -self.f.get_abs_dis(self.t)]
                 if self.t.unit_type == C.TYPE_CULTIST:
-                    return [VE.CULT_SHOOT_OP_CULT, -self.f.get_dis(self.t)]
+                    return [VE.CULT_SHOOT_OP_CULT, -self.f.get_abs_dis(self.t)]
         elif self.method == C.ACTION_CONVERT:
             self.ans.extend([str(self.t.unit_id)])
             return [VE.LEADER_INFECT_NEUTRAL_CULT]

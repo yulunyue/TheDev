@@ -9,6 +9,7 @@ from common.algo.search.state import State
 
 class World(State):
     maps = None
+    show_msgs = []
 
     def __init__(self, state: str, player_id):
         super().__init__(state, player_id)
@@ -50,8 +51,6 @@ class World(State):
             self.hp[owner] += hp
         for s in nodes:
             s.bfs_find_action()
-            for dst in s.get_nexts_tiles():
-                dst.bfs_find_action()
         return self
 
     def get_actions(self, depth=1, **kw):
@@ -86,8 +85,7 @@ class World(State):
 
     def to_str(self):
 
-        s = [
-            f"hp0: {self.hp[0]}, hp1: {self.hp[1]}",
+        s = self.show_msgs + [
             [C.WALL_S] * (self.width + 1),
         ]
         for i, row in enumerate(self.grid):

@@ -1,5 +1,6 @@
 from app.yly.game.envs.cw.model.constant import C
 from common.util.export import logger, List, defaultdict, Dict
+from .b_line_help import BM
 
 
 class ShapeBase:
@@ -47,7 +48,7 @@ class ShapeBase:
         return f(self.unit_type)
 
     def __repr__(self):
-        return f"{self.view()},{self.hp}"
+        return f"{self.view()},{self.hp},{self.y},{self.x}"
         return f"[id:{self.unit_id}, type:{self.view()}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}]"
 
     @property
@@ -67,25 +68,39 @@ class ShapeBase:
         return ret
 
     def get_dis(self, aim: "ShapeBase"):
-        return self.path.shpae_dis[aim.k]
+        return self.path.shpae_dis.get(aim.k, float("inf"))
+
+    def get_shoot(self, aim: "ShapeBase") -> "ShapeBase":
+        dis = self.get_abs_dis(aim)
+        if dis >= C.VALUE_DAMAGE_MAX:
+            return
+        for dy, dx in BM.get(aim.y - self.y, aim.x - self.x):
+            y, x = self.y + dy, self.x + dx
+            if y < 0 or y >= self.g.height or x < 0 or x >= self.g.width:
+                break
+            if self.g.grid[y][x].unit_type != C.TYPE_NULL:
+                return self.g.grid[y][x]
+
+    def get_abs_dis(self, aim: "ShapeBase"):
+        return abs(self.x - aim.x) + abs(self.y - aim.y)
 
     def bfs_find_action(self):
         if self.path:
             return
         q: List[ShapeBase] = [self]
-        vt = dict()
         l = 1
         from .path import Path
 
         self.path = Path()
+        self.path.shpae_dis[self.k] = 0
         while q:
             tmp = q
             q = []
             for s in tmp:
                 for p in s.get_nexts_tiles():
-                    if p.k in vt:
+                    if p.k in self.path.shpae_dis:
                         continue
-                    vt[p.k] = l
+                    self.path.shpae_dis[p.k] = l
                     if p.unit_type == C.TYPE_NULL:
                         q.append(p)
                     else:
