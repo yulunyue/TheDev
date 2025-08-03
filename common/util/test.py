@@ -66,3 +66,21 @@ class TestBase:
     def expect_dfs(self, src, dst, info=""):
         msg = Diff(src).compare(dst)
         return self.expect(len(msg), 0, info + "\n".join(msg), stacklevel=3)
+
+    def expect_ndarray(self, a, e, wucha=0.000001):
+        import numpy as np
+
+        if not isinstance(a, np.ndarray):
+            a = np.array(a)
+        if not isinstance(e, np.ndarray):
+            e = np.array(e)
+        if a.shape != e.shape:
+            not_equ = True
+        else:
+            not_equ = abs((a - e).min()) > wucha
+        return self.expect(
+            not_equ,
+            False,
+            info=f"shape:{a.shape}\n{a}\n!=\nshape:{e.shape}\n{e}",
+            stacklevel=3,
+        )

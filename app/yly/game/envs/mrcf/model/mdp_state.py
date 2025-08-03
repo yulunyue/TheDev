@@ -1,69 +1,59 @@
-class Mdp(Mrp):
-    def __init__(self, gamma=0.5):
-        self.S = ["s1", "s2", "s3", "s4", "s5"]  # 状态集合
-        self.K = len(self.S)
-        self.actions = [
-            "保持s1",
-            "前往s1",
-            "前往s2",
-            "前往s3",
-            "前往s4",
-            "前往s5",
-            "概率前往",
-        ]  # 动作集合
-        # 状态转移函数
-        self.P_STATE = {
-            "s1-保持s1-s1": 1.0,
-            "s1-前往s2-s2": 1.0,
-            "s2-前往s1-s1": 1.0,
-            "s2-前往s3-s3": 1.0,
-            "s3-前往s4-s4": 1.0,
-            "s3-前往s5-s5": 1.0,
-            "s4-前往s5-s5": 1.0,
-            "s4-概率前往-s2": 0.2,
-            "s4-概率前往-s3": 0.4,
-            "s4-概率前往-s4": 0.4,
-            "s5-前往s5-s5": 1.0,
-        }
-        # 奖励函数
-        self.R = {
-            "s1-保持s1": -1,
-            "s1-前往s2": 0,
-            "s2-前往s1": -1,
-            "s2-前往s3": -2,
-            "s3-前往s4": -2,
-            "s3-前往s5": 0,
-            "s4-前往s5": 10,
-            "s4-概率前往": 1,
-        }
-        self.gamma = gamma
-        self.mdp = (self.S, self.actions, self.P_STATE, self.R, gamma)
+from common.algo.search.state import np
+from common.util.export import List, Dict
+from .constant import C
 
-    def get_policy1(self):
-        return {
-            "s1-保持s1": 0.5,
-            "s1-前往s2": 0.5,
-            "s2-前往s1": 0.5,
-            "s2-前往s3": 0.5,
-            "s3-前往s4": 0.5,
-            "s3-前往s5": 0.5,
-            "s4-前往s5": 0.5,
-            "s4-概率前往": 0.5,
-            "s5-前往s5": 1,
-        }
 
-    def get_policy2(self):
-        return {
-            "s1-保持s1": 0.6,
-            "s1-前往s2": 0.4,
-            "s2-前往s1": 0.3,
-            "s2-前往s3": 0.7,
-            "s3-前往s4": 0.5,
-            "s3-前往s5": 0.5,
-            "s4-前往s5": 0.1,
-            "s4-概率前往": 0.9,
-            "s5-前往s5": 1,
-        }
+class Action:
+    def __init__(self, dst, p):
+        self.dst: "MdpState" = dst
+        self.p = p
+
+
+class Policy:
+    def __init__(self, key, reward):
+        self.key = key
+        self.reward = reward
+        self.actions: List[Action] = []
+
+    def add_action(self, dst, p):
+        self.actions.append(Action(dst, p))
+
+
+class MdpState:
+    def __init__(self, k):
+        self.k = k
+        self.policys: List[Policy] = []
+
+
+class MarkovDecisionProcess:
+    def __init__(self):
+        self.n = 5
+        self.states = [MdpState(i) for i in range(self.n)]
+
+        for k, v in C.P.items():
+            a, b, c = k.split("-")
+            key = f"{a}-{b}"
+            p = Policy(key, C.R[key])
+            p.add_action(self.states[int(c[1]) - 1], v)
+            self.states[int(a[1]) - 1].policys.append(p)
+
+    def get_mrp_form_mdp(self, pi: Dict[str, int]):
+        ans = [[0] * self.n for _ in range(self.n)]
+        for k, v in pi.items():
+            a, b = k.split("-")
+            s = self.states[int(a[1]) - 1]
+            for p in s.policys:
+                for a in p.actions:
+                    ans[s.k][a.dst.k] += a.p * v
+        return ans
+
+    def get_reawrd(self, pi):
+        ret = []
+        for s in self.states:
+            ret.append(0)
+            for p in s.policys:
+                ret[-1] += p.reward * pi[p.key]
+        return ret
 
     def use_policy(self, po):
         p = [[0 for j in range(self.K)] for i in range(self.K)]

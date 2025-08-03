@@ -31,7 +31,10 @@ class CwTest(TestBase):
         )
 
     def test_bl(self):
-        logger.info(BM.draw(1, 2), "##*\n**#")
+        logger.info(BM.draw(0, 0, 1, 2))
+        logger.info(BM.draw(1, 2, 0, 0))
+        logger.info(BM.draw(0, 2, 1, 0))
+        logger.info(BM.draw(1, 0, 0, 2))
 
     def test_debug(self):
         self.test_bl()

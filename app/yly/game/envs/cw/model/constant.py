@@ -31,11 +31,11 @@ class Constant:
     def get_cases(self):
         return {
             CASES[0]: [["0 MOVE 4 4"], ["0 MOVE 3 3"]],
-            CASES[1]: [[], ["0 MOVE 4 4", "0 MOVE 5 3"]],
+            CASES[1]: [[], ["0 MOVE 4 4", "0 MOVE 5 3", "0 MOVE 3 3"]],
             CASES[2]: [[], ["0 MOVE 2 0"]],
             CASES[3]: [[], ["0 MOVE 4 4"]],
             CASES[4]: [[], ["0 MOVE 2 3"]],
-            CASES[5]: [[], []],
+            CASES[5]: [[], ["0 MOVE 4 6"]],
         }
 
 

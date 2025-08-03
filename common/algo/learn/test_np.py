@@ -25,19 +25,6 @@ class TestNp(TestBase):
     def test_all(self):
         self.test_array()
 
-    def expect(self, a, e):
-        if not isinstance(a, np.ndarray):
-            a = np.array(a)
-        if not isinstance(e, np.ndarray):
-            e = np.array(e)
-        if a.shape != e.shape:
-            not_equ = True
-        else:
-            not_equ = abs((a - e).min()) > 0.00000001
-        return super().expect(
-            not_equ, False, info=f"{a.shape},{a}!={e.shape},{e}", stacklevel=3
-        )
-
 
 if __name__ == "__main__":
     TestNp().run()

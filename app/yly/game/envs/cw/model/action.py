@@ -25,15 +25,15 @@ class CwAction(Action):
                 if aim2:
                     aim2_dis = aim2.get_dis(self.t)
                 if self.aim:
-                    aim = self.f.get_shoot(self.aim)
-                    aim2 = self.t.get_shoot(self.aim)
-                    if aim and aim.owner == 1 - self.f.owner:
-                        if aim2 and aim2.owner != self.aim.owner:
+                    aimf = self.aim.get_shoot(self.f)
+                    aimt = self.aim.get_shoot(self.t)
+                    if aimf and aimf.unit_id == self.f.unit_id:
+                        if aimt and aimt.unit_id != self.t.unit_id:
                             return [VE.LEADER_OUT_OP_CULT_RANGE, -aim2_dis]
                         if self.t.get_abs_dis(self.aim) > self.f.get_abs_dis(self.aim):
                             return [VE.LEADER_AWAY_OP_CULT_RANGE, -aim2_dis]
-                    if aim2 and aim2.owner == 1 - self.f.owner:
-                        return [VE.LEADER_IN_OP_CULT_RANGE, -aim2_dis]
+                    if aimt and aimt.unit_id == self.t.unit_id:
+                        return [VE.LEADER_IN_OP_CULT_RANGE]
                 self.aim = aim2
                 return [VE.LEADER_NEAR_NEUTRAL_CULT, -aim2_dis]
             elif self.f.unit_type == C.TYPE_CULTIST:

@@ -78,8 +78,11 @@ class ShapeBase:
             y, x = self.y + dy, self.x + dx
             if y < 0 or y >= self.g.height or x < 0 or x >= self.g.width:
                 break
-            if self.g.grid[y][x].unit_type != C.TYPE_NULL:
-                return self.g.grid[y][x]
+            dst = self.g.grid[y][x]
+            if dst.k == aim.k:
+                return dst
+            if dst.unit_type != C.TYPE_NULL:
+                return dst
 
     def get_abs_dis(self, aim: "ShapeBase"):
         return abs(self.x - aim.x) + abs(self.y - aim.y)
