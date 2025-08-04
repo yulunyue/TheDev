@@ -1,4 +1,11 @@
 from common.util.export import Module, get_log
+from common.tool.base_class.table_base import (
+    TableBase,
+    StrModel,
+    NumberModel,
+    ConfigBase,
+    TableConfig,
+)
 
 logger = get_log("task")
 import _thread
@@ -6,22 +13,23 @@ import time
 from typing import Dict, List
 
 
-class TaskConfig:
+class TaskConfig(TableConfig):
 
-    def load(self, module_name, fun_name, root_path, args=None, wait_time=-1):
-        self.wait_time = wait_time
-        self.module_name = module_name
-        self.fun_name = fun_name
-        self.args = args or []
-        self.root_path = root_path
-        self.fun = Module().load_module(module_name, root_path, fun_name)
+    def __init__(self):
+        self.module_name = StrModel()
+        self.fun_name = StrModel()
+        self.root_path = StrModel()
+        self.args = StrModel()
+        self.wait_time = NumberModel()
+        super().__init__()
+
+    def load(self, **kw):
+        super().load(**kw)
+        self.fun = Module().load_module(self.module_name, self.root_path, self.fun_name)
         self.last_begin_t = 0
         self.last_finish_t = 0
+        self.result = None
         return self
-
-    @property
-    def key(self):
-        return self.module_name + self.fun_name
 
     def exec(self):
         t = time.time()
@@ -33,10 +41,12 @@ class TaskConfig:
         except Exception as e:
             self.result = dict(code=500, msg=str(e))
         self.last_finish_t = t
-        logger.info(f"{self.key}:{self.args}{self.result}")
+
+    def __repr__(self):
+        return f"result:{self.result}"
 
 
-class Task:
+class Task(TableBase):
 
     def __init__(self) -> None:
         self.tasks: List[TaskConfig] = []
@@ -65,4 +75,12 @@ class Task:
         _thread.start_new_thread(self.run, ())
 
 
-TASK_MANAGER = Task()
+TASK_MANAGER: Dict[str, Task] = dict()
+
+
+def get_task(name):
+    if name not in TASK_MANAGER:
+        TASK_MANAGER[name] = Task().set_model(
+            TaskConfig().set_resource(f"data/task/{name}.json")
+        )
+    return TASK_MANAGER[name]

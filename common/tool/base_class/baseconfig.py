@@ -1,39 +1,58 @@
 import json
 from common.util.fp import File
-from typing import List
+from typing import List, Dict
 
 CONFIG_SETTING_DIR = "data/setting"
 
 
 class ConfigBase:
 
-    def __init__(self, file_name, config_name) -> None:
-        self._config_name = config_name
-        self._fp = File(f"{CONFIG_SETTING_DIR}/{file_name}.json")
-        self._mtime = 0
+    def __init__(self) -> None:
         from common.tool.base_class.model import BaseModel
 
-        self._params: List[BaseModel] = []
-        self._config = dict()
+        self.fp: File = None
+        self._params: Dict[str, BaseModel] = {}
+
         self.init_param()
         self.init()
 
-    def add_param(self, param):
-        self._params.append(param)
+    def set_resource(self, path):
+        if isinstance(path, str):
+            path = File(path)
+        self.fp = path
+        self.config = dict()
+        if self.fp.exists():
+            self.config.update(self.fp.read_file())
+        return self
+
+    def save(self, data):
+        self.fp.write_file(data)
+        return self
+
+    def update_param_value(self, param, value):
+        pass
+
+    def get_param_value(self, param):
+        return param.value
+
+    def clone(self):
+        ret = self.__class__()
+        return ret
+
+    def load(self, **kw):
+        for key, value in self._params.items():
+            if key in kw:
+                value.set_value(kw[key])
+        return self
 
     def init_param(self):
         pass
 
-    def save(self):
-        self._fp.write_file(self._config)
-
     def get_config(self) -> dict:
-        if self._fp.exists():
-            self._config = self._fp.read_fast_file()
-        return self._config
+        return self.config
 
     def init(self):
-        self._config = self.get_config()
+        # self._config.update(self.get_config())
         from common.tool.base_class.model import BaseModel
 
         for key in dir(self):
@@ -42,8 +61,7 @@ class ConfigBase:
             v = getattr(self, key)
             if not isinstance(v, BaseModel):
                 continue
-            v.key = key
+            self._params[key] = v.set_key(key).set_datasource(self)
 
-    def get_key_value(self, key):
-        config = self._config.get(self._config_name, {})
-        return config.get(key, self._config.get(key))
+    def to_json(self):
+        return {v.key: v.get_value() for v in self._params.values()}

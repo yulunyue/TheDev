@@ -1,29 +1,49 @@
-from typing import List
+from typing import List, Dict
 import json
 
 
 class BaseModel:
-    def __init__(self, key, default_value=None, data_source=None) -> None:
+    def __init__(self, key=None, default_value=None, data_source=None) -> None:
         self.default_value = default_value
+        self.value = default_value
         from common.tool.base_class.baseconfig import ConfigBase
 
         self.data_source: ConfigBase = data_source
-
-        if self.data_source:
-            self.data_source.add_param(self)
         self.ops = []
+        self.title = key
         self.key = key
 
+    def set_datasource(self, data_source):
+        self.data_source = data_source
+        return self
+
+    def set_key(self, key):
+        self.key = key
+        if not self.title:
+            self.title = self.key
+        return self
+
     def get_value(self) -> str:
-        if self.data_source and self.key:
-            ret = self.data_source.get_key_value(self.key)
-            if ret is not None:
-                return ret
+        if self.data_source is not None:
+            return self.data_source.get_param_value(self)
+        if self.value is not None:
+            return self.value
         return self.default_value
 
     def set_value(self, value):
-        self.data_source.set_key_value(self.key, value)
+        if value == self.default_value:
+            return
+        self.value = value
+        if self.data_source:
+            self.data_source.update_param_value(self, value)
         return self
+
+    web_type = ""
+
+    def to_web_view(self):
+        return dict(
+            type=self.web_type, value=self.value, defaullt_value=self.default_value
+        )
 
     def __gt__(self, value):
         if isinstance(value, BaseModel):
@@ -56,8 +76,7 @@ class BaseModel:
 
 
 class StrModel(BaseModel):
-    def __init__(self, key, data_source) -> None:
-        super().__init__(key, data_source)
+    pass
 
 
 class NumberModel(BaseModel):

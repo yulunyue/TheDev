@@ -57,7 +57,7 @@ class ThreadRecord(threading.Thread):
         self._last_state = state
         return self.localtrace
 
-    def execute(self, *args, **kw):
+    def execute(self, *args, **kw) -> "ThreadRecord":
         self.state = 0
         self.args = args
         self.kw = kw
@@ -76,3 +76,21 @@ class ThreadRecord(threading.Thread):
     def log(self):
         for r in self.records:
             logger.map(**r)
+
+
+class TestRc(ThreadRecord):
+    def init(self):
+        self.a = 0
+        self.b = 0
+
+    def exec_main(self):
+        for i in range(3):
+            self.b += i
+            self.a += i
+        return self.a
+
+    def __str__(self):
+        return f"{self.a}"
+
+    def to_josn(self):
+        return dict(a=self.a, b=self.b)

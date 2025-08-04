@@ -1,23 +1,16 @@
-from common.util.export import TestBase
-from common.tool.export import Draw, ThreadRecord, OsUtil
-
-
-class TestRc(ThreadRecord):
-    def init(self):
-        self.a = 0
-        self.b = 0
-
-    def exec_main(self):
-        for i in range(3):
-            self.b += i
-            self.a += i
-        return self.a
-
-    def __str__(self):
-        return f"{self.a}"
-
-    def to_josn(self):
-        return dict(a=self.a, b=self.b)
+from common.util.export import TestBase, logger
+from common.tool.export import (
+    Draw,
+    ThreadRecord,
+    OsUtil,
+    TableBase,
+    StrModel,
+    NumberModel,
+    TableConfig,
+    TestTableConfig,
+    TestRc,
+    get_task,
+)
 
 
 class ToolTest(TestBase):
@@ -36,10 +29,23 @@ class ToolTest(TestBase):
         self.expect(b, "")
 
     def test_thread_record(self):
-
         s = TestRc().execute()
         self.expect(s.result, 3)
         self.expect(s.records, [{"a": 0, "b": 0}, {"a": 1, "b": 1}, {"a": 3, "b": 3}])
+
+    def test_table(self):
+        t = TableBase().set_model(
+            TestTableConfig().set_resource("data/setting/test_table.json")
+        )
+        t.add_row_data(a="a", b=1)
+        t.add_row_data(a="b", b=2)
+        t.save()
+        logger.info(t.to_web_view())
+
+    def test_task(self):
+        t = get_task("taskconfig")
+        t.loop()
+        t.save()
 
 
 if __name__ == "__main__":

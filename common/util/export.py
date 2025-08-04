@@ -9,7 +9,7 @@ from typing import List, Dict, TypeVar
 from collections import defaultdict
 import functools
 import json
-from common.constant import C
+from common.constant import THE_DEV_CONSTANT
 import bisect
 import math
 import traceback
@@ -19,4 +19,3 @@ from common.tool.base_class.model import NumberModel, StrModel, DictModel
 from common.util.singleton_util import SingletonUtil
 import random
 from copy import deepcopy
-from ..constant import C
