@@ -26,6 +26,7 @@ import Ct from "../../base/web/constant"
 
 
 DivFactory.register(Ct.DOM_TYPE_INPUT, () => new Input())
+DivFactory.register(Ct.DOM_TYPE_STRING, () => new Input())
 DivFactory.register(Ct.DOM_TYPE_MERA_GRAPH, () => new MeraGraph())
 DivFactory.register(Ct.DOM_TYPE_PRE, () => new Pre())
 DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())

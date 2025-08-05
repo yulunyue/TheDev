@@ -6,6 +6,8 @@ class Constant:
     WEB_VIEW_TYPE_SEARCH = "search"
     WEB_VIEW_TYPE_TABLE = "table"
     KEY_BODY = "body"
+    CODE_500 = 500
+    CODE_200 = 200
 
 
 THE_DEV_CONSTANT = Constant()

@@ -1,10 +1,11 @@
-from common.util.export import Module, get_log
+from common.util.export import Module, get_log, THE_DEV_CONSTANT
 from common.tool.base_class.table_base import (
     TableBase,
     StrModel,
     NumberModel,
     ConfigBase,
     TableConfig,
+    DictModel,
 )
 
 logger = get_log("task")
@@ -20,59 +21,58 @@ class TaskConfig(TableConfig):
         self.fun_name = StrModel()
         self.root_path = StrModel()
         self.args = StrModel()
-        self.wait_time = NumberModel()
+        self.wait_time = NumberModel(default_value=1)
+        self.last_begin_t = NumberModel(default_value=0)
+        self.last_finish_t = NumberModel(default_value=0)
+        self.result = DictModel()
         super().__init__()
 
     def load(self, **kw):
         super().load(**kw)
-        self.fun = Module().load_module(self.module_name, self.root_path, self.fun_name)
-        self.last_begin_t = 0
-        self.last_finish_t = 0
-        self.result = None
+        self.fun = Module().load_module(
+            self.module_name.get_value(),
+            self.root_path.get_value(),
+            self.fun_name.get_value(),
+        )
         return self
 
     def exec(self):
-        t = time.time()
-        if self.wait_time == -1 or t - self.last_finish_t < self.wait_time:
+        now_t = time.time()
+        if (
+            self.wait_time.get_value() == -1
+            or now_t - self.last_finish_t.get_value() < self.wait_time.get_value()
+        ):
             return
-        self.last_begin_t = t
+        self.last_begin_t.set_value(now_t)
         try:
-            self.result = self.fun(*self.args)
+            self.result.update(
+                code=THE_DEV_CONSTANT.CODE_200,
+                value=self.fun(*self.args.get_value().split(",")),
+            )
         except Exception as e:
-            self.result = dict(code=500, msg=str(e))
-        self.last_finish_t = t
+            self.result.update(code=THE_DEV_CONSTANT.CODE_500, value=str(e))
+        self.last_finish_t.set_value(time.time())
 
     def __repr__(self):
         return f"result:{self.result}"
 
 
 class Task(TableBase):
-
-    def __init__(self) -> None:
-        self.tasks: List[TaskConfig] = []
-
-    def add_task(self, **kw):
-        t = TaskConfig().load(**kw)
-        self.tasks.append(t)
-        return self
-
-    def load(self, tasks):
-        for t in tasks:
-            self.add_task(**t)
-        return self
+    body: List[TaskConfig]
 
     def loop(self):
-        for t in self.tasks:
+        for t in self.body:
             t.exec()
         return self
 
     def run(self):
         while True:
             self.loop()
-            time.sleep(1)
+            time.sleep(60)
 
     def start(self):
         _thread.start_new_thread(self.run, ())
+        return self
 
 
 TASK_MANAGER: Dict[str, Task] = dict()

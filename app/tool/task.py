@@ -1,8 +1,8 @@
 from common.tool.export import get_task
 
-PATH = "data/task/taskconfig.json"
-
 
 class TaskTool:
+    T = get_task("taskconfig").start()
+
     def query(self, **kw):
-        return get_task(PATH)
+        return

@@ -4,7 +4,6 @@ class XorBais:
         self.b = [0] * n
 
     def insert(self, x: int):
-        return
         while x:
             i = x.bit_length() - 1
             if self.b[i] == 0:

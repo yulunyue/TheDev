@@ -47,6 +47,9 @@ class ToolTest(TestBase):
         t.loop()
         t.save()
 
+    def test_debug(self):
+        self.test_task()
+
 
 if __name__ == "__main__":
     ToolTest().run()

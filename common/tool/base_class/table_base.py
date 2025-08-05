@@ -1,4 +1,4 @@
-from .model import NumberModel, BaseModel, StrModel, List, Dict
+from .model import NumberModel, BaseModel, StrModel, DictModel, List, Dict
 from .baseconfig import ConfigBase
 from ...constant import THE_DEV_CONSTANT
 

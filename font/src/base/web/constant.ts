@@ -63,6 +63,7 @@ class Constant {
     EVENT_CHANGE = "event_change"
 
     DOM_TYPE_INPUT = "input"
+    DOM_TYPE_STRING = "str"
     DOM_TYPE_MERA_GRAPH = "graph"
     DOM_TYPE_PRE = "pre"
     DOM_TYPE_ENUM = "enum"

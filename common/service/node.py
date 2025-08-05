@@ -1,4 +1,4 @@
-from common.util.export import uid, List, json, C
+from common.util.export import uid, List, json, THE_DEV_CONSTANT
 
 
 class Node:
@@ -117,8 +117,8 @@ def cls_util(tp, **kw):
 
 
 def enum_cls(enums):
-    return cls_util(C.CLS_TYPE_ENUM, childs=enums)
+    return cls_util(THE_DEV_CONSTANT.WEB_VIEW_TYPE_ENUM, childs=enums)
 
 
 def search_cls(url):
-    return cls_util(C.CLS_TYPE_SEARCH, url=url)
+    return cls_util(THE_DEV_CONSTANT.WEB_VIEW_TYPE_SEARCH, url=url)

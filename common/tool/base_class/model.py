@@ -94,19 +94,14 @@ def number(v):
 
 
 class DictModel(BaseModel):
-    def __init__(self, key, data_source) -> None:
-        super().__init__(key, data_source=data_source)
+    value: dict
 
-    def get(self, key, default_value=None) -> dict:
-        store = self.get_value()
-        if key in store:
-            return store[key]
-        return default_value
+    def __init__(self, key=None, default_value=None, data_source=None):
+        super().__init__(key, default_value or dict(), data_source)
 
-    def set(self, k, v):
-        store = self.get_value()
-        store[k] = v
-        self.data_source.save()
+    def update(self, **kw):
+        self.value.update(kw)
+        return self.set_value(self.value)
 
 
 ENABLE = "enable"
@@ -118,7 +113,7 @@ class EnableModel(BaseModel):
         super().__init__(value)
 
     def get_value(self):
-        return super().get_value() == ENABLE
+        return super().get_value().lower() in {ENABLE, "true"}
 
 
 class EncroyModel(BaseModel):
