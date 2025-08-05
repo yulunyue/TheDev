@@ -20,13 +20,13 @@ class SegTreeNode:
         self._right: SegTreeNode = None
 
     def do(self, v):
-        pass
+        raise Exception(v)
 
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
 
     def merge(self, l, r):
-        pass
+        raise Exception(l, r)
 
     def set_range(self, l, r):
         self.l = l
@@ -60,12 +60,12 @@ class SegTreeNode:
         rv = self.right.query(l, r)
         return self.merge(lv, rv)
 
-    def build(self):
+    def build(self, nums):
         if self.l == self.r:
-            self.do()
+            self.do(nums[self.l])
             return
-        self.left.build()
-        self.right.build()
+        self.left.build(nums)
+        self.right.build(nums)
         self.up()
 
     def update(self, l, r, value):

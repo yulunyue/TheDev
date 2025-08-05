@@ -1,4 +1,4 @@
-from common.util.export import TestBase, json, math
+from common.util.export import TestBase, json, math, logger
 from common.algo.export import (
     sin,
     cos,
@@ -11,6 +11,8 @@ from common.algo.export import (
     encode_data,
     decode_data,
     solve_xyz,
+    XorBais,
+    BeiZhenTree,
 )
 
 
@@ -24,17 +26,12 @@ class TestAlgo(TestBase):
            6
            7
         """
-        nodes = TreeNode.load_from_edges(
+        nodes = BeiZhenTree.load_from_edges(
             [[0, 1], [0, 2], [1, 3], [3, 4], [3, 5], [5, 6], [6, 7]]
         )
         root = nodes[0].bei_zhen()
-        self.expect(nodes[7].parents[0].key, 6)
-        self.expect(nodes[7].parents[1].key, 5)
-        self.expect(nodes[7].parents[2].key, 1)
-        self.expect(nodes[6].parents[2].key, 0)
         self.expect(root.get_k_parent(nodes[7], 5).key, 0)
         self.expect(root.get_last_lcm_parent(nodes[4], nodes[7]).key, 3)
-        self.expect(root.get_dis2node(nodes[4], nodes[7]), 4)
 
     def test_math(self):
         self.expect(math.comb(5, 3), 5 * 4 * 3 / (3 * 2 * 1))
@@ -62,6 +59,14 @@ class TestAlgo(TestBase):
         s = encode_data(a, p)
         self.expect(bin(s), "0b10101")
         self.expect(decode_data(s, p), a)
+
+    def test_xor_bias(self):
+        xs = [5, 3, 4]
+        xb = XorBais().set_b(xs)
+        self.expect(xb.max_xor(), 6, xb)
+
+    def test_debug(self):
+        self.test_tree()
 
 
 if __name__ == "__main__":

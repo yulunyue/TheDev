@@ -9,9 +9,16 @@ def load_from_edges(cls: "Node", edges):
             nodes[f] = cls(f)
         if t not in nodes:
             nodes[t] = cls(t)
-        if len(args) == 1:
-            nodes[f].out_edges[t] = Edge(nodes[f], nodes[t]).load(args[0])
-            nodes[t].out_edges[f] = Edge(nodes[t], nodes[f]).load(args[0])
+        if len(args) == 0:
+            ft = tf = 1
+        elif len(args) == 1:
+            ft = tf = args[0]
+        else:
+            ft = tf = args
+        if ft is not None:
+            nodes[f].out_edges[t] = Edge(nodes[f], nodes[t]).load(ft)
+        if tf is not None:
+            nodes[t].out_edges[f] = Edge(nodes[t], nodes[f]).load(tf)
     return nodes
 
 
@@ -29,7 +36,6 @@ class Node:
 
 class Edge:
     def __init__(self, src, dst):
-
         self.src: Node = src
         self.dst: Node = dst
 
