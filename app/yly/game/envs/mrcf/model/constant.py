@@ -61,11 +61,5 @@ class Ct:
     ]
     MDP_STATE = [-1.22555411, -1.67666232, 0.51890482, 6.0756193, 0.0]
 
-    def get_cases(self):
-        return [
-            dict(tp="mrp", method="computer", result=-2.5),
-            dict(tp="mdp", method="occu", result="?"),
-        ]
-
 
 C = Ct()

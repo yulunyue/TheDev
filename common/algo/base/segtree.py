@@ -15,12 +15,11 @@ class SegTreeNode:
     def __init__(self, idx=1) -> None:
         self.idx = idx
         self.todo = 0
-        self.value = 0
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
 
     def do(self, v):
-        raise Exception(v)
+        self.value = v
 
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
