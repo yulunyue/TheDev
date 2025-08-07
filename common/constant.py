@@ -10,4 +10,9 @@ class Constant:
     CODE_200 = 200
 
 
+class CT:
+    MOD = (10**9) + 7
+    inf = float("inf")
+
+
 THE_DEV_CONSTANT = Constant()

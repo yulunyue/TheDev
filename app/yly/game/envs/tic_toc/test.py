@@ -8,23 +8,25 @@ from .cg import TicTocCg
 
 
 class TestTicToc(TestBase):
+    def prepare(self, args=None):
+        self.c = CodingGame(TicTocCg.name)
+
     def test_cg(self, mode="submit"):
         Module().compile_one("app/yly/game/envs/tic_toc/cg.py")
-        c = CodingGame("tc")
-        if mode == "submit":
-            c.pk(Module.RUN_TMP_PATH, TicTocCg.game_id, TicTocCg.agentsIds)
-        elif mode == "replay":
-            s = TtState.new_state(C.INIT_SATTE)
-            for f in c.get_replay_json():
-                action = C.op_pos(int(f.stdout[0]), int(f.stdout[2]))
-                logger.info(s)
-                a = s.get_action(action)
-                s = a.dst
-            TicTocCg().replay(c.get_replay_json())
+        self.c.pk(Module.RUN_TMP_PATH, TicTocCg.game_id, TicTocCg.agentsIds)
+
+    def replay(self):
+        s = TtState.new_state(C.INIT_SATTE)
+        for f in c.get_replay_json():
+            action = C.op_pos(int(f.stdout[0]), int(f.stdout[2]))
+            logger.info(s)
+            a = s.get_action(action)
+            s = a.dst
+        TicTocCg().replay(c.get_replay_json())
 
     def test_actor(self):
         s = TtState.new_state(C.INIT_SATTE)
-        ans = ALgoManage().set_init_state(s).actor([Pm.ab3, Pm.ab1], max_turn=101)
+        ans = ALgoManage().set_state(s).actor([Pm.ab3, Pm.ab1], max_turn=101)
         logger.info(f"lose: {ans}")
 
     def test_search(self):
@@ -35,9 +37,7 @@ class TestTicToc(TestBase):
 
     def test_fight(self):
         s = TtState.new_state(C.INIT_SATTE)
-        ALgoManage().set_init_state(s).set_players(
-            [Pm.ab1, Pm.ab2, Pm.ab3, Pm.rd1]
-        ).fight()
+        ALgoManage().set_state(s).set_players([Pm.ab1, Pm.ab2, Pm.ab3, Pm.rd1]).fight()
 
     def test_debug(self):
         self.test_dev4()

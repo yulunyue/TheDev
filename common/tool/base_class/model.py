@@ -5,13 +5,15 @@ import json
 class BaseModel:
     def __init__(self, key=None, default_value=None, data_source=None) -> None:
         self.default_value = default_value
-        self.value = default_value
         from common.tool.base_class.baseconfig import ConfigBase
 
         self.data_source: ConfigBase = data_source
         self.ops = []
         self.title = key
         self.key = key
+
+    def clone(self):
+        return self.__class__(key=self.key, default_value=self.default_value)
 
     def set_datasource(self, data_source):
         self.data_source = data_source
@@ -26,17 +28,10 @@ class BaseModel:
     def get_value(self) -> str:
         if self.data_source is not None:
             return self.data_source.get_param_value(self)
-        if self.value is not None:
-            return self.value
         return self.default_value
 
     def set_value(self, value):
-        if value == self.default_value:
-            return
-        self.value = value
-        if self.data_source:
-            self.data_source.update_param_value(self, value)
-        return self
+        return self.data_source.update_param_value(self, value)
 
     web_type = ""
 
@@ -71,8 +66,8 @@ class BaseModel:
     def __radd__(self, value):
         return self.__add__(value)
 
-    def __str__(self) -> str:
-        return f"value:{self.value},{self.ops}"
+    def __repr__(self) -> str:
+        return f"key:{self.key}"
 
 
 class StrModel(BaseModel):
@@ -84,7 +79,7 @@ class NumberModel(BaseModel):
         try:
             return int(super().get_value())
         except Exception as e:
-            return None
+            raise e
 
 
 def number(v):

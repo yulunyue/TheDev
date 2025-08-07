@@ -1,9 +1,9 @@
-from common.mock import MockBase
+from common.mock import MockCg
 from common.algo.search.alphabate_search import AlphaBateSearch
 from app.yly.game.envs.l9.model.l9state import L9State, L9Action
 
 
-class Cgl9(MockBase):
+class Cgl9(MockCg):
     uri = ""
     game_id = ""
     agentsIds = [-1, 4820019]

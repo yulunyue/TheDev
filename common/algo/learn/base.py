@@ -32,7 +32,12 @@ class Base(Algo):
             self.rewards_record.append(self.reward_tmp_all)
             self.round += 1
         state.set_best_action(self.get_max_action(state))
-        # logger.map(round=_, reward=self.reward_tmp_all)
+        # logger.map(round=self.round, reward=self.reward_tmp_all)
+
+    def draw(self, path):
+        from common.tool.export import Draw
+
+        Draw().draw_line(self.reward_tmp_all).save(path)
 
     def run_one(self, state: State):
         state = state.reset()

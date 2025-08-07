@@ -1,16 +1,17 @@
-from common.mock import MockBase
+from common.mock import MockCg
 from common.algo.search.alphabate_search import AlphaBateSearch
 from app.yly.game.envs.tic_toc.model.ttstate import TtState
 from app.yly.game.envs.tic_toc.constant import C
 
 
-class TicTocCg(MockBase):
+class TicTocCg(MockCg):
     uri = "https://www.codingame.com/ide/puzzle/tic-tac-toe"
     game_id = "6246186678d52f83e9a2d47885d4b6f60900eed7"
     agentsIds = [
         5604295,
         -1,
     ]
+    name = "tc"
 
     def get_search(self):
         return AlphaBateSearch().load(2)

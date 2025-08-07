@@ -4,7 +4,7 @@ from app.yly.game.envs.kululu.cg import Kululu
 from app.yly.game.envs.kululu.util import Util
 
 
-class CwTest(TestBase):
+class KululuTest(TestBase):
     def test_pk(self):
         Module().compile_one(Kululu.main_py())
         CodingGame(Kululu.name).pk(

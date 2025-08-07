@@ -1,5 +1,6 @@
 from common.algo.export import Action, State
 from common.util.export import logger
+from .constant import C
 
 
 class CartAction(Action):
@@ -14,7 +15,7 @@ class CartPoleState(State):
             import gymnasium as gym
             from gymnasium.envs.classic_control.cartpole import CartPoleEnv
 
-            CartPoleState._env = gym.make("CartPole-v1", render_mode="human")
+            CartPoleState._env = gym.make("CartPole-v1", render_mode=C.render_mode)
             CartPoleState._env_ins: CartPoleEnv = CartPoleState._env.env.env.env
         if state is None:
             state, _ = CartPoleState._env.reset()

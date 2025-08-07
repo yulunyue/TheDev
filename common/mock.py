@@ -78,9 +78,5 @@ class MockCg(MockCf):
     def main_py(cls):
         return f"app/yly/game/envs/{cls.name}/cg.py"
 
-    @classmethod
-    def tmp_dir(cls):
-        return f"data/cg/{cls.name}"
-
 
 CT = Constant()

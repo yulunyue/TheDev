@@ -48,7 +48,7 @@ class ALgoManage:
         logger.info(s)
         return self
 
-    def actor(self, players: List[Algo], max_turn=200):
+    def actor(self, players: List[Algo], max_turn=4000):
         """
         返还输的玩家ID
         """

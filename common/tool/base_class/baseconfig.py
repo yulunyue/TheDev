@@ -3,65 +3,62 @@ from common.util.fp import File
 from typing import List, Dict
 
 CONFIG_SETTING_DIR = "data/setting"
+from common.tool.base_class.model import BaseModel, StrModel
 
 
 class ConfigBase:
+    _params_cls_map: Dict[str, BaseModel] = None
 
-    def __init__(self) -> None:
-        from common.tool.base_class.model import BaseModel
+    def __init__(self, key):
+        self.key = key
+        self.params = dict()
+        for k, v in self._params_cls_map.items():
+            c = v.clone().set_datasource(self).set_key(k)
+            setattr(self, k, c)
+            self.params[k] = c
 
-        self.fp: File = None
-        self._params: Dict[str, BaseModel] = {}
-
-        self.init_param()
-        self.init()
-
-    def set_resource(self, path):
-        if isinstance(path, str):
-            path = File(path)
-        self.fp = path
-        self.config = dict()
-        if self.fp.exists():
-            self.config.update(self.fp.read_file())
+    def set_resource(self, resource):
+        self.resource = resource
         return self
 
-    def save(self, data):
-        self.fp.write_file(data)
-        return self
+    def __new__(cls, *args) -> None:
+        cls.init_param()
+        return super().__new__(cls)
+
+    @classmethod
+    def get_params(cls):
+        if cls._params_cls_map is None:
+            cls.init_param()
+        return cls._params_cls_map
+
+    @classmethod
+    def get_default_conifg(cls):
+        return dict()
 
     def update_param_value(self, param, value):
-        pass
+        return self.resource.update_param_value(self, param, value)
 
     def get_param_value(self, param):
-        return param.value
+        return self.resource.get_param_value(self, param)
 
-    def clone(self):
-        ret = self.__class__()
-        return ret
-
-    def load(self, **kw):
-        for key, value in self._params.items():
-            if key in kw:
-                value.set_value(kw[key])
+    def update(self, **kw):
+        for k, v in kw.items():
+            self.params[k].set_value(v)
         return self
 
-    def init_param(self):
-        pass
-
-    def get_config(self) -> dict:
-        return self.config
-
-    def init(self):
+    @classmethod
+    def init_param(cls):
         # self._config.update(self.get_config())
         from common.tool.base_class.model import BaseModel
 
-        for key in dir(self):
+        cls._params_cls_map = dict()
+        for key in dir(cls):
             if key.startswith("_"):
                 continue
-            v = getattr(self, key)
+            v = getattr(cls, key)
             if not isinstance(v, BaseModel):
                 continue
-            self._params[key] = v.set_key(key).set_datasource(self)
+            cls._params_cls_map[key] = v.set_key(key)
 
     def to_json(self):
         return {v.key: v.get_value() for v in self._params.values()}

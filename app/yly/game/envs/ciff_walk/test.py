@@ -12,7 +12,7 @@ from common.algo.export import (
 )
 
 
-class Test(TestBase):
+class CfTest(TestBase):
 
     def test_debug(self):
         self.test_algo(Qlearning().load())
@@ -42,4 +42,4 @@ class Test(TestBase):
 
 if __name__ == "__main__":
     random_seed(0)
-    Test().run()
+    CfTest().run()

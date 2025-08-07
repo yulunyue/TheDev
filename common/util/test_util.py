@@ -8,6 +8,7 @@ from common.util.export import (
     File,
     TypeVar,
     List,
+    Generic,
 )
 import threading
 import time
@@ -32,9 +33,18 @@ class TestCls:
         return a + b + c
 
 
+T = TypeVar("T")
+
+
+class Stack(Generic[T]):
+    items: List[T]
+
+
 class TestUtil(TestBase):
     def test_fun(self):
         c = TestCls()
+        a = get_function_info(Stack[int])
+        logger.info(a)
         info = get_function_info(c.test_fun)
         self.expect(info.data["kwargs"], dict(a=None, b=2))
 

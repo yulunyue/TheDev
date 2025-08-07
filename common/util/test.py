@@ -10,6 +10,8 @@ TEST_FN_PREFIX = "test_"
 
 
 class TestBase:
+    TEST_EMABLE = True
+
     def __init__(self) -> None:
         self.prepare()
 
@@ -84,3 +86,6 @@ class TestBase:
             info=f"shape:{a.shape}\n{a}\n!=\nshape:{e.shape}\n{e}",
             stacklevel=3,
         )
+
+    def get_temp_file(self, name):
+        return f"data/test/{self.__class__.__name__}/{name}"

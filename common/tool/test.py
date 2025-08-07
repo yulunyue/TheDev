@@ -7,10 +7,15 @@ from common.tool.export import (
     StrModel,
     NumberModel,
     TableConfig,
-    TestTableConfig,
+    ConfigBase,
     TestRc,
     get_task,
 )
+
+
+class TestTableConfig(TableConfig):
+    a = StrModel()
+    b = NumberModel()
 
 
 class ToolTest(TestBase):
@@ -33,14 +38,15 @@ class ToolTest(TestBase):
         self.expect(s.result, 3)
         self.expect(s.records, [{"a": 0, "b": 0}, {"a": 1, "b": 1}, {"a": 3, "b": 3}])
 
-    def test_table(self):
-        t = TableBase().set_model(
-            TestTableConfig().set_resource("data/setting/test_table.json")
-        )
-        t.add_row_data(a="a", b=1)
-        t.add_row_data(a="b", b=2)
+    def test_config(self):
+        t = TableBase[TestTableConfig]().set_resource("data/setting/test_table.json")
+        m = t.insert("a")
+        self.expect(m.b.get_value(), 1)
+        m.update(b=2)
+        self.expect(m.b.get_value(), 2)
+        m.b.set_value(1)
+        self.expect(m.b.get_value(), 1)
         t.save()
-        logger.info(t.to_web_view())
 
     def test_task(self):
         t = get_task("taskconfig")
@@ -48,7 +54,7 @@ class ToolTest(TestBase):
         t.save()
 
     def test_debug(self):
-        self.test_task()
+        self.test_config()
 
 
 if __name__ == "__main__":

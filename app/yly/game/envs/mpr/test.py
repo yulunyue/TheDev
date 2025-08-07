@@ -4,7 +4,7 @@ from app.yly.game.envs.mpr.cg import Mpr
 from app.yly.game.envs.mpr.util import Util
 
 
-class CwTest(TestBase):
+class MprTest(TestBase):
     def test_cg(self, mode):
         Module().compile_one(Mpr.main_py())
         File(Module.RUN_TMP_PATH).replace({"MOCK_MODE": mode})
@@ -18,4 +18,4 @@ class CwTest(TestBase):
 
 
 if __name__ == "__main__":
-    CwTest().run()
+    MprTest().run()

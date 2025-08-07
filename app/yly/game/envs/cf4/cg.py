@@ -2,10 +2,11 @@ from common.algo.search.alphabate_search import AlphaBateSearch
 from typing import List
 import json
 import sys
-from common.mock import MockBase
+from common.mock import MockCg
 
 
-class CgMuiltCf4(MockBase):
+class CgMuiltCf4(MockCg):
+    name = "cf4"
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
     agentsIds = [-1, 4820019]

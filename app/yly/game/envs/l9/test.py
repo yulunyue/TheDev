@@ -51,7 +51,7 @@ class TestL9(TestBase):
     def test_pk(self, algo1: Algo, algo2: Algo, s: L9State):
         ans = (
             ALgoManage("l9")
-            .set_init_state(s)
+            .set_state(s)
             .actor([get_player(algo1), get_player(algo2)], max_turn=200)
         )
         logger.info(ans)

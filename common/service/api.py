@@ -4,29 +4,30 @@ from common.util.export import (
     File,
     get_cache,
     hash_any,
-    ConfigBase,
-    StrModel,
-    DictModel,
-    NumberModel,
     SingletonUtil,
     ThreadManage,
 )
+from common.tool.export import NumberModel, StrModel, ConfigBase, TableBase, DictModel
 import urllib3
 
 urllib3.disable_warnings()
 logger = get_log("api")
 
 
-class Api(SingletonUtil):
+class ApiConfig(ConfigBase):
+    endpoint = StrModel()
+    cookie = DictModel()
+    proxy = DictModel()
+    timeout = NumberModel()
+
+
+class Api:
     CONTENT_TYPE = "content-type"
     APPLICATION_JSON = "application/json;charset=UTF-8"
 
     def __init__(self):
-        self.config = ConfigBase("api", self.__class__.__name__)
-        self.endpoint = StrModel("endpoint", self.config)
-        self.cookie = DictModel("cookie", self.config)
-        self.proxy = DictModel("proxy", self.config)
-        self.timeout = NumberModel("timeout", 10, self.config)
+        self.name = self.__class__.__name__
+        self.c = TableBase[ApiConfig]().set_resource("api")
         self.cache = None
 
     def set_cache(self, cache=None):
@@ -70,7 +71,7 @@ class Api(SingletonUtil):
         return ret
 
     def get_proxy(self):
-        return self.proxy.get_value()
+        return self.c.get(self.name).proxy.get_value()
 
     def get_mock_data(self, uri, method, param):
         k = method + "|" + hash_any(uri) + "|" + hash_any(param)
@@ -79,7 +80,7 @@ class Api(SingletonUtil):
         return k, None
 
     def get_timeout(self):
-        return self.timeout.get_value()
+        return self.c.get(self.name).timeout.get_value()
 
     def http(self, method, path, data=None, headers=None, param=None):
         if headers is None:
@@ -93,7 +94,9 @@ class Api(SingletonUtil):
         key, mock_res = self.get_mock_data(path, method, data or param)
         if mock_res:
             return mock_res
-        logger.info(f"DO HTTP [{method}] {uri}")
+        proxies = self.get_proxy()
+        timeout = self.get_timeout()
+        logger.info(f"DO HTTP [{method}] {uri} {proxies} {timeout}")
         params = dict()
         if method == "GET":
             params.update(dict(params=data))
@@ -102,15 +105,15 @@ class Api(SingletonUtil):
                 params.update(dict(params=param))
             if data is not None:
                 params.update(dict(json=data))
-        cookies = self.cookie.get_value() or {}
+        cookies = self.c.get(self.name).cookie.get_value() or {}
         res: requests.Response = requests.request(
             url=uri,
             headers=headers,
             verify=False,
             cookies=cookies,
-            timeout=self.get_timeout(),
+            timeout=timeout,
             method=method,
-            proxies=self.get_proxy(),
+            proxies=proxies,
             **params,
         )
         if res.status_code <= 300:

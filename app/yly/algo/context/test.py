@@ -20,7 +20,6 @@ def get_ins(file_name):
 
 
 class LCTest(TestBase):
-    uri = "https://leetcode.cn"
 
     def test_cases(self, file_name, fun_name="execute", case_idx=None):
         ins: MockCf = get_ins(file_name)
@@ -39,6 +38,9 @@ class LCTest(TestBase):
                 ins.log()
             msg = f"{cases[cid]}\nlogger:\n{logger.get_and_clear_cache()}"
             self.expect(r, except_result, msg)
+
+    def test_debug(self):
+        self.test_cases("lg_p3179")
 
 
 if __name__ == "__main__":

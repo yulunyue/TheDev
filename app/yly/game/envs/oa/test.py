@@ -4,7 +4,7 @@ from common.algo.export import AlphaBateSearch, ALgoManage, Algo
 from app.yly.game.envs.oa.cg import CgOa, Rooms, C, PM
 
 
-class CwTest(TestBase):
+class OaTest(TestBase):
     def test_cg(self):
         Module().compile_one("app/yly/game/envs/oa/cg.py")
         CodingGame(CgOa.name).pk(Module.RUN_TMP_PATH, CgOa.game_id, CgOa.agentsIds)
@@ -33,16 +33,14 @@ class CwTest(TestBase):
         self.test_fight()
 
     def test_fight(self):
-        ALgoManage(CgOa.name).set_players(
-            [PM.ab1, PM.ab2, PM.ab3, PM.ab4]
-        ).set_init_state(Rooms.new(C.INIT_MASK)).fight()
+        ALgoManage(CgOa.name).set_players([PM.ab1, PM.ab2, PM.ab3, PM.ab4]).set_state(
+            Rooms.new(C.INIT_MASK)
+        ).fight()
 
     def test_pk(self):
         players = [PM.ab1, PM.ab2]
         win_idx = (
-            ALgoManage(CgOa.name)
-            .set_init_state(Rooms.new(C.INIT_MASK))
-            .actor(players, 200)
+            ALgoManage(CgOa.name).set_state(Rooms.new(C.INIT_MASK)).actor(players, 200)
         )
         logger.map(win_idx=win_idx)
 

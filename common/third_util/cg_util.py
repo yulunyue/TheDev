@@ -46,9 +46,6 @@ class CodingGame(Api):
         File(tmp_path).write_file(ret)
         return ret
 
-    def get_timeout(self):
-        return 30
-
     def submit(self, file_path, game_id):
         return self.execute(file_path, game_id, play_type="submit")
 

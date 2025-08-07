@@ -15,7 +15,9 @@ class F4State(State):
         #
 
     @classmethod
-    def new_state(cls, state):
+    def new_state(cls, state=None):
+        if state is None:
+            state = C.init_masks[C.GRID_ENV]
         if state not in F4State.STATE_STORE:
             F4State.STATE_STORE[state] = F4State(state).load()
         return F4State.STATE_STORE[state]
