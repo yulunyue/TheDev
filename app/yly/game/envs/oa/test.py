@@ -10,6 +10,7 @@ class OaTest(TestBase):
         CodingGame(CgOa.name).pk(Module.RUN_TMP_PATH, CgOa.game_id, CgOa.agentsIds)
 
     def test_base(self):
+        """ """
         r = Rooms.new(C.INIT_MASK).get_action(2).dst
 
         # a = AlphaBateSearch().search(r)
@@ -29,8 +30,10 @@ class OaTest(TestBase):
         s = Rooms.new_room(0, s2)
         self.expect(s.boards, s2, s)
 
-    def test_debug(self):
-        self.test_fight()
+    def test_dev2(self):
+        s = Rooms.new(78401807947313188929)
+        a = s.get_action(5)
+        self.expect(a.reward, 9, f"{s}\n{a}\n{a.dst}")
 
     def test_fight(self):
         ALgoManage(CgOa.name).set_players([PM.ab1, PM.ab2, PM.ab3, PM.ab4]).set_state(
@@ -48,6 +51,9 @@ class OaTest(TestBase):
         s = Rooms.new(74939897936884006912)
         self.expect(list(s.get_actions().keys()), [5], s)
 
+    def test_debug(self):
+        self.test_dev2()
+
 
 if __name__ == "__main__":
-    CwTest().run()
+    OaTest().run()

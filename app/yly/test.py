@@ -26,8 +26,10 @@ class YlyTest:
         for k, v in LOCALS.items():
             if k.startswith("_") or getattr(v, "TEST_EMABLE", False) == False:
                 continue
+            if k == "TestBase":
+                continue
             if k not in record:
-                record[k] = dict(run_num=0, user_time=0, err_msg="")
+                record[k] = dict(run_num=0, user_time=0, err_msg="", args="debug")
             if record[k]["err_msg"]:
                 test_has_error.append(k)
             else:
@@ -37,14 +39,21 @@ class YlyTest:
         idx = random.randint(0, len(tests) - 1)
         logger.info(tests[idx])
         instance: TestBase = LOCALS[tests[idx]]()
-        record[tests[idx]]["err_msg"] = ""
+        r = record[tests[idx]]
+        r["err_msg"] = ""
+        args = r.get("args", "debug")
         try:
-            record[tests[idx]]["run_num"] += 1
-            instance.run("debug")
+            instance.run_all_test()
+            r["run_num"] += 1
         except Exception as e:
-            record[tests[idx]]["err_msg"] = str(e)
+            r["err_msg"] = str(e)
             raise Exception(instance, e)
         finally:
+            module_path = str(LOCALS[tests[idx]]).split(" '").pop().split("'")[0]
+            module_paths = module_path.split(".")
+            module_paths.pop()
+            path = ".".join(module_paths)
+            logger.info(f"python3 -m {path} {args}")
             fp.write_file(record)
 
 

@@ -164,4 +164,3 @@ font/package-lock.json
 .vscode
 *.out
 font/src/demo/secmaster
-doc/secmaster

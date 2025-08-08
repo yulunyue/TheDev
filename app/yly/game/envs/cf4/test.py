@@ -14,15 +14,15 @@ class C4Test(TestBase):
     def prepare(self, args=None):
         self.c = CodingGame(CgMuiltCf4.name)
 
-    def test_cgplay(self):
+    def cg_play(self):
         Module().compile_one(CgMuiltCf4.main_py())
         CodingGame("cf4").pk(
             Module.RUN_TMP_PATH, CgMuiltCf4.game_id, CgMuiltCf4.agentsIds
         )
-        self.test_cgplay()
+        self.cg_replay()
 
-    def test_cgreplay(self):
-        ALgoManage().set_state(F4State.new_state()).actor([Pm.ab1])
+    def cg_replay(self):
+        ALgoManage(CgMuiltCf4.name).set_state(F4State.new_state()).actor([Pm.ab1])
 
     def test_dev2(self):
         s = F4State.new_state()
@@ -35,7 +35,7 @@ class C4Test(TestBase):
         logger.info(s)
 
     def test_debug(self):
-        self.test_cgplay()
+        pass
 
 
 if __name__ == "__main__":

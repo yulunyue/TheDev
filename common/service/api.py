@@ -136,3 +136,11 @@ class Api:
 
     def parse(self, value):
         return value
+
+    _ins = None
+
+    @classmethod
+    def ins(cls):
+        if cls._ins is None:
+            cls._ins = cls().set_cache()
+        return cls._ins

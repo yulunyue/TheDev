@@ -168,7 +168,7 @@ class Cache:
     def exists(self, key):
         return key in self.store
 
-    def flush(self):
+    def save(self):
         self.fp.write_file(self.store)
         return self
 

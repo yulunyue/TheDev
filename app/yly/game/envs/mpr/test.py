@@ -5,12 +5,12 @@ from app.yly.game.envs.mpr.util import Util
 
 
 class MprTest(TestBase):
-    def test_cg(self, mode):
+    def cg_play(self, mode):
         Module().compile_one(Mpr.main_py())
         File(Module.RUN_TMP_PATH).replace({"MOCK_MODE": mode})
         CodingGame(Mpr.name).pk(Module.RUN_TMP_PATH, Mpr.game_id, Mpr.agents_ids)
 
-    def test_show(self, mode):
+    def show(self, mode):
         Util().show(CodingGame(Mpr.name).get_cg_frames(), mode)
 
     def test_debug(self):

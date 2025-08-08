@@ -12,3 +12,6 @@ class F4Action(Action):
         self.action = action
         self.src: "F4State" = src
         self.dst: "F4State" = dst
+
+    def get_reward(self, *args, **kw):
+        return self.dst.get_reward()

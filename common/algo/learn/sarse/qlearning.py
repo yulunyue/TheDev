@@ -11,13 +11,14 @@ class Qlearning(Base):
         return self.take_action(a.dst)
 
     def q_learning(self, a0: Action):
-        actions_value = [a.value for a in a0.dst.get_actions().values()]
+        actions_value = [a.get_reward() for a in a0.dst.get_actions().values()]
         if actions_value:
             action_value = max(actions_value)
         else:
             action_value = 0
-        td_error = a0.reward + self.gamma * action_value - a0.value
-        a0.value += self.alpha * td_error
+        a0_value = a0.get_data("value", 0)
+        td_error = a0.reward + self.gamma * action_value - a0_value
+        a0.set_data("value", a0_value + self.alpha * td_error)
 
     def update_action(self, a0):
         self.q_learning(a0)

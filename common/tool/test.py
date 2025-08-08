@@ -51,7 +51,7 @@ class ToolTest(TestBase):
     def test_task(self):
         t = get_task("taskconfig")
         t.loop()
-        t.save()
+        t.source.save()
 
     def test_debug(self):
         self.test_config()

@@ -32,7 +32,7 @@ class TableBase(Generic[T]):
             fp = File(f"data/setting/{fp}.json")
         self.fp = fp
         self.config = dict()
-        self.instance_map = dict()
+        self.instance_map: Dict[str, ConfigBase] = dict()
         if self.fp.exists():
             self.config.update(self.fp.read_file())
         else:
@@ -45,10 +45,11 @@ class TableBase(Generic[T]):
     def get_body(self):
         return [b.to_json() for b in self.filter()]
 
-    def filter(self):
+    def filter(self) -> List[T]:
         ret = []
-        for s in self.body:
-            ret.append(s)
+        for k in self.config.keys():
+            v = self.get(k)
+            ret.append(v)
         return ret
 
     def to_web_view(self, **kw):
@@ -58,7 +59,8 @@ class TableBase(Generic[T]):
         )
 
     def insert(self, id, **kw) -> T:
-        return self.get(id).update(**kw)
+        r: ConfigBase = self.get(id)
+        return r.update(**kw)
 
     def get(self, key) -> T:
         if key in self.instance_map:
@@ -67,8 +69,8 @@ class TableBase(Generic[T]):
             config = self.config[key]
         else:
             config = self._concrete_type.get_default_conifg()
-        self.instance_map[key] = self._concrete_type(key).set_resource(self)
-        self.instance_map[key].update(**config)
+        self.instance_map[key] = self._concrete_type(key)
+        self.instance_map[key].set_resource(self).update(**config)
         return self.instance_map[key]
 
     def save(self):

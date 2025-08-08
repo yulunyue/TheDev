@@ -12,7 +12,6 @@ class F4State(State):
         self.board, self.shape, player_id = C.mask_decode(state)
         self.g = Grid.new(self.shape)
         super().__init__(state, player_id=player_id, depth=0)
-        #
 
     @classmethod
     def new_state(cls, state=None):

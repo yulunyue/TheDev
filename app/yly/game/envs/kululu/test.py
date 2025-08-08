@@ -1,23 +1,32 @@
 from common.util.export import TestBase, logger, Module
+from common.algo.export import ALgoManage
 from common.third_util.export import CodingGame
 from app.yly.game.envs.kululu.cg import Kululu
-from app.yly.game.envs.kululu.util import Util
+from app.yly.game.envs.kululu.util import Pm
+from .model.grid import Grid
 
 
 class KululuTest(TestBase):
-    def test_pk(self):
-        Module().compile_one(Kululu.main_py())
-        CodingGame(Kululu.name).pk(
-            Module.RUN_TMP_PATH, Kululu.game_id, Kululu.agentsIds
-        )
+    def prepare(self, args=None):
+        self.c = CodingGame(Kululu.name)
 
-    def test_replay(self):
-        frames = CodingGame(Kululu.name).get_cg_frames()
-        Util().replay(frames)
+    def cg_play(self):
+        Module().compile_one(Kululu.main_py())
+        self.c.pk(Module.RUN_TMP_PATH, Kululu.game_id, Kululu.agentsIds)
+        self.cg_replay()
+
+    def cg_replay(self):
+        frames = self.c.get_cg_frames_stderror()
+
+        def util(idx: int, dst):
+            return Grid().load_from_json(**frames[idx].stderr)
+
+        ALgoManage(Kululu.name).set_state(util).actor([Pm.ab1], len(frames))
 
     def test_debug(self):
-        self.test_replay()
+        logger.info("pk 错误复原代码")
+        # self.test_pk()
 
 
 if __name__ == "__main__":
-    CwTest().run()
+    KululuTest().run()

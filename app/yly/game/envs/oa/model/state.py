@@ -36,10 +36,14 @@ class Rooms(State):
                 continue
             boards = self.boards.copy()
             pos = []
-            for k in range(boards[j]):
-                idx = (k + 1 + j) % C.ROOM_NUM
+            idx = j
+            for k in range(self.boards[j]):
+                idx = (1 + idx) % C.ROOM_NUM
+                if idx == j:
+                    idx = (1 + idx) % C.ROOM_NUM
                 boards[idx] += 1
                 pos.append(idx)
+                k += 1
             rv_num = 0
             while pos and 2 <= boards[pos[-1]] <= 3:
                 idx = pos.pop()
@@ -73,7 +77,7 @@ class Rooms(State):
             s.append(" ".join(ts))
         return "\n".join(s)
 
-    def get_reward(self, actions: List[Action], **kw):
+    def get_reward(self, actions: List[Action] = None, **kw):
         r = 0
         for i, a in enumerate(actions):
             r += a.reward if i % 2 == 0 else -a.reward

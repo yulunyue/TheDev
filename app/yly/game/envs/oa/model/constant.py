@@ -5,7 +5,7 @@ class Constant:
     ROOM_NUM = 12
     SELF_NUM = ROOM_NUM // 2
     OR_NUM = 4
-    MASK_POSS = [1] + [6] * ROOM_NUM
+    MASK_POSS = [6] * ROOM_NUM
 
     def __init__(self):
         self.INIT_MASK = self.encode_data(0, [self.OR_NUM] * self.ROOM_NUM)

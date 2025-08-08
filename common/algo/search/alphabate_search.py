@@ -7,7 +7,7 @@ from common.util.export import logger, defaultdict
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
     BR_TYPE = "brutal"
-    SERACH_DFS = "search_dfs"
+    SERACH_MAX = "search_max"
 
     def load(self, max_depth, cache=None, search_type=""):
         self.max_depth = max_depth
@@ -137,7 +137,7 @@ class AlphaBateSearch(Algo):
         max_action = None
         max_reward = None
         for a in s.get_actions().values():
-            reward = s.get_reward(a)
+            reward = s.get_reward(actions=[a])
             if max_reward is None or reward > max_reward:
                 max_reward = reward
                 max_action = a
@@ -150,6 +150,6 @@ class AlphaBateSearch(Algo):
         elif self.search_type == AlphaBateSearch.BR_TYPE:
             records = self.search_with_done(state)
             return state.set_data(records=records)
-        elif self.search_type == AlphaBateSearch.SERACH_DFS:
-            return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
-        return self.search_max(state)
+        elif self.search_type == AlphaBateSearch.SERACH_MAX:
+            return self.search_max(state)
+        return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)

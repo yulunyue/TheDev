@@ -2,9 +2,9 @@ from typing import List
 
 
 def encode_data(array, pos):
-    ans = 0
-    for i in range(len(array)):
-        ans = (ans << pos[i]) + array[i]
+    ans = array[0]
+    for i in range(len(pos)):
+        ans = (ans << pos[i]) + array[i + 1]
     return ans
 
 
@@ -15,6 +15,7 @@ def decode_data(mask, pos: List[int]) -> List[int]:
         m = 1 << i
         ans.insert(0, mask & (m - 1))
         mask = mask >> i
+    ans.insert(0, mask)
     return ans
 
 

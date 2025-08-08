@@ -9,6 +9,9 @@ from .util import get_player, PM
 
 
 class TestL9(TestBase):
+    def prepare(self, args=None):
+        self.l9_api = L9Api()
+
     def test_cg(self, mode="submit"):
         Module().compile_one("app/yly/game/envs/l9/cg.py")
         if mode == "submit":
@@ -57,7 +60,7 @@ class TestL9(TestBase):
         logger.info(ans)
 
     def exit(self):
-        L9Api.new().cache.flush()
+        L9Api.ins().cache.save()
 
 
 if __name__ == "__main__":

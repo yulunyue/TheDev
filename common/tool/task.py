@@ -15,17 +15,14 @@ from typing import Dict, List
 
 
 class TaskConfig(TableConfig):
-
-    def __init__(self):
-        self.module_name = StrModel()
-        self.fun_name = StrModel()
-        self.root_path = StrModel()
-        self.args = StrModel()
-        self.wait_time = NumberModel(default_value=1)
-        self.last_begin_t = NumberModel(default_value=0)
-        self.last_finish_t = NumberModel(default_value=0)
-        self.result = DictModel()
-        super().__init__()
+    module_name = StrModel()
+    fun_name = StrModel()
+    root_path = StrModel()
+    args = StrModel()
+    wait_time = NumberModel(default_value=1)
+    last_begin_t = NumberModel(default_value=0)
+    last_finish_t = NumberModel(default_value=0)
+    result = DictModel()
 
     def load(self, **kw):
         super().load(**kw)
@@ -57,11 +54,12 @@ class TaskConfig(TableConfig):
         return f"result:{self.result}"
 
 
-class Task(TableBase):
-    body: List[TaskConfig]
+class Task:
+    def __init__(self, name):
+        self.source = TableBase[TaskConfig]().set_resource(name)
 
     def loop(self):
-        for t in self.body:
+        for t in self.source.filter():
             t.exec()
         return self
 
@@ -78,9 +76,7 @@ class Task(TableBase):
 TASK_MANAGER: Dict[str, Task] = dict()
 
 
-def get_task(name):
+def get_task(name) -> Task:
     if name not in TASK_MANAGER:
-        TASK_MANAGER[name] = Task().set_model(
-            TaskConfig().set_resource(f"data/task/{name}.json")
-        )
+        TASK_MANAGER[name] = Task(name)
     return TASK_MANAGER[name]

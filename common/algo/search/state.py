@@ -9,19 +9,17 @@ inf = float("inf")
 class Action:
     check_info = None
     reward = None
-    data = None
 
     def __init__(self, src, action, dst=None):
         self.action = action
         self.src: State = src
         self.dst: State = dst
+        self.data = dict()
 
-    def get_data(self, key):
-        return self.data[key]
+    def get_data(self, key, default_value):
+        return self.data.get(key, default_value)
 
     def set_data(self, key, value):
-        if not self.data:
-            self.data = dict()
         self.data[key] = value
         return self
 
@@ -44,7 +42,7 @@ class Action:
         return self.get_best_actions()[-1]
 
     def __repr__(self):
-        return f"action: {self.action}, reward: {self.reward}"
+        return f"action: {self.action}, reward: {self.reward}, data:{self.data}"
 
 
 class State:

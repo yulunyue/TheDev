@@ -22,11 +22,12 @@ class Constant:
         return decode_data(v, [2, self.POS_MASK_NUM])
 
     def encode_state(self, board, player_id, pos):
-        if pos < 81:
-            y, x = pos // 9, pos % 9
-            pos1 = x * 9 + y
-            board = set_mask(board, pos1 * 2, pos1 * 2 + 2, player_id)
-            return encode_data([board, 3 - player_id, pos], [2, self.POS_MASK_NUM])
+        if pos >= 81:
+            return None
+        y, x = pos // 9, pos % 9
+        pos1 = x * 9 + y
+        board = set_mask(board, pos1 * 2, pos1 * 2 + 2, player_id)
+        return encode_data([board, 3 - player_id, pos], [2, self.POS_MASK_NUM])
 
     def op_pos(self, y, x):
         y1, y2 = y // 3, y % 3

@@ -23,26 +23,19 @@ class TestBan(TestBase):
         self.d = Draw()
         logger.info(self.prob_format)
 
-    def test_all(self):
-        self.test_de()
-        self.test_eg()
-        self.test_ucb()
-        self.test_ts()
-        self.d.save(f"data/game/bandit/all.svg")
-
     def test_eg(self):
-        self.test_algo(EpsilonGreedy().load())
+        self.algo(EpsilonGreedy().load())
 
     def test_de(self):
-        self.test_algo(DecayingEpsilonGreedy().load(epsilon=0.2))
+        self.algo(DecayingEpsilonGreedy().load(epsilon=0.2))
 
     def test_ucb(self):
-        self.test_algo(Ucb().load())
+        self.algo(Ucb().load())
 
     def test_ts(self):
-        self.test_algo(ThompsonSampling().load())
+        self.algo(ThompsonSampling().load())
 
-    def test_algo(self, algo: Algo):
+    def algo(self, algo: Algo):
         a = algo.search(self.b)
         self.expect(
             a.action,
@@ -53,7 +46,10 @@ class TestBan(TestBase):
         self.d.draw_line(algo.rewards_record, title=algo.name)
 
     def test_debug(self):
-        return self.test_eg()
+        pass
+
+    def exit(self):
+        return self.d.save(f"data/game/bandit/all.svg")
 
 
 if __name__ == "__main__":

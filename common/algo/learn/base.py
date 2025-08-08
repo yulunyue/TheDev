@@ -21,7 +21,7 @@ class Base(Algo):
 
     def get_max_action(self, state: State) -> Action:
         actions = list(state.get_actions().values())
-        return actions[np.argmax([a.value for a in actions])]
+        return actions[np.argmax([a.get_reward() for a in actions])]
 
     def search_main(self, state: State):
         self.rewards_record = []

@@ -20,7 +20,7 @@ class ALgoManage:
 
     def get_state(self, idx, dst=None) -> State:
         if callable(self.state):
-            return self.state(idx)
+            return self.state(idx, dst)
         return dst
 
     def fight(self, pk_round=1):
@@ -55,25 +55,34 @@ class ALgoManage:
 
         player_idx = 0
         self.turn_idx = 0
-        s = self.get_state(0)
-        self.rewards = [0] * len(players)
-        while not s.get_done() and self.turn_idx < max_turn:
+        s = self.get_state(0, self.state)
+        self.rewards = [[0] * len(players)]
+        while not s.get_done():
             a = players[player_idx].search(s)
             if a is None:
                 return s.get_win_player(self.rewards, (player_idx + 1) % len(players))
-            self.rewards[player_idx] = a.reward
-            self.info(players, s)
+            self.record(players, a, player_idx, s)
             player_idx = (player_idx + 1) % len(players)
             self.turn_idx += 1
+            if self.turn_idx >= max_turn:
+                break
             s = self.get_state(self.turn_idx, a.dst)
-        if s:
-            self.info(players, s)
+        # if s:
+        #     self.record(players, s)
         return s.get_win_player(self.rewards, player_idx)
 
-    def info(self, players: List[Algo], msg=None):
-        msg = f"turn: {self.turn_idx}; reward_all: {self.rewards};{msg}"
+    def record(self, players: List[Algo], a: Action, player_idx, s: State):
+        self.rewards.append(self.rewards[-1].copy())
+        reward = a.get_reward()
+        self.rewards[-1][player_idx] += reward
+        info = players[player_idx].name
+        if reward > 0:
+            info += f" WIN {reward}"
+        elif reward < 0:
+            info += f" LOS {reward}"
+        msg = f"{s}\nturn: {self.turn_idx}; reward_all: {self.rewards[-1]}; info: {info}\n"
         file_name = "_pk_".join([v.get_name() for v in players])
         file_path = f"data/log/algo_pk/{self.name}/{file_name}.log"
         fp = File(file_path).get_writer()
-        fp.write(f"{msg}\n")
+        fp.write(msg)
         fp.flush()

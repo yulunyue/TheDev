@@ -11,6 +11,7 @@ TEST_FN_PREFIX = "test_"
 
 class TestBase:
     TEST_EMABLE = True
+    RAISE_ERROR = True
 
     def __init__(self) -> None:
         self.prepare()
@@ -24,9 +25,10 @@ class TestBase:
                 args = sys.argv[1:]
             self.argvs, self.kw = url_to_json(args)
             self.prepare_case(*self.argvs)
-            self.ep_cont = 0
-            self.ok_count = 0
-            self.run_one_case(self.argvs[0], *self.argvs[1:], **self.kw)
+            f = getattr(self, self.argvs[0], None)
+            if f is None:
+                f = getattr(self, f"test_{self.argvs[0]}")
+            self.run_one_case(f, *self.argvs[1:], **self.kw)
             self.after_case(*self.argvs)
         except Exception as e:
             raise e
@@ -39,8 +41,9 @@ class TestBase:
     def after_case(self, *args):
         pass
 
-    def run_one_case(self, name, *args, **kw):
-        f = getattr(self, f"test_{name}")
+    def run_one_case(self, f, *args, **kw):
+        self.ep_cont = 0
+        self.ok_count = 0
         start_time = time.time() * 1000
         logger.info(f"---Test Begin {f.__name__}------")
 
@@ -49,6 +52,14 @@ class TestBase:
         logger.info(
             f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
         )
+
+    def run_all_test(self):
+        for key in dir(self):
+            if not key.startswith("test_"):
+                continue
+            f = getattr(self, key)
+            if callable(f):
+                self.run_one_case(f)
 
     def exit(self):
         pass
@@ -59,8 +70,11 @@ class TestBase:
         if is_eq:
             self.ok_count += 1
             return True
+        msg = f"\ninfo:\n{info}\nresult:\n{a}\nexpect:\n{expect_value}"
+        if self.RAISE_ERROR:
+            raise Exception(msg)
         logger.error(
-            f"\ninfo:\n{info}\nresult:\n{a}\nexpect:\n{expect_value}",
+            msg,
             stacklevel=stacklevel,
         )
         return False

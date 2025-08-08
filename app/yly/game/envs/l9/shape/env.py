@@ -191,7 +191,7 @@ class L9Env:
 
         mask_down(board, util)
         ret.append([" "] + [chr(ord("A") + i) for i in range(7)])
-        return "\n" + "\n".join([" ".join(v) for v in ret]) + "\n"
+        return "\n".join([" ".join(v) for v in ret]) + "\n"
 
 
 L9ENV = L9Env().load()
