@@ -1,12 +1,11 @@
 import { GNode } from "../gnode";
 import web_dom from "../../../web/web_dom"
-import { Line, line } from "../line";
-import { Rect, rect } from "../rect";
-import { Circle, circle } from "../circle";
+import { Line } from "../line";
+import { Rect } from "../rect";
 import { Text, text } from "../text";
 import { Node } from "../../../web/cls";
 import { SvgNode, svg } from "../svg";
-import { div, Div } from "../../dom/div";
+import { Div } from "../../dom/div";
 import Constant from "../../../web/constant";
 import { button } from "../../dom/button";
 import { Input, input } from "../../dom/input";
@@ -18,7 +17,7 @@ class ProgrePoint extends GNode {
     start_x: number
     start_y: number
     init_node(): void {
-        this.rect = this.add_child(rect())
+        this.rect = this.add_child(new Rect())
         this.rect.set_wh(7, 14).set_color(Constant.COLOR_BALCK).set_y(-10)
         this.text = this.add_child(text())
         this.text.set_y(14).set_x(4)

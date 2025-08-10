@@ -49,7 +49,7 @@ class TestBan(TestBase):
         pass
 
     def exit(self):
-        return self.d.save(f"data/game/bandit/all.svg")
+        return self.d.save(self.get_temp_file(f"all.svg"))
 
 
 if __name__ == "__main__":

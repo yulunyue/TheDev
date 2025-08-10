@@ -1,7 +1,7 @@
-import { Line, line } from "../line";
+import { Line } from "../line";
 import { Node, to_node } from "../../../web/cls";
 import { Text, text } from "../comb/div_text";
-import { GNode, gnode } from "../gnode";
+import { GNode } from "../gnode";
 import { SvgNode, svg } from "../svg";
 export class TreeNode extends GNode {
     line: Line
@@ -12,7 +12,7 @@ export class TreeNode extends GNode {
     nodes: TreeNode[]
     init_node(): void {
         this.nodes = []
-        this.line = line().with_arrow()
+        this.line = new Line().with_arrow()
         this.text = this.add_child(text().on_change(() => this.on_text_change()))
         this.parent = null
     }

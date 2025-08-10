@@ -1,8 +1,8 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, Form, dialog, Row, node, Select, select, Pre, pre,
-    line, gnode, GNode, button, progress, div, input, Input, Progress, DivFactory,
-    text_area, TextArea
+    Div, Svg, svg, Constant, Node, web_dom, tree, Form, dialog, Row, node, Select, Pre,
+    GNode, button, div, input, Input, Progress, DivFactory,
+    TextArea
 } from "../base/components/export";
 
 
@@ -44,7 +44,7 @@ class Algo extends Div {
     init_node() {
         this.init_edit_dialog()
         this.div = div()
-        this.pro = progress().set_size(1).on_change(() => this.goto())
+        this.pro = new Progress().set_size(1).on_change(() => this.goto())
 
         this.add_childs([
             //div().set_size(1).add_childs([this.div]),

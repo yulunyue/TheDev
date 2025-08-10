@@ -2,22 +2,16 @@
 import data from "src/base/tool/data";
 import {
     Div, Search, Button, TextAreaRich,
-    Table, Util, dialog, MeraGraph,
-    Ct, Node, to_node
+    Table, Util, dialog,
+    Ct, Node, to_node, Chart,
+    Svg
 } from "../base/components/export";
+import { D3Chart, MeraGraph } from "../third/export"
 export class Dev extends Div {
-
+    svg: Svg
     init_node(): void {
-        // this.search = new Search().set_title(
-        //     "搜索"
-        // ).set_btns([
-        //     new Button().set_html("测试")
-        // ])
-
-        // this.add_childs([
-        //     this.search,
-        //     this.table
-        // ]).full()
+        this.svg = new Svg()
+        this.add_childs([this.svg])
     }
     init_style(): void {
 
@@ -65,10 +59,14 @@ export class Dev extends Div {
         })
         this.add_child(new MeraGraph().set_option(node))
     }
+    test_chart() {
+        let chart = new D3Chart().set_option({
+
+        })
+        this.add_child(chart)
+    }
     on_mount(): void {
-        //this.test_table_data()
-        //this.test_open_edit_dialog()
-        this.test_graph_xy()
+        this.test_chart()
     }
 
 }

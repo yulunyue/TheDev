@@ -18,7 +18,7 @@ class ApiConfig(ConfigBase):
     endpoint = StrModel()
     cookie = DictModel()
     proxy = DictModel()
-    timeout = NumberModel()
+    timeout = NumberModel(default_value=10)
 
 
 class Api:
@@ -26,9 +26,13 @@ class Api:
     APPLICATION_JSON = "application/json;charset=UTF-8"
 
     def __init__(self):
-        self.name = self.__class__.__name__
+        self._name = self.__class__.__name__
         self.c = TableBase[ApiConfig]().set_resource("api")
         self.cache = None
+
+    @property
+    def name(self):
+        return self._name
 
     def set_cache(self, cache=None):
         if cache is None:

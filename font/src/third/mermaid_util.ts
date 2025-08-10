@@ -1,7 +1,5 @@
-import { Div } from "../../dom/div";
+import { Div, Node, web_dom } from "../base/components/export";
 import mermaid from "mermaid";
-import { Svg, Node } from "../../export";
-import { line, web_dom } from "../../export";
 import createPanZoom from "panzoom";
 mermaid.initialize({
     //theme: 'neutral',
@@ -134,7 +132,3 @@ export class MeraGraph extends Div {
     }
 }
 
-
-export function mera_util() {
-    return new MeraGraph()
-}

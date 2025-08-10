@@ -79,6 +79,3 @@ export class Line extends GNode {
         return this.set_attr("marker-end", Defs.marker_id(ARROW_KEY, ARROW_END))
     }
 }
-export function line() {
-    return new Line()
-}
