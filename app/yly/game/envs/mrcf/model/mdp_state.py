@@ -15,14 +15,17 @@ class Policy:
         self.reward = reward
         self.actions: List[Action] = []
 
-    def add_action(self, dst, p):
-        self.actions.append(Action(dst, p))
-
 
 class MdpState:
     def __init__(self, k):
         self.k = k
-        self.policys: List[Policy] = []
+        self.policys: Dict[str, Policy] = dict()
+
+    def get_policy(self, key, reward):
+        if key in self.policys:
+            return self.policys[key]
+        self.policys[key] = Policy(key, reward)
+        return self.policys[key]
 
 
 class MarkovDecisionProcess:
@@ -33,25 +36,23 @@ class MarkovDecisionProcess:
         for k, v in C.P.items():
             a, b, c = k.split("-")
             key = f"{a}-{b}"
-            p = Policy(key, C.R[key])
-            p.add_action(self.states[int(c[1]) - 1], v)
-            self.states[int(a[1]) - 1].policys.append(p)
+            p = self.states[int(a[1]) - 1].get_policy(key, C.R[key])
+            p.actions.append(Action(self.states[int(c[1]) - 1], v))
 
     def get_mrp_form_mdp(self, pi: Dict[str, int]):
         ans = [[0] * self.n for _ in range(self.n)]
         for k, v in pi.items():
-            a, b = k.split("-")
-            s = self.states[int(a[1]) - 1]
-            for p in s.policys:
-                for a in p.actions:
-                    ans[s.k][a.dst.k] += a.p * v
+            an, _ = k.split("-")
+            s = self.states[int(an[1]) - 1]
+            for a in s.policys[k].actions:
+                ans[s.k][a.dst.k] += a.p * v
         return ans
 
     def get_reawrd(self, pi):
         ret = []
         for s in self.states:
             ret.append(0)
-            for p in s.policys:
+            for k, p in s.policys.items():
                 ret[-1] += p.reward * pi[p.key]
         return ret
 

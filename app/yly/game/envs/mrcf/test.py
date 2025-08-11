@@ -14,12 +14,14 @@ class TestMain(TestBase):
     def test_mdp(self):
         s = MarkovDecisionProcess()
         pi = s.get_mrp_form_mdp(C.Pi_1)
-
         rewards = s.get_reawrd(C.Pi_1)
         self.expect_ndarray(rewards, C.MDR_REWARDS)
         self.expect_ndarray(pi, C.P_from_mdp_to_mrp)
         self.expect_ndarray(computer(C.MDR_REWARDS, C.P_from_mdp_to_mrp), C.MDP_STATE)
         self.expect_ndarray(computer(rewards, pi), C.MDP_STATE)
+
+    def debug(self):
+        self.test_mdp()
 
 
 if __name__ == "__main__":

@@ -93,7 +93,7 @@ class TestBase:
         if a.shape != e.shape:
             not_equ = True
         else:
-            not_equ = abs((a - e).min()) > wucha
+            not_equ = abs(a - e).sum() > wucha
         return self.expect(
             not_equ,
             False,
