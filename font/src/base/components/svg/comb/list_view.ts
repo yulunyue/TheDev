@@ -1,8 +1,7 @@
-import { GNode, gnode } from "../gnode";
-import { line } from "../line";
+import { GNode } from "../gnode";
+import { Line } from "../line";
 import { SvgNode } from "../svg";
-import { circle } from "../circle";
-import { Rect, rect, polygon } from "../rect";
+import { Circle } from "../circle";
 import { Node } from "../../../web/cls";
 import { Text, text } from "../text";
 export class ListNode extends GNode {

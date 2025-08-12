@@ -36,6 +36,3 @@ export class Circle extends GNode {
         this.set_x(this.option.x).set_y(this.option.y).set_r(this.option.value)
     }
 }
-export function circle() {
-    return new Circle()
-}

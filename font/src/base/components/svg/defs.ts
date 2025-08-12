@@ -1,6 +1,6 @@
 import { Constant } from "../export";
-import { GNode, gnode } from "./gnode";
-import { line } from "./line";
+import { GNode } from "./gnode";
+import { Line } from "./line";
 let ARROW_WIDTH = 10
 export let ARROW_KEY = 'arrow'
 export let ARROW_START = 'start'
@@ -32,7 +32,7 @@ export class Marker extends GNode {
     }
     update_node() {
         if (this.key == ARROW_KEY) {
-            let l = line().set_style({
+            let l = new Line().set_style({
                 stroke: Constant.COLOR_BALCK,
                 fill: Constant.COLOR_BALCK
             })

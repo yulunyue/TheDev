@@ -1,5 +1,6 @@
 import sys
 import time
+from common.util.fp import File
 from common.util.log import get_log
 from common.util.tool import url_to_json
 from common.util.difftool import Diff
@@ -102,4 +103,6 @@ class TestBase:
         )
 
     def get_temp_file(self, name):
-        return f"data/test/{self.__class__.__name__}/{name}"
+        path = f"data/test/{self.__class__.__name__}/{name}"
+        File(path).make_dir_if_not_exist()
+        return path

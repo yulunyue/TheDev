@@ -1,7 +1,5 @@
 import { Div } from "../dom/div"
 import { Defs } from "./defs"
-import { line } from "./line"
-import { circle } from "./circle"
 import { GNode } from "./gnode"
 import { Tree, tree } from "./comb/tree"
 import { Node } from "../../web/cls"

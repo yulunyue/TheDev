@@ -150,6 +150,3 @@ export class GNode extends Div {
     }
 
 }
-export function gnode(name: string = "g") {
-    return new GNode(name)
-}

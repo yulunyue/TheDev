@@ -33,7 +33,10 @@ class ConfigBase:
 
     @classmethod
     def get_default_conifg(cls):
-        return dict()
+        ret = dict()
+        for key, v in cls.get_params().items():
+            ret[key] = v.default_value
+        return ret
 
     def update_param_value(self, param, value):
         return self.resource.update_param_value(self, param, value)

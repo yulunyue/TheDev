@@ -4,6 +4,17 @@ import matplotlib.pyplot as plt
 from common.util.export import List, defaultdict, File
 
 
+def lines_data(datas):
+    if isinstance(datas[0], dict):
+        tmp_data = defaultdict(list)
+        lines = []
+        for data in datas:
+            for k, v in data.items():
+                tmp_data[k].append(v)
+        for k, values in tmp_data.items():
+            lines.append([values, None, k])
+
+
 class Draw:
     def __init__(self) -> None:
         self.fig, self.ax = plt.subplots()
@@ -23,14 +34,7 @@ class Draw:
 
     def draw_lines(self, datas: List, xlabel="x", ylabel="y", title="title"):
         lines = datas
-        if isinstance(datas[0], dict):
-            tmp_data = defaultdict(list)
-            lines = []
-            for data in datas:
-                for k, v in data.items():
-                    tmp_data[k].append(v)
-            for k, values in tmp_data.items():
-                lines.append([values, None, k])
+
         for y, x, ti in lines:
             x = x or range(len(y))
             plt.plot(x, y, label=ti)

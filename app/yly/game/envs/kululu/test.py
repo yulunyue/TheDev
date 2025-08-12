@@ -23,9 +23,8 @@ class KululuTest(TestBase):
 
         ALgoManage(Kululu.name).set_state(util).actor([Pm.ab1], len(frames))
 
-    def test_debug(self):
-        logger.info("pk 错误复原代码")
-        # self.test_pk()
+    def debug(self):
+        self.cg_play()
 
 
 if __name__ == "__main__":

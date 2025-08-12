@@ -53,7 +53,7 @@ class YlyTest:
             module_paths = module_path.split(".")
             module_paths.pop()
             path = ".".join(module_paths)
-            logger.info(f"python3 -m {path} {args}")
+            logger.info(f"python -m {path} {args}")
             fp.write_file(record)
 
 

@@ -1,4 +1,4 @@
-import { GNode, gnode } from "../gnode"
+import { GNode, } from "../gnode"
 import { Node, Style, } from "../../../web/cls"
 import Constant from "../../../web/constant"
 import { Div } from "../../dom/div"
@@ -17,7 +17,7 @@ export class Text extends GNode {
             padding: Constant.DEFAULT_PADDING,
             textAlign: "center"
         })
-        this.foreign_object = this.add_child(gnode("foreignObject").add_childs([this.contain]))
+        this.foreign_object = this.add_child(new GNode("foreignObject").add_childs([this.contain]))
 
     }
 

@@ -1,13 +1,11 @@
-import { GNode, gnode } from "../gnode";
-import { line } from "../line";
+import { GNode } from "../gnode";
+import { Line } from "../line";
 import { text, Text } from "./div_text";
 import { SvgNode } from "../svg";
-import { circle } from "../circle";
-import { Rect, rect, polygon, Polygon } from "../rect";
+import { Circle } from "../circle";
+import { Rect, Polygon } from "../rect";
 const NODE_GEN = {
-    polygon,
-    circle,
-    line
+
 }
 export class Grid extends SvgNode {
     g: GNode

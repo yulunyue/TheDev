@@ -24,14 +24,15 @@ class Kululu(MockCg):
             players = []
             for _ in range(entity_count):
                 players.append(self.input().split())
-            g.set_players(players)
-            raise Exception(self.inputs)
-            self.log(**g.dump())
+            print("wait")
+            # g.set_players(players)
+
+            # self.log(**g.dump())
             # info = g.get_action()
             # if info:
             #     self.output(f"MOVE {info[1]} {info[0]}")
             # else:
-            self.output("WAIT")
+            # self.output("WAIT")
 
 
 if __name__ == "__main__":

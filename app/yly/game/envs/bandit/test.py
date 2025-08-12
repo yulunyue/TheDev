@@ -1,6 +1,6 @@
 from .main import Bandit, BAN_ENV
 from common.util.export import TestBase, logger, json
-from common.tool.draw import Draw
+from common.third_util.export import Draw
 from common.algo.export import (
     EpsilonGreedy,
     DecayingEpsilonGreedy,
@@ -45,11 +45,11 @@ class TestBan(TestBase):
         logger.info(f"{algo.name}:{self.b}")
         self.d.draw_line(algo.rewards_record, title=algo.name)
 
-    def test_debug(self):
+    def debug(self):
         pass
 
     def exit(self):
-        return self.d.save(f"data/game/bandit/all.svg")
+        return self.d.save(self.get_temp_file(f"all.svg"))
 
 
 if __name__ == "__main__":

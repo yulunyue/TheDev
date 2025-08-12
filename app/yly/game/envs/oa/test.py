@@ -5,7 +5,7 @@ from app.yly.game.envs.oa.cg import CgOa, Rooms, C, PM
 
 
 class OaTest(TestBase):
-    def test_cg(self):
+    def cg_play(self):
         Module().compile_one("app/yly/game/envs/oa/cg.py")
         CodingGame(CgOa.name).pk(Module.RUN_TMP_PATH, CgOa.game_id, CgOa.agentsIds)
 
@@ -16,14 +16,14 @@ class OaTest(TestBase):
         # a = AlphaBateSearch().search(r)
         logger.info(r)
 
-    def test_case(self, algo: Algo):
+    def run_algo_case(self, algo: Algo):
         for a, v in C.get_cases().items():
             s = Rooms.new(a)
             a = algo.search(s)
             self.expect(str(a), v, s)
 
     def test_dev(self):
-        self.test_case(PM.ab1)
+        self.do_case(PM.ab1)
 
     def test_dev1(self):
         s2 = ii("1 8 7 6 6 4 4 4 4 4 0 0")
@@ -35,7 +35,7 @@ class OaTest(TestBase):
         a = s.get_action(5)
         self.expect(a.reward, 9, f"{s}\n{a}\n{a.dst}")
 
-    def test_fight(self):
+    def fight(self):
         ALgoManage(CgOa.name).set_players([PM.ab1, PM.ab2, PM.ab3, PM.ab4]).set_state(
             Rooms.new(C.INIT_MASK)
         ).fight()
@@ -51,7 +51,7 @@ class OaTest(TestBase):
         s = Rooms.new(74939897936884006912)
         self.expect(list(s.get_actions().keys()), [5], s)
 
-    def test_debug(self):
+    def debug(self):
         self.test_dev2()
 
 

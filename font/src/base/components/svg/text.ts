@@ -1,5 +1,5 @@
 import { GNode } from "./gnode"
-import { Rect, rect } from "./rect"
+import { Rect } from "./rect"
 import { Node } from "../../web/cls"
 import { Constant } from "../export"
 class Tt extends GNode {

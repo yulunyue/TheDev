@@ -29,7 +29,7 @@ class TableBase(Generic[T]):
 
     def set_resource(self, fp):
         if isinstance(fp, str):
-            fp = File(f"data/setting/{fp}.json")
+            fp = File(f"config/setting/{fp}.json")
         self.fp = fp
         self.config = dict()
         self.instance_map: Dict[str, ConfigBase] = dict()
@@ -68,7 +68,7 @@ class TableBase(Generic[T]):
         if key in self.config:
             config = self.config[key]
         else:
-            config = self._concrete_type.get_default_conifg()
+            self.config[key] = config = self._concrete_type.get_default_conifg()
         self.instance_map[key] = self._concrete_type(key)
         self.instance_map[key].set_resource(self).update(**config)
         return self.instance_map[key]
@@ -81,4 +81,4 @@ class TableBase(Generic[T]):
         self.config[row.key][ins.key] = vlaue
 
     def get_param_value(self, row: ConfigBase, ins: BaseModel):
-        return self.config[row.key][ins.key]
+        return self.config[row.key].get(ins.key, ins.default_value)
