@@ -7,24 +7,27 @@ from .model.grid import Grid
 
 
 class KululuTest(TestBase):
-    def prepare(self, args=None):
+    def prepare(self):
         self.c = CodingGame(Kululu.name)
 
-    def cg_play(self):
+    def play(self):
         Module().compile_one(Kululu.main_py())
         self.c.pk(Module.RUN_TMP_PATH, Kululu.game_id, Kululu.agentsIds)
-        self.cg_replay()
+        self.replay()
 
-    def cg_replay(self):
+    def replay(self):
         frames = self.c.get_cg_frames_stderror()
+        g: Grid = Grid().load_from_json(**frames[0].stderr)
 
         def util(idx: int, dst):
-            return Grid().load_from_json(**frames[idx].stderr)
+            return g.set_players(frames[idx].stderr["players"])
 
-        ALgoManage(Kululu.name).set_state(util).actor([Pm.ab1], len(frames))
+        ALgoManage().set_record_dir(self.c.get_local_path()).set_state(util).actor(
+            [Pm.am1], len(frames)
+        )
 
     def debug(self):
-        self.cg_play()
+        self.replay()
 
 
 if __name__ == "__main__":

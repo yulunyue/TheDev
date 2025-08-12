@@ -1,81 +1,41 @@
-from common.util.export import List
-from app.yly.game.envs.kululu.model.player import Player, C, Shape
-from common.algo.base.graph import Graph
-from common.algo.base.math_util import math, mean
+from common.util.export import List, Dict, defaultdict
+from .player import Player, C
+from .shape import Shape
+from common.algo.search.state import State
 import json
+from .kl_action import KlAction
 
 
-class Grid:
-    g: Graph = None
+class Grid(State):
 
-    def __init__(self):
-        self.node_map = {"#": [], ".": [], "w": []}
-
-    def load_from_json(self, width, height, mapes, players, **kw):
-        self.load_size(width, height)
+    def load_from_json(self, mapes, **kw):
         self.load_map(mapes)
-        self.set_players(players)
-        return self
-
-    def load_size(self, width, height):
-        self.width = width
-        self.height = height
         return self
 
     def load_map(self, maps: List[str]):
-        if self.g:
-            return
-        self.src_map = maps
-        self.maps: List[List[Shape]] = []
-        self.board_show = []
-        self.g = Graph().reset()
+        self.borads: List[List[Shape]] = []
+        self.width = len(maps[0])
+        self.height = len(maps)
+        self.maps = maps
+        null_shapes: List[Shape] = []
         for i, row in enumerate(maps):
             tmp = []
-            self.board_show.append([])
             for j, v in enumerate(row):
-                s = Shape(i, j, v, len(self.node_map[v]))
-                self.node_map[v].append(s)
+                s = Shape(i, j, v)
+                if s.entity_type == C.TYPE_NULL:
+                    null_shapes.append(s)
                 tmp.append(s)
-                self.board_show[-1].append(s.view())
-                for dy, dx in C.DR:
-                    y, x = i + dy, j + dx
-                    if y < 0 or x < 0 or y >= self.height or x >= self.width:
-                        continue
-                    if maps[y][x] == "#":
-                        continue
-                    self.g.add_edge((i, j), (y, x))
-                    self.g.add_edge((y, x), (i, j))
-            self.maps.append(tmp)
-        self.null_pos: List[Shape] = self.node_map["."]
-        for n in self.g.nodes.values():
-            n.bfs()
+            self.borads.append(tmp)
+        for d in null_shapes:
+            d.set_grid(self)
 
-    def get_action(self):
-        min_e_dis = None
-        rt = None
-        for key in self.g.nodes[self.player.pos].childs:
-            min_w_dis = self.calc_w(key)
-            if min_w_dis < 2:
-                continue
-            e_dis = self.calc_e(key)
-            if min_e_dis is None or e_dis < min_e_dis:
-                min_e_dis = e_dis
-                rt = key
-        return rt
-
-    def calc_e(self, pos):
-        es = []
-        for e in self.explorer:
-            es.append(self.g.get_dis(pos, e.pos))
-        return mean(es)
-
-    def calc_w(self, pos):
-        dis = float("inf")
-        for w in self.wanderer:
-            d = self.g.get_dis(pos, w.pos)
-            if d < dis:
-                dis = d
-        return dis
+    def get_actions(self, depth=1, **kw):
+        wait_action = KlAction(self, C.ACTION_WAIT).set_reward(0)
+        self.actions = {C.ACTION_WAIT: wait_action}
+        for n in self.player.cell.get_nexts():
+            k = f"{C.ACTION_MOVE} {n.y} {n.x}"
+            self.actions[k] = KlAction(self, k).set_reward(1)
+        return self.actions
 
     def load_param(self, args):
         (
@@ -90,7 +50,7 @@ class Grid:
         self.nodes_list: List[Player] = []
         self.wanderer: List[Player] = []
         for pargs in ps:
-            p = Player(*pargs)
+            p = Player(*pargs).set_grid(self)
             if p.entity_type == C.EXPLORER:
                 if p.key == "0":
                     self.player = p
@@ -99,19 +59,29 @@ class Grid:
             elif p.entity_type == C.WANDERER:
                 self.wanderer.append(p)
             self.nodes_list.append(Player(*pargs))
+        self.state = json.dumps(self.dump())
+        return self
 
     def dump(self):
         return dict(
             height=self.height,
             width=self.width,
-            mapes=self.src_map,
+            mapes=self.maps,
             players=[d.dump() for d in self.nodes_list],
         )
 
-    def __repr__(self):
-        board_row = json.loads(json.dumps(self.board_show))
+    def to_str(self):
+        board_row: List[List[str]] = []
+        for i, row in enumerate(self.borads):
+            board_row.append([])
+            for j, c in enumerate(row):
+                board_row[-1].append(c.view())
+
         for p in self.nodes_list:
             board_row[p.y][p.x] = p.view()
-        # for p in self.null_pos:
-        #     board_row[p.y][p.x] = "%02d" % self.g.get_dis(p.pos, self.explorer[0].pos)
+        for a in self.get_actions().values():
+            board_row.append(str(a))
         return "\n".join(["".join(rows) for rows in board_row])
+
+    def get_reward(self, *args, **kw):
+        return 0

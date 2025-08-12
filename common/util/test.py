@@ -21,20 +21,16 @@ class TestBase:
         pass
 
     def run(self, args=None):
-        try:
-            if args is None:
-                args = sys.argv[1:]
-            self.argvs, self.kw = url_to_json(args)
-            self.prepare_case(*self.argvs)
-            f = getattr(self, self.argvs[0], None)
-            if f is None:
-                f = getattr(self, f"test_{self.argvs[0]}")
-            self.run_one_case(f, *self.argvs[1:], **self.kw)
-            self.after_case(*self.argvs)
-        except Exception as e:
-            raise e
-        finally:
-            self.exit()
+
+        if args is None:
+            args = sys.argv[1:]
+        self.argvs, self.kw = url_to_json(args)
+        self.prepare_case(*self.argvs)
+        f = getattr(self, self.argvs[0], None)
+        if f is None:
+            f = getattr(self, f"test_{self.argvs[0]}")
+        self.run_one_case(f, *self.argvs[1:], **self.kw)
+        self.after_case(*self.argvs)
 
     def prepare_case(self, *args):
         pass
@@ -47,20 +43,24 @@ class TestBase:
         self.ok_count = 0
         start_time = time.time() * 1000
         logger.info(f"---Test Begin {f.__name__}------")
-
+        msg = ""
         f(*args, **kw)
         end_time = time.time() * 1000
         logger.info(
             f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
         )
+        return msg
 
     def run_all_test(self):
         for key in dir(self):
             if not key.startswith("test_"):
                 continue
             f = getattr(self, key)
-            if callable(f):
-                self.run_one_case(f)
+            if not callable(f):
+                continue
+            s = self.run_one_case(f)
+            if s:
+                return s
 
     def exit(self):
         pass
@@ -74,7 +74,7 @@ class TestBase:
         msg = f"\ninfo:\n{info}\nresult:\n{a}\nexpect:\n{expect_value}"
         if self.RAISE_ERROR:
             raise Exception(msg)
-        logger.error(
+        logger.info(
             msg,
             stacklevel=stacklevel,
         )

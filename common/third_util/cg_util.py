@@ -33,8 +33,11 @@ class CodingGame(Api):
     def name(self):
         return "CodingGame"
 
+    def get_local_path(self, name=""):
+        return f"data/cg/{self.game_name}/{name}"
+
     def get_local_file(self, name="play.json") -> File:
-        return File(f"data/cg/{self.game_name}/{name}")
+        return File(self.get_local_path("/" + name))
 
     def execute(self, file_path, game_id, key=None, data=None, play_type="play"):
         code = open(file_path, "r", encoding="utf-8").read()

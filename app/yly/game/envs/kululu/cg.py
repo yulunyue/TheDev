@@ -10,8 +10,10 @@ class Kululu(MockCg):
     agentsIds = [-1, 5751943, 3995777, 4762568]
 
     def main(self):
-        g = Grid().load_size(int(self.input()), int(self.input()))
-        g.load_map([self.input() for _ in range(g.height)])
+        self.input()
+        h = int(self.input())
+        g = Grid()
+        g.load_map([self.input() for _ in range(h)])
 
         # sanity_loss_lonely: how much sanity you lose every turn when alone, always 3 until wood 1
         # sanity_loss_group: how much sanity you lose every turn when near another player, always 1 until wood 1
@@ -24,15 +26,14 @@ class Kululu(MockCg):
             players = []
             for _ in range(entity_count):
                 players.append(self.input().split())
-            print("wait")
-            # g.set_players(players)
+            g.set_players(players)
 
-            # self.log(**g.dump())
+            self.log(**g.dump())
             # info = g.get_action()
             # if info:
             #     self.output(f"MOVE {info[1]} {info[0]}")
             # else:
-            # self.output("WAIT")
+            self.output("WAIT")
 
 
 if __name__ == "__main__":

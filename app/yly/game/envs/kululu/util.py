@@ -5,4 +5,4 @@ from common.algo.export import AlphaBateSearch
 
 
 class Pm:
-    ab1 = AlphaBateSearch("ab1").load(1)
+    am1 = AlphaBateSearch("am1").load(1, search_type=AlphaBateSearch.SERACH_MAX)

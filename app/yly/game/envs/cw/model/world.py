@@ -97,5 +97,5 @@ class World(State):
         s.append([C.WALL_S] * (self.width + 1))
         return "\n".join(["".join(r) for r in s])
 
-    def get_reward(self, a: CwAction):
-        return a.reward
+    def get_reward(self, actions: List[CwAction], **kw):
+        return 0

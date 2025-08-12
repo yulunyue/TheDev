@@ -4,8 +4,6 @@ from common.util.export import logger, File, List, defaultdict
 
 
 class ALgoManage:
-    def __init__(self, name):
-        self.name = name
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
@@ -60,6 +58,7 @@ class ALgoManage:
         while not s.get_done():
             a = players[player_idx].search(s)
             if a is None:
+                self.record(players, a, player_idx, s)
                 return s.get_win_player(self.rewards, (player_idx + 1) % len(players))
             self.record(players, a, player_idx, s)
             player_idx = (player_idx + 1) % len(players)
@@ -71,9 +70,15 @@ class ALgoManage:
         #     self.record(players, s)
         return s.get_win_player(self.rewards, player_idx)
 
+    def set_record_dir(self, path: str):
+        self.record_dir = path
+        return self
+
     def record(self, players: List[Algo], a: Action, player_idx, s: State):
         self.rewards.append(self.rewards[-1].copy())
-        reward = a.get_reward()
+        reward = 0
+        if a is not None:
+            reward = a.get_reward()
         self.rewards[-1][player_idx] += reward
         info = players[player_idx].name
         if reward > 0:
@@ -82,7 +87,7 @@ class ALgoManage:
             info += f" LOS {reward}"
         msg = f"{s}\nturn: {self.turn_idx}; reward_all: {self.rewards[-1]}; info: {info}\n"
         file_name = "_pk_".join([v.get_name() for v in players])
-        file_path = f"data/log/algo_pk/{self.name}/{file_name}.log"
+        file_path = f"{self.record_dir}/{file_name}.log"
         fp = File(file_path).get_writer()
         fp.write(msg)
         fp.flush()

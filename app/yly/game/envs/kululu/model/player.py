@@ -1,31 +1,7 @@
-from app.yly.game.envs.kululu.model.constant import C
+from .constant import C
 
 
-class Shape:
-
-    def __init__(self, x, y, entity_type, key):
-        self.x = x
-        self.y = y
-        self.entity_type = entity_type
-        self.key = key
-
-    def view(self):
-        if self.entity_type == C.EXPLORER:
-            return f"E{self.key}"
-        if self.entity_type == C.WANDERER:
-            return f"S{str(self.key)[-1]}"
-        if self.entity_type == ".":
-            return "  "
-        if self.entity_type == "#":
-            return "##"
-        return f"{self.entity_type}{str(self.key)[-1]}"
-
-    @property
-    def pos(self):
-        return self.y, self.x
-
-
-class Player(Shape):
+class Player:
 
     def __init__(self, entity_type, key, x, y, param_0, param_1, param_2) -> None:
         self.x = int(x)
@@ -46,3 +22,19 @@ class Player(Shape):
             self.param_1,
             self.param_2,
         ]
+
+    def set_grid(self, g):
+        from .grid import Grid
+
+        self.g: Grid = g
+        return self
+
+    def view(self):
+
+        if self.entity_type == C.EXPLORER:
+            return f"e{self.key}"
+        return f"p{self.key}"
+
+    @property
+    def cell(self):
+        return self.g.borads[self.y][self.x]

@@ -111,6 +111,9 @@ class Module:
                 self.lines = []
                 self.childs: Dict[str, Node] = dict()
                 self.out_deg = 0
+                self.init(vt)
+
+            def init(self, vt):
                 for ln2 in self.fp.read_line():
                     if not ln2:
                         continue
@@ -132,8 +135,13 @@ class Module:
                         self.lines.append(ln2)
 
             def add_depends(self, p: "Node"):
+                if self.fp.path in p.childs:
+                    return
                 p.childs[self.fp.path] = self
                 self.out_deg += 1
+
+            def __repr__(self):
+                return f"{self.fp.path} {list(self.childs.keys())} {self.out_deg}"
 
         nodes: Dict[str, Node] = dict()
 

@@ -40,21 +40,14 @@ class YlyTest:
         logger.info(tests[idx])
         instance: TestBase = LOCALS[tests[idx]]()
         r = record[tests[idx]]
-        r["err_msg"] = ""
         args = r.get("args", "debug")
-        try:
-            instance.run_all_test()
-            r["run_num"] += 1
-        except Exception as e:
-            r["err_msg"] = str(e)
-            raise Exception(instance, e)
-        finally:
-            module_path = str(LOCALS[tests[idx]]).split(" '").pop().split("'")[0]
-            module_paths = module_path.split(".")
-            module_paths.pop()
-            path = ".".join(module_paths)
-            logger.info(f"python -m {path} {args}")
-            fp.write_file(record)
+        r["err_msg"] = instance.run_all_test()
+        module_path = str(LOCALS[tests[idx]]).split(" '").pop().split("'")[0]
+        module_paths = module_path.split(".")
+        module_paths.pop()
+        path = ".".join(module_paths)
+        logger.info(f"python -m {path} {args}")
+        fp.write_file(record)
 
 
 if __name__ == "__main__":
