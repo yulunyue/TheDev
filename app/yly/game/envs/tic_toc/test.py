@@ -11,7 +11,7 @@ class TestTicToc(TestBase):
     def prepare(self, args=None):
         self.c = CodingGame(TicTocCg.name)
 
-    def test_cg(self, mode="submit"):
+    def cg(self, mode="submit"):
         Module().compile_one("app/yly/game/envs/tic_toc/cg.py")
         self.c.pk(Module.RUN_TMP_PATH, TicTocCg.game_id, TicTocCg.agentsIds)
 
@@ -24,38 +24,35 @@ class TestTicToc(TestBase):
             s = a.dst
         TicTocCg().replay(c.get_replay_json())
 
-    def test_actor(self):
+    def actor(self):
         s = TtState.new_state(C.INIT_SATTE)
         ans = ALgoManage().set_state(s).actor([Pm.ab3, Pm.ab1], max_turn=101)
         logger.info(f"lose: {ans}")
 
-    def test_search(self):
+    def search(self):
         s = TtState.new_state(C.INIT_SATTE).get_action(40).dst
         b: TtAction = Pm.ab2.search(s)
         logger.info(s)
         logger.info(b.dst)
 
-    def test_fight(self):
+    def fight(self):
         s = TtState.new_state(C.INIT_SATTE)
         ALgoManage().set_state(s).set_players([Pm.ab1, Pm.ab2, Pm.ab3, Pm.rd1]).fight()
 
-    def test_debug(self):
-        self.test_dev4()
-
-    def test_dev3(self):
+    def dev3(self):
         s = TtState.new_state(98)
         logger.info(s)
 
     def test_dev4(self):
-        self.test_ec_wrong(Pm.ab2)
+        self.run_ec_wrong(Pm.ab2)
 
-    def test_ec_wrong(self, algo: Algo):
+    def run_ec_wrong(self, algo: Algo):
         for k, v in C.get_except_wrong().items():
             s = TtState.new_state(k)
             a = algo.search(s)
             self.expect(a.action not in v, True, f"{s}\n{a.action} not in {v}")
 
-    def test_dev5(self):
+    def dev5(self):
         s = TtState.new_state(SC.SC1)
         Pm.bl1.search(s)
         logger.info(s.data["records"])

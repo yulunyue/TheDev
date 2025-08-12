@@ -44,7 +44,7 @@ class Api:
         return self
 
     def get_endpoint(self):
-        return self.endpoint.get_value()
+        return self.c.get(self.name).endpoint.get_value()
 
     def url(self, path):
         if isinstance(path, list):

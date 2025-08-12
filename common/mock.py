@@ -7,6 +7,7 @@ import math
 from collections import defaultdict
 import os
 import random
+from itertools import permutations
 
 try:
     from sortedcontainers import SortedDict, SortedList, SortedSet
