@@ -42,7 +42,7 @@ class Logger(logging.Logger):
                 mode=os.environ.get(LOGGER_MODE, mode),
                 encoding="utf-8",
             ),
-            logging.INFO,
+            logging.DEBUG,
             fmt=fmt,
         )
 

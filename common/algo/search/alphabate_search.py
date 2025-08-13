@@ -6,7 +6,6 @@ from common.util.export import logger, defaultdict
 
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
-    BR_TYPE = "brutal"
     SERACH_MAX = "search_max"
 
     def load(self, max_depth, cache=None, search_type=""):
@@ -59,9 +58,8 @@ class AlphaBateSearch(Algo):
                 state.set_best_action(a)
         return alpha
 
-    def get_depth_reward(self, s: State, depth: int, **kw):
-        reward = s.get_reward(**kw)
-        return -reward if depth % 2 == 1 else reward
+    def get_depth_reward(self, s: State, depth: int, actions: List[Action], **kw):
+        return s.get_relative_reward(actions, params=self.params)
 
     def search_dfs(
         self, state: State, actions: List[Action], depth=0, player_id=None, **kw
@@ -93,46 +91,6 @@ class AlphaBateSearch(Algo):
                 best_reward = reward
         return best_reward
 
-    def search_with_done(self, s: State):
-        ret = []
-
-        def dfs(state: State, depth=0):
-            done = state.get_done()
-            if done or depth == self.max_depth:
-                state.set_data(done=done)
-                return done
-            mvs = list(state.get_actions(depth=depth).values())
-            ct = defaultdict(int)
-            for a in mvs:
-                done = dfs(a.dst, depth + 1)
-                ct[done] += 1
-
-            for k, value in ct.items():
-                if k == state.player_id and value:
-                    state.set_data(done=k)
-                    return k
-                elif k and ct[done] == len(mvs):
-                    state.set_data(done=k)
-                    return k
-            state.set_data(done=0)
-            return 0
-
-        def dfs2(state: State, depth=0):
-            done = state.get_done()
-            if done or depth == self.max_depth:
-                return
-            mvs = list(state.get_actions(depth=depth).values())
-            for a in mvs:
-                if not a.dst.data["done"]:
-                    continue
-                s = f'{" "*depth}- {a}: {a.dst.data["done"]}'
-                ret.append(s)
-                dfs2(a.dst, depth + 1)
-
-        dfs(s)
-        dfs2(s)
-        return "\n" + "\n".join(ret)
-
     def search_max(self, s: State):
         max_action = None
         max_reward = None
@@ -147,9 +105,6 @@ class AlphaBateSearch(Algo):
     def search_main(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
             return self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
-        elif self.search_type == AlphaBateSearch.BR_TYPE:
-            records = self.search_with_done(state)
-            return state.set_data(records=records)
         elif self.search_type == AlphaBateSearch.SERACH_MAX:
             return self.search_max(state)
         return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)

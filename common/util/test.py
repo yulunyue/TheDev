@@ -102,7 +102,10 @@ class TestBase:
             stacklevel=3,
         )
 
+    def get_temp_path(self, name):
+        return f"data/test/{self.__class__.__name__}/{name}"
+
     def get_temp_file(self, name):
-        path = f"data/test/{self.__class__.__name__}/{name}"
+        path = self.get_temp_path(name)
         File(path).make_dir_if_not_exist()
         return path

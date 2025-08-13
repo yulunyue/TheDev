@@ -1,11 +1,20 @@
 from common.algo.base.bin_util import encode_data, decode_data, set_mask
-from common.util.export import List, Dict, get_log
-
-logger = get_log("tic_toc")
+from common.util.export import List, Dict
+from common.algo.search.param import Param, Params
 
 
 class SC:
     SC1 = 7592961601693925925382490737438186337788543455929
+
+
+class TcEnum(Params):
+    PLAYER2_3 = Param((0, 3), 100)
+    PLAYER1_3 = Param((3, 0), -100)
+    PLAYER2_2 = Param((0, 2), 10)
+    PLAYER1_2 = Param((2, 0), -10)
+    PLAYER2_1 = Param((0, 1), 1)
+    PLAYER1_1 = Param((1, 0), -1)
+    NULL_SATTE = Param((0, 0), 0)
 
 
 class Constant:
@@ -15,8 +24,11 @@ class Constant:
     ALL_SIZE2 = ALL_SIZE1 * ALL_SIZE1
     POS_MASK_NUM = 7
     INIT_SATTE = (1 << POS_MASK_NUM) + 81
-
+    VIEW_STR = [". ", "X ", "O "]
     MAX_SCORE = 1000
+    PLAYER_NULL = 0
+    PLAYER_FIRST = 1
+    PLAYER_SECOND = 2
 
     def decode_state(self, v):
         return decode_data(v, [2, self.POS_MASK_NUM])

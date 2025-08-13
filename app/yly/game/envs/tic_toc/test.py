@@ -3,6 +3,7 @@ from common.algo.export import ALgoManage, Algo, State, random_seed
 from common.third_util.export import CodingGame
 from .util import Pm
 from .model.ttstate import TtState, TtAction
+from .model.ttstate3 import TtState3
 from .constant import C, SC
 from .cg import TicTocCg
 
@@ -11,7 +12,7 @@ class TestTicToc(TestBase):
     def prepare(self, args=None):
         self.c = CodingGame(TicTocCg.name)
 
-    def cg(self, mode="submit"):
+    def cg(self):
         Module().compile_one("app/yly/game/envs/tic_toc/cg.py")
         self.c.pk(Module.RUN_TMP_PATH, TicTocCg.game_id, TicTocCg.agentsIds)
 
@@ -60,6 +61,20 @@ class TestTicToc(TestBase):
     def test_util(self):
         self.expect(C.op_pos(4, 4), 40)
         self.expect(C.pos_op(4), (3, 3))
+
+    def test_tt3(self):
+        t1 = TtState3.new(256)
+        t2 = t1.get_action(1)
+        self.expect(0, 1, f"{t1}\n{t2}")
+
+    def run_t3(self):
+        a = ALgoManage().set_record_dir(self.get_temp_path("t3"))
+        a.set_state(TtState3.new())
+        resutlt = a.actor([Pm.bl9, Pm.rd1])
+        logger.info(resutlt)
+
+    def debug(self):
+        self.run_t3()
 
 
 if __name__ == "__main__":

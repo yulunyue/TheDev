@@ -3,9 +3,9 @@ import numpy as np
 
 
 class Param:
-    def __init__(self, key):
+    def __init__(self, key, args=None):
         self.key = key
-        self.args = None
+        self.args = args
 
     def set_args(self, args):
         self.args = args

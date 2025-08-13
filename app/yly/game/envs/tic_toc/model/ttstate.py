@@ -1,6 +1,7 @@
 from common.algo.export import State
-from app.yly.game.envs.tic_toc.shape.env import E
-from app.yly.game.envs.tic_toc.constant import C, logger
+
+# from app.yly.game.envs.tic_toc.shape.cell81 import E
+from app.yly.game.envs.tic_toc.constant import C
 from app.yly.game.envs.tic_toc.model.ttaction import TtAction
 from typing import List, Dict
 
@@ -52,10 +53,6 @@ class TtState(State):
             self.board,
             f"last_pos:{[self.last_pos%9,self.last_pos//9]}, actions:{len(self.get_actions().keys())}",
         )
-
-    def __repr__(self):
-        # self.get_actions()
-        return super().__repr__()
 
     def get_win_player(self):
         if self.done == 1 or self.done == 2:

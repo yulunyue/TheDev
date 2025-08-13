@@ -1,3 +1,5 @@
+from ..constant import C
+
 LINES = [
     [0, 1, 2],
     [3, 4, 5],
@@ -12,17 +14,23 @@ from typing import List, Dict
 
 
 class Line:
-    def __init__(self, p, shap1, shape2, shape3):
-        from app.yly.game.envs.tic_toc.shape.cell import Cell9, Cell
+    def __init__(self, shap1, shape2, shape3):
+        from app.yly.game.envs.tic_toc.shape.cell import Cell
 
-        self.p: Cell9 = p
         self.shapes: List[Cell] = [shap1, shape2, shape3]
         for s in self.shapes:
             s.p_lines.append(self)
-        self.nums = [3, 0, 0, 0]
+        self.nums = [3, 0, 0]
+
+    def get_state(self):
+        if self.nums[1] and self.nums[2] == 0:
+            return self.nums[1], 0
+        if self.nums[2] and self.nums[1] == 0:
+            return 0, self.nums[2]
+        return 0, 0
 
     def change(self, f, t):
-        self.p.add_line_count(f, self.nums[f], self.nums[f] - 1)
-        self.p.add_line_count(t, self.nums[t], self.nums[t] + 1)
+        last_state = self.get_state()
         self.nums[f] -= 1
         self.nums[t] += 1
+        return last_state, self.get_state()

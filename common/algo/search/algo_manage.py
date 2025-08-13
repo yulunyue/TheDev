@@ -55,8 +55,11 @@ class ALgoManage:
         self.turn_idx = 0
         s = self.get_state(0, self.state)
         self.rewards = [[0] * len(players)]
-        while not s.get_done():
+        while True:
             a = players[player_idx].search(s)
+            if s.get_done():
+                self.record(players, a, player_idx, s)
+                break
             if a is None:
                 self.record(players, a, player_idx, s)
                 return s.get_win_player(self.rewards, (player_idx + 1) % len(players))

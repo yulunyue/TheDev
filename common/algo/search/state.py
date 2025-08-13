@@ -67,16 +67,8 @@ class State:
         self.best_action = a
         return self
 
-    def set_value(self, v):
-        self.value = v
-        return self
-
     def set_depth(self, depth):
         self.depth = depth
-        return self
-
-    def set_best_action(self, a):
-        self.best_action = a
         return self
 
     def set_done(self, done):
@@ -99,9 +91,6 @@ class State:
             return self.actions[a]
         raise Exception(a, list(actions.keys()))
 
-    def get_score(self, **kw):
-        raise Exception("todo")
-
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
         raise Exception("todo")
 
@@ -112,18 +101,8 @@ class State:
             return None
         return actions[np.random.randint(0, len(values) - 1)]
 
-    def do(self, action):
-        raise Exception(f"{self.__class__}.do not impl")
-
-    def get_regret(self, action):
-        raise Exception("todo")
-
     def to_str(self):
         return ""
-
-    @classmethod
-    def get_init_state(cls):
-        raise Exception("todo")
 
     def dump_tree(self, max_depth):
         ret = []
@@ -142,8 +121,15 @@ class State:
         ret.reverse()
         return "\n" + "\n".join(ret)
 
-    def get_reward(self, *args, **kw) -> int:
-        raise Exception("todo", args, kw)
+    def get_reward(self, actions: List[Action]) -> int:
+        return self.reward
+
+    def get_self_reward(self, actions: List[Action]):
+        return self.get_reward(actions)
+
+    def get_relative_reward(self, actions: List[Action], params):
+        r = self.get_self_reward(actions)
+        return r if len(actions) % 2 == 0 else 1
 
     def get_max_action_reward(self):
         reward = -inf
@@ -173,6 +159,7 @@ class State:
                 f"mask:{self.state}",
                 self.to_str(),
             ]
+            + f"reward: {self.get_self_reward()}"
             + info
             + [f"best_action:\n{self.best_action}", "-" * 40]
         )
