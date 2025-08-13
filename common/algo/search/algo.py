@@ -48,7 +48,7 @@ class Algo:
 
     def search(self, state: "State") -> "Action":
         self.begin_time = time.time()
-        self.search_main(state.reset_env().reset())
+        self.search_main(state.reset())
         use_time = int((time.time() - self.begin_time) * 1000)
         self.use_time += use_time
         self.max_use_time = max(self.max_use_time, use_time)

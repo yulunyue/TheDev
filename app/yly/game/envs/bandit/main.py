@@ -56,3 +56,10 @@ class Bandit(State):
 
     def action_size(self):
         return BAN_ENV.K
+
+    def reset_env(self):
+        for a in self.get_actions().values():
+            a.value = 1
+            a.count = 0
+            a.tm_value = [1, 1]
+        return self

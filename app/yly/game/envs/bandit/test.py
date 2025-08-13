@@ -8,13 +8,11 @@ from common.algo.export import (
     ThompsonSampling,
     random_seed,
     Algo,
+    ALgoManage,
 )
 
 
 class TestBan(TestBase):
-    uri = (
-        "https://hrl.boyuai.com/chapter/1/%E5%A4%9A%E8%87%82%E8%80%81%E8%99%8E%E6%9C%BA"
-    )
 
     def prepare(self):
         BAN_ENV.load()
@@ -27,7 +25,7 @@ class TestBan(TestBase):
         self.algo(EpsilonGreedy().load())
 
     def test_de(self):
-        self.algo(DecayingEpsilonGreedy().load(epsilon=0.2))
+        self.algo(DecayingEpsilonGreedy().load(epsilon=0.1))
 
     def test_ucb(self):
         self.algo(Ucb().load())
@@ -35,10 +33,14 @@ class TestBan(TestBase):
     def test_ts(self):
         self.algo(ThompsonSampling().load())
 
-    def algo(self, algo: Algo):
-        a = algo.search(self.b)
+    def algo(self, algo: EpsilonGreedy):
+        algo.reward_tmp_all = 0
+        a = ALgoManage().set_state(self.b)
+        a.train([algo], epochs=1)
+        b = algo.get_max_action(self.b).action
         self.expect(
-            a.action,
+            # BAN_ENV.max_idx,
+            b,
             BAN_ENV.max_idx,
             f"name:{algo.name}\nb:{self.b}",
         )
@@ -46,7 +48,7 @@ class TestBan(TestBase):
         self.d.draw_line(algo.rewards_record, title=algo.name)
 
     def debug(self):
-        pass
+        self.test_de()
 
     def exit(self):
         return self.d.save(self.get_temp_file(f"all.svg"))

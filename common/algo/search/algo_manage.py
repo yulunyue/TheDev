@@ -47,14 +47,14 @@ class ALgoManage:
         logger.info(s)
         return self
 
-    def actor(self, players: List[Algo], max_turn=4000):
+    def actor(self, players: List[Algo], max_turn=5000):
         """
         返还输的玩家ID
         """
 
         player_idx = 0
         self.turn_idx = 0
-        s = self.get_state(0, self.state)
+        s = self.get_state(0, self.state).reset_env()
         self.rewards = [[0] * len(players)]
         while True:
             if s.get_done():
@@ -98,7 +98,7 @@ class ALgoManage:
         fp.write(msg)
         fp.flush()
 
-    def train(self, players: List[Algo], epochs=4000):
+    def train(self, players: List[Algo], epochs=1):
         win_count = defaultdict(int)
         for _ in range(epochs):
             win_idx = self.actor(players)

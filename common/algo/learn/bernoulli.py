@@ -22,18 +22,11 @@ class EpsilonGreedy(Base):
         k = np.argmax([v.value for v in actions])
         return actions[k]
 
-    def run_one(self, state: State):
-        a = self.take_action(state)
+    def update_action(self, a: Action):
         regrat, r = a.get_reward()
         a.value = (a.value * a.count + r) / (a.count + 1)
         a.count += 1
         self.reward_tmp_all -= regrat
-
-    def search(self, state: State):
-        for a in state.get_actions().values():
-            a.value = 1
-            a.count = 0
-        return super().search(state)
 
 
 class DecayingEpsilonGreedy(EpsilonGreedy):
@@ -50,7 +43,7 @@ class Ucb(EpsilonGreedy):
         self.coef = coef
         return super().load(num_episodes=num_episodes)
 
-    def run_one(self, state: State):
+    def search_main(self, state: State):
         a = self.get_max_action(state)
         regrat, r = a.get_reward()
         a.value = (a.value * a.count + r) / (a.count + 1)
@@ -73,22 +66,17 @@ class ThompsonSampling(Base):
     def load(self, num_episodes=5000, epsilon=0.01):
         return super().load(num_episodes=num_episodes, epsilon=epsilon)
 
-    def run_one(self, state: State):
+    def search_main(self, state: State):
         a = self.get_max_action(state)
         regrat, reward = a.get_reward()
         self.reward_tmp_all -= regrat
-        a.value[0] += reward
-        a.value[1] += 1 - reward
-
-    def search(self, state: State):
-        for a in state.get_actions().values():
-            a.value = [1, 1]
-        return super().search(state)
+        a.tm_value[0] += reward
+        a.tm_value[1] += 1 - reward
 
     def get_max_action(self, state):
         actions = [state.get_action(i) for i in range(state.action_size())]
-        a = [ac.value[0] for ac in actions]
-        b = [ac.value[1] for ac in actions]
+        a = [ac.tm_value[0] for ac in actions]
+        b = [ac.tm_value[1] for ac in actions]
         samples = np.random.beta(a, b)
         k = np.argmax(samples)
         return actions[k]

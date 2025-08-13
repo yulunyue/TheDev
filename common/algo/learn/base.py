@@ -3,11 +3,13 @@ from common.util.export import get_log, logger, List
 
 
 class Base(Algo):
+
     def load(self, alpha=0.1, gamma=0.9, epsilon=0.01, num_episodes=500, **kw):
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon
         self.num_episodes = num_episodes
+        self.rewards_record = []
         return super().load(**kw)
 
     def can_epsilon(self):
@@ -29,3 +31,9 @@ class Base(Algo):
         self.update_action(ac)
         state.set_best_action(ac)
         # logger.info(f"run_one {self.state_count}")
+
+    def search(self, state):
+        # self.reward_tmp_all = 0
+        ret = super().search(state)
+        self.rewards_record.append(self.reward_tmp_all)
+        return ret
