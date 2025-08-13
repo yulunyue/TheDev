@@ -1,7 +1,18 @@
 from ..shape.cell9 import Cell9, C
 from ..constant import TcEnum
-from common.algo.search.state import State, Action
+from common.algo.search.state import State, Action as Ac
 from common.util.export import Dict, List
+
+
+class Action(Ac):
+    def get_reward(self, **kwargs):
+        done = self.dst.done()
+        if not done:
+            return 0
+        if 1 <= done <= 2:
+            return 1
+        return 0.5
+
 
 CELL = Cell9()
 

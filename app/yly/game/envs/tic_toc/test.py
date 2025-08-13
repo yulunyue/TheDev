@@ -80,8 +80,13 @@ class TestTicToc(TestBase):
         resutlt = a.actor([Pm.bl10, Pm.rd1])
         logger.info(resutlt)
 
+    def train(self):
+        a = ALgoManage().set_state(TtState3.new())
+        ans = a.train([Pm.td0, Pm.td1], 2)
+        logger.info(ans)
+
     def debug(self):
-        self.test_tt3()
+        self.train()
 
 
 if __name__ == "__main__":

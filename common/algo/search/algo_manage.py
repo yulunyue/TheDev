@@ -4,6 +4,7 @@ from common.util.export import logger, File, List, defaultdict
 
 
 class ALgoManage:
+    record_dir = ""
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
@@ -56,10 +57,10 @@ class ALgoManage:
         s = self.get_state(0, self.state)
         self.rewards = [[0] * len(players)]
         while True:
-            a = players[player_idx].search(s)
             if s.get_done():
-                self.record(players, a, player_idx, s)
+                self.record(players, None, player_idx, s)
                 break
+            a = players[player_idx].search(s)
             if a is None:
                 self.record(players, a, player_idx, s)
                 return s.get_win_player(self.rewards, (player_idx + 1) % len(players))
@@ -78,6 +79,8 @@ class ALgoManage:
         return self
 
     def record(self, players: List[Algo], a: Action, player_idx, s: State):
+        if not self.record_dir:
+            return
         self.rewards.append(self.rewards[-1].copy())
         reward = 0
         if a is not None:
@@ -94,3 +97,10 @@ class ALgoManage:
         fp = File(file_path).get_writer()
         fp.write(msg)
         fp.flush()
+
+    def train(self, players: List[Algo], epochs=4000):
+        win_count = defaultdict(int)
+        for _ in range(epochs):
+            win_idx = self.actor(players)
+            win_count[win_idx] += 1
+        return win_count

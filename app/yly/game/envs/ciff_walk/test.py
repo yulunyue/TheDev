@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger
 from app.yly.game.envs.ciff_walk.env import CfState, ENV
 from common.algo.export import (
-    Sarsa,
+    Td0,
     Qlearning,
     DynaQ,
     Algo,
@@ -21,9 +21,9 @@ class CfTest(TestBase):
         self.test_algo(MctsEasy().load())
         self.test_algo(Qlearning().load())
         self.test_algo(DynaQ().load())
-        self.test_algo(Sarsa().load())
+        self.test_algo(Td0().load())
 
-    def test_algo(self, algo: Sarsa):
+    def test_algo(self, algo: Td0):
         for y, x, a in ENV.get_expects():
             state = CfState.new_one(y * ENV.ncol + x)
             self.expect(

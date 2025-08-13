@@ -19,7 +19,7 @@ DEFAULT_FMT = "".join(
         # "process)s:%(threadName",
         # "[%(pathname)s]",
         "[%(funcName)s:%(lineno)s]",
-        "%(message)s",
+        " %(message)s",
     ]
 )
 

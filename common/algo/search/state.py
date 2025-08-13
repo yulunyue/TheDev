@@ -10,6 +10,7 @@ inf = float("inf")
 class Action:
     check_info = None
     reward = None
+    value = 0
 
     def __init__(self, src, action, dst=None):
         self.action = action
