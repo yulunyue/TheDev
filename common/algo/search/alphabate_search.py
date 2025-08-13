@@ -51,11 +51,11 @@ class AlphaBateSearch(Algo):
             )
             if reward >= bate:
                 alpha = bate
-                state.set_best_action(a)
+                state.set_best_action(a.set_reward(reward))
                 break
             if reward > alpha:
                 alpha = reward
-                state.set_best_action(a)
+                state.set_best_action(a.set_reward(reward))
         return alpha
 
     def get_depth_reward(self, s: State, depth: int, actions: List[Action], **kw):
@@ -87,7 +87,7 @@ class AlphaBateSearch(Algo):
                 a.dst, actions=actions + [a], depth=depth + 1, player_id=player_id
             )
             if reward > best_reward:
-                state.set_best_action(a)
+                state.set_best_action(a.set_reward(reward))
                 best_reward = reward
         return best_reward
 

@@ -1,4 +1,5 @@
 from ..shape.cell9 import Cell9, C
+from ..constant import TcEnum
 from common.algo.search.state import State, Action
 from common.util.export import Dict, List
 
@@ -28,6 +29,7 @@ class TtState3(State):
     def get_env(self):
         CELL.set_state(self.state)
         self.depth = CELL.ct_num[1] + CELL.ct_num[2]
+        self.data = CELL.state_count.copy()
         self.player_id = 1 + self.depth % 2
         self.set_done(CELL.get_done())
         return CELL
@@ -44,5 +46,9 @@ class TtState3(State):
         self.get_env()
         return self.done
 
-    # def get_reward(self, player_id, actions: List[Action], **kw):
-    #     return 0
+    def get_reward(self, actions: List[Action], params: TcEnum, **kw):
+        self.get_env()
+        reward = 0
+        for p in params.get_params().values():
+            reward += p.get_value() * self.data[p.key]
+        return reward

@@ -1,6 +1,6 @@
 from common.util.log import File, get_log
 from common.util.module import Module, get_function_info
-from common.util.tool import uid, re_search, hash_any, json_dumps, ii, auto
+from common.util.tool import uid, re_search, hash_any, json_dumps, ii
 from common.util.test import TestBase, logger
 from common.util.fp import File, get_cache
 from common.util.module import Module, run_catch_error

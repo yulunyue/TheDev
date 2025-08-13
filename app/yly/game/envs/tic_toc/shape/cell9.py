@@ -1,6 +1,6 @@
 from .cell import Cell
 from .line import Line, LINES
-from ..constant import C
+from ..constant import C, TcEnum
 from common.util.export import List, Dict, defaultdict
 
 
@@ -54,9 +54,9 @@ class Cell9(Cell):
         c.value = value
 
     def get_done(self):
-        if self.state_count[C.WIN_STATE1]:
+        if self.state_count[TcEnum.PLAYER1_3.key]:
             return 1
-        if self.state_count[C.WIN_STATE2]:
+        if self.state_count[TcEnum.PLAYER2_3.key]:
             return 2
         if self.ct_num[1] + self.ct_num[2] == 9:
             return 3

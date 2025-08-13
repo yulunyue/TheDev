@@ -2,6 +2,7 @@ from typing import List, Dict
 import numpy as np
 import random
 from common.util.export import logger, json_dumps, defaultdict
+from .param import Params, Param
 
 inf = float("inf")
 
@@ -53,6 +54,7 @@ class State:
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
         self.depth = depth
+        self.data = dict()
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
@@ -121,14 +123,14 @@ class State:
         ret.reverse()
         return "\n" + "\n".join(ret)
 
-    def get_reward(self, actions: List[Action]) -> int:
+    def get_reward(self, actions: List[Action], params: Params = None) -> int:
         return self.reward
 
-    def get_self_reward(self, actions: List[Action]):
-        return self.get_reward(actions)
+    def get_self_reward(self, actions: List[Action], params: Params = None):
+        return self.get_reward(actions, params=params)
 
-    def get_relative_reward(self, actions: List[Action], params):
-        r = self.get_self_reward(actions)
+    def get_relative_reward(self, actions: List[Action], params=None):
+        r = self.get_self_reward(actions, params=params)
         return r if len(actions) % 2 == 0 else 1
 
     def get_max_action_reward(self):
@@ -139,28 +141,19 @@ class State:
                 reward = ar
         return reward
 
-    data = None
-
     def set_data(self, **kw):
-        if not self.data:
-            self.data = dict()
         self.data.update(kw)
         return self
 
     def __repr__(self):
-        info = []
-        if self.data:
-            for key, value in self.data.items():
-                info.append(f"{key}: {value}")
         return f"\n".join(
             ["", "-" * 40]
             + [
                 f"done:{self.done}, depth:{self.depth}, player:{self.player_id}",
                 f"mask:{self.state}",
                 self.to_str(),
+                f"info:{self.data}",
             ]
-            + f"reward: {self.get_self_reward()}"
-            + info
             + [f"best_action:\n{self.best_action}", "-" * 40]
         )
 

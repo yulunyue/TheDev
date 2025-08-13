@@ -70,7 +70,7 @@ class TestTicToc(TestBase):
     def run_t3(self):
         a = ALgoManage().set_record_dir(self.get_temp_path("t3"))
         a.set_state(TtState3.new())
-        resutlt = a.actor([Pm.bl9, Pm.rd1])
+        resutlt = a.actor([Pm.bl1, Pm.bl1])
         logger.info(resutlt)
 
     def debug(self):
