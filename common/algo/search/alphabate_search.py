@@ -59,7 +59,7 @@ class AlphaBateSearch(Algo):
         return alpha
 
     def get_depth_reward(self, s: State, depth: int, actions: List[Action], **kw):
-        return s.get_relative_reward(actions, params=self.params)
+        return s.get_self_reward(actions, params=self.params)
 
     def search_dfs(
         self, state: State, actions: List[Action], depth=0, player_id=None, **kw

@@ -64,11 +64,12 @@ class TestTicToc(TestBase):
 
     def test_tt3(self):
         t0 = TtState3.new()
+        b = Pm.bl2.search(t0)
+        self.expect(b.reward, 1)
+        self.expect(b.action, 4, t0)
         a = Pm.bl1.search(t0)
-        self.expect(a.reward, 3)
-        t1 = TtState3.new(256)
-        t2 = t1.get_action(1)
-        self.expect(0, 1, f"{t1}\n{t2}")
+        self.expect(a.reward, 4, t0)
+        self.expect(a.action, 4, t0)
 
     def run_t32(self):
         pass
@@ -76,7 +77,7 @@ class TestTicToc(TestBase):
     def run_t3(self):
         a = ALgoManage().set_record_dir(self.get_temp_path("t3"))
         a.set_state(TtState3.new())
-        resutlt = a.actor([Pm.bl1, Pm.bl1])
+        resutlt = a.actor([Pm.bl10, Pm.rd1])
         logger.info(resutlt)
 
     def debug(self):

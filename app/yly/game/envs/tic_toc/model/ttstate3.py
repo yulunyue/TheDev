@@ -46,8 +46,8 @@ class TtState3(State):
         self.get_env()
         return self.done
 
-    def get_self_reward(self, actions, params=None):
-        r = self.get_reward(actions, params=None)
+    def get_self_reward(self, actions, params):
+        r = self.get_reward(actions, params=params)
         return -r if self.player_id == 1 else r
 
     def get_reward(self, actions: List[Action], params: TcEnum, **kw):
