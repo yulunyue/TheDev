@@ -1,5 +1,5 @@
 from common.algo.search.algo import State, np, random_select, Action
-from .constant import C
+from .constant import C1
 from common.util.export import List, Dict
 
 
@@ -12,22 +12,22 @@ def computer(rewards, pi, gamma=0.5, **kw):
     return r.reshape((1, -1))[0]
 
 
-class MarkovRewardProcess:
-    state_store: Dict[str, "MarkovRewardProcess"] = dict()
-    n = len(C.STATE_VALUE)
+N = len(C1.STATE_VALUE)
 
-    def action_size(self):
-        return len(C.MRP_REWARD)
 
-    def get_actions_score(self, chains, gamma=0.5):
-        ret = 0
-        for i in chains[::-1]:
-            ret = gamma * ret + C.MRP_REWARD[i]
-        return ret
+class MrpState(State):
 
-    def berman(self, reward, gamma=0.5, **kw):
-        ret = C.MRP_REWARD.copy()
-        for i in range(self.n):
-            for j in range(self.n):
-                ret[i] += gamma * C.MRP_P[i][j] * reward[j]
-        return ret
+    def get_actions(self, depth=1, **kw):
+        if self.actions is not None:
+            return self.actions
+        self.actions = dict()
+        for i in range(N):
+            p = 1
+            if self.state is not None:
+                p = C1.MRP_P[self.state][i]
+            if p == 0:
+                continue
+            r = C1.MRP_REWARD[i]
+            nx = MrpState.new(i).set_reward(r)
+            self.actions[i] = Action(self, i, nx).set_p(p).set_reward(r)
+        return self.actions

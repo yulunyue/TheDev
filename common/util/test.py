@@ -93,14 +93,16 @@ class TestBase:
             a = np.array(a)
         if not isinstance(e, np.ndarray):
             e = np.array(e)
+        cha = 0
         if a.shape != e.shape:
-            not_equ = True
+            not_equ = False
         else:
-            not_equ = abs(a - e).sum() > wucha
+            cha = abs(a - e).sum()
+            not_equ = cha <= wucha
         return self.expect(
             not_equ,
-            False,
-            info=f"shape:{a.shape}\n{a}\n!=\nshape:{e.shape}\n{e}",
+            True,
+            info=f"shape:{a.shape}\n{a}\n!=\nshape:{e.shape}\n{e}\ncha:{cha}\n",
             stacklevel=3,
         )
 

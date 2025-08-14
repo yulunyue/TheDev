@@ -18,11 +18,32 @@ class Action:
         self.dst: State = dst
         self.data = dict()
 
+    def get_dst(self):
+        if self.dst_p:
+            a = random.random()
+            for p, s in self.dst_p:
+                if a <= p:
+                    return s
+                a -= p
+        return self.dst
+
     def get_data(self, key, default_value):
         return self.data.get(key, default_value)
 
     def set_data(self, key, value):
         self.data[key] = value
+        return self
+
+    def set_p(self, p):
+        self.p = p
+        return self
+
+    dst_p = None
+
+    def add_dst_with_p(self, dst: "State", p):
+        if self.dst_p is None:
+            self.dst_p = []
+        self.dst_p.append([p, dst])
         return self
 
     def set_reward(self, reward):
@@ -51,6 +72,7 @@ class State:
     name = "state"
     parent: "State"
     done = None
+    STATE_STORE: Dict[str, "State"] = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
@@ -59,6 +81,14 @@ class State:
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
+
+    @classmethod
+    def new(cls, state=None, **kw):
+        if cls.STATE_STORE is None:
+            cls.STATE_STORE = dict()
+        if state not in cls.STATE_STORE:
+            cls.STATE_STORE[state] = cls(state, **kw)
+        return cls.STATE_STORE[state]
 
     def get_done(self):
         return self.done
@@ -94,7 +124,43 @@ class State:
             return self.actions[a]
         raise Exception(a, list(actions.keys()))
 
+    def get_steps(self, steps) -> List[Action]:
+        ret = []
+        s = self
+        for step in steps:
+            action = s.get_action(step)
+            ret.append(action)
+            s = action.dst
+        return ret
+
+    def get_seq_score_forward(self, actions: List[Action], gamma=0.5):
+        """
+        计算一个序列的价值, 未来的值更重要
+        """
+        ret = 0
+        for a in actions:
+            ret = gamma * ret + a.get_reward()
+        return ret
+
+    def get_seq_score_backward(self, actions: List[Action], gamma=0.5):
+        """
+        计算一个序列的价值，当前值更重要
+        """
+        return self.get_seq_score_forward(actions[::-1], gamma)
+
+    def get_bellman_score(self, gamma=0.5):
+        ret = self.get_reward()
+        for a in self.get_actions().values():
+            ret += a.p * gamma * a.get_reward()
+        return ret
+
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
+        if self.actions is not None:
+            return self.actions
+        self.actions = self.make_actions()
+        return self.actions
+
+    def make_actions(self):
         raise Exception("todo")
 
     def get_random_action(self) -> Action:
@@ -124,7 +190,7 @@ class State:
         ret.reverse()
         return "\n" + "\n".join(ret)
 
-    def get_reward(self, actions: List[Action], params: Params = None) -> int:
+    def get_reward(self, actions: List[Action] = None, params: Params = None) -> int:
         return self.reward
 
     def get_self_reward(self, actions: List[Action], params: Params = None):
