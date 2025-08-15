@@ -10,13 +10,20 @@ inf = float("inf")
 class Action:
     check_info = None
     reward = None
-    value = 0
+    regret = 0
 
     def __init__(self, src, action, dst=None):
         self.action = action
         self.src: State = src
         self.dst: State = dst
         self.data = dict()
+
+    def get_regret(self):
+        return self.regret
+
+    @property
+    def key(self):
+        return f"{self.src.state}_{self.action}"
 
     def get_dst(self):
         if self.dst_p:

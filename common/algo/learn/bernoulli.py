@@ -2,13 +2,16 @@ from common.algo.learn.base import Base
 from common.algo.search.state import State, Action
 import numpy as np
 from typing import List
+from common.util.export import defaultdict
 
 
 class EpsilonGreedy(Base):
 
-    def load(self, num_episodes=5000, epsilon=0.1):
+    def load(self, epsilon=0.1):
+        self.action_count = defaultdict(int)
+        self.action_value = defaultdict(lambda: 1)
         self.total_count = 1
-        return super().load(num_episodes=num_episodes, epsilon=epsilon)
+        return super().load(epsilon=epsilon)
 
     def take_action(self, state: State):
         if np.random.rand() < self.epsilon / self.total_count:
@@ -19,14 +22,14 @@ class EpsilonGreedy(Base):
 
     def get_max_action(self, s: State):
         actions = list(s.get_actions().values())
-        k = np.argmax([v.value for v in actions])
+        k = np.argmax([self.action_value[v.key] for v in actions])
         return actions[k]
 
     def update_action(self, a: Action):
-        regrat, r = a.get_reward()
-        a.value = (a.value * a.count + r) / (a.count + 1)
-        a.count += 1
-        self.reward_tmp_all -= regrat
+        r = a.get_reward()
+        count, value = self.action_count[a.key], self.action_value[a.key]
+        self.action_value[a.key] = (value * count + r) / (count + 1)
+        self.action_count[a.key] += 1
 
 
 class DecayingEpsilonGreedy(EpsilonGreedy):
@@ -39,23 +42,16 @@ class DecayingEpsilonGreedy(EpsilonGreedy):
 
 class Ucb(EpsilonGreedy):
 
-    def load(self, num_episodes=5000, coef=1):
+    def load(self, coef=1):
         self.coef = coef
-        return super().load(num_episodes=num_episodes)
+        return super().load()
 
-    def search_main(self, state: State):
-        a = self.get_max_action(state)
-        regrat, r = a.get_reward()
-        a.value = (a.value * a.count + r) / (a.count + 1)
-        a.count += 1
-        self.reward_tmp_all -= regrat
-
-    def get_max_action(self, state):
+    def take_action(self, state: State):
         actions = [v for v in state.get_actions().values()]
-        estimates = [v.value for v in actions]
-        counts = [v.count for v in state.get_actions().values()]
-        ucb = np.array(estimates) + self.coef * np.sqrt(
-            np.log(self.total_count) / (2 * (np.array(counts) + 1))
+        estimates = np.array([self.action_value[v.key] for v in actions])
+        counts = np.array([self.action_count[v.key] for v in actions])
+        ucb = estimates + self.coef * np.sqrt(
+            np.log(self.total_count) / (2 * counts + 1)
         )
         self.total_count += 1
         return actions[np.argmax(ucb)]
@@ -64,19 +60,18 @@ class Ucb(EpsilonGreedy):
 class ThompsonSampling(Base):
 
     def load(self, num_episodes=5000, epsilon=0.01):
+        self.action_value = defaultdict(lambda: [1, 1])
         return super().load(num_episodes=num_episodes, epsilon=epsilon)
 
-    def search_main(self, state: State):
-        a = self.get_max_action(state)
-        regrat, reward = a.get_reward()
-        self.reward_tmp_all -= regrat
-        a.tm_value[0] += reward
-        a.tm_value[1] += 1 - reward
+    def update_action(self, a: Action):
+        r = a.get_reward()
+        self.action_value[a.key][0] += r
+        self.action_value[a.key][1] += 1 - r
 
-    def get_max_action(self, state):
-        actions = [state.get_action(i) for i in range(state.action_size())]
-        a = [ac.tm_value[0] for ac in actions]
-        b = [ac.tm_value[1] for ac in actions]
+    def take_action(self, state: State):
+        actions = list(state.get_actions().values())
+        a = [self.action_value[ac.key][0] for ac in actions]
+        b = [self.action_value[ac.key][1] for ac in actions]
         samples = np.random.beta(a, b)
         k = np.argmax(samples)
         return actions[k]

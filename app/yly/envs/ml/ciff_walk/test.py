@@ -1,7 +1,9 @@
 from common.util.export import TestBase, logger
-from app.yly.game.envs.ciff_walk.env import CfState, C
+from .env import CfState, C
 from common.algo.export import (
     Td0,
+    ValueIteration,
+    PolicyIteration,
     Qlearning,
     DynaQ,
     Algo,
@@ -14,7 +16,9 @@ from common.algo.export import (
 
 class CfTest(TestBase):
 
-    def test_base(self):
+    def test_value(self):
+        self.run_algo(ValueIteration())
+
         # self.run_algo(MctsEasy().load())
         # self.run_algo(Qlearning().load())
         # self.run_algo(DynaQ().load())

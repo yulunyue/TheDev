@@ -97,10 +97,3 @@ class ALgoManage:
         fp = File(file_path).get_writer()
         fp.write(msg)
         fp.flush()
-
-    def train(self, players: List[Algo], epochs=1):
-        win_count = defaultdict(int)
-        for _ in range(epochs):
-            win_idx = self.actor(players)
-            win_count[win_idx] += 1
-        return win_count

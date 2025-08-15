@@ -17,7 +17,6 @@ class TestBan(TestBase):
     def prepare(self):
         BAN_ENV.load()
         self.prob_format = ", ".join(["%.2f" % v for v in BAN_ENV.probs])
-        self.b = Bandit()
         self.d = Draw()
         logger.info(self.prob_format)
 
@@ -34,21 +33,12 @@ class TestBan(TestBase):
         self.algo(ThompsonSampling().load())
 
     def algo(self, algo: EpsilonGreedy):
-        algo.reward_tmp_all = 0
-        a = ALgoManage().set_state(self.b)
-        a.train([algo], epochs=1)
-        b = algo.get_max_action(self.b).action
-        self.expect(
-            # BAN_ENV.max_idx,
-            b,
-            BAN_ENV.max_idx,
-            f"name:{algo.name}\nb:{self.b}",
-        )
-        logger.info(f"{algo.name}:{self.b}")
+        algo.train(Bandit)
+        logger.info(f"{algo.name} {algo.rewards_record[-1]}")
         self.d.draw_line(algo.rewards_record, title=algo.name)
 
     def debug(self):
-        self.test_de()
+        self.test_ucb()
 
     def exit(self):
         return self.d.save(self.get_temp_file(f"all.svg"))

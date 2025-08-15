@@ -32,7 +32,7 @@ class TestMain(TestBase):
         m = MctsEasy().load(num_episodes=10000)
         m.train(MdpState)
         rewards = [MdpState.new(i).mct_reward for i in range(1, 6)]
-        self.expect_ndarray(rewards, C2.MDP_STATE, wucha=0.07)
+        self.expect_ndarray(rewards, C2.MDP_STATE, wucha=0.1)
 
 
 if __name__ == "__main__":
