@@ -1,5 +1,6 @@
 todo:
-MOVE_API的check和模仿学习的方案
+MOVE_API的check
+模仿学习的方案
 check_list:
 
 QA:
