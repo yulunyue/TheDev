@@ -10,6 +10,7 @@ from common.algo.learn.bernoulli import (
     ThompsonSampling,
 )
 from common.algo.learn.sarse.sarse import Td0
+from common.algo.learn.base import Base as BaseLn
 from common.algo.learn.sarse.qlearning import Qlearning
 from common.algo.learn.sarse.dyn import DynaQ
 from common.algo.learn.sarse.mcts import MctsEasy

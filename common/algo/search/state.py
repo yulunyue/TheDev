@@ -162,6 +162,8 @@ class State:
         return ret
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
+        if self.get_done():
+            return dict()
         if self.actions is not None:
             return self.actions
         self.actions = self.make_actions()
@@ -179,6 +181,21 @@ class State:
 
     def to_str(self):
         return ""
+
+    def bfs(self) -> Dict[str, "State"]:
+        ret = {self.state: self}
+        q = [self]
+        while q:
+            t = q
+            q = []
+            for s in t:
+                for a in s.get_actions().values():
+                    d = a.get_dst()
+                    if d.state in ret:
+                        continue
+                    ret[d.state] = d
+                    q.append(d)
+        return ret
 
     def dump_tree(self, max_depth):
         ret = []

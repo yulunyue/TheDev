@@ -6,8 +6,10 @@ from .constant import C
 
 
 class CfState(State):
-    def __init__(self, state=C.INIT_SATTE):
-        self.y, self.x = state // C.ncol, state % C.nrow
+    def __init__(self, state):
+        if state is None:
+            state = C.INIT_SATTE
+        self.y, self.x = state // C.ncol, state % C.ncol
         super().__init__(state)
 
     def make_actions(self):

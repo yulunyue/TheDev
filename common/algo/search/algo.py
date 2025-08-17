@@ -8,6 +8,7 @@ from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
+from common.util.export import File
 
 
 def random_seed(v=1):
@@ -57,13 +58,13 @@ class Algo:
     def search_main(self, state: "State"):
         raise Exception("todo")
 
-    def get_max_action(self, state: State):
+    def get_max_action(self, state: "State"):
         raise Exception("todo")
 
-    def take_action(self, state: State) -> Action:
+    def take_action(self, state: "State") -> Action:
         raise Exception("todo")
 
-    def update_action(self, a: Action):
+    def update_action(self, a: "Action"):
         pass
 
     def reset(self):
@@ -82,6 +83,14 @@ class Algo:
 
     def actor(self):
         pass
+
+    _log = None
+
+    def log(self, msg):
+        if self._log is None:
+            self._log = File(f"data/algo/log/{self.get_name()}.log").get_writer()
+        self._log.write(f"{msg}\n")
+        self._log.flush()
 
 
 class RandomAlgo(Algo):
