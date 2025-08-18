@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger, File, Module, ThreadManage
 
-from app.yly.game.envs.mpr.cg import Mpr
-from app.yly.game.envs.mpr.util import Util
+from app.yly.envs.cg.mpr.cg import Mpr
+from app.yly.envs.cg.mpr.util import Util
 
 
 class MprTest(TestBase):

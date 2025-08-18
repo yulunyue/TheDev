@@ -1,7 +1,7 @@
 from common.util.export import logger
-from app.yly.game.envs.oa.model.state import Rooms
+from app.yly.envs.cg.oa.model.state import Rooms
 from common.mock import MockCg
-from app.yly.game.envs.oa.model.constant import C
+from app.yly.envs.cg.oa.model.constant import C
 from common.algo.search.alphabate_search import AlphaBateSearch, Algo
 
 

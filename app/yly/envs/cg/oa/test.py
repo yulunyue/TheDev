@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger, Module, ii
 from common.third_util.export import CodingGame
 from common.algo.export import AlphaBateSearch, ALgoManage, Algo
-from app.yly.game.envs.oa.cg import CgOa, Rooms, C, PM
+from app.yly.envs.cg.oa.cg import CgOa, Rooms, C, PM
 
 
 class OaTest(TestBase):

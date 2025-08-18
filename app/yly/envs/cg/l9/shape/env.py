@@ -1,6 +1,6 @@
-from app.yly.game.envs.l9.constant import C
-from app.yly.game.envs.l9.shape.chess import Chess
-from app.yly.game.envs.l9.shape.line import Line
+from app.yly.envs.cg.l9.constant import C
+from app.yly.envs.cg.l9.shape.chess import Chess
+from app.yly.envs.cg.l9.shape.line import Line
 from typing import List, Dict
 from common.util.export import logger
 

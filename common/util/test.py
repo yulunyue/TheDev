@@ -39,7 +39,7 @@ class TestBase:
         pass
 
     def run_one_case(self, f, *args, **kw):
-        self.prepare_case(*self.argvs)
+        self.prepare_case(*args)
         self.ep_cont = 0
         self.ok_count = 0
         start_time = time.time() * 1000
@@ -50,7 +50,7 @@ class TestBase:
         logger.info(
             f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
         )
-        self.after_case(*self.argvs)
+        self.after_case(*args)
         return msg
 
     def run_all_test(self):
@@ -69,7 +69,10 @@ class TestBase:
 
     def expect(self, a, expect_value=True, info="", stacklevel=2):
         self.ep_cont += 1
-        is_eq = a == expect_value or str(a) == str(expect_value)
+        if isinstance(a, float) and isinstance(expect_value, float):
+            is_eq = abs(a - expect_value) <= 0.000001
+        else:
+            is_eq = a == expect_value or str(a) == str(expect_value)
         if is_eq:
             self.ok_count += 1
             return True
@@ -89,6 +92,8 @@ class TestBase:
     def expect_ndarray(self, a, e, wucha=0.000001):
         import numpy as np
 
+        if getattr(a, "requires_grad"):
+            a = a.detach().numpy()
         if not isinstance(a, np.ndarray):
             a = np.array(a)
         if not isinstance(e, np.ndarray):

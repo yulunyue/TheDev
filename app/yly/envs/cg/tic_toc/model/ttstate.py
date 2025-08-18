@@ -1,8 +1,8 @@
 from common.algo.export import State
 
-# from app.yly.game.envs.tic_toc.shape.cell81 import E
-from app.yly.game.envs.tic_toc.constant import C
-from app.yly.game.envs.tic_toc.model.ttaction import TtAction
+# from app.yly.envs.cg.tic_toc.shape.cell81 import E
+from app.yly.envs.cg.tic_toc.constant import C
+from app.yly.envs.cg.tic_toc.model.ttaction import TtAction
 from typing import List, Dict
 
 

@@ -1,4 +1,4 @@
-from app.yly.game.envs.cw.model.constant import C
+from app.yly.envs.cg.cw.model.constant import C
 from common.util.export import logger, List, defaultdict, Dict
 from .b_line_help import BM
 
@@ -10,7 +10,7 @@ class ShapeBase:
     owner = C.OWNER_NEUTRAL
 
     def __init__(self, g, shape_type):
-        from app.yly.game.envs.cw.model.world import World
+        from app.yly.envs.cg.cw.model.world import World
 
         self.unit_type = self.shape_type = shape_type
         self.g: World = g

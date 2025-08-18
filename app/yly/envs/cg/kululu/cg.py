@@ -1,6 +1,6 @@
 from common.util.export import logger
 from common.mock import MockCg
-from app.yly.game.envs.kululu.model.grid import Grid
+from app.yly.envs.cg.kululu.model.grid import Grid
 
 
 class Kululu(MockCg):

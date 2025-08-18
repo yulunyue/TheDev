@@ -1,5 +1,5 @@
 from common.mock import MockCg
-from app.yly.game.envs.mpr.constant import C
+from app.yly.envs.cg.mpr.constant import C
 from .model.algo import MprAlgo
 
 

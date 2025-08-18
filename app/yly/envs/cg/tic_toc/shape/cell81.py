@@ -1,6 +1,6 @@
-from app.yly.game.envs.tic_toc.shape.cell import Cell, Cell9
-from app.yly.game.envs.tic_toc.shape.line import Line, LINES
-from app.yly.game.envs.tic_toc.constant import C
+from app.yly.envs.cg.tic_toc.shape.cell import Cell, Cell9
+from app.yly.envs.cg.tic_toc.shape.line import Line, LINES
+from app.yly.envs.cg.tic_toc.constant import C
 from typing import List
 
 

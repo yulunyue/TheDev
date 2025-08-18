@@ -1,8 +1,8 @@
 from common.util.export import TestBase, logger, Module
 from common.algo.export import ALgoManage
 from common.third_util.export import CodingGame
-from app.yly.game.envs.kululu.cg import Kululu
-from app.yly.game.envs.kululu.util import Pm
+from app.yly.envs.cg.kululu.cg import Kululu
+from app.yly.envs.cg.kululu.util import Pm
 from .model.grid import Grid
 
 

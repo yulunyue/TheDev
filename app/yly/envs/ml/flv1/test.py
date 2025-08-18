@@ -6,10 +6,17 @@ from .algo.qlearn import LkQl
 
 
 class TestFlv(TestBase):
+    def prepare(self, args=None):
+        self.s = Flvo.new()
+
     def dev(self):
-        l = LkQl().load()
-        l.search(Flvo())
-        l.draw()
+        # l = LkQl().load()
+        # l.search(Flvo())
+        logger.info(self.s)
 
     def debug(self):
-        pass
+        self.dev()
+
+
+if __name__ == "__main__":
+    TestFlv().dev()

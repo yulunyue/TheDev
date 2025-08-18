@@ -1,4 +1,4 @@
-from app.yly.game.envs.cw.model.shape import ShapeBase, C
+from app.yly.envs.cg.cw.model.shape import ShapeBase, C
 from .constant import VE
 from common.algo.search.state import Action
 

@@ -21,7 +21,7 @@ def get_ins(file_name):
 
 class LCTest(TestBase):
 
-    def test_cases(self, file_name, fun_name="execute", case_idx=None):
+    def cases(self, file_name, fun_name="execute", case_idx=None):
         ins: MockCf = get_ins(file_name)
         cases = ins.get_cases()
         if case_idx is None:
@@ -40,7 +40,7 @@ class LCTest(TestBase):
             self.expect(r, except_result, msg)
 
     def test_debug(self):
-        self.test_cases("lg_p3179")
+        self.cases("lg_p3179")
 
 
 if __name__ == "__main__":

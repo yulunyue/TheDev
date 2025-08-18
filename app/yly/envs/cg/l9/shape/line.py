@@ -1,15 +1,15 @@
 from typing import List
-from app.yly.game.envs.l9.shape.chess import Chess
+from app.yly.envs.cg.l9.shape.chess import Chess
 
 
 class Line:
 
     def __init__(self, chesss: List[Chess]) -> None:
         self.chess_array: List[Chess] = chesss
-        for i,c in  enumerate(self.chess_array):
+        for i, c in enumerate(self.chess_array):
             c.lines.append(self)
-            if i>0:
-                lc=self.chess_array[i-1]
+            if i > 0:
+                lc = self.chess_array[i - 1]
                 lc.nexts.append(c)
                 c.nexts.append(lc)
         self.reset()

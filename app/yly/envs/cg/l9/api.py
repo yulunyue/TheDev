@@ -1,8 +1,8 @@
 from common.service.export import Api
 from common.algo.export import Algo
 from common.util.export import logger
-from app.yly.game.envs.l9.constant import C
-from app.yly.game.envs.l9.model.l9state import L9State, L9Action, L9ENV
+from app.yly.envs.cg.l9.constant import C
+from app.yly.envs.cg.l9.model.l9state import L9State, L9Action, L9ENV
 
 
 class L9Api(Api):

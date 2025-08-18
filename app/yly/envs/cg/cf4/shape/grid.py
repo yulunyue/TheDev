@@ -1,8 +1,8 @@
-from app.yly.game.envs.cf4.shape.line import Line
-from app.yly.game.envs.cf4.shape.colunm import Point, Column
+from .line import Line
+from .colunm import Point, Column
 from common.algo.base.bin_util import low_bits, set_mask
 from common.util.export import List, logger, defaultdict
-from app.yly.game.envs.cf4.model.constant import C
+from ..model.constant import C
 
 
 class Grid:

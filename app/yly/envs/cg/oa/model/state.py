@@ -1,7 +1,7 @@
 from common.algo.search.state import State, Action
 from common.algo.search.state import Action
 from common.util.export import List
-from app.yly.game.envs.oa.model.constant import C
+from app.yly.envs.cg.oa.model.constant import C
 
 
 class Rooms(State):

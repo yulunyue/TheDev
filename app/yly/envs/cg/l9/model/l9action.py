@@ -1,11 +1,11 @@
 from common.algo.search.state import Action
-from app.yly.game.envs.l9.constant import C
+from app.yly.envs.cg.l9.constant import C
 
 
 class L9Action(Action):
 
     def __init__(self, src, dst):
-        from app.yly.game.envs.l9.model.l9state import L9State
+        from app.yly.envs.cg.l9.model.l9state import L9State
 
         self.src: L9State = src
         self.dst: L9State = dst

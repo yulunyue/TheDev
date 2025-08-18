@@ -8,7 +8,7 @@ class Chess:
         self.key = key
         self.mask1, self.mask2 = C.get_mask(idx)
         self.idx = idx
-        from app.yly.game.envs.l9.shape.line import Line
+        from app.yly.envs.cg.l9.shape.line import Line
 
         self.lines: List[Line] = []
         self.nexts: List[Chess] = []

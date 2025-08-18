@@ -68,7 +68,7 @@ class Logger(logging.Logger):
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
     ):
         if self.cache_enable:
-            self.cache_msgs.append(msg)
+            self.cache_msgs.append(str(msg))
             return
         return super().info(
             msg,

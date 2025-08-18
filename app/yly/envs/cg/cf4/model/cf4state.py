@@ -1,6 +1,6 @@
-from app.yly.game.envs.cf4.model.cf4action import F4Action
-from app.yly.game.envs.cf4.model.constant import C
-from app.yly.game.envs.cf4.shape.grid import Grid
+from .cf4action import F4Action
+from .constant import C
+from ..shape.grid import Grid
 from common.algo.search.state import State
 from typing import Dict
 

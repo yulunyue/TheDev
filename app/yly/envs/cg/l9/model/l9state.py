@@ -1,8 +1,8 @@
 from common.algo.search.state import State
-from app.yly.game.envs.l9.model.l9action import L9Action
-from app.yly.game.envs.l9.constant import C
-from app.yly.game.envs.l9.shape.env import L9ENV
-from app.yly.game.envs.l9.shape.chess import Chess
+from app.yly.envs.cg.l9.model.l9action import L9Action
+from app.yly.envs.cg.l9.constant import C
+from app.yly.envs.cg.l9.shape.env import L9ENV
+from app.yly.envs.cg.l9.shape.chess import Chess
 from typing import Dict, List
 
 

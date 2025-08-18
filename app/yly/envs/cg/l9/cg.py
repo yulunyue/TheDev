@@ -1,6 +1,6 @@
 from common.mock import MockCg
 from common.algo.search.alphabate_search import AlphaBateSearch
-from app.yly.game.envs.l9.model.l9state import L9State, L9Action
+from app.yly.envs.cg.l9.model.l9state import L9State, L9Action
 
 
 class Cgl9(MockCg):

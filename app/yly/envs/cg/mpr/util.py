@@ -1,5 +1,5 @@
 from common.util.export import List, ii, defaultdict, logger
-from app.yly.game.envs.mpr.cg import Mpr, C
+from app.yly.envs.cg.mpr.cg import Mpr, C
 from common.third_util.export import CGFrames, CodingGame, EChart, Draw
 
 from .model.data import Data

@@ -1,6 +1,6 @@
-from app.yly.game.envs.cw.model.shape import ShapeBase
-from app.yly.game.envs.cw.model.constant import C
-from app.yly.game.envs.cw.model.action import CwAction
+from .shape import ShapeBase
+from .constant import C
+from .action import CwAction
 from common.util.export import List, Dict, logger
 import random
 from .path import Path

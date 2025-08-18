@@ -1,4 +1,4 @@
-from app.yly.game.envs.cw.model.world import World, C
+from .model.world import World, C
 from common.mock import MockCg
 
 from common.algo.search.alphabate_search import AlphaBateSearch

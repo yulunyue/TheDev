@@ -1,10 +1,10 @@
 from common.algo.export import Action
-from app.yly.game.envs.tic_toc.constant import C
+from app.yly.envs.cg.tic_toc.constant import C
 
 
 class TtAction(Action):
     def __init__(self, src, action, dst=None):
-        from app.yly.game.envs.tic_toc.model.ttstate import TtState
+        from app.yly.envs.cg.tic_toc.model.ttstate import TtState
 
         self.src: TtState = src
         self.dst: TtState = dst

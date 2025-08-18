@@ -15,7 +15,7 @@ from typing import List, Dict
 
 class Line:
     def __init__(self, shap1, shape2, shape3):
-        from app.yly.game.envs.tic_toc.shape.cell import Cell
+        from app.yly.envs.cg.tic_toc.shape.cell import Cell
 
         self.shapes: List[Cell] = [shap1, shape2, shape3]
         for s in self.shapes:

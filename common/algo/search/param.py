@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Param:
-    def __init__(self, key, value=None):
+    def __init__(self, key=None, value=None):
         self.key = key
         self.value = value
 
@@ -26,6 +26,8 @@ class Params:
                 continue
             p = getattr(self, k)
             if isinstance(p, Param):
+                if p.key is None:
+                    p.key = k
                 self._params[p.key] = p.clone()
         return self._params
 

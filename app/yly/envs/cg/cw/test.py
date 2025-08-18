@@ -1,6 +1,6 @@
 from common.util.export import TestBase, logger, Module
 from common.third_util.export import CodingGame
-from app.yly.game.envs.cw.cg import CgCw, World, C
+from .cg import CgCw, World, C
 from .model.constant import CASES
 from .util import Util
 from common.algo.export import ALgoManage, Algo

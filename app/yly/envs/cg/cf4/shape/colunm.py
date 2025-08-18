@@ -1,11 +1,11 @@
-from app.yly.game.envs.cf4.shape.point import Point
-from app.yly.game.envs.cf4.model.constant import C
+from .point import Point
+from ..model.constant import C
 from common.util.export import List, Dict
 
 
 class Column:
     def __init__(self, p, idx, height):
-        from app.yly.game.envs.cf4.shape.grid import Grid
+        from .grid import Grid
 
         self.p: Grid = p
         self.idx = idx

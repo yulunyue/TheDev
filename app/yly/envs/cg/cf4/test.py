@@ -3,9 +3,9 @@ from common.algo.export import random_seed, ALgoManage
 from common.third_util.export import CodingGame
 
 
-from app.yly.game.envs.cf4.model.cf4state import F4State, F4Action
-from app.yly.game.envs.cf4.cg import CgMuiltCf4
-from app.yly.game.envs.cf4.model.constant import C
+from .model.cf4state import F4State, F4Action
+from .cg import CgMuiltCf4
+from .model.constant import C
 from .util import Pm
 from typing import List
 

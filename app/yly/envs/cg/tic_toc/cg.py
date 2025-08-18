@@ -1,7 +1,7 @@
 from common.mock import MockCg
 from common.algo.search.alphabate_search import AlphaBateSearch
-from app.yly.game.envs.tic_toc.model.ttstate import TtState
-from app.yly.game.envs.tic_toc.constant import C
+from app.yly.envs.cg.tic_toc.model.ttstate import TtState
+from app.yly.envs.cg.tic_toc.constant import C
 
 
 class TicTocCg(MockCg):

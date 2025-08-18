@@ -1,4 +1,4 @@
-from app.yly.game.envs.cf4.shape.point import Point
+from ..shape.point import Point
 from common.util.export import List, Dict
 
 

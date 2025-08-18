@@ -1,6 +1,6 @@
 from ..constant import C
 from common.util.export import List, Dict
-from app.yly.game.envs.tic_toc.shape.line import Line, LINES
+from app.yly.envs.cg.tic_toc.shape.line import Line, LINES
 
 
 class Cell:

@@ -1,4 +1,4 @@
-from common.util.tool import auto, EnumAuto
+from common.algo.search.param import Param, Params
 
 CASES = [
     "....xx.xx....,....x...x....,.....x.x.....,.....x.x.....,..x.......x..,...x.....x...,..x.......x..|0 1 10 4 3 0,1 1 10 9 6 1,2 0 10 2 0 0,3 0 10 4 2 0,4 0 10 1 2 0,5 0 10 1 3 0,6 0 10 4 6 2,7 0 10 1 6 0,8 0 10 11 1 1,9 0 10 9 3 1,10 0 10 10 2 1,11 0 10 11 3 1,12 0 10 7 5 1,13 0 10 11 5 2",
@@ -39,17 +39,17 @@ class Constant:
         }
 
 
-class ValueEnum(EnumAuto):
-    LEADER_IN_OP_CULT_RANGE = auto()
-    WAIT_STATE = auto()
-    NULL_STATE = auto()
-    CULT_NEAR_OP_LEADER = auto()
-    LEADER_AWAY_OP_CULT_RANGE = auto()
-    LEADER_NEAR_NEUTRAL_CULT = auto()
-    CULT_SHOOT_OP_CULT = auto()
-    CULT_SHOOT_OP_LEADER = auto()
-    LEADER_INFECT_NEUTRAL_CULT = auto()
-    LEADER_OUT_OP_CULT_RANGE = auto()
+class ValueEnum(Params):
+    LEADER_IN_OP_CULT_RANGE = Param()
+    WAIT_STATE = Param()
+    NULL_STATE = Param()
+    CULT_NEAR_OP_LEADER = Param()
+    LEADER_AWAY_OP_CULT_RANGE = Param()
+    LEADER_NEAR_NEUTRAL_CULT = Param()
+    CULT_SHOOT_OP_CULT = Param()
+    CULT_SHOOT_OP_LEADER = Param()
+    LEADER_INFECT_NEUTRAL_CULT = Param()
+    LEADER_OUT_OP_CULT_RANGE = Param()
 
 
 VE = ValueEnum()

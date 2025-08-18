@@ -1,16 +1,16 @@
 from common.util.export import List, Dict
-from app.yly.game.envs.cf4.model.constant import C
+from ..model.constant import C
 
 
 class Point:
     def __init__(self, g, y, x):
-        from app.yly.game.envs.cf4.shape.grid import Grid
+        from ..shape.grid import Grid
 
         self.g: Grid = g
         self.y = y
         self.x = x
         self.value = 2
-        from app.yly.game.envs.cf4.shape.line import Line
+        from ..shape.line import Line
 
         self.lines: Dict[int, Line] = {}
 
