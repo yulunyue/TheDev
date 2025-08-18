@@ -92,7 +92,7 @@ class TestBase:
     def expect_ndarray(self, a, e, wucha=0.000001):
         import numpy as np
 
-        if getattr(a, "requires_grad"):
+        if getattr(a, "requires_grad", False):
             a = a.detach().numpy()
         if not isinstance(a, np.ndarray):
             a = np.array(a)

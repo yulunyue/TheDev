@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger
-from common.algo.export import MctsEasy
+from common.algo.export import MctsEasy, PolicyIteration, ValueIteration
 from .model.mrp_state import computer, MrpState
 from .model.mdp_state import MdpState, get_mrp_form_mdp
 from .model.constant import C1, C2
@@ -33,6 +33,12 @@ class TestMain(TestBase):
         m.train(MdpState)
         rewards = [MdpState.new(i).mct_reward for i in range(1, 6)]
         self.expect_ndarray(rewards, C2.MDP_STATE, wucha=0.1)
+
+    def run_value(self):
+        ValueIteration().load().train(MdpState)
+
+    def run_policy(self):
+        PolicyIteration().load().train(MdpState)
 
 
 if __name__ == "__main__":

@@ -48,3 +48,4 @@ class VFunc(PiFunc):
         states = state_cls.new().bfs().values()
         self.policy_evaluation(states)
         self.policy_improvement(states)
+        return self
