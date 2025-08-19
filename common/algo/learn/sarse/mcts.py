@@ -1,5 +1,5 @@
 from common.algo.search.algo import Algo, Action, State, np
-from common.util.export import get_log, logger, List, defaultdict
+from common.util.export import get_log, logger, random, List, defaultdict
 from common.algo.learn.base import Base
 
 
@@ -11,6 +11,13 @@ class MctsEasy(Base):
         self.vt = defaultdict(int)
         self.mct_reward = defaultdict(int)
         return self
+
+    def take_action(self, state, **kw):
+        s = random.random()
+        for a in state.get_actions().values():
+            if s <= a.p:
+                return a
+            s -= a.p
 
     def feed_back_actions(self, actions: List[Action]):
         g = 0

@@ -21,14 +21,16 @@ class MdpState(State):
             key = f"s{self.state}-{a}"
             if key not in C2.R:
                 continue
-            a = Action(self, key).set_reward(C2.R[key])
             for i in range(1, N + 1):
                 pk = f"{key}-s{i}"
                 if pk not in C2.P:
                     continue
-                s = MdpState.new(i)
-                a.add_dst_with_p(s, C2.P[pk])
-            actions[key] = a
+                a = (
+                    Action(self, key, MdpState.new(i))
+                    .set_reward(C2.R[key])
+                    .set_p(C2.P[pk])
+                )
+                actions[pk] = a
         return actions
 
     def get_pi_reawrd(self, pi):
@@ -46,6 +48,6 @@ def get_mrp_form_mdp(pi: Dict[str, int]):
     for k, v in pi.items():
         an, _ = k.split("-")
         s = MdpState.new(int(an[1]))
-        for d, p in s.get_action(k).dst_p.values():
-            ans[s.state - 1][d.state - 1] += p * v
+        for d in s.get_actions().values():
+            ans[s.state - 1][d.dst.state - 1] += d.p * v
     return ans

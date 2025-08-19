@@ -25,15 +25,7 @@ class Action:
     def key(self):
         return f"{self.src.state}_{self.action}"
 
-    def get_dst(self, step=None):
-        if self.dst_p:
-            if step is None:
-                a = random.random()
-                for s, p in self.dst_p.values():
-                    if a <= p:
-                        return s
-                    a -= p
-            return self.dst_p[step][0]
+    def get_dst(self):
         return self.dst
 
     def get_data(self, key, default_value):
@@ -45,14 +37,6 @@ class Action:
 
     def set_p(self, p):
         self.p = p
-        return self
-
-    dst_p = None
-
-    def add_dst_with_p(self, dst: "State", p):
-        if self.dst_p is None:
-            self.dst_p = dict()
-        self.dst_p[dst.state] = [dst, p]
         return self
 
     def set_reward(self, reward):
@@ -138,7 +122,7 @@ class State:
         s = self
         for step in steps:
             action = s.get_action(step)
-            s = action.get_dst(step)
+            s = action.get_dst()
             ret.append(s)
         return ret
 
@@ -160,7 +144,7 @@ class State:
     def get_bellman_score(self, gamma=0.5):
         ret = self.get_reward()
         for a in self.get_actions().values():
-            ret += gamma * a.get_reward()
+            ret += gamma * a.get_reward() * a.p
         return ret
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:

@@ -11,8 +11,8 @@ class TestMain(TestBase):
 
     def test_mrp(self):
         s = MrpState.new(0)
-        actions = s.get_steps([1, 2, 5])
-        self.expect(s.get_seq_score_backward(actions, 0.5), -2.5)
+        states = s.get_steps([1, 2, 5])
+        self.expect(s.get_seq_score_backward(states, 0.5), -2.5)
         self.expect_ndarray(
             [
                 MrpState.new(i).get_bellman_score(0.5)
@@ -43,7 +43,7 @@ class TestMain(TestBase):
 
     def test_mct1(self):
         m = MctsEasy().load(num_episodes=10000)
-        m.train(MrpState.new(2))
+        m.train(MrpState.new())
         rewards = [m.mct_reward[i] for i in range(len(C1.STATE_VALUE))]
         self.expect_ndarray(rewards, C1.STATE_VALUE, wucha=1)
 
@@ -54,7 +54,7 @@ class TestMain(TestBase):
         PolicyIteration().load().train(MdpState)
 
     def debug(self):
-        self.test_mct1()
+        self.test_mrp()
 
 
 if __name__ == "__main__":

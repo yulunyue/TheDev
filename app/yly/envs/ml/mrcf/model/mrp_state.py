@@ -17,10 +17,7 @@ N = len(C1.STATE_VALUE)
 
 class MrpAction(Action):
     def get_reward(self, **kwargs):
-        ret = 0
-        for s, p in self.dst_p.values():
-            ret += p * s.get_reward()
-        return ret
+        return self.dst.reward
 
 
 class MrpState(State):
@@ -32,17 +29,14 @@ class MrpState(State):
         return super().new(state, **kw).set_reward(C1.MRP_REWARD[state])
 
     def make_actions(self, depth=1, **kw):
-        a = MrpAction(self, self.state)
+        actions = dict()
         for i in range(N):
             p = C1.MRP_P[self.state][i]
             if p == 0:
                 continue
             nx = MrpState.new(i)
-            a.add_dst_with_p(nx, p)
-        return {self.state: a}
+            actions[i] = MrpAction(self, i, nx).set_p(p)
+        return actions
 
     def get_done(self):
         return self.state == 5
-
-    def get_action(self, a=None):
-        return super().get_action(self.state)
