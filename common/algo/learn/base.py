@@ -25,19 +25,20 @@ class Base(Algo):
         actions = list(state.get_actions().values())
         return actions[np.argmax([a.get_reward() for a in actions])]
 
-    def train(self, state_cls: State):
+    def train(self, init_state: State, max_round=2000):
         self.reward_tmp_all = 0
-        init_state = state_cls.new()
         self.reset()
         for _ in range(self.num_episodes):
             s = init_state.reset()
             actions: List[Action] = []
-            while not s.get_done():
+            tmp_round = max_round
+            while not s.get_done() and tmp_round:
                 ac = self.take_action(s)
                 actions.append(ac)
                 self.update_action(ac)
                 self.reward_tmp_all += ac.get_regret()
                 s = ac.get_dst()
+                tmp_round -= 1
             self.feed_back_actions(actions)
             self.rewards_record.append(self.reward_tmp_all)
         init_state.set_best_action(self.take_action(init_state))

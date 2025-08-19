@@ -37,21 +37,8 @@ class MdpState(State):
             ret += a.get_reward() * pi[a.action]
         return ret
 
-    def reset_env(self):
-        for i in range(1, 6):
-            s = MdpState.new(i)
-            s.mct_reward = s.count = 0
-        return super().reset_env()
-
     def get_done(self):
         return self.state == 5
-
-    def take_action(self):
-        rand, temp = np.random.rand(), 0
-        for a in self.get_actions().values():
-            temp += C2.Pi_1[a.action]
-            if temp > rand:
-                return a
 
 
 def get_mrp_form_mdp(pi: Dict[str, int]):
@@ -59,6 +46,6 @@ def get_mrp_form_mdp(pi: Dict[str, int]):
     for k, v in pi.items():
         an, _ = k.split("-")
         s = MdpState.new(int(an[1]))
-        for p, d in s.get_action(k).dst_p:
+        for d, p in s.get_action(k).dst_p.values():
             ans[s.state - 1][d.state - 1] += p * v
     return ans

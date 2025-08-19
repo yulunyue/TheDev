@@ -25,13 +25,15 @@ class Action:
     def key(self):
         return f"{self.src.state}_{self.action}"
 
-    def get_dst(self):
+    def get_dst(self, step=None):
         if self.dst_p:
-            a = random.random()
-            for p, s in self.dst_p:
-                if a <= p:
-                    return s
-                a -= p
+            if step is None:
+                a = random.random()
+                for s, p in self.dst_p.values():
+                    if a <= p:
+                        return s
+                    a -= p
+            return self.dst_p[step][0]
         return self.dst
 
     def get_data(self, key, default_value):
@@ -49,8 +51,8 @@ class Action:
 
     def add_dst_with_p(self, dst: "State", p):
         if self.dst_p is None:
-            self.dst_p = []
-        self.dst_p.append([p, dst])
+            self.dst_p = dict()
+        self.dst_p[dst.state] = [dst, p]
         return self
 
     def set_reward(self, reward):
@@ -131,34 +133,34 @@ class State:
             return self.actions[a]
         raise Exception(a, list(actions.keys()))
 
-    def get_steps(self, steps) -> List[Action]:
-        ret = []
+    def get_steps(self, steps) -> List["State"]:
+        ret = [self]
         s = self
         for step in steps:
             action = s.get_action(step)
-            ret.append(action)
-            s = action.dst
+            s = action.get_dst(step)
+            ret.append(s)
         return ret
 
-    def get_seq_score_forward(self, actions: List[Action], gamma=0.5):
+    def get_seq_score_forward(self, states: List["State"], gamma=0.5):
         """
         计算一个序列的价值, 未来的值更重要
         """
         ret = 0
-        for a in actions:
+        for a in states:
             ret = gamma * ret + a.get_reward()
         return ret
 
-    def get_seq_score_backward(self, actions: List[Action], gamma=0.5):
+    def get_seq_score_backward(self, states: List["State"], gamma=0.5):
         """
         计算一个序列的价值，当前值更重要
         """
-        return self.get_seq_score_forward(actions[::-1], gamma)
+        return self.get_seq_score_forward(states[::-1], gamma)
 
     def get_bellman_score(self, gamma=0.5):
         ret = self.get_reward()
         for a in self.get_actions().values():
-            ret += a.p * gamma * a.get_reward()
+            ret += gamma * a.get_reward()
         return ret
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:

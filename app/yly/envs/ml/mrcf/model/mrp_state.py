@@ -15,19 +15,34 @@ def computer(rewards, pi, gamma=0.5, **kw):
 N = len(C1.STATE_VALUE)
 
 
+class MrpAction(Action):
+    def get_reward(self, **kwargs):
+        ret = 0
+        for s, p in self.dst_p.values():
+            ret += p * s.get_reward()
+        return ret
+
+
 class MrpState(State):
 
-    def get_actions(self, depth=1, **kw):
-        if self.actions is not None:
-            return self.actions
-        self.actions = dict()
+    @classmethod
+    def new(cls, state=None, **kw):
+        if state is None:
+            state = 0
+        return super().new(state, **kw).set_reward(C1.MRP_REWARD[state])
+
+    def make_actions(self, depth=1, **kw):
+        a = MrpAction(self, self.state)
         for i in range(N):
-            p = 1
-            if self.state is not None:
-                p = C1.MRP_P[self.state][i]
+            p = C1.MRP_P[self.state][i]
             if p == 0:
                 continue
-            r = C1.MRP_REWARD[i]
-            nx = MrpState.new(i).set_reward(r)
-            self.actions[i] = Action(self, i, nx).set_p(p).set_reward(r)
-        return self.actions
+            nx = MrpState.new(i)
+            a.add_dst_with_p(nx, p)
+        return {self.state: a}
+
+    def get_done(self):
+        return self.state == 5
+
+    def get_action(self, a=None):
+        return super().get_action(self.state)

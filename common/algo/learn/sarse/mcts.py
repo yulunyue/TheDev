@@ -16,7 +16,7 @@ class MctsEasy(Base):
         g = 0
         for i in range(len(actions) - 1, -1, -1):
             a = actions[i]
-            g = self.gamma * g + a.reward
+            g = self.gamma * g + a.get_reward()
             self.vt[a.src.state] += 1
             cv = self.mct_reward[a.src.state]
             nv = cv + (g - cv) / self.vt[a.src.state]
