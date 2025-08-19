@@ -28,6 +28,7 @@ class Base(Algo):
     def train(self, state_cls: State):
         self.reward_tmp_all = 0
         init_state = state_cls.new()
+        self.reset()
         for _ in range(self.num_episodes):
             s = init_state.reset()
             actions: List[Action] = []

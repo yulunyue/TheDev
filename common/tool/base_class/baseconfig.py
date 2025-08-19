@@ -16,6 +16,10 @@ class ConfigBase:
             c = v.clone().set_datasource(self).set_key(k)
             setattr(self, k, c)
             self.params[k] = c
+        self.init()
+
+    def init(self):
+        pass
 
     def set_resource(self, resource):
         self.resource = resource

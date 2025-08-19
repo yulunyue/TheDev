@@ -93,6 +93,7 @@ class DictModel(BaseModel):
 
     def __init__(self, key=None, default_value=None, data_source=None):
         super().__init__(key, default_value or dict(), data_source)
+        self.value = dict()
 
     def update(self, **kw):
         self.value.update(kw)

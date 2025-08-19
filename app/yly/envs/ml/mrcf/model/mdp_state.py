@@ -7,7 +7,6 @@ N = 5
 
 
 class MdpState(State):
-    mct_reward = 0
     count = 0
 
     @classmethod

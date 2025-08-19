@@ -7,8 +7,7 @@ from common.tool.base_class.table_base import (
     TableConfig,
     DictModel,
 )
-
-logger = get_log("task")
+import traceback
 import _thread
 import time
 from typing import Dict, List
@@ -23,15 +22,17 @@ class TaskConfig(TableConfig):
     last_begin_t = NumberModel(default_value=0)
     last_finish_t = NumberModel(default_value=0)
     result = DictModel()
+    _fun = None
 
-    def load(self, **kw):
-        super().load(**kw)
-        self.fun = Module().load_module(
+    def get_call(self):
+        if self._fun:
+            return self._fun
+        self._fun = Module().load_module(
             self.module_name.get_value(),
             self.root_path.get_value(),
             self.fun_name.get_value(),
         )
-        return self
+        return self._fun
 
     def exec(self):
         now_t = time.time()
@@ -43,11 +44,12 @@ class TaskConfig(TableConfig):
         self.last_begin_t.set_value(now_t)
         try:
             self.result.update(
-                code=THE_DEV_CONSTANT.CODE_200,
-                value=self.fun(*self.args.get_value().split(",")),
+                value=self.get_call()(*self.args.get_value().split(",")),
             )
         except Exception as e:
-            self.result.update(code=THE_DEV_CONSTANT.CODE_500, value=str(e))
+            self.result.update(
+                code=THE_DEV_CONSTANT.CODE_500, value=traceback.format_exc().split("\n")
+            )
         self.last_finish_t.set_value(time.time())
 
     def __repr__(self):
@@ -76,7 +78,7 @@ class Task:
 TASK_MANAGER: Dict[str, Task] = dict()
 
 
-def get_task(name) -> Task:
+def get_task(name="taskconfig") -> Task:
     if name not in TASK_MANAGER:
         TASK_MANAGER[name] = Task(name)
     return TASK_MANAGER[name]

@@ -39,12 +39,6 @@ class TableBase(Generic[T]):
             self.fp.write_file(dict())
         return self
 
-    def get_header(self):
-        return {k: m.to_web_view() for k, m in self._concrete_type._params.items()}
-
-    def get_body(self):
-        return [b.to_json() for b in self.filter()]
-
     def filter(self) -> List[T]:
         ret = []
         for k in self.config.keys():

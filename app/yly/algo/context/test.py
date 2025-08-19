@@ -13,7 +13,7 @@ from common.mock import MockCf
 def get_ins(file_name):
     md = Module().load_module(f"app.yly.algo.context.{file_name}")
     Module().compile_one(f"app/yly/algo/context/{file_name}.py")
-    logger.enable_cache()
+    # logger.enable_cache()
     ins: MockCf = md.Solution()
     ins.dev = True
     return ins

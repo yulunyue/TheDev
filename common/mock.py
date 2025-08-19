@@ -28,6 +28,8 @@ class logger:
 class Constant:
     MOD = (10**9) + 7
     inf = float("inf")
+    min = lambda a, b: a if a < b else b
+    max = lambda a, b: a if a > b else b
 
 
 class MockCf:

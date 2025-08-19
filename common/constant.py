@@ -13,6 +13,8 @@ class Constant:
 class CT:
     MOD = (10**9) + 7
     inf = float("inf")
+    min = lambda a, b: a if a < b else b
+    max = lambda a, b: a if a > b else b
 
 
 THE_DEV_CONSTANT = Constant()

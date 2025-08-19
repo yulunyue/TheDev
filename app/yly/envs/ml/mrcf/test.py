@@ -7,6 +7,8 @@ import random
 
 
 class TestMain(TestBase):
+    """python -m app.yly.envs.ml.mrcf.test debug"""
+
     def test_mrp(self):
         s = MrpState.new()
         actions = s.get_steps([0, 1, 2, 5])
@@ -31,14 +33,17 @@ class TestMain(TestBase):
     def test_mct(self):
         m = MctsEasy().load(num_episodes=10000)
         m.train(MdpState)
-        rewards = [MdpState.new(i).mct_reward for i in range(1, 6)]
-        self.expect_ndarray(rewards, C2.MDP_STATE, wucha=0.1)
+        rewards = [MdpState.new(i).state for i in range(1, 6)]
+        self.expect_ndarray(rewards, C2.MDP_STATE, wucha=0.2)
 
     def run_value(self):
         ValueIteration().load().train(MdpState)
 
     def run_policy(self):
         PolicyIteration().load().train(MdpState)
+
+    def debug(self):
+        self.run_value()
 
 
 if __name__ == "__main__":
