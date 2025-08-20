@@ -1,17 +1,27 @@
-from common.util.export import TestBase, logger
-from common.algo.export import MctsEasy, PolicyIteration, ValueIteration
-from .model.mrp_state import computer, MrpState
-from .model.mdp_state import MdpState, get_mrp_form_mdp
-from .model.constant import C1, C2
-import random
+from common.util.export import TestBase, logger, random
+from common.algo.export import (
+    MctsEasy,
+    PolicyIteration,
+    ValueIteration,
+    AlphaBateSearch,
+    BaseLn,
+)
+from app.yly.envs.ml.mrcf.export import (
+    computer,
+    MrpState,
+    MdpState,
+    get_mrp_form_mdp,
+    C1,
+    C2,
+)
 
 
 class TestMain(TestBase):
-    """python -m app.yly.envs.ml.mrcf.test debug"""
+    """python -m tests.mrcf_test debug"""
 
     def test_mrp(self):
-        s = MrpState.new(0)
-        states = s.get_steps([1, 2, 5])
+        s = MrpState.new()
+        states = s.get_steps([0, 1, 2, 5])
         self.expect(s.get_seq_score_backward(states, 0.5), -2.5)
         self.expect_ndarray(
             [
@@ -33,28 +43,33 @@ class TestMain(TestBase):
         )
         self.expect_ndarray(computer(rewards, pi), C2.MDP_STATE)
 
-    def test_mct(self):
+    def test_mctp(self):
         m = MctsEasy().load(num_episodes=10000)
-        m.train(MdpState.new(1))
+        m.train(MdpState.new(2))
         rewards = [
             m.mct_reward[MdpState.new(i + 1).state] for i in range(len(C2.MDP_STATE))
         ]
         self.expect_ndarray(rewards, C2.MDP_STATE, wucha=0.3)
 
-    def test_mct1(self):
+    def test_mctr(self):
         m = MctsEasy().load(num_episodes=10000)
         m.train(MrpState.new())
         rewards = [m.mct_reward[i] for i in range(len(C1.STATE_VALUE))]
-        self.expect_ndarray(rewards, C1.STATE_VALUE, wucha=1)
+        self.expect_ndarray(rewards, C1.STATE_VALUE, wucha=0.3)
 
-    def run_value(self):
-        ValueIteration().load().train(MdpState)
+    def run_vp(self, algo: BaseLn):
+        p = MdpState.new()
+        algo.train(p)
+        self.expect([a.action for a in p.get_best_actions()], [3, "s4-s5"])
 
-    def run_policy(self):
-        PolicyIteration().load().train(MdpState)
+    def test_value(self):
+        self.run_vp(ValueIteration().load())
+
+    def test_policy(self):
+        self.run_vp(PolicyIteration().load())
 
     def debug(self):
-        self.test_mrp()
+        self.test_mctr()
 
 
 if __name__ == "__main__":

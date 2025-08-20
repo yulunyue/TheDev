@@ -8,7 +8,7 @@ from app.yly.envs.cg.kululu.test import KululuTest
 from app.yly.envs.cg.l9.test import TestL9
 from app.yly.envs.cg.mpr.test import MprTest
 from app.yly.envs.ml.mrcf.test import TestMain
-from app.yly.envs.cg.oa.test import OaTest
+from tests.test_oa import OaTest
 from app.yly.envs.cg.pendulum.test import TestPen
 from app.yly.envs.cg.tic_toc.test import TestTicToc
 from app.yly.algo.context.test import LCTest

@@ -1,5 +1,6 @@
 from common.algo.search.algo import Algo, Action, State, np
 from common.util.export import get_log, logger, List
+import random
 
 
 class Base(Algo):
@@ -17,13 +18,8 @@ class Base(Algo):
 
     def take_action(self, state: State, **kw):
         if self.can_epsilon():
-            actions = list(state.get_actions().values())
-            return actions[np.random.randint(len(actions))]
+            return self.get_random_action(state)
         return self.get_max_action(state)
-
-    def get_max_action(self, state: State) -> Action:
-        actions = list(state.get_actions().values())
-        return actions[np.argmax([a.get_reward() for a in actions])]
 
     def train(self, init_state: State, max_round=2000):
         self.reward_tmp_all = 0
@@ -45,3 +41,27 @@ class Base(Algo):
 
     def feed_back_actions(self, actions: List[Action]):
         pass
+
+    def search_main(self, state: State):
+        self.max_actions = []
+        self.max_score = float("-inf")
+
+        def dfs(s: State, actions):
+            next_actions = list(s.get_actions().values())
+            if s.get_done() or not next_actions:
+                score = self.get_actions_backend_score()
+                if score > self.max_score:
+                    self.max_score = score
+                    self.max_actions = actions
+                return
+            for n in next_actions:
+                dfs(n.get_dst(), actions + [n])
+
+        dfs(state, [])
+        return self.max_actions
+
+    def get_actions_backend_score(self, actions: List[Action]):
+        ret = 0
+        for a in actions:
+            ret = ret * self.gamma + a.get_reward() * a.p
+        return ret

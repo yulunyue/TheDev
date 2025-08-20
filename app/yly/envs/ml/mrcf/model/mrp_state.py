@@ -1,6 +1,7 @@
-from common.algo.search.algo import State, np, random_select, Action
+from common.algo.export import State, np, Action, PAction
 from .constant import C1
 from common.util.export import List, Dict
+import random
 
 
 def computer(rewards, pi, gamma=0.5, **kw):
@@ -16,25 +17,27 @@ N = len(C1.STATE_VALUE)
 
 
 class MrpAction(Action):
-    def get_reward(self, **kwargs):
-        return self.dst.reward
+
+    def __repr__(self):
+        return f"{self.action}:{self.get_reward()}:{self.p}"
 
 
 class MrpState(State):
 
     @classmethod
     def new(cls, state=None, **kw):
-        if state is None:
-            state = 0
-        return super().new(state, **kw).set_reward(C1.MRP_REWARD[state])
+        return super().new(state, **kw)
 
     def make_actions(self, depth=1, **kw):
         actions = dict()
         for i in range(N):
-            p = C1.MRP_P[self.state][i]
+            if self.state is None:
+                p = 1
+            else:
+                p = C1.MRP_P[self.state][i]
             if p == 0:
                 continue
-            nx = MrpState.new(i)
+            nx = MrpState.new(i).set_reward(C1.MRP_REWARD[i])
             actions[i] = MrpAction(self, i, nx).set_p(p)
         return actions
 

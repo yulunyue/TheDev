@@ -5,6 +5,7 @@ from common.util.export import logger, File, List, defaultdict
 
 class ALgoManage:
     record_dir = ""
+    file_path = None
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
@@ -93,7 +94,7 @@ class ALgoManage:
             info += f" LOS {reward}"
         msg = f"{s}\nturn: {self.turn_idx}; reward_all: {self.rewards[-1]}; info: {info}\n"
         file_name = "_pk_".join([v.get_name() for v in players])
-        file_path = f"{self.record_dir}/{file_name}.log"
-        fp = File(file_path).get_writer()
+        self.file_path = f"{self.record_dir}/{file_name}.log"
+        fp = File(self.file_path).get_writer()
         fp.write(msg)
         fp.flush()

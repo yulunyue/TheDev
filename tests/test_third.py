@@ -1,5 +1,5 @@
-from common.util.export import TestBase
-from common.third_util.export import LeetCode, EChart, Faker, opts, Draw
+from common.util.export import TestBase, logger
+from common.third_util.export import LeetCode, EChart, Faker, opts, Draw, PtTable
 
 
 class ThirdTest(TestBase):
@@ -16,6 +16,10 @@ class ThirdTest(TestBase):
         Draw().draw_lines([dict(a=1, b=2), dict(a=4, b=5)]).save(
             f"{line_tmp_path}/line3.svg"
         )
+
+    def test_pttable(self):
+        p = PtTable().load_from_matrix([[1] * 12, [4] * 12], list(range(12)))
+        logger.info(p)
 
 
 if __name__ == "__main__":

@@ -53,13 +53,21 @@ class Algo:
         use_time = int((time.time() - self.begin_time) * 1000)
         self.use_time += use_time
         self.max_use_time = max(self.max_use_time, use_time)
-        return state.best_action
+        return state.get_best_action()
 
     def search_main(self, state: "State"):
         raise Exception("todo")
 
-    def get_max_action(self, state: "State"):
-        raise Exception("todo")
+    def get_random_action(self, state: State, **kw):
+        s = random.random() * state.get_p_sum()
+        for a in state.get_actions().values():
+            if s <= a.p:
+                return a
+            s -= a.p
+
+    def get_max_action(self, state: State) -> Action:
+        actions = list(state.get_actions().values())
+        return actions[np.argmax([a.get_reward() for a in actions])]
 
     def take_action(self, state: "State") -> Action:
         raise Exception("todo")

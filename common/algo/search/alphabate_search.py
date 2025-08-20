@@ -6,7 +6,6 @@ from common.util.export import logger, defaultdict
 
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
-    SERACH_MAX = "search_max"
 
     def load(self, max_depth, cache=None, search_type=""):
         self.max_depth = max_depth
@@ -51,11 +50,11 @@ class AlphaBateSearch(Algo):
             )
             if reward >= bate:
                 alpha = bate
-                state.set_best_action(a.set_reward(reward))
+                state.set_best_action(a)
                 break
             if reward > alpha:
                 alpha = reward
-                state.set_best_action(a.set_reward(reward))
+                state.set_best_action(a)
         return alpha
 
     def get_depth_reward(self, s: State, depth: int, actions: List[Action], **kw):
@@ -87,24 +86,11 @@ class AlphaBateSearch(Algo):
                 a.dst, actions=actions + [a], depth=depth + 1, player_id=player_id
             )
             if reward > best_reward:
-                state.set_best_action(a.set_reward(reward))
+                state.set_best_action(a)
                 best_reward = reward
         return best_reward
-
-    def search_max(self, s: State):
-        max_action = None
-        max_reward = None
-        for a in s.get_actions().values():
-            reward = s.get_reward(actions=[a])
-            if max_reward is None or reward > max_reward:
-                max_reward = reward
-                max_action = a
-        if max_action is not None:
-            s.set_best_action(max_action)
 
     def search_main(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
             return self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
-        elif self.search_type == AlphaBateSearch.SERACH_MAX:
-            return self.search_max(state)
         return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)

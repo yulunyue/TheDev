@@ -35,6 +35,8 @@ class Action:
         self.data[key] = value
         return self
 
+    p = None
+
     def set_p(self, p):
         self.p = p
         return self
@@ -46,19 +48,35 @@ class Action:
     def get_reward(self, **kwargs):
         return self.reward
 
-    def get_best_actions(self) -> List["Action"]:
-        p = self
-        ret = []
-        while p:
-            ret.append(p)
-            p = p.dst.best_action
-        return ret
-
     def get_best_action(self):
         return self.get_best_actions()[-1]
 
     def __repr__(self):
         return f"action: {self.action}, reward: {self.reward}, data:{self.data}"
+
+
+class PAction(Action):
+    dst = None
+
+    def __init__(self, src, action):
+        self.src: State = src
+        self.action = action
+        self.dst_p = dict()
+        self.max_p = 0
+        self.data = dict()
+
+    def add_dst(self, state: "State", p):
+        if state.state in self.dst_p:
+            return
+        self.dst_p[state.state] = [state, p]
+        self.max_p += p
+
+    def get_dst(self):
+        a = random.random() * self.max_p
+        for s, p in self.dst_p.values():
+            if a <= p:
+                return s
+            a -= p
 
 
 class State:
@@ -117,29 +135,38 @@ class State:
             return self.actions[a]
         raise Exception(a, list(actions.keys()))
 
-    def get_steps(self, steps) -> List["State"]:
-        ret = [self]
+    def get_best_actions(self) -> List["Action"]:
+        vt = dict()
+        p = self
+        ret: List[Action] = []
+        while not p.get_done():
+            if p.state in vt:
+                continue
+            vt[p.state] = p
+            ret.append(p.get_best_action())
+            p = ret[-1].get_dst()
+        return ret
+
+    def get_best_action(self):
+        return self.best_action
+
+    def get_steps(self, steps) -> List["Action"]:
+        ret = []
         s = self
         for step in steps:
             action = s.get_action(step)
+            ret.append(action)
             s = action.get_dst()
-            ret.append(s)
         return ret
 
-    def get_seq_score_forward(self, states: List["State"], gamma=0.5):
+    def get_seq_score_backward(self, actions: List["Action"], gamma=0.5):
         """
         计算一个序列的价值, 未来的值更重要
         """
         ret = 0
-        for a in states:
+        for a in actions[::-1]:
             ret = gamma * ret + a.get_reward()
         return ret
-
-    def get_seq_score_backward(self, states: List["State"], gamma=0.5):
-        """
-        计算一个序列的价值，当前值更重要
-        """
-        return self.get_seq_score_forward(states[::-1], gamma)
 
     def get_bellman_score(self, gamma=0.5):
         ret = self.get_reward()
@@ -232,3 +259,15 @@ class State:
 
     def get_win_player(self, *args, **kw):
         return self.done
+
+    p_sum = None
+
+    def get_p_sum(self):
+        if self.p_sum is not None:
+            return self.p_sum
+        self.p_sum = 0
+        for a in self.get_actions().values():
+            if a.p is None:
+                a.p = 1
+            self.p_sum += a.p
+        return self.p_sum
