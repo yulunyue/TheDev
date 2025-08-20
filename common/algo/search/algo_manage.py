@@ -38,9 +38,9 @@ class ALgoManage:
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
         keys = [f"{players1[i].get_name()}_{i}" for i in range(len(players1))]
         if 0 <= win_idx < len(players1):
-            self.fight_result[keys[win_idx]]["LOSE"] += 1
-            self.fight_result[keys[1 - win_idx]]["WIN"] += 1
-            s += f"[{keys[win_idx]}][LOSE]"
+            self.fight_result[keys[1 - win_idx]]["LOSE"] += 1
+            self.fight_result[keys[win_idx]]["WIN"] += 1
+            s += f"[{keys[win_idx]}][WIN]"
         else:
             self.fight_result[keys[0]]["DRAW"] += 1
             self.fight_result[keys[1]]["DRAW"] += 1
@@ -89,9 +89,9 @@ class ALgoManage:
         self.rewards[-1][player_idx] += reward
         info = players[player_idx].name
         if reward > 0:
-            info += f" WIN {reward}"
+            info += f" CXCWIN {reward}"
         elif reward < 0:
-            info += f" LOS {reward}"
+            info += f" CXCLOS {reward}"
         msg = f"{s}\nturn: {self.turn_idx}; reward_all: {self.rewards[-1]}; info: {info}\n"
         file_name = "_pk_".join([v.get_name() for v in players])
         self.file_path = f"{self.record_dir}/{file_name}.log"

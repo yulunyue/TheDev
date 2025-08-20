@@ -10,14 +10,16 @@ class PM:
     ab2 = AlphaBateSearch("ab2").load(2)
     ab3 = AlphaBateSearch("ab3").load(3)
     ab4 = AlphaBateSearch("ab4").load(4)
+    ab5 = AlphaBateSearch("ab5").load(5, AlphaBateSearch.AB_TYPE)
 
 
 class CgOa(MockCg):
     game_id = "7180187268449801570b2e5cd61f1efefe076e42"
-    agentsIds = [-1, -2]
-    name = "cgcw"
+    agentsIds = [-1, 5077834]
+    name = "oa"
+    uri = "https://www.codingame.com/ide/puzzle/oware-abapa"
 
-    def get_action(self, s: Rooms, name="ab2"):
+    def get_action(self, s: Rooms, name="ab4"):
         if not name:
             actions = list(s.get_actions().values())
             return actions[0].action
@@ -26,7 +28,7 @@ class CgOa(MockCg):
 
     def main(self):
         while True:
-            s = Rooms.new_room(0, self.ii())
+            s = Rooms.new(C.encode_data(0, self.ii()))
             a = self.get_action(s)
             self.log(state=s.state, action=a, board=s.boards)
             self.output(a)

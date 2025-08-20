@@ -79,7 +79,7 @@ class MockCg(MockCf):
 
     @classmethod
     def main_py(cls):
-        return f"app/yly/game/envs/{cls.name}/cg.py"
+        return f"app/yly/envs/cg/{cls.name}/cg.py"
 
 
 CT = Constant()

@@ -7,17 +7,18 @@ from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM
 class OaTest(TestBase):
     def prepare(self, args=None):
         self.cg = CodingGame(CgOa.name)
+        self.al = (
+            ALgoManage()
+            .set_state(Rooms.new(C.INIT_MASK))
+            .set_record_dir(self.cg.get_local_path("pk"))
+        )
+
+    def cg_make(self):
+        Module().compile_one(CgOa.main_py())
 
     def cg_play(self):
-        Module().compile_one("app/yly/game/envs/oa/cg.py")
+        self.cg_make()
         self.cg.pk(Module.RUN_TMP_PATH, CgOa.game_id, CgOa.agentsIds)
-
-    # def test_base(self):
-    #     """ """
-    #     r = Rooms.new(C.INIT_MASK).get_action(2).dst
-
-    #     # a = AlphaBateSearch().search(r)
-    #     logger.info(r)
 
     def run_algo_case(self, algo: Algo):
         for a, v in C.get_cases().items():
@@ -27,7 +28,7 @@ class OaTest(TestBase):
 
     def test_dev1(self):
         s2 = ii("1 8 7 6 6 4 4 4 4 4 0 0")
-        s = Rooms.new_room(0, s2)
+        s = Rooms.new(C.encode_data(0, s2))
         self.expect(s.boards, s2, s)
 
     def test_dev2(self):
@@ -35,27 +36,32 @@ class OaTest(TestBase):
         a = s.get_action(5)
         self.expect(a.reward, 9, f"{s}\n{a}\n{a.dst}")
 
-    def fight(self):
-        ALgoManage(CgOa.name).set_players([PM.ab1, PM.ab2, PM.ab3, PM.ab4]).set_state(
-            Rooms.new(C.INIT_MASK)
-        ).fight()
+    def test_ab(self):
+        s = Rooms.new(4724692046856857583875)
+        a1 = PM.ab1.search(s)
+        self.expect(a1.get_reward(), 5, s)
+        a3 = PM.ab1.search(a1.dst)
+        self.expect(a3.get_reward(), 0, a1.dst)
+        a2 = PM.ab2.search(s)
+        self.expect(a2.get_reward(), 5, s)
+
+    def fight(self, players):
+        self.al.set_players(players).fight()
+
+    def fight_all(self):
+        self.fight([PM.ab1, PM.ab2, PM.ab3, PM.ab4, PM.ab5])
 
     def pk(self):
-        players = [PM.ab1, PM.ab2]
-        al = (
-            ALgoManage()
-            .set_state(Rooms.new(C.INIT_MASK))
-            .set_record_dir(self.cg.get_local_path("pk"))
-        )
-        win_idx = al.actor(players, 200)
-        logger.map(win_idx=win_idx, log=al.file_path)
+        self.fight([PM.ab4, PM.ab5])
 
     def test_rule(self):
         s = Rooms.new(74939897936884006912)
         self.expect(list(s.get_actions().keys()), [5], s)
+        s = Rooms.new(2342206402455670848)
+        self.expect(list(s.get_actions().keys()), [1, 2, 3, 4], s)
 
     def debug(self):
-        self.pk()
+        self.test_ab()
 
 
 if __name__ == "__main__":

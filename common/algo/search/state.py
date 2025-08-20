@@ -230,9 +230,6 @@ class State:
     def get_reward(self, actions: List[Action] = None, params: Params = None) -> int:
         return self.reward
 
-    def get_self_reward(self, actions: List[Action], params: Params = None):
-        return self.get_reward(actions, params=params)
-
     def get_max_action_reward(self):
         reward = -inf
         for a in self.get_actions().values():
