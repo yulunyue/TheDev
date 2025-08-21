@@ -25,6 +25,7 @@ def random_select(states, fn):
 
 
 class Algo:
+    state_num = 0
 
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
@@ -50,9 +51,7 @@ class Algo:
     def search(self, state: "State") -> "Action":
         self.begin_time = time.time()
         self.search_main(state.reset())
-        use_time = int((time.time() - self.begin_time) * 1000)
-        self.use_time += use_time
-        self.max_use_time = max(self.max_use_time, use_time)
+        self.use_time = int((time.time() - self.begin_time) * 1000)
         return state.get_best_action()
 
     def search_main(self, state: "State"):
@@ -76,15 +75,14 @@ class Algo:
         pass
 
     def reset(self):
-        self.max_use_time = 0
-        self.use_time = 0
+        self.state_num = 0
         return self
 
     def new_state(self, key):
         pass
 
     def __str__(self):
-        return f"<{self.__class__.__name__}  user_time:{self.max_use_time} params:{self.params}>"
+        return f"<{self.__class__.__name__}  params:{self.params}>"
 
     def get_name(self):
         return self.name

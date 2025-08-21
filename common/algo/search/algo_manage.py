@@ -1,6 +1,21 @@
 from common.algo.search.algo import Algo
 from common.algo.search.state import State, Action
 from common.util.export import logger, File, List, defaultdict
+from common.third_util.export import PtTable, TableModel
+
+
+class AlgoInfo(TableModel):
+
+    WIN = 0
+    LOSE = 0
+    DRAW = 0
+    SCORE = 0
+    STATE_NUM = 0
+    AVG_STATE_NUM = 0
+    MAX_TIME = 0
+
+    def __new__(cls, key) -> "AlgoInfo":
+        return super().__new__(cls, key)
 
 
 class ALgoManage:
@@ -9,9 +24,6 @@ class ALgoManage:
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
-        self.fight_result = defaultdict(
-            lambda: dict(WIN=0, LOSE=0, DRAW=0, use_time=0, max_time=0)
-        )
         return self
 
     def set_state(self, state):
@@ -23,39 +35,63 @@ class ALgoManage:
             return self.state(idx, dst)
         return dst
 
-    def fight(self, pk_round=1):
+    def get_players_turn_much(self, pk_round):
+        ret = []
         for _ in range(pk_round):
             for i in range(len(self.players)):
                 for j in range(len(self.players)):
                     if i != j:
-                        self.pk([self.players[i], self.players[j]])
-                    self.pk([self.players[j], self.players[i]])
-        logger.table(self.fight_result, lambda a: [a["WIN"], a["DRAW"], a["DRAW"]])
-        return self.fight_result
+                        ret.append([self.players[i], self.players[j]])
+                    ret.append([self.players[j], self.players[i]])
+        return ret
+
+    def get_players_turn_simple(self, pk_round):
+        ret = []
+        for i in range(len(self.players)):
+            for j in range(i + 1, len(self.players)):
+                ret.append([self.players[i], self.players[j]])
+                ret.append([self.players[j], self.players[i]])
+        return ret
+
+    def fight(self, pk_round=1):
+        AlgoInfo.clear()
+
+        for players in self.get_players_turn_simple(pk_round):
+            self.pk(players)
+        logger.info(PtTable().load_form_model(AlgoInfo))
 
     def pk(self, players1: List[Algo]):
         win_idx: int = self.actor(players1)
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
-        keys = [f"{players1[i].get_name()}_{i}" for i in range(len(players1))]
-        if 0 <= win_idx < len(players1):
-            self.fight_result[keys[1 - win_idx]]["LOSE"] += 1
-            self.fight_result[keys[win_idx]]["WIN"] += 1
-            s += f"[{keys[win_idx]}][WIN]"
-        else:
-            self.fight_result[keys[0]]["DRAW"] += 1
-            self.fight_result[keys[1]]["DRAW"] += 1
-            s += f"[DRAW]"
+        for i, p in enumerate(players1):
+            key = p.get_name()
+            AlgoInfo(key).MAX_TIME = max(AlgoInfo(key).MAX_TIME, players1[i].use_time)
+            AlgoInfo(key).STATE_NUM = max(
+                AlgoInfo(key).STATE_NUM, players1[i].state_num
+            )
+            AlgoInfo(key).AVG_STATE_NUM += players1[i].state_num
+            AlgoInfo(key).SCORE += self.rewards[-1][i]
+            if win_idx == -1:
+                AlgoInfo(key).C_DRAW += 1
+                s += f"[{key}][DRAW]"
+            elif win_idx == i:
+                AlgoInfo(key).WIN += 1
+                s += f"[{key}][WIN]"
+            else:
+                AlgoInfo(key).LOSE += 1
         logger.info(s)
         return self
 
     def actor(self, players: List[Algo], max_turn=5000):
         """
-        返还输的玩家ID
+        返还赢的玩家ID
         """
 
         player_idx = 0
         self.turn_idx = 0
         s = self.get_state(0, self.state).reset_env()
+        for p in players:
+            p.reset()
         self.rewards = [[0] * len(players)]
         while True:
             if s.get_done():

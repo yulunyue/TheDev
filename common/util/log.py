@@ -79,18 +79,6 @@ class Logger(logging.Logger):
             extra=extra,
         )
 
-    def table(self, datas: dict, key=None, header_key="t_name"):
-        from prettytable import PrettyTable
-
-        headers = [header_key] + list(list(datas.values())[0].keys())
-        for k, v in datas.items():
-            v[header_key] = k
-        datas = list(sorted(datas.values(), key=key))
-        tb = PrettyTable(field_names=headers)
-        for row in datas:
-            tb.add_row([row[k] for k in headers])
-        self.info(f"-TABLLE-\n{tb}", stacklevel=2)
-
     def draw_line(self, name, data):
         from common.tool.draw import Draw
 

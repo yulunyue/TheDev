@@ -23,6 +23,7 @@ class AlphaBateSearch(Algo):
         **kw,
     ) -> None:
         if depth == self.max_depth or state.get_done():
+            self.state_num += 1
             return self.get_depth_reward(
                 state,
                 depth=depth,
@@ -32,6 +33,7 @@ class AlphaBateSearch(Algo):
             )
         mvs: Dict[str, Action] = state.get_actions(depth=depth)
         if not mvs:
+            self.state_num += 1
             return self.get_depth_reward(
                 state,
                 depth=depth,
@@ -65,6 +67,7 @@ class AlphaBateSearch(Algo):
         self, state: State, actions: List[Action], depth=0, player_id=None, **kw
     ):
         if depth == self.max_depth or state.get_done():
+            self.state_num += 1
             return self.get_depth_reward(
                 state,
                 depth=depth,
@@ -74,6 +77,7 @@ class AlphaBateSearch(Algo):
             )
         mvs: Dict[str, Action] = state.get_actions(depth=depth)
         if not mvs:
+            self.state_num += 1
             return self.get_depth_reward(
                 state,
                 depth=depth,
