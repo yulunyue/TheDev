@@ -65,24 +65,24 @@ class ALgoManage:
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
         for i, p in enumerate(players1):
             key = p.get_name()
-            AlgoInfo(key).MAX_TIME = max(AlgoInfo(key).MAX_TIME, players1[i].use_time)
-            AlgoInfo(key).STATE_NUM = max(
-                AlgoInfo(key).STATE_NUM, players1[i].state_num
-            )
-            AlgoInfo(key).AVG_STATE_NUM += players1[i].state_num
+            AlgoInfo(key).MAX_TIME = max(AlgoInfo(key).MAX_TIME, p.use_time)
+            AlgoInfo(key).STATE_NUM = max(AlgoInfo(key).STATE_NUM, p.state_num)
+            AlgoInfo(key).AVG_STATE_NUM += p.state_num
             AlgoInfo(key).SCORE += self.rewards[-1][i]
             if win_idx == -1:
-                AlgoInfo(key).C_DRAW += 1
+                AlgoInfo(key).DRAW += 1
                 s += f"[{key}][DRAW]"
             elif win_idx == i:
                 AlgoInfo(key).WIN += 1
                 s += f"[{key}][WIN]"
             else:
                 AlgoInfo(key).LOSE += 1
-        logger.info(s)
+        logger.info(f"{s}{win_idx}")
         return self
 
-    def actor(self, players: List[Algo], max_turn=5000):
+    max_turn = 200
+
+    def actor(self, players: List[Algo]):
         """
         返还赢的玩家ID
         """
@@ -104,7 +104,7 @@ class ALgoManage:
             self.record(players, a, player_idx, s)
             player_idx = (player_idx + 1) % len(players)
             self.turn_idx += 1
-            if self.turn_idx >= max_turn:
+            if self.turn_idx >= self.max_turn:
                 break
             s = self.get_state(self.turn_idx, a.dst)
         # if s:

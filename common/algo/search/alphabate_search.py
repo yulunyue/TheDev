@@ -7,10 +7,10 @@ from common.util.export import logger, defaultdict
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
 
-    def load(self, max_depth, cache=None, search_type=""):
+    def load(self, max_depth, search_type="", **kw):
         self.max_depth = max_depth
         self.search_type = search_type
-        return super().load(cache=cache)
+        return super().load(**kw)
 
     def search_ab(
         self,

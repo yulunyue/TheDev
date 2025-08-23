@@ -52,7 +52,7 @@ class OaTest(TestBase):
         self.fight([PM.ab1, PM.ab2, PM.ab3, PM.ab4, PM.ab5])
 
     def pk(self):
-        self.fight([PM.bl5, PM.ab5])
+        self.fight([PM.ab5, PM.bl5, PM.bl4])
 
     def test_rule(self):
         s = Rooms.new(74939897936884006912)
@@ -61,7 +61,7 @@ class OaTest(TestBase):
         self.expect(list(s.get_actions().keys()), [1, 2, 3, 4], s)
 
     def debug(self):
-        self.test_ab()
+        self.pk()
 
 
 if __name__ == "__main__":
