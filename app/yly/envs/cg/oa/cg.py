@@ -5,30 +5,15 @@ from app.yly.envs.cg.oa.model.constant import C
 from common.algo.search.alphabate_search import AlphaBateSearch, Algo
 
 
-class PM:
-    bl1 = AlphaBateSearch("bl1").load(1)
-    bl2 = AlphaBateSearch("bl2").load(2)
-    bl3 = AlphaBateSearch("bl3").load(3)
-    bl4 = AlphaBateSearch("bl4").load(4)
-    bl5 = AlphaBateSearch("bl5").load(5)
-    ab1 = AlphaBateSearch("ab1").load(1, AlphaBateSearch.AB_TYPE)
-    ab3 = AlphaBateSearch("ab3").load(3, AlphaBateSearch.AB_TYPE)
-    ab4 = AlphaBateSearch("ab4").load(4, AlphaBateSearch.AB_TYPE)
-    ab5 = AlphaBateSearch("ab5").load(5, AlphaBateSearch.AB_TYPE)
-
-
 class CgOa(MockCg):
     game_id = "7180187268449801570b2e5cd61f1efefe076e42"
     agentsIds = [-1, 5077834]
     name = "oa"
     uri = "https://www.codingame.com/ide/puzzle/oware-abapa"
 
-    def get_action(self, s: Rooms, name="ab5"):
-        if not name:
-            actions = list(s.get_actions().values())
-            return actions[0].action
-        algo: Algo = getattr(PM, name)
-        return algo.search(s).action
+    def get_action(self, s: Rooms):
+        al5 = AlphaBateSearch("ab5").load(5, AlphaBateSearch.AB_TYPE)
+        return al5.search(s).action
 
     def main(self):
         while True:

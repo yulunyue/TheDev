@@ -11,7 +11,7 @@ class Rooms(State):
     def __init__(self, state=None):
         super().__init__(state)
         self.player_id, *boards = C.decode_data(state)
-        self.boards = boards
+        self.score, self.boards = boards[:2], boards[2:]
 
     @staticmethod
     def new(state) -> "Rooms":
