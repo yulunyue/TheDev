@@ -104,6 +104,9 @@ class State:
     def get_done(self):
         return self.done
 
+    def do_action(self, a: Action):
+        return a.dst
+
     def action_size(self):
         raise Exception("tood")
 

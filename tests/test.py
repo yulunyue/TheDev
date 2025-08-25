@@ -11,7 +11,7 @@ from app.yly.envs.ml.mrcf.test import TestMain
 from tests.test_oa import OaTest
 from app.yly.envs.cg.pendulum.test import TestPen
 from app.yly.envs.cg.tic_toc.test import TestTicToc
-from app.yly.algo.context.test import LCTest
+from tests.test_context import LCTest
 from common.util.export import logger, random, TestBase, List, File
 
 LOCALS = locals()

@@ -35,23 +35,16 @@ class Algo:
         self.name = name
         return self
 
-    def load(self, cache=None, max_t=-1):
-        self.cache = cache
-        self.max_t = max_t
+    def load(self):
         self.reset()
         return self
-
-    def time_out(self):
-        return self.max_t > 0 and time.time() - self.begin_time >= self.max_t
 
     def set_params(self, params):
         self.params: Params = params
         return self
 
     def search(self, state: "State") -> "Action":
-        self.begin_time = time.time()
         self.search_main(state.reset())
-        self.use_time = int((time.time() - self.begin_time) * 1000)
         return state.get_best_action()
 
     def search_main(self, state: "State"):
@@ -75,7 +68,6 @@ class Algo:
         pass
 
     def reset(self):
-        self.state_num = 0
         return self
 
     def new_state(self, key):

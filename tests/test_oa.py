@@ -45,14 +45,14 @@ class OaTest(TestBase):
         a2 = PM.ab2.search(s)
         self.expect(a2.get_reward(), 5, s)
 
-    def fight(self, players):
-        self.al.set_players(players).fight()
+    def fight(self, players, tp=None):
+        self.al.set_players(players).fight(tp=tp)
 
     def fight_all(self):
         self.fight([PM.ab1, PM.ab2, PM.ab3, PM.ab4, PM.ab5])
 
     def pk(self):
-        self.fight([PM.ab5, PM.bl5, PM.bl4])
+        self.fight([PM.ab5, PM.bl1], ALgoManage.SIGNAL)
 
     def test_rule(self):
         s = Rooms.new(74939897936884006912)

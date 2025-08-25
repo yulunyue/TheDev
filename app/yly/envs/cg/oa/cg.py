@@ -16,11 +16,13 @@ class CgOa(MockCg):
         return al5.search(s).action
 
     def main(self):
+        Rooms.reset_env()
         while True:
             s = Rooms.new(C.encode_data(0, self.ii()))
             a = self.get_action(s)
             self.log(state=s.state, action=a, board=s.boards)
             self.output(a)
+            Rooms.curent_round += 2
 
 
 if __name__ == "__main__":

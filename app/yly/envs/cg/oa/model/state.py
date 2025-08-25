@@ -8,10 +8,17 @@ class Rooms(State):
 
     STATE_MAP = dict()
 
+    def reset_env(self):
+        Rooms.G_SCORE = [0, 0]
+        Rooms.curent_round = 0
+        return self
+
     def __init__(self, state=None):
         super().__init__(state)
-        self.player_id, *boards = C.decode_data(state)
-        self.score, self.boards = boards[:2], boards[2:]
+        self.player_id, *self.boards = C.decode_data(state)
+
+    def do_action(self, a):
+        return super().do_action(a)
 
     @staticmethod
     def new(state) -> "Rooms":

@@ -1,7 +1,8 @@
 from common.algo.search.algo import Algo
 from common.algo.search.state import State, Action
-from common.util.export import logger, File, List, defaultdict
+from common.util.export import logger, File, List, defaultdict, Dict
 from common.third_util.export import PtTable, TableModel
+import time
 
 
 class AlgoInfo(TableModel):
@@ -10,20 +11,39 @@ class AlgoInfo(TableModel):
     LOSE = 0
     DRAW = 0
     SCORE = 0
-    STATE_NUM = 0
-    AVG_STATE_NUM = 0
+    MAX_VISTE_NUM = 0
+    ALL_VISTE_NUM = 0
     MAX_TIME = 0
 
     def __new__(cls, key) -> "AlgoInfo":
         return super().__new__(cls, key)
 
+    @classmethod
+    def get_headers(cls):
+        return [
+            "key",
+            "WIN",
+            "DRAW",
+            "LOSE",
+            "SCORE",
+            "MAX_VISTE_NUM",
+            "MAX_TIME",
+            "ALL_VISTE_NUM",
+        ]
+
 
 class ALgoManage:
     record_dir = ""
     file_path = None
+    SIGNAL = "SIGNAL"
+    DTURN = "DTURN"
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
+        AlgoInfo.clear()
+        self.a_r: Dict[str, AlgoInfo] = {
+            p.get_name(): AlgoInfo(p.get_name()) for p in players
+        }
         return self
 
     def set_state(self, state):
@@ -45,42 +65,41 @@ class ALgoManage:
                     ret.append([self.players[j], self.players[i]])
         return ret
 
-    def get_players_turn_simple(self, pk_round):
+    def get_players_turn_simple(self, pk_round, tp):
         ret = []
-        for i in range(len(self.players)):
-            for j in range(i + 1, len(self.players)):
-                ret.append([self.players[i], self.players[j]])
-                ret.append([self.players[j], self.players[i]])
+        for _ in range(pk_round):
+            for i in range(len(self.players)):
+                for j in range(i + 1, len(self.players)):
+                    if tp == ALgoManage.SIGNAL:
+                        ret.append([self.players[i], self.players[j]])
+                    else:
+                        ret.append([self.players[i], self.players[j]])
+                        ret.append([self.players[j], self.players[i]])
         return ret
 
-    def fight(self, pk_round=1):
-        AlgoInfo.clear()
+    def fight(self, pk_round=1, tp=None):
 
-        for players in self.get_players_turn_simple(pk_round):
+        for players in self.get_players_turn_simple(pk_round, tp):
             self.pk(players)
         logger.info(PtTable().load_form_model(AlgoInfo))
 
     def pk(self, players1: List[Algo]):
-        win_idx: int = self.actor(players1)
+        win_idx, turn_idx = self.actor(players1)
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
         for i, p in enumerate(players1):
             key = p.get_name()
-            AlgoInfo(key).MAX_TIME = max(AlgoInfo(key).MAX_TIME, p.use_time)
-            AlgoInfo(key).STATE_NUM = max(AlgoInfo(key).STATE_NUM, p.state_num)
-            AlgoInfo(key).AVG_STATE_NUM += p.state_num
-            AlgoInfo(key).SCORE += self.rewards[-1][i]
             if win_idx == -1:
-                AlgoInfo(key).DRAW += 1
+                self.a_r[key].DRAW += 1
                 s += f"[{key}][DRAW]"
             elif win_idx == i:
-                AlgoInfo(key).WIN += 1
+                self.a_r[key].WIN += 1
                 s += f"[{key}][WIN]"
             else:
-                AlgoInfo(key).LOSE += 1
-        logger.info(f"{s}{win_idx}")
+                self.a_r[key].LOSE += 1
+        logger.info(f"{s}[{win_idx}] turn:{turn_idx}")
         return self
 
-    max_turn = 200
+    max_turn = 250
 
     def actor(self, players: List[Algo]):
         """
@@ -97,19 +116,30 @@ class ALgoManage:
             if s.get_done():
                 self.record(players, None, player_idx, s)
                 break
-            a = players[player_idx].search(s)
+            b = time.time()
+            p = players[player_idx]
+            ar = self.a_r[p.get_name()]
+            p.state_num = 0
+            a = p.search(s)
+            ar.MAX_TIME = max(ar.MAX_TIME, int((time.time() - b) * 1000))
+            ar.MAX_VISTE_NUM = max(ar.MAX_VISTE_NUM, p.state_num)
+            ar.ALL_VISTE_NUM += p.state_num
             if a is None:
                 self.record(players, a, player_idx, s)
-                return s.get_win_player(self.rewards, (player_idx + 1) % len(players))
+                return (
+                    s.get_win_player(self.rewards, (player_idx + 1) % len(players)),
+                    self.turn_idx,
+                )
+            ar.SCORE += a.get_reward()
             self.record(players, a, player_idx, s)
             player_idx = (player_idx + 1) % len(players)
             self.turn_idx += 1
             if self.turn_idx >= self.max_turn:
                 break
-            s = self.get_state(self.turn_idx, a.dst)
+            s = self.get_state(self.turn_idx, s.do_action(a))
         # if s:
         #     self.record(players, s)
-        return s.get_win_player(self.rewards, player_idx)
+        return s.get_win_player(self.rewards, player_idx), self.turn_idx
 
     def set_record_dir(self, path: str):
         self.record_dir = path
