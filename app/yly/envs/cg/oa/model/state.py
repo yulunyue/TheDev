@@ -18,6 +18,8 @@ class Rooms(State):
         self.player_id, *self.boards = C.decode_data(state)
 
     def do_action(self, a):
+        Rooms.G_SCORE[a.src.player_id] += a.get_reward()
+        Rooms.curent_round += 1
         return super().do_action(a)
 
     @staticmethod
@@ -63,6 +65,13 @@ class Rooms(State):
             s = C.encode_data(1 - self.player_id, boards)
             self.actions[i] = Action(self, i, Rooms.new(s)).set_reward(rv_num)
         return self.actions
+
+    def get_done(self):
+
+        return (
+            Rooms.G_SCORE[1 - self.player_id] >= C.WIN_SCORE
+            or Rooms.curent_round >= C.MAX_ROUND
+        )
 
     def to_str(self):
         from common.third_util.export import PtTable

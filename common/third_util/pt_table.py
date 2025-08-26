@@ -5,13 +5,14 @@ from typing import Dict, List
 class TableModel:
     _STORE: Dict[str, "TableModel"] = dict()
     _headers = None
-    key = ""
+
+    def __init__(self, key):
+        self.key = key
 
     def __new__(cls, key):
         if key in cls._STORE:
             return cls._STORE[key]
         cls._STORE[key] = object.__new__(cls)
-        cls._STORE[key].key = key
         return cls._STORE[key]
 
     @classmethod

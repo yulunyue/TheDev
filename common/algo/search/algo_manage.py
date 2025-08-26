@@ -15,6 +15,10 @@ class AlgoInfo(TableModel):
     ALL_VISTE_NUM = 0
     MAX_TIME = 0
 
+    def __init__(self, key):
+        self.score = []
+        super().__init__(key)
+
     def __new__(cls, key) -> "AlgoInfo":
         return super().__new__(cls, key)
 
@@ -30,6 +34,15 @@ class AlgoInfo(TableModel):
             "MAX_TIME",
             "ALL_VISTE_NUM",
         ]
+
+    def update(self, tm, state_num, score):
+        self.score.append(score)
+        self.SCORE += score
+        self.ALL_VISTE_NUM += state_num
+        if state_num > self.MAX_VISTE_NUM:
+            self.MAX_VISTE_NUM = state_num
+        if tm > self.MAX_TIME:
+            self.MAX_TIME = tm
 
 
 class ALgoManage:
@@ -96,7 +109,7 @@ class ALgoManage:
                 s += f"[{key}][WIN]"
             else:
                 self.a_r[key].LOSE += 1
-        logger.info(f"{s}[{win_idx}] turn:{turn_idx}")
+        logger.info(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
         return self
 
     max_turn = 250
@@ -118,19 +131,18 @@ class ALgoManage:
                 break
             b = time.time()
             p = players[player_idx]
-            ar = self.a_r[p.get_name()]
+
             p.state_num = 0
             a = p.search(s)
-            ar.MAX_TIME = max(ar.MAX_TIME, int((time.time() - b) * 1000))
-            ar.MAX_VISTE_NUM = max(ar.MAX_VISTE_NUM, p.state_num)
-            ar.ALL_VISTE_NUM += p.state_num
             if a is None:
                 self.record(players, a, player_idx, s)
                 return (
                     s.get_win_player(self.rewards, (player_idx + 1) % len(players)),
                     self.turn_idx,
                 )
-            ar.SCORE += a.get_reward()
+            self.a_r[p.get_name()].update(
+                int((time.time() - b) * 1000), p.state_num, a.get_reward()
+            )
             self.record(players, a, player_idx, s)
             player_idx = (player_idx + 1) % len(players)
             self.turn_idx += 1

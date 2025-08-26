@@ -17,8 +17,8 @@ DEFAULT_FMT = "".join(
         "[%(asctime)s]",
         # "levelname",
         # "process)s:%(threadName",
-        # "[%(pathname)s]",
-        "[%(funcName)s:%(lineno)s]",
+        "[%(pathname)s:%(lineno)s]",
+        "[%(funcName)s]",
         " %(message)s",
     ]
 )

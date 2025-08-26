@@ -60,7 +60,7 @@ class Solution(MockCf):
             else:
                 self.s[self.z[t]][1] = ans
 
-    def to_josn(self):
+    def to_json(self):
         return dict(
             z=deepcopy(self.z), mex=deepcopy(dict(self.mex)), s=deepcopy(dict(self.s))
         )

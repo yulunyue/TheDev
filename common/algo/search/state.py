@@ -249,7 +249,7 @@ class State:
         return f"\n".join(
             ["", "-" * 40]
             + [
-                f"done:{self.done}, depth:{self.depth}, player:{self.player_id}",
+                f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}",
                 f"mask:{self.state}",
                 self.to_str(),
                 f"info:{self.data}",
