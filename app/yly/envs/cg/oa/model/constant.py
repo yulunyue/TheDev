@@ -7,7 +7,7 @@ class Constant:
     SELF_NUM = ROOM_NUM // 2
     OR_NUM = 4
     MASK_POSS = [5] * ROOM_NUM
-    WIN_SCORE = 24
+    WIN_SCORE = 25
     MAX_ROUND = 200
 
     def __init__(self):
