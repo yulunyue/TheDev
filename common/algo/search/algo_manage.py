@@ -1,6 +1,14 @@
 from common.algo.search.algo import Algo
 from common.algo.search.state import State, Action
-from common.util.export import logger, File, List, defaultdict, Dict
+from common.util.export import (
+    logger,
+    File,
+    List,
+    defaultdict,
+    Dict,
+    ThreadManage,
+    progress_bar,
+)
 from common.third_util.export import PtTable, TableModel
 import time
 
@@ -14,6 +22,7 @@ class AlgoInfo(TableModel):
     MAX_VISTE_NUM = 0
     ALL_VISTE_NUM = 0
     MAX_TIME = 0
+    ALL_TIME = 0
 
     def __init__(self, key):
         self.score = []
@@ -27,22 +36,28 @@ class AlgoInfo(TableModel):
         return [
             "key",
             "WIN",
-            "DRAW",
             "LOSE",
-            "SCORE",
             "MAX_VISTE_NUM",
             "MAX_TIME",
+            "ALL_TIME",
             "ALL_VISTE_NUM",
+            "DRAW",
+            "SCORE",
         ]
 
     def update(self, tm, state_num, score):
         self.score.append(score)
         self.SCORE += score
         self.ALL_VISTE_NUM += state_num
+        self.ALL_TIME += tm
         if state_num > self.MAX_VISTE_NUM:
             self.MAX_VISTE_NUM = state_num
         if tm > self.MAX_TIME:
             self.MAX_TIME = tm
+
+    @classmethod
+    def sort(cls, v: "AlgoInfo"):
+        return [v.WIN, -v.LOSE, -v.MAX_VISTE_NUM, -v.MAX_TIME]
 
 
 class ALgoManage:
@@ -50,6 +65,7 @@ class ALgoManage:
     file_path = None
     SIGNAL = "SIGNAL"
     DTURN = "DTURN"
+    MUCH_THREAD = "MUCH_THREAD"
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
@@ -80,10 +96,14 @@ class ALgoManage:
                         ret.append([self.players[j], self.players[i]])
         return ret
 
-    def fight(self, pk_round=1, tp=None):
-
-        for players in self.get_players_turn_simple(pk_round, tp):
-            self.pk(players)
+    def fight(self, pk_round=1, tp=None, run_type=None):
+        players = self.get_players_turn_simple(pk_round, tp)
+        if run_type == ALgoManage.MUCH_THREAD:
+            ThreadManage().run(self.pk, players)
+        else:
+            for i, p in enumerate(players):
+                self.pk(p)
+                progress_bar(i + 1, len(players))
         logger.info(PtTable().load_form_model(AlgoInfo))
 
     def pk(self, players1: List[Algo]):

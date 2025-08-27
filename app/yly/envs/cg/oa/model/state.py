@@ -1,5 +1,6 @@
 from common.algo.search.state import State, Action
 from common.algo.search.state import Action
+from common.algo.search.algo import Algo
 from common.util.export import List
 from app.yly.envs.cg.oa.model.constant import C
 
@@ -8,19 +9,12 @@ class Rooms(State):
 
     STATE_MAP = dict()
 
-    def reset_env(self):
-        Rooms.G_SCORE = [0, 0]
-        Rooms.curent_round = 0
-        return self
-
     def __init__(self, state=None):
         super().__init__(state)
-        self.player_id, *self.boards = C.decode_data(state)
-
-    def do_action(self, a):
-        Rooms.G_SCORE[a.src.player_id] += a.get_reward()
-        Rooms.curent_round += 1
-        return super().do_action(a)
+        self.player_id, self.curent_round, score0, score1, *self.boards = C.decode_data(
+            state
+        )
+        self.score = [score0, score1]
 
     @staticmethod
     def new(state) -> "Rooms":
@@ -61,19 +55,20 @@ class Rooms(State):
                 op_board_num, self_num = self_num, op_board_num
             if op_board_num == 0:
                 continue
+            score = [self.score[0], self.score[1]]
+            score[self.player_id] += rv_num
             if self_num == 0:
                 rv_num -= op_board_num
             boards[j] = 0
-            s = C.encode_data(1 - self.player_id, boards)
-            self.actions[i] = Action(self, i, Rooms.new(s)).set_reward(rv_num)
+            done = (
+                score[self.player_id] >= C.WIN_SCORE or self.curent_round >= C.MAX_ROUND
+            )
+
+            s = C.encode_data(1 - self.player_id, self.curent_round + 1, score, boards)
+            self.actions[i] = Action(self, i, Rooms.new(s).set_done(done)).set_reward(
+                rv_num
+            )
         return self.actions
-
-    def get_done(self):
-
-        return (
-            Rooms.G_SCORE[1 - self.player_id] >= C.WIN_SCORE
-            or Rooms.curent_round >= C.MAX_ROUND
-        )
 
     def to_str(self):
         from common.third_util.export import PtTable
@@ -97,10 +92,13 @@ class Rooms(State):
         )
         return str(p)
 
-    def get_reward(self, actions: List[Action] = None, **kw):
+    def get_reward(self, actions: List[Action] = None, params=None, **kw):
         r = 0
+        c = 1
         for i, a in enumerate(actions):
-            r += a.reward if i % 2 == 0 else -a.reward
+            ar = a.reward if i % 2 == 0 else -a.reward
+            r += ar * c
+            c = c * params[0]
         return r
 
     def get_win_player(self, rewards, *args, **kw):

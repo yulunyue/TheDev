@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
 import time
+import sys
 
 
 class ThreadExec:
@@ -12,6 +13,16 @@ class ThreadExec:
     def add_to_executor(self, executor: ThreadPoolExecutor):
         self.future = executor.submit(self.func, self.args)
         return self.future
+
+
+def progress_bar(current, total, bar_length=100):
+    percent = float(current) * 100 / total
+    arrow = "-" * int(percent / 100 * bar_length - 1) + ">"
+    spaces = " " * (bar_length - len(arrow))
+    sys.stdout.write(f"\r进度: [{arrow}{spaces}] [{current}/{total}]")
+    sys.stdout.flush()
+    if current == total:
+        print("")
 
 
 class ThreadManage:
@@ -27,4 +38,5 @@ class ThreadManage:
         ret = []
         for future in as_completed(futures):
             ret.append(future.result())
+            progress_bar(len(ret), len(self.tasks))
         return ret

@@ -13,8 +13,6 @@ from common.util.export import (
 import threading
 import time
 
-thread_local_val = threading.local()
-
 
 class D:
     def get_value(self):
@@ -59,20 +57,9 @@ class TestUtil(TestBase):
             time.sleep(v)
             return v
 
-        t = [0.2, 0.1, 0.15]
+        t = [0.2, 0.1, 0.15, 1.3, 0.6]
         t1 = ThreadManage().run(fun1, t)
         self.expect(t1, sorted(t))
-
-        def get_local(*args):
-            logger.info([thread_local_val, hasattr(thread_local_val, "v")])
-            return
-
-        def set_local(v):
-            thread_local_val.v = v
-            logger.info([thread_local_val, hasattr(thread_local_val, "v")])
-            return ThreadManage().run(get_local, t)
-
-        ThreadManage().run(set_local, t)
 
     def test_re(self):
         self.expect(re_search(".*ab.*", "aabbcc") is not None)

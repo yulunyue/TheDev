@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger, Module, ii
-from common.third_util.export import CodingGame
+from common.third_service.export import CodingGame
 from common.algo.export import AlphaBateSearch, ALgoManage, Algo
 from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM
 
@@ -52,7 +52,7 @@ class OaTest(TestBase):
         self.fight(PM.all())
 
     def pk(self):
-        self.fight([PM.ab5, PM.bl1], ALgoManage.SIGNAL)
+        self.fight([PM.bl(6), PM.ab(5), PM.ab(5, [0.5])])
 
     def test_rule(self):
         s = Rooms.new(74939897936884006912)
