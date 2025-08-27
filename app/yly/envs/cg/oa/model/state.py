@@ -54,13 +54,15 @@ class Rooms(State):
                     break
                 rv_num += boards[idx]
                 boards[idx] = 0
-            op_board_num = (
-                sum(boards[: C.SELF_NUM])
-                if self.player_id == 1
-                else sum(boards[C.SELF_NUM :])
+            op_board_num, self_num = sum(boards[: C.SELF_NUM]), sum(
+                boards[C.SELF_NUM :]
             )
+            if self.player_id == 0:
+                op_board_num, self_num = self_num, op_board_num
             if op_board_num == 0:
                 continue
+            if self_num == 0:
+                rv_num -= op_board_num
             boards[j] = 0
             s = C.encode_data(1 - self.player_id, boards)
             self.actions[i] = Action(self, i, Rooms.new(s)).set_reward(rv_num)

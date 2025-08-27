@@ -68,16 +68,6 @@ class ALgoManage:
             return self.state(idx, dst)
         return dst
 
-    def get_players_turn_much(self, pk_round):
-        ret = []
-        for _ in range(pk_round):
-            for i in range(len(self.players)):
-                for j in range(len(self.players)):
-                    if i != j:
-                        ret.append([self.players[i], self.players[j]])
-                    ret.append([self.players[j], self.players[i]])
-        return ret
-
     def get_players_turn_simple(self, pk_round, tp):
         ret = []
         for _ in range(pk_round):
@@ -109,7 +99,7 @@ class ALgoManage:
                 s += f"[{key}][WIN]"
             else:
                 self.a_r[key].LOSE += 1
-        logger.info(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
+        logger.debug(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
         return self
 
     max_turn = 250

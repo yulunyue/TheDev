@@ -49,7 +49,7 @@ class OaTest(TestBase):
         self.al.set_players(players).fight(tp=tp)
 
     def fight_all(self):
-        self.fight([PM.ab1, PM.ab2, PM.ab3, PM.ab4, PM.ab5])
+        self.fight(PM.all())
 
     def pk(self):
         self.fight([PM.ab5, PM.bl1], ALgoManage.SIGNAL)

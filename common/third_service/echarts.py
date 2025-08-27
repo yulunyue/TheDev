@@ -1,5 +1,6 @@
 import pyecharts.options as opts
-from pyecharts.charts import Line
+from pyecharts.globals import ThemeType
+from pyecharts.charts import Line, Bar
 from pyecharts.faker import Faker
 from collections import defaultdict
 from typing import List, Dict
@@ -15,9 +16,11 @@ def lines_data(datas):
 
 
 class EChart:
+    def get_opts(self):
+        return opts.InitOpts("100%", "660px", theme=ThemeType.LIGHT)
 
     def draw_lines(self, datas: List[dict], x_values=None, gui1=False):
-        self.ins = Line(opts.InitOpts("100%", "660px"))
+        self.ins = Line(self.get_opts())
         if x_values is None:
             x_values = list(range(len(datas)))
         datas = lines_data(datas)
@@ -32,6 +35,22 @@ class EChart:
                     v = [d / ab_max for d in v]
             self.ins.add_yaxis(k, v, label_opts=opts.LabelOpts(is_show=False))
         return self
+
+    def draw_bars(self, values):
+        self.ins = (
+            Bar(self.get_opts())
+            .add_xaxis([1, 2, 3, 4, 5])
+            .add_yaxis("y", values, stack="stack1", category_gap="50%")
+        )
+
+        # .set_series_opts(
+        #     label_opts=opts.LabelOpts(
+        #         position="right",
+        #         formatter=JsCode(
+        #             "function(x){return Number(x.data.percent * 100).toFixed() + '%';}"
+        #         ),
+        #     )
+        # )
 
     def save(self, path):
         return self.ins.render(path)

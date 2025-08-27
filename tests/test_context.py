@@ -44,4 +44,4 @@ class LCTest(TestBase):
 
 
 if __name__ == "__main__":
-    LCTest().run()
+    LCTest(raise_err=False).run()

@@ -12,10 +12,10 @@ TEST_FN_PREFIX = "test_"
 
 class TestBase:
     TEST_EMABLE = True
-    RAISE_ERROR = True
 
-    def __init__(self) -> None:
+    def __init__(self, raise_err=True) -> None:
         self.prepare()
+        self.raise_err = raise_err
 
     def prepare(self, args=None):
         pass
@@ -77,7 +77,7 @@ class TestBase:
             self.ok_count += 1
             return True
         msg = f"\ninfo:\n{info}\nresult:\n{a}\nexpect:\n{expect_value}"
-        if self.RAISE_ERROR:
+        if self.raise_err:
             raise Exception(msg)
         logger.info(
             msg,
