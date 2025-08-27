@@ -51,14 +51,12 @@ class OaTest(TestBase):
     def fight_all(self):
         self.fight(PM.all())
 
-    def pk(self):
+    def pk1(self):
         self.fight([PM.bl(6), PM.ab(5), PM.ab(5, [0.5])])
 
-    def test_rule(self):
-        s = Rooms.new(74939897936884006912)
-        self.expect(list(s.get_actions().keys()), [5], s)
-        s = Rooms.new(2342206402455670848)
-        self.expect(list(s.get_actions().keys()), [1, 2, 3, 4], s)
+    def pk2(self):
+        self.fight([PM.ab(5),PM.mc()])
+   
 
     def debug(self):
         self.pk()

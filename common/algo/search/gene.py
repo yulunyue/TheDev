@@ -1,9 +1,9 @@
 from common.algo.search.param import Params
 from common.algo.search.state import Action
 from common.algo.search.algo import Algo
-from common.util.log import get_log
+from common.util.export import get_log,logger
 
-looger = get_log("gene")
+
 from typing import List
 import numpy as np
 import random

@@ -1,4 +1,4 @@
-from common.algo.export import AbDev, Algo
+from common.algo.export import AbDev, Algo, MctsSearch
 
 
 class Pm:
@@ -22,5 +22,7 @@ class Pm:
             params = [1]
         return AbDev(f"bl{depath}{params}").load(depath).set_params(params)
 
+    def mc(self):
+        return MctsSearch("mc")
 
 PM = Pm()

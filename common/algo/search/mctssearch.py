@@ -9,27 +9,6 @@ import time
 inf = float("inf")
 
 
-class MctsNode(State):
-    FIRST_PLAYER = 0
-
-    def __init__(self, *args, **kw):
-        super().__init__(*args, **kw)
-        self.reset()
-
-    def get_untried_actions(self):
-        if self.untried_actions is None:
-            self._untried_actions = list(self.get_actions().values())
-        return self._untried_actions
-
-    def reset(self):
-        self.visite_num = 0
-        self.is_visite = False
-        self.vt_num = 0
-        self.mct_value = 0  # 累计胜利值（玩家视角）
-        self.expand_actions: List[Action] = []
-        self.untried_actions: List[Action] = None
-        return super().reset()
-
 
 class MctsSearch(Algo):
 
@@ -37,7 +16,7 @@ class MctsSearch(Algo):
         self.scalar = 1 / (2 * math.sqrt(2.0))  # 0.353553
         return super().load(**kw)
 
-    def select(self, node: MctsNode, visite_actions: List[Action]):
+    def select(self, node: State, visite_actions: List[Action]):
         score = 0
         while node.expand_actions:
             action = max(node.expand_actions, key=lambda v: self.ucb_score(v))
@@ -46,7 +25,7 @@ class MctsSearch(Algo):
             node = action.dst
         return node, score
 
-    def expand(self, node: MctsNode, visite_actions: List[Action]):
+    def expand(self, node: State, visite_actions: List[Action]):
         untried_actions = node.get_untried_actions()
         i = random.randint(0, len(untried_actions) - 1)
         child = untried_actions.pop(i)
@@ -60,7 +39,7 @@ class MctsSearch(Algo):
             a.dst.mct_value += score
             self.reward_tmp_all += a.reward
 
-    def simulate(self, cur: MctsNode):
+    def simulate(self, cur: State):
         value = 0
         visite_actions: List[Action] = []
         while not cur.done:
