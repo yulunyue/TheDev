@@ -1,4 +1,4 @@
-from ..app.yly.envs.ml.bandit.main import Bandit, BAN_ENV
+from app.yly.envs.ml.bandit.main import Bandit, BAN_ENV
 from common.util.export import TestBase, logger, json
 from common.third_util.export import Draw
 from common.algo.export import (
@@ -33,7 +33,7 @@ class TestBan(TestBase):
         self.algo(ThompsonSampling().load())
 
     def algo(self, algo: EpsilonGreedy):
-        algo.train(Bandit)
+        algo.train(Bandit())
         logger.info(f"{algo.name} {algo.rewards_record[-1]}")
         self.d.draw_line(algo.rewards_record, title=algo.name)
 

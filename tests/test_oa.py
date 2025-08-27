@@ -7,9 +7,10 @@ from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM
 class OaTest(TestBase):
     def prepare(self, args=None):
         self.cg = CodingGame(CgOa.name)
+        self.init_state = Rooms.new(C.INIT_MASK)
         self.al = (
             ALgoManage()
-            .set_state(Rooms.new(C.INIT_MASK))
+            .set_state(self.init_state)
             .set_record_dir(self.cg.get_local_path("pk"))
         )
 
@@ -31,20 +32,6 @@ class OaTest(TestBase):
         s = Rooms.new(C.encode_data(0, s2))
         self.expect(s.boards, s2, s)
 
-    def test_dev2(self):
-        s = Rooms.new(78401807947313188929)
-        a = s.get_action(5)
-        self.expect(a.reward, 9, f"{s}\n{a}\n{a.dst}")
-
-    def test_ab(self):
-        s = Rooms.new(4724692046856857583875)
-        a1 = PM.ab1.search(s)
-        self.expect(a1.get_reward(), 5, s)
-        a3 = PM.ab1.search(a1.dst)
-        self.expect(a3.get_reward(), 0, a1.dst)
-        a2 = PM.ab2.search(s)
-        self.expect(a2.get_reward(), 5, s)
-
     def fight(self, players, tp=None):
         self.al.set_players(players).fight(tp=tp)
 
@@ -56,7 +43,9 @@ class OaTest(TestBase):
 
     def pk2(self):
         self.fight([PM.ab(5),PM.mc()])
-   
+    
+    def dev(self):
+        PM.mc().search(self.init_state)
 
     def debug(self):
         self.pk()

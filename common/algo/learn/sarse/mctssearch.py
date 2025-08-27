@@ -1,5 +1,5 @@
 from common.algo.search.state import State, Action
-from common.algo.search.algo import Algo
+from common.algo.learn.base import Base
 from typing import List, Dict
 import math
 import random
@@ -10,7 +10,7 @@ inf = float("inf")
 
 
 
-class MctsSearch(Algo):
+class MctsSearch(Base):
 
     def load(self, **kw):
         self.scalar = 1 / (2 * math.sqrt(2.0))  # 0.353553
@@ -59,11 +59,13 @@ class MctsSearch(Algo):
         a.value = exploit + self.scalar * explore
         return a.value
 
-    def run_one(self, init_state: MctsNode):
-        visite_actions, score = self.simulate(init_state)
-        self.backpropagate(visite_actions, score)
+    def search_main(self, init_state: State):
+        for _ in range(self.num_episodes):
+            visite_actions, score = self.simulate(init_state)
+            self.backpropagate(visite_actions, score)
+        init_state.set_best_action(self.get_max_action(init_state))
 
-    def get_max_action(self, state: MctsNode):
+    def get_max_action(self, state: State):
         actions = list(state.get_actions().values())
         actions.sort(key=lambda a: a.dst.visite_num)
         return actions[-1]

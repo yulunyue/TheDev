@@ -25,11 +25,13 @@ class TestBase:
         if args is None:
             args = sys.argv[1:]
         self.argvs, self.kw = url_to_json(args)
-
-        f = getattr(self, self.argvs[0], None)
-        if f is None:
-            f = getattr(self, f"test_{self.argvs[0]}")
-        self.run_one_case(f, *self.argvs[1:], **self.kw)
+        if self.argvs:
+            f = getattr(self, self.argvs[0], None)
+            if f is None and self.argvs:
+                f = getattr(self, f"test_{self.argvs[0]}")
+            self.run_one_case(f, *self.argvs[1:], **self.kw)
+        else:
+            self.run_all_test()
         self.exit()
 
     def prepare_case(self, *args):

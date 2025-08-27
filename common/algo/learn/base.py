@@ -49,7 +49,7 @@ class Base(Algo):
         def dfs(s: State, actions):
             next_actions = list(s.get_actions().values())
             if s.get_done() or not next_actions:
-                score = self.get_actions_backend_score()
+                score = self.get_actions_backend_score(actions)
                 if score > self.max_score:
                     self.max_score = score
                     self.max_actions = actions
