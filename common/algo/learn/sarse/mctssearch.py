@@ -1,71 +1,49 @@
 from common.algo.search.state import State, Action
 from common.algo.learn.base import Base
-from typing import List, Dict
-import math
-import random
-import numpy as np
-import time
-
-inf = float("inf")
-
+from common.util.export import List, Dict, defaultdict, math, random, CT
 
 
 class MctsSearch(Base):
 
-    def load(self, **kw):
-        self.scalar = 1 / (2 * math.sqrt(2.0))  # 0.353553
-        return super().load(**kw)
+    def load(self, max_depath=-1, num_episodes=50, **kw):
+        self.c = math.sqrt(2.0)
+        self.max_depath = max_depath
+        return super().load(num_episodes=num_episodes, **kw)
 
-    def select(self, node: State, visite_actions: List[Action]):
+    def select(self, node: State) -> tuple[State, int]:
         score = 0
-        while node.expand_actions:
-            action = max(node.expand_actions, key=lambda v: self.ucb_score(v))
-            visite_actions.append(node)
-            score += action.reward
-            node = action.dst
+        max_depath = self.max_depath
+        while node.expand_actions and max_depath != 0:
+            if node.get_done():
+                return node, score
+            a = self.take_action(node)
+            node = a.get_dst()
+            node.parent = a.src
+            score += a.get_reward()
+            max_depath -= 1
+        if not node.expand_actions:
+            node.expand_actions = node.get_sort_actions(params=self.params)
         return node, score
 
-    def expand(self, node: State, visite_actions: List[Action]):
-        untried_actions = node.get_untried_actions()
-        i = random.randint(0, len(untried_actions) - 1)
-        child = untried_actions.pop(i)
-        node.expand_actions.append(child)
-        visite_actions.append(child)
-        return child.dst, child.reward
+    def take_action(self, node: State) -> Action:
+        max_score = -CT.inf
+        ans = None
+        for a in node.expand_actions:
+            score = a.ucb_score()
+            if score > max_score:
+                ans = a
+        return ans
 
-    def backpropagate(self, actions: List[Action], score):
-        for a in actions:
-            a.dst.visite_num += 1
-            a.dst.mct_value += score
-            self.reward_tmp_all += a.reward
-
-    def simulate(self, cur: State):
-        value = 0
-        visite_actions: List[Action] = []
-        while not cur.done:
-            if not cur.is_visite:
-                cur.is_visite = True
-                cur, score = self.expand(cur, visite_actions)
-            elif self.can_epsilon() and cur.get_untried_actions():
-                cur, score = self.expand(cur, visite_actions)
-            else:
-                cur, score = self.select(cur, visite_actions)
-            value += score
-        return visite_actions, value
-
-    def ucb_score(self, a: Action):
-        exploit = a.dst.mct_value / a.dst.visite_num  # 平均值
-        explore = math.sqrt(2.0 * math.log(a.src.visite_num) / a.src.visite_num)
-        a.value = exploit + self.scalar * explore
-        return a.value
+    def backpropagate(self, node: State, score):
+        while node:
+            node.visite_score += score
+            node.visite_num += 1
+            node = node.parent
 
     def search_main(self, init_state: State):
+        if init_state.get_done():
+            return
         for _ in range(self.num_episodes):
-            visite_actions, score = self.simulate(init_state)
-            self.backpropagate(visite_actions, score)
-        init_state.set_best_action(self.get_max_action(init_state))
-
-    def get_max_action(self, state: State):
-        actions = list(state.get_actions().values())
-        actions.sort(key=lambda a: a.dst.visite_num)
-        return actions[-1]
+            dst, score = self.select(init_state)
+            self.backpropagate(dst, score)
+        init_state.set_best_action(self.take_action(init_state))

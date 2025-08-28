@@ -1,5 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const path = require('path');
+
 module.exports = {
     // change to .tsx if necessary
     entry: './src/app.ts',

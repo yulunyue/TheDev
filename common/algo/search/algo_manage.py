@@ -186,3 +186,6 @@ class ALgoManage:
         fp = File(self.file_path).get_writer()
         fp.write(msg)
         fp.flush()
+
+    def train(self, player: Algo):
+        pass

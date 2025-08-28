@@ -1,5 +1,6 @@
 from common.service.export import Api
 from common.util.export import File, List, logger
+from common.algo.export import Algo
 import json
 
 
@@ -22,6 +23,17 @@ class CGFrames:
             self.stderr = json.loads(stderr[:-1])
         return self
 
+    def __repr__(self):
+        return f"out:{self.stdout} error:{self.stderr}"
+
+
+def uu(name):
+    return f"data/cg/{name}"
+
+
+def ss(name):
+    return uu(name + ".json")
+
 
 class CodingGame(Api):
 
@@ -29,15 +41,12 @@ class CodingGame(Api):
         super().__init__()
         self.game_name = game_name
 
+    def get_timeout(self):
+        return 100
+
     @property
     def name(self):
         return "CodingGame"
-
-    def get_local_path(self, name=""):
-        return f"data/cg/{self.game_name}/{name}"
-
-    def get_local_file(self, name="play.json") -> File:
-        return File(self.get_local_path("/" + name))
 
     def execute(self, file_path, game_id, key=None, data=None, play_type="play"):
         code = open(file_path, "r", encoding="utf-8").read()
@@ -48,7 +57,7 @@ class CodingGame(Api):
         if play_type == "submit":
             player_data.append(None)
         ret = self.post(f"/services/TestSession/{play_type}", player_data)
-        self.get_local_file(f"{play_type}.json").write_file(ret)
+        File(ss(play_type)).write_file(ret)
 
     def submit(self, file_path, game_id):
         return self.execute(file_path, game_id, play_type="submit")
@@ -71,7 +80,7 @@ class CodingGame(Api):
         return ret
 
     def get_cg_frames(self, name="play", filter=None) -> List[CGFrames]:
-        data = self.get_local_file(f"{name}.json").read_file()
+        data = File(ss(name)).read_file()
         ret = []
         for d in data["frames"]:
             if filter and filter(d):
@@ -83,10 +92,16 @@ class CodingGame(Api):
     def get_cg_frames_stderror(self, name="play") -> List[CGFrames]:
         return self.get_cg_frames(name, filter=lambda a: a.get("stderr") is None)
 
-    _log = None
+    def train(self, state_cls, algo: Algo):
+        last_f = None
+        for i, f in enumerate(self.get_cg_frames()):
+            s = state_cls(last_f, f)
+            self.log(f"----turn:{i}--input:{f}")
+            algo.search(s)
+            self.log(s)
+            last_f = f
 
     def log(self, msg):
-        if self._log is None:
-            self._log = self.get_local_file("replay.log").get_writer()
-        self._log.write(f"{msg}\n")
-        self._log.flush()
+        f = File(uu("replay.log")).get_writer()
+        f.write(f"{msg}\n")
+        f.flush()

@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger, Module, ii
-from common.third_service.export import CodingGame
+from common.third_service.export import CodingGame, uu, CGFrames
 from common.algo.export import AlphaBateSearch, ALgoManage, Algo
 from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM
 
@@ -8,11 +8,7 @@ class OaTest(TestBase):
     def prepare(self, args=None):
         self.cg = CodingGame(CgOa.name)
         self.init_state = Rooms.new(C.INIT_MASK)
-        self.al = (
-            ALgoManage()
-            .set_state(self.init_state)
-            .set_record_dir(self.cg.get_local_path("pk"))
-        )
+        self.al = ALgoManage().set_state(self.init_state).set_record_dir(uu(CgOa.name))
 
     def cg_make(self):
         Module().compile_one(CgOa.main_py())
@@ -20,6 +16,17 @@ class OaTest(TestBase):
     def cg_play(self):
         self.cg_make()
         self.cg.pk(Module.RUN_TMP_PATH, CgOa.game_id, CgOa.agentsIds)
+        self.cg_replay()
+
+    def cg_replay(self):
+        self.state = self.init_state
+
+        def util(a: CGFrames, b: CGFrames):
+            if b.stdout != "":
+                self.state = self.state.get_action(int(b.stdout)).get_dst()
+            return self.state
+
+        self.cg.train(util, PM.ab(5))
 
     def run_algo_case(self, algo: Algo):
         for a, v in C.get_cases().items():
@@ -42,13 +49,16 @@ class OaTest(TestBase):
         self.fight([PM.bl(6), PM.ab(5), PM.ab(5, [0.5])])
 
     def pk2(self):
-        self.fight([PM.ab(5),PM.mc()])
-    
+        self.fight([PM.ab(1), PM.mc()])
+
+    def pk3(self):
+        self.fight([PM.ab(5), PM.ab(5)])
+
     def dev(self):
         PM.mc().search(self.init_state)
 
     def debug(self):
-        self.pk()
+        self.dev()
 
 
 if __name__ == "__main__":

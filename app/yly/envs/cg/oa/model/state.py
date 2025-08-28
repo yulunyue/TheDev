@@ -90,7 +90,7 @@ class Rooms(State):
             ],
             [f"N{i}" for i in range(6)],
         )
-        return str(p)
+        return str(p) + f"\nscore:{self.score}\n"
 
     def get_reward(self, actions: List[Action] = None, params=None, **kw):
         r = 0

@@ -1,4 +1,5 @@
 from common.algo.export import AbDev, Algo, MctsSearch
+from .model.state import Rooms
 
 
 class Pm:
@@ -23,6 +24,7 @@ class Pm:
         return AbDev(f"bl{depath}{params}").load(depath).set_params(params)
 
     def mc(self):
-        return MctsSearch("mc")
+        return MctsSearch("mc").load(max_depath=20, num_episodes=1000)
+
 
 PM = Pm()

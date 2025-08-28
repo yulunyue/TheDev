@@ -30,7 +30,7 @@ class D3Graph extends SvgNode {
         var svgGroup = svg.append('g')
 
         // Run the renderer. This is what draws the final graph.
-        new render()(svgGroup, g as any);
+        // new render()(svgGroup, g as any);
         // Center the graph
         // var xCenterOffset = (svg.attr('width') - g.graph().width) / 2;
         // svgGroup.attr('transform', 'translate(' + xCenterOffset + ', 20)');

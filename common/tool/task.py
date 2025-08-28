@@ -63,6 +63,7 @@ class Task:
     def loop(self):
         for t in self.source.filter():
             t.exec()
+        self.source.save()
         return self
 
     def run(self):

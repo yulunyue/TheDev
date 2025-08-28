@@ -4,25 +4,26 @@
   "license": "ISC",
   "scripts": {
     "build": "webpack build --config webpack.config.js",
-    "start": "webpack serve --config webpack.config.js --mode development"
+    "start": "webpack serve --config webpack.config.js --mode development",
+    "test": "webpack"
   },
   "devDependencies": {
     "@types/dagre-d3": "^0.6.6",
-    "css-loader": "^6.7.1",
+    "css-loader": "7.1.2",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
-    "source-map-loader": "^3.0.0",
-    "style-loader": "^3.3.1",
+    "source-map-loader": "5.0.0",
+    "style-loader": "4.0.0",
     "ts-loader": "^9.2.6",
-    "typescript": "^4.4.4",
-    "webpack": "^5.64.0",
-    "webpack-cli": "^4.9.1",
+    "typescript": "5.9.2",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
-    "d3": "last",
     "dagre-d3": "^0.6.4",
     "mermaid": "^11.4.1",
+    "node": "^24.7.0",
     "panzoom": "^9.4.3"
   }
 }

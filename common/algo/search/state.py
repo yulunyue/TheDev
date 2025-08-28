@@ -1,7 +1,7 @@
 from typing import List, Dict
 import numpy as np
 import random
-from common.util.export import logger, json_dumps, defaultdict
+from common.util.export import logger, json_dumps, defaultdict, math
 from .param import Params, Param
 
 inf = float("inf")
@@ -17,6 +17,13 @@ class Action:
         self.src: State = src
         self.dst: State = dst
         self.data = dict()
+
+    def ucb_score(self, c=1.314):
+        if self.dst.visite_num == 0:
+            return 0
+        exploit = self.src.visite_score / self.dst.visite_num  # 平均值
+        explore = math.sqrt(math.log(self.src.visite_num) / self.dst.visite_num)
+        return exploit + c * explore
 
     def get_regret(self):
         return self.regret
@@ -81,9 +88,12 @@ class PAction(Action):
 
 class State:
     name = "state"
-    parent: "State"
+    parent: "State" = None
     done = None
     STATE_STORE: Dict[str, "State"] = None
+    visite_num = 0
+    visite_score = 0
+    expand_actions: List[Action] = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
@@ -92,6 +102,9 @@ class State:
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
+
+    def get_sort_actions(self, params=None):
+        return list(self.get_actions().values())
 
     @classmethod
     def new(cls, state=None, **kw):
