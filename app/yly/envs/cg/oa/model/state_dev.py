@@ -17,7 +17,7 @@ class Rooms(StateBase):
             ],
             [f"P{5-i}" for i in range(6)],
         )
-        return str(p) + f"\nscore:{self.score,self.op_score}\n"
+        return str(p) + f"\nscore:{self.score,self.op_score}"
 
     def get_win_player(self, rewards, *args, **kw):
         if rewards[-1][0] < rewards[-1][1]:
@@ -25,9 +25,3 @@ class Rooms(StateBase):
         if rewards[-1][0] > rewards[-1][1]:
             return 0
         return -1
-
-    @staticmethod
-    def new(state) -> "Rooms":
-        if state not in Rooms.STATE_MAP:
-            Rooms.STATE_MAP[state] = Rooms(state)
-        return Rooms.STATE_MAP[state]

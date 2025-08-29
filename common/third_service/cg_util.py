@@ -95,13 +95,13 @@ class CodingGame(Api):
     def replay(self, state_cls, algo: Algo):
         last_f = None
         for i, f in enumerate(self.get_cg_frames()):
-            self.log(f"----turn:{i}-action:{f.stdout}----")
+            self.log(f"----[turn: {i}--action: {f.stdout}]----")
             s = state_cls(last_f, f)
             self.log(s)
             for k, v in f.stderr.items():
                 self.log(f"{k} :{v}")
-            a = algo.search(s)
-            self.log(a)
+            # a = algo.search(s)
+            # self.log(a)
             last_f = f
 
     def log(self, msg):

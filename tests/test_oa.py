@@ -1,6 +1,6 @@
 from common.util.export import TestBase, logger, Module, ii
 from common.third_service.export import CodingGame, uu, CGFrames
-from common.algo.export import AlphaBateSearch, ALgoManage, Algo
+from common.algo.export import AlphaBateSearch, ALgoManage, Algo,FIGHT_TYPE
 from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM
 
 
@@ -39,20 +39,11 @@ class OaTest(TestBase):
         s = Rooms.new(C.encode_data(0, s2))
         self.expect(s.boards, s2, s)
 
-    def fight(self, players, tp=None):
-        self.al.set_players(players).fight(tp=tp)
-
-    def fight_all(self):
-        self.fight(PM.all())
-
-    def pk1(self):
-        self.fight([PM.bl(6), PM.ab(5), PM.ab(5, [0.5])])
-
     def pk2(self):
-        self.fight([PM.ab(1), PM.mc()])
-
-    def pk3(self):
-        self.fight([PM.ab(5), PM.ab(5)])
+        self.al.set_players([
+            PM.ab(1), PM.ab(3)
+        ]).fight(tp=FIGHT_TYPE.SIGNAL)
+     
 
     def dev(self):
         PM.mc().search(self.init_state)

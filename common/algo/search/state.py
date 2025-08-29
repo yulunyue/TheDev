@@ -256,15 +256,17 @@ class State:
         return self
 
     def __repr__(self):
+        datas = [
+            f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}",
+            f"mask:{self.state}",
+            self.to_str()
+        ]
+        if self.data:
+            datas.append(f"data:{self.data}")
         return f"\n".join(
             ["-" * 40]
-            + [
-                f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}",
-                f"mask:{self.state}",
-                self.to_str(),
-                f"info:{self.data}",
-            ]
-            + [f"best_action:\n{self.best_action}", "-" * 40]
+            + datas
+            + ["-" * 40]
         )
 
     def get_win_player(self, *args, **kw):

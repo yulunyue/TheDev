@@ -59,13 +59,14 @@ class AlgoInfo(TableModel):
     def sort(cls, v: "AlgoInfo"):
         return [v.WIN, -v.LOSE, -v.MAX_VISTE_NUM, -v.MAX_TIME]
 
+class FIGHT_TYPE:
+    SIGNAL = "SIGNAL"
+    DTURN = "DTURN"
+    MUCH_THREAD = "MUCH_THREAD"
 
 class ALgoManage:
     record_dir = ""
     file_path = None
-    SIGNAL = "SIGNAL"
-    DTURN = "DTURN"
-    MUCH_THREAD = "MUCH_THREAD"
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
@@ -89,7 +90,7 @@ class ALgoManage:
         for _ in range(pk_round):
             for i in range(len(self.players)):
                 for j in range(i + 1, len(self.players)):
-                    if tp == ALgoManage.SIGNAL:
+                    if tp == FIGHT_TYPE.SIGNAL:
                         ret.append([self.players[i], self.players[j]])
                     else:
                         ret.append([self.players[i], self.players[j]])
@@ -98,7 +99,7 @@ class ALgoManage:
 
     def fight(self, pk_round=1, tp=None, run_type=None):
         players = self.get_players_turn_simple(pk_round, tp)
-        if run_type == ALgoManage.MUCH_THREAD:
+        if run_type == FIGHT_TYPE.MUCH_THREAD:
             ThreadManage().run(self.pk, players)
         else:
             for i, p in enumerate(players):
@@ -119,7 +120,7 @@ class ALgoManage:
                 s += f"[{key}][WIN]"
             else:
                 self.a_r[key].LOSE += 1
-        logger.debug(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
+        logger.info(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
         return self
 
     max_turn = 250
