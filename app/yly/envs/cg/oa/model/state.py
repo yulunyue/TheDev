@@ -12,7 +12,7 @@ class StateBase(MctsState):
 
     def __init__(self, state=None):
         super().__init__(state)
-        self.score, self.current_round, *boards = C.decode_data(state)
+        self.current_round, self.score, *boards = C.decode_data(state)
         self.boards = boards[: C.SELF_NUM]
         self.op_boards = boards[C.SELF_NUM :]
         self.nums = sum(self.boards)

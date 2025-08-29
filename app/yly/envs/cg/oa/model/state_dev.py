@@ -10,11 +10,12 @@ class Rooms(StateBase):
 
         p = PtTable().load_from_matrix(
             [
-                [f"{i}:{u(i)}" for i in range(6)],
-                self.boards,
-                self.op_boards[::-1],
+                [f"A{i}" for i in range(6)],
+                self.boards if self.current_round % 2 else self.op_boards,
+                self.op_boards[::-1] if self.current_round % 2 else self.boards[::-1],
+                [f"B{5-i}" for i in range(6)],
             ],
-            [f"P{i}" for i in range(6)],
+            [f"P{5-i}" for i in range(6)],
         )
         return str(p) + f"\nscore:{self.score,self.op_score}\n"
 
