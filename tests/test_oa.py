@@ -20,24 +20,8 @@ class OaTest(TestBase):
 
     def cg_replay(self):
         self.state = self.init_state
+        self.cg.replay(self.init_state, PM.ab(5))
 
-        def util(a: CGFrames, b: CGFrames):
-            if b.stdout != "":
-                self.state = self.state.get_action(int(b.stdout)).get_dst()
-            return self.state
-
-        self.cg.replay(util, PM.ab(5))
-
-    def run_algo_case(self, algo: Algo):
-        for a, v in C.get_cases().items():
-            s = Rooms.new(a)
-            a = algo.search(s)
-            self.expect(str(a), v, s)
-
-    def test_dev1(self):
-        s2 = ii("1 8 7 6 6 4 4 4 4 4 0 0")
-        s = Rooms.new(C.encode_data(0, s2))
-        self.expect(s.boards, s2, s)
 
     def pk2(self):
         self.al.set_players([
@@ -45,10 +29,12 @@ class OaTest(TestBase):
         ]).fight(tp=FIGHT_TYPE.SIGNAL)
      
 
-    def dev(self):
-        PM.mc().search(self.init_state)
+    def pk2(self):
+        self.al.set_players(PM.all()).fight()
 
     def debug(self):
+        # s=Rooms.new(852117536177685595136).get_action(4).dst
+        # logger.info(s)
         self.cg_replay()
 
 

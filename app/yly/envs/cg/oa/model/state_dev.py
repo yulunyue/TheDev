@@ -7,21 +7,24 @@ class Rooms(StateBase):
         def u(i):
             ac = self.get_actions()
             return 0 if i not in ac else ac[i].get_reward()
-
+        idx=self.current_round%2
         p = PtTable().load_from_matrix(
             [
                 [f"A{i}" for i in range(6)],
-                self.boards if self.current_round % 2 else self.op_boards,
-                self.op_boards[::-1] if self.current_round % 2 else self.boards[::-1],
+                self.boards[idx],
+                self.boards[1-idx][::-1],
                 [f"B{5-i}" for i in range(6)],
             ],
             [f"P{5-i}" for i in range(6)],
         )
         return str(p) + f"\nscore:{self.score,self.op_score}"
 
-    def get_win_player(self, rewards, *args, **kw):
-        if rewards[-1][0] < rewards[-1][1]:
-            return 1
-        if rewards[-1][0] > rewards[-1][1]:
-            return 0
+    def get_action(self, a):
+        return super().get_action(int(a))
+
+    def get_win_player(self, rewards, player_idx,*args, **kw):
+        if self.reward>1:
+            return 1-player_idx
+        if self.reward<1:
+            return player_idx
         return -1

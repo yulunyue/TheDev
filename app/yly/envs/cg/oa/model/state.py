@@ -13,11 +13,9 @@ class StateBase(MctsState):
     def __init__(self, state=None):
         super().__init__(state)
         self.current_round, self.score, *boards = C.decode_data(state)
-        self.boards = boards[: C.SELF_NUM]
-        self.op_boards = boards[C.SELF_NUM :]
-        self.nums = sum(self.boards)
-        self.op_nums = sum(self.op_boards)
-        self.op_score = C.ALL_SCORE - self.score - self.nums - self.op_nums
+        self.boards = [boards[: C.SELF_NUM],boards[C.SELF_NUM :]]
+        self.nums = [sum(self.boards[0]),sum(self.boards[1])]
+        self.op_score = C.ALL_SCORE - self.score - self.nums[0] - self.nums[1]
         self.reward = (self.score - self.op_score) / C.ALL_SCORE
         if self.score >= C.WIN_SCORE:
             self.done = self.reward = 1
@@ -37,39 +35,41 @@ class StateBase(MctsState):
     def make_actions(self, *args, **kw):
         actions = dict()
         for i in range(C.SELF_NUM):
-            if self.boards[i] == 0:
+            if self.boards[0][i] == 0:
                 continue
-            score, op_score = self.score, self.op_score
-            boards, op_boards = self.boards.copy(), self.op_boards.copy()
-            nums, op_nums = self.nums - self.boards[i], self.op_nums
+            op_score = self.op_score
+            rv_num=0
+            boards= [self.boards[0].copy(), self.boards[1].copy()]
+            nums = [self.nums[0],self.nums[1]]
             idx = i
-            is_self = True
-            boards[i] = 0
-            for _ in range(self.boards[i]):
+            player_id = 0
+            boards[0][i] = 0
+
+            for _ in range(self.boards[0][i]):
                 idx += 1
+                if idx == i and player_id == 0:
+                    idx += 1
                 if idx == 6:
-                    boards, op_boards = op_boards, boards
-                    nums, op_nums = op_nums, nums
-                    is_self = not is_self
+                    player_id = 1-player_id
                     idx = 0
-                if idx == i and is_self:
-                    continue
-                boards[idx] += 1
-                nums += 1
+    
+                boards[player_id][idx] += 1
+                nums[player_id] += 1
 
-            while not is_self and 2 <= boards[idx] <= 3:
+            while player_id==1 and idx>=0 and 2 <= boards[1][idx] <= 3:
+                nums[1] -= boards[1][idx]
+                rv_num += boards[1][idx]
+                boards[1][idx] = 0
                 idx -= 1
-                if idx == -1:
-                    break
-                op_nums -= boards[idx]
-                score += boards[idx]
-                boards[idx] = 0
-            if not is_self:
-                boards, op_boards = op_boards, boards
-                nums, op_nums = op_nums, nums
+            
+            if nums[0]==0:
+                op_score+=nums[1]
+                nums[1]=0
+                boards[1]=[0]*6
+                
 
-            s = C.encode_data(self.current_round + 1, op_score, op_boards + boards)
+            s = C.encode_data(self.current_round + 1, op_score, boards[1] + boards[0])
             actions[i] = Action(self, i, self.__class__.new(s)).set_reward(
-                score - self.score
+                rv_num
             )
         return actions

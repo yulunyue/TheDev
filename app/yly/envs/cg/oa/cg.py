@@ -12,7 +12,7 @@ class CgOa(MockCg):
     uri = "https://www.codingame.com/ide/puzzle/oware-abapa"
 
     def get_action(self, s: StateBase):
-        al5 = AlphaBateSearch("ab5").load(5, AlphaBateSearch.AB_TYPE).set_params([1])
+        al5 = AlphaBateSearch().load(5, AlphaBateSearch.AB_TYPE)
         return al5.search(s)
 
     def main(self):
@@ -20,7 +20,7 @@ class CgOa(MockCg):
         i = 0
         while True:
             boards = self.ii()
-            if i==0 and any([v==0 for v in boards]):
+            if i==0 and any([v!=4 for v in boards]):
                 i=1
             s = StateBase.new(C.encode_data(i, reward, boards))
             a = self.get_action(s)

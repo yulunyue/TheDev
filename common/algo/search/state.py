@@ -9,7 +9,7 @@ inf = float("inf")
 
 class Action:
     check_info = None
-    reward = None
+    reward = 0
     regret = 0
 
     def __init__(self, src, action, dst=None):
@@ -18,12 +18,6 @@ class Action:
         self.dst: State = dst
         self.data = dict()
 
-    def ucb_score(self, c=1.314):
-        if self.dst.visite_num == 0:
-            return 0
-        exploit = self.src.visite_score / self.dst.visite_num  # 平均值
-        explore = math.sqrt(math.log(self.src.visite_num) / self.dst.visite_num)
-        return exploit + c * explore
 
     def get_regret(self):
         return self.regret
@@ -59,7 +53,12 @@ class Action:
         return self.get_best_actions()[-1]
 
     def __repr__(self):
-        return f"action: {self.action}, reward: {self.reward}, data:{self.data}"
+        ret=f"action: {self.action}, data:{self.data}"
+        if self.reward>0:
+            ret+=f', rwin: {self.reward}'
+        elif self.reward<0:
+            ret+=f", rlos: {self.reward}"
+        return ret
 
 
 class PAction(Action):
