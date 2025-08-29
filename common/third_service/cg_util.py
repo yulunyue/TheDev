@@ -96,10 +96,10 @@ class CodingGame(Api):
         last_f = None
         for i, f in enumerate(self.get_cg_frames()):
             self.log(f"----[turn: {i}--action: {f.stdout}]----")
-            s = state_cls(last_f, f)
-            self.log(s)
             for k, v in f.stderr.items():
                 self.log(f"{k} :{v}")
+            s = state_cls(last_f, f)
+            self.log(s)
             # a = algo.search(s)
             # self.log(a)
             last_f = f
