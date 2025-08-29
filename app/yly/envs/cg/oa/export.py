@@ -1,2 +1,3 @@
-from .cg import CgOa, Rooms, C
+from .cg import CgOa, C
+from .model.state_dev import Rooms
 from .util import PM

@@ -18,9 +18,9 @@ class CGFrames:
         self.summary = summary.replace("\n", ",")
         self.gameInformation = gameInformation
         self.agent_id = agentId
-        self.stderr = None
+        self.stderr = dict()
         if stderr:
-            self.stderr = json.loads(stderr[:-1])
+            self.stderr.update(json.loads(stderr[:-1]))
         return self
 
     def __repr__(self):
@@ -92,13 +92,16 @@ class CodingGame(Api):
     def get_cg_frames_stderror(self, name="play") -> List[CGFrames]:
         return self.get_cg_frames(name, filter=lambda a: a.get("stderr") is None)
 
-    def train(self, state_cls, algo: Algo):
+    def replay(self, state_cls, algo: Algo):
         last_f = None
         for i, f in enumerate(self.get_cg_frames()):
+            self.log(f"----turn:{i}-action:{f.stdout}----")
             s = state_cls(last_f, f)
-            self.log(f"----turn:{i}--input:{f}")
-            algo.search(s)
             self.log(s)
+            for k, v in f.stderr.items():
+                self.log(f"{k} :{v}")
+            a = algo.search(s)
+            self.log(a)
             last_f = f
 
     def log(self, msg):

@@ -26,7 +26,7 @@ class OaTest(TestBase):
                 self.state = self.state.get_action(int(b.stdout)).get_dst()
             return self.state
 
-        self.cg.train(util, PM.ab(5))
+        self.cg.replay(util, PM.ab(5))
 
     def run_algo_case(self, algo: Algo):
         for a, v in C.get_cases().items():
@@ -58,7 +58,7 @@ class OaTest(TestBase):
         PM.mc().search(self.init_state)
 
     def debug(self):
-        self.dev()
+        self.cg_replay()
 
 
 if __name__ == "__main__":

@@ -91,9 +91,6 @@ class State:
     parent: "State" = None
     done = None
     STATE_STORE: Dict[str, "State"] = None
-    visite_num = 0
-    visite_score = 0
-    expand_actions: List[Action] = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
@@ -102,9 +99,6 @@ class State:
         self.player_id = player_id
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
-
-    def get_sort_actions(self, params=None):
-        return list(self.get_actions().values())
 
     @classmethod
     def new(cls, state=None, **kw):
@@ -116,6 +110,9 @@ class State:
 
     def get_done(self):
         return self.done
+
+    def is_game_over(self):
+        return self.get_done() is not None
 
     def do_action(self, a: Action):
         return a.dst
@@ -147,9 +144,9 @@ class State:
 
     def get_action(self, a) -> Action:
         actions = self.get_actions()
-        if a in self.actions:
-            return self.actions[a]
-        raise Exception(a, list(actions.keys()))
+        if a in actions:
+            return actions[a]
+        raise Exception(a, list(actions.keys()), self.state)
 
     def get_best_actions(self) -> List["Action"]:
         vt = dict()
@@ -260,7 +257,7 @@ class State:
 
     def __repr__(self):
         return f"\n".join(
-            ["", "-" * 40]
+            ["-" * 40]
             + [
                 f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}",
                 f"mask:{self.state}",

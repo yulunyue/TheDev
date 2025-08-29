@@ -1,109 +1,75 @@
 from common.algo.search.state import State, Action
+from common.algo.learn.sarse.mctssearch import MctsState
 from common.algo.search.state import Action
 from common.algo.search.algo import Algo
 from common.util.export import List
 from app.yly.envs.cg.oa.model.constant import C
 
 
-class Rooms(State):
+class StateBase(MctsState):
 
     STATE_MAP = dict()
 
     def __init__(self, state=None):
         super().__init__(state)
-        self.player_id, self.curent_round, score0, score1, *self.boards = C.decode_data(
-            state
-        )
-        self.score = [score0, score1]
+        self.score, self.current_round, *boards = C.decode_data(state)
+        self.boards = boards[: C.SELF_NUM]
+        self.op_boards = boards[C.SELF_NUM :]
+        self.nums = sum(self.boards)
+        self.op_nums = sum(self.op_boards)
+        self.op_score = C.ALL_SCORE - self.score - self.nums - self.op_nums
+        self.reward = (self.score - self.op_score) / C.ALL_SCORE
+        if self.score >= C.WIN_SCORE:
+            self.done = self.reward = 1
+        elif self.op_score >= C.WIN_SCORE:
+            self.done = self.reward = -1
+        elif self.current_round >= C.MAX_ROUND:
+            if self.score == self.op_score:
+                self.done = 0
+            elif self.score < self.op_score:
+                self.done = -1
+            else:
+                self.done = 1
 
-    @staticmethod
-    def new(state) -> "Rooms":
-        if state not in Rooms.STATE_MAP:
-            Rooms.STATE_MAP[state] = Rooms(state)
-        return Rooms.STATE_MAP[state]
+    def get_reward(self, *args, **kw):
+        return self.reward
 
     def make_actions(self, *args, **kw):
-        self.actions = dict()
-        self_start = self.player_id * C.SELF_NUM
-        self_end = self_start + C.SELF_NUM
-
+        actions = dict()
         for i in range(C.SELF_NUM):
-            j = self.player_id * C.SELF_NUM + i
-            if self.boards[j] == 0:
+            if self.boards[i] == 0:
                 continue
-            boards = self.boards.copy()
-            pos = []
-            idx = j
-            for k in range(self.boards[j]):
-                idx = (1 + idx) % C.ROOM_NUM
-                if idx == j:
-                    idx = (1 + idx) % C.ROOM_NUM
+            score, op_score = self.score, self.op_score
+            boards, op_boards = self.boards.copy(), self.op_boards.copy()
+            nums, op_nums = self.nums - self.boards[i], self.op_nums
+            idx = i
+            is_self = True
+            boards[i] = 0
+            for _ in range(self.boards[i]):
+                idx += 1
+                if idx == 6:
+                    boards, op_boards = op_boards, boards
+                    nums, op_nums = op_nums, nums
+                    is_self = not is_self
+                    idx = 0
+                if idx == i and is_self:
+                    continue
                 boards[idx] += 1
-                pos.append(idx)
-                k += 1
-            rv_num = 0
-            while pos and 2 <= boards[pos[-1]] <= 3:
-                idx = pos.pop()
-                if self_start <= idx < self_end:
+                nums += 1
+
+            while not is_self and 2 <= boards[idx] <= 3:
+                idx -= 1
+                if idx == -1:
                     break
-                rv_num += boards[idx]
+                op_nums -= boards[idx]
+                score += boards[idx]
                 boards[idx] = 0
-            op_board_num, self_num = sum(boards[: C.SELF_NUM]), sum(
-                boards[C.SELF_NUM :]
+            if not is_self:
+                boards, op_boards = op_boards, boards
+                nums, op_nums = op_nums, nums
+
+            s = C.encode_data(self.current_round + 1, op_score, op_boards + boards)
+            actions[i] = Action(self, i, self.__class__.new(s)).set_reward(
+                score - self.score
             )
-            if self.player_id == 0:
-                op_board_num, self_num = self_num, op_board_num
-            if op_board_num == 0:
-                continue
-            score = [self.score[0], self.score[1]]
-            score[self.player_id] += rv_num
-            if self_num == 0:
-                rv_num -= op_board_num
-            boards[j] = 0
-            done = (
-                score[self.player_id] >= C.WIN_SCORE or self.curent_round >= C.MAX_ROUND
-            )
-
-            s = C.encode_data(1 - self.player_id, self.curent_round + 1, score, boards)
-            self.actions[i] = Action(self, i, Rooms.new(s).set_done(done)).set_reward(
-                rv_num
-            )
-        return self.actions
-
-    def to_str(self):
-        from common.third_util.export import PtTable
-
-        def u(i, player_id):
-            if player_id != self.player_id:
-                return 0
-            actions = self.get_actions()
-            if i in actions:
-                return actions[i].get_reward()
-            return 0
-
-        p = PtTable().load_from_matrix(
-            [
-                [f"A{i}:{u(i,0)}" for i in range(6)],
-                self.boards[: C.SELF_NUM],
-                self.boards[C.SELF_NUM :][::-1],
-                [f"B{5-i}:{u(5-i,1)}" for i in range(6)],
-            ],
-            [f"N{i}" for i in range(6)],
-        )
-        return str(p) + f"\nscore:{self.score}\n"
-
-    def get_reward(self, actions: List[Action] = None, params=None, **kw):
-        r = 0
-        c = 1
-        for i, a in enumerate(actions):
-            ar = a.reward if i % 2 == 0 else -a.reward
-            r += ar * c
-            c = c * params[0]
-        return r
-
-    def get_win_player(self, rewards, *args, **kw):
-        if rewards[-1][0] < rewards[-1][1]:
-            return 1
-        if rewards[-1][0] > rewards[-1][1]:
-            return 0
-        return -1
+        return actions
