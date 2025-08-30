@@ -26,20 +26,20 @@ class Base(Algo):
         self.reset()
         for _ in range(self.num_episodes):
             s = init_state.reset()
-            actions: List[Action] = []
+            vt_states: List[State] = [s]
             tmp_round = max_round
             while not s.get_done() and tmp_round:
                 ac = self.take_action(s)
-                actions.append(ac)
                 self.update_action(ac)
                 self.reward_tmp_all += ac.get_regret()
                 s = ac.get_dst()
+                vt_states.append(s)
                 tmp_round -= 1
-            self.feed_back_actions(actions)
+            self.feed_back_states(vt_states)
             self.rewards_record.append(self.reward_tmp_all)
         init_state.set_best_action(self.take_action(init_state))
 
-    def feed_back_actions(self, actions: List[Action]):
+    def feed_back_states(self, vt_states: List[Action]):
         pass
 
     def search_main(self, state: State):

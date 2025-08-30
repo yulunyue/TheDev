@@ -9,6 +9,7 @@ from common.algo.export import (
     random_seed,
     Algo,
     ALgoManage,
+    MctsEasy,
 )
 
 
@@ -16,9 +17,7 @@ class TestBan(TestBase):
 
     def prepare(self):
         BAN_ENV.load()
-        self.prob_format = ", ".join(["%.2f" % v for v in BAN_ENV.probs])
         self.d = Draw()
-        logger.info(self.prob_format)
 
     def test_eg(self):
         self.algo(EpsilonGreedy().load())
@@ -32,13 +31,18 @@ class TestBan(TestBase):
     def test_ts(self):
         self.algo(ThompsonSampling().load())
 
+    def test_mcts(self):
+        self.algo(MctsEasy().load())
+
     def algo(self, algo: EpsilonGreedy):
-        algo.train(Bandit())
-        logger.info(f"{algo.name} {algo.rewards_record[-1]}")
+        b = Bandit()
+        algo.train(b)
+        logger.debug(f"{algo.name} {algo.rewards_record[-1]}")
+        self.expect(b.best_action.action, BAN_ENV.max_idx)
         self.d.draw_line(algo.rewards_record, title=algo.name)
 
     def debug(self):
-        self.test_ucb()
+        self.test_mcts()
 
     def exit(self):
         return self.d.save(self.get_temp_file(f"all.svg"))

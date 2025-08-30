@@ -13,16 +13,14 @@ class Pm:
     def ab(self, depath, params=None):
         if params is None:
             params = [1]
-        return (
-            AbDev(f"ab{depath}").load(depath, AbDev.AB_TYPE)
-        )
+        return AbDev(f"ab{depath}").load(depath, AbDev.AB_TYPE)
 
     def bl(self, depath, params=None):
         if params is None:
             params = [1]
         return AbDev(f"bl{depath}").load(depath)
 
-    def mc(self):
+    def mc(self, *args):
         return MctsSearch("mc").load(max_depath=20, num_episodes=1000)
 
 

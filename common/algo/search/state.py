@@ -18,7 +18,6 @@ class Action:
         self.dst: State = dst
         self.data = dict()
 
-
     def get_regret(self):
         return self.regret
 
@@ -53,11 +52,11 @@ class Action:
         return self.get_best_actions()[-1]
 
     def __repr__(self):
-        ret=f"action: {self.action}, data:{self.data}"
-        if self.reward>0:
-            ret+=f', rwin: {self.reward}'
-        elif self.reward<0:
-            ret+=f", rlos: {self.reward}"
+        ret = f"action: {self.action}, data:{self.data}"
+        if self.reward > 0:
+            ret += f", rwin: {self.reward}"
+        elif self.reward < 0:
+            ret += f", rlos: {self.reward}"
         return ret
 
 
@@ -88,7 +87,7 @@ class PAction(Action):
 class State:
     name = "state"
     parent: "State" = None
-    done = None
+    done = False
     STATE_STORE: Dict[str, "State"] = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
@@ -109,9 +108,6 @@ class State:
 
     def get_done(self):
         return self.done
-
-    def is_game_over(self):
-        return self.get_done() is not None
 
     def do_action(self, a: Action):
         return a.dst
@@ -187,8 +183,6 @@ class State:
         return ret
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-        if self.get_done():
-            return dict()
         if self.actions is not None:
             return self.actions
         self.actions = self.make_actions()
@@ -258,15 +252,11 @@ class State:
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}",
             f"mask:{self.state}",
-            self.to_str()
+            self.to_str(),
         ]
         if self.data:
             datas.append(f"data:{self.data}")
-        return f"\n".join(
-            ["-" * 40]
-            + datas
-            + ["-" * 40]
-        )
+        return f"\n".join(["-" * 40] + datas + ["-" * 40])
 
     def get_win_player(self, *args, **kw):
         return self.done
@@ -282,3 +272,7 @@ class State:
                 a.p = 1
             self.p_sum += a.p
         return self.p_sum
+
+    def get_depth_reward(self, depth: int, *args, **kw):
+        r = self.get_reward(*args, **kw)
+        return -r if depth % 2 == 1 else r

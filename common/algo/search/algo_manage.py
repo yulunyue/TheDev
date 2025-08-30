@@ -59,10 +59,12 @@ class AlgoInfo(TableModel):
     def sort(cls, v: "AlgoInfo"):
         return [v.WIN, -v.LOSE, -v.MAX_VISTE_NUM, -v.MAX_TIME]
 
+
 class FIGHT_TYPE:
     SIGNAL = "SIGNAL"
     DTURN = "DTURN"
     MUCH_THREAD = "MUCH_THREAD"
+
 
 class ALgoManage:
     record_dir = ""
@@ -120,7 +122,7 @@ class ALgoManage:
                 s += f"[{key}][WIN]"
             else:
                 self.a_r[key].LOSE += 1
-        logger.info(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
+        logger.debug(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
         return self
 
     max_turn = 250
@@ -176,14 +178,9 @@ class ALgoManage:
         if a is not None:
             reward = a.get_reward()
         self.rewards[-1][player_idx] += reward
-        info = players[player_idx].name
-        if reward > 0:
-            info += f" CXCWIN {reward}"
-        elif reward < 0:
-            info += f" CXCLOS {reward}"
-        msg = f"{s}\nturn: {self.turn_idx}; reward_all: {self.rewards[-1]}; info: {info}\n"
+        msg = f"{s}\nturn: {self.turn_idx}; reward_all: {self.rewards[-1]};\n{players[player_idx].get_name()} do {a}\n"
         file_name = "_pk_".join([v.get_name() for v in players])
-        self.file_path = f"{self.record_dir}/{file_name}.log"
+        self.file_path = f"{self.record_dir}/pk/{file_name}.log"
         fp = File(self.file_path).get_writer()
         fp.write(msg)
         fp.flush()

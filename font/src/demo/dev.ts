@@ -10,8 +10,7 @@ import { D3Chart, MeraGraph } from "../third/export"
 export class Dev extends Div {
     svg: Svg
     init_node(): void {
-        this.svg = new Svg()
-        this.add_childs([this.svg])
+
     }
     init_style(): void {
 
@@ -31,8 +30,9 @@ export class Dev extends Div {
                 key: "b",
                 value: "b",
                 type: "input"
-            }, { key: "method", title: "操作", type: "btns", value: ["remove", "add"] }
-            ],
+            }, {
+                key: "method", title: "操作", type: "btns", value: ["remove", "add"]
+            }],
             body: Util.array(27, (i: number) => {
                 return {
                     a: i,
@@ -66,7 +66,7 @@ export class Dev extends Div {
         this.add_child(chart)
     }
     on_mount(): void {
-        this.test_chart()
+        this.test_table_data()
     }
 
 }
