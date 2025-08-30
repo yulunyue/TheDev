@@ -11,6 +11,7 @@ class TestState(MctsState):
 
         def util(w, h, reward):
             ret = TestState.new(TestState.idx).set_reward(reward)
+            ret.player_id = h % 2
             TestState.idx += 1
             if h == height:
                 ret.set_done(True)

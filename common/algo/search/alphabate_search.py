@@ -6,6 +6,7 @@ from common.util.export import logger, defaultdict
 
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
+    AB_MUCH = "abmuch"
 
     def load(self, max_depth, search_type="", **kw):
         self.max_depth = max_depth
@@ -30,7 +31,7 @@ class AlphaBateSearch(Algo):
                 params=self.params,
                 actions=actions,
             )
-        mvs: Dict[str, Action] = state.get_actions(depth=depth)
+        mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
             return self.get_depth_reward(
                 state,
@@ -39,7 +40,7 @@ class AlphaBateSearch(Algo):
                 params=self.params,
                 actions=actions,
             )
-        for k, a in mvs.items():
+        for a in mvs:
             reward = -self.search_ab(
                 a.dst,
                 actions + [a],
@@ -49,11 +50,11 @@ class AlphaBateSearch(Algo):
                 player_id=player_id,
             )
             if reward >= bate:
-                alpha = bate
+                state.sort_reward = alpha = bate
                 state.set_best_action(a)
                 break
             if reward > alpha:
-                alpha = reward
+                state.sort_reward = alpha = reward
                 state.set_best_action(a)
         return alpha
 
@@ -71,7 +72,7 @@ class AlphaBateSearch(Algo):
                 params=self.params,
                 actions=actions,
             )
-        mvs: Dict[str, Action] = state.get_actions(depth=depth)
+        mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
             return self.get_depth_reward(
                 state,
@@ -81,7 +82,7 @@ class AlphaBateSearch(Algo):
                 actions=actions,
             )
         best_reward = -inf
-        for k, a in mvs.items():
+        for a in mvs:
             reward = -self.search_dfs(
                 a.dst, actions=actions + [a], depth=depth + 1, player_id=player_id
             )
@@ -89,6 +90,12 @@ class AlphaBateSearch(Algo):
                 state.set_best_action(a)
                 best_reward = reward
         return best_reward
+
+    def seach_ab_much(self, state: State):
+        max_depth = self.max_depth + 1
+        for depth in range(1, max_depth):
+            self.max_depth = depth
+            self.search_ab(state, depth=0)
 
     def search_main(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
@@ -100,3 +107,7 @@ class AbDev(AlphaBateSearch):
     def get_depth_reward(self, s, depth, actions, **kw):
         self.state_num += 1
         return super().get_depth_reward(s, depth, actions, **kw)
+
+    def search(self, state):
+        self.state_num = 0
+        return super().search(state)

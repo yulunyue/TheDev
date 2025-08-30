@@ -86,6 +86,7 @@ class State:
     parent: "State" = None
     done = False
     STATE_STORE: Dict[str, "State"] = None
+    sort_reward = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
@@ -134,11 +135,20 @@ class State:
     def reset_env(self):
         return self
 
-    def get_action(self, a) -> Action:
-        actions = self.get_actions()
-        if a in actions:
-            return actions[a]
-        raise Exception(a, list(actions.keys()), self.state)
+    def get_dst(self, actions):
+        return self.get_action(actions).get_dst()
+
+    def get_action(self, actions) -> Action:
+        if not isinstance(actions, list):
+            actions = [actions]
+        s = self
+        for a in actions:
+            actions = s.get_actions()
+            if a not in actions:
+                raise Exception(a, list(actions.keys()), self.state)
+            ret = actions[a]
+            s = ret.get_dst()
+        return ret
 
     def get_best_actions(self) -> List["Action"]:
         p = self
@@ -151,15 +161,6 @@ class State:
 
     def get_best_action(self):
         return self.best_action
-
-    def get_steps(self, steps) -> List["Action"]:
-        ret = []
-        s = self
-        for step in steps:
-            action = s.get_action(step)
-            ret.append(action)
-            s = action.get_dst()
-        return ret
 
     def get_seq_score_backward(self, actions: List["Action"], gamma=0.5):
         """
@@ -220,7 +221,7 @@ class State:
             for a in actions:
                 done = dfs(a.dst, depth + 1, stacks + [a])
                 ret.append(
-                    f'{" "*depth}-{a.action}: ar={a.get_reward()}, sr={a.get_dst().get_reward(actions=stacks)} d={done}'
+                    f'{"  "*depth}{a.action}: ar={a.get_reward()}, sr={a.get_dst().get_reward(actions=stacks)} d={done}'
                 )
 
         dfs(self, 0, [])
@@ -268,4 +269,12 @@ class State:
         return self.p_sum
 
     def get_depth_reward(self, depth: int, *args, **kw):
-        return self.get_reward(*args, **kw)
+        r = self.get_reward(*args, **kw)
+        return r if self.player_id == 0 else -r
+
+    sort_actions: List[Action] = None
+
+    def get_sort_actions(self, **kw):
+        if self.sort_actions is None:
+            self.sort_actions = list(self.get_actions().values())
+        return self.sort_actions
