@@ -48,9 +48,6 @@ class Action:
     def get_reward(self, **kwargs):
         return self.reward
 
-    def get_best_action(self):
-        return self.get_best_actions()[-1]
-
     def __repr__(self):
         ret = f"action: {self.action}, data:{self.data}"
         if self.reward > 0:
@@ -144,15 +141,12 @@ class State:
         raise Exception(a, list(actions.keys()), self.state)
 
     def get_best_actions(self) -> List["Action"]:
-        vt = dict()
         p = self
         ret: List[Action] = []
         while not p.get_done():
-            if p.state in vt:
-                continue
-            vt[p.state] = p
-            ret.append(p.get_best_action())
-            p = ret[-1].get_dst()
+            a = p.get_best_action()
+            ret.append(a)
+            p = a.get_dst()
         return ret
 
     def get_best_action(self):
@@ -216,7 +210,7 @@ class State:
                     q.append(d)
         return ret
 
-    def dump_tree(self, max_depth):
+    def dump_tree(self, max_depth=-1):
         ret = []
 
         def dfs(s: State, depth, stacks):
@@ -226,7 +220,7 @@ class State:
             for a in actions:
                 done = dfs(a.dst, depth + 1, stacks + [a])
                 ret.append(
-                    f'{" "*depth}- {a}: reward:{a.dst.get_reward(actions=stacks)}, down:{done}'
+                    f'{" "*depth}-{a.action}: ar={a.get_reward()}, sr={a.get_dst().get_reward(actions=stacks)} d={done}'
                 )
 
         dfs(self, 0, [])
@@ -274,5 +268,4 @@ class State:
         return self.p_sum
 
     def get_depth_reward(self, depth: int, *args, **kw):
-        r = self.get_reward(*args, **kw)
-        return -r if depth % 2 == 1 else r
+        return self.get_reward(*args, **kw)

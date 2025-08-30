@@ -15,8 +15,8 @@ class MctsEasy(Base):
         self.mct_reward = self.init_reward.copy()
         return self
 
-    def update_state(self, s: State, score):
-        self.g = self.gamma * self.g + score
+    def update_state(self, s: State):
+        self.g = self.gamma * self.g + s.get_reward()
         self.vt[s.state] += 1
         cv = self.mct_reward[s.state]
         nv = cv + (self.g - cv) / self.vt[s.state]
@@ -25,6 +25,6 @@ class MctsEasy(Base):
     def feed_back_states(self, states: List[Action]):
         self.g = 0
         for i in range(len(states) - 1, -1, -1):
-            self.update_state(states[i], states[i].get_reward())
+            self.update_state(states[i])
 
         # logger.debug(f"---xxx---\n{actions}\n{dict(self.mct_reward)}\n{dict(self.vt)}")
