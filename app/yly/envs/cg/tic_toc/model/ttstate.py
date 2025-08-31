@@ -82,7 +82,7 @@ class TtState(MctsState):
         for i in range(C.ALL_SIZE1):
             g = E.cells[i]
             y, x = (g.key // 3) * 4, (g.key % 3) * 3
-        #     if g.value:
+        #     if g.value: XX#
         #         ret[y + 1][(x + 1) * 2] = str(g.value)
         #         continue
             for j in range(C.ALL_SIZE1):
