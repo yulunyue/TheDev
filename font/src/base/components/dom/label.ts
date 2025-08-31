@@ -40,7 +40,14 @@ export class Label extends Div {
     }
 
 }
-
+export class Span extends Div {
+    constructor() {
+        super("span")
+    }
+    set_value(value: any): this {
+        return this.set_html(value)
+    }
+}
 export function label() {
     return new Label()
 }

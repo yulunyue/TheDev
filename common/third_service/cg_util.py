@@ -1,6 +1,6 @@
 from common.service.export import Api
 from common.util.export import File, List, logger
-from common.algo.export import Algo
+from common.algo.export import Algo, State
 import json
 
 
@@ -92,17 +92,27 @@ class CodingGame(Api):
     def get_cg_frames_stderror(self, name="play") -> List[CGFrames]:
         return self.get_cg_frames(name, filter=lambda a: a.get("stderr") is None)
 
-    def replay(self, state_cls, algo: Algo):
-        last_f = None
+    def replay(self, state, algo: Algo):
+        s: State = state
+        self.log(s)
         for i, f in enumerate(self.get_cg_frames()):
-            self.log(f"----[turn: {i}--action: {f.stdout}]----")
-            for k, v in f.stderr.items():
-                self.log(f"{k} :{v}")
-            s = state_cls(last_f, f)
-            self.log(s)
-            # a = algo.search(s)
-            # self.log(a)
-            last_f = f
+            if not f.stdout:
+                continue
+
+            # for k, v in f.stderr.items():
+            #     self.log(f"{k} :{v}")
+            if hasattr(s, "check_cg"):
+                s.check_cg(**f.stderr)
+            a = s.get_action(f.stdout)
+            b = algo.search(s)
+            self.log(
+                f"----[turn:{i}, r:{a.action}, e:{b.action}, sm_{a.action==b.action}]----"
+            )
+            s = a.get_dst()
+            if a.get_reward() or a.action != b.action:
+                self.log(s)
+        self.log("-----------finalstate-------------")
+        self.log(s)
 
     def log(self, msg):
         f = File(uu("replay.log")).get_writer()

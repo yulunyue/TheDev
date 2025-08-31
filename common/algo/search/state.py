@@ -9,7 +9,7 @@ inf = float("inf")
 
 class Action:
     check_info = None
-    reward = None
+    reward = 0
     regret = 0
 
     def __init__(self, src, action, dst=None):
@@ -17,13 +17,6 @@ class Action:
         self.src: State = src
         self.dst: State = dst
         self.data = dict()
-
-    def ucb_score(self, c=1.314):
-        if self.dst.visite_num == 0:
-            return 0
-        exploit = self.src.visite_score / self.dst.visite_num  # 平均值
-        explore = math.sqrt(math.log(self.src.visite_num) / self.dst.visite_num)
-        return exploit + c * explore
 
     def get_regret(self):
         return self.regret
@@ -55,11 +48,13 @@ class Action:
     def get_reward(self, **kwargs):
         return self.reward
 
-    def get_best_action(self):
-        return self.get_best_actions()[-1]
-
     def __repr__(self):
-        return f"action: {self.action}, reward: {self.reward}, data:{self.data}"
+        ret = f"action: {self.action}, data:{self.data}"
+        if self.reward > 0:
+            ret += f", rwin: {self.reward}"
+        elif self.reward < 0:
+            ret += f", rlos: {self.reward}"
+        return ret
 
 
 class PAction(Action):
@@ -89,8 +84,9 @@ class PAction(Action):
 class State:
     name = "state"
     parent: "State" = None
-    done = None
+    done = False
     STATE_STORE: Dict[str, "State"] = None
+    sort_reward = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
@@ -110,9 +106,6 @@ class State:
 
     def get_done(self):
         return self.done
-
-    def is_game_over(self):
-        return self.get_done() is not None
 
     def do_action(self, a: Action):
         return a.dst
@@ -142,35 +135,32 @@ class State:
     def reset_env(self):
         return self
 
-    def get_action(self, a) -> Action:
-        actions = self.get_actions()
-        if a in actions:
-            return actions[a]
-        raise Exception(a, list(actions.keys()), self.state)
+    def get_dst(self, actions):
+        return self.get_action(actions).get_dst()
+
+    def get_action(self, actions) -> Action:
+        if not isinstance(actions, list):
+            actions = [actions]
+        s = self
+        for a in actions:
+            actions = s.get_actions()
+            if a not in actions:
+                raise Exception(a, list(actions.keys()), self.state)
+            ret = actions[a]
+            s = ret.get_dst()
+        return ret
 
     def get_best_actions(self) -> List["Action"]:
-        vt = dict()
         p = self
         ret: List[Action] = []
         while not p.get_done():
-            if p.state in vt:
-                continue
-            vt[p.state] = p
-            ret.append(p.get_best_action())
-            p = ret[-1].get_dst()
+            a = p.get_best_action()
+            ret.append(a)
+            p = a.get_dst()
         return ret
 
     def get_best_action(self):
         return self.best_action
-
-    def get_steps(self, steps) -> List["Action"]:
-        ret = []
-        s = self
-        for step in steps:
-            action = s.get_action(step)
-            ret.append(action)
-            s = action.get_dst()
-        return ret
 
     def get_seq_score_backward(self, actions: List["Action"], gamma=0.5):
         """
@@ -188,8 +178,6 @@ class State:
         return ret
 
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-        if self.get_done():
-            return dict()
         if self.actions is not None:
             return self.actions
         self.actions = self.make_actions()
@@ -223,7 +211,7 @@ class State:
                     q.append(d)
         return ret
 
-    def dump_tree(self, max_depth):
+    def dump_tree(self, max_depth=-1):
         ret = []
 
         def dfs(s: State, depth, stacks):
@@ -233,7 +221,7 @@ class State:
             for a in actions:
                 done = dfs(a.dst, depth + 1, stacks + [a])
                 ret.append(
-                    f'{" "*depth}- {a}: reward:{a.dst.get_reward(actions=stacks)}, down:{done}'
+                    f'{"  "*depth}{a.action}: ar={a.get_reward()}, sr={a.get_dst().get_reward(actions=stacks)} d={done}'
                 )
 
         dfs(self, 0, [])
@@ -259,15 +247,11 @@ class State:
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}",
             f"mask:{self.state}",
-            self.to_str()
+            self.to_str(),
         ]
         if self.data:
             datas.append(f"data:{self.data}")
-        return f"\n".join(
-            ["-" * 40]
-            + datas
-            + ["-" * 40]
-        )
+        return f"\n".join(["-" * 40] + datas + ["-" * 40])
 
     def get_win_player(self, *args, **kw):
         return self.done
@@ -283,3 +267,14 @@ class State:
                 a.p = 1
             self.p_sum += a.p
         return self.p_sum
+
+    def get_depth_reward(self, depth: int, *args, **kw):
+        r = self.get_reward(*args, **kw)
+        return r if self.player_id == 0 else -r
+
+    sort_actions: List[Action] = None
+
+    def get_sort_actions(self, **kw):
+        if self.sort_actions is None:
+            self.sort_actions = list(self.get_actions().values())
+        return self.sort_actions

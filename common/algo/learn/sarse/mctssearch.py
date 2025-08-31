@@ -19,7 +19,7 @@ class MctsState(State):
         return self.need_expand_actions
 
     def is_fully_expanded(self):
-        return len(self.need_expand_actions) == 0
+        return len(self.get_need_expand_actions()) == 0
 
     def get_uct_best_child(self, exploration_param=1.4):
         best_score = -float("inf")
@@ -38,12 +38,14 @@ class MctsState(State):
         return best_child
 
     def expand(self):
-        self.expand_actions.append(self.get_need_expand_actions().pop())
+        action = self.get_need_expand_actions().pop()
+        self.expand_actions.append(action)
+        return action.get_dst()
 
 
 class MctsSearch(Base):
 
-    def load(self, max_depath=-1, num_episodes=50, **kw):
+    def load(self, max_depath=-1, num_episodes=100, **kw):
         self.c = math.sqrt(2.0)
         self.max_depath = max_depath
         return super().load(num_episodes=num_episodes, **kw)
@@ -51,30 +53,24 @@ class MctsSearch(Base):
     def select(self, node: MctsState, vt_states: List[MctsState]) -> MctsState:
         cur = node
         vt_states.append(cur)
-        while not cur.is_game_over() and cur.is_fully_expanded():
+        while not cur.get_done() and cur.is_fully_expanded():
             cur = cur.get_uct_best_child()
             vt_states.append(cur)
         return cur
 
-    def take_action(self, node: MctsState) -> Action:
-        max_score = -CT.inf
-        ans = None
-        for a in node.expand_actions:
-            score = a.ucb_score()
-            if score > max_score:
-                ans = a
-        return ans
-
     def backpropagate(self, vt_states: List[MctsState], score):
-        for node in vt_states:
-            node.visite_score += score
-            node.visite_num += 1
+        n = len(vt_states)
+        chen = 1
+        for i in range(n - 1, -1, -1):
+            vt_states[i].visite_score += score * chen
+            vt_states[i].visite_num += 1
+            chen = -chen
 
     def search_main(self, init_state: MctsState):
         for _ in range(self.num_episodes):
             vt_states: List[MctsState] = []  # 不要用parent记录因为尽可能有多个parent，
-            node = self.select(init_state, vt_states)  # 指导探索到为拓展的节点
-            if not node.is_game_over():
+            node = self.select(init_state, vt_states)  # 指导探索到待拓展的节点
+            if not node.get_done():
                 node = node.expand()
                 vt_states.append(node)
             self.backpropagate(vt_states, node.get_reward())

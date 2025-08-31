@@ -1,6 +1,6 @@
 from common.util.export import TestBase, logger, Module, ii
 from common.third_service.export import CodingGame, uu, CGFrames
-from common.algo.export import AlphaBateSearch, ALgoManage, Algo,FIGHT_TYPE
+from common.algo.export import AlphaBateSearch, ALgoManage, Algo, FIGHT_TYPE
 from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM
 
 
@@ -20,36 +20,16 @@ class OaTest(TestBase):
 
     def cg_replay(self):
         self.state = self.init_state
-
-        def util(a: CGFrames, b: CGFrames):
-            if b.stdout != "":
-                self.state = self.state.get_action(int(b.stdout)).get_dst()
-            return self.state
-
-        self.cg.replay(util, PM.ab(5))
-
-    def run_algo_case(self, algo: Algo):
-        for a, v in C.get_cases().items():
-            s = Rooms.new(a)
-            a = algo.search(s)
-            self.expect(str(a), v, s)
-
-    def test_dev1(self):
-        s2 = ii("1 8 7 6 6 4 4 4 4 4 0 0")
-        s = Rooms.new(C.encode_data(0, s2))
-        self.expect(s.boards, s2, s)
+        self.cg.replay(self.init_state, PM.ab(5))
 
     def pk2(self):
-        self.al.set_players([
-            PM.ab(1), PM.ab(3)
-        ]).fight(tp=FIGHT_TYPE.SIGNAL)
-     
+        self.al.set_players([PM.ab(1), PM.mc(2)]).fight(tp=FIGHT_TYPE.SIGNAL)
 
-    def dev(self):
-        PM.mc().search(self.init_state)
+    def pkall(self):
+        self.al.set_players(PM.all()).fight()
 
     def debug(self):
-        self.cg_replay()
+        self.pk2()
 
 
 if __name__ == "__main__":

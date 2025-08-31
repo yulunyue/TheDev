@@ -73,8 +73,8 @@ export class Div {
         this.el = this.create_element(this.node_type)
         this.parent = null
         this.option = new Node()
-        this.init_node()
         this.init_style()
+        this.init_node()
         this.init_event()
     }
     dump() {

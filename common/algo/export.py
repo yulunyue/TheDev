@@ -15,7 +15,7 @@ from common.algo.learn.sarse.qlearning import Qlearning
 from common.algo.learn.sarse.dyn import DynaQ
 from common.algo.learn.sarse.mcts import MctsEasy
 from common.algo.learn.dqn import Dqn
-from common.algo.search.algo_manage import ALgoManage,FIGHT_TYPE
+from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE
 from common.algo.base.math_util import sin, cos, calc_angle, Comb, solve_xyz
 from common.algo.base.str_util import (
     manacher_get_odd_p,
@@ -27,3 +27,4 @@ from common.algo.base.lazyheap import LazyHeapMinMax, LazyMinHeap, LazyMaxHeap
 from common.algo.base.bin_util import encode_data, decode_data
 from common.algo.base.xor_basis import XorBais
 from sortedcontainers import SortedList
+from common.algo.search.util import TestState

@@ -89,11 +89,11 @@ export class Table extends Div {
         this.table_container.set_style({
             textAlign: "left",
             overflow: "auto",
-            height: 600,
+            maxHeight: 600,
         })
         this.table.set_style({
             overflow: "auto",
-            height: 600,
+            maxHeight: 600,
         })
     }
     set_header(items: Node[]) {

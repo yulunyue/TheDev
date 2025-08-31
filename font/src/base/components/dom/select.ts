@@ -59,6 +59,7 @@ export class Select extends Div {
                 return this.option.childs[i]
             }
         }
+        return this.option.childs[0]
     }
     render_option(): void {
         if (this.option.url) {

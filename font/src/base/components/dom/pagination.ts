@@ -1,5 +1,5 @@
 import { Div } from "./div";
-import { Label } from "./label";
+import { Span } from "./label";
 import { Select } from "./select";
 import { Dom, Node, to_node } from "../../web/cls";
 import { Button } from "./button";
@@ -8,14 +8,20 @@ import Util from "../../tool/util"
 import Constant from "../../web/constant";
 export class Pagination extends Div {
     page_size_select: Select
-    page_info: Label
+    page_info: Span
     cur_page: Input
 
     init_node(): void {
         this.option.data = { all_length: 0, cur_page: 0 }
-        this.page_size_select = new Select().set_style({ width: Constant.INPUT_NUMBER_WIDTH })
+        this.page_size_select = new Select().set_style({
+            width: Constant.INPUT_NUMBER_WIDTH
+        }).set_option({
+            childs: [
+                new Node().set_value(10)
+            ]
+        })
         this.cur_page = new Input().set_option(new Node().set_type(Constant.NUMBER))
-        this.page_info = new Label()
+        this.page_info = new Span()
         this.render_page_size()
         this.add_child(this.page_size_select)
         this.add_childs([
