@@ -95,11 +95,13 @@ class AlphaBateSearch(Algo):
         max_depth = self.max_depth + 1
         for depth in range(1, max_depth):
             self.max_depth = depth
-            self.search_ab(state, depth=0)
+            self.search_ab(state, [], depth=0)
 
     def search_main(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
             return self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
+        elif self.search_type == AlphaBateSearch.AB_MUCH:
+            return self.seach_ab_much(state)
         return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
 
 

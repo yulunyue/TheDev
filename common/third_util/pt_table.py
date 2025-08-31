@@ -67,4 +67,4 @@ class PtTable:
         return self
 
     def __str__(self):
-        return str(self.pr)
+        return "\n"+str(self.pr)

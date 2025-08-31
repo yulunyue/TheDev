@@ -6,10 +6,14 @@ from common.util.export import List, Dict, defaultdict
 
 class Cell9(Cell):
     MASK_NUM = 2
-    MASK = (1 << MASK_NUM) - 1
     CLS_TYPE = Cell
+    NUM_ALL=9
+    @property
+    def MASK(self):
+        return (1 << self.MASK_NUM) - 1
 
-    def __init__(self):
+    def __init__(self,key):
+        super().__init__(key)
         self.state = 0
         self.cells: List[Cell] = []
         self.ct_num = [9, 0, 0]
@@ -19,7 +23,7 @@ class Cell9(Cell):
             self.state_count[i, 0] = 0
         self.cell_map: List[Dict[int, Cell9]] = [dict(), dict(), dict()]
         for i in range(C.ALL_SIZE1):
-            c = self.__class__.CLS_TYPE().set_key(i)
+            c = self.__class__.CLS_TYPE(self.key*9+i)
             self.cells.append(c)
             self.cell_map[0][c.key] = c
         self.c_lines = []
@@ -37,8 +41,6 @@ class Cell9(Cell):
             state = state >> self.MASK_NUM
         return self
 
-    def get_state(self, c: Cell, player_id):
-        return self.state | (player_id << (c.key * 2))
 
     def set_cell_state(self, c: Cell, value):
         if c.value == value:
@@ -54,10 +56,22 @@ class Cell9(Cell):
         c.value = value
 
     def get_done(self):
+        if self.state_count[TcEnum.PLAYER1_3.key] or self.state_count[TcEnum.PLAYER2_3.key]:
+            return True
+        if self.ct_num[1] + self.ct_num[2] == self.NUM_ALL:
+            return True
+        return False
+    def get_value(self):
         if self.state_count[TcEnum.PLAYER1_3.key]:
             return 1
         if self.state_count[TcEnum.PLAYER2_3.key]:
             return 2
-        if self.ct_num[1] + self.ct_num[2] == 9:
-            return 3
+        return 0
+      
+    def get_reward(self):
+        v = self.get_value()
+        if v==1:
+            return 1
+        if v==2:
+            return -1
         return 0

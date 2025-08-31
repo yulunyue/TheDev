@@ -11,6 +11,7 @@ class Base(Algo):
         self.epsilon = epsilon
         self.num_episodes = num_episodes
         self.rewards_record = []
+        self.max_round=-1
         return super().load(**kw)
 
     def can_epsilon(self):
@@ -21,20 +22,19 @@ class Base(Algo):
             return self.get_random_action(state)
         return self.get_max_action(state)
 
-    def train(self, init_state: State, max_round=2000):
+    def train(self, init_state: State):
         self.reward_tmp_all = 0
-        self.reset()
         for _ in range(self.num_episodes):
             s = init_state.reset()
             vt_states: List[State] = [s]
-            tmp_round = max_round
-            while not s.get_done() and tmp_round:
+            tmp_round = self.max_round
+            while not s.get_done() and tmp_round!=0:
                 ac = self.take_action(s)
                 self.update_action(ac)
                 self.reward_tmp_all += ac.get_regret()
                 s = ac.get_dst()
                 vt_states.append(s)
-                tmp_round -= 1
+                self.tmp_round -= 1
             self.feed_back_states(vt_states)
             self.rewards_record.append(self.reward_tmp_all)
         init_state.set_best_action(self.take_action(init_state))
@@ -42,23 +42,8 @@ class Base(Algo):
     def feed_back_states(self, vt_states: List[Action]):
         pass
 
-    def search_main(self, state: State):
-        self.max_actions = []
-        self.max_score = float("-inf")
-
-        def dfs(s: State, actions):
-            next_actions = list(s.get_actions().values())
-            if s.get_done() or not next_actions:
-                score = self.get_actions_backend_score(actions)
-                if score > self.max_score:
-                    self.max_score = score
-                    self.max_actions = actions
-                return
-            for n in next_actions:
-                dfs(n.get_dst(), actions + [n])
-
-        dfs(state, [])
-        return self.max_actions
+    def search_main(self, state):
+        return self.take_action(state)
 
     def get_actions_backend_score(self, actions: List[Action]):
         ret = 0

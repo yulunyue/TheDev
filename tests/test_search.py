@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger
-from common.algo.export import TestState, AbDev, Algo
+from common.algo.export import TestState, AbDev, Algo, MctsSearch
 
 
 class TestSearch(TestBase):
@@ -8,6 +8,7 @@ class TestSearch(TestBase):
         self.al1 = AbDev("dfs").load(10)
         self.al2 = AbDev("ab1").load(10, AbDev.AB_TYPE)
         self.al3 = AbDev("abm").load(10, AbDev.AB_MUCH)
+        self.ms1 = MctsSearch("ms1").load()
         logger.debug(self.s.dump_tree())
 
     def check_algo(self, a: Algo):
@@ -27,6 +28,7 @@ class TestSearch(TestBase):
         self.check_algo(self.al1)
         self.check_algo(self.al2)
         self.check_algo(self.al3)
+        self.check_algo(self.ms1)
 
     def test_much(self):
         s = TestState.make_test_state(5, 7)

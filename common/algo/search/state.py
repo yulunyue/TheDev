@@ -87,7 +87,7 @@ class State:
     done = False
     STATE_STORE: Dict[str, "State"] = None
     sort_reward = None
-
+    reward = None
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
         self.depth = depth
@@ -187,11 +187,8 @@ class State:
         raise Exception("todo")
 
     def get_random_action(self) -> Action:
-        actions = self.get_actions()
-        values = list(actions.keys())
-        if not values:
-            return None
-        return actions[np.random.randint(0, len(values) - 1)]
+        actions = self.get_sort_actions()
+        return actions[random.randint(0, len(actions) - 1)]
 
     def to_str(self):
         return ""
@@ -245,7 +242,7 @@ class State:
 
     def __repr__(self):
         datas = [
-            f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}",
+            f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{self.reward}",
             f"mask:{self.state}",
             self.to_str(),
         ]
@@ -253,8 +250,12 @@ class State:
             datas.append(f"data:{self.data}")
         return f"\n".join(["-" * 40] + datas + ["-" * 40])
 
-    def get_win_player(self, *args, **kw):
-        return self.done
+    def get_win_player(self,rewards,player_idx, *args, **kw):
+        if self.reward==0:
+            return -1
+        if self.reward>0:
+            return 0
+        return 1
 
     p_sum = None
 
@@ -278,3 +279,42 @@ class State:
         if self.sort_actions is None:
             self.sort_actions = list(self.get_actions().values())
         return self.sort_actions
+
+class MctsState(State):
+    visite_num = 0
+    visite_score = 0
+
+    def __init__(self, state=None, player_id=0, depth=0):
+        super().__init__(state, player_id, depth)
+        self.expand_actions: List[Action] = []
+        self.need_expand_actions: List[Action] = None
+
+    def get_need_expand_actions(self):
+        if self.need_expand_actions is not None:
+            return self.need_expand_actions
+        self.need_expand_actions = list(self.get_actions().values())
+        return self.need_expand_actions
+
+    def is_fully_expanded(self):
+        return len(self.get_need_expand_actions()) == 0
+
+    def get_uct_best_child(self, exploration_param=1.4):
+        best_score = -float("inf")
+        best_child = None
+        for action in self.expand_actions:
+            child: MctsState = action.get_dst()
+            # UCT公式
+            exploit = child.visite_score / child.visite_num
+            explore = exploration_param * math.sqrt(
+                math.log(self.visite_num) / child.visite_num
+            )
+            score = exploit + explore
+            if score > best_score:
+                best_score = score
+                best_child = child
+        return best_child
+
+    def expand(self):
+        action = self.get_need_expand_actions().pop()
+        self.expand_actions.append(action)
+        return action.get_dst()

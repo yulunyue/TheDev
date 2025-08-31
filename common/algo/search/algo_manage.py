@@ -26,6 +26,7 @@ class AlgoInfo(TableModel):
 
     def __init__(self, key):
         self.score = []
+        self.all_count=0
         super().__init__(key)
 
     def __new__(cls, key) -> "AlgoInfo":
@@ -35,15 +36,17 @@ class AlgoInfo(TableModel):
     def get_headers(cls):
         return [
             "key",
+            "rate",
             "WIN",
-            "LOSE",
-            "MAX_VISTE_NUM",
+            "DRAW",
             "MAX_TIME",
             "ALL_TIME",
-            "ALL_VISTE_NUM",
-            "DRAW",
             "SCORE",
         ]
+
+    @property
+    def rate(self):
+        return (self.WIN+self.DRAW*0.5)/self.all_count
 
     def update(self, tm, state_num, score):
         self.score.append(score)
@@ -55,9 +58,13 @@ class AlgoInfo(TableModel):
         if tm > self.MAX_TIME:
             self.MAX_TIME = tm
 
+    def update_result(self,tp):
+        self.all_count +=1
+        setattr(self, tp, getattr(self,tp)+1)
+
     @classmethod
     def sort(cls, v: "AlgoInfo"):
-        return [v.WIN, -v.LOSE, -v.MAX_VISTE_NUM, -v.MAX_TIME]
+        return [v.rate,v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE]
 
 
 class FIGHT_TYPE:
@@ -69,10 +76,10 @@ class FIGHT_TYPE:
 class ALgoManage:
     record_dir = ""
     file_path = None
-
+    record_model = AlgoInfo
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
-        AlgoInfo.clear()
+        self.record_model.clear()
         self.a_r: Dict[str, AlgoInfo] = {
             p.get_name(): AlgoInfo(p.get_name()) for p in players
         }
@@ -107,7 +114,10 @@ class ALgoManage:
             for i, p in enumerate(players):
                 self.pk(p)
                 progress_bar(i + 1, len(players))
-        logger.info(PtTable().load_form_model(AlgoInfo))
+        return self
+    
+    def __repr__(self):
+        return str(PtTable().load_form_model(self.record_model))
 
     def pk(self, players1: List[Algo]):
         win_idx, turn_idx = self.actor(players1)
@@ -115,15 +125,15 @@ class ALgoManage:
         for i, p in enumerate(players1):
             key = p.get_name()
             if win_idx == -1:
-                self.a_r[key].DRAW += 1
+                self.a_r[key].update_result("DRAW")
                 s += f"[{key}][DRAW]"
             elif win_idx == i:
-                self.a_r[key].WIN += 1
+                self.a_r[key].update_result("WIN")
                 s += f"[{key}][WIN]"
             else:
-                self.a_r[key].LOSE += 1
+                self.a_r[key].update_result("LOSE")
         logger.debug(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
-        return self
+        return win_idx
 
     max_turn = 250
 
@@ -144,7 +154,6 @@ class ALgoManage:
                 break
             b = time.time()
             p = players[player_idx]
-
             p.state_num = 0
             a = p.search(s)
             if a is None:
@@ -184,3 +193,6 @@ class ALgoManage:
         fp = File(self.file_path).get_writer()
         fp.write(msg)
         fp.flush()
+
+    def train(self,players:List[Algo]):
+        pass

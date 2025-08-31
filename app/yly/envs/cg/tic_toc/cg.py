@@ -11,7 +11,7 @@ class TicTocCg(MockCg):
         5604295,
         -1,
     ]
-    name = "tc"
+    name = "tic_toc"
 
     def get_search(self):
         return AlphaBateSearch().load(2)

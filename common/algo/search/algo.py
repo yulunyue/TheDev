@@ -44,6 +44,7 @@ class Algo:
         return self
 
     def search(self, state: "State") -> "Action":
+        self.reset()
         self.search_main(state.reset())
         return state.get_best_action()
 
@@ -93,8 +94,4 @@ class Algo:
 
 class RandomAlgo(Algo):
     def search_main(self, s: State, **kw):
-        actions = list(s.get_actions().values())
-        if not actions:
-            return
-        a = np.random.choice(actions)
-        s.set_best_action(a)
+        s.set_best_action(s.get_random_action())

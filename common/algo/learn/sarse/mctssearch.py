@@ -1,51 +1,12 @@
-from common.algo.search.state import State, Action
+from common.algo.search.state import State, Action,MctsState
 from common.algo.learn.base import Base
 from common.util.export import List, Dict, defaultdict, math, random, CT
 
 
-class MctsState(State):
-    visite_num = 0
-    visite_score = 0
-
-    def __init__(self, state=None, player_id=0, depth=0):
-        super().__init__(state, player_id, depth)
-        self.expand_actions: List[Action] = []
-        self.need_expand_actions: List[Action] = None
-
-    def get_need_expand_actions(self):
-        if self.need_expand_actions is not None:
-            return self.need_expand_actions
-        self.need_expand_actions = list(self.get_actions().values())
-        return self.need_expand_actions
-
-    def is_fully_expanded(self):
-        return len(self.get_need_expand_actions()) == 0
-
-    def get_uct_best_child(self, exploration_param=1.4):
-        best_score = -float("inf")
-        best_child = None
-        for action in self.expand_actions:
-            child: MctsState = action.get_dst()
-            # UCT公式
-            exploit = child.visite_score / child.visite_num
-            explore = exploration_param * math.sqrt(
-                math.log(self.visite_num) / child.visite_num
-            )
-            score = exploit + explore
-            if score > best_score:
-                best_score = score
-                best_child = child
-        return best_child
-
-    def expand(self):
-        action = self.get_need_expand_actions().pop()
-        self.expand_actions.append(action)
-        return action.get_dst()
-
 
 class MctsSearch(Base):
 
-    def load(self, max_depath=-1, num_episodes=100, **kw):
+    def load(self, max_depath=-1, num_episodes=5000, **kw):
         self.c = math.sqrt(2.0)
         self.max_depath = max_depath
         return super().load(num_episodes=num_episodes, **kw)
@@ -57,23 +18,30 @@ class MctsSearch(Base):
             cur = cur.get_uct_best_child()
             vt_states.append(cur)
         return cur
-
+    def simulate(self,node:MctsState):
+        while not node.get_done():
+            a = node.get_random_action()
+            node=a.get_dst()
+        return node
     def backpropagate(self, vt_states: List[MctsState], score):
         n = len(vt_states)
-        chen = 1
+
         for i in range(n - 1, -1, -1):
-            vt_states[i].visite_score += score * chen
+            vt_states[i].visite_score += score if vt_states[i].player_id==1 else -score
             vt_states[i].visite_num += 1
-            chen = -chen
+ 
 
     def search_main(self, init_state: MctsState):
         for _ in range(self.num_episodes):
             vt_states: List[MctsState] = []  # 不要用parent记录因为尽可能有多个parent，
             node = self.select(init_state, vt_states)  # 指导探索到待拓展的节点
             if not node.get_done():
-                node = node.expand()
-                vt_states.append(node)
-            self.backpropagate(vt_states, node.get_reward())
+                expanded_node = node.expand()
+                vt_states.append(expanded_node)
+                end_node=self.simulate(expanded_node)
+                self.backpropagate(vt_states, end_node.get_reward())
+            else:
+                self.backpropagate(vt_states, node.get_reward())
         init_state.set_best_action(self.get_max_action(init_state))
 
     def get_max_action(self, node: MctsState):
@@ -89,3 +57,7 @@ class MctsSearch(Base):
                 best_visits = a.get_dst().visite_num
                 best_move = a
         return best_move
+
+
+class MctsSearchDev(MctsSearch):
+    pass

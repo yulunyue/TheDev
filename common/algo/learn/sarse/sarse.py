@@ -25,3 +25,10 @@ class Td0(Base):
         s = self.actions.pop(0)
         td_error = g - s.value
         s.value += self.alpha * td_error
+    
+    def reset(self):
+        self.actions:List[Action] = []
+        return super().reset()
+
+    
+

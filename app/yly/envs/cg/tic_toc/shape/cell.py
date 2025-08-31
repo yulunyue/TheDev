@@ -4,10 +4,8 @@ from app.yly.envs.cg.tic_toc.shape.line import Line, LINES
 
 
 class Cell:
-    def __init__(self):
+    def __init__(self,key):
         self.value = 0
+        self.key = key
         self.p_lines: List[Line] = []
 
-    def set_key(self, key):
-        self.key = key
-        return self

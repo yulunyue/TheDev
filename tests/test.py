@@ -10,7 +10,7 @@ from app.yly.envs.cg.mpr.test import MprTest
 from .test_mrcf import TestMain
 from tests.test_oa import OaTest
 from app.yly.envs.cg.pendulum.test import TestPen
-from app.yly.envs.cg.tic_toc.test import TestTicToc
+from tests.test_tic import TestTicToc
 from tests.test_context import LCTest
 from common.util.export import logger, random, TestBase, List, File
 
