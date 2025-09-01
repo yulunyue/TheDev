@@ -218,7 +218,7 @@ class State:
             for a in actions:
                 done = dfs(a.dst, depth + 1, stacks + [a])
                 ret.append(
-                    f'{"  "*depth}{a.action}: ar={a.get_reward()}, sr={a.get_dst().get_reward(actions=stacks)} d={done}'
+                    f'{"  "*depth}{a.action}: ar={a.get_reward()}, sr={a.get_dst().get_reward()} d={done} mask:{a.get_dst().state}'
                 )
 
         dfs(self, 0, [])
@@ -246,12 +246,15 @@ class State:
     def __repr__(self):
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{self.reward}",
-            f"mask:{self.state}",
             self.to_str(),
         ]
         if self.data:
             datas.append(f"data:{self.data}")
-        return f"\n".join(["-" * 40] + datas + ["-" * 40])
+        mask = str(self.state)
+        mask_max_len = 60
+        return f"\n".join(
+            [mask + "-" * (mask_max_len - len(mask))] + datas + ["-" * mask_max_len]
+        )
 
     def get_win_player(self, rewards, player_idx, *args, **kw):
         if self.reward == 0:
@@ -274,7 +277,11 @@ class State:
 
     def get_self_reward(self, **kw):
         r = self.get_reward()
-        return r if self.player_id == 0 else -r
+        if (
+            self.player_id == 0
+        ):  # Player1 回合结束，轮到Player0 走，返回对于Player1的价值 取反
+            return -r
+        return r
 
     sort_actions: List[Action] = None
 
@@ -284,14 +291,7 @@ class State:
         return self.sort_actions
 
 
-class AbState(State):
-    child_index = 0
-    alpha = -inf
-    bate = inf
-    ab_value: int = None
-
-
-class MctsState(AbState):
+class MctsState(State):
     visite_num = 0
     visite_score = 0
 

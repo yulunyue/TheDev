@@ -12,21 +12,22 @@ class TestSearch(TestBase):
         logger.debug(self.s.dump_tree())
 
     def check_algo(self, a: Algo):
-        b = a.search(self.s.get_dst([0, 0]))
-        self.expect(b.action, 0)
         b = a.search(self.s.get_dst([0]))  # 2
         self.expect(b.action, 0)
+        b = a.search(self.s.get_dst([0, 1]))
+        self.expect(b.action, 1)
         b = a.search(self.s.get_dst([1]))  # 3
         self.expect(b.action, 0)
         b = a.search(self.s.get_dst([2]))  # 4
         self.expect(b.action, 0)
         b = a.search(self.s)
         self.expect(b.action, 2)
+        logger.debug([a.get_name(), a.state_num])
 
     def test_easy(self):
         self.check_algo(self.al1)
         self.check_algo(self.al2)
-        # self.check_algo(self.al3)
+        self.check_algo(self.al3)
         self.check_algo(self.ms1)
 
     # def test_much(self):
@@ -34,6 +35,8 @@ class TestSearch(TestBase):
     #     AbDev("dfs").load(6).search(s)
 
     def debug(self):
+        # c = self.al3.search(self.s.get_dst([1]))
+        # logger.info(c.action)
         self.check_algo(self.al3)
 
 

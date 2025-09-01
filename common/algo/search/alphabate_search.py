@@ -1,7 +1,17 @@
-from common.algo.search.state import AbState as State, inf, Action
+from common.algo.search.state import State, inf, Action
 from common.algo.search.algo import Algo
 from typing import List, Dict
 from common.util.export import logger, defaultdict
+
+
+class AbState:
+    def __init__(self, state: State, depth=0, alpha=-inf, bate=inf):
+        self.state = state
+        self.child_index = 0
+        self.alpha = alpha
+        self.bate = bate
+        self.depth = depth
+        self.ab_value: int = None
 
 
 class AlphaBateSearch(Algo):
@@ -24,22 +34,10 @@ class AlphaBateSearch(Algo):
         **kw,
     ) -> None:
         if depth == self.max_depth or state.get_done():
-            return self.get_depth_reward(
-                state,
-                depth=depth,
-                player_id=player_id,
-                params=self.params,
-                actions=actions,
-            )
+            return -self.get_depth_reward(state)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
-            return self.get_depth_reward(
-                state,
-                depth=depth,
-                player_id=player_id,
-                params=self.params,
-                actions=actions,
-            )
+            return -self.get_depth_reward(state)
         for a in mvs:
             reward = -self.search_ab(
                 a.dst,
@@ -67,22 +65,10 @@ class AlphaBateSearch(Algo):
         self, state: State, actions: List[Action], depth=0, player_id=None, **kw
     ):
         if depth == self.max_depth or state.get_done():
-            return self.get_depth_reward(
-                state,
-                depth=depth,
-                player_id=player_id,
-                params=self.params,
-                actions=actions,
-            )
+            return -self.get_depth_reward(state)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
-            return self.get_depth_reward(
-                state,
-                depth=depth,
-                player_id=player_id,
-                params=self.params,
-                actions=actions,
-            )
+            return -self.get_depth_reward(state)
         best_reward = -inf
         for a in mvs:
             reward = -self.search_dfs(
@@ -94,45 +80,40 @@ class AlphaBateSearch(Algo):
         return best_reward
 
     def search_ab_loop(self, state: State):
-        stacks = [state]
+        stacks = [AbState(state)]
+        pop_node: AbState = None
         state.depth = 0
         best_action = None
         while stacks:
             cur_node = stacks[-1]
-            if cur_node.get_done() or cur_node.depth == self.max_depth:
-                cur_node.ab_value = self.get_depth_reward(cur_node)
-                stacks.pop()
+            if cur_node.state.get_done() or cur_node.depth == self.max_depth:
+                cur_node.ab_value = -self.get_depth_reward(cur_node.state)
+                pop_node = stacks.pop()
                 continue
-            actions = cur_node.get_sort_actions()
-            if cur_node.child_index == len(actions):
-                stacks.pop()
-                if stacks:
-                    p = stacks[-1]
-                    if p.depth % 2 == 0:
-                        if p.ab_value is None or p.ab_value < cur_node.ab_value:
-                            p.ab_value = cur_node.ab_value
-                        if p.alpha < cur_node.alpha:
-                            p.alpha = cur_node.alpha
-                    else:
-                        if p.ab_value is None or p.ab_value > cur_node.ab_value:
-                            p.ab_value = cur_node.ab_value
-                        if p.bate > cur_node.bate:
-                            p.bate = cur_node.bate
-                    if p.alpha >= p.bate:
-                        p.child_index = len(actions)
-                        if len(state) == 1 and cur_node.ab_value == p.ab_value:
-                            best_action = cur_node
-                elif cur_node.depth == 0:
-                    best_action = cur_node.sort_actions[0]
+            actions = cur_node.state.get_sort_actions()
+            if pop_node:
+                # logger.debug(
+                #     f"c: {cur_node.state.state},{cur_node.alpha} s: {pop_node.state.state},{pop_node.ab_value}"
+                # )
+                if cur_node.alpha < -pop_node.ab_value:
+                    cur_node.alpha = cur_node.ab_value = -pop_node.ab_value
+                    if cur_node.depth == 0:
+                        best_action = actions[cur_node.child_index - 1]
+                if cur_node.alpha >= cur_node.bate:
+                    # cur_node.child_index = len(actions)
+                    pop_node = stacks.pop()
+                    continue
+                if cur_node.depth == 0:
+                    pop_node = None  # 根节点每次对比完 需要找新节点
+            if cur_node.child_index >= len(actions):
+                pop_node = stacks.pop()
                 continue
-            if cur_node.alpha >= cur_node.bate:
-                cur_node.child_index = len(actions)
-                continue
-
-            next_node: State = actions[cur_node.child_index].get_dst()
-            next_node.alpha = cur_node.alpha
-            next_node.bate = cur_node.bate
-            next_node.depth = cur_node.depth + 1
+            next_node = AbState(
+                actions[cur_node.child_index].get_dst(),
+                cur_node.depth + 1,
+                -cur_node.bate,
+                -cur_node.alpha,
+            )
             stacks.append(next_node)
             cur_node.child_index += 1
         state.set_best_action(best_action)
