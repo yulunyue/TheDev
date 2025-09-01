@@ -1,4 +1,4 @@
-from common.algo.search.state import State, inf, Action
+from common.algo.search.state import AbState as State, inf, Action
 from common.algo.search.algo import Algo
 from typing import List, Dict
 from common.util.export import logger, defaultdict
@@ -58,8 +58,10 @@ class AlphaBateSearch(Algo):
                 state.set_best_action(a)
         return alpha
 
-    def get_depth_reward(self, s: State, depth: int, actions: List[Action], **kw):
-        return s.get_depth_reward(depth, actions=actions, params=self.params)
+    def get_depth_reward(
+        self, s: State, depth: int = None, actions: List[Action] = None, **kw
+    ):
+        return s.get_self_reward(depth=depth, actions=actions, params=self.params)
 
     def search_dfs(
         self, state: State, actions: List[Action], depth=0, player_id=None, **kw
@@ -91,24 +93,62 @@ class AlphaBateSearch(Algo):
                 best_reward = reward
         return best_reward
 
-    def seach_ab_much(self, state: State):
-        max_depth = self.max_depth + 1
-        for depth in range(1, max_depth):
-            self.max_depth = depth
-            self.search_ab(state, [], depth=0)
+    def search_ab_loop(self, state: State):
+        stacks = [state]
+        state.depth = 0
+        best_action = None
+        while stacks:
+            cur_node = stacks[-1]
+            if cur_node.get_done() or cur_node.depth == self.max_depth:
+                cur_node.ab_value = self.get_depth_reward(cur_node)
+                stacks.pop()
+                continue
+            actions = cur_node.get_sort_actions()
+            if cur_node.child_index == len(actions):
+                stacks.pop()
+                if stacks:
+                    p = stacks[-1]
+                    if p.depth % 2 == 0:
+                        if p.ab_value is None or p.ab_value < cur_node.ab_value:
+                            p.ab_value = cur_node.ab_value
+                        if p.alpha < cur_node.alpha:
+                            p.alpha = cur_node.alpha
+                    else:
+                        if p.ab_value is None or p.ab_value > cur_node.ab_value:
+                            p.ab_value = cur_node.ab_value
+                        if p.bate > cur_node.bate:
+                            p.bate = cur_node.bate
+                    if p.alpha >= p.bate:
+                        p.child_index = len(actions)
+                        if len(state) == 1 and cur_node.ab_value == p.ab_value:
+                            best_action = cur_node
+                elif cur_node.depth == 0:
+                    best_action = cur_node.sort_actions[0]
+                continue
+            if cur_node.alpha >= cur_node.bate:
+                cur_node.child_index = len(actions)
+                continue
+
+            next_node: State = actions[cur_node.child_index].get_dst()
+            next_node.alpha = cur_node.alpha
+            next_node.bate = cur_node.bate
+            next_node.depth = cur_node.depth + 1
+            stacks.append(next_node)
+            cur_node.child_index += 1
+        state.set_best_action(best_action)
 
     def search_main(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
             return self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
         elif self.search_type == AlphaBateSearch.AB_MUCH:
-            return self.seach_ab_much(state)
+            return self.search_ab_loop(state)
         return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
 
 
 class AbDev(AlphaBateSearch):
-    def get_depth_reward(self, s, depth, actions, **kw):
+    def get_depth_reward(self, s, **kw):
         self.state_num += 1
-        return super().get_depth_reward(s, depth, actions, **kw)
+        return super().get_depth_reward(s, **kw)
 
     def search(self, state):
         self.state_num = 0

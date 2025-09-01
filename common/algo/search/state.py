@@ -87,7 +87,7 @@ class State:
     done = False
     STATE_STORE: Dict[str, "State"] = None
     sort_reward = None
-    reward = None
+
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state
         self.depth = depth
@@ -226,6 +226,9 @@ class State:
         return "\n" + "\n".join(ret)
 
     def get_reward(self, actions: List[Action] = None, params: Params = None) -> int:
+        """
+        绝对优势 >0 表示先手优势 <0 表示后手优势
+        """
         return self.reward
 
     def get_max_action_reward(self):
@@ -250,10 +253,10 @@ class State:
             datas.append(f"data:{self.data}")
         return f"\n".join(["-" * 40] + datas + ["-" * 40])
 
-    def get_win_player(self,rewards,player_idx, *args, **kw):
-        if self.reward==0:
+    def get_win_player(self, rewards, player_idx, *args, **kw):
+        if self.reward == 0:
             return -1
-        if self.reward>0:
+        if self.reward > 0:
             return 0
         return 1
 
@@ -269,8 +272,8 @@ class State:
             self.p_sum += a.p
         return self.p_sum
 
-    def get_depth_reward(self, depth: int, *args, **kw):
-        r = self.get_reward(*args, **kw)
+    def get_self_reward(self, **kw):
+        r = self.get_reward()
         return r if self.player_id == 0 else -r
 
     sort_actions: List[Action] = None
@@ -280,7 +283,15 @@ class State:
             self.sort_actions = list(self.get_actions().values())
         return self.sort_actions
 
-class MctsState(State):
+
+class AbState(State):
+    child_index = 0
+    alpha = -inf
+    bate = inf
+    ab_value: int = None
+
+
+class MctsState(AbState):
     visite_num = 0
     visite_score = 0
 

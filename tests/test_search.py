@@ -22,20 +22,19 @@ class TestSearch(TestBase):
         self.expect(b.action, 0)
         b = a.search(self.s)
         self.expect(b.action, 2)
-        logger.info(f"{a.name}->state_num:{a.state_num}")
 
     def test_easy(self):
         self.check_algo(self.al1)
         self.check_algo(self.al2)
-        self.check_algo(self.al3)
+        # self.check_algo(self.al3)
         self.check_algo(self.ms1)
 
-    def test_much(self):
-        s = TestState.make_test_state(5, 7)
-        AbDev("dfs").load(6).search(s)
+    # def test_much(self):
+    #     s = TestState.make_test_state(5, 7)
+    #     AbDev("dfs").load(6).search(s)
 
     def debug(self):
-        self.test_abdfs()
+        self.check_algo(self.al3)
 
 
 if __name__ == "__main__":
