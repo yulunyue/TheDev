@@ -2,7 +2,7 @@ from .test_ban import TestBan
 from app.yly.envs.cg.cart_pole.test import TestCart
 from app.yly.envs.cg.cf4.test import C4Test
 from app.yly.envs.ml.ciff_walk.test import CfTest
-from app.yly.envs.cg.cw.test import CwTest
+from tests.test_cw import CwTest
 from app.yly.envs.ml.flv1.test import TestFlv
 from app.yly.envs.cg.kululu.test import KululuTest
 from app.yly.envs.cg.l9.test import TestL9

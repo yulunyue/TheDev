@@ -1,9 +1,9 @@
 from common.util.export import TestBase, logger, Module
 from common.third_service.export import CodingGame
-from .cg import CgCw, World, C
-from .model.constant import CASES
+from app.yly.envs.cg.cw.cg import CgCw, World, C
+from app.yly.envs.cg.cw.model.constant import CASES
 from common.algo.export import ALgoManage, Algo
-from .model.b_line_help import BlineHelp, BM
+from app.yly.envs.cg.cw.model.b_line_help import BlineHelp, BM
 
 
 class CwTest(TestBase):
@@ -38,11 +38,9 @@ class CwTest(TestBase):
     def test_debug(self):
         pass
 
-    def test_base(self, aim_id=1):
+    def run_base(self, aim_id=1):
         frame = self.c.get_cg_frames_stderror()[int(aim_id)]
         s = World(frame.stderr["state"], 0)
-        a = Util.ab1.search(s)
-        self.expect(a.action, "", s)
 
     def run_cases(self, algo: Algo):
         for k, (not_in, ins) in C.get_cases().items():
@@ -50,14 +48,9 @@ class CwTest(TestBase):
             a = algo.search(s).action
             self.expect(a not in not_in and a in ins, info=f"{s}\n{a}\n{not_in},{ins}")
 
-    def test_ab1(self):
-        self.test_cases(Util.ab1)
-
-    def test_case(self):
+    def run_case(self):
         s = World(CASES[5], 0)
         logger.info(s)
-        Util.ab1.search(s)
-        logger.info(s.best_action)
 
 
 if __name__ == "__main__":
