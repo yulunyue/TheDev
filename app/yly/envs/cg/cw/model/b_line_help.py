@@ -8,7 +8,7 @@ class BlineHelp:
     def bresenham_line(self, y1, x1, chen):
         """
         使用 Bresenham 算法在网格上绘制从 (x0, y0) 到 (x1, y1) 的直线。
-        返回直线路径上的所有像素坐标列表。
+        返回直线路径上的所有像素坐标列表。尽可能的直线
         """
         points = []
         x0 = y0 = 0

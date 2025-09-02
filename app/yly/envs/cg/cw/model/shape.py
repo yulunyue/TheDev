@@ -70,19 +70,22 @@ class ShapeBase:
     def get_dis(self, aim: "ShapeBase"):
         return self.path.shpae_dis.get(aim.k, float("inf"))
 
-    def get_shoot(self, aim: "ShapeBase") -> "ShapeBase":
+    def can_shoot(self, aim: "ShapeBase") -> "ShapeBase":
+        if aim is None:
+            return False
         dis = self.get_abs_dis(aim)
         if dis >= C.VALUE_DAMAGE_MAX:
-            return
+            return False
         for dy, dx in BM.get(aim.y - self.y, aim.x - self.x):
             y, x = self.y + dy, self.x + dx
             if y < 0 or y >= self.g.height or x < 0 or x >= self.g.width:
                 break
             dst = self.g.grid[y][x]
             if dst.k == aim.k:
-                return dst
+                return True
             if dst.unit_type != C.TYPE_NULL:
-                return dst
+                return False
+        return True
 
     def get_abs_dis(self, aim: "ShapeBase"):
         return abs(self.x - aim.x) + abs(self.y - aim.y)

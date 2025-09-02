@@ -53,32 +53,30 @@ class World(State):
             s.bfs_find_action()
         return self
 
-    def get_actions(self, depth=1, **kw):
-        self.actions: Dict[str, CwAction] = dict()
-
-        def add_action(src, method, dst):
-            if dst is None:
-                return
-
-            a = CwAction(self, src, method, dst, self)
-            if a.reward is None:
-                return
-            self.actions[a.action] = a
+    def get_sort_actions(self, **kw):
+        actions = []
 
         for src in self.cultists[self.player_id].values():
             for dst in src.get_nexts_tiles():
                 if dst.unit_type == C.TYPE_NULL:
-                    add_action(src, C.ACTION_MOVE, dst)
+                    actions.append(CwAction(src, C.ACTION_MOVE, dst))
                 elif (
                     dst.unit_type == C.TYPE_CULTIST
                     and dst.owner == C.OWNER_NEUTRAL
                     and src.unit_type == C.TYPE_CULT_LEADER
                 ):
-                    add_action(src, C.ACTION_CONVERT, dst)
+                    actions.append(CwAction(src, C.ACTION_CONVERT, dst))
             if src.unit_type == C.TYPE_CULTIST:
-                add_action(src, C.ACTION_SHOOT, src.path.get_near(1 - self.player_id))
-                add_action(src, C.ACTION_SHOOT, src.path.leaders[1 - self.player_id])
-        return self.actions
+                near_cul = src.path.get_near(1 - self.player_id)
+                if src.can_shoot(near_cul):
+                    actions.append(CwAction(src, C.ACTION_SHOOT, near_cul))
+                if src.can_shoot(src.path.leaders[1 - self.player_id]):
+                    actions.append(
+                        CwAction(
+                            src, C.ACTION_SHOOT, src.path.leaders[1 - self.player_id]
+                        )
+                    )
+        return actions
 
     def to_json(self):
         return dict(state=f"{self.maps}|{self.shapes}")
@@ -95,8 +93,8 @@ class World(State):
             tmp.append("*")
             s.append(tmp)
         s.append([C.WALL_S] * (self.width + 1))
-
-        return "\n".join(["".join(r) for r in s])
+        acs = [str(a) for a in self.get_sort_actions()]
+        return "\n".join(["".join(r) for r in s] + acs)
 
     def get_reward(self, **kw):
         return 0

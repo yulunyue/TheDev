@@ -1,7 +1,7 @@
-from .env import PenduState
+from ..app.yly.envs.cg.pendulum.env import PenduState
 from common.util.export import TestBase, logger
 from common.algo.export import Dqn, Qlearning, np
-from .constant import C
+from ..app.yly.envs.cg.pendulum.constant import C
 
 
 class TestPen(TestBase):

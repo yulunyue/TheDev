@@ -35,7 +35,7 @@ class CwTest(TestBase):
         logger.info(BM.draw(0, 2, 1, 0))
         logger.info(BM.draw(1, 0, 0, 2))
 
-    def test_debug(self):
+    def debug(self):
         pass
 
     def run_base(self, aim_id=1):
@@ -48,9 +48,9 @@ class CwTest(TestBase):
             a = algo.search(s).action
             self.expect(a not in not_in and a in ins, info=f"{s}\n{a}\n{not_in},{ins}")
 
-    def run_case(self):
+    def dev(self):
         s = World(CASES[5], 0)
-        logger.info(s)
+        logger.debug(s)
 
 
 if __name__ == "__main__":
