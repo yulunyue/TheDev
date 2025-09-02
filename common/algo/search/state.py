@@ -87,6 +87,7 @@ class State:
     done = False
     STATE_STORE: Dict[str, "State"] = None
     sort_reward = None
+    reward = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state = state

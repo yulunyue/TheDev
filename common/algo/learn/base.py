@@ -11,7 +11,7 @@ class Base(Algo):
         self.epsilon = epsilon
         self.num_episodes = num_episodes
         self.rewards_record = []
-        self.max_round=-1
+        self.max_round = -1
         return super().load(**kw)
 
     def can_epsilon(self):
@@ -28,13 +28,13 @@ class Base(Algo):
             s = init_state.reset()
             vt_states: List[State] = [s]
             tmp_round = self.max_round
-            while not s.get_done() and tmp_round!=0:
+            while not s.get_done() and tmp_round != 0:
                 ac = self.take_action(s)
                 self.update_action(ac)
                 self.reward_tmp_all += ac.get_regret()
                 s = ac.get_dst()
                 vt_states.append(s)
-                self.tmp_round -= 1
+                tmp_round -= 1
             self.feed_back_states(vt_states)
             self.rewards_record.append(self.reward_tmp_all)
         init_state.set_best_action(self.take_action(init_state))

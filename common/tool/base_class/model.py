@@ -93,11 +93,12 @@ class DictModel(BaseModel):
 
     def __init__(self, key=None, default_value=None, data_source=None):
         super().__init__(key, default_value or dict(), data_source)
-        self.value = dict()
+
+    def get_value(self) -> dict:
+        return super().get_value()
 
     def update(self, **kw):
-        self.value.update(kw)
-        return self.set_value(self.value)
+        return self.set_value(kw)
 
 
 ENABLE = "enable"

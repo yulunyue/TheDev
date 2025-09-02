@@ -1,7 +1,7 @@
 from common.algo.learn.dyn import PolicyIteration, ValueIteration
 from common.algo.search.state import State, Action, PAction
 from common.algo.search.algo import Algo, random_seed, np, RandomAlgo
-from common.algo.learn.sarse.mctssearch import MctsSearch
+from common.algo.learn.sarse.mctssearch import MctsSearch, MctsState
 from common.algo.search.alphabate_search import AlphaBateSearch, AbDev
 from common.algo.learn.bernoulli import (
     EpsilonGreedy,

@@ -1,5 +1,5 @@
 from common.util.export import TestBase, Module, logger
-from common.third_util.export import CodingGame
+from common.third_service.export import CodingGame
 from common.algo.export import Algo, AlphaBateSearch, ALgoManage
 from .cg import Cgl9
 from .api import L9Api, ApiAlgo

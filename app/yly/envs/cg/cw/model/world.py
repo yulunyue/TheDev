@@ -37,7 +37,7 @@ class World(State):
 
     def set_shapes(self, shapes: str):
         self.cultists: List[Dict[int, ShapeBase]] = [dict(), dict(), dict()]
-        self.hp = [0, 0, 0]
+        # self.hp = [0, 0, 0]
         self.shapes = shapes
         for s in self.null_shapes:
             s.reset()
@@ -48,7 +48,7 @@ class World(State):
             nodes.append(s)
             s.load(unit_id, unit_type, hp, x, y, owner)
             self.cultists[owner][unit_id] = s
-            self.hp[owner] += hp
+            # self.hp[owner] += hp
         for s in nodes:
             s.bfs_find_action()
         return self
@@ -97,5 +97,5 @@ class World(State):
         s.append([C.WALL_S] * (self.width + 1))
         return "\n".join(["".join(r) for r in s])
 
-    def get_reward(self, actions: List[CwAction], **kw):
+    def get_reward(self, **kw):
         return 0

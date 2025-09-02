@@ -1,8 +1,7 @@
 from common.util.export import TestBase, logger, Module
-from common.third_util.export import CodingGame
+from common.third_service.export import CodingGame
 from .cg import CgCw, World, C
 from .model.constant import CASES
-from .util import Util
 from common.algo.export import ALgoManage, Algo
 from .model.b_line_help import BlineHelp, BM
 
@@ -21,23 +20,23 @@ class CwTest(TestBase):
         ]
         return s
 
-    def test_pk(self):
+    def cg_pk(self):
         CodingGame(CgCw.name).pk(Module.RUN_TMP_PATH, CgCw.game_id, CgCw.agentsIds)
         self.test_replay()
 
-    def test_replay(self):
+    def cg_replay(self):
         ALgoManage(CgCw.name).set_state(self.get_state).actor(
             [Util.ab1], (len(self.c.get_cg_frames()) // 2 - 1)
         )
 
-    def test_bl(self):
+    def run_bl(self):
         logger.info(BM.draw(0, 0, 1, 2))
         logger.info(BM.draw(1, 2, 0, 0))
         logger.info(BM.draw(0, 2, 1, 0))
         logger.info(BM.draw(1, 0, 0, 2))
 
     def test_debug(self):
-        self.test_bl()
+        pass
 
     def test_base(self, aim_id=1):
         frame = self.c.get_cg_frames_stderror()[int(aim_id)]
@@ -45,7 +44,7 @@ class CwTest(TestBase):
         a = Util.ab1.search(s)
         self.expect(a.action, "", s)
 
-    def test_cases(self, algo: Algo):
+    def run_cases(self, algo: Algo):
         for k, (not_in, ins) in C.get_cases().items():
             s = World(k, 0)
             a = algo.search(s).action

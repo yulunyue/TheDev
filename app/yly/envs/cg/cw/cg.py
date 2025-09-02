@@ -13,11 +13,8 @@ class CgCw(MockCg):
     game_id = "72806721d45bcc88f2891a7927b73fbfa911b50b"
     agentsIds = [-1, -2]
 
-    def get_player(self):
-        return AlphaBateSearch().load(1)
-
     def main(self):
-        algo = self.get_player()
+        algo = AlphaBateSearch().load(1)
         player_id = self.ii()[0]
         # 0 - you are the first player, 1 - you are the second player
         # width: Width of the board

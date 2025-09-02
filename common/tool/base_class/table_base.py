@@ -46,6 +46,9 @@ class TableBase(Generic[T]):
             ret.append(v)
         return ret
 
+    def all(self):
+        return self.filter()
+
     def to_web_view(self, **kw):
         return dict(
             type=THE_DEV_CONSTANT.WEB_VIEW_TYPE_TABLE,

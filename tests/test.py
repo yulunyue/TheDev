@@ -13,41 +13,28 @@ from app.yly.envs.cg.pendulum.test import TestPen
 from tests.test_tic import TestTicToc
 from tests.test_context import LCTest
 from common.util.export import logger, random, TestBase, List, File
+from common.tool.export import TableConfig, TableBase, StrModel, DictModel
 
 LOCALS = locals()
 
 
+class RunModel(TableConfig):
+    calls = DictModel()
+
+
 class YlyTest:
+    def __init__(self):
+        self.tb = TableBase[RunModel]().set_resource("yly_random_run")
+
     def run_random(self):
-        fp = File("data/log/yly_run.json")
-        record = fp.read_file() if fp.exists() else dict()
-        test_has_error: List[TestBase] = []
-        tests: List[TestBase] = []
-        for k, v in LOCALS.items():
-            if k.startswith("_") or getattr(v, "TEST_EMABLE", False) == False:
-                continue
-            if k == "TestBase":
-                continue
-            if k not in record:
-                record[k] = dict(run_num=0, user_time=0, err_msg="", args="debug")
-            if record[k]["err_msg"]:
-                test_has_error.append(k)
-            else:
-                tests.append(k)
-        if test_has_error:
-            tests = test_has_error
-        idx = random.randint(0, len(tests) - 1)
-        logger.info(tests[idx])
-        instance: TestBase = LOCALS[tests[idx]]()
-        r = record[tests[idx]]
-        args = r.get("args", "debug")
-        r["err_msg"] = instance.run_all_test()
-        module_path = str(LOCALS[tests[idx]]).split(" '").pop().split("'")[0]
-        module_paths = module_path.split(".")
-        module_paths.pop()
-        path = ".".join(module_paths)
-        logger.info(f"python -m {path} {args}")
-        fp.write_file(record)
+        calls = []
+        for t in self.tb.all():
+            s = LOCALS[t.key]()
+            for k, v in t.calls.get_value().items():
+                calls.append([s, k, v])
+        s, k, v = calls[random.randint(0, len(calls)) - 1]
+        args = [u for u in v.split("#")[0].split(",") if u]
+        getattr(s, k)(*args)
 
 
 if __name__ == "__main__":

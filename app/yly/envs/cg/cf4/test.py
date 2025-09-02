@@ -1,6 +1,6 @@
 from common.util.export import TestBase, logger, Module
 from common.algo.export import random_seed, ALgoManage
-from common.third_util.export import CodingGame
+from common.third_service.export import CodingGame
 
 
 from .model.cf4state import F4State, F4Action
