@@ -1,5 +1,5 @@
 from common.util.export import List, Dict
-from .shape import ShapeBase, C
+from .cell import ShapeBase, C
 
 
 class Path:

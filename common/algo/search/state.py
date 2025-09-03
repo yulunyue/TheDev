@@ -97,6 +97,10 @@ class State:
         self.best_action: Action = None
         self.actions: Dict[str, Action] = None
 
+    def set_player_id(self, player_id):
+        self.player_id = player_id
+        return self
+
     @classmethod
     def new(cls, state=None, **kw):
         if cls.STATE_STORE is None:

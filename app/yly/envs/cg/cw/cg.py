@@ -1,4 +1,4 @@
-from .model.world import World, C
+from .model.state import CwState, World
 from common.mock import MockCg
 
 from common.algo.search.alphabate_search import AlphaBateSearch
@@ -24,7 +24,7 @@ class CgCw(MockCg):
 
         for _ in range(height):
             maps.append(self.input())
-        w = World(",".join(maps), player_id)
+        CwState.g = World(",".join(maps), player_id)
         # game loop
         while True:
             num_of_units = int(input())  # The total number of units on the board
@@ -37,13 +37,12 @@ class CgCw(MockCg):
                 # y: Y coordinate of the unit
                 # owner: id of owner player
                 shapes.append(self.input())
-            w.set_shapes(",".join(shapes))
-
+            s = CwState.new("|".join(shapes)).set_player_id(player_id)
             # Write an action using print
-            self.log(**w.to_json())
+            self.log(state=s.state)
 
             # WAIT | unitId MOVE x y | unitId SHOOT target| unitId CONVERT target
-            self.output(algo.search(w).action)
+            self.output(algo.search(s).action)
 
 
 if __name__ == "__main__":

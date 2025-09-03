@@ -1,22 +1,18 @@
-from .shape import ShapeBase
-from .constant import C
-from .action import CwAction
+from .cell import ShapeBase
+from ..model.constant import C
+from ..model.action import CwAction
 from common.util.export import List, Dict, logger
 import random
 from .path import Path
-from common.algo.search.state import State
 
 
-class World(State):
+class World:
     maps = None
     show_msgs = []
 
-    def __init__(self, state: str, player_id):
-        super().__init__(state, player_id)
-        maps, *args = state.split("|")
+    def __init__(self, maps: str):
         self.load(maps)
-        if args:
-            self.set_shapes(args[0])
+        self.load_shapes()
 
     def load(self, maps: str):
         self.maps = maps
@@ -35,22 +31,20 @@ class World(State):
             self.grid.append(tmp)
         return self
 
-    def set_shapes(self, shapes: str):
+    def set_shapes(self, shapes):
         self.cultists: List[Dict[int, ShapeBase]] = [dict(), dict(), dict()]
-        # self.hp = [0, 0, 0]
-        self.shapes = shapes
-        for s in self.null_shapes:
-            s.reset()
-        shapes_int = [[int(v) for v in s.split(" ")] for s in shapes.split(",")]
-        nodes: List[ShapeBase] = []
-        for unit_id, unit_type, hp, x, y, owner in shapes_int:
-            s = self.grid[y][x]
-            nodes.append(s)
-            s.load(unit_id, unit_type, hp, x, y, owner)
+        unit_id = 1
+        for owner in range(C.PLAYER_NUM):
+            s = ShapeBase(self, C.TYPE_NULL)
+            s.load(unit_id, C.TYPE_CULT_LEADER, C.DEFAULT_HP, -1, -1, owner)
             self.cultists[owner][unit_id] = s
-            # self.hp[owner] += hp
-        for s in nodes:
-            s.bfs_find_action()
+            unit_id += 1
+        for _ in range(C.UNITS_CULTIST_NUM):
+            ShapeBase(self, C.TYPE_NULL).load(
+                unit_id, C.TYPE_CULTIST, C.DEFAULT_HP, -1, -1
+            )
+            unit_id += 1
+            self.cultists[C.OWNER_NEUTRAL][unit_id] = s
         return self
 
     def get_sort_actions(self, **kw):
@@ -77,24 +71,3 @@ class World(State):
                         )
                     )
         return actions
-
-    def to_json(self):
-        return dict(state=f"{self.maps}|{self.shapes}")
-
-    def to_str(self):
-
-        s = self.show_msgs + [
-            [C.WALL_S] * (self.width + 1),
-        ]
-        for i, row in enumerate(self.grid):
-            tmp = ["*"]
-            for j, c in enumerate(row):
-                tmp.append(c.view())
-            tmp.append("*")
-            s.append(tmp)
-        s.append([C.WALL_S] * (self.width + 1))
-        acs = [str(a) for a in self.get_sort_actions()]
-        return "\n".join(["".join(r) for r in s] + acs)
-
-    def get_reward(self, **kw):
-        return 0

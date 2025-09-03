@@ -10,7 +10,7 @@ class ShapeBase:
     owner = C.OWNER_NEUTRAL
 
     def __init__(self, g, shape_type):
-        from app.yly.envs.cg.cw.model.world import World
+        from app.yly.envs.cg.cw.shape.world import World
 
         self.unit_type = self.shape_type = shape_type
         self.g: World = g
@@ -25,7 +25,6 @@ class ShapeBase:
         return self
 
     def reset(self):
-        self.path = None
         self.unit_type = self.shape_type
         self.owner = 2
         self.unit_id = None
@@ -75,20 +74,22 @@ class ShapeBase:
             return False
         dis = self.get_abs_dis(aim)
         if dis >= C.VALUE_DAMAGE_MAX:
-            return False
+            return -1
         for dy, dx in BM.get(aim.y - self.y, aim.x - self.x):
             y, x = self.y + dy, self.x + dx
             if y < 0 or y >= self.g.height or x < 0 or x >= self.g.width:
                 break
             dst = self.g.grid[y][x]
             if dst.k == aim.k:
-                return True
+                return dis
             if dst.unit_type != C.TYPE_NULL:
-                return False
-        return True
+                return -2
+        return -3
 
     def get_abs_dis(self, aim: "ShapeBase"):
         return abs(self.x - aim.x) + abs(self.y - aim.y)
+
+    path = None
 
     def bfs_find_action(self):
         if self.path:
@@ -112,3 +113,7 @@ class ShapeBase:
                     else:
                         self.path.add_shape(l, p)
             l += 1
+
+    def get_path(self):
+        self.bfs_find_action()
+        return self.path

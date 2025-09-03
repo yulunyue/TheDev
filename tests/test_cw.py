@@ -3,7 +3,7 @@ from common.third_service.export import CodingGame
 from app.yly.envs.cg.cw.cg import CgCw, World, C
 from app.yly.envs.cg.cw.model.constant import CASES
 from common.algo.export import ALgoManage, Algo
-from app.yly.envs.cg.cw.model.b_line_help import BlineHelp, BM
+from app.yly.envs.cg.cw.shape.b_line_help import BlineHelp, BM
 
 
 class CwTest(TestBase):
@@ -36,7 +36,7 @@ class CwTest(TestBase):
         logger.info(BM.draw(1, 0, 0, 2))
 
     def debug(self):
-        pass
+        self.dev()
 
     def run_base(self, aim_id=1):
         frame = self.c.get_cg_frames_stderror()[int(aim_id)]
