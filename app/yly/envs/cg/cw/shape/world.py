@@ -48,5 +48,6 @@ class World:
             self.grid[y][x].load(unit_id, unit_type, hp, owner)
             if unit_type == C.TYPE_CULT_LEADER:
                 self.leaders[owner] = s
-            self.cultists[s.owner][unit_id] = s
+            else:
+                self.cultists[s.owner][unit_id] = s
         return self

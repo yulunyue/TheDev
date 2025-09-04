@@ -15,8 +15,11 @@ class CwState(State):
         self.reward = 0
         g.hp
         g.owner
-        if g.leaders:
-            pass
+        if g.leaders[self.player_id]:
+            min_v, sum_v, max_v = g.leaders[self.player_id].calc_dis(
+                g.cultists[C.OWNER_NEUTRAL]
+            )
+            self.reward += min_v * 0.2 + sum_v * 0.1 - max_v * 0.1
 
     @staticmethod
     def set_envi(s: str):
