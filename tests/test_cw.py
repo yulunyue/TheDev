@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger, Module
 from common.third_service.export import CodingGame
-from app.yly.envs.cg.cw.cg import CgCw, World, C
-from app.yly.envs.cg.cw.model.constant import CASES
+from app.yly.envs.cg.cw.cg import CgCw, World, CwState
+from app.yly.envs.cg.cw.model.constant import CASES, C
 from common.algo.export import ALgoManage, Algo
 from app.yly.envs.cg.cw.shape.b_line_help import BlineHelp, BM
 
@@ -49,8 +49,9 @@ class CwTest(TestBase):
             self.expect(a not in not_in and a in ins, info=f"{s}\n{a}\n{not_in},{ins}")
 
     def dev(self):
-        s = World(CASES[5], 0)
-        logger.debug(s)
+        CwState.set_envi(CASES.MAP1)
+        s = CwState.new(CASES.S1_1)
+        logger.debug(s.show())
 
 
 if __name__ == "__main__":

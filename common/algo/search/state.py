@@ -48,7 +48,7 @@ class Action:
     def get_reward(self, **kwargs):
         return self.reward
 
-    def __repr__(self):
+    def show(self):
         ret = f"action: {self.action}, data:{self.data}"
         if self.reward > 0:
             ret += f", rwin: {self.reward}"
@@ -248,7 +248,7 @@ class State:
         self.data.update(kw)
         return self
 
-    def __repr__(self):
+    def show(self):
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{self.reward}",
             self.to_str(),

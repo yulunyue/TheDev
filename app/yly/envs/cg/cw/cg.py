@@ -37,7 +37,7 @@ class CgCw(MockCg):
                 # y: Y coordinate of the unit
                 # owner: id of owner player
                 shapes.append(self.input())
-            s = CwState.new("|".join(shapes)).set_player_id(player_id)
+            s = CwState.new(",".join(shapes)).set_player_id(player_id)
             # Write an action using print
             self.log(state=s.state)
 

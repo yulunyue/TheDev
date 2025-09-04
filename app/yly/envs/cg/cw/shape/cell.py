@@ -1,23 +1,23 @@
 from app.yly.envs.cg.cw.model.constant import C
 from common.util.export import logger, List, defaultdict, Dict
 from .b_line_help import BM
+from .path import Path
 
 
 class ShapeBase:
     x: int = -1
-    unit_type = None
-    unit_id = None
     owner = C.OWNER_NEUTRAL
+    unit_type = C.TYPE_NULL
 
-    def __init__(self, g, shape_type):
+    def __init__(self, g, shape_type, y, x):
         from app.yly.envs.cg.cw.shape.world import World
 
-        self.unit_type = self.shape_type = shape_type
-        self.g: World = g
-
-    def load(self, unit_id, unit_type, hp, x, y, owner):
         self.y: int = y
         self.x: int = x
+        self.shape_type = shape_type
+        self.g: World = g
+
+    def load(self, unit_id, unit_type, hp, owner):
         self.unit_type = unit_type
         self.owner = owner
         self.hp = hp
@@ -25,8 +25,8 @@ class ShapeBase:
         return self
 
     def reset(self):
-        self.unit_type = self.shape_type
-        self.owner = 2
+        self.unit_type = C.TYPE_NULL
+        self.owner = C.OWNER_NEUTRAL
         self.unit_id = None
         return self
 
@@ -34,86 +34,76 @@ class ShapeBase:
         def f(s):
             return f"{s}{self.unit_id%10}"
 
-        if self.unit_type == C.TYPE_OBS:
+        if self.shape_type == C.TYPE_OBS:
             return "##"
-        if self.unit_type == C.TYPE_NULL:
-            return f"  "
         if self.unit_type == C.TYPE_CULT_LEADER:
             return f("A" if self.owner == 0 else "B")
         if self.unit_type == C.TYPE_CULTIST:
             o = "DEC"[self.owner]
             return f(o)
-        # print(self.shape_type)
-        return f(self.unit_type)
-
-    def __repr__(self):
-        return f"{self.view()},{self.hp},{self.y},{self.x}"
-        return f"[id:{self.unit_id}, type:{self.view()}, hp:{self.hp}, owner:{self.owner}, y:{self.y}, x:{self.x}]"
+        return "  "
 
     @property
     def k(self):
         return self.y, self.x
 
-    def get_nexts_tiles(self):
-        ret: List[ShapeBase] = []
+    nexts_tiles: List["ShapeBase"] = None
+
+    def get_nexts_tiles(self) -> List["ShapeBase"]:
+        if self.nexts_tiles is not None:
+            return self.nexts_tiles
+        self.nexts_tiles: List[ShapeBase] = []
         for dy, dx in C.DR:
             y, x = self.y + dy, self.x + dx
             if y < 0 or x < 0 or y >= self.g.height or x >= self.g.width:
                 continue
             p = self.g.grid[y][x]
-            if p.unit_type == C.TYPE_OBS:
+            if p.shape_type == C.TYPE_OBS:
                 continue
-            ret.append(p)
-        return ret
+            self.nexts_tiles.append(p)
+        return self.nexts_tiles
 
-    def get_dis(self, aim: "ShapeBase"):
-        return self.path.shpae_dis.get(aim.k, float("inf"))
-
-    def can_shoot(self, aim: "ShapeBase") -> "ShapeBase":
-        if aim is None:
-            return False
-        dis = self.get_abs_dis(aim)
-        if dis >= C.VALUE_DAMAGE_MAX:
-            return -1
-        for dy, dx in BM.get(aim.y - self.y, aim.x - self.x):
-            y, x = self.y + dy, self.x + dx
-            if y < 0 or y >= self.g.height or x < 0 or x >= self.g.width:
-                break
-            dst = self.g.grid[y][x]
-            if dst.k == aim.k:
-                return dis
-            if dst.unit_type != C.TYPE_NULL:
-                return -2
-        return -3
+    def get_dis(self, aim: "ShapeBase", default_value=None):
+        return self.path.shpae_dis.get(aim.k, default_value)
 
     def get_abs_dis(self, aim: "ShapeBase"):
         return abs(self.x - aim.x) + abs(self.y - aim.y)
 
-    path = None
+    _path: Path = None
 
-    def bfs_find_action(self):
-        if self.path:
-            return
+    @property
+    def path(self):
+        if self._path:
+            return self._path
         q: List[ShapeBase] = [self]
         l = 1
-        from .path import Path
 
-        self.path = Path()
-        self.path.shpae_dis[self.k] = 0
+        self._path = Path(self)
+        self._path.shpae_dis[self.k] = 0
         while q:
             tmp = q
             q = []
             for s in tmp:
                 for p in s.get_nexts_tiles():
-                    if p.k in self.path.shpae_dis:
+                    if p.k in self._path.shpae_dis:
                         continue
-                    self.path.shpae_dis[p.k] = l
+                    self._path.shpae_dis[p.k] = l
                     if p.unit_type == C.TYPE_NULL:
                         q.append(p)
                     else:
-                        self.path.add_shape(l, p)
+                        self._path.add_shape(l, p)
             l += 1
+        return self._path
 
-    def get_path(self):
-        self.bfs_find_action()
-        return self.path
+    def calc_dis(self, ss: List["ShapeBase"]):
+        min_v, sum_v, max_v = float("inf"), 0, float("-inf")
+        for d in ss:
+            v = self.get_dis(d, -1)
+            if v == -1:
+                continue
+            if v < min_v:
+                min_v = v
+            if v > max_v:
+                max_v = v
+            sum_v += v
+        return min_v, sum_v, max_v

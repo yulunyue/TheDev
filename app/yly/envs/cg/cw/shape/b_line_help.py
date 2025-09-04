@@ -28,7 +28,7 @@ class BlineHelp:
                 err += dx
                 y0 += sy
             points.append((y0 * chen, x0 * chen))
-        return points
+        return points[:-1]
 
     def get(self, y, x) -> List[List[int]]:
         k = y, x

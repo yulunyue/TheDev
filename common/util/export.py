@@ -5,7 +5,7 @@ from common.util.test import TestBase, logger
 from common.util.fp import File, get_cache
 from common.util.module import Module, run_catch_error
 from common.util.thread_poll import ThreadManage, ThreadExec, progress_bar
-from typing import List, Dict, TypeVar, Generic, get_origin, get_args
+from typing import List, Dict, TypeVar, Generic, get_origin, get_args, Tuple
 from collections import defaultdict
 import functools
 import json
