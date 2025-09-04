@@ -28,6 +28,7 @@ class ShapeBase:
         self.unit_type = C.TYPE_NULL
         self.owner = C.OWNER_NEUTRAL
         self.unit_id = None
+        self._path = None
         return self
 
     def view(self):

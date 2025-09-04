@@ -7,32 +7,32 @@ import copy
 class CwAction(Action):
     src: CwState
 
-    def __init__(self, src, f: ShapeBase, method, t, param0=None):
-        self.f: ShapeBase = f
-        self.t: ShapeBase = t
+    def __init__(self, src, f: ShapeBase, method, t: ShapeBase, param0=None):
+        self.f_id, self.f_x, self.f_y = f.unit_id, f.x, f.y
+        self.t_id, self.t_x, self.t_y = t.unit_id, t.x, t.y
         self.method = method
         self.param0 = param0
+        self.owner = f.owner
         super().__init__(src, self.get_action_str())
 
     def get_action_str(self):
-        ans = [str(self.f.unit_id), self.method]
+        ans = [str(self.f_id), self.method]
         if self.method == C.ACTION_MOVE:
-            ans.extend([str(self.t.x), str(self.t.y)])
+            ans.extend([str(self.t_x), str(self.t_y)])
         else:
-            ans.extend([str(self.t.unit_id)])
+            ans.extend([str(self.t_id)])
         return " ".join(ans)
 
     def show(self):
-        ans = [f"{self.f.view()} {self.method}"]
+        ans = [f"{self.f_id} {self.method}"]
         if self.method == C.ACTION_MOVE:
-            k = self.t.y - self.f.y, self.t.x - self.f.x
-            # print(self.f, self.t)
+            k = self.t_y - self.f_y, self.t_x - self.f_x
             action = {(0, 1): "RIGHT", (0, -1): "LEFT", (1, 0): "DOWN", (-1, 0): "UP"}[
                 k
             ]
             ans[0] += f" {action}"
         else:
-            ans[0] += f" {self.t.view()}"
+            ans[0] += f" {self.t_id}"
         ans += [f"  reward:{self.get_dst().get_reward()}"]
         return "\n".join(ans)
 
@@ -45,13 +45,13 @@ class CwAction(Action):
 
         dst = copy.deepcopy(self.src.board)
         if self.method == C.ACTION_MOVE:
-            dst[self.f.unit_id - 1][C.DATA_POS_y] = self.t.y
-            dst[self.f.unit_id - 1][C.DATA_POS_x] = self.t.x
+            dst[self.f_id][C.DATA_POS_y] = self.t_y
+            dst[self.f_id][C.DATA_POS_x] = self.t_x
         elif self.method == C.ACTION_CONVERT:
-            dst[self.t.unit_id - 1][C.DATA_POS_owner] = self.f.owner
+            dst[self.t_id][C.DATA_POS_owner] = self.owner
         else:
-            dst[self.t.unit_id - 1][C.DATA_POS_hp] -= self.param0
-        self.dst = CwState.new(
+            dst[self.t_id][C.DATA_POS_hp] -= self.param0
+        self.dst = self.src.__class__.new(
             ",".join([f"{v[0]} {v[1]} {v[2]} {v[3]} {v[4]} {v[5]}" for v in dst])
         )
         return self.dst

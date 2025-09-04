@@ -17,7 +17,7 @@ class CwState(State):
         g.owner
         if g.leaders[self.player_id]:
             min_v, sum_v, max_v = g.leaders[self.player_id].calc_dis(
-                g.cultists[C.OWNER_NEUTRAL]
+                g.cultists[C.OWNER_NEUTRAL].values()
             )
             self.reward += min_v * 0.2 + sum_v * 0.1 - max_v * 0.1
 
@@ -32,7 +32,10 @@ class CwState(State):
         def add_action(a: CwAction):
             actions[a.action] = a
 
-        for src in CwState.g.cultists[self.player_id].values():
+        cultists = list(CwState.g.cultists[self.player_id].values())
+        if CwStateDev.g.leaders[self.player_id]:
+            cultists += [CwStateDev.g.leaders[self.player_id]]
+        for src in cultists:
             for dst in src.get_nexts_tiles():
                 if dst.unit_type == C.TYPE_NULL:
                     add_action(CwAction(self, src, C.ACTION_MOVE, dst))
@@ -47,6 +50,8 @@ class CwState(State):
                     add_action(CwAction(self, src, C.ACTION_SHOOT, d, param0=dis))
         return actions
 
+
+class CwStateDev(CwState):
     def to_str(self):
         s = [
             [C.WALL_S] * (CwState.g.width + 1),
@@ -58,9 +63,9 @@ class CwState(State):
             tmp.append("*")
             s.append(tmp)
         s.append([C.WALL_S] * (CwState.g.width + 1))
-        acs = [a.show() for a in self.get_actions().values()]
+        # actions = sorted(
+        #     self.get_actions().values(), key=lambda a: a.get_reward(), reverse=True
+        # )
+        # acs = [a.show() for a in actions]
+        acs = []
         return "\n".join(["".join(r) for r in s] + acs)
-
-
-class CwStateDev(CwState):
-    pass

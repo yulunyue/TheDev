@@ -1,6 +1,7 @@
 from common.util.export import TestBase, logger, Module
 from common.third_service.export import CodingGame
-from app.yly.envs.cg.cw.cg import CgCw, World, CwState
+from app.yly.envs.cg.cw.cg import CgCw, World
+from app.yly.envs.cg.cw.model.state import CwState, CwStateDev
 from app.yly.envs.cg.cw.model.constant import CASES, C
 from common.algo.export import ALgoManage, Algo
 from app.yly.envs.cg.cw.shape.b_line_help import BlineHelp, BM
@@ -50,8 +51,11 @@ class CwTest(TestBase):
 
     def dev(self):
         CwState.set_envi(CASES.MAP1)
-        s = CwState.new(CASES.S1_1)
+        s = CwStateDev.new(CASES.S1_1)
         logger.debug(s.show())
+        for a in s.get_actions().values():
+            logger.debug(a.show())
+            logger.debug(a.get_dst().show())
 
 
 if __name__ == "__main__":
