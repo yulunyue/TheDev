@@ -14,7 +14,10 @@ class Solution:
             return -1
 
         @functools
-        def dfs(v):
-            pass
+        def dfs(l):
+            r = n - l
+
+            for i in range(-k, k):
+                pass
 
         return dfs(v)

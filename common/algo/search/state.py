@@ -262,9 +262,10 @@ class State:
         )
 
     def get_win_player(self, rewards, player_idx, *args, **kw):
-        if self.reward == 0:
+        reward = self.get_reward()
+        if reward == 0:
             return -1
-        if self.reward > 0:
+        if reward > 0:
             return 0
         return 1
 

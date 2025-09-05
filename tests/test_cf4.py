@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger, Module
-from common.algo.export import random_seed, ALgoManage
+from common.algo.export import random_seed, ALgoManage, AbDev
 from common.third_service.export import CodingGame
 from app.yly.envs.cg.cf4.export import F4State, F4Action, CgMuiltCf4
 
@@ -10,6 +10,9 @@ from typing import List
 class C4Test(TestBase):
     def prepare(self, args=None):
         self.c = CodingGame(CgMuiltCf4.name)
+        self.ab1 = AbDev("ab1").load(1)
+        self.init_satte = F4State.new_state()
+        self.al = ALgoManage().set_state(self.init_satte)
 
     def cg_play(self):
         Module().compile_one(CgMuiltCf4.main_py())
@@ -21,17 +24,19 @@ class C4Test(TestBase):
     def cg_replay(self):
         ALgoManage(CgMuiltCf4.name).set_state(F4State.new_state()).actor([Pm.ab1])
 
-    def test_dev2(self):
+    def dev(self):
         s = F4State.new_state()
-        # logger.info(s)
         a = s.get_action(0).dst.get_action(0)
         logger.info(a.dst)
 
-    def test_dev3(self):
+    def dev1(self):
         s = F4State.new_state(17740539234841)
         logger.info(s)
 
-    def test_debug(self):
+    def dev2(self):
+        self.al.set_players([self.ab1, self.ab1]).fight()
+
+    def debug(self):
         pass
 
 
