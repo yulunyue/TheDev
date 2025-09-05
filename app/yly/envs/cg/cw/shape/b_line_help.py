@@ -1,4 +1,5 @@
 from typing import List
+from common.util.export import logger
 
 
 class BlineHelp:
@@ -40,12 +41,22 @@ class BlineHelp:
         self.maps[k] = self.bresenham_line(y, x, c)
         return self.maps[k]
 
-    def draw(self, y0, x0, y1, x1):
-        ret = [["*"] * 10 for _ in range(5)]
+    def draw(self, y0, x0, y1, x1, ret):
+
         ret[y0][x0] = "A"
         for y, x in self.get(y1 - y0, x1 - x0):
             ret[y0 + y][x0 + x] = "B"
-        return "\n" + "\n".join(["".join(v) for v in ret])
+        ret[y1][x1] = "C"
+
+    def test(self):
+        ret = [["*"] * 9 for _ in range(9)]
+        start_x, start_y = 4, 4
+        self.draw(start_x, start_y, start_x - 2, start_y - 1, ret)
+        self.draw(start_x, start_y, start_x + 1, start_y + 2, ret)
+        self.draw(start_x, start_y, start_x - 1, start_y + 2, ret)
+        self.draw(start_x, start_y, start_x + 1, start_y - 2, ret)
+        show = "\n" + "\n".join(["".join(v) for v in ret])
+        logger.debug(show)
 
 
 BM = BlineHelp()

@@ -1,15 +1,26 @@
 from common.util.export import TestBase, logger, Module
-from common.third_service.export import CodingGame
-from app.yly.envs.cg.cw.cg import CgCw, World
-from app.yly.envs.cg.cw.model.state import CwState, CwStateDev
-from app.yly.envs.cg.cw.model.constant import CASES, C
-from common.algo.export import ALgoManage, Algo
-from app.yly.envs.cg.cw.shape.b_line_help import BlineHelp, BM
+from common.third_service.export import CodingGame, uu
+from app.yly.envs.cg.cw.export import (
+    CgCw,
+    World,
+    CwState,
+    CwStateDev,
+    CASES,
+    C,
+    lineHelp,
+    BM,
+)
+
+from common.algo.export import ALgoManage, Algo, AbDev
 
 
 class CwTest(TestBase):
     def prepare(self, args=None):
         self.c = CodingGame(CgCw.name)
+        self.ab1 = AbDev(f"ab1").load(1)
+        CwStateDev.set_envi(CASES.MAP1)
+        self.state = CwStateDev.new(CASES.S1_1)
+        self.al = ALgoManage().set_state(self.state).set_record_dir(uu(CgCw.name))
         Module().compile_one(CgCw.main_py())
 
     def get_state(self, i: int, *args):
@@ -26,18 +37,13 @@ class CwTest(TestBase):
         self.test_replay()
 
     def cg_replay(self):
-        ALgoManage(CgCw.name).set_state(self.get_state).actor(
-            [Util.ab1], (len(self.c.get_cg_frames()) // 2 - 1)
-        )
+        pass
 
     def run_bl(self):
-        logger.info(BM.draw(0, 0, 1, 2))
-        logger.info(BM.draw(1, 2, 0, 0))
-        logger.info(BM.draw(0, 2, 1, 0))
-        logger.info(BM.draw(1, 0, 0, 2))
+        BM.test()
 
     def debug(self):
-        self.dev()
+        self.fight()
 
     def run_base(self, aim_id=1):
         frame = self.c.get_cg_frames_stderror()[int(aim_id)]
@@ -50,12 +56,10 @@ class CwTest(TestBase):
             self.expect(a not in not_in and a in ins, info=f"{s}\n{a}\n{not_in},{ins}")
 
     def dev(self):
-        CwState.set_envi(CASES.MAP1)
-        s = CwStateDev.new(CASES.S1_1)
-        logger.debug(s.show())
-        for a in s.get_actions().values():
-            logger.debug(a.show())
-            logger.debug(a.get_dst().show())
+        logger.debug(self.state.show())
+
+    def fight(self):
+        self.al.set_players([self.ab1, self.ab1]).fight()
 
 
 if __name__ == "__main__":

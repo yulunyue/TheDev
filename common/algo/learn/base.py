@@ -5,7 +5,7 @@ import random
 
 class Base(Algo):
 
-    def load(self, alpha=0.1, gamma=0.9, epsilon=0.01, num_episodes=5000, **kw):
+    def load(self, alpha=0.1, gamma=0.9, epsilon=0.01, num_episodes=1, **kw):
         self.alpha = alpha
         self.gamma = gamma
         self.epsilon = epsilon

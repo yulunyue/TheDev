@@ -33,8 +33,8 @@ class CwAction(Action):
             ans[0] += f" {action}"
         else:
             ans[0] += f" {self.t_id}"
-        ans += [f"  reward:{self.get_dst().get_reward()}"]
-        return "\n".join(ans)
+        ans += [f"reward:{self.get_dst().get_reward()}"]
+        return ";".join(ans)
 
     def get_dst(self):
         if self.action == C.ACTION_WAIT:
@@ -53,5 +53,5 @@ class CwAction(Action):
             dst[self.t_id][C.DATA_POS_hp] -= self.param0
         self.dst = self.src.__class__.new(
             ",".join([f"{v[0]} {v[1]} {v[2]} {v[3]} {v[4]} {v[5]}" for v in dst])
-        )
+        ).set_player_id(1 - self.owner)
         return self.dst

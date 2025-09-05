@@ -26,7 +26,7 @@ class AlgoInfo(TableModel):
 
     def __init__(self, key):
         self.score = []
-        self.all_count=0
+        self.all_count = 0
         super().__init__(key)
 
     def __new__(cls, key) -> "AlgoInfo":
@@ -46,7 +46,7 @@ class AlgoInfo(TableModel):
 
     @property
     def rate(self):
-        return (self.WIN+self.DRAW*0.5)/self.all_count
+        return (self.WIN + self.DRAW * 0.5) / self.all_count
 
     def update(self, tm, state_num, score):
         self.score.append(score)
@@ -58,13 +58,13 @@ class AlgoInfo(TableModel):
         if tm > self.MAX_TIME:
             self.MAX_TIME = tm
 
-    def update_result(self,tp):
-        self.all_count +=1
-        setattr(self, tp, getattr(self,tp)+1)
+    def update_result(self, tp):
+        self.all_count += 1
+        setattr(self, tp, getattr(self, tp) + 1)
 
     @classmethod
     def sort(cls, v: "AlgoInfo"):
-        return [v.rate,v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE]
+        return [v.rate, v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE]
 
 
 class FIGHT_TYPE:
@@ -77,6 +77,7 @@ class ALgoManage:
     record_dir = ""
     file_path = None
     record_model = AlgoInfo
+
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
         self.record_model.clear()
@@ -115,7 +116,7 @@ class ALgoManage:
                 self.pk(p)
                 progress_bar(i + 1, len(players))
         return self
-    
+
     def __repr__(self):
         return str(PtTable().load_form_model(self.record_model))
 
@@ -184,15 +185,24 @@ class ALgoManage:
             return
         self.rewards.append(self.rewards[-1].copy())
         reward = 0
+
+        action_s = ""
         if a is not None:
             reward = a.get_reward()
+            action_s = a.show()
+        msgs = [
+            s.show(),
+            f"turn: {self.turn_idx}; reward_all: {self.rewards[-1]};",
+            f"{players[player_idx].get_name()} do {action_s}",
+            "",
+        ]
         self.rewards[-1][player_idx] += reward
-        msg = f"{s}\nturn: {self.turn_idx}; reward_all: {self.rewards[-1]};\n{players[player_idx].get_name()} do {a}\n"
+
         file_name = "_pk_".join([v.get_name() for v in players])
         self.file_path = f"{self.record_dir}/pk/{file_name}.log"
         fp = File(self.file_path).get_writer()
-        fp.write(msg)
+        fp.write("\n".join(msgs))
         fp.flush()
 
-    def train(self,players:List[Algo]):
+    def train(self, players: List[Algo]):
         pass

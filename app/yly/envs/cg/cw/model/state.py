@@ -46,7 +46,7 @@ class CwState(State):
                 ):
                     add_action(CwAction(self, src, C.ACTION_CONVERT, dst))
             if src.unit_type == C.TYPE_CULTIST:
-                for dis, d in src.path.can_shoot_units:
+                for d, dis in src.path.can_shoot_units:
                     add_action(CwAction(self, src, C.ACTION_SHOOT, d, param0=dis))
         return actions
 
@@ -63,9 +63,8 @@ class CwStateDev(CwState):
             tmp.append("*")
             s.append(tmp)
         s.append([C.WALL_S] * (CwState.g.width + 1))
-        # actions = sorted(
-        #     self.get_actions().values(), key=lambda a: a.get_reward(), reverse=True
-        # )
-        # acs = [a.show() for a in actions]
-        acs = []
-        return "\n".join(["".join(r) for r in s] + acs)
+        actions = sorted(
+            self.get_actions().values(), key=lambda a: a.get_reward(), reverse=True
+        )
+        s.append(",".join([a.show() for a in actions]))
+        return "\n".join(["".join(r) for r in s])
