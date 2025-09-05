@@ -4,7 +4,7 @@ from tests.test_cf4 import C4Test
 from app.yly.envs.ml.ciff_walk.test import CfTest
 from tests.test_cw import CwTest
 from app.yly.envs.ml.flv1.test import TestFlv
-from app.yly.envs.cg.kululu.test import KululuTest
+from tests.test_lulu import KululuTest
 from app.yly.envs.cg.l9.test import TestL9
 from app.yly.envs.cg.mpr.test import MprTest
 from .test_mrcf import TestMain

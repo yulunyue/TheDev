@@ -1,5 +1,6 @@
 from common.algo.search.algo import Algo
 from common.algo.search.state import State, Action
+from common.algo.search.alphabate_search import AbDev
 from common.util.export import (
     logger,
     File,
@@ -11,6 +12,16 @@ from common.util.export import (
 )
 from common.third_util.export import PtTable, TableModel
 import time
+
+
+class PM:
+    @staticmethod
+    def ab(n):
+        return AbDev(f"ab{n}").load(n)
+
+    @staticmethod
+    def am(n):
+        return AbDev(f"am{n}").load(n, search_type=AbDev.AB_MUCH)
 
 
 class AlgoInfo(TableModel):
@@ -117,7 +128,7 @@ class ALgoManage:
                 progress_bar(i + 1, len(players))
         return self
 
-    def __repr__(self):
+    def show(self):
         return str(PtTable().load_form_model(self.record_model))
 
     def pk(self, players1: List[Algo]):
@@ -138,7 +149,7 @@ class ALgoManage:
 
     max_turn = 250
 
-    def actor(self, players: List[Algo]):
+    def actor(self, players: List[Algo], num=-1):
         """
         返还赢的玩家ID
         """

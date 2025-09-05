@@ -1,12 +1,11 @@
 from common.util.export import List, Dict, defaultdict
 from .player import Player, C
 from .shape import Shape
-from common.algo.search.state import State
 import json
 from .kl_action import KlAction
 
 
-class Grid(State):
+class Grid:
 
     def load_from_json(self, mapes, **kw):
         self.load_map(mapes)
@@ -28,6 +27,7 @@ class Grid(State):
             self.borads.append(tmp)
         for d in null_shapes:
             d.set_grid(self)
+        return self
 
     def get_actions(self, depth=1, **kw):
         wait_action = KlAction(self, C.ACTION_WAIT).set_reward(0)
@@ -69,19 +69,6 @@ class Grid(State):
             mapes=self.maps,
             players=[d.dump() for d in self.nodes_list],
         )
-
-    def to_str(self):
-        board_row: List[List[str]] = []
-        for i, row in enumerate(self.borads):
-            board_row.append([])
-            for j, c in enumerate(row):
-                board_row[-1].append(c.view())
-
-        for p in self.nodes_list:
-            board_row[p.y][p.x] = p.view()
-        for a in self.get_actions().values():
-            board_row.append(str(a))
-        return "\n".join(["".join(rows) for rows in board_row])
 
     def get_reward(self, *args, **kw):
         return 0
