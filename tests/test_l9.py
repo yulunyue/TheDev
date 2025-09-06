@@ -1,11 +1,11 @@
 from common.util.export import TestBase, Module, logger
 from common.third_service.export import CodingGame
 from common.algo.export import Algo, AlphaBateSearch, ALgoManage
-from .cg import Cgl9
-from .api import L9Api, ApiAlgo
-from .model.l9state import L9State, L9Action
-from .shape.env import L9ENV, C
-from .util import get_player, PM
+from ..app.yly.envs.cg.l9.cg import Cgl9
+from ..app.yly.envs.cg.l9.api import L9Api, ApiAlgo
+from ..app.yly.envs.cg.l9.model.l9state import L9State, L9Action
+from ..app.yly.envs.cg.l9.shape.env import L9ENV, C
+from ..app.yly.envs.cg.l9.util import get_player, PM
 
 
 class TestL9(TestBase):

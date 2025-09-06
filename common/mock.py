@@ -25,7 +25,7 @@ class logger:
     debug = get_log
 
 
-class Constant:
+class CT:
     MOD = (10**9) + 7
     inf = float("inf")
     min = lambda a, b: a if a < b else b
@@ -81,5 +81,3 @@ class MockCg(MockCf):
     def main_py(cls):
         return f"app/yly/envs/cg/{cls.name}/cg.py"
 
-
-CT = Constant()

@@ -12,7 +12,7 @@ from common.util.export import (
 )
 import threading
 import time
-
+from common.mock import CT
 
 class D:
     def get_value(self):
@@ -68,6 +68,9 @@ class TestUtil(TestBase):
         path = "data/temp/zip_test"
         File(path).zip()
         File(path + ".zip").unzip()
+
+    def test_ct(self):
+        self.expect(CT.min(1,2),1)
 
 
 if __name__ == "__main__":
