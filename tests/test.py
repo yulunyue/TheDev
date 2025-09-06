@@ -1,5 +1,5 @@
 from .test_ban import TestBan
-from app.yly.envs.cg.cart_pole.test import TestCart
+from .test_cart import TestCart
 from tests.test_cf4 import C4Test
 from app.yly.envs.ml.ciff_walk.test import CfTest
 from tests.test_cw import CwTest
@@ -25,6 +25,9 @@ class RunModel(TableConfig):
 class YlyTest:
     def __init__(self):
         self.tb = TableBase[RunModel]().set_resource("yly_random_run")
+        for k, v in LOCALS.items():
+            if isinstance(v, TestBase):
+                self.tb.insert(k, calls=dict(run_all_test=""))
 
     def run_random(self):
         calls = []
