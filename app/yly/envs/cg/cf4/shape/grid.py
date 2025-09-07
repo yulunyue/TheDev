@@ -12,7 +12,7 @@ class Grid:
         self.shape = shape
         self.height, self.width = C.SHAPES[shape]
         self.columns: List[Column] = []
-        self.board = 0
+        self.board = -1
         self.line_ct = defaultdict(int)
         for i in range(self.width):
             self.columns.append(Column(self, i, self.height))
@@ -27,11 +27,9 @@ class Grid:
                     if y < 0 or x < 0 or y >= self.height or x >= self.width:
                         continue
                     ln = Line.new_line(y, x, k)
-                    m = 0
-                    while m <= 3:
-                        y, x = i + m * dy, j + m * dx
-                        ln.set_point(m, self.columns[y].pts[x])
-                        m += 1
+                    for m in range(4):
+                        y1, x1 = i + m * dy, j + m * dx
+                        ln.set_point(m, self.columns[x1].pts[y1])
 
     @staticmethod
     def new(shape: int) -> "Grid":
@@ -42,40 +40,45 @@ class Grid:
     def line_state_change(self, ln: Line, pos_idx, player_id, f0, t0, f1, t1):
         self.line_ct[f0, t0] -= 1
         self.line_ct[f1, t1] += 1
-        # logger.map(
-        #     ln=ln, pt=ln.pts[pos_idx], player_id=player_id, ct=dict(self.line_ct)
-        # )
 
-    def set_board(self, board):
+    def set_board(self, board, player_id):
 
         if self.board == board:
-            return self
+            return self.done, self.action
         # logger.map(src_board=self.board, dst_borad=board)
-        self.done = None
         self.board = board
         for c in self.columns:
             c.set_state(board & c.mask)
             board = board >> self.height
+        self.action = self.get_actions(player_id)
+        self.done = None if self.action else 2
         if self.line_ct[4, 0]:
             self.done = 0
         elif self.line_ct[0, 4]:
             self.done = 1
-        return self
+        return self.done, self.action
 
     def get_actions(self, player_id):
-        ret = []
-        for c in self.columns:
-            if c.top == self.height:
+        ret = dict()
+        for idx, c in enumerate(self.columns):
+            if c.top == self.height - 1:
                 continue
-            a = dict(action=c.idx, mask=c.put(player_id))
-            ret.append(a)
+            ret[idx] = C.mask_encode(
+                self.board,
+                self.shape,
+                idx * self.height + c.top,
+                player_id,
+            )
 
         return ret
 
     def to_str(self):
-        ret = [["-"] * self.width for _ in range(self.height)]
+        ret = [["- " if i != 0 else "##"] * self.width for i in range(self.height)]
         for i in range(self.width):
             co = self.columns[i]
             for j in range(co.top - 1, -1, -1):
-                ret[self.height - j - 1][i] = str(co.pts[j].value)
-        return "\n".join([" ".join(s) for s in ret] + ["-" * (2 * self.width - 1)])
+                ret[self.height - j - 1][i] = f"{co.pts[j].value} "
+        ret.append([f"{i}#" for i in range(self.width)])
+        return "\n".join(
+            [f"{i}:" + "".join(s) for i, s in enumerate(ret)] + ["-" * (2 * self.width)]
+        )

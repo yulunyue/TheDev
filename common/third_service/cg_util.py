@@ -94,11 +94,10 @@ class CodingGame(Api):
 
     def replay(self, state, algo: Algo):
         s: State = state
-        self.log(s)
+        self.log(s.show())
         for i, f in enumerate(self.get_cg_frames()):
             if not f.stdout:
                 continue
-
             # for k, v in f.stderr.items():
             #     self.log(f"{k} :{v}")
             if hasattr(s, "check_cg"):
@@ -110,9 +109,9 @@ class CodingGame(Api):
             )
             s = a.get_dst()
             if a.get_reward() or a.action != b.action:
-                self.log(s)
+                self.log(s.show())
         self.log("-----------finalstate-------------")
-        self.log(s)
+        self.log(s.show())
 
     def log(self, msg):
         f = File(uu("replay.log")).get_writer()

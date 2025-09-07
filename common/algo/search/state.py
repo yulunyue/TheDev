@@ -167,21 +167,6 @@ class State:
     def get_best_action(self):
         return self.best_action
 
-    def get_seq_score_backward(self, actions: List["Action"], gamma=0.5):
-        """
-        计算一个序列的价值, 未来的值更重要
-        """
-        ret = 0
-        for a in actions[::-1]:
-            ret = gamma * ret + a.get_reward()
-        return ret
-
-    def get_bellman_score(self, gamma=0.5):
-        ret = self.get_reward()
-        for a in self.get_actions().values():
-            ret += gamma * a.get_reward() * a.p
-        return ret
-
     def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
         if self.actions is not None:
             return self.actions

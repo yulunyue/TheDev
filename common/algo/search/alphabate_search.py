@@ -1,22 +1,30 @@
 from common.algo.search.state import State, inf, Action
 from common.algo.search.algo import Algo
 from typing import List, Dict
-from common.util.export import logger, defaultdict
+from common.util.export import logger, defaultdict, get_log
 
 
 class AbState:
-    def __init__(self, state: State, depth=0, alpha=-inf, bate=inf):
+    def __init__(self, state: State, action=None, depth=0, alpha=-inf, bate=inf):
         self.state = state
+        self.action = action
         self.child_index = 0
         self.alpha = alpha
         self.bate = bate
         self.depth = depth
-        self.ab_value: int = None
+        self.ab_value = alpha
 
 
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
     AB_MUCH = "abmuch"
+
+    def debug(self, actions: List[Action], msg):
+        if isinstance(actions[0], AbState):
+            s = "".join([str(a.action.action) for a in actions[1:]])
+        else:
+            s = "".join([str(a.action) for a in actions])
+        logger.debug(f"as:{s} {msg}")
 
     def load(self, max_depth, search_type="", **kw):
         self.max_depth = max_depth
@@ -48,11 +56,13 @@ class AlphaBateSearch(Algo):
                 player_id=player_id,
             )
             if reward >= bate:
-                state.sort_reward = alpha = bate
+                self.debug(actions + [a], f"r:{reward},b:{bate}")
+                alpha = bate
                 state.set_best_action(a)
                 break
             if reward > alpha:
-                state.sort_reward = alpha = reward
+                self.debug(actions + [a], f"r:{reward},b:{alpha}")
+                alpha = reward
                 state.set_best_action(a)
         return alpha
 
@@ -81,6 +91,7 @@ class AlphaBateSearch(Algo):
 
     def search_ab_loop(self, state: State):
         stacks = [AbState(state)]
+
         pop_node: AbState = None
         state.depth = 0
         best_action = None
@@ -90,26 +101,34 @@ class AlphaBateSearch(Algo):
                 cur_node.ab_value = -self.get_depth_reward(cur_node.state)
                 pop_node = stacks.pop()
                 continue
-            actions = cur_node.state.get_sort_actions()
+            sort_actions = cur_node.state.get_sort_actions()
             if pop_node:
                 # logger.debug(
                 #     f"c: {cur_node.state.state},{cur_node.alpha} s: {pop_node.state.state},{pop_node.ab_value}"
                 # )
-                if cur_node.alpha < -pop_node.ab_value:
-                    cur_node.alpha = cur_node.ab_value = -pop_node.ab_value
-                    if cur_node.depth == 0:
-                        best_action = actions[cur_node.child_index - 1]
-                if cur_node.alpha >= cur_node.bate:
+                reward = -pop_node.ab_value
+                if reward >= cur_node.bate:
                     # cur_node.child_index = len(actions)
+                    self.debug(stacks + [pop_node], f"r:{reward},b:{cur_node.bate}")
+                    cur_node.ab_value = cur_node.alpha = cur_node.bate
                     pop_node = stacks.pop()
+                    # cur_node.ab_value = -pop_node.ab_value
                     continue
+                if reward > cur_node.alpha:
+                    self.debug(stacks + [pop_node], f"r:{reward},a:{cur_node.alpha}")
+                    cur_node.ab_value = cur_node.alpha = reward
+                    if cur_node.depth == 0:
+                        best_action = sort_actions[cur_node.child_index - 1]
                 if cur_node.depth == 0:
                     pop_node = None  # 根节点每次对比完 需要找新节点
-            if cur_node.child_index >= len(actions):
+
+            if cur_node.child_index >= len(sort_actions):
                 pop_node = stacks.pop()
                 continue
+            cur_action = sort_actions[cur_node.child_index]
             next_node = AbState(
-                actions[cur_node.child_index].get_dst(),
+                cur_action.get_dst(),
+                cur_action,
                 cur_node.depth + 1,
                 -cur_node.bate,
                 -cur_node.alpha,

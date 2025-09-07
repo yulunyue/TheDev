@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger, Module
-from common.algo.export import random_seed, ALgoManage, AbDev
-from common.third_service.export import CodingGame
-from app.yly.envs.cg.cf4.export import F4State, F4Action, CgMuiltCf4
+from common.algo.export import random_seed, ALgoManage, AbDev, PM, Algo
+from common.third_service.export import CodingGame, uu
+from app.yly.envs.cg.cf4.export import F4State, F4Action, CgMuiltCf4, C
 
 
 from typing import List
@@ -10,9 +10,10 @@ from typing import List
 class C4Test(TestBase):
     def prepare(self, args=None):
         self.c = CodingGame(CgMuiltCf4.name)
-        self.ab1 = AbDev("ab1").load(1)
-        self.init_satte = F4State.new_state()
-        self.al = ALgoManage().set_state(self.init_satte)
+        self.init_state = F4State.new(C.init_masks[1])
+        self.al = (
+            ALgoManage().set_state(self.init_state).set_record_dir(uu(CgMuiltCf4.name))
+        )
 
     def cg_play(self):
         Module().compile_one(CgMuiltCf4.main_py())
@@ -22,22 +23,32 @@ class C4Test(TestBase):
         self.cg_replay()
 
     def cg_replay(self):
-        ALgoManage(CgMuiltCf4.name).set_state(F4State.new_state()).actor([Pm.ab1])
-
-    def dev(self):
-        s = F4State.new_state()
-        a = s.get_action(0).dst.get_action(0)
-        logger.info(a.dst)
+        self.c.replay(self.init_state, PM.am(5))
 
     def dev1(self):
-        s = F4State.new_state(17740539234841)
-        logger.info(s)
+        self.al.set_players([PM.am(1), PM.am(4)]).fight()
+        logger.debug(self.al.show())
 
     def dev2(self):
-        self.al.set_players([self.ab1, self.ab1]).fight()
+        self.al.set_players(PM.ad5()).fight()
+        logger.debug(self.al.show())
+
+    def dev3(self):
+        s = self.init_state.get_action(0).get_dst()
+        s = s.get_action(0).get_dst()
+        logger.debug(s.show())
 
     def debug(self):
-        pass
+        self.test_algo()
+
+    def run_algo(self, algo: Algo):
+        for k, v in C.CASES.items():
+            s = F4State.new(k)
+            a = algo.search(s)
+            self.expect(a.action, v, s.show())
+
+    def test_algo(self):
+        self.run_algo(PM.am(4))
 
 
 if __name__ == "__main__":

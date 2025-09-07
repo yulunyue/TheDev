@@ -13,7 +13,7 @@ TEST_FN_PREFIX = "test_"
 class TestBase:
     TEST_EMABLE = True
 
-    def __init__(self, raise_err=True) -> None:
+    def __init__(self, raise_err=False) -> None:
         self.prepare()
         self.raise_err = raise_err
 

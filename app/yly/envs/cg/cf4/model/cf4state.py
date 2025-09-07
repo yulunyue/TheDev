@@ -11,47 +11,36 @@ class F4State(State):
     def __init__(self, state):
         self.board, self.shape, player_id = C.mask_decode(state)
         self.g = Grid.new(self.shape)
-        super().__init__(state, player_id=player_id, depth=0)
+        self.done, self.actions_state = self.g.set_board(self.board, player_id)
 
-    @classmethod
-    def new_state(cls, state=None):
-        if state is None:
-            state = C.init_masks[C.GRID_ENV]
-        if state not in F4State.STATE_STORE:
-            F4State.STATE_STORE[state] = F4State(state).load()
-        return F4State.STATE_STORE[state]
+        self.msgs = []
+        if self.done == 0:
+            self.reward = 1
+        elif self.done == 1:
+            self.reward = -1
+        else:
+            self.calc_score(self.g.line_ct)
+        super().__init__(state, player_id=player_id)
 
-    def load(self):
-        self.g.set_board(self.board)
-        self.set_done(self.g.done)
-        self.set_data(line_ct=dict(self.g.line_ct))
-        return self
+    def calc_score(self, ct: dict):
+        self.reward = 0
+        for k, v in ct.items():
+            if v <= 0:
+                continue
+            if k[0] and k[1]:
+                continue
+            self.msgs.append(f"k{k[0]}{k[1]}: {v}")
 
-    def get_done(self):
-        self.load()
-        return self.done
-
-    def get_player_actions(self, player_id) -> Dict[str, F4Action]:
+    def make_actions(self, *args, **kw) -> Dict[str, F4Action]:
         actions = dict()
-        if not self.get_done():
-            action_array = self.g.get_actions(player_id)
-            for a in action_array:
-                actions[a["action"]] = F4Action(
-                    self, a["action"], F4State.new_state(a["mask"])
-                )
-            if not action_array:
-                self.set_done(2)
+        for k, v in self.actions_state.items():
+            actions[k] = F4Action(self, k, F4State.new(v))
+
         return actions
 
-    def get_actions(self, **kw):
-        if self.actions is not None:
-            return self.actions
-        self.actions = self.get_player_actions(self.player_id)
-        return self.actions
-
-    def get_reward(self, **kw):
-        return 0
-
     def to_str(self):
-        self.load()
-        return self.g.to_str()
+        self.g.set_board(self.board, self.player_id)
+        return self.g.to_str() + "\n" + "\n".join(self.msgs)
+
+    def get_action(self, actions):
+        return super().get_action(int(actions))

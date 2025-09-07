@@ -28,11 +28,3 @@ class Column:
                 self.pts[i].set_value(2)
             state = state >> 1
         return self
-
-    def put(self, player_id):
-        return C.mask_encode(
-            self.p.board,
-            self.p.shape,
-            self.idx * self.height + self.top,
-            player_id,
-        )

@@ -1,46 +1,21 @@
 from common.algo.search.alphabate_search import AlphaBateSearch
-from typing import List
-import json
-import sys
+from common.util.export import List, Dict
 from common.mock import MockCg
+from .model.constant import C
+from .model.cf4state import F4State
 
 
 class CgMuiltCf4(MockCg):
     name = "cf4"
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
-    agentsIds = [-1, 4820019]
-
-    def __init__(self):
-        C.load(7, 9)
-        self.init_state = F4State.new_state(C.INIT_MASK)
-
-    def get_player(self, name=""):
-        if name == "ab4":
-            return AlphaBateSearch().load(max_depth=4).reset()
-        return KagleAgent().reset()
-
-    def replay(self, name="play"):
-        path = f"data/cg/cf4/{name}.json"
-        player = self.get_player()
-        state = self.init_state
-        for frame in json.loads(open(path, "r").read())["frames"][1:]:
-            if not frame["stdout"]:
-                break
-            if frame["stdout"][0] == "-":
-                continue
-            player.search(state)
-            logger.info(state)
-            a = int(frame["stdout"][:1])
-            logger.info(a)
-            action = state.get_action(a)
-            state = action.dst
+    agentsIds = [4791004, -1]
 
     def run(self, **kw):
-        player = self.get_player()
-        my_id, opp_id = [int(i) for i in self.input().split()]
+        player = AlphaBateSearch().load(4, search_type=AlphaBateSearch.AB_MUCH)
+        my_id, opp_id = self.ii()
+        state = F4State.new(C.init_masks[1])
         # game loop
-        state = self.init_state
         while True:
             TRUN_INDEX = int(
                 self.input()
@@ -61,18 +36,14 @@ class CgMuiltCf4(MockCg):
                 self.input()
             )  # opponent's previous chosen column index (will be -1 for first player in the first turn)
 
-            if 0 <= opp_previous_action < C.WIDTH:
+            if 0 <= opp_previous_action < C.SHAPES[1][0]:
                 state = state.get_action(opp_previous_action).dst
             action = player.search(state)
             # action = state.get_action(opp_previous_action)
-            self.debug(
-                opp_previous_action=opp_previous_action,
-                action=action.action,
-                num_valid_actions=num_valid_actions,
-            )
+            self.log(state=state.state)
             print(action.action)
             state = action.dst
 
 
 if __name__ == "__main__":
-    Solution().run()
+    CgMuiltCf4().run()

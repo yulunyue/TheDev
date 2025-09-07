@@ -23,6 +23,19 @@ class PM:
     def am(n):
         return AbDev(f"am{n}").load(n, search_type=AbDev.AB_MUCH)
 
+    @staticmethod
+    def ad(n):
+        return AbDev(f"ad{n}").load(n, search_type=AbDev.AB_TYPE)
+
+    def ab5():
+        return [PM.ab(i + 1) for i in range(5)]
+
+    def am5():
+        return [PM.am(i + 1) for i in range(5)]
+
+    def ad5():
+        return [PM.ad(i + 1) for i in range(5)]
+
 
 class AlgoInfo(TableModel):
 
@@ -160,7 +173,8 @@ class ALgoManage:
         for p in players:
             p.reset()
         self.rewards = [[0] * len(players)]
-        while True:
+        while num != 0:
+            num -= 1
             if s.get_done():
                 self.record(players, None, player_idx, s)
                 break

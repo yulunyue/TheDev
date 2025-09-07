@@ -23,10 +23,12 @@ DEFAULT_FMT = "".join(
     ]
 )
 
+DEBUG_FMT = "%(message)s"
+
 
 class Logger(logging.Logger):
 
-    def __init__(self, name, fmt=None, mode="w") -> None:
+    def __init__(self, name, fmt, mode="w") -> None:
         super().__init__(name)
         self.cache_msgs = []
         self.cache_enable = False
@@ -43,7 +45,7 @@ class Logger(logging.Logger):
                 encoding="utf-8",
             ),
             logging.DEBUG,
-            fmt=fmt,
+            fmt=DEBUG_FMT,
         )
 
     def enable_cache(self):
@@ -78,12 +80,6 @@ class Logger(logging.Logger):
             stacklevel=stacklevel + 1,
             extra=extra,
         )
-
-    def draw_line(self, name, data):
-        from common.tool.draw import Draw
-
-        save_path = f"{LOG_DIR}/line/{self.name}_{name}.svg"
-        Draw().draw_line(data).save(save_path)
 
     def add_hander(self, h: logging.Handler, level, fmt=None):
         if fmt is None:

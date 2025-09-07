@@ -1,7 +1,7 @@
 from typing import List
 
 
-def encode_data(array, pos):
+def encode_data(array, pos) -> int:
     ans = array[0]
     for i in range(len(pos)):
         ans = (ans << pos[i]) + array[i + 1]
