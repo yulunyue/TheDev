@@ -228,13 +228,11 @@ class State:
             actions = s.get_sort_actions()
             if s.get_done() is not None or depth == max_depth or not actions:
                 return
-            if DONE_S not in s.data:  # dfs 里遇到必胜或者必输会跳过
-                return
-            if s.data[DONE_S] != 0 and s.data[DONE_S] != 1:
-                return
-            ret[action] = s
             for a in actions:
                 dst = a.get_dst()
+                if dst.data.get(DONE_S) != s.data[DONE_S]:
+                    continue
+                ret[action + str(a.action)] = dst
                 dfs1(dst, depth + 1, action + str(a.action))
 
         dfs(self, 0)
