@@ -204,7 +204,7 @@ class State:
         return ret, end_states
 
     def dfs(self, max_depth=-1):
-        ret: Dict[str, State] = dict()
+
         DONE_S = "done"
 
         def dfs(s: State, depth):
@@ -224,20 +224,20 @@ class State:
                 return s.set_value(DONE_S, None)
             return s.set_value(DONE_S, -1)
 
-        def dfs1(s: State, depth, action):
+        def dfs1(s: State, depth, stacks):
             actions = s.get_sort_actions()
-            if s.get_done() is not None or depth == max_depth or not actions:
+            if depth == max_depth or not actions:
+                return
+            if s.get_done() is not None:
                 return
             for a in actions:
                 dst = a.get_dst()
                 if dst.data.get(DONE_S) != s.data[DONE_S]:
                     continue
-                ret[action + str(a.action)] = dst
-                dfs1(dst, depth + 1, action + str(a.action))
+                dfs1(dst, depth + 1, stacks + [str(a.action)])
 
         dfs(self, 0)
-        dfs1(self, 0, "")
-        return ret
+        dfs1(self, 0, [])
 
     def get_reward(self, actions: List[Action] = None, params: Params = None) -> int:
         """
@@ -281,18 +281,6 @@ class State:
         if reward > 0:
             return 0
         return 1
-
-    p_sum = None
-
-    def get_p_sum(self):
-        if self.p_sum is not None:
-            return self.p_sum
-        self.p_sum = 0
-        for a in self.get_actions().values():
-            if a.p is None:
-                a.p = 1
-            self.p_sum += a.p
-        return self.p_sum
 
     def get_self_reward(self, **kw):
         r = self.get_reward()

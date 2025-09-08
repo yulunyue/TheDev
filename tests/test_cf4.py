@@ -55,9 +55,8 @@ class C4Test(TestBase):
 
     def dev5(self):
         s = F4State.new(CASES.CASE2)
-        logger.debug(s.show())
-        for a, v in s.dfs(4).items():
-            logger.debug(f"actions: {a}\n{v.show()}\n")
+        s.dfs(4)
+
         # PM.am(4).search(s)
 
     def test_algo(self):
