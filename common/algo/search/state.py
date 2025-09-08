@@ -183,37 +183,63 @@ class State:
     def to_str(self):
         return ""
 
-    def bfs(self) -> Dict[str, "State"]:
-        ret = {self.state: self}
+    def bfs(self, max_depth=-2) -> Dict[str, "State"]:
+        ret = {self.state: [[], self]}
+        end_states = dict()
         q = [self]
-        while q:
+        while q and max_depth != -1:
             t = q
             q = []
             for s in t:
+                actions = ret[s.state][0]
                 for a in s.get_actions().values():
                     d = a.get_dst()
                     if d.state in ret:
                         continue
-                    ret[d.state] = d
+                    ret[d.state] = [actions + [str(a.action)], d]
+                    if d.get_done() is not None:
+                        end_states[d.state] = ret[d.state]
                     q.append(d)
-        return ret
+            max_depth -= 1
+        return ret, end_states
 
-    def dump_tree(self, max_depth=-1):
-        ret = []
+    def dfs(self, max_depth=-1):
+        ret: Dict[str, State] = dict()
+        DONE_S = "done"
 
-        def dfs(s: State, depth, stacks):
-            if s.get_done() or depth == max_depth:
-                return s.get_done()
-            actions = list(s.get_actions().values())
+        def dfs(s: State, depth):
+            actions = s.get_sort_actions()
+            if s.get_done() is not None or depth == max_depth or not actions:
+                return s.set_value(DONE_S, s.get_done())
+            ct = defaultdict(int)
             for a in actions:
-                done = dfs(a.dst, depth + 1, stacks + [a])
-                ret.append(
-                    f'{"  "*depth}{a.action}: ar={a.get_reward()}, sr={a.get_dst().get_reward()} d={done} mask:{a.get_dst().state}'
-                )
+                dst = a.get_dst()
+                done = dfs(dst, depth + 1)
+                if done == s.player_id:
+                    return s.set_value(DONE_S, done)
+                ct[done] += 1
+            if ct[1 - s.player_id] == len(actions):
+                return s.set_value(DONE_S, 1 - s.player_id)
+            if ct[None]:
+                return s.set_value(DONE_S, None)
+            return s.set_value(DONE_S, -1)
 
-        dfs(self, 0, [])
-        ret.reverse()
-        return "\n" + "\n".join(ret)
+        def dfs1(s: State, depth, action):
+            actions = s.get_sort_actions()
+            if s.get_done() is not None or depth == max_depth or not actions:
+                return
+            if DONE_S not in s.data:  # dfs 里遇到必胜或者必输会跳过
+                return
+            if s.data[DONE_S] != 0 and s.data[DONE_S] != 1:
+                return
+            ret[action] = s
+            for a in actions:
+                dst = a.get_dst()
+                dfs1(dst, depth + 1, action + str(a.action))
+
+        dfs(self, 0)
+        dfs1(self, 0, "")
+        return ret
 
     def get_reward(self, actions: List[Action] = None, params: Params = None) -> int:
         """
@@ -232,6 +258,10 @@ class State:
     def set_data(self, **kw):
         self.data.update(kw)
         return self
+
+    def set_value(self, k, v):
+        self.data[k] = v
+        return self.data[k]
 
     def show(self):
         datas = [

@@ -108,7 +108,7 @@ class CodingGame(Api):
                 f"----[turn:{i}, r:{a.action}, e:{b.action}, sm_{a.action==b.action}]----"
             )
             s = a.get_dst()
-            if a.get_reward() or a.action != b.action:
+            if a.get_reward() or a.action != b.action or 1:
                 self.log(s.show())
         self.log("-----------finalstate-------------")
         self.log(s.show())

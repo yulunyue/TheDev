@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger, Module
 from common.algo.export import random_seed, ALgoManage, AbDev, PM, Algo
 from common.third_service.export import CodingGame, uu
-from app.yly.envs.cg.cf4.export import F4State, F4Action, CgMuiltCf4, C
+from app.yly.envs.cg.cf4.export import F4State, F4Action, CgMuiltCf4, C, CASES
 
 
 from typing import List
@@ -23,7 +23,7 @@ class C4Test(TestBase):
         self.cg_replay()
 
     def cg_replay(self):
-        self.c.replay(self.init_state, PM.am(5))
+        self.c.replay(self.init_state, PM.am(4))
 
     def dev1(self):
         self.al.set_players([PM.am(1), PM.am(4)]).fight()
@@ -39,13 +39,26 @@ class C4Test(TestBase):
         logger.debug(s.show())
 
     def debug(self):
-        self.test_algo()
+        self.dev5()
 
     def run_algo(self, algo: Algo):
         for k, v in C.CASES.items():
             s = F4State.new(k)
             a = algo.search(s)
             self.expect(a.action, v, s.show())
+
+    def dev4(self):
+        s = F4State.new(CASES.CASE1)
+        a = PM.am(4).search(s)
+        b = PM.ad(4).search(s)
+        logger.map(a=a.action, b=b.action)
+
+    def dev5(self):
+        s = F4State.new(CASES.CASE2)
+        logger.debug(s.show())
+        for a, v in s.dfs(4).items():
+            logger.debug(f"actions: {a}\n{v.show()}\n")
+        # PM.am(4).search(s)
 
     def test_algo(self):
         self.run_algo(PM.am(4))

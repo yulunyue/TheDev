@@ -91,6 +91,9 @@ class Algo:
         self._log.write(f"{msg}\n")
         self._log.flush()
 
+    def debug(self, *args, **kw):
+        pass
+
 
 class RandomAlgo(Algo):
     def search_main(self, s: State, **kw):

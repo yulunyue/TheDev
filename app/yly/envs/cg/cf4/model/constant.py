@@ -1,12 +1,17 @@
 from common.algo.base.bin_util import decode_data, encode_data, set_mask
 
 
+class CASES:
+    CASE1 = 74076337003370644495
+    CASE2 = 74076350232138357855
+    ALL = {CASE1: 3}
+
+
 class Constant:
     SHAPES = [[7, 7], [8, 9]]
     POS_MASK = [1, 1]
     DR = [[0, 1], [1, 0], [1, -1], [1, 1]]
     IN_ROW = 4
-    CASES = {74076337003370644495: 3}
 
     def __init__(self):
         self.init_masks = []
