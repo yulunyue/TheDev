@@ -1,11 +1,17 @@
 from common.algo.base.bin_util import decode_data, encode_data, set_mask
+from common.util.export import math
 
 
-class CASES:
+class Cases:
     CASE1 = 74076337003370644495
     CASE2 = 74076350232138357855
     CASE3 = 74076350232138357982
-    ALL = {CASE1: 3}
+    CASE4 = 74077462983057369838
+    CASE5 = 74076337003639079951
+    ALL = {CASE4: [4, 7, 4, 1]}
+
+
+CASES = Cases()
 
 
 class Constant:
@@ -47,6 +53,12 @@ class Constant:
     def mask_encode(self, board, shape, low, player_id):
         boare = set_mask(board, low, low + 2, player_id + 2)
         return encode_data([boare, shape, 1 - player_id], self.POS_MASK)
+
+    def pos_score(self, y, x):
+        h, w = self.SHAPES[1]
+        yc, xc = abs(h / 2 - y), abs(w / 2 - x)
+        c = math.sqrt(yc * yc + xc * xc)
+        return c * 0.0000002
 
 
 C = Constant()

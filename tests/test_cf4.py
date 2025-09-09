@@ -46,9 +46,7 @@ class C4Test(TestBase):
 
     def dev4(self):
         s = F4State.new(CASES.CASE1)
-        a = PM.am(4).search(s)
-        b = PM.ad(4).search(s)
-        logger.map(a=a.action, b=b.action)
+        PM.am(4).search(s)
 
     def dev5(self):
         s = F4State.new(CASES.CASE2)
@@ -59,8 +57,12 @@ class C4Test(TestBase):
         s = F4State.new(CASES.CASE3)
         PM.am(4).search(s)
 
+    def dev7(self):
+        s = F4State.new(CASES.CASE5)
+        PM.ad(4).search(s)
+
     def debug(self):
-        self.dev5()
+        self.dev7()
 
 
 if __name__ == "__main__":

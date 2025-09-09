@@ -18,11 +18,6 @@ class AbState:
         a = self.action.action if self.action else "?"
         return f"idx:{self.child_index}, a:{a}, d:{self.depth}"
 
-    def set_best_action(self, a: Action, eq_flag, reward):
-        if not eq_flag or self.state.best_action is None:
-            self.state.set_best_action(a)
-            return
-
 
 class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
@@ -32,6 +27,9 @@ class AlphaBateSearch(Algo):
         self.max_depth = max_depth
         self.search_type = search_type
         return super().load(**kw)
+
+    def set_state_best_action(self, s: State, a: Action, actions: List[Action]):
+        s.best_action = a
 
     def search_ab(
         self,
@@ -45,13 +43,13 @@ class AlphaBateSearch(Algo):
     ) -> None:
 
         if depth == self.max_depth or state.get_done() is not None:
-            return -self.get_depth_reward(state), depth
+            return -self.get_depth_reward(state, depth)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
-            return -self.get_depth_reward(state), depth
-        best_action: Action = None
+            return -self.get_depth_reward(state, depth)
+        state.best_action = None
         for a in mvs:
-            reward, a.depth = self.search_ab(
+            reward = -self.search_ab(
                 a.get_dst(),
                 actions + [a],
                 depth=depth + 1,
@@ -59,51 +57,33 @@ class AlphaBateSearch(Algo):
                 bate=-alpha,
                 player_id=player_id,
             )
-            reward = -reward
             # self.debug("ab", actions + [a], f"r:{reward}")
             if reward >= bate:
                 # self.debug(actions + [a], f"r:{reward},b:{bate}")
                 alpha = bate
-                best_action = a
+                self.set_state_best_action(state, a, actions)
+
                 break
-            elif reward == bate:
-                alpha = bate
-                if reward <= 0:
-                    if best_action.depth < a.depth:
-                        best_action = a
-                else:
-                    if best_action.depth > a.depth:
-                        best_action = a
-                break
-            elif reward > alpha or best_action is None:
+            elif reward > alpha:
                 # self.debug(actions + [a], f"r:{reward},b:{alpha}")
-                best_action = a
+                self.set_state_best_action(state, a, actions)
                 alpha = reward
-            elif reward == alpha:
-                alpha = reward
-                if reward <= 0:
-                    if best_action.depth < a.depth:
-                        best_action = a
-                else:
-                    if best_action.depth > a.depth:
-                        best_action = a
+        return alpha
 
-        state.set_best_action(best_action)
-        return alpha, best_action.depth
-
-    def get_depth_reward(
-        self, s: State, depth: int = None, actions: List[Action] = None, **kw
-    ):
-        return s.get_self_reward(depth=depth, actions=actions, params=self.params)
+    def get_depth_reward(self, s: State, depth, actions: List[Action] = None, **kw):
+        r = s.get_self_reward(depth=depth, actions=actions, params=self.params)
+        if r > 0:
+            return r - depth * 0.0000001
+        return r + depth * 0.0000001
 
     def search_dfs(
         self, state: State, actions: List[Action], depth=0, player_id=None, **kw
     ):
         if depth == self.max_depth or state.get_done() is not None:
-            return -self.get_depth_reward(state)
+            return -self.get_depth_reward(state, depth)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
-            return -self.get_depth_reward(state)
+            return -self.get_depth_reward(state, depth)
         best_reward = -inf
         for a in mvs:
             reward = -self.search_dfs(
@@ -126,7 +106,9 @@ class AlphaBateSearch(Algo):
                 cur_node.state.get_done() is not None
                 or cur_node.depth == self.max_depth
             ):
-                cur_node.ab_value = -self.get_depth_reward(cur_node.state)
+                cur_node.ab_value = -self.get_depth_reward(
+                    cur_node.state, cur_node.depth
+                )
                 pop_node = stacks.pop()
                 max_depth = cur_node.depth
                 continue
@@ -145,12 +127,12 @@ class AlphaBateSearch(Algo):
                     #     sort_actions[cur_node.child_index - 1]
                     # )
                     pop_node = stacks.pop()
-                    cur_node.set_best_action(sa, reward == cur_node.bate, reward)
+                    cur_node.state.best_action = sa
                     # cur_node.ab_value = -pop_node.ab_value
                     continue
-                if reward >= cur_node.alpha:
+                if reward > cur_node.alpha:
                     # self.debug(stacks + [pop_node], f"r:{reward},a:{cur_node.alpha}")
-                    cur_node.set_best_action(sa, reward == cur_node.alpha, reward)
+                    cur_node.state.best_action = sa
                     cur_node.ab_value = cur_node.alpha = reward
 
                 # if cur_node.depth == 0:
@@ -180,15 +162,25 @@ class AlphaBateSearch(Algo):
 
 
 class AbDev(AlphaBateSearch):
-    def get_depth_reward(self, s, **kw):
+    def get_depth_reward(self, s, depth, **kw):
         self.state_num += 1
-        return super().get_depth_reward(s, **kw)
+        return super().get_depth_reward(s, depth, **kw)
 
     def search(self, state: State):
         self.state_num = 0
         ret = super().search(state)
         self.print_best_actions(state)
         return ret
+
+    def set_state_best_action(self, s: State, a: Action, actions: List[Action]):
+        s.best_action = a
+        ac = actions[:]
+        while a:
+            ac.append(a)
+            dst = a.get_dst()
+            a = dst.best_action
+        aa = ",".join([str(v.action) for v in ac])
+        get_log("ab").debug(f"aa:{aa}\n{dst.show()}")
 
     # def debug(self, name, actions: List[Action], msg=""):
     #     if actions and isinstance(actions[0], AbState):
