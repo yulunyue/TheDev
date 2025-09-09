@@ -12,7 +12,7 @@ class CgMuiltCf4(MockCg):
     agentsIds = [4791004, -1]
 
     def run(self, **kw):
-        player = AlphaBateSearch().load(4, search_type=AlphaBateSearch.AB_MUCH)
+        player = AlphaBateSearch().load(4, search_type=AlphaBateSearch.AB_TYPE)
         my_id, opp_id = self.ii()
         state = F4State.new(C.init_masks[1])
         # game loop

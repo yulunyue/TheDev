@@ -1,13 +1,19 @@
-from common.util.export import TestBase, logger, Module
+from common.util.export import TestBase, logger, Module, List
 from common.algo.export import random_seed, ALgoManage, AbDev, PM, Algo
 from common.third_service.export import CodingGame, uu
 from app.yly.envs.cg.cf4.export import F4State, F4Action, CgMuiltCf4, C, CASES
 
 
-from typing import List
-
-
 class C4Test(TestBase):
+    def run_algo(self, algo: Algo):
+        for k, v in CASES.ALL.items():
+            s = F4State.new(k)
+            a = algo.search(s)
+            self.expect(a.action, v, s.show())
+
+    def test_algo(self):
+        self.run_algo(PM.am(4))
+
     def prepare(self, args=None):
         self.c = CodingGame(CgMuiltCf4.name)
         self.init_state = F4State.new(C.init_masks[1])
@@ -38,15 +44,6 @@ class C4Test(TestBase):
         s = s.get_action(0).get_dst()
         logger.debug(s.show())
 
-    def debug(self):
-        self.dev5()
-
-    def run_algo(self, algo: Algo):
-        for k, v in C.CASES.items():
-            s = F4State.new(k)
-            a = algo.search(s)
-            self.expect(a.action, v, s.show())
-
     def dev4(self):
         s = F4State.new(CASES.CASE1)
         a = PM.am(4).search(s)
@@ -55,12 +52,15 @@ class C4Test(TestBase):
 
     def dev5(self):
         s = F4State.new(CASES.CASE2)
-        s.dfs(4)
+        PM.ad(4).search(s)
+        # s.dfs(4)
 
-        # PM.am(4).search(s)
+    def dev6(self):
+        s = F4State.new(CASES.CASE3)
+        PM.am(4).search(s)
 
-    def test_algo(self):
-        self.run_algo(PM.am(4))
+    def debug(self):
+        self.dev5()
 
 
 if __name__ == "__main__":

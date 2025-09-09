@@ -11,6 +11,7 @@ class Action:
     check_info = None
     reward = 0
     regret = 0
+    depth = 0
 
     def __init__(self, src, action, dst=None):
         self.action = action
@@ -158,8 +159,10 @@ class State:
     def get_best_actions(self) -> List["Action"]:
         p = self
         ret: List[Action] = []
-        while not p.get_done():
+        while p and not p.get_done():
             a = p.get_best_action()
+            if not a:
+                break
             ret.append(a)
             p = a.get_dst()
         return ret

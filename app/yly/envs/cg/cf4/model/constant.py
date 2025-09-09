@@ -4,6 +4,7 @@ from common.algo.base.bin_util import decode_data, encode_data, set_mask
 class CASES:
     CASE1 = 74076337003370644495
     CASE2 = 74076350232138357855
+    CASE3 = 74076350232138357982
     ALL = {CASE1: 3}
 
 

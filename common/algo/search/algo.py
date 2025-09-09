@@ -1,14 +1,14 @@
-import numpy as np
+from common.third_util.np_util import np
 import time
 import random
 
-np.set_printoptions(suppress=True, precision=4)
+
 from typing import List, Dict
 from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
-from common.util.export import File
+from common.util.export import File, logger, get_log
 
 
 def random_seed(v=1):
@@ -93,6 +93,14 @@ class Algo:
 
     def debug(self, *args, **kw):
         pass
+
+    def print_best_actions(self, state: State):
+        actions = state.get_best_actions()
+        s1 = ",".join([str(a.action) for a in actions])
+        get_log("algo").debug(f"[{state.show()}")
+        get_log("algo").debug(f"{state.state}->{s1}")
+        if actions and actions[-1].get_dst():
+            get_log("algo").debug(f"{actions[-1].get_dst().show()}]")
 
 
 class RandomAlgo(Algo):

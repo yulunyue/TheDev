@@ -4,7 +4,7 @@ import functools
 import heapq
 from typing import List, Dict
 import math
-from collections import defaultdict
+from collections import defaultdict, deque
 import os
 import random
 from itertools import permutations
@@ -80,4 +80,3 @@ class MockCg(MockCf):
     @classmethod
     def main_py(cls):
         return f"app/yly/envs/cg/{cls.name}/cg.py"
-
