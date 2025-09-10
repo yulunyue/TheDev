@@ -22,11 +22,22 @@ class Constant:
 
     def __init__(self):
         self.init_masks = []
+        self.default_score = self.get_score()
         for j, (h, w) in enumerate(self.SHAPES):
             tmp = 0
             for i in range(w):
                 tmp += 1 << (i * h)
             self.init_masks.append((tmp << 2) + j * 2)
+
+    def get_score(self):
+        return {
+            (0, 2): -0.002,
+            (0, 3): -0.05,
+            (0, 4): -1,
+            (2, 0): 0.002,
+            (3, 0): 0.05,
+            (4, 0): 1,
+        }
 
     def any_to_mask(self, s, shape):
         if isinstance(s, str):

@@ -1,6 +1,7 @@
 from common.algo.search.algo import Algo
 from common.algo.search.state import State, Action
 from common.algo.search.alphabate_search import AbDev
+from common.algo.learn.sarse.mctssearch import MctsSearchDev
 from common.util.export import (
     logger,
     File,
@@ -27,11 +28,15 @@ class PM:
     def ad(n):
         return AbDev(f"ad{n}").load(n, search_type=AbDev.AB_TYPE)
 
+    @staticmethod
+    def mc(n):
+        return MctsSearchDev(f"mc").load(num_episodes=10)
+
     def ab5():
         return [PM.ab(i + 1) for i in range(5)]
 
-    def am5():
-        return [PM.am(i + 1) for i in range(5)]
+    def ams(v=5):
+        return [PM.am(i + 1) for i in range(v)]
 
     def ad5():
         return [PM.ad(i + 1) for i in range(5)]
@@ -58,19 +63,7 @@ class AlgoInfo(TableModel):
 
     @classmethod
     def get_headers(cls):
-        return [
-            "key",
-            "rate",
-            "WIN",
-            "DRAW",
-            "MAX_TIME",
-            "ALL_TIME",
-            "SCORE",
-        ]
-
-    @property
-    def rate(self):
-        return (self.WIN + self.DRAW * 0.5) / self.all_count
+        return ["key", "WIN", "DRAW", "MAX_TIME", "ALL_TIME", "SCORE", "LOSE"]
 
     def update(self, tm, state_num, score):
         self.score.append(score)
@@ -88,7 +81,7 @@ class AlgoInfo(TableModel):
 
     @classmethod
     def sort(cls, v: "AlgoInfo"):
-        return [v.rate, v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE]
+        return [v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE, -v.LOSE]
 
 
 class FIGHT_TYPE:
@@ -154,9 +147,9 @@ class ALgoManage:
                 s += f"[{key}][DRAW]"
             elif win_idx == i:
                 self.a_r[key].update_result("WIN")
-                s += f"[{key}][WIN]"
             else:
                 self.a_r[key].update_result("LOSE")
+                s += f"[{key}][LOSE]"
         logger.debug(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
         return win_idx
 
@@ -175,7 +168,7 @@ class ALgoManage:
         self.rewards = [[0] * len(players)]
         while num != 0:
             num -= 1
-            if s.get_done():
+            if s.get_done() is not None:
                 self.record(players, None, player_idx, s)
                 break
             b = time.time()

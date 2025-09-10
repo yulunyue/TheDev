@@ -169,18 +169,18 @@ class AbDev(AlphaBateSearch):
     def search(self, state: State):
         self.state_num = 0
         ret = super().search(state)
-        self.print_best_actions(state)
+        # self.print_best_actions(state)
         return ret
 
-    def set_state_best_action(self, s: State, a: Action, actions: List[Action]):
-        s.best_action = a
-        ac = actions[:]
-        while a:
-            ac.append(a)
-            dst = a.get_dst()
-            a = dst.best_action
-        aa = ",".join([str(v.action) for v in ac])
-        get_log("ab").debug(f"aa:{aa}\n{dst.show()}")
+    # def set_state_best_action(self, s: State, a: Action, actions: List[Action]):
+    #     s.best_action = a
+    #     ac = actions[:]
+    #     while a:
+    #         ac.append(a)
+    #         dst = a.get_dst()
+    #         a = dst.best_action
+    #     aa = ",".join([str(v.action) for v in ac])
+    #     get_log("ab").debug(f"aa:{aa}\n{dst.show()}")
 
     # def debug(self, name, actions: List[Action], msg=""):
     #     if actions and isinstance(actions[0], AbState):

@@ -38,8 +38,10 @@ class Grid:
         return Grid.GIRD_MAP[shape]
 
     def line_state_change(self, ln: Line, pos_idx, player_id, f0, t0, f1, t1):
-        self.line_ct[f0, t0] -= 1
-        self.line_ct[f1, t1] += 1
+        if (f0, t0) in C.default_score:
+            self.line_ct[f0, t0] -= 1
+        if (f1, t1) in C.default_score:
+            self.line_ct[f1, t1] += 1
 
     def set_board(self, board, player_id):
 

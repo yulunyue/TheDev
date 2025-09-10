@@ -31,12 +31,12 @@ class C4Test(TestBase):
     def cg_replay(self):
         self.c.replay(self.init_state, PM.am(4))
 
-    def dev1(self):
-        self.al.set_players([PM.am(1), PM.am(4)]).fight()
+    def fight2(self):
+        self.al.set_players([PM.am(2), PM.mc(2)]).fight()
         logger.debug(self.al.show())
 
-    def dev2(self):
-        self.al.set_players(PM.ad5()).fight()
+    def fight(self):
+        self.al.set_players(PM.ams(4)).fight()
         logger.debug(self.al.show())
 
     def dev3(self):
@@ -62,7 +62,7 @@ class C4Test(TestBase):
         PM.ad(4).search(s)
 
     def debug(self):
-        self.dev7()
+        self.fight2()
 
 
 if __name__ == "__main__":

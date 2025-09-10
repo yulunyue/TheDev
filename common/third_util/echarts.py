@@ -34,7 +34,7 @@ class EChart:
         return self
 
     def get_opts(self):
-        return opts.InitOpts("100%", "660px", theme=ThemeType.LIGHT)
+        return opts.InitOpts("100%", "900px", theme=ThemeType.LIGHT)
 
     def draw_lines(self):
         self.ins = Line(self.get_opts())
