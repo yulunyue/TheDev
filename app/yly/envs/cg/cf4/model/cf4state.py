@@ -42,5 +42,8 @@ class F4State(State):
         self.g.set_board(self.board, self.player_id)
         return self.g.to_str() + "\n" + "\n".join(self.msgs)
 
+    def get_data(self):
+        return super().get_data()
+
     def get_action(self, actions):
         return super().get_action(int(actions))

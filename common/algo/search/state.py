@@ -300,6 +300,9 @@ class State:
             self.sort_actions = list(self.get_actions().values())
         return self.sort_actions
 
+    def get_data(self):
+        return dict(reward=self.reward)
+
 
 class MctsState(State):
     visite_num = 0

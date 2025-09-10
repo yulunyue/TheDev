@@ -95,6 +95,10 @@ class CodingGame(Api):
     def replay(self, state, algo: Algo):
         s: State = state
         self.log(s.show())
+        from common.third_util.echarts import EChart
+
+        e = EChart()
+        e.add_data(s.get_data())
         for i, f in enumerate(self.get_cg_frames()):
             if not f.stdout:
                 continue
@@ -108,12 +112,12 @@ class CodingGame(Api):
                 f"----[turn:{i}, r:{a.action}, e:{b.action}, sm_{a.action==b.action}]----"
             )
             s = a.get_dst()
-            if a.get_reward() or a.action != b.action or 1:
+            if s:
                 self.log(s.show())
-        self.log("-----------finalstate-------------")
-        self.log(s.show())
+                e.add_data(s.get_data())
+        e.draw_lines().save(uu(f"{self.game_name}/replay.html"))
 
     def log(self, msg):
-        f = File(uu("replay.log")).get_writer()
+        f = File(uu(f"{self.game_name}/replay.log")).get_writer()
         f.write(f"{msg}\n")
         f.flush()
