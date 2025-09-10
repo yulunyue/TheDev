@@ -72,6 +72,3 @@ export class Pre extends Div {
     }
 }
 
-export function pre() {
-    return new Pre()
-}

@@ -2,7 +2,7 @@ import { GNode, } from "../gnode"
 import { Node, Style, } from "../../../web/cls"
 import Constant from "../../../web/constant"
 import { Div } from "../../dom/div"
-import { Pre, pre } from "../../dom/label"
+import { Pre } from "../../dom/label"
 import web_dom from "../../../web/web_dom"
 
 export class Text extends GNode {
@@ -11,7 +11,7 @@ export class Text extends GNode {
     width = 0
     height = 0
     init_node(): void {
-        this.contain = pre().set_style({
+        this.contain = new Pre().set_style({
             border: "1px solid #000",
             // margin: Constant.DEFAULT_MARGIN,
             padding: Constant.DEFAULT_PADDING,

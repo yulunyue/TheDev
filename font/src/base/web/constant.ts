@@ -70,6 +70,7 @@ class Constant {
     DOM_TYPE_ENUM = "enum"
     DOM_TYPE_SEARCH = "search"
     DOM_TYPE_TABLE = "table"
+    DOM_GRID_VIEW = "grid"
     get_mock_data(s: string, param: any) {
         if (web_dom.web_host.endsWith('github.io')) {
             return this.get_ts_data(s, param)

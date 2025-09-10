@@ -4,11 +4,11 @@ import { SvgNode, svg } from "./svg/svg"
 import { button, Button } from "./dom/button"
 import { div, Div, DivFactory, Container } from "./dom/div"
 import { GNode } from "./svg/gnode"
-import { progress, Progress } from "./svg/comb/progress"
+import { Progress } from "./svg/comb/progress"
 import { tree } from "./svg/comb/tree"
-import { grid, Grid } from './svg/comb/grid'
+import { Grid } from './svg/comb/grid'
 import { Table } from "./dom/table/main"
-import { label, pre, Pre, Label } from "./dom/label"
+import { label, Pre, Label } from "./dom/label"
 import { ListUi } from "./dom/list"
 import Constant from "../../base/web/constant"
 import { Node, node, to_node, oj_to_node } from "../../base/web/cls"
@@ -33,6 +33,7 @@ DivFactory.register(Ct.DOM_TYPE_PRE, () => new Pre())
 DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())
 DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
 DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
+DivFactory.register(Ct.DOM_GRID_VIEW, () => new Grid())
 export {
     Select, Pre, FormRow as Row, TextArea, Util, web_socket, Data, Button,
     Div, div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,

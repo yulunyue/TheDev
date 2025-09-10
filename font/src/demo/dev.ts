@@ -4,7 +4,8 @@ import {
     Div, Search, Button, TextAreaRich,
     Table, Util, dialog,
     Ct, Node, to_node, Chart,
-    Svg
+    Svg,
+    Grid
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
 export class Dev extends Div {
@@ -65,8 +66,13 @@ export class Dev extends Div {
         })
         this.add_child(chart)
     }
+    test_grid() {
+        this.add_child(new Grid().set_option({
+            childs: []
+        }))
+    }
     on_mount(): void {
-        this.test_table_data()
+        this.test_grid()
     }
 
 }
