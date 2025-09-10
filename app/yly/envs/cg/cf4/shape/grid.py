@@ -47,8 +47,11 @@ class Grid:
             return self.done, self.action
         # logger.map(src_board=self.board, dst_borad=board)
         self.board = board
+        self.pos_score = [0, 0]
         for c in self.columns:
             c.set_state(board & c.mask)
+            self.pos_score[0] += c.player_pos_score[0]
+            self.pos_score[1] += c.player_pos_score[1]
             board = board >> self.height
         self.action = self.get_actions(player_id)
         self.done = None if self.action else 2
