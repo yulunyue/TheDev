@@ -1,7 +1,5 @@
-from typing import List, Dict
-import numpy as np
 import random
-from common.util.export import logger, json_dumps, defaultdict, math
+from common.util.export import logger, json_dumps, defaultdict, math, List, Dict, Tuple
 from .param import Params, Param
 
 inf = float("inf")
@@ -186,9 +184,8 @@ class State:
     def to_str(self):
         return ""
 
-    def bfs(self, max_depth=-2) -> Dict[str, "State"]:
+    def bfs(self, max_depth=-2) -> Dict[str, Tuple[List[Action], "State"]]:
         ret = {self.state: [[], self]}
-        end_states = dict()
         q = [self]
         while q and max_depth != -1:
             t = q
@@ -199,12 +196,9 @@ class State:
                     d = a.get_dst()
                     if d.state in ret:
                         continue
-                    ret[d.state] = [actions + [str(a.action)], d]
-                    if d.get_done() is not None:
-                        end_states[d.state] = ret[d.state]
-                    q.append(d)
+                    ret[d.state] = [actions + [a], d]
             max_depth -= 1
-        return ret, end_states
+        return ret
 
     def dfs(self, max_depth=-1):
 

@@ -29,7 +29,7 @@ class PolicyIteration(Base):
             max_diff = 0
             for src in states:
                 qsalst = []
-                actions = list(src.get_actions().values())
+                actions = src.get_sort_actions()
                 if not actions:
                     continue
                 pi = 1 / len(actions)
@@ -44,7 +44,7 @@ class PolicyIteration(Base):
             cnt += 1
             if max_diff < self.theta:
                 break
-        self.log_value(cnt, max_diff)
+        # self.log_value(cnt, max_diff)
         return cnt
 
     def log_value(self, cnt, max_diff):
@@ -56,9 +56,9 @@ class PolicyIteration(Base):
     def policy_improvement(self, states: List[State]):  # 策略提升
         pi = dict()
         for s in states:
-            if s.get_done():
+            actions = s.get_sort_actions()
+            if not actions:
                 continue
-            actions = list(s.get_actions().values())
             maxq = float("-inf")
             cntq = 0
             for a in actions:
@@ -73,11 +73,10 @@ class PolicyIteration(Base):
                 a.action: 1 / cntq if self.get_action_value(a) == maxq else 0
                 for a in actions
             }
-        self.log_policy(pi)
+        # self.log_policy(pi)
         return pi
 
-    def train(self, state_cls: State):
-        states = state_cls.bfs().values()
+    def train_all_states(self, states: List[State]):
         while True:
             self.policy_evaluation(states)
             pi = self.policy_improvement(states)
