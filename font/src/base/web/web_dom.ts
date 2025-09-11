@@ -88,10 +88,6 @@ class WebDom {
     xml_http_request(method: string, path: string, data: any, call_back: any) {
 
         let url = this.url(path)
-        let mock_data = Ct.get_mock_data(url, data)
-        if (mock_data) {
-            return call_back(mock_data)
-        }
         // dlg.open_loading()
         let req = new XMLHttpRequest()
         if (method == this.HTTP_GET_METHOD) {
@@ -120,7 +116,7 @@ class WebDom {
                     call_back(req.responseText)
                     return
                 }
-                let data:any = this.hander_res(JSON.parse(req.responseText))
+                let data: any = this.hander_res(JSON.parse(req.responseText))
                 if (data && data.code > 300) {
                     alert(data.code + '->' + data.title)
                 }

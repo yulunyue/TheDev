@@ -19,7 +19,7 @@ export class Grid extends SvgNode {
         this.g = this.add_child(new GNode())
     }
     draw_child() {
-        this.g.clear()
+
         for (var i = 0; i < this.option.childs.length; i += 1) {
             let op = this.option.childs[i]
             let fun = NODE_GEN[op.type] || Text
@@ -29,7 +29,7 @@ export class Grid extends SvgNode {
             this.g.add_child(el)
         }
     }
-    draw() {
+    init_data() {
         if (this.option.x) {
             this.width = this.option.x
         }
@@ -42,13 +42,35 @@ export class Grid extends SvgNode {
         if (this.option.data.w) {
             this.w = this.option.data.w
         }
-        this.cell_width = this.option.y / this.h
-        this.cell_height = this.option.x / this.w
+        this.cell_width = this.height / this.h
+        this.cell_height = this.width / this.w
         this.set_style({
-            width: this.option.x,
-            height: this.option.y
+            width: this.width,
+            height: this.height
         })
-        this.draw_child()
+    }
+    draw_bg_line() {
+        for (var i = 0; i <= this.h; i++) {
+            let datas = [
+                { x: 0, y: i * this.cell_height },
+                { x: this.w * this.cell_width, y: i * this.cell_height }
+            ]
+            console.log(datas)
+            this.g.add_child(new Line().set_d(datas))
+        }
+        for (var i = 0; i <= this.w; i++) {
+            let datas = [
+                { x: i * this.cell_width, y: 0 },
+                { x: i * this.cell_width, y: this.h * this.cell_height }
+            ]
+            this.g.add_child(new Line().set_d(datas))
+        }
+    }
+    draw() {
+        this.init_data()
+        this.g.clear()
+        this.draw_bg_line()
+        // this.draw_child()
     }
 
     render_option(): void {

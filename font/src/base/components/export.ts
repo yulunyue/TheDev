@@ -16,7 +16,8 @@ import web_dom from "../../base/web/web_dom"
 import { Line } from "./svg/line"
 import { Form } from "./dom/form/main"
 import { FormRow } from "./dom/form/row"
-import { Select, select } from "./dom/select";
+import { Select } from "./dom/select";
+import Mock from "../../model/mock"
 import Util from "../tool/util"
 import Data from "../tool/data"
 import dialog from "./dom/dialog"
@@ -39,5 +40,5 @@ export {
     Div, div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, button, input, tree, Form, node,
     to_node, Grid, ListUi, Table, Ct, search, Search, TextAreaRich, label,
-    Container, Label, oj_to_node, Chart, Axies
+    Container, Label, oj_to_node, Chart, Axies, Mock
 }

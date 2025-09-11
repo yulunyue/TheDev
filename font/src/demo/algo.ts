@@ -90,7 +90,6 @@ class Algo extends Div {
         }
     }
     test() {
-        this.set_option(new Node().set_childs([Constant.MOCK_NODE_3_3.set_type("tree")]))
     }
 
     get_case() {

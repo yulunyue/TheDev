@@ -13,9 +13,9 @@ export class Line extends GNode {
 
     init_style(): void {
         this.set_style({
-            strokeWidth: "2",
-            stroke: '#000',
-            fill: "#fff"
+            strokeWidth: "0.8",
+            stroke: '#888',
+            fill: "#888"
         })
     }
     set_d(pts: string | any[]) {
