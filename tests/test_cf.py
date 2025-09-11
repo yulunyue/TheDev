@@ -6,6 +6,7 @@ from common.algo.export import random_seed, ValueIteration
 class CfTest(TestBase):
     def prepare(self, args=None):
         self.pf = PiFunc().load()
+        self.vf = VFunc().load()
         self.init_state = CfState.new(C.INIT_SATTE)
         self.states = [v[1] for v in self.init_state.bfs().values()]
         return super().prepare(args)
@@ -14,7 +15,7 @@ class CfTest(TestBase):
         self.pf.train_all_states(self.states)
 
     def run_value(self):
-        VFunc().load().train(CfState)
+        self.vf.train(CfState)
 
     def debug(self):
         self.run_value()

@@ -47,12 +47,6 @@ class PolicyIteration(Base):
         # self.log_value(cnt, max_diff)
         return cnt
 
-    def log_value(self, cnt, max_diff):
-        self.log(f"cnt:{cnt},value:{dict(self.v)}")
-
-    def log_policy(self, pi):
-        self.log(f"pi:{dict(pi)}")
-
     def policy_improvement(self, states: List[State]):  # 策略提升
         pi = dict()
         for s in states:
