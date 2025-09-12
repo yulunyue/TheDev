@@ -21,7 +21,11 @@ export class Input extends Div {
         this.set_style({
             outline: "none",
             margin: Constant.DEFAULT_MARGIN,
-            padding: Constant.DEFAULT_PADDING
+            padding: Constant.DEFAULT_PADDING,
+            borderTop: "none",
+            borderLeft: "none",
+            borderRight: "none",
+            width: 1
         })
     }
     render_option() {
