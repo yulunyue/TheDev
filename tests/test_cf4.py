@@ -32,7 +32,7 @@ class C4Test(TestBase):
         self.c.replay(self.init_state, PM.am(4))
 
     def fight2(self):
-        self.al.set_players([PM.am(2), PM.am(3)]).fight()
+        self.al.set_players([PM.am(2), PM.am(5)]).fight()
         logger.debug(self.al.show())
 
     def fight(self):
