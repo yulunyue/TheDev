@@ -60,11 +60,12 @@ class PtTable:
         return self
 
     def load_from_matrix(self, matrix, titles=None):
-        if titles:
-            self.pr.field_names = titles
+        if titles is None:
+            titles = list(range(len(matrix[0])))
+        self.pr.field_names = titles
         for m in matrix:
             self.pr.add_row(m)
         return self
 
     def __str__(self):
-        return "\n"+str(self.pr)
+        return "\n" + str(self.pr)

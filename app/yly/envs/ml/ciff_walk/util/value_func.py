@@ -1,6 +1,8 @@
 from common.algo.export import PolicyIteration
 from ..constant import C
-from common.util.export import defaultdict
+from common.util.export import defaultdict, logger
+from common.third_util.export import PtTable
+from ..env import CfState
 
 
 class PiFunc(PolicyIteration):
@@ -8,32 +10,20 @@ class PiFunc(PolicyIteration):
         pi = defaultdict(lambda: [0.25] * 4)
         return super().load(pi, num_episodes, theta, gamma)
 
-    def log_util(self, header, util):
-        ret = [header]
+    def policy_evaluation(self, states, *args):
+        cnt = super().policy_evaluation(states, *args)
+        logger.debug(f"cnt:{cnt} states:{len(states)}")
+        p = PtTable().load_from_matrix(self.to_matrix(lambda v: "%.2f" % self.v[v]))
+        logger.debug(p)
+
+    def to_matrix(self, util):
+        ret = []
         for i in range(C.nrow):
-            tmp = []
+            ret.append([])
             for j in range(C.ncol):
                 k = i * C.ncol + j
-                tmp.append(util(k))
-            ret.append(" ".join(tmp))
-        msg = "\n".join(ret)
-        self.log(msg)
-
-    def log_value(self, cnt, max_diff):
-        self.log_util(
-            f"----round:{cnt}----diff:{max_diff}",
-            lambda k: "%6.6s" % ("%.3f" % self.v[k]),
-        )
-
-    def log_policy(self):
-        def util(k):
-            if k not in self.pi:
-                return "oooo"
-            return "".join(
-                [C.ACS[i] if d > 0 else "o" for i, d in enumerate(self.pi[k])]
-            )
-
-        self.log_util("upgrade policy", util)
+                ret[-1].append(util(k))
+        return ret
 
 
 class VFunc(PiFunc):

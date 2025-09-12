@@ -192,11 +192,12 @@ class State:
             q = []
             for s in t:
                 actions = ret[s.state][0]
-                for a in s.get_actions().values():
+                for a in s.get_sort_actions():
                     d = a.get_dst()
                     if d.state in ret:
                         continue
                     ret[d.state] = [actions + [a], d]
+                    q.append(d)
             max_depth -= 1
         return ret
 
