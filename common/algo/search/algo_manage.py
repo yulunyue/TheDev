@@ -10,6 +10,7 @@ from common.util.export import (
     Dict,
     ThreadManage,
     progress_bar,
+    os,
 )
 from common.third_util.export import PtTable, TableModel
 import time
@@ -87,7 +88,6 @@ class AlgoInfo(TableModel):
 class FIGHT_TYPE:
     SIGNAL = "SIGNAL"
     DTURN = "DTURN"
-    MUCH_THREAD = "MUCH_THREAD"
 
 
 class ALgoManage:
@@ -97,6 +97,7 @@ class ALgoManage:
 
     def set_players(self, players: List[Algo]):
         self.players: List[Algo] = players
+        self.current_player = self.players
         self.record_model.clear()
         self.a_r: Dict[str, AlgoInfo] = {
             p.get_name(): AlgoInfo(p.get_name()) for p in players
@@ -124,20 +125,60 @@ class ALgoManage:
                         ret.append([self.players[j], self.players[i]])
         return ret
 
-    def fight(self, pk_round=1, tp=None, run_type=None):
+    def fight(self, pk_round=1, tp=None):
         players = self.get_players_turn_simple(pk_round, tp)
-        if run_type == FIGHT_TYPE.MUCH_THREAD:
-            ThreadManage().run(self.pk, players)
-        else:
-            for i, p in enumerate(players):
-                self.pk(p)
-                progress_bar(i + 1, len(players))
+        for i, p in enumerate(players):
+            self.pk(p)
+            progress_bar(i + 1, len(players))
         return self
+
+    def fight_with_control(self):
+        init_state = s = self.get_state(0, self.state).reset_env()
+        history: List[Action] = []
+        while True:
+            os.system("cls")
+            self.view(
+                [s.show()]
+                + [
+                    f"{p.get_name()} do {getattr(p.search(s),'action',None)}"
+                    for p in self.current_player
+                ]
+                + [",".join([str(a.action) for a in history])]
+            )
+            cmd, *args = input("CMD: ").split(" ")
+            if cmd == "r":
+                if not args:
+                    argsv = 1
+                else:
+                    argsv = int(args[0])
+                history = history[: max(len(history) - argsv, 0)]
+                if history:
+                    s = history[-1].get_dst()
+                else:
+                    s = init_state
+            elif cmd == "a":
+                a = s.get_action(args[0])
+                history.append(a)
+                s = a.get_dst()
+            elif cmd == "p":
+                if not args:
+                    argsv = 1
+                else:
+                    argsv = int(args[0])
+                for _ in range(argsv):
+                    if s.get_done() is not None:
+                        break
+                    a = self.current_player[len(history) % 2].search(s)
+                    history.append(a)
+                    s = a.get_dst()
+            else:
+                break
 
     def show(self):
         return str(PtTable().load_form_model(self.record_model))
 
     def pk(self, players1: List[Algo]):
+        self.current_player = players1
         win_idx, turn_idx = self.actor(players1)
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
         for i, p in enumerate(players1):
@@ -215,12 +256,21 @@ class ALgoManage:
             "",
         ]
         self.rewards[-1][player_idx] += reward
+        self.log(msgs)
 
-        file_name = "_pk_".join([v.get_name() for v in players])
-        self.file_path = f"{self.record_dir}/pk/{file_name}.log"
-        fp = File(self.file_path).get_writer()
-        fp.write("\n".join(msgs))
-        fp.flush()
+    def log(self, msgs, name="pk"):
+        file_name = "_pk_".join([v.get_name() for v in self.current_player])
+        self.file_path = f"{self.record_dir}/{name}/{file_name}.log"
+        msgs = "\n".join(msgs)
+        if name == "pk":
+            fp = File(self.file_path).get_writer()
+            fp.write(msgs)
+            fp.flush()
+        else:
+            File(self.file_path).write_file(msgs)
+
+    def view(self, msgs):
+        self.log(msgs, name="view")
 
     def train(self, players: List[Algo]):
         pass

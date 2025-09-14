@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger, Module, List
-from common.algo.export import random_seed, ALgoManage, AbDev, PM, Algo
+from common.algo.export import random_seed, ALgoManage, PM, Algo
 from common.third_service.export import CodingGame, uu
-from app.yly.envs.cg.cf4.export import F4State, F4Action, CgMuiltCf4, C, CASES
+from app.yly.envs.cg.cf4.export import F4State, CgMuiltCf4, C, CASES
 
 
 class C4Test(TestBase):
@@ -11,12 +11,10 @@ class C4Test(TestBase):
             a = algo.search(s)
             self.expect(a.action, v, s.show())
 
-    def test_algo(self):
-        self.run_algo(PM.am(4))
-
     def prepare(self, args=None):
+        C.load(1)
         self.c = CodingGame(CgMuiltCf4.name)
-        self.init_state = F4State.new(C.init_masks[1])
+        self.init_state = F4State.new()
         self.al = (
             ALgoManage().set_state(self.init_state).set_record_dir(uu(CgMuiltCf4.name))
         )
@@ -35,34 +33,30 @@ class C4Test(TestBase):
         self.al.set_players([PM.am(2), PM.am(5)]).fight()
         logger.debug(self.al.show())
 
+    def fc(self):
+        self.al.set_players([PM.am(5), PM.am(2)]).fight_with_control()
+
     def fight(self):
-        self.al.set_players(PM.ams(4)).fight()
+        self.al.set_players(PM.ams(5)).fight()
         logger.debug(self.al.show())
 
-    def dev3(self):
-        s = self.init_state.get_action(0).get_dst()
+    def run2(self):
+        s = self.init_state
+        logger.debug(s.show())
+        for i in range(3):
+            s = s.get_action(0).get_dst()
+            logger.debug(s.show())
+            s = s.get_action(1).get_dst()
+            logger.debug(s.show())
         s = s.get_action(0).get_dst()
         logger.debug(s.show())
 
-    def dev4(self):
+    def run1(self):
         s = F4State.new(CASES.CASE1)
-        PM.am(4).search(s)
-
-    def dev5(self):
-        s = F4State.new(CASES.CASE2)
-        PM.ad(4).search(s)
-        # s.dfs(4)
-
-    def dev6(self):
-        s = F4State.new(CASES.CASE3)
-        PM.am(4).search(s)
-
-    def dev7(self):
-        s = F4State.new(CASES.CASE5)
-        PM.ad(4).search(s)
+        logger.info(s.show())
 
     def debug(self):
-        self.fight2()
+        self.run1()
 
 
 if __name__ == "__main__":

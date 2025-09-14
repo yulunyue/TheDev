@@ -13,7 +13,7 @@ class Grid:
         self.height, self.width = C.SHAPES[shape]
         self.columns: List[Column] = []
         self.board = -1
-        self.line_ct = defaultdict(int)
+        self.line_cf = [[{}, {}, {}, {}, {}], [{}, {}, {}, {}, {}]]
         for i in range(self.width):
             self.columns.append(Column(self, i, self.height))
         self.load_lines()
@@ -38,10 +38,21 @@ class Grid:
         return Grid.GIRD_MAP[shape]
 
     def line_state_change(self, ln: Line, pos_idx, player_id, f0, t0, f1, t1):
-        if (f0, t0) in C.default_score:
-            self.line_ct[f0, t0] -= 1
-        if (f1, t1) in C.default_score:
-            self.line_ct[f1, t1] += 1
+        s0, s1 = f0 + t0, f1 + t1
+        if (f0 == 0 or t0 == 0) and s0 >= 2:
+            p0 = 0 if f0 else 1
+            self.line_cf[p0][s0].pop(ln.k)
+
+        if (f1 == 0 or t1 == 0) and s1 >= 2:
+            if f1:
+                p1 = 0
+                if f1 == 4:
+                    self.done = 0
+            if t1:
+                p1 = 1
+                if t1 == 4:
+                    self.done = 1
+            self.line_cf[p1][s1][ln.k] = ln
 
     def set_board(self, board, player_id):
 
@@ -49,6 +60,7 @@ class Grid:
             return self.done, self.action
         # logger.map(src_board=self.board, dst_borad=board)
         self.board = board
+        self.done = None
         self.pos_score = [0, 0]
         for c in self.columns:
             c.set_state(board & c.mask)
@@ -56,11 +68,8 @@ class Grid:
             self.pos_score[1] += c.player_pos_score[1]
             board = board >> self.height
         self.action = self.get_actions(player_id)
-        self.done = None if self.action else 2
-        if self.line_ct[4, 0]:
-            self.done = 0
-        elif self.line_ct[0, 4]:
-            self.done = 1
+        if not self.action and self.done is None:
+            self.done = 2
         return self.done, self.action
 
     def get_actions(self, player_id):
@@ -76,14 +85,3 @@ class Grid:
             )
 
         return ret
-
-    def to_str(self):
-        ret = [["- " if i != 0 else "##"] * self.width for i in range(self.height)]
-        for i in range(self.width):
-            co = self.columns[i]
-            for j in range(co.top - 1, -1, -1):
-                ret[self.height - j - 1][i] = f"{co.pts[j].value} "
-        ret.append([f"{i}#" for i in range(self.width)])
-        return "\n".join(
-            [f"{i}:" + "".join(s) for i, s in enumerate(ret)] + ["-" * (2 * self.width)]
-        )

@@ -7,6 +7,7 @@ from common.util.export import logger, defaultdict, get_log, deque
 class AbState:
     def __init__(self, state: State, action=None, depth=0, alpha=-inf, bate=inf):
         self.state: State = state
+        self.state.best_action = None
         self.action: Action = action
         self.child_index = 0
         self.alpha = alpha
@@ -27,9 +28,6 @@ class AlphaBateSearch(Algo):
         self.max_depth = max_depth
         self.search_type = search_type
         return super().load(**kw)
-
-    def set_state_best_action(self, s: State, a: Action, actions: List[Action]):
-        s.best_action = a
 
     def search_ab(
         self,
@@ -110,7 +108,6 @@ class AlphaBateSearch(Algo):
                     cur_node.state, cur_node.depth
                 )
                 pop_node = stacks.pop()
-                max_depth = cur_node.depth
                 continue
             sort_actions = cur_node.state.get_sort_actions()
             if pop_node:
@@ -127,14 +124,14 @@ class AlphaBateSearch(Algo):
                     #     sort_actions[cur_node.child_index - 1]
                     # )
                     pop_node = stacks.pop()
-                    cur_node.state.best_action = sa
+                    if reward > cur_node.bate:
+                        self.set_state_best_action(cur_node.state, sa, cur_node.depth)
                     # cur_node.ab_value = -pop_node.ab_value
                     continue
                 if reward > cur_node.alpha:
                     # self.debug(stacks + [pop_node], f"r:{reward},a:{cur_node.alpha}")
-                    cur_node.state.best_action = sa
                     cur_node.ab_value = cur_node.alpha = reward
-
+                    self.set_state_best_action(cur_node.state, sa, cur_node.depth)
                 # if cur_node.depth == 0:
                 pop_node = None  # 根节点每次对比完 需要找新节点
 
@@ -172,15 +169,17 @@ class AbDev(AlphaBateSearch):
         # self.print_best_actions(state)
         return ret
 
-    # def set_state_best_action(self, s: State, a: Action, actions: List[Action]):
-    #     s.best_action = a
-    #     ac = actions[:]
-    #     while a:
-    #         ac.append(a)
-    #         dst = a.get_dst()
-    #         a = dst.best_action
-    #     aa = ",".join([str(v.action) for v in ac])
-    #     get_log("ab").debug(f"aa:{aa}\n{dst.show()}")
+    def set_state_best_action(self, s: State, a: Action, depth):
+        super().set_state_best_action(s, a, depth)
+        if depth != 0:
+            return
+        d = a.get_dst()
+        while d:
+            a = d.get_best_action()
+            if a is None:
+                break
+            d = a.get_dst()
+        get_log(self.get_name()).debug(d.show())
 
     # def debug(self, name, actions: List[Action], msg=""):
     #     if actions and isinstance(actions[0], AbState):

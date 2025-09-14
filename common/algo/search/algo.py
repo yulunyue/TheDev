@@ -102,6 +102,9 @@ class Algo:
         if actions and actions[-1].get_dst():
             get_log("algo").debug(f"{actions[-1].get_dst().show()}]")
 
+    def set_state_best_action(self, s: State, a: Action, depth):
+        s.set_best_action(a)
+
 
 class RandomAlgo(Algo):
     def search_main(self, s: State, **kw):

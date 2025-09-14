@@ -2,7 +2,7 @@ import json
 import sys
 import functools
 import heapq
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import math
 from collections import defaultdict, deque
 import os

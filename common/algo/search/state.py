@@ -83,7 +83,7 @@ class PAction(Action):
 class State:
     name = "state"
     parent: "State" = None
-    done = False
+    done = None
     STATE_STORE: Dict[str, "State"] = None
     sort_reward = None
     reward = None
@@ -266,10 +266,14 @@ class State:
         ]
         if self.data:
             datas.append(f"data:{self.data}")
-        mask = str(self.state)
+        if isinstance(self.state, int):
+            mask = "%x" % self.state
+        else:
+            mask = str(self.state)
         mask_max_len = 60
+        margin = (mask_max_len - len(mask)) // 2
         return f"\n".join(
-            [mask + "-" * (mask_max_len - len(mask))] + datas + ["-" * mask_max_len]
+            ["-" * margin + mask + "-" * margin] + datas + ["-" * mask_max_len]
         )
 
     def get_win_player(self, rewards, player_idx, *args, **kw):
