@@ -32,7 +32,12 @@ class Logger(logging.Logger):
         super().__init__(name)
         self.cache_msgs = []
         self.cache_enable = False
-        self.path = f"{LOG_DIR}/{name}"
+        if "/" not in name:
+            self.path = f"{LOG_DIR}/{name}"
+        else:
+            self.path = name
+        if not self.path.endswith(".log"):
+            self.path += ".log"
         File(self.path).make_dir_if_not_exist()
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
@@ -40,7 +45,7 @@ class Logger(logging.Logger):
     def add_file_hander(self, fmt, mode):
         self.add_hander(
             logging.FileHandler(
-                self.path + ".log",
+                self.path,
                 mode=os.environ.get(LOGGER_MODE, mode),
                 encoding="utf-8",
             ),

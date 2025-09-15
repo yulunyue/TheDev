@@ -16,39 +16,6 @@ from common.third_util.export import PtTable, TableModel
 import time
 
 
-class PM:
-    @staticmethod
-    def ab(n):
-        return AbDev(f"ab{n}").load(n)
-
-    @staticmethod
-    def am(n):
-        return AbDev(f"am{n}").load(n, search_type=AbDev.AB_MUCH)
-
-    @staticmethod
-    def ad(n):
-        return AbDev(f"ad{n}").load(n, search_type=AbDev.AB_TYPE)
-
-    @staticmethod
-    def mc(n):
-        return MctsSearchDev(f"mc{n}").load(max_t=n)
-
-    @staticmethod
-    def mcs(n):
-        return [PM.mc(i * 10) for i in range(3, n)]
-
-    @staticmethod
-    def ab5():
-        return [PM.ab(i + 1) for i in range(5)]
-
-    @staticmethod
-    def ams(v=5):
-        return [PM.am(i + 1) for i in range(v)]
-
-    def ad5():
-        return [PM.ad(i + 1) for i in range(5)]
-
-
 class AlgoInfo(TableModel):
 
     WIN = 0
@@ -100,6 +67,38 @@ class ALgoManage:
     record_dir = ""
     file_path = None
     record_model = AlgoInfo
+
+    def ab(self, n):
+        return AbDev(f"ab{n}").load(n).set_record_dir(self.record_dir)
+
+    def am(self, n):
+        return (
+            AbDev(f"am{n}")
+            .load(n, search_type=AbDev.AB_MUCH)
+            .set_record_dir(self.record_dir)
+        )
+
+    def ad(self, n):
+        return (
+            AbDev(f"ad{n}")
+            .load(n, search_type=AbDev.AB_TYPE)
+            .set_record_dir(self.record_dir)
+        )
+
+    def mc(self, n):
+        return MctsSearchDev(f"mc{n}").load(max_t=n)
+
+    def mcs(self, n):
+        return [self.mc(i * 10) for i in range(3, n)]
+
+    def abs(self, n):
+        return [self.ab(i + 1) for i in range(5)]
+
+    def ams(self, v=5):
+        return [self.am(i + 1) for i in range(v)]
+
+    def ad5(self):
+        return [self.ad(i + 1) for i in range(5)]
 
     def set_players(self, players1: List[Algo], players2: List[Algo]):
         self.players: List[List[Algo]] = []

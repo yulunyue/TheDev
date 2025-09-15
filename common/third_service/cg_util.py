@@ -1,5 +1,5 @@
 from common.service.export import Api
-from common.util.export import File, List, logger
+from common.util.export import File, List, logger, get_log
 from common.algo.export import Algo, State
 import json
 
@@ -94,7 +94,7 @@ class CodingGame(Api):
 
     def replay(self, state, algo: Algo):
         s: State = state
-        self.log(s.show())
+        self.logger.debug(s.show())
         from common.third_util.echarts import EChart
 
         e = EChart()
@@ -108,16 +108,15 @@ class CodingGame(Api):
                 s.check_cg(**f.stderr)
             a = s.get_action(f.stdout)
             b = algo.search(s)
-            self.log(
-                f"----[turn:{i}, r:{a.action}, e:{b.action}, sm_{a.action==b.action}]----"
+            self.logger.debug(
+                f"----[turn:{i}, cg_action:{a.action}, local_action:{b.action}, sm_{a.action==b.action}]----"
             )
             s = a.get_dst()
             if s:
-                self.log(s.show())
+                self.logger.debug(s.show())
                 e.add_data(s.get_data())
         e.draw_lines().save(uu(f"{self.game_name}/replay.html"))
 
-    def log(self, msg):
-        f = File(uu(f"{self.game_name}/replay.log")).get_writer()
-        f.write(f"{msg}\n")
-        f.flush()
+    @property
+    def logger(self):
+        return get_log(uu(f"{self.game_name}/replay.log"))

@@ -32,10 +32,12 @@ class F4State(MctsState):
 
     def get_reward(self, actions=None, params=None):
         if self.done == 0:
-            return 1
+            self.reward = 1
         elif self.done == 1:
-            return -1
-        return self.pos_reward * C.POS_SCORE_RADIO
+            self.reward = -1
+        else:
+            self.reward = self.pos_reward * C.POS_SCORE_RADIO
+        return self.reward
 
     def make_actions(self, *args, **kw) -> Dict[str, F4Action]:
         actions = dict()
@@ -67,9 +69,9 @@ class F4State(MctsState):
         for i in range(C.WIDTH):
             for j in range(self.heights[i] - 1, -1, -1):
                 if self.states[0] & C.MASK_POS[i][j]:
-                    ret[C.HEIGHT - j][i] = f"X "
-                elif self.states[1] & C.MASK_POS[i][j]:
                     ret[C.HEIGHT - j][i] = f"O "
+                elif self.states[1] & C.MASK_POS[i][j]:
+                    ret[C.HEIGHT - j][i] = f"X "
                 else:
                     break
         ret.append([f"{i}#" for i in range(C.WIDTH)])

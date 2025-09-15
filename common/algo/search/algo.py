@@ -31,6 +31,14 @@ class Algo:
         self.name = name or self.__class__.__name__
         self.params = None
 
+    def set_record_dir(self, path):
+        self.record_dir = path
+        return self
+
+    @property
+    def logger(self):
+        return get_log(f"{self.record_dir}/algo/{self.name}")
+
     def set_name(self, name):
         self.name = name
         return self
@@ -94,13 +102,13 @@ class Algo:
     def debug(self, *args, **kw):
         pass
 
-    def print_best_actions(self, state: State):
-        actions = state.get_best_actions()
-        s1 = ",".join([str(a.action) for a in actions])
-        get_log("algo").debug(f"[{state.show()}")
-        get_log("algo").debug(f"{state.state}->{s1}")
-        if actions and actions[-1].get_dst():
-            get_log("algo").debug(f"{actions[-1].get_dst().show()}]")
+    def print_best_actions(self, a: Action):
+        actions = []
+        while a:
+            s = a.get_dst()
+            actions.append(str(a.action))
+            a = s.get_best_action()
+        self.logger.debug(s.show(title=",".join(actions)))
 
     def set_state_best_action(self, s: State, a: Action, depth):
         s.set_best_action(a)

@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger, Module, List
-from common.algo.export import random_seed, ALgoManage, PM, Algo
+from common.algo.export import random_seed, ALgoManage, Algo
 from common.third_service.export import CodingGame, uu
 from app.yly.envs.cg.cf4.export import F4State, CgMuiltCf4, C, CASES
 
@@ -27,7 +27,7 @@ class C4Test(TestBase):
         self.cg_replay()
 
     def cg_replay(self):
-        self.c.replay(self.init_state, PM.am(4))
+        self.c.replay(self.init_state, self.al.ab(4))
 
     def fight2(self):
         self.al.set_players([PM.am(3), PM.mc(50)]).fight()
@@ -54,13 +54,17 @@ class C4Test(TestBase):
         s = s.get_action(0).get_dst()
         logger.debug(s.show())
 
+    def run3(self):
+        s = self.init_state.get_action([0, 0, 1]).get_dst()
+        self.al.ab(1).search(s)
+
     def run1(self):
         s = F4State.new(CASES.CASE1)
-        a = PM.mc(0).search(s)
+        a = self.al.am(4).search(s)
         logger.debug(f"{s.show()}\n{a.show()}")
 
     def debug(self):
-        self.run1()
+        self.run3()
 
 
 if __name__ == "__main__":

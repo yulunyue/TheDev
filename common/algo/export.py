@@ -15,7 +15,7 @@ from common.algo.learn.sarse.qlearning import Qlearning
 from common.algo.learn.sarse.dyn import DynaQ
 from common.algo.learn.sarse.mcts import MctsEasy
 from common.algo.learn.dqn import Dqn
-from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE, PM
+from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE
 from common.algo.base.math_util import sin, cos, calc_angle, Comb, solve_xyz
 from common.algo.base.str_util import (
     manacher_get_odd_p,

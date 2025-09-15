@@ -259,7 +259,7 @@ class State:
         self.data[k] = v
         return self.data[k]
 
-    def show(self, info=""):
+    def show(self, info="", title=""):
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{self.reward}",
             self.to_str(),
@@ -269,10 +269,12 @@ class State:
         if info:
             datas.append(info)
         if isinstance(self.state, int):
-            mask = "%x" % self.state
+            mask = "%s:%x" % (title, self.state)
         else:
-            mask = str(self.state)
+            mask = f"{title}:{self.state}"
         mask_max_len = 60
+        if len(mask) > mask_max_len:
+            mask_max_len = len(mask) + 8
         margin = (mask_max_len - len(mask)) // 2
         return f"\n".join(
             ["-" * margin + mask + "-" * margin] + datas + ["-" * mask_max_len]
@@ -344,8 +346,8 @@ class MctsState(State):
         self.expand_actions.append(action)
         return action.get_dst()
 
-    def show(self, s=""):
+    def show(self, info="", title=""):
         if self.visite_num:
             s += f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
 
-        return super().show(s)
+        return super().show(info=info, title=title)

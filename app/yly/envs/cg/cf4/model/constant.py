@@ -43,7 +43,7 @@ class Constant:
     def pos_score(self, y, x):
         yc, xc = abs(self.HEIGHT / 2 - y), abs(self.WIDTH / 2 - x)
         c = math.sqrt(yc * yc + xc * xc)
-        return c
+        return -c
 
 
 C = Constant()
