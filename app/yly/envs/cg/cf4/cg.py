@@ -14,7 +14,8 @@ class CgMuiltCf4(MockCg):
     def run(self, **kw):
         player = AlphaBateSearch().load(4, search_type=AlphaBateSearch.AB_MUCH)
         my_id, opp_id = self.ii()
-        state = F4State.new(C.init_masks[1])
+        C.load(1)
+        state = F4State.new()
         # game loop
         while True:
             TRUN_INDEX = int(

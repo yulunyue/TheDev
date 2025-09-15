@@ -4,7 +4,7 @@ import random
 
 
 from typing import List, Dict
-from common.algo.search.state import State, inf, Action
+from common.algo.search.state import State, inf, Action, MctsState
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
@@ -43,7 +43,7 @@ class Algo:
         self.params: Params = params
         return self
 
-    def search(self, state: "State") -> "Action":
+    def search(self, state: "MctsState") -> "Action":
         self.reset()
         self.search_main(state.reset())
         return state.get_best_action()

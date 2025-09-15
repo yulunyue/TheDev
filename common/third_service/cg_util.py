@@ -57,7 +57,7 @@ class CodingGame(Api):
         if play_type == "submit":
             player_data.append(None)
         ret = self.post(f"/services/TestSession/{play_type}", player_data)
-        File(ss(play_type)).write_file(ret)
+        File(ss(self.game_name + "/" + play_type)).write_file(ret)
 
     def submit(self, file_path, game_id):
         return self.execute(file_path, game_id, play_type="submit")

@@ -55,7 +55,6 @@ export class Grid extends SvgNode {
                 { x: 0, y: i * this.cell_height },
                 { x: this.w * this.cell_width, y: i * this.cell_height }
             ]
-            console.log(datas)
             this.g.add_child(new Line().set_d(datas))
         }
         for (var i = 0; i <= this.w; i++) {

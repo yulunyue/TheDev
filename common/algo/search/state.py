@@ -13,8 +13,8 @@ class Action:
 
     def __init__(self, src, action, dst=None):
         self.action = action
-        self.src: State = src
-        self.dst: State = dst
+        self.src: MctsState = src
+        self.dst: MctsState = dst
         self.data = dict()
 
     def get_regret(self):
@@ -259,13 +259,15 @@ class State:
         self.data[k] = v
         return self.data[k]
 
-    def show(self):
+    def show(self, info=""):
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{self.reward}",
             self.to_str(),
         ]
         if self.data:
             datas.append(f"data:{self.data}")
+        if info:
+            datas.append(info)
         if isinstance(self.state, int):
             mask = "%x" % self.state
         else:
@@ -341,3 +343,9 @@ class MctsState(State):
         action = self.get_need_expand_actions().pop()
         self.expand_actions.append(action)
         return action.get_dst()
+
+    def show(self, s=""):
+        if self.visite_num:
+            s += f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
+
+        return super().show(s)

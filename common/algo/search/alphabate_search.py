@@ -180,10 +180,3 @@ class AbDev(AlphaBateSearch):
                 break
             d = a.get_dst()
         get_log(self.get_name()).debug(d.show())
-
-    # def debug(self, name, actions: List[Action], msg=""):
-    #     if actions and isinstance(actions[0], AbState):
-    #         s = "".join([str(a.action.action) for a in actions[1:]])
-    #     else:
-    #         s = "".join([str(a.action) for a in actions])
-    #     get_log(name).debug(f"as:{s} {msg}")

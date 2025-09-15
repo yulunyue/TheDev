@@ -30,15 +30,18 @@ class C4Test(TestBase):
         self.c.replay(self.init_state, PM.am(4))
 
     def fight2(self):
-        self.al.set_players([PM.am(2), PM.am(5)]).fight()
+        self.al.set_players([PM.am(3), PM.mc(50)]).fight()
         logger.debug(self.al.show())
 
     def fc(self):
-        self.al.set_players([PM.am(5), PM.am(2)]).fight_with_control()
+        self.al.set_players([PM.am(2), PM.mc(10)]).fight_with_control()
 
     def fight(self):
         self.al.set_players(PM.ams(5)).fight()
         logger.debug(self.al.show())
+
+    def fc3(self):
+        self.al.set_players(PM.ams(5), PM.mcs(6)).fight()
 
     def run2(self):
         s = self.init_state
@@ -53,7 +56,8 @@ class C4Test(TestBase):
 
     def run1(self):
         s = F4State.new(CASES.CASE1)
-        logger.info(s.show())
+        a = PM.mc(0).search(s)
+        logger.debug(f"{s.show()}\n{a.show()}")
 
     def debug(self):
         self.run1()

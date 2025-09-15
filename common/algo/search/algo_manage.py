@@ -31,11 +31,17 @@ class PM:
 
     @staticmethod
     def mc(n):
-        return MctsSearchDev(f"mc").load(num_episodes=10)
+        return MctsSearchDev(f"mc{n}").load(max_t=n)
 
+    @staticmethod
+    def mcs(n):
+        return [PM.mc(i * 10) for i in range(3, n)]
+
+    @staticmethod
     def ab5():
         return [PM.ab(i + 1) for i in range(5)]
 
+    @staticmethod
     def ams(v=5):
         return [PM.am(i + 1) for i in range(v)]
 
@@ -95,12 +101,16 @@ class ALgoManage:
     file_path = None
     record_model = AlgoInfo
 
-    def set_players(self, players: List[Algo]):
-        self.players: List[Algo] = players
-        self.current_player = self.players
+    def set_players(self, players1: List[Algo], players2: List[Algo]):
+        self.players: List[List[Algo]] = []
+        for p1 in players1:
+            for p2 in players2:
+                self.players.append([p1, p2])
+                self.players.append([p2, p1])
+        self.current_player = self.players[0]
         self.record_model.clear()
         self.a_r: Dict[str, AlgoInfo] = {
-            p.get_name(): AlgoInfo(p.get_name()) for p in players
+            p.get_name(): AlgoInfo(p.get_name()) for p in players1 + players2
         }
         return self
 
@@ -113,23 +123,11 @@ class ALgoManage:
             return self.state(idx, dst)
         return dst
 
-    def get_players_turn_simple(self, pk_round, tp):
-        ret = []
-        for _ in range(pk_round):
-            for i in range(len(self.players)):
-                for j in range(i + 1, len(self.players)):
-                    if tp == FIGHT_TYPE.SIGNAL:
-                        ret.append([self.players[i], self.players[j]])
-                    else:
-                        ret.append([self.players[i], self.players[j]])
-                        ret.append([self.players[j], self.players[i]])
-        return ret
-
-    def fight(self, pk_round=1, tp=None):
-        players = self.get_players_turn_simple(pk_round, tp)
-        for i, p in enumerate(players):
+    def fight(self):
+        for i, p in enumerate(self.players):
             self.pk(p)
-            progress_bar(i + 1, len(players))
+            progress_bar(i + 1, len(self.players))
+        logger.debug(self.show())
         return self
 
     def fight_with_control(self):
