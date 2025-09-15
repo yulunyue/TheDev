@@ -10,7 +10,7 @@ CASES = Cases()
 
 
 class Constant:
-    SHAPES = [[7, 7], [8, 9]]
+    SHAPES = [[7, 7], [7, 9]]
 
     DR = [[0, 1], [1, 0], [1, -1], [1, 1]]
     IN_ROW = 4
@@ -41,9 +41,10 @@ class Constant:
         return encode_data([boare, shape, 1 - player_id], self.POS_MASK)
 
     def pos_score(self, y, x):
+        b = math.sqrt(self.HEIGHT * self.HEIGHT / 4 + self.WIDTH * self.WIDTH / 4)
         yc, xc = abs(self.HEIGHT / 2 - y), abs(self.WIDTH / 2 - x)
         c = math.sqrt(yc * yc + xc * xc)
-        return -c
+        return b - c
 
 
 C = Constant()

@@ -167,7 +167,8 @@ class AbDev(AlphaBateSearch):
     def search(self, state: State):
         self.state_num = 0
         ret = super().search(state)
-        self.logger.debug(state.show(title=f"BEGIN:{ret.action}"))
+        action = ret.action if ret else None
+        self.logger.debug(state.show(title=f"BEGIN:{action}"))
         for a in state.get_sort_actions():
             self.print_best_actions(a)
         return ret

@@ -80,7 +80,7 @@ class CodingGame(Api):
         return ret
 
     def get_cg_frames(self, name="play", filter=None) -> List[CGFrames]:
-        data = File(ss(name)).read_file()
+        data = File(ss(self.game_name + "/" + name)).read_file()
         ret = []
         for d in data["frames"]:
             if filter and filter(d):
@@ -97,6 +97,7 @@ class CodingGame(Api):
         self.logger.debug(s.show())
         from common.third_util.echarts import EChart
 
+        last_s = None
         e = EChart()
         e.add_data(s.get_data())
         for i, f in enumerate(self.get_cg_frames()):
@@ -104,13 +105,15 @@ class CodingGame(Api):
                 continue
             # for k, v in f.stderr.items():
             #     self.log(f"{k} :{v}")
-            if hasattr(s, "check_cg"):
-                s.check_cg(**f.stderr)
+            if hasattr(s, "check_cg") and f.stderr:
+                s.check_cg(**f.stderr, last_state=last_s)
             a = s.get_action(f.stdout)
             b = algo.search(s)
+            b_action = b.action if b else None
             self.logger.debug(
-                f"----[turn:{i}, cg_action:{a.action}, local_action:{b.action}, sm_{a.action==b.action}]----"
+                f"----[turn:{i}, cg_action:{a.action}, local_action:{b_action}, sm_{a.action==b_action}]----"
             )
+            last_s = s
             s = a.get_dst()
             if s:
                 self.logger.debug(s.show())

@@ -93,3 +93,9 @@ class F4State(MctsState):
             s1 = s & (s >> pos)
             if s1 & (s1 >> (pos * 2)):
                 return 1 - self.player_id
+
+    def check_cg(self, state, last_state: State = None, **kw):
+        if last_state and last_state.state != state[0]:
+            raise Exception(f"{self.show()}\n{state}")
+        if state[1] != self.state:
+            raise Exception(f"{self.show()}\n{state}")

@@ -37,13 +37,15 @@ class CgMuiltCf4(MockCg):
                 self.input()
             )  # opponent's previous chosen column index (will be -1 for first player in the first turn)
             # player.max_depth = 4 + TRUN_INDEX // 30
-            if 0 <= opp_previous_action < C.SHAPES[1][0]:
-                state = state.get_action(opp_previous_action).dst
+            last_state = -1
+            if 0 <= opp_previous_action < C.WIDTH:
+                last_state = state.state
+                state = state.get_action(opp_previous_action).get_dst()
             action = player.search(state)
             # action = state.get_action(opp_previous_action)
-            self.log(state=state.state)
+            self.log(state=[last_state, state.state])
             print(action.action)
-            state = action.dst
+            state = action.get_dst()
 
 
 if __name__ == "__main__":
