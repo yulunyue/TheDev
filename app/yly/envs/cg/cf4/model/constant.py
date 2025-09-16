@@ -3,16 +3,24 @@ from common.util.export import math, List
 
 
 class Cases:
-    CASE1 = 0x7000000000000000700
+    CASE1 = 0x101010106D4D6D5AA
 
 
 CASES = Cases()
 
 
 class Constant:
-    SHAPES = [[7, 7], [7, 9]]
+    SHAPES = [
+        [7, 7],
+        [8, 9],
+    ]
 
-    DR = [[0, 1], [1, 0], [1, -1], [1, 1]]
+    DR = [
+        [-1, 0],
+        [1, -1],
+        [1, 1],
+        [0, 1],
+    ]  # x,y
     IN_ROW = 4
     SCORE2 = 0.002
     SCORE3 = 0.05
@@ -20,18 +28,35 @@ class Constant:
 
     def load(self, s):
         self.HEIGHT, self.WIDTH = self.SHAPES[s]
+        self.INIT_MASK = 0
         self.SIZE = self.WIDTH * self.HEIGHT
-        self.MASK_SIZE = (1 << self.SIZE) - 1
+        self.MASK_FULL = (1 << self.SIZE) - 1
+        self.WIDTH_MASK: List[int] = []
         self.MASK_HEIGHT = (1 << self.HEIGHT) - 1
-        self.MASK_POS: List[List[int]] = []
-        self.POS_REWARD: List[List[int]] = []
+        self.MASK_POS: List[int] = []
+        self.HEIGHT_CLEAR: List[int] = []
+        self.POINTS: List[List[List[int]]] = []
+        # self.POS_REWARD: List[List[int]] = []
+        for i in range(self.HEIGHT):
+            self.MASK_POS.append(1 << i)
+            self.HEIGHT_CLEAR.append(self.MASK_HEIGHT - self.MASK_POS[-1])
         for i in range(self.WIDTH):
-            s = 1 << (i * self.HEIGHT)
-            self.POS_REWARD.append([])
-            self.MASK_POS.append([])
+            self.INIT_MASK = (self.INIT_MASK << self.HEIGHT) + 1
+            self.WIDTH_MASK.append(
+                self.MASK_FULL - (self.MASK_HEIGHT << (i * self.HEIGHT))
+            )
+            self.POINTS.append([])
             for j in range(self.HEIGHT):
-                self.MASK_POS[-1].append(s << j)
-                self.POS_REWARD[-1].append(self.pos_score(j, i))
+                self.POINTS[-1].append([])
+                for k, (dy, dx) in enumerate(self.DR):
+                    self.POINTS[-1][-1].append([])
+                    for l in range(-3, 4):
+                        if l == 0:
+                            continue
+                        x, y = i + dx * l, j + dy * l
+                        if x < 0 or x >= self.WIDTH or y < 0 or y >= self.HEIGHT - 1:
+                            continue
+                        self.POINTS[-1][-1][-1].append([x, y])
 
     def mask_decode(self, s):
         return decode_data(s, [self.SIZE])

@@ -84,12 +84,12 @@ class State:
     name = "state"
     parent: "State" = None
     done = None
-    STATE_STORE: Dict[str, "State"] = None
+    STATE_STORE: Dict[str, "State"] = dict()
     sort_reward = None
     reward = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
-        self.state = state
+        self.state: int = state
         self.depth = depth
         self.data = dict()
         self.player_id = player_id
@@ -102,8 +102,6 @@ class State:
 
     @classmethod
     def new(cls, state=None, **kw):
-        if cls.STATE_STORE is None:
-            cls.STATE_STORE = dict()
         if state not in cls.STATE_STORE:
             cls.STATE_STORE[state] = cls(state, **kw)
         return cls.STATE_STORE[state]
@@ -265,7 +263,8 @@ class State:
             self.to_str(),
         ]
         if self.data:
-            datas.append(f"data:{self.data}")
+            for k, v in self.data.items():
+                datas.append(f"{k}:{v}")
         if info:
             datas.append(info)
         if isinstance(self.state, int):

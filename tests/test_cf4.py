@@ -5,16 +5,11 @@ from app.yly.envs.cg.cf4.export import F4State, CgMuiltCf4, C, CASES
 
 
 class C4Test(TestBase):
-    def run_algo(self, algo: Algo):
-        for k, v in CASES.ALL.items():
-            s = F4State.new(k)
-            a = algo.search(s)
-            self.expect(a.action, v, s.show())
 
     def prepare(self, args=None):
         C.load(1)
         self.c = CodingGame(CgMuiltCf4.name)
-        self.init_state = F4State.new()
+        self.init_state = F4State.new(C.INIT_MASK)
         self.al = (
             ALgoManage().set_state(self.init_state).set_record_dir(uu(CgMuiltCf4.name))
         )
@@ -29,29 +24,17 @@ class C4Test(TestBase):
     def cg_replay(self):
         self.c.replay(self.init_state, self.al.ab(4))
 
-    def fight2(self):
-        self.al.set_players([PM.am(3), PM.mc(50)]).fight()
-        logger.debug(self.al.show())
+    def f1(self):
+        self.al.set_players([self.al.am(2)], [self.al.am(4)]).fight()
 
-    def fc(self):
+    def f2(self):
         self.al.set_players([PM.am(2), PM.mc(10)]).fight_with_control()
 
-    def fight(self):
+    def f3(self):
         self.al.set_players(PM.ams(5)).fight()
-        logger.debug(self.al.show())
-
-    def fc3(self):
-        self.al.set_players(PM.ams(5), PM.mcs(6)).fight()
 
     def run2(self):
-        s = self.init_state
-        logger.debug(s.show())
-        for i in range(3):
-            s = s.get_action(0).get_dst()
-            logger.debug(s.show())
-            s = s.get_action(1).get_dst()
-            logger.debug(s.show())
-        s = s.get_action(0).get_dst()
+        s = F4State.new(CASES.CASE1)
         logger.debug(s.show())
 
     def run3(self):
@@ -59,12 +42,11 @@ class C4Test(TestBase):
         self.al.ab(1).search(s)
 
     def run1(self):
-        s = F4State.new(CASES.CASE1)
-        a = self.al.am(4).search(s)
-        logger.debug(f"{s.show()}\n{a.show()}")
+        a = self.al.am(1).search(self.init_state)
+        logger.debug(f"{self.init_state.show()}\n{a.show()}\n{a.get_dst().show()}")
 
     def debug(self):
-        self.run3()
+        self.run2()
 
 
 if __name__ == "__main__":
