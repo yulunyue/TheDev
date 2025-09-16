@@ -104,7 +104,7 @@ class F4State(MctsState):
         for k, mask in enumerate(self.widths):
             done, s = self.get_next_state(k)
             if done == 0 or done == 1:
-
+                self.done = done
                 return
             if s is None:
                 continue
