@@ -85,8 +85,7 @@ class State:
     parent: "State" = None
     done = None
     STATE_STORE: Dict[str, "State"] = dict()
-    sort_reward = None
-    reward = None
+    reward = 0
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -110,7 +109,7 @@ class State:
         return self.done
 
     def do_action(self, a: Action):
-        return a.dst
+        return a.get_dst()
 
     def action_size(self):
         raise Exception("tood")
@@ -252,8 +251,9 @@ class State:
         return self.data[k]
 
     def show(self, info="", title=""):
+        rf = "%.7f" % self.reward
         datas = [
-            f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{self.reward}",
+            f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{rf}",
             self.to_str(),
         ]
         if self.data:

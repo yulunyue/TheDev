@@ -27,11 +27,11 @@ class C4Test(TestBase):
     def f1(self):
         self.al.set_players([self.al.am(2)], [self.al.am(4)]).fight()
 
-    def f2(self):
-        self.al.set_players([PM.am(2), PM.mc(10)]).fight_with_control()
+    # def f2(self):
+    #     self.al.set_players([PM.am(2), PM.mc(10)]).fight_with_control()
 
-    def f3(self):
-        self.al.set_players(PM.ams(5)).fight()
+    # def f3(self):
+    #     self.al.set_players(PM.ams(5)).fight()
 
     def run2(self):
         s = F4State.new(CASES.CASE1)
@@ -46,7 +46,7 @@ class C4Test(TestBase):
         logger.debug(f"{self.init_state.show()}\n{a.show()}\n{a.get_dst().show()}")
 
     def debug(self):
-        self.run2()
+        self.f1()
 
 
 if __name__ == "__main__":

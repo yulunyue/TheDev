@@ -21,28 +21,15 @@ class F4State(MctsState):
             self.widths[i] = s1
             self.heights[i] = s1.bit_length() - 1
             s = s >> C.HEIGHT
-            self.depth += self.heights[-1]
+            self.depth += self.heights[i]
         self.player_id = self.depth % 2
-        if self.depth == C.SIZE and self.done is None:
-            self.done = 2
         self.actions = []
         for k in range(C.WIDTH):
             if self.heights[k] >= C.HEIGHT - 1:
                 continue
             scores = self.get_point_scores(k)
-            self.actions.append(F4Action(self, k, self.get_next_state(k), scores))
-
-    def get_reward(self, **kw):
-        # for i in range(C.WIDTH):
-        #     pass
-        if self.done == 0:
-            self.reward = 1
-        elif self.done == 1:
-            self.reward = -1
-        else:
-            # self.reward = self.pos_reward * C.POS_SCORE_RADIO
-            self.reward = 0
-        return self.reward
+            state = self.get_next_state(k)
+            self.actions.append(F4Action(self, k, state, scores))
 
     def get_point_scores(self, x, depth=0):
         scroe0, scroe1 = [0] * 3, [0] * 3

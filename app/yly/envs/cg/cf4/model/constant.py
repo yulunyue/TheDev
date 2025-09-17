@@ -36,6 +36,7 @@ class Constant:
         self.MASK_POS: List[int] = []
         self.HEIGHT_CLEAR: List[int] = []
         self.POINTS: List[List[List[int]]] = []
+        self.POS_SCORE: List[List[int]] = []
         # self.POS_REWARD: List[List[int]] = []
         for i in range(self.HEIGHT):
             self.MASK_POS.append(1 << i)
@@ -45,8 +46,10 @@ class Constant:
             self.WIDTH_MASK.append(
                 self.MASK_FULL - (self.MASK_HEIGHT << (i * self.HEIGHT))
             )
+            self.POS_SCORE.append([])
             self.POINTS.append([])
             for j in range(self.HEIGHT):
+                self.POS_SCORE[-1].append(self.pos_score(i, j))
                 self.POINTS[-1].append([])
                 for k, (dy, dx) in enumerate(self.DR):
                     self.POINTS[-1][-1].append([])
@@ -65,11 +68,11 @@ class Constant:
         boare = set_mask(board, low, low + 2, player_id + 2)
         return encode_data([boare, shape, 1 - player_id], self.POS_MASK)
 
-    def pos_score(self, y, x):
-        b = math.sqrt(self.HEIGHT * self.HEIGHT / 4 + self.WIDTH * self.WIDTH / 4)
+    def pos_score(self, x, y):
+        d = self.HEIGHT * self.HEIGHT / 4 + self.WIDTH * self.WIDTH / 4
         yc, xc = abs(self.HEIGHT / 2 - y), abs(self.WIDTH / 2 - x)
         c = math.sqrt(yc * yc + xc * xc)
-        return b - c
+        return math.sqrt(d) - c
 
 
 C = Constant()
