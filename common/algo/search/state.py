@@ -94,7 +94,7 @@ class State:
         self.data = dict()
         self.player_id = player_id
         self.best_action: Action = None
-        self.actions: Dict[str, Action] = None
+        self.actions: List[Action] = None
 
     def set_player_id(self, player_id):
         self.player_id = player_id
@@ -145,7 +145,7 @@ class State:
             actions = [actions]
         s = self
         for a in actions:
-            actions = s.get_actions()
+            actions = {a.action: a for a in s.get_sort_actions()}
             if a not in actions:
                 raise Exception(a, list(actions.keys()), self.state)
             ret = actions[a]
@@ -165,12 +165,6 @@ class State:
 
     def get_best_action(self):
         return self.best_action
-
-    def get_actions(self, depth=1, **kw) -> Dict[str, Action]:
-        if self.actions is not None:
-            return self.actions
-        self.actions = self.make_actions()
-        return self.actions
 
     def make_actions(self):
         raise Exception("todo")
@@ -295,12 +289,10 @@ class State:
             return -r
         return r
 
-    sort_actions: List[Action] = None
-
     def get_sort_actions(self, **kw):
-        if self.sort_actions is None:
-            self.sort_actions = list(self.get_actions().values())
-        return self.sort_actions
+        if self.actions is None:
+            self.actions = self.make_actions()
+        return self.actions
 
     def get_data(self):
         return dict(reward=self.reward)

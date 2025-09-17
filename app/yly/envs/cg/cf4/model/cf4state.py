@@ -6,14 +6,9 @@ from common.util.export import List, Dict
 
 class F4State(MctsState):
 
-    def __init__(self, state, heights=None):
+    def __init__(self, state):
         super().__init__(state)
-        if heights is None:
-            self.init_from_state()
-        else:
-            self.heights = heights
-        if self.depth == C.SIZE and self.done is None:
-            self.done = 2
+        self.init_from_state()
 
     def init_from_state(self):
         self.heights = [0] * C.WIDTH
@@ -28,11 +23,14 @@ class F4State(MctsState):
             s = s >> C.HEIGHT
             self.depth += self.heights[-1]
         self.player_id = self.depth % 2
-        for i in range(C.WIDTH):
-            done, player_info = self.get_player_action_info(i)
-            if done == 1 or done == 0:
-                self.done = done
-            # self.data[i] = player_info
+        if self.depth == C.SIZE and self.done is None:
+            self.done = 2
+        self.actions = []
+        for k in range(C.WIDTH):
+            if self.heights[k] >= C.HEIGHT - 1:
+                continue
+            scores = self.get_point_scores(k)
+            self.actions.append(F4Action(self, k, self.get_next_state(k), scores))
 
     def get_reward(self, **kw):
         # for i in range(C.WIDTH):
@@ -46,15 +44,16 @@ class F4State(MctsState):
             self.reward = 0
         return self.reward
 
-    def get_point_info(self, x, y) -> tuple[list[int], list[int]]:
-        player0, player1 = [0, 0, 0], [0, 0, 0]
-        for i, ll in enumerate(C.POINTS[x][y]):
-            max_l = self.get_pos_line(ll)
-            if max_l[0] > 1:
-                player0[max_l[0] - 1] += 1
-            if max_l[1] > 1:
-                player1[max_l[1] - 1] += 1
-        return player0, player1
+    def get_point_scores(self, x, depth=0):
+        scroe0, scroe1 = [0] * 3, [0] * 3
+        y = self.heights[x] + depth
+        for ll in C.POINTS[x][y]:
+            player_0, player_1 = self.get_pos_line(ll)
+            if player_0 > 1:
+                scroe0[3 - player_0] += 1
+            if player_1 > 1:
+                scroe1[3 - player_1] += 1
+        return scroe0, scroe1
 
     def get_pos_line(self, l):
         ct = [0, 0, 1]
@@ -80,36 +79,13 @@ class F4State(MctsState):
         return self.done
 
     def get_next_state(self, k):
-        done, player_point_info = self.get_player_action_info(k)
-        if done != -1:
-            return done, None
+
         mask = self.widths[k]
         mask |= C.MASK_POS[self.heights[k] + 1]
         if self.player_id == 0:
             mask &= C.HEIGHT_CLEAR[self.heights[k]]
         state = (self.state & C.WIDTH_MASK[k]) | (mask << k * C.HEIGHT)
-        s = F4State.new(state)
-        return done, s
-
-    def get_player_action_info(self, k):
-        if self.heights[k] >= C.HEIGHT - 1:
-            return None, []
-        player_point_info = self.get_point_info(k, self.heights[k])
-        if player_point_info[self.player_id][2]:
-            return self.player_id, player_point_info
-        return -1, player_point_info
-
-    def make_actions(self, *args, **kw) -> Dict[str, F4Action]:
-        actions = dict()
-        for k, mask in enumerate(self.widths):
-            done, s = self.get_next_state(k)
-            if done == 0 or done == 1:
-                self.done = done
-                return
-            if s is None:
-                continue
-            actions[k] = F4Action(self, k, s)
-        return actions
+        return state
 
     def to_str(self):
         ret = [["- " if i != 0 else "##"] * C.WIDTH for i in range(C.HEIGHT)]
