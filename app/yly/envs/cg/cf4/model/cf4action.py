@@ -23,6 +23,6 @@ class F4Action(Action):
             score += c
         else:
             sp = c * C.POS_SCORE[self.action][s.heights[self.action]]
-            score += sp * C.POS_SCORE_RADIO
+            score += sp * C.POS_SCORE_RADIO  # action reward  累加问题
         s.set_reward(score)
         return s
