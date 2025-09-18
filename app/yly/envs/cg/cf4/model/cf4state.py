@@ -43,16 +43,18 @@ class F4State(MctsState):
         return scroe0, scroe1
 
     def get_pos_line(self, l):
-        ct = [0, 0, 1]
-        pos = [0] * len(l)
+        ct = [0, 0, 0]
+        pos = [-1] * len(l)
         ret = [0, 0]
         for i, (x, y) in enumerate(l):
             pos[i] = self.get_pos_statu(x, y)
             ct[pos[i]] += 1
-            if i >= 4:
-                ct[pos[i - 4]] -= 1
-            if pos[i] != 2 and ct[pos[i]] + ct[2] == 4:
-                ret[pos[i]] = max(ret[pos[i]], ct[pos[i]])
+            if i >= 3:  # 因为过滤了当前节点 所以只有三个
+                ct[pos[i - 3]] -= 1
+            if ct[0] + ct[2] == 3 and ct[0] > ret[0]:
+                ret[0] = ct[0]
+            if ct[1] + ct[2] == 3 and ct[1] > ret[1]:
+                ret[1] = ct[1]
         return ret
 
     def get_pos_statu(self, x, y):
