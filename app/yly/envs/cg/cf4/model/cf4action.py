@@ -5,4 +5,5 @@ from typing import List, Dict
 
 
 class F4Action(Action):
-    pass
+    def __init__(self, src, action, done):
+        super().__init__(src, action)
