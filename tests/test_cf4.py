@@ -34,9 +34,12 @@ class C4Test(TestBase):
     #     self.al.set_players(PM.ams(5)).fight()
 
     def run2(self):
-        s: F4State = F4State.new(0x1143575AA16090101)
-        logger.debug(s.show())
-        logger.debug(s.get_point_scores(2))
+        s: F4State = F4State.new(0x154B5CDAA05010101)
+        self.al.am(1).search(s)
+        # d = s.get_action(3).get_dst()
+        # logger.debug(d.show())
+        # logger.debug(s.get_point_scores(3))
+        # logger.debug(.get_dst().show())
 
     def run3(self):
         s = self.init_state.get_action([0, 0, 1]).get_dst()

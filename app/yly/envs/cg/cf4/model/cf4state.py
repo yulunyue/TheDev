@@ -27,13 +27,12 @@ class F4State(MctsState):
         for k in range(C.WIDTH):
             if self.heights[k] >= C.HEIGHT - 1:
                 continue
-            scores = self.get_point_scores(k)
+            scores = self.get_point_scores(k, self.heights[k])
             state = self.get_next_state(k)
             self.actions.append(F4Action(self, k, state, scores))
 
-    def get_point_scores(self, x, depth=0):
+    def get_point_scores(self, x, y):
         scroe0, scroe1 = [0] * 3, [0] * 3
-        y = self.heights[x] + depth
         for ll in C.POINTS[x][y]:
             player_0, player_1 = self.get_pos_line(ll)
             if player_0 > 1:
