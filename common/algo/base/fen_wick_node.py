@@ -13,21 +13,18 @@ class FenWickTree:
         return self
 
     def update(self, i, v):
-        self.i = i + 1
-        while self.i < self.size:
-            self.array[self.i] = v(self.array[self.i])
-            self.i += self.i & -self.i
+        while i < self.size:
+            self.array[i] = self.calc(self.array[i], v)
+            i += i & -i
 
-    def add(self, i, v):
-        return self.update(i, lambda a: a + v)
-
-    def query_value(self, i, f):
+    def query(self, i):
+        if i <= 0:
+            return 0
         ret = 0
-        self.i = i + 1
-        while self.i > 0:
-            ret = f(ret, self.array[self.i])
-            self.i &= self.i - 1
+        while i > 0:
+            ret = self.calc(ret, self.array[i])
+            i &= i - 1
         return ret
 
-    def query_sum(self, l):
-        return self.query_value(l, lambda a, b: a + b)
+    def calc(self, a, b):
+        return a + b

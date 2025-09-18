@@ -4,6 +4,7 @@ from common.util.export import math, List
 
 class Cases:
     CASE1 = 0x101010106D4D6D5AA
+    CASE2 = 0x101D5D5AAAA060101
 
 
 CASES = Cases()
@@ -52,14 +53,16 @@ class Constant:
                 self.POS_SCORE[-1].append(self.pos_score(i, j))
                 self.POINTS[-1].append([])
                 for k, (dy, dx) in enumerate(self.DR):
-                    self.POINTS[-1][-1].append([])
+                    tmp = []
                     for l in range(-3, 4):
                         if l == 0:
                             continue
                         x, y = i + dx * l, j + dy * l
                         if x < 0 or x >= self.WIDTH or y < 0 or y >= self.HEIGHT - 1:
                             continue
-                        self.POINTS[-1][-1][-1].append([x, y])
+                        tmp.append([x, y])
+                    if len(tmp) >= 3:
+                        self.POINTS[-1][-1].append(tmp)
 
     def mask_decode(self, s):
         return decode_data(s, [self.SIZE])
