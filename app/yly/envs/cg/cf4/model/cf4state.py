@@ -53,7 +53,7 @@ class F4State(MctsState):
                 ct[pos[i - 3]] -= 1
             if ct[0] + ct[2] == 3 and ct[0] > ret[0]:
                 ret[0] = ct[0]
-            if ct[1] + ct[2] == 3 and ct[1] > ret[0]:
+            if ct[1] + ct[2] == 3 and ct[1] > ret[1]:
                 ret[1] = ct[1]
         return ret
 
