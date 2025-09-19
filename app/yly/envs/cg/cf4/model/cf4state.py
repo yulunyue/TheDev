@@ -67,7 +67,6 @@ class F4State(MctsState):
         return self.done
 
     def get_next_state(self, k):
-
         mask = self.widths[k]
         mask |= C.MASK_POS[self.heights[k] + 1]
         if self.player_id == 0:
