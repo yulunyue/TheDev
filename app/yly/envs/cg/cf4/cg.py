@@ -9,13 +9,13 @@ class CgMuiltCf4(MockCg):
     name = "cf4"
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
-    agentsIds = [4791004, -1]
+    agentsIds = [5642784, -1]
 
     def run(self, **kw):
-        player = AlphaBateSearch().load(4, search_type=AlphaBateSearch.AB_MUCH)
+        player = AlphaBateSearch().load(1, search_type=AlphaBateSearch.AB_MUCH)
         my_id, opp_id = self.ii()
         C.load(1)
-        state = F4State.new()
+        state = F4State.new(C.INIT_MASK)
         # game loop
         while True:
             TRUN_INDEX = int(

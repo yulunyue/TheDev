@@ -85,7 +85,8 @@ class State:
     parent: "State" = None
     done = None
     STATE_STORE: Dict[str, "State"] = dict()
-    reward = 0
+    reward = None
+    actions: List[Action] = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -93,7 +94,6 @@ class State:
         self.data = dict()
         self.player_id = player_id
         self.best_action: Action = None
-        self.actions: List[Action] = None
 
     def set_player_id(self, player_id):
         self.player_id = player_id
@@ -251,7 +251,9 @@ class State:
         return self.data[k]
 
     def show(self, info="", title=""):
-        rf = "%.7f" % self.reward
+        rf = str(self.reward)
+        if isinstance(self.reward, float):
+            rf = "%.7f" % self.reward
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{rf}",
             self.to_str(),

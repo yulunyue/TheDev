@@ -111,7 +111,7 @@ class CodingGame(Api):
             b = algo.search(s)
             b_action = b.action if b else None
             self.logger.debug(
-                f"----[turn:{i}, cg_action:{a.action}, local_action:{b_action}, sm_{a.action==b_action}]----"
+                f"----[turn:{i}, cg_action:{a.action}, local_action:{b_action}, sm_{s.player_id}{a.action==b_action}]----"
             )
             last_s = s
             s = a.get_dst()

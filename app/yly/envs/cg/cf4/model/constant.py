@@ -5,6 +5,8 @@ from common.util.export import math, List
 class Cases:
     CASE1 = 0x101010106D4D6D5AA
     CASE2 = 0x101D5D5AAAA060101
+    CASE3 = 0x154B5CDAA05010101
+    CASES = {CASE3: 2}
 
 
 CASES = Cases()
@@ -25,7 +27,26 @@ class Constant:
     IN_ROW = 4
     SCORE2 = 0.002
     SCORE3 = 0.05
-    POS_SCORE_RADIO = 0.0000002
+    POS_SCORE_RADIO = 2 / (10**20)
+    CALC_SCORE_MAX_DEPTH = 3
+    SCORES = [
+        10**5,  # 第一个点player0 的活二权重
+        10**6,
+        0,
+        0,
+        -(10**2),  # 第二个点player0 的活三权重
+        0,
+        0,
+        -(10**4),  # 第二个点player1 的活三权重
+        0,
+        0,
+        10**1,  # 第三个点player0 的活三权重
+        0,
+        0,
+        10**3,  # 第三个点player0 的活三权重
+        0,
+        0,
+    ]
 
     def load(self, s):
         self.HEIGHT, self.WIDTH = self.SHAPES[s]
