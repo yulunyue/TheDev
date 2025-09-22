@@ -1,11 +1,15 @@
+from common.util.export import List, logger, StrUtil, get_log
+
+
 class XorBais:
     def set_length(self, n):
         self.n = n
         self.b = [0] * n
         return self
 
-    def set_b(self, xs):
-        self.set_length(max(xs).bit_length())
+    def set_b(self, xs: List[int]):
+        mx = max(xs)
+        self.set_length(mx.bit_length())
         for b in xs:
             self.insert(b)
         return self
@@ -25,8 +29,15 @@ class XorBais:
                 res ^= self.b[i]
         return res
 
-    def __repr__(self):
-        return "\n".join(["----"] + [self.f(v) for v in self.b] + ["----"])
 
+class XorBarisDev(XorBais):
     def f(self, v):
-        return format(v, f"0{self.n}b")
+        return StrUtil(v).format_pre0_bin(self.n)
+
+    def show(self, msg):
+        ret = "\n".join([f"--{msg}--"] + [self.f(v) for v in self.b] + ["----"])
+        get_log("algo").debug(ret)
+
+    def insert(self, x):
+        super().insert(x)
+        self.show(f"insert:{self.f(x)}")

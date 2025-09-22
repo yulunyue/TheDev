@@ -25,6 +25,6 @@ from common.algo.base.str_util import (
 from common.algo.base.tree import BeiZhenTree
 from common.algo.base.lazyheap import LazyHeapMinMax, LazyMinHeap, LazyMaxHeap
 from common.algo.base.bin_util import encode_data, decode_data
-from common.algo.base.xor_basis import XorBais
+from common.algo.base.xor_basis import XorBais, XorBarisDev
 from sortedcontainers import SortedList
 from common.algo.search.util import TestState

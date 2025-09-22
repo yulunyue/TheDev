@@ -1,6 +1,8 @@
-from common.tool.task import TASK_MANAGER, get_task
-from common.tool.thread_util import ThreadRecord, TestRc
-from common.tool.os_util import OsUtil
-from common.tool.base_class.table_base import TableBase, TableConfig
-from common.tool.base_class.baseconfig import ConfigBase
-from common.tool.base_class.model import StrModel, NumberModel, DictModel
+from .task import TASK_MANAGER, get_task
+from .thread_util import ThreadRecord, TestRc
+from .os_util import OsUtil
+from .base_class.table_base import TableBase, TableConfig
+from .base_class.baseconfig import ConfigBase
+from .base_class.model import StrModel, NumberModel, DictModel
+from .bp.node import BpNode
+from .bp.compile import BpCompile, BP

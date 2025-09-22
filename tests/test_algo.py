@@ -11,7 +11,7 @@ from common.algo.export import (
     encode_data,
     decode_data,
     solve_xyz,
-    XorBais,
+    XorBarisDev as XorBais,
     BeiZhenTree,
 )
 
@@ -61,9 +61,9 @@ class TestAlgo(TestBase):
         self.expect(decode_data(s, p), a)
 
     def test_xor_bias(self):
-        xs = [5, 3, 4]
+        xs = [5, 3, 4, 7, 9, 2, 11]
         xb = XorBais().set_b(xs)
-        self.expect(xb.max_xor(), 6, xb)
+        self.expect(xb.max_xor(), 15, xb)
 
     def test_debug(self):
         self.test_tree()

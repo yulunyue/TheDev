@@ -116,10 +116,7 @@ class F4State(MctsState):
         return super().get_action(actions)
 
     def check_cg(self, state, last_state: State = None, **kw):
-        if last_state and last_state.state != state[0]:
-            raise Exception(f"{self.show()}\n{state}")
-        if state[1] != self.state:
-            raise Exception(f"{self.show()}\n{state}")
+        pass
 
     def calc_cation_reward(self, a):
         depth = 0
@@ -128,8 +125,6 @@ class F4State(MctsState):
         while depth < C.CALC_SCORE_MAX_DEPTH and self.heights[a] + depth < C.HEIGHT - 1:
 
             scores = self.get_point_scores(a, self.heights[a] + depth)
-            if depth == 0 and scores[1 - self.player_id][0]:
-                return self.calc_score(p0, p1, a, extern=0.9)
             p0.append(scores[0])
             p1.append(scores[1])
             depth += 1
@@ -148,33 +143,33 @@ class F4State(MctsState):
                 self.cur_max_action = a.action
         return ret
 
-    def show(self, info="", title=""):
-        self.get_self_reward()
-        return super().show(info, title)
-
     def get_reward(self, **kw):
         if self.reward is not None:
             return self.reward
-        if self.done == 0 or self.done == 1:
+        if self.done == self.player_id:
             self.reward = 1
         else:
             self.reward = self.get_max_reward()
-        if self.player_id == 0:
+        if self.player_id == 1:
             self.reward = -self.reward
         return self.reward
 
 
 class F4StateDev(F4State):
     def __init__(self, state):
-        self.data = dict()
+        self.scores_record = dict()
         super().__init__(state)
 
     def calc_score(self, p0, p1, a, extern=0):
         ret = super().calc_score(p0, p1, a, extern)
-        self.data[a] = f"self:{p0}, op:{p1}, score:{'%.10f'%ret}"
+        self.scores_record[a] = [
+            ret,
+            f"{a}->self:{p0}, op:{p1}, score:{'%.10f'%ret}",
+            a,
+        ]
         return ret
 
-    def get_reward(self, **kw):
-        ret = super().get_reward()
-        self.data["max"] = f"{self.cur_max_action}->{'%.10f'%ret}"
-        return ret
+    def show(self, title=""):
+        self.get_reward()
+        info = sorted(self.scores_record.values(), reverse=True)
+        return super().show(info=[v[1] for v in info], title=title)

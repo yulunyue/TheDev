@@ -116,12 +116,3 @@ def merge_dict(src, dst):
 
     util(src, dst, [])
     return src, record
-
-
-def str_prefix_match(key: str, prefixs: List[str]):
-    for p in prefixs:
-        if key.startswith(p):
-            return True
-    return False
-
-

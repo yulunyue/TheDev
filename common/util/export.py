@@ -18,4 +18,5 @@ from common.util.singleton_util import SingletonUtil
 import random
 from copy import deepcopy
 from itertools import permutations
+from .str_util import StrUtil
 import os

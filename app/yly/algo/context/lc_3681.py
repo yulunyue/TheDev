@@ -1,4 +1,5 @@
 from common.util.export import List, logger, math
+from common.algo.base.xor_basis import XorBais
 
 
 class Solution:
@@ -6,8 +7,7 @@ class Solution:
         return [dict(nums=[1, 2, 3], result=3)]
 
     def maxXorSubsequences(self, nums: List[int]) -> int:
-        mx = max(nums)
-        n = mx.bit_length()
-        return (1 << n) - 1
+        x = XorBais().set_b(nums)
+        return x.max_xor()
 
     execute = maxXorSubsequences

@@ -1,6 +1,6 @@
 import random
 from common.util.export import logger, json_dumps, defaultdict, math, List, Dict, Tuple
-from .param import Params, Param
+
 
 inf = float("inf")
 
@@ -87,11 +87,11 @@ class State:
     STATE_STORE: Dict[str, "State"] = dict()
     reward = None
     actions: List[Action] = None
+    data = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
         self.depth = depth
-        self.data = dict()
         self.player_id = player_id
         self.best_action: Action = None
 
@@ -228,7 +228,7 @@ class State:
         dfs(self, 0)
         dfs1(self, 0, [])
 
-    def get_reward(self, actions: List[Action] = None, params: Params = None) -> int:
+    def get_reward(self, actions: List[Action] = None, params=None) -> int:
         """
         绝对优势 >0 表示先手优势 <0 表示后手优势
         """
@@ -261,7 +261,9 @@ class State:
         if self.data:
             for k, v in self.data.items():
                 datas.append(f"{k}:{v}")
-        if info:
+        if isinstance(info, list):
+            datas.extend(info)
+        elif info:
             datas.append(info)
         if isinstance(self.state, int):
             mask = "%s:%x" % (title, self.state)

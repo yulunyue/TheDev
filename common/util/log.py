@@ -67,9 +67,9 @@ class Logger(logging.Logger):
         for k, v in kw.items():
             ret.append(f"{'%s'%k}:{v}")
         if indent is None:
-            self.info(" ".join(ret), stacklevel=2)
+            self.debug(" ".join(ret), stacklevel=2)
         else:
-            self.info(json_dumps(kw, indent=indent))
+            self.debug(json_dumps(kw, indent=indent))
 
     def info(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None

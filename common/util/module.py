@@ -6,7 +6,7 @@ from typing import List, Dict
 from importlib import import_module, invalidate_caches
 
 from common.util.fp import File
-from common.util.tool import str_prefix_match
+from common.util.str_util import StrUtil
 from common.util.log import get_log
 from collections import defaultdict
 import traceback
@@ -122,7 +122,8 @@ class Module:
                         ln = ln2.strip().split(" ")[1]
                         if ln.startswith("."):
                             ln = self.fp.get_relative_path(ln)
-                        if not str_prefix_match(ln, prefix):
+                        str_ln = StrUtil(ln)
+                        if not str_ln.str_prefix_match(prefix):
                             self.lines.append(ln2)
                             continue
                         path = ln.replace(".", "/") + ".py"

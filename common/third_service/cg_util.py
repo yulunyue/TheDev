@@ -118,6 +118,7 @@ class CodingGame(Api):
             if s:
                 self.logger.debug(s.show())
                 e.add_data(s.get_data())
+
         e.draw_lines().save(uu(f"{self.game_name}/replay.html"))
 
     @property
