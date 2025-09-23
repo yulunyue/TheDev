@@ -1,7 +1,13 @@
 from common.util.export import TestBase, logger, Module, List
 from common.algo.export import random_seed, ALgoManage, Algo
 from common.third_service.export import CodingGame, uu
-from app.yly.envs.cg.cf4.export import F4StateDev as F4State, CgMuiltCf4, C, CASES
+from app.yly.envs.cg.cf4.export import (
+    F4StateDev as F4State,
+    CgMuiltCf4,
+    C,
+    CASES,
+    Kagle,
+)
 
 
 class C4Test(TestBase):
@@ -37,7 +43,7 @@ class C4Test(TestBase):
         )
 
     def cg_replay(self):
-        self.c.replay(self.init_state, self.al.am(1))
+        self.c.replay(self.init_state, Kagle("kg").load())
 
     def f1(self):
         self.al.set_players([self.al.am(1)], [self.al.am(1)]).fight()

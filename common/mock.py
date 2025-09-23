@@ -28,6 +28,7 @@ class logger:
 class CT:
     MOD = (10**9) + 7
     inf = float("inf")
+    MX = (10**5) + 1
     min = lambda a, b: a if a < b else b
     max = lambda a, b: a if a > b else b
 

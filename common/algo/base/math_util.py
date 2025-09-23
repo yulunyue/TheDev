@@ -2,6 +2,7 @@ import math
 import itertools
 from functools import lru_cache
 from collections import defaultdict, deque, Counter
+from common.util.export import CT
 
 
 @lru_cache(None)
@@ -187,7 +188,7 @@ def solve_xyz(x, y, z):
 
 
 class Comb:
-    def load(self, mx, mod):
+    def load(self, mx=CT.MX, mod=CT.MOD):
         """(a//fac[i])%MOD == (a*self.inv_fac[i])%MOD"""
         self.mod = mod
         self.mx = mx

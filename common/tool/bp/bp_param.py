@@ -1,4 +1,4 @@
-from .node import BpNode
+from .node import BpNode, uid
 
 
 class BpParam(BpNode):
@@ -6,6 +6,7 @@ class BpParam(BpNode):
         self.key = key
         self.type = type
         self.default_value = default_value
+        self.key = uid(f"{key}_{type}")
         super().__init__()
 
     def set_value(self, value):

@@ -20,7 +20,7 @@ function flow(node: Node) {
         if (f) {
             return `--->|${f}|`
         }
-        return '-----'
+        return '--->'
     }
     for (var key in node.data) {
         let edges = node.data[key]

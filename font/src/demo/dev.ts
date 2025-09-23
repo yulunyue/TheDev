@@ -47,7 +47,8 @@ export class Dev extends Div {
         let node = to_node({
             value: "flowchart TD",
             data: {
-                A: [["B", "a"]]
+                A: ["BC"],
+                C: [["B"]]
             }
         })
 
@@ -72,7 +73,7 @@ export class Dev extends Div {
         }))
     }
     on_mount(): void {
-        this.test_grid()
+        this.test_graph()
     }
 
 }

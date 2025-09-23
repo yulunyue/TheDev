@@ -18,6 +18,8 @@ class TestBp(TestBase):
     def test_demo(self):
         BP.register_func(mul=mul, add=add, sub=sub)
         n = BP.load_from_file("data/bp/demo.txt")
+        n.init_env()
+        logger.debug(n.view())
         self.expect(n.get_value(), 40)
 
     def debug(self):
