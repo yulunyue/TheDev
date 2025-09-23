@@ -22,18 +22,19 @@ class CartPoleState(State):
         self.done = False
         super().__init__(state, player_id, depth)
 
-    def get_actions(self, depth=1, **kw):
-        if self.actions:
-            return self.actions
-        self.actions = dict()
+    def make_actions(self, depth=1, **kw):
+
+        actions = []
         for i in range(CartPoleState._env.action_space.n):
             CartPoleState._env_ins.state = self.state
             next_state, reward, terminated, _, _ = CartPoleState._env.step(i)
             CartPoleState._env_ins.steps_beyond_terminated = None
-            self.actions[i] = CartAction(
-                self, i, CartPoleState(next_state).set_done(terminated)
-            ).set_reward(reward)
-        return self.actions
+            actions.append(
+                CartAction(
+                    self, i, CartPoleState(next_state).set_done(terminated)
+                ).set_reward(reward)
+            )
+        return actions
 
     def to_str(self):
         return f"{self.state}"
