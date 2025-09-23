@@ -80,5 +80,18 @@ class Constant:
         c = math.sqrt(yc * yc + xc * xc)
         return math.sqrt(d) - c
 
+    def mask_to_grid(self, state):
+        ret = [0] * ((self.HEIGHT - 1) * self.WIDTH)
+        for i in range(C.WIDTH):
+            s: int = state & C.MASK_HEIGHT
+            h = s.bit_length()
+            for j in range(h - 2, -1, -1):
+                if s & self.MASK_POS[j]:
+                    ret[j * C.WIDTH + i] = 2
+                else:
+                    ret[j * C.WIDTH + i] = 1
+            state = state >> C.HEIGHT
+        return ret
+
 
 C = Constant()

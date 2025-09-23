@@ -60,7 +60,7 @@ class C4Test(TestBase):
         logger.debug(f"{self.init_state.show()}\n{a.show()}\n{a.get_dst().show()}")
 
     def debug(self):
-        self.test_am1()
+        self.cg_replay()
 
 
 if __name__ == "__main__":

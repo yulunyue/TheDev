@@ -22,10 +22,13 @@ class Kagle(Algo):
 
     def search_main(self, state: F4State, **kw):
         obs = KaggleEnv(
-            C.mask_to_grid(state.state), C.HEIGHT, C.WIDTH, state.player_id + 1
+            C.mask_to_grid(state.state), C.HEIGHT - 1, C.WIDTH, state.player_id + 1
         )
-        action, grid = cell_swarm1(obs, obs)
-        return state.get_action(action)
+        cells = cell_swarm1(obs, obs)
+        state.data = dict()
+        for cell in cells:
+            state.data[cell["x"]] = cell["points"]
+        state.set_best_action(state.get_action(cells[0]["x"]))
 
     def __call__(self, env: KaggleEnv, conf: KaggleEnv):
         return cell_swarm(env, conf)

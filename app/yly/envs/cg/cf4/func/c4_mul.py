@@ -2,6 +2,8 @@
 https://www.kaggle.com/competitions/connectx
 """
 
+from typing import List
+
 
 def cell_swarm1(obs, conf):
 
@@ -167,32 +169,9 @@ def cell_swarm1(obs, conf):
             cell["points"].extend([0, 0, 0, 0, 0, 0])
         return cell, cell_above["points"]
 
-    def choose_best_cell(best_cell, current_cell):
+    def choose_best_cell(best_cell):
         """compare two cells and return the best one"""
-        if best_cell is not None:
-            for i in range(len(best_cell["points"])):
-                # compare amounts of points of two cells
-                if best_cell["points"][i] < current_cell["points"][i]:
-                    best_cell = current_cell
-                    break
-                if best_cell["points"][i] > current_cell["points"][i]:
-                    break
-                # if ["points"][i] of cells are equal, compare distance to swarm's center of each cell
-                if best_cell["points"][i] > 0:
-                    if (
-                        best_cell["distance_to_center"]
-                        > current_cell["distance_to_center"]
-                    ):
-                        best_cell = current_cell
-                        break
-                    if (
-                        best_cell["distance_to_center"]
-                        < current_cell["distance_to_center"]
-                    ):
-                        break
-        else:
-            best_cell = current_cell
-        return best_cell
+        return [best_cell["points"], -best_cell["distance_to_center"]]
 
     ###############################################################################
     # define swarm's and opponent's marks
@@ -219,7 +198,7 @@ def cell_swarm1(obs, conf):
             }
             swarm[column].append(cell)
 
-    best_cell = None
+    best_cells = []
     # start searching for best_cell from swarm center
     x = swarm_center_horizontal
     # shift to right or left from swarm center
@@ -235,9 +214,10 @@ def cell_swarm1(obs, conf):
         if y >= 0:
             # current cell evaluates its own qualities
             current_cell = evaluate_cell(swarm[x][y])
+            best_cells.append(current_cell)
             # current cell compares itself against best cell
-            best_cell = choose_best_cell(best_cell, current_cell)
 
+        best_cells.sort(key=choose_best_cell)
         # shift x to right or left from swarm center
         if shift >= 0:
             shift += 1
@@ -245,8 +225,8 @@ def cell_swarm1(obs, conf):
         x = swarm_center_horizontal + shift
 
     # return index of the best cell column
-    return best_cell["x"], swarm
+    return best_cells
 
 
 def cell_swarm(obs, conf):
-    return cell_swarm1(obs, conf)[0]
+    return cell_swarm1(obs, conf)[0]["x"]

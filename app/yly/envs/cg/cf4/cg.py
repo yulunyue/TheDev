@@ -3,6 +3,7 @@ from common.util.export import List, Dict
 from common.mock import MockCg
 from .model.constant import C
 from .model.cf4state import F4State
+from .func.kagle import Kagle
 
 
 class CgMuiltCf4(MockCg):
@@ -12,7 +13,8 @@ class CgMuiltCf4(MockCg):
     agentsIds = [5642784, -1]
 
     def run(self, **kw):
-        player = AlphaBateSearch().load(1, search_type=AlphaBateSearch.AB_MUCH)
+        # player = AlphaBateSearch().load(1, search_type=AlphaBateSearch.AB_MUCH)
+        player = Kagle().load()
         my_id, opp_id = self.ii()
         C.load(1)
         state = F4State.new(C.INIT_MASK)
