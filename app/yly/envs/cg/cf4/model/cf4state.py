@@ -5,8 +5,10 @@ from common.util.export import List, Dict
 
 
 class F4State(MctsState):
+    pos_score = 0
 
     def __init__(self, state):
+        super().__init__(state)
         self.heights = [0] * C.WIDTH
         self.widths = [0] * C.WIDTH
         self.depth = 0
@@ -30,7 +32,11 @@ class F4State(MctsState):
             if self.heights[k] >= C.HEIGHT - 1:
                 continue
             scores = self.get_point_scores(k, self.heights[k])
-            next_state = self.__class__.new(self.get_next_state(k))
+            next_state: F4State = self.__class__.new(self.get_next_state(k))
+            if self.player_id == 0:
+                next_state.pos_score = self.pos_score + C.POS_SCORE[k][self.heights[k]]
+            else:
+                next_state.pos_score = self.pos_score - C.POS_SCORE[k][self.heights[k]]
             if scores[self.player_id][0]:
                 next_state.set_done(self.player_id)
             actions.append(F4Action(self, k, next_state))
@@ -121,16 +127,14 @@ class F4State(MctsState):
     def calc_cation_reward(self, a):
         depth = 0
         p0, p1 = [], []
-        pos_score = C.POS_SCORE[a][self.heights[a]] * C.POS_SCORE_RADIO
         while depth < C.CALC_SCORE_MAX_DEPTH and self.heights[a] + depth < C.HEIGHT - 1:
-
             scores = self.get_point_scores(a, self.heights[a] + depth)
             p0.append(scores[0])
             p1.append(scores[1])
             depth += 1
         if self.player_id == 0:
-            return self.calc_score(p0, p1, a, pos_score)
-        return self.calc_score(p1, p0, a, pos_score)
+            return self.calc_score(p0, p1, a)
+        return self.calc_score(p1, p0, a)
 
     cur_max_action = None
 
@@ -150,8 +154,10 @@ class F4State(MctsState):
             self.reward = 1
         else:
             self.reward = self.get_max_reward()
+
         if self.player_id == 1:
             self.reward = -self.reward
+        self.reward += self.pos_score * C.POS_SCORE_RADIO
         return self.reward
 
 
@@ -164,7 +170,7 @@ class F4StateDev(F4State):
         ret = super().calc_score(p0, p1, a, extern)
         self.scores_record[a] = [
             ret,
-            f"{a}->self:{p0}, op:{p1}, score:{'%.10f'%ret}",
+            f"{a}->self:{p0}, op:{p1}, score:{'%.24f'%ret}",
             a,
         ]
         return ret

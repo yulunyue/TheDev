@@ -62,7 +62,7 @@ class MctsSearch(Base):
         """
         best_move = None
         best_visits = -1
-        for a in node.get_actions().values():
+        for a in node.get_sort_actions():
             if a.get_dst().visite_num > best_visits:
                 best_visits = a.get_dst().visite_num
                 best_move = a

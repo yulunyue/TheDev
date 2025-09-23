@@ -253,7 +253,7 @@ class State:
     def show(self, info="", title=""):
         rf = str(self.reward)
         if isinstance(self.reward, float):
-            rf = "%.7f" % self.reward
+            rf = "%.24f" % self.reward
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{rf}",
             self.to_str(),
@@ -278,12 +278,11 @@ class State:
         )
 
     def get_win_player(self, rewards, player_idx, *args, **kw):
-        reward = self.get_reward()
-        if reward == 0:
-            return -1
-        if reward > 0:
+        if self.done == 0:
             return 0
-        return 1
+        elif self.done == 1:
+            return 1
+        return 2
 
     def get_self_reward(self, **kw):
         r = self.get_reward()
@@ -314,7 +313,7 @@ class MctsState(State):
     def get_need_expand_actions(self):
         if self.need_expand_actions is not None:
             return self.need_expand_actions
-        self.need_expand_actions = list(self.get_actions().values())
+        self.need_expand_actions = self.get_sort_actions()[:]
         return self.need_expand_actions
 
     def is_fully_expanded(self):
@@ -342,7 +341,7 @@ class MctsState(State):
         return action.get_dst()
 
     def show(self, info="", title=""):
-        if self.visite_num:
-            s += f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
+        if self.visite_num and 0:
+            s = f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
 
         return super().show(info=info, title=title)

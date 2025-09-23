@@ -43,6 +43,8 @@ class File:
             with open(self.path, "wb") as f:
                 f.write(data)
         else:
+            if not isinstance(data, str):
+                data = str(data)
             with open(self.path, "w", encoding=encoding) as f:
                 f.write(data)
         return self

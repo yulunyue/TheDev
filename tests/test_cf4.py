@@ -24,16 +24,26 @@ class C4Test(TestBase):
 
     def cg_play(self):
         Module().compile_one(CgMuiltCf4.main_py())
-        CodingGame("cf4").pk(
+        CodingGame(CgMuiltCf4.name).pk(
             Module.RUN_TMP_PATH, CgMuiltCf4.game_id, CgMuiltCf4.agentsIds
         )
         self.cg_replay()
+
+    def cg_submit(self):
+        Module().compile_one(CgMuiltCf4.main_py())
+        CodingGame(CgMuiltCf4.name).submit(
+            Module.RUN_TMP_PATH,
+            CgMuiltCf4.game_id,
+        )
 
     def cg_replay(self):
         self.c.replay(self.init_state, self.al.am(1))
 
     def f1(self):
         self.al.set_players([self.al.am(1)], [self.al.am(1)]).fight()
+
+    def f2(self):
+        self.al.set_players(self.al.ams(4), self.al.ams(4)).fight()
 
     def run3(self):
         s = self.init_state.get_action([0, 0, 1]).get_dst()
