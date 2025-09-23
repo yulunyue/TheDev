@@ -46,7 +46,7 @@ class C4Test(TestBase):
         self.c.replay(self.init_state, Kagle("kg").load())
 
     def f1(self):
-        self.al.set_players([self.al.am(1)], [self.al.am(1)]).fight()
+        self.al.set_players([self.al.mc(1)], [self.al.mc(100)]).fight()
 
     def f2(self):
         self.al.set_players(self.al.ams(4), self.al.ams(4)).fight()
