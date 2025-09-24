@@ -28,7 +28,7 @@ class Constant:
     SCORE2 = 0.002
     SCORE3 = 0.05
     POS_SCORE_RADIO = 2 / (10**20)
-    CALC_SCORE_MAX_DEPTH = 3
+    CALC_SCORE_MAX_DEPTH = 1
 
     def load(self, s):
         self.HEIGHT, self.WIDTH = self.SHAPES[s]
@@ -75,10 +75,9 @@ class Constant:
         return encode_data([boare, shape, 1 - player_id], self.POS_MASK)
 
     def pos_score(self, x, y):
-        d = self.HEIGHT * self.HEIGHT / 4 + self.WIDTH * self.WIDTH / 4
-        yc, xc = abs(self.HEIGHT / 2 - y), abs(self.WIDTH / 2 - x)
+        yc, xc = abs((self.HEIGHT - 2) / 2 - y), abs((self.WIDTH - 1) / 2 - x)
         c = math.sqrt(yc * yc + xc * xc)
-        return math.sqrt(d) - c
+        return -c
 
     def mask_to_grid(self, state):
         ret = [0] * ((self.HEIGHT - 1) * self.WIDTH)

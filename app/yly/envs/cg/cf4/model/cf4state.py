@@ -5,7 +5,7 @@ from common.util.export import List, Dict, logger
 
 
 class F4State(MctsState):
-    pos_score = 0
+    # pos_score = 0
 
     def __init__(self, state):
         super().__init__(state)
@@ -33,10 +33,10 @@ class F4State(MctsState):
                 continue
             scores = self.get_point_scores(k, self.heights[k])
             next_state: F4State = self.__class__.new(self.get_next_state(k))
-            if self.player_id == 0:
-                next_state.pos_score = self.pos_score + C.POS_SCORE[k][self.heights[k]]
-            else:
-                next_state.pos_score = self.pos_score - C.POS_SCORE[k][self.heights[k]]
+            # if self.player_id == 0:
+            #     next_state.pos_score = self.pos_score + C.POS_SCORE[k][self.heights[k]]
+            # else:
+            #     next_state.pos_score = self.pos_score - C.POS_SCORE[k][self.heights[k]]
             if scores[self.player_id][0]:
                 next_state.set_done(self.player_id)
             actions.append(F4Action(self, k, next_state))
@@ -124,14 +124,17 @@ class F4State(MctsState):
     def calc_cation_reward(self, a):
         depth = 0
         p0, p1 = [], []
+        pos_score = 0
         while depth < C.CALC_SCORE_MAX_DEPTH and self.heights[a] + depth < C.HEIGHT - 1:
             scores = self.get_point_scores(a, self.heights[a] + depth)
             p0.append(scores[0])
             p1.append(scores[1])
+            pos_score += C.POS_SCORE[a][self.heights[a] + depth]
             depth += 1
+        pos_score *= C.POS_SCORE_RADIO
         if self.player_id == 0:
-            return self.calc_score(p0, p1, a)
-        return self.calc_score(p1, p0, a)
+            return self.calc_score(p0, p1, a, pos_score)
+        return self.calc_score(p1, p0, a, pos_score)
 
     cur_max_action = None
 
@@ -154,7 +157,7 @@ class F4State(MctsState):
 
         if self.player_id == 1:
             self.reward = -self.reward
-        self.reward += self.pos_score * C.POS_SCORE_RADIO
+        # self.reward += self.pos_score * C.POS_SCORE_RADIO
         return self.reward
 
 
