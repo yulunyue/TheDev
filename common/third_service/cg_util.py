@@ -98,15 +98,15 @@ class CodingGame(Api):
         from common.third_util.echarts import EChart
 
         last_s = None
-        e = EChart()
-        e.add_data(s.get_data())
+        # e = EChart()
+        # e.add_data(s.get_data())
         for i, f in enumerate(self.get_cg_frames()):
             if not f.stdout:
                 continue
             # for k, v in f.stderr.items():
             #     self.log(f"{k} :{v}")
-            if hasattr(s, "check_cg") and f.stderr:
-                s.check_cg(**f.stderr, last_state=last_s)
+            if hasattr(s, "check_cg") and s.check_cg(f.stdout, f.summary):
+                continue
             a = s.get_action(f.stdout)
             b = algo.search(s)
             self.logger.debug(s.show())

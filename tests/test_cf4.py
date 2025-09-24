@@ -43,7 +43,7 @@ class C4Test(TestBase):
         )
 
     def cg_replay(self):
-        self.c.replay(self.init_state, Kagle("kg").load())
+        self.c.replay(self.init_state, self.al.am(1))
 
     def f1(self):
         self.al.set_players([self.al.mc(1)], [self.al.mc(100)]).fight()

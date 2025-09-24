@@ -10,11 +10,11 @@ class CgMuiltCf4(MockCg):
     name = "cf4"
     uri = "https://www.codingame.com/ide/puzzle/connect-4"
     game_id = "70989246b492bcc523436cf43b6090c82395d392"
-    agentsIds = [5642784, -1]
+    agentsIds = [-1, 5642784]
 
     def run(self, **kw):
-        # player = AlphaBateSearch().load(1, search_type=AlphaBateSearch.AB_MUCH)
-        player = Kagle().load()
+        player = AlphaBateSearch().load(1, search_type=AlphaBateSearch.AB_MUCH)
+        # player = Kagle().load()
         my_id, opp_id = self.ii()
         C.load(1)
         state = F4State.new(C.INIT_MASK)

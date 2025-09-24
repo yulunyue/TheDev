@@ -5,19 +5,19 @@ from typing import List
 class SparseTable:
     """ """
 
-    def load(self, a):
+    def __init__(self, a):
         self.n = len(a)
         self.m = self.n.bit_length()
-        self.st = [a]
-        return self
+        self.nums = a
 
-    def make_max(self):
+    def make_arae(self) -> "SparseTable":
+        self.st = [[self.op(v, v) for v in self.nums]]
         for j in range(1, self.m):
             k = self.n - (1 << j)
-            tmp = [0] * self.n
+            tmp = []
             for i in range(k + 1):
                 u = i + (1 << (j - 1))
-                tmp[i] = max(self.st[j - 1][i], self.st[j - 1][u])
+                tmp.append(self.op(self.st[j - 1][i], self.st[j - 1][u]))
             self.st.append(tmp)
         return self
 
@@ -30,7 +30,7 @@ class SparseTable:
             self.st.append(tmp)
         return self
 
-    def query_jump(self, l, r):
+    def jump(self, l, r):
         res = 0
         for k in range(self.m - 1, -1, -1):
             if self.st[k][r] > l:
@@ -38,12 +38,15 @@ class SparseTable:
                 r = self.st[k][r]
         return res, r
 
-    def query_max(self, l: int, r: int):
+    def query(self, l: int, r: int):
         if l >= r:
             return 0
         k = (r - l).bit_length() - 1
         r = r - (1 << k)
-        return max(self.st[k][l], self.st[k][r])
+        return self.calc(self.op(self.st[k][l], self.st[k][r]))
 
-    def __repr__(self):
-        return "\n".join([str(v) for v in self.st])
+    def op(self, l, r):
+        raise Exception("todo")
+
+    def calc(self, v):
+        raise Exception("todo")

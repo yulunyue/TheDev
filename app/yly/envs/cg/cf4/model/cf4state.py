@@ -1,7 +1,7 @@
 from .cf4action import F4Action
 from .constant import C
 from common.algo.search.state import State, MctsState
-from common.util.export import List, Dict
+from common.util.export import List, Dict, logger
 
 
 class F4State(MctsState):
@@ -121,9 +121,6 @@ class F4State(MctsState):
             actions = int(actions)
         return super().get_action(actions)
 
-    def check_cg(self, state, last_state: State = None, **kw):
-        pass
-
     def calc_cation_reward(self, a):
         depth = 0
         p0, p1 = [], []
@@ -179,3 +176,9 @@ class F4StateDev(F4State):
         self.get_reward()
         info = sorted(self.scores_record.values(), reverse=True)
         return super().show(info=[v[1] for v in info], title=title)
+
+    def check_cg(self, stdout, summary):
+        if stdout == "-2":
+            logger.info(summary)
+            return True
+        return False
