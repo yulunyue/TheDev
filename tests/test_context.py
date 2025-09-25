@@ -33,11 +33,14 @@ class LCTest(TestBase):
             except_result = (
                 input_param.pop("result") if "result" in input_param else None
             )
+
             r = getattr(ins, fun_name)(**input_param)
             if isinstance(ins, ThreadRecord):
                 ins.log()
             msg = f"{cases[cid]}\nlogger:\n{logger.get_and_clear_cache()}"
             self.expect(r, except_result, msg)
+            File("data/test/a.txt").write_file(r)
+            File("data/test/b.txt").write_file(except_result)
 
     def test_debug(self):
         self.cases("oj_2811")

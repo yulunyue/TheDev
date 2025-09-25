@@ -59,27 +59,35 @@ class F4State(MctsState):
             return self.point_score[x, y]
         scroe0, scroe1 = [0] * 3, [0] * 3
         for ll in C.POINTS[x][y]:
-            player_0, player_1 = self.get_pos_line(ll)
+            player_0, player_0num, player_1, player_1num = self.get_pos_line(ll)
             if player_0 > 1:
-                scroe0[3 - player_0] += 1
+                scroe0[3 - player_0] += player_0num
             if player_1 > 1:
-                scroe1[3 - player_1] += 1
+                scroe1[3 - player_1] += player_1num
         self.point_score[x, y] = scroe0, scroe1
         return self.point_score[x, y]
 
     def get_pos_line(self, l):
         ct = [0, 0, 0]
         pos = [-1] * len(l)
-        ret = [0, 0]
+        ret = [0, 0, 0, 0]
+
+        def u(i):
+            j = i * 2
+            if ct[i] + ct[2] == 3:
+                if ct[i] > ret[j]:
+                    ret[i] = ct[i]
+                    ret[j + 1] = 1
+                elif ct[i] == ret[j]:
+                    ret[j + 1] += 1
+
         for i, (x, y) in enumerate(l):
             pos[i] = self.get_pos_statu(x, y)
             ct[pos[i]] += 1
             if i >= 3:  # 因为过滤了当前节点 所以只有三个
                 ct[pos[i - 3]] -= 1
-            if ct[0] + ct[2] == 3 and ct[0] > ret[0]:
-                ret[0] = ct[0]
-            if ct[1] + ct[2] == 3 and ct[1] > ret[1]:
-                ret[1] = ct[1]
+            u(0)
+            u(1)
         return ret
 
     def get_pos_statu(self, x, y):

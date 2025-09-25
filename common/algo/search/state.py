@@ -305,8 +305,7 @@ class MctsState(State):
     visite_num = 0
     visite_score = 0
 
-    def __init__(self, state=None, player_id=0, depth=0):
-        super().__init__(state, player_id, depth)
+    def init_mcts(self):
         self.expand_actions: List[Action] = []
         self.need_expand_actions: List[Action] = None
 
@@ -345,3 +344,12 @@ class MctsState(State):
             s = f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
 
         return super().show(info=info, title=title)
+
+
+class AbState(MctsState):
+    def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
+        self.search_depth = search_depth
+        self.alpha = alpha
+        self.bate = bate
+        self.ab_value = alpha
+        return self

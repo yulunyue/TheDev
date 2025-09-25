@@ -64,35 +64,46 @@ O2 = """Case:2
 
 
 class Action:
-    pass
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
 
 
 LOGS: Dict[int, List[Action]] = dict()
 
 
+def add_action(a: Action):
+    if Solution.now_t not in LOGS:
+        LOGS[Solution.now_t] = []
+    LOGS[Solution.now_t].append(a)
+
+
 class Unit:
     attack_power: int = None
     init_hp: int = None
+    type_name = ""
 
 
 class Dragon(Unit):
-    pass
+    type_name = "dragon"
 
 
 class Ninja(Unit):
-    pass
+    type_name = "ninja"
 
 
 class IceMan(Unit):
-    pass
+    type_name = "iceman"
 
 
 class Lion(Unit):
-    pass
+    type_name = "lion"
 
 
 class Wolf(Unit):
-    pass
+    type_name = "wolf"
 
 
 SHAPES: List[Unit] = [Dragon, Ninja, IceMan, Lion, Wolf]
@@ -107,11 +118,23 @@ class Commander:
         self.key = key
         if key == Commander.RED:
             self.shape_clss: List[Unit] = [IceMan, Lion, Wolf, Ninja, Dragon]
+            self.color = "red"
         else:
             self.shape_clss: List[Unit] = [Lion, Ninja, Dragon, IceMan, Wolf]
+            self.color = "blue"
+        self.shapes = []
+        self.born_idx = 0
+
+    def born(self):
+        s: Unit = self.shape_clss[self.born_idx]()
+        self.shapes.append(s)
+        add_action(Action(f"{self.color} {s.type_name} 1 born"))
+        self.born_idx = (self.born_idx + 1) % len(self.shape_clss)
 
 
 class Solution(MockCf):
+    now_t = 0
+
     def get_cases(self):
         return [
             dict(
@@ -134,7 +157,7 @@ class Solution(MockCf):
         ]
 
     def execute(self, main_hp, city_num, t, init_hps, init_attack_power, case_id):
-        self.main_hps = [
+        self.cmds = [
             Commander(Commander.RED, main_hp),
             Commander(Commander.BLUE, main_hp),
         ]
@@ -142,21 +165,22 @@ class Solution(MockCf):
         for i, v in enumerate(SHAPES):
             v.attack_power, v.init_hp = init_attack_power[i], init_hps[i]
         LOGS.clear()
-        self.t = 0
-        while self.t < self.max_t:
-            tm = self.t % 60
+        Solution.now_t = 0
+        while Solution.now_t < self.max_t:
+            tm = Solution.now_t % 60
             if getattr(self, f"do_when_{tm}")():
                 break
-            self.t += 10
+            Solution.now_t += 10
         ans = [f"Case:{case_id}"]
         for t in sorted(LOGS.keys()):
-            k = "%03d:%d" % (t // 60, t % 60)
+            k = "%03d:%02d" % (t // 60, t % 60)
             for a in LOGS[t]:
                 ans.append(f"{k} {a}")
         return "\n".join(ans)
 
     def do_when_0(self):
-        pass
+        self.cmds[0].born()
+        self.cmds[1].born()
 
     def do_when_10(self):
         pass

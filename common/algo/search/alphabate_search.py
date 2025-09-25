@@ -1,23 +1,7 @@
-from common.algo.search.state import State, inf, Action
+from common.algo.search.state import State, inf, Action, AbState
 from common.algo.search.algo import Algo
 from typing import List, Dict
 from common.util.export import logger, defaultdict, get_log, deque
-
-
-class AbState:
-    def __init__(self, state: State, action=None, depth=0, alpha=-inf, bate=inf):
-        self.state: State = state
-        self.state.best_action = None
-        self.action: Action = action
-        self.child_index = 0
-        self.alpha = alpha
-        self.bate = bate
-        self.depth = depth
-        self.ab_value = alpha
-
-    def __repr__(self):
-        a = self.action.action if self.action else "?"
-        return f"idx:{self.child_index}, a:{a}, d:{self.depth}"
 
 
 class AlphaBateSearch(Algo):
@@ -93,8 +77,8 @@ class AlphaBateSearch(Algo):
                 best_reward = reward
         return best_reward
 
-    def search_ab_loop(self, state: State):
-        stacks = deque([AbState(state)])
+    def search_ab_loop(self, state: AbState):
+        stacks = deque([state.load_ab()])
 
         pop_node: AbState = None
         stacks[0].depth = 0
@@ -102,8 +86,8 @@ class AlphaBateSearch(Algo):
         while stacks:
             cur_node = stacks[-1]
             if (
-                cur_node.state.get_done() is not None
-                or cur_node.depth == self.max_depth
+                cur_node.get_done() is not None
+                or cur_node.search_depth == self.max_depth
             ):
                 cur_node.ab_value = -self.get_depth_reward(
                     cur_node.state, cur_node.depth
@@ -169,7 +153,11 @@ class AbDev(AlphaBateSearch):
         ret = super().search(state)
         action = ret.action if ret else None
         self.logger.debug(state.show(title=f"BEGIN:{action}"))
-        for a in state.get_sort_actions():
+        for a in sorted(
+            state.get_sort_actions(),
+            key=lambda a: a.get_dst().get_reward(),
+            reverse=True,
+        ):
             self.print_best_actions(a)
         return ret
 
