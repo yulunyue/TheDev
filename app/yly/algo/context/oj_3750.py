@@ -62,7 +62,12 @@ O2 = """Case:2
 002:10 red lion 2 reached blue headquarter with 20 elements and force 20
 002:10 blue headquarter was taken"""
 
-LOGS = []
+
+class Action:
+    pass
+
+
+LOGS: Dict[int, List[Action]] = dict()
 
 
 class Unit:
@@ -115,6 +120,7 @@ class Solution(MockCf):
                 t=1000,
                 init_hps=[10, 20, 50, 50, 30],
                 init_attack_power=[20, 50, 50, 50, 50],
+                case_id=1,
                 result=O1,
             ),
             # dict(
@@ -127,7 +133,7 @@ class Solution(MockCf):
             # ),
         ]
 
-    def execute(self, main_hp, city_num, t, init_hps, init_attack_power):
+    def execute(self, main_hp, city_num, t, init_hps, init_attack_power, case_id):
         self.main_hps = [
             Commander(Commander.RED, main_hp),
             Commander(Commander.BLUE, main_hp),
@@ -142,7 +148,12 @@ class Solution(MockCf):
             if getattr(self, f"do_when_{tm}")():
                 break
             self.t += 10
-        return "\n".join(LOGS)
+        ans = [f"Case:{case_id}"]
+        for t in sorted(LOGS.keys()):
+            k = "%03d:%d" % (t // 60, t % 60)
+            for a in LOGS[t]:
+                ans.append(f"{k} {a}")
+        return "\n".join(ans)
 
     def do_when_0(self):
         pass
@@ -163,12 +174,14 @@ class Solution(MockCf):
         pass
 
     def main(self):
-        cases = self.ii()
-        for _ in range(cases):
+        cases, *args = self.ii()
+        for i in range(cases):
             main_hp, city_num, t = self.ii()
             init_hps = self.ii()
             init_attack_power = self.ii()
-            print(self.execute(main_hp, city_num, t, init_hps, init_attack_power))
+            print(
+                self.execute(main_hp, city_num, t, init_hps, init_attack_power, i + 1)
+            )
 
 
 if __name__ == "__main__":
