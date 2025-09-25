@@ -40,7 +40,7 @@ class LCTest(TestBase):
             self.expect(r, except_result, msg)
 
     def test_debug(self):
-        self.cases("lc_3651")
+        self.cases("oj_2811")
 
 
 if __name__ == "__main__":

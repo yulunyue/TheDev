@@ -10,9 +10,9 @@ from common.algo.export import (
     Comb,
     encode_data,
     decode_data,
-    solve_xyz,
     XorBarisDev as XorBais,
     BeiZhenTree,
+    GaussElimination,
 )
 
 
@@ -41,7 +41,6 @@ class TestAlgo(TestBase):
             self.expect(
                 int(calc_angle(0, 0, 3 * sin(i), 3 * cos(i)) / math.pi * 180), i, i
             )
-        self.expect(solve_xyz(4074, 9819, 23712), (1, 2))
 
     def test_str(self):
         s = "aabcbc"
@@ -65,7 +64,11 @@ class TestAlgo(TestBase):
         xb = XorBais().set_b(xs)
         self.expect(xb.max_xor(), 15, xb)
 
-    def test_debug(self):
+    def test_ge(self):
+        x = GaussElimination([[2, 1, 1], [6, 2, 1], [-2, 2, 1]], [1, -1, 7]).calc()
+        self.expect(x, [-1.0, 2.0, 1.0])
+
+    def debug(self):
         self.test_tree()
 
 

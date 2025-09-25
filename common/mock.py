@@ -9,11 +9,6 @@ import os
 import random
 from itertools import permutations
 
-try:
-    from sortedcontainers import SortedDict, SortedList, SortedSet
-except Exception as e:
-    pass
-
 
 def get_log(*args, **kw):
     pass
