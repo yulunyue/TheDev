@@ -1,4 +1,4 @@
-from common.algo.search.state import State, inf, Action, AbState
+from common.algo.search import State, inf, Action, AbState
 from common.algo.search.algo import Algo
 from typing import List, Dict
 from common.util.export import logger, defaultdict, get_log, deque
@@ -89,34 +89,32 @@ class AlphaBateSearch(Algo):
                 cur_node.get_done() is not None
                 or cur_node.search_depth == self.max_depth
             ):
-                cur_node.ab_value = -self.get_depth_reward(
-                    cur_node.state, cur_node.depth
-                )
+                cur_node.ab_value = -self.get_depth_reward(cur_node, cur_node.depth)
                 pop_node = stacks.pop()
                 continue
-            sort_actions = cur_node.state.get_sort_actions()
+            sort_actions = cur_node.get_sort_actions()
             if pop_node:
                 reward = -pop_node.ab_value
                 # self.debug(
-                #     "sk", stacks + [pop_node], f"r:{reward}, s:{pop_node.state.state}"
+                #     "sk", stacks + [pop_node], f"r:{reward}, s:{pop_node}"
                 # )
                 sa = sort_actions[cur_node.child_index - 1]
                 if reward >= cur_node.bate:
                     # cur_node.child_index = len(actions)
                     # self.debug(stacks + [pop_node], f"r:{reward},b:{cur_node.bate}")
                     cur_node.ab_value = cur_node.alpha = cur_node.bate
-                    # cur_node.state.set_best_action(
+                    # cur_node.set_best_action(
                     #     sort_actions[cur_node.child_index - 1]
                     # )
                     pop_node = stacks.pop()
                     if reward > cur_node.bate:
-                        self.set_state_best_action(cur_node.state, sa, cur_node.depth)
+                        self.set_state_best_action(cur_node, sa, cur_node.depth)
                     # cur_node.ab_value = -pop_node.ab_value
                     continue
                 if reward > cur_node.alpha:
                     # self.debug(stacks + [pop_node], f"r:{reward},a:{cur_node.alpha}")
                     cur_node.ab_value = cur_node.alpha = reward
-                    self.set_state_best_action(cur_node.state, sa, cur_node.depth)
+                    self.set_state_best_action(cur_node, sa, cur_node.depth)
                 # if cur_node.depth == 0:
                 pop_node = None  # 根节点每次对比完 需要找新节点
 
