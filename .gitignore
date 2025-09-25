@@ -165,3 +165,4 @@ font/package-lock.json
 *.out
 font/src/demo/secmaster
 config
+*.pdf
