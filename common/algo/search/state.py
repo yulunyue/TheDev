@@ -349,6 +349,7 @@ class MctsState(State):
 class AbState(MctsState):
     def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
         self.search_depth = search_depth
+        self.child_index = 0
         self.alpha = alpha
         self.bate = bate
         self.ab_value = alpha
