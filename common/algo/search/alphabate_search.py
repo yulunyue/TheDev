@@ -139,7 +139,6 @@ class AbDev(AlphaBateSearch):
         for a in sorted(
             state.get_sort_actions(),
             key=lambda a: self.get_state_reward(a.get_dst()),
-            reverse=True,
         ):
             self.print_best_actions(a)
         return ret

@@ -5,7 +5,7 @@ from common.util.export import List, Dict, logger
 
 
 class F4State(AbState):
-    # pos_score = 0
+    pos_score0 = pos_score1 = 0
 
     def __init__(self, state):
         super().__init__(state)
@@ -14,7 +14,7 @@ class F4State(AbState):
         self.depth = 0
         self.state = state
         self.point_score = dict()
-        # self.pos_reward = 0
+
         s: int = self.state
         for i in range(C.WIDTH):
             s1: int = s & C.MASK_HEIGHT
@@ -33,10 +33,10 @@ class F4State(AbState):
                 continue
             scores = self.get_point_scores(k, self.heights[k])
             next_state: F4State = self.__class__.new(self.get_next_state(k))
-            # if self.player_id == 0:
-            #     next_state.pos_score = self.pos_score + C.POS_SCORE[k][self.heights[k]]
-            # else:
-            #     next_state.pos_score = self.pos_score - C.POS_SCORE[k][self.heights[k]]
+            if self.player_id == 0:
+                next_state.pos_score0 += C.POS_SCORE[k][self.heights[k]]
+            else:
+                next_state.pos_score1 += C.POS_SCORE[k][self.heights[k]]
             if scores[self.player_id][0]:
                 next_state.set_done(self.player_id)
             actions.append(F4Action(self, k, next_state))
@@ -132,17 +132,16 @@ class F4State(AbState):
     def calc_cation_reward(self, a):
         depth = 0
         p0, p1 = [], []
-        pos_score = 0
+
         while depth < C.CALC_SCORE_MAX_DEPTH and self.heights[a] + depth < C.HEIGHT - 1:
             scores = self.get_point_scores(a, self.heights[a] + depth)
             p0.append(scores[0])
             p1.append(scores[1])
-            pos_score += C.POS_SCORE[a][self.heights[a] + depth]
             depth += 1
-        pos_score *= C.POS_SCORE_RADIO
+
         if self.player_id == 0:
-            return self.calc_score(p0, p1, a, pos_score)
-        return self.calc_score(p1, p0, a, pos_score)
+            return self.calc_score(p0, p1, a)
+        return self.calc_score(p1, p0, a)
 
     cur_max_action = None
 
@@ -155,18 +154,24 @@ class F4State(AbState):
                 self.cur_max_action = a.action
         return ret
 
-    def get_reward(self, **kw):
-        if self.reward is not None:
-            return self.reward
-        if self.done == self.player_id:
-            self.reward = 1
-        else:
-            self.reward = self.get_max_reward()
+    self_reward = None
 
-        if self.player_id == 1:
-            self.reward = -self.reward
-        # self.reward += self.pos_score * C.POS_SCORE_RADIO
-        return self.reward
+    def get_self_reward(self, **kw):
+        if self.self_reward is not None:
+            return self.self_reward
+        if self.done == self.player_id:
+            self.self_reward = 1
+        else:
+            self.self_reward = self.get_max_reward()
+            if self.player_id == 0:
+                self.self_reward += self.pos_score0 * C.POS_SCORE_RADIO
+            else:
+                self.self_reward += self.pos_score1 * C.POS_SCORE_RADIO
+        return self.self_reward
+
+    def get_reward(self, **kw):
+        r = self.get_self_reward()
+        return r if self.player_id == 0 else -r
 
 
 class F4StateDev(F4State):
