@@ -1,10 +1,10 @@
 from .cf4action import F4Action
 from .constant import C
-from common.algo.search.state import State, MctsState
+from common.algo.search.state import AbState
 from common.util.export import List, Dict, logger
 
 
-class F4State(MctsState):
+class F4State(AbState):
     # pos_score = 0
 
     def __init__(self, state):
@@ -183,10 +183,12 @@ class F4StateDev(F4State):
         ]
         return ret
 
-    def show(self, title=""):
+    def show(self, info=None, title=""):
         self.get_reward()
-        info = sorted(self.scores_record.values(), reverse=True)
-        return super().show(info=[v[1] for v in info], title=title)
+        if info is None:
+            info = []
+        info2 = sorted(self.scores_record.values(), reverse=True)
+        return super().show(info=info + [v[1] for v in info2[:1]], title=title)
 
     def check_cg(self, stdout, summary):
         if stdout == "-2":

@@ -9,7 +9,6 @@ class Action:
     check_info = None
     reward = 0
     regret = 0
-    depth = 0
 
     def __init__(self, src, action, dst=None):
         self.action = action
@@ -88,12 +87,16 @@ class State:
     reward = None
     actions: List[Action] = None
     data = None
+    best_action: Action = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
         self.depth = depth
         self.player_id = player_id
-        self.best_action: Action = None
+
+    def init_data(self):
+        self.data = dict()
+        return self
 
     def set_player_id(self, player_id):
         self.player_id = player_id
@@ -129,6 +132,18 @@ class State:
     def set_reward(self, reward):
         self.reward = reward
         return self
+
+    def set_actions(self, actions):
+        self.actions = actions
+        return self
+
+    def set_next_states(self, states: List["State"]):
+        return self.set_actions(
+            [
+                Action(self, i, v.set_player_id(1 - self.player_id))
+                for i, v in enumerate(states)
+            ]
+        )
 
     def reset(self):
         return self
@@ -193,10 +208,13 @@ class State:
         return ret
 
     def dfs(self, max_depth=-1):
-
+        tree_info = []
         DONE_S = "done"
 
         def dfs(s: State, depth):
+            tree_info.append(
+                f'{"  " * depth}-{s.state}: p={s.player_id}; r={s.get_reward()}; done={s.get_done()}'
+            )
             actions = s.get_sort_actions()
             if s.get_done() is not None or depth == max_depth or not actions:
                 return s.set_value(DONE_S, s.get_done())
@@ -204,8 +222,8 @@ class State:
             for a in actions:
                 dst = a.get_dst()
                 done = dfs(dst, depth + 1)
-                if done == s.player_id:
-                    return s.set_value(DONE_S, done)
+                # if done == s.player_id:
+                #     return s.set_value(DONE_S, done)
                 ct[done] += 1
             if ct[1 - s.player_id] == len(actions):
                 return s.set_value(DONE_S, 1 - s.player_id)
@@ -227,6 +245,11 @@ class State:
 
         dfs(self, 0)
         dfs1(self, 0, [])
+        return tree_info
+
+    def dump_tree(self):
+        tree_info = self.dfs()
+        return "\n".join(tree_info)
 
     def get_reward(self, actions: List[Action] = None, params=None) -> int:
         """
@@ -264,7 +287,7 @@ class State:
         if isinstance(info, list):
             datas.extend(info)
         elif info:
-            datas.append(info)
+            datas.append(str(info))
         if isinstance(self.state, int):
             mask = "%s:%x" % (title, self.state)
         else:

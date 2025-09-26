@@ -108,10 +108,15 @@ class Algo:
             s = a.get_dst()
             actions.append(str(a.action))
             a = s.get_best_action()
-        self.logger.debug(s.show(title=",".join(actions)))
+        self.logger.debug(
+            s.show(
+                info=["ab_value:%.10f" % self.get_state_reward(s)],
+                title=",".join(actions),
+            )
+        )
 
-    def set_state_best_action(self, s: State, a: Action, depth):
-        s.set_best_action(a)
+    def get_state_reward(self, s: State):
+        return s.get_reward()
 
 
 class RandomAlgo(Algo):
