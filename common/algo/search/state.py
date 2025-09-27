@@ -88,6 +88,7 @@ class State:
     actions: List[Action] = None
     data = None
     best_action: Action = None
+    ab_value = -inf
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -211,9 +212,12 @@ class State:
         tree_info = []
         DONE_S = "done"
 
-        def dfs(s: State, depth):
+        def dfs(s: State, depth, action=None):
+            state = str(s.state)
+            if isinstance(s.state, int):
+                state = "%x" % s.state
             tree_info.append(
-                f'{"  " * depth}-{s.state}: p={s.player_id}; r={s.get_reward()}; done={s.get_done()}'
+                f'{"  " * depth}-{state}-{action}: p={s.player_id}; r={s.get_reward()}; ab={s.ab_value}; done={s.get_done()}'
             )
             actions = s.get_sort_actions()
             if s.get_done() is not None or depth == max_depth or not actions:
@@ -221,7 +225,7 @@ class State:
             ct = defaultdict(int)
             for a in actions:
                 dst = a.get_dst()
-                done = dfs(dst, depth + 1)
+                done = dfs(dst, depth + 1, a.action)
                 # if done == s.player_id:
                 #     return s.set_value(DONE_S, done)
                 ct[done] += 1
@@ -247,8 +251,8 @@ class State:
         dfs1(self, 0, [])
         return tree_info
 
-    def dump_tree(self):
-        tree_info = self.dfs()
+    def dump_tree(self, max_depth=-1):
+        tree_info = self.dfs(max_depth)
         return "\n".join(tree_info)
 
     def get_reward(self, actions: List[Action] = None, params=None) -> int:
@@ -275,8 +279,6 @@ class State:
 
     def show(self, info="", title=""):
         rf = str(self.reward)
-        if isinstance(self.reward, float):
-            rf = "%.24f" % self.reward
         datas = [
             f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{rf}",
             self.to_str(),
@@ -307,7 +309,7 @@ class State:
             return 1
         return 2
 
-    def get_self_reward(self, **kw):
+    def get_self_reward(self, *args, **kw):
         r = self.get_reward()
         if (
             self.player_id == 0
@@ -370,6 +372,7 @@ class MctsState(State):
 
 
 class AbState(MctsState):
+
     def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
         self.search_depth = search_depth
         self.child_index = 0

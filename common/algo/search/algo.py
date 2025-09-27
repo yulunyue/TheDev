@@ -110,7 +110,7 @@ class Algo:
             a = s.get_best_action()
         self.logger.debug(
             s.show(
-                info=["ab_value:%.10f" % self.get_state_reward(s)],
+                info=[f"ab_value:{s.ab_value}"],
                 title=",".join(actions),
             )
         )

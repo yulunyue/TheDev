@@ -51,16 +51,16 @@ class C4Test(TestBase):
     def f2(self):
         self.al.set_players(self.al.ams(4), self.al.ams(4)).fight()
 
-    def run3(self):
-        s = self.init_state.get_action([0, 0, 1]).get_dst()
-        self.al.ab(1).search(s)
-
-    def run1(self):
-        a = self.al.am(1).search(self.init_state)
-        logger.debug(f"{self.init_state.show()}\n{a.show()}\n{a.get_dst().show()}")
+    def dev(self):
+        s = F4State.new(0x10215147239030302)
+        logger.debug(s.show())
+        for i in range(2, 3):
+            a = self.al.ab(i).search(s)
+            logger.debug(a.show())
+        logger.debug(s.dump_tree(2))
 
     def debug(self):
-        self.cg_replay()
+        self.dev()
 
 
 if __name__ == "__main__":

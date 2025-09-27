@@ -25,10 +25,11 @@ class Constant:
         [0, 1],
     ]  # x,y
     IN_ROW = 4
-    SCORE2 = 0.002
-    SCORE3 = 0.05
-    POS_SCORE_RADIO = 2 / (10**20)
     CALC_SCORE_MAX_DEPTH = 1
+    SCORES = [
+        [10**6, 10**4, 10**2, 10**5, 10**3, 10],
+        [10**5, 10**3, 10, 10**6, 10**4, 10**2],
+    ]
 
     def load(self, s):
         self.HEIGHT, self.WIDTH = self.SHAPES[s]
@@ -40,7 +41,7 @@ class Constant:
         self.MASK_POS: List[int] = []
         self.HEIGHT_CLEAR: List[int] = []
         self.POINTS: List[List[List[int]]] = []
-        self.POS_SCORE: List[List[int]] = []
+        self.ACTION_SCORE: List[int] = []
         # self.POS_REWARD: List[List[int]] = []
         for i in range(self.HEIGHT):
             self.MASK_POS.append(1 << i)
@@ -50,10 +51,9 @@ class Constant:
             self.WIDTH_MASK.append(
                 self.MASK_FULL - (self.MASK_HEIGHT << (i * self.HEIGHT))
             )
-            self.POS_SCORE.append([])
+            self.ACTION_SCORE.append(self.pos_score(i))
             self.POINTS.append([])
             for j in range(self.HEIGHT):
-                self.POS_SCORE[-1].append(self.pos_score(i, j))
                 self.POINTS[-1].append([])
                 for k, (dy, dx) in enumerate(self.DR):
                     tmp = []
@@ -74,10 +74,9 @@ class Constant:
         boare = set_mask(board, low, low + 2, player_id + 2)
         return encode_data([boare, shape, 1 - player_id], self.POS_MASK)
 
-    def pos_score(self, x, y):
-        yc, xc = abs((self.HEIGHT - 2) / 2 - y), abs((self.WIDTH - 1) / 2 - x)
-        c = math.sqrt(yc * yc + xc * xc)
-        return -c
+    def pos_score(self, x):
+        mid = (self.WIDTH - 1) / 2
+        return mid - abs(x - mid)
 
     def mask_to_grid(self, state):
         ret = [0] * ((self.HEIGHT - 1) * self.WIDTH)

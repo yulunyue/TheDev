@@ -5,7 +5,6 @@ from common.util.export import List, Dict, logger
 
 
 class F4State(AbState):
-    pos_score0 = pos_score1 = 0
 
     def __init__(self, state):
         super().__init__(state)
@@ -33,39 +32,32 @@ class F4State(AbState):
                 continue
             scores = self.get_point_scores(k, self.heights[k])
             next_state: F4State = self.__class__.new(self.get_next_state(k))
-            if self.player_id == 0:
-                next_state.pos_score0 += C.POS_SCORE[k][self.heights[k]]
-            else:
-                next_state.pos_score1 += C.POS_SCORE[k][self.heights[k]]
             if scores[self.player_id][0]:
                 next_state.set_done(self.player_id)
             actions.append(F4Action(self, k, next_state))
         return actions
 
-    def calc_score(self, p0, p1, a, extern=0):
-        ret = extern
-        ci = 0.1
-        for j in range(3):
-            for i in range(len(p0)):
-                if i % 2 == 0:
-                    ret += (p0[i][j] + p1[i][j] * 0.1) * ci
-                else:
-                    ret -= (p1[i][j] + p0[i][j] * 0.1) * ci
-                ci *= 0.01
-        return ret
+    def calc_score(self, p, a):
+        ret = 0
+        for i, v in enumerate(p):
+            ret += v * C.SCORES[self.player_id][i]
+        return ret  # C.ACTION_SCORE[a]
 
     def get_point_scores(self, x, y):
         if (x, y) in self.point_score:
             return self.point_score[x, y]
+        self.point_score[x, y] = self.calc_point_scroes(x, y)
+        return self.point_score[x, y]
+
+    def calc_point_scroes(self, x, y):
         scroe0, scroe1 = [0] * 3, [0] * 3
-        for ll in C.POINTS[x][y]:
+        for j, ll in enumerate(C.POINTS[x][y]):
             player_0, player_0num, player_1, player_1num = self.get_pos_line(ll)
             if player_0 > 1:
                 scroe0[3 - player_0] += player_0num
             if player_1 > 1:
                 scroe1[3 - player_1] += player_1num
-        self.point_score[x, y] = scroe0, scroe1
-        return self.point_score[x, y]
+        return scroe0, scroe1
 
     def get_pos_line(self, l):
         ct = [0, 0, 0]
@@ -74,9 +66,9 @@ class F4State(AbState):
 
         def u(i):
             j = i * 2
-            if ct[i] + ct[2] == 3:
+            if ct[i] + ct[2] == 3 and ct[i]:
                 if ct[i] > ret[j]:
-                    ret[i] = ct[i]
+                    ret[j] = ct[i]
                     ret[j + 1] = 1
                 elif ct[i] == ret[j]:
                     ret[j + 1] += 1
@@ -129,61 +121,40 @@ class F4State(AbState):
             actions = int(actions)
         return super().get_action(actions)
 
-    def calc_cation_reward(self, a):
-        depth = 0
-        p0, p1 = [], []
-
-        while depth < C.CALC_SCORE_MAX_DEPTH and self.heights[a] + depth < C.HEIGHT - 1:
-            scores = self.get_point_scores(a, self.heights[a] + depth)
-            p0.append(scores[0])
-            p1.append(scores[1])
-            depth += 1
-
-        if self.player_id == 0:
-            return self.calc_score(p0, p1, a)
-        return self.calc_score(p1, p0, a)
-
-    cur_max_action = None
+    def calc_action_reward(self, a):
+        p0, p1 = self.get_point_scores(a, self.heights[a])
+        return self.calc_score(p0 + p1, a)
 
     def get_max_reward(self):
         ret = 0
         for a in self.get_sort_actions():
-            reward = self.calc_cation_reward(a.action)
+            reward = self.calc_action_reward(a.action)
             if reward > ret:
                 ret = reward
-                self.cur_max_action = a.action
         return ret
 
-    self_reward = None
-
-    def get_self_reward(self, **kw):
-        if self.self_reward is not None:
-            return self.self_reward
-        if self.done == self.player_id:
-            self.self_reward = 1
-        else:
-            self.self_reward = self.get_max_reward()
-            if self.player_id == 0:
-                self.self_reward += self.pos_score0 * C.POS_SCORE_RADIO
-            else:
-                self.self_reward += self.pos_score1 * C.POS_SCORE_RADIO
-        return self.self_reward
-
-    def get_reward(self, **kw):
-        r = self.get_self_reward()
-        return r if self.player_id == 0 else -r
+    def get_reward(self):
+        if self.reward is not None:
+            return self.reward
+        self.reward = self.get_max_reward()
+        if (
+            self.player_id == 1
+        ):  # 如果当前执行玩家是先手，表示该状态为后手玩家的执行结果，后手玩家优势值越小优势越大，所以取反
+            self.reward = -self.reward
+        return self.reward
 
 
 class F4StateDev(F4State):
     def __init__(self, state):
         self.scores_record = dict()
+        self.data = dict()
         super().__init__(state)
 
-    def calc_score(self, p0, p1, a, extern=0):
-        ret = super().calc_score(p0, p1, a, extern)
+    def calc_score(self, p, a):
+        ret = super().calc_score(p, a)
         self.scores_record[a] = [
             ret,
-            f"{a}->self:{p0}, op:{p1}, score:{'%.24f'%ret}",
+            f"{a}->p:{p}, r:{ret}",
             a,
         ]
         return ret
