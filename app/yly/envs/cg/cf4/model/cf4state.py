@@ -27,15 +27,21 @@ class F4State(AbState):
 
     def make_actions(self):
         actions = []
+        op_win_actions = []
         for k in range(C.WIDTH):
             if self.heights[k] >= C.HEIGHT - 1:
                 continue
             scores = self.get_point_scores(k, self.heights[k])
             next_state: F4State = self.__class__.new(self.get_next_state(k))
+            a = F4Action(self, k, next_state)
             if scores[self.player_id][0]:
                 next_state.set_done(self.player_id)
-            actions.append(F4Action(self, k, next_state))
-        return actions
+                return [a]
+            elif scores[1 - self.player_id][0]:
+                op_win_actions = [a]
+            else:
+                actions.append(F4Action(self, k, next_state))
+        return op_win_actions if op_win_actions else actions
 
     def calc_score(self, p, a):
         ret = 0
