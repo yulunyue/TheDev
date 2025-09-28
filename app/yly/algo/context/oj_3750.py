@@ -66,9 +66,14 @@ O2 = """Case:2
 class Action:
     def __init__(self, msgs: List[str]):
         self.msgs = msgs
+        self.score = [0, 0]
 
     def __str__(self):
         return " ".join(self.msgs)
+
+    def set_score(self, v):
+        self.score[0] = v
+        return self
 
 
 LOGS: Dict[int, List[Action]] = dict()
@@ -77,63 +82,8 @@ LOGS: Dict[int, List[Action]] = dict()
 def add_action(a: Action):
     if Solution.now_t not in LOGS:
         LOGS[Solution.now_t] = []
+    a.score[1] = len(LOGS[Solution.now_t])
     LOGS[Solution.now_t].append(a)
-
-
-class Unit:
-    attack_power: int = None
-    hp: int = None
-    type_name = ""
-    BORN = "born"
-    MARCHED = "marched to"
-    earned = "earned"
-
-    def __init__(self, city: "City"):
-        self.cmd: Commander = city
-        self.city: City = city
-        self.key = self.cmd.shape_idx
-
-    def action(self, s, city=None):
-        ret = [
-            "red" if self.cmd.color == Commander.RED else "blue",
-            self.type_name,
-            str(self.key),
-        ] + [s]
-        if s == self.MARCHED:
-            ret.extend([str(self.city), self.info()])
-            self.city = city
-        elif s == self.earned:
-            ret.append(f"{self.city.hp} elements for his headquarter")
-            self.cmd.hp += self.city.hp
-            self.city.hp = 0
-
-        add_action(Action(ret))
-
-    def info(self):
-        return f"with {self.hp} and force {self.attack_power}"
-
-
-class Dragon(Unit):
-    type_name = "dragon"
-
-
-class Ninja(Unit):
-    type_name = "ninja"
-
-
-class IceMan(Unit):
-    type_name = "iceman"
-
-
-class Lion(Unit):
-    type_name = "lion"
-
-
-class Wolf(Unit):
-    type_name = "wolf"
-
-
-SHAPES: List[Unit] = [Dragon, Ninja, IceMan, Lion, Wolf]
 
 
 class City:
@@ -147,6 +97,133 @@ class City:
     def __str__(self):
         return f"city {self.city_idx}"
 
+    def get_fight_id(self):
+        if self.flag == Commander.RED:
+            return self.shape_map
+        if self.flag == Commander.BLUE:
+            return self.shape_map[::-1]
+        if self.city_idx % 2:
+            return self.shape_map
+        return self.shape_map[::-1]
+
+    def fight(self):
+        if not self.shape_map[0] or not self.shape_map[1]:
+            return
+        self_unit, op_unit = self.get_fight_id()
+        self_unit.action(Unit.attacked, op_unit=op_unit)
+        if not self.kill(self_unit, op_unit, self_unit.attack_power):
+            op_unit.action(Unit.fight_back, op_unit=self_unit)
+            self.kill(op_unit, self_unit, op_unit.attack_power // 2)
+
+    def kill(self, self_unit: "Unit", op_unit: "Unit", power):
+        op_unit_hp = op_unit.hp - power
+        if op_unit_hp > 0:
+            op_unit.hp = op_unit_hp
+            return False
+        op_unit.action(Unit.killed, op_unit=self_unit)
+        self_unit.capture_hp(False)
+        op_unit.hp = 0
+        return True
+
+
+class Unit:
+    attack_power: int = None
+    hp: int = None
+    type_name = ""
+    BORN = "born"
+    MARCHED = "marched to"
+    earned = "earned"
+    attacked = "attacked"
+    killed = "was killed"
+    fight_back = "fought back against"
+    reached = "reached"
+
+    def __init__(self, city: "City"):
+        self.cmd: Commander = city
+        self.city: City = city
+        self.key = self.cmd.shape_idx
+
+    def k(self):
+        return [
+            self.cmd.color_str,
+            self.type_name,
+            str(self.key),
+        ]
+
+    def action(self, s, city=None, op_unit: "Unit" = None):
+        ret = self.k() + [s]
+        if s == self.MARCHED or s == self.reached:
+            ret.extend([str(city), self.info()])
+            self.city = city
+        elif s == self.earned:
+            ret += [f"{self.city.hp} elements for his headquarter"]
+        elif s == self.attacked or s == self.fight_back:
+            ret += op_unit.k() + [f"in city {self.city.city_idx}"]
+            if s == self.attacked:
+                ret += [self.info()]
+        elif s == self.killed:
+            op_unit.cmd.kill_op_units.append(op_unit)
+            self.city.shape_map[self.cmd.color] = None
+            ret += [f"in city {self.city.city_idx}"]
+        a = Action(ret)
+        add_action(a)
+        return a
+
+    def capture_hp(self, cp_now=True):
+        self.action(self.earned)
+        if cp_now:
+            self.cmd.hp += self.city.hp
+        else:
+            self.cmd.tmp_hp += self.city.hp
+        self.city.hp = 0
+
+    def info(self):
+        return f"with {self.hp} elements and force {self.attack_power}"
+
+    def move(self, next_city: "City"):
+        self.city.shape_map[self.cmd.color] = None
+        if isinstance(next_city, Commander):
+            a = self.action(Unit.reached, city=next_city)
+        else:
+            a = self.action(Unit.MARCHED, city=next_city)
+        a.set_score(next_city.city_idx)
+        next_city.shape_map[self.cmd.color] = self
+
+
+class Dragon(Unit):
+    type_name = "dragon"
+
+
+class Ninja(Unit):
+    type_name = "ninja"
+
+
+class IceMan(Unit):
+    type_name = "iceman"
+
+    def move(self, next_city):
+        move_num = abs(next_city.city_idx - self.cmd.city_idx)
+        if move_num % 2 == 0 and move_num:
+            self.hp = max(self.hp - 9, 1)
+            self.attack_power += 20
+        return super().move(next_city)
+
+
+class Lion(Unit):
+    type_name = "lion"
+
+    def action(self, s, city=None, op_unit=None):
+        if s == self.killed:
+            op_unit.hp += self.hp
+        return super().action(s, city, op_unit)
+
+
+class Wolf(Unit):
+    type_name = "wolf"
+
+
+SHAPES: List[Unit] = [Dragon, Ninja, IceMan, Lion, Wolf]
+
 
 class Commander(City):
     RED = 0
@@ -155,13 +232,22 @@ class Commander(City):
     def __init__(self, color, hp, city_idx):
         self.hp = hp
         self.color = color
+        self.tmp_hp: int = 0
+        self.kill_op_units: List[Unit] = []
         if self.color == Commander.RED:
             self.shape_clss: List[Unit] = [IceMan, Lion, Wolf, Ninja, Dragon]
         else:
-            self.shape_clss: List[Unit] = [Lion, Ninja, Dragon, IceMan, Wolf]
+            self.shape_clss: List[Unit] = [Lion, Dragon, Ninja, IceMan, Wolf]
         self.shape_idx = 0
         # self.shapes_all: Dict[int, Unit] = {}
         super().__init__(city_idx)
+
+    @property
+    def color_str(self):
+        return "red" if self.color == Commander.RED else "blue"
+
+    def __str__(self):
+        return f"{self.color_str} headquarter"
 
 
 class Solution(MockCf):
@@ -190,6 +276,7 @@ class Solution(MockCf):
         ]
 
     def execute(self, main_hp, city_num, t, init_hps, init_attack_power, case_id):
+        self.city_num = city_num
         self.cmds = [
             Commander(Commander.RED, main_hp, 0),
             Commander(Commander.BLUE, main_hp, city_num + 1),
@@ -210,7 +297,7 @@ class Solution(MockCf):
         ans = [f"Case:{case_id}"]
         for t in sorted(LOGS.keys()):
             k = "%03d:%02d" % (t // 60, t % 60)
-            for a in LOGS[t]:
+            for a in sorted(LOGS[t], key=lambda a: a.score):
                 ans.append(f"{k} {a}")
         return "\n".join(ans)
 
@@ -235,12 +322,7 @@ class Solution(MockCf):
             if cur_city.shape_map[cmd.color] is None:
                 start_idx += step
                 continue
-            next_city = self.citys[start_idx - step]
-            cur_city.shape_map[cmd.color].action(Unit.MARCHED, city=next_city)
-            next_city.shape_map[cmd.color], cur_city.shape_map[cmd.color] = (
-                cur_city.shape_map[cmd.color],
-                None,
-            )
+            cur_city.shape_map[cmd.color].move(self.citys[start_idx - step])
             start_idx += step
 
     def do_when_0(self):
@@ -260,16 +342,30 @@ class Solution(MockCf):
         for c in self.citys[1:-1]:
             s0, s1 = c.shape_map
             if s0 is None and s1:
-                s1.action(Unit.earned)
+                s1.capture_hp()
             elif s1 is None and s0:
-                s0.action(Unit.earned)
+                s0.capture_hp()
 
     def do_when_40(self):
-        pass
+        for c in self.citys[1:-1]:
+            c.fight()
 
     def do_when_50(self):
         for c in self.cmds:
-            add_action(Action([f"{c.hp} elements in {c.color} headquarter"]))
+            c.kill_op_units.sort(
+                key=lambda v: abs(
+                    v.city.city_idx - (self.city_num + 1 - v.cmd.city_idx)
+                )
+            )
+            for u in c.kill_op_units:
+                if c.hp < 8:
+                    break
+                c.hp -= 8
+                u.hp += 8
+            c.hp += c.tmp_hp
+            add_action(Action([f"{c.hp} elements in {c}"]))
+            c.kill_op_units = []
+            c.tmp_hp = 0
 
     def main(self):
         cases, *args = self.ii()
