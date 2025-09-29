@@ -216,9 +216,7 @@ class State:
             state = str(s.state)
             if isinstance(s.state, int):
                 state = "%x" % s.state
-            tree_info.append(
-                f'{"  " * depth}-{state}-{action}: p={s.player_id}; r={s.get_reward()}; ab={s.ab_value}; done={s.get_done()}'
-            )
+            tree_info.append(f'{"  " * depth}-{action}->{state}: {s.show_titles()}')
             actions = s.get_sort_actions()
             if s.get_done() is not None or depth == max_depth or not actions:
                 return s.set_value(DONE_S, s.get_done())
@@ -277,12 +275,20 @@ class State:
         self.data[k] = v
         return self.data[k]
 
+    def title_show_keys(self):
+        return ["done", "player_id", "reward", "depth"]
+
+    def show_titles(self):
+        ret = []
+        for k in self.title_show_keys():
+            if k.find("=") != -1:
+                ret.append(k)
+            else:
+                ret.append(f"{k}={getattr(self,k)}")
+        return "; ".join(ret)
+
     def show(self, info="", title=""):
-        rf = str(self.reward)
-        datas = [
-            f"done:{self.get_done()}, depth:{self.depth}, player:{self.player_id}, reward:{rf}",
-            self.to_str(),
-        ]
+        datas = [self.show_titles(), self.to_str()]
         if self.data:
             for k, v in self.data.items():
                 datas.append(f"{k}:{v}")

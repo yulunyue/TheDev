@@ -165,12 +165,15 @@ class F4StateDev(F4State):
         ]
         return ret
 
+    def title_show_keys(self):
+        return super().title_show_keys() + ["ab_value", f"pt={self.score2[0][1]}"]
+
     def show(self, info=None, title=""):
         self.get_reward()
+        self.score2 = sorted(self.scores_record.values(), reverse=True)
         if info is None:
             info = []
-        info2 = sorted(self.scores_record.values(), reverse=True)
-        return super().show(info=info + [v[1] for v in info2[:1]], title=title)
+        return super().show(info=info + [v[1] for v in self.score2], title=title)
 
     def check_cg(self, stdout, summary):
         if stdout == "-2":

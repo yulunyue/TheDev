@@ -55,7 +55,7 @@ class C4Test(TestBase):
         s = F4State.new(0x301012B2A01010102)
         logger.debug(s.show())
         for i in range(1, 2):
-            a = self.al.am(i).search(s)
+            a = self.al.ab(i).search(s)
             logger.debug(a.show())
         logger.debug(s.dump_tree(1))
 
