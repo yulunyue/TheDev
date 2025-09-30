@@ -279,7 +279,7 @@ class Commander(City):
 
 class Solution(MockCf):
     now_t = 0
-    uri = "http://bailian.openjudge.cn/practice/3750/"
+    uri = "http://bailian.openjudge.cn/practice/3750/|https://www.luogu.com.cn/problem/U275831"
 
     def get_cases(self):
         return [

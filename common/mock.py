@@ -47,7 +47,7 @@ class MockCf:
         return self.inputs[-1]
 
     def ii(self):
-        return [int(v) for v in self.input().split(" ")]
+        return [int(v) for v in self.input().split(" ") if v]
 
     _o = None
 

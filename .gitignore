@@ -166,3 +166,4 @@ font/package-lock.json
 font/src/demo/secmaster
 config
 *.pdf
+rust/the_dev/Cargo.lock
