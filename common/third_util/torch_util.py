@@ -3,16 +3,61 @@ import torch.nn.functional as TorchF
 from torch.nn import Linear, Module
 from common.util.export import File
 from torch import Tensor
+import json
 
 
-class TorchNet(Module):
-    def __init__(self, *args, name="", **kwargs):
-        super().__init__(*args, **kwargs)
+class TorchNet:
+    SAVE_DIR = "data/model"
+    model_cls = Module
+
+    def __init__(self, name):
         self.name = name or self.__class__.__name__
+        self.save_path = File(f"{self.SAVE_DIR}/{name}.pt")
         self.init_net()
 
     def init_net(self):
-        pass
+        if self.save_path.exists():
+            # example_input = torch.rand(1, 3, 224, 224)
+            self.model: Module = torch.jit.load(self.save_path.path)
+            print(torch.jit.script(self.model))
+        else:
+            self.model: Module = self.model_cls()
+
+    def print_model_details(self):
+        msgs = []
+        total_params = 0
+        for name, module in self.model.named_modules():
+            num_params = sum(p.numel() for p in module.parameters())
+            total_params += num_params
+
+            msgs.append(f"层: {name}")
+            msgs.append(f"  类型: {type(module).__name__}")
+
+            # 输入相关属性
+            if hasattr(module, "in_channels"):
+                msgs.append(f"  输入通道: {module.in_channels}")
+            if hasattr(module, "in_features"):
+                msgs.append(f"  输入特征: {module.in_features}")
+
+            # 输出相关属性
+            if hasattr(module, "out_channels"):
+                msgs.append(f"  输出通道: {module.out_channels}")
+            if hasattr(module, "out_features"):
+                msgs.append(f"  输出特征: {module.out_features}")
+
+            msgs.append(f"  参数数量: {num_params}")
+            msgs.append("-" * 30)
+        for i, (name, layer) in enumerate(self.model.named_children()):
+            msgs.append(f"第{i}层: {name}, 类型: {type(layer)}")
+            if hasattr(layer, "in_channels"):
+                msgs.append(f"输入通道数: {layer.in_channels}")
+            if hasattr(layer, "in_features"):
+                msgs.append(f"输入特征数: {layer.in_features}")
+        msgs.append(f"总参数数量: {total_params}")
+        return "\n".join(msgs)
+
+    def view(self):
+        return f"states:{self.model.state_dict()}"
 
 
 class TorchDoubleNet:
