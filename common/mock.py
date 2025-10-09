@@ -8,6 +8,7 @@ from collections import defaultdict, deque
 import os
 import random
 from itertools import permutations
+import bisect
 
 
 def get_log(*args, **kw):

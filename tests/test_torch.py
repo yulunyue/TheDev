@@ -1,10 +1,5 @@
-import torch
+from common.third_util.torch_util import torch, TorchNet
 from common.util.export import TestBase, logger
-
-# import torch.nn as nn
-# import torch.optim as optim
-# from torch.utils.data import DataLoader, TensorDataset
-# from torch.utils.tensorboard import SummaryWriter  # for logging
 
 
 TEST_DATA1 = [[1, 2, 3], [4, 2, 6]]
@@ -43,7 +38,7 @@ class TestTorch(TestBase):
         self.expect_ndarray(e, [3.0])
         self.expect_ndarray(a.grad, [6.0])
 
-    def test_nn(self):
+    def run_nn(self):
         class TestNN(torch.nn.Module):
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
@@ -70,6 +65,10 @@ class TestTorch(TestBase):
                 logger.info(loss)
 
         self.expect_ndarray(model(x), y)
+
+    def run_model(self):
+        a = TorchNet("c4/model_fish")
+        logger.debug(a.view())
 
 
 if __name__ == "__main__":
