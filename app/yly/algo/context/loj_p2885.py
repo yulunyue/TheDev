@@ -39,8 +39,14 @@ class Pig:
     猪哥连弩 = None
     power = 4
 
-    def __init__(self, pos_idx):
-        self.pos_idx = pos_idx
+    def __init__(self, g: "Game"):
+        self.g = g
+        self.pos_idx = len(g.pigs)
+        g.pigs.append(self)
+
+    @property
+    def dead(self):
+        return self.power == 0
 
     def set_cards(self, cards):
         self.cards: List[CardBase] = []
@@ -59,6 +65,24 @@ class Pig:
         self.card_map[c.type].append(c)
         return self
 
+    def get_next(self):
+        nid = (self.pos_idx + 1) % len(self.g.pigs)
+        n = self.g.pigs[nid]
+        while n.dead:
+            nid = (n.pos_idx + 1) % len(self.g.pigs)
+            if nid == self.pos_idx:
+                return
+            n = self.g.pigs[nid]
+        return n
+
+    def view(self):
+        if not self.power:
+            return "DEAD"
+        return " ".join([c.type for c in self.cards if not c.is_use])
+
+    def play(self):
+        pass
+
 
 class Mp(Pig):
     pass
@@ -70,6 +94,15 @@ class Zp(Pig):
 
 class Fp(Pig):
     pass
+
+
+class Game:
+    def __init__(self):
+        self.pigs: List[Pig] = []
+
+    def add_pig(self, p: Pig):
+        if isinstance(p, Mp):
+            self.zp = p
 
 
 class Solution(MockCf):
@@ -84,26 +117,26 @@ class Solution(MockCf):
             )
         ]
 
-    zp: Zp
-
     def execute(self, hands: List[str], cards: str, **kw):
-        self.pigs: List[Pig] = []
-        mp_cls = dict(MP=Mp, ZP=Zp, FP=Fp)
 
-        Solution.msgs = []
+        mp_cls = dict(MP=Mp, ZP=Zp, FP=Fp)
+        g = Game()
         for hand in hands:
             tp, *args = hand.split()
-            p = mp_cls[tp](len(self.pigs)).set_cards(args)
-            if isinstance(p, Zp):
-                self.zp = p
-            self.pigs.append(p)
-        card = cards.split()
-        for i in range(0, len(card), 2):
-            p = self.pigs[i % len(self.pigs)]
-            p.add(card[i])
-            p.add(card[i + 1])
+            p = mp_cls[tp](g).set_cards(args)
+            g.add_pig(p)
 
-        return "\n".join(Solution.msgs)
+        card = cards.split()
+        p = g.zp
+        while card and not p.dead:
+            p.add(card.pop(0))
+            p.add(card.pop(0))
+            p.play()
+            p = p.get_next()
+        msgs = ["MP" if g.zp.power else "FP"]
+        for p in g.pigs:
+            msgs.append(p.view())
+        return "\n".join(msgs)
 
     def run(self):
         n, m = self.ii()
