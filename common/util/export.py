@@ -1,4 +1,4 @@
-from common.util.log import File, get_log
+from common.util.log import File, get_log, Logger
 from common.util.module import Module, get_function_info
 from common.util.tool import uid, re_search, hash_any, json_dumps, ii
 from common.util.test import TestBase, logger
@@ -17,6 +17,6 @@ import heapq
 from common.util.singleton_util import SingletonUtil
 import random
 from copy import deepcopy
-from itertools import permutations
+from itertools import permutations, accumulate, pairwise
 from .str_util import StrUtil
 import os

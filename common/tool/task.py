@@ -1,4 +1,4 @@
-from common.util.export import Module, get_log, THE_DEV_CONSTANT
+from common.util.export import Module, get_log, THE_DEV_CONSTANT, File
 from common.tool.base_class.table_base import (
     TableBase,
     StrModel,
@@ -7,6 +7,7 @@ from common.tool.base_class.table_base import (
     TableConfig,
     DictModel,
 )
+from .os_util import OsUtil
 import traceback
 import _thread
 import time
@@ -18,6 +19,7 @@ class TaskConfig(TableConfig):
     fun_name = StrModel()
     root_path = StrModel()
     args = StrModel()
+    log_type = StrModel()
     wait_time = NumberModel(default_value=1)
     last_begin_t = NumberModel(default_value=0)
     last_finish_t = NumberModel(default_value=0)
@@ -27,12 +29,27 @@ class TaskConfig(TableConfig):
     def get_call(self):
         if self._fun:
             return self._fun
-        self._fun = Module().load_module(
-            self.module_name.get_value(),
-            self.root_path.get_value(),
-            self.fun_name.get_value(),
-        )
+
+        module_name = self.module_name.get_value()
+        if module_name:
+            self._fun = Module().load_module(
+                module_name,
+                self.root_path.get_value(),
+                self.fun_name.get_value(),
+            )
+        else:
+            self._fun = (
+                OsUtil()
+                .set_logger(self.get_log())
+                .set_env(self.root_path.get_value(), self.fun_name.get_value())
+                .run
+            )
         return self._fun
+
+    def get_log(self):
+        # log_type = self.log_type.get_value()
+        ret = File(f"data/log/task/{self.key}.log")
+        return ret
 
     def exec(self):
         now_t = time.time()

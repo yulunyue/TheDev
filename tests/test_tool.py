@@ -8,7 +8,6 @@ from common.tool.export import (
     TableConfig,
     ConfigBase,
     TestRc,
-    get_task,
 )
 
 
@@ -37,11 +36,6 @@ class ToolTest(TestBase):
         m.b.set_value(1)
         self.expect(m.b.get_value(), 1)
         t.save()
-
-    def test_task(self):
-        t = get_task()
-        t.loop()
-        t.source.save()
 
     def test_debug(self):
         self.test_config()

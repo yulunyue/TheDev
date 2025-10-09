@@ -105,6 +105,8 @@ class Module:
         return ret
 
     def megre_to_one(self, src, dst, mock_map: dict, prefix: List[str]):
+        str_util = StrUtil().set_prefix(prefix)
+
         class Node:
             def __init__(self, path: str, vt: set):
                 self.fp = File(path)
@@ -122,8 +124,7 @@ class Module:
                         ln = ln2.strip().split(" ")[1]
                         if ln.startswith("."):
                             ln = self.fp.get_relative_path(ln)
-                        str_ln = StrUtil(ln)
-                        if not str_ln.str_prefix_match(prefix):
+                        if not str_util.str_prefix_match(ln):
                             self.lines.append(ln2)
                             continue
                         path = ln.replace(".", "/") + ".py"
