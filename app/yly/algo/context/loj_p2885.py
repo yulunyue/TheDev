@@ -25,14 +25,14 @@ def C(k):
 
 
 class CT:
-    桃 = C("P")
-    杀 = C("K")
-    闪 = C("D")
-    决斗 = C("F")
-    南猪入侵 = C("N")
-    万箭齐发 = C("W")
-    无懈可击 = C("J")
-    猪哥连弩 = C("Z")
+    桃: CardBase = C("P")
+    杀: CardBase = C("K")
+    闪: CardBase = C("D")
+    决斗: CardBase = C("F")
+    南猪入侵: CardBase = C("N")
+    万箭齐发: CardBase = C("W")
+    无懈可击: CardBase = C("J")
+    猪哥连弩: CardBase = C("Z")
 
 
 class Pig:
@@ -57,23 +57,22 @@ class Pig:
 
     def add(self, s: str):
         c: CardBase = CARD_MAP[s]()
-        if isinstance(c, CT.猪哥连弩):
-            self.猪哥连弩 = c
         self.cards.append(c)
         if c.type not in self.card_map:
             self.card_map[c.type] = []
         self.card_map[c.type].append(c)
         return self
 
-    def get_next(self):
+    def get_nexts(self):
+        ret: List[Pig] = []
         nid = (self.pos_idx + 1) % len(self.g.pigs)
-        n = self.g.pigs[nid]
-        while n.dead:
-            nid = (n.pos_idx + 1) % len(self.g.pigs)
-            if nid == self.pos_idx:
-                return
+        while nid != self.pos_idx:
             n = self.g.pigs[nid]
-        return n
+            nid = (nid + 1) % len(self.g.pigs)
+            if n.dead:
+                continue
+            ret.append(n)
+        return ret
 
     def view(self):
         if not self.power:
@@ -81,7 +80,25 @@ class Pig:
         return " ".join([c.type for c in self.cards if not c.is_use])
 
     def play(self):
-        pass
+        while self.power < 4 and self.card_map[CT.桃.type]:
+            self.power += 1
+            c = self.card_map[CT.桃.type].pop()
+            c.is_use = True
+        for tp in [CT.猪哥连弩.type, CT.万箭齐发.type, CT.南猪入侵.type]:
+            while self.card_map.get(tp):
+                c = self.card_map[tp].pop()
+                if tp == CT.猪哥连弩.type:
+                    self.猪哥连弩 = c
+                else:
+                    for next_pid in self.get_nexts():
+                        next_pid.hander(c)
+                c.is_use = True
+
+    def hander(self, c: CardBase):
+        if c == CT.南猪入侵.type:
+            pass
+        elif c == CT.万箭齐发.type:
+            pass
 
 
 class Mp(Pig):
@@ -132,7 +149,7 @@ class Solution(MockCf):
             p.add(card.pop(0))
             p.add(card.pop(0))
             p.play()
-            p = p.get_next()
+            p = p.get_nexts()[0]
         msgs = ["MP" if g.zp.power else "FP"]
         for p in g.pigs:
             msgs.append(p.view())
