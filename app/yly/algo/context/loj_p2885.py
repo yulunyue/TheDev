@@ -12,6 +12,14 @@ class CardBase:
     type: str
     is_use = False
 
+    def is_gl(self):
+        return self.type in {
+            CT.南猪入侵.type,
+            CT.万箭齐发.type,
+            CT.决斗.type,
+            CT.无懈可击.type,
+        }
+
 
 CARD_MAP = dict()
 
@@ -38,6 +46,7 @@ class CT:
 class Pig:
     猪哥连弩 = None
     power = 4
+    state = 0
 
     def __init__(self, g: "Game"):
         self.g = g
@@ -45,11 +54,32 @@ class Pig:
         g.pigs.append(self)
 
     @property
+    def is_good(self):
+        return self.state == 2
+
+    @property
+    def is_bad(self):
+        return self.state == -2
+
+    @property
+    def like_good(self):
+        return self.state == 1
+
+    @property
+    def like_bad(self):
+        return self.state == -1
+
+    @property
+    def is_unknow(self):
+        return self.state == 0
+
+    @property
     def dead(self):
         return self.power == 0
 
     def set_cards(self, cards):
         self.cards: List[CardBase] = []
+        self.can_use_cards: List[CardBase] = []
         self.card_map: Dict[str, List[CardBase]] = dict()
         for c in cards:
             self.add(c)
@@ -58,6 +88,7 @@ class Pig:
     def add(self, s: str):
         c: CardBase = CARD_MAP[s]()
         self.cards.append(c)
+        self.can_use_cards.append(c)
         if c.type not in self.card_map:
             self.card_map[c.type] = []
         self.card_map[c.type].append(c)
@@ -80,29 +111,55 @@ class Pig:
         return " ".join([c.type for c in self.cards if not c.is_use])
 
     def play(self):
-        while self.power < 4 and self.card_map[CT.桃.type]:
-            self.power += 1
-            c = self.card_map[CT.桃.type].pop()
-            c.is_use = True
-        for tp in [CT.猪哥连弩.type, CT.万箭齐发.type, CT.南猪入侵.type]:
-            while self.card_map.get(tp):
-                c = self.card_map[tp].pop()
-                if tp == CT.猪哥连弩.type:
-                    self.猪哥连弩 = c
-                else:
-                    for next_pid in self.get_nexts():
-                        next_pid.hander(c)
+        i = 0
+        while i < len(self.can_use_cards):
+            c = self.can_use_cards[i]
+            if c.is_use:
+                self.can_use_cards.pop(i)
+                continue
+            if self.do_card(c):
+                c = self.can_use_cards.pop(i)
                 c.is_use = True
+                continue
+            i += 1
+
+    def do_card(self, c: CardBase):
+        if c.type == CT.桃.type and self.power < 4:
+            self.power += 1
+            return True
+        if c.type == CT.猪哥连弩.type:
+            self.猪哥连弩 = c
+            return True
+        if c.type == CT.万箭齐发.type or c.type == CT.南猪入侵.type:
+            self.push(c)
+            return True
+        if c.type == CT.决斗.type:
+            return self.juedo(c)
+        return False
 
     def hander(self, c: CardBase):
-        if c == CT.南猪入侵.type:
+        if c.is_gl() and self.call_help(c):
             pass
-        elif c == CT.万箭齐发.type:
+
+    def hander_help(self, c: CardBase, f: "Pig"):
+        if self.is_good():
             pass
+
+    def call_help(self, c: CardBase):
+        for d in self.get_nexts():
+            if d.hander_help(c, self):
+                return True
+
+    def push(self, c):
+        for d in self.get_nexts():
+            d.hander(c)
+
+    def juedo(self, c: CardBase):
+        pass
 
 
 class Mp(Pig):
-    pass
+    state = 2
 
 
 class Zp(Pig):
