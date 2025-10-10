@@ -55,10 +55,13 @@ class AlphaBateSearch(Algo):
     def get_depth_reward(self, s: State, actions: List[Action], **kw):
         return s.get_self_reward(actions, params=self.params)
 
+    def set_state_best_action(self, state: State, a: Action, *args, **kw):
+        state.set_best_action(a)
+
     def search_dfs(
         self, state: AbState, actions: List[Action], depth=0, player_id=None, **kw
     ):
-        state.load_ab(depth)
+
         if depth == self.max_depth or state.get_done() is not None:
             state.ab_value = -self.get_depth_reward(state, depth)
             return state.ab_value
@@ -66,13 +69,15 @@ class AlphaBateSearch(Algo):
         if not mvs:
             state.ab_value = -self.get_depth_reward(state, depth)
             return state.ab_value
+        state.ab_value = -inf
         for a in mvs:
             reward = -self.search_dfs(
                 a.get_dst(), actions=actions + [a], depth=depth + 1, player_id=player_id
             )
             if reward > state.ab_value:
-                state.set_best_action(a)
                 state.ab_value = reward
+                self.set_state_best_action(state, a, depth)
+
         return state.ab_value
 
     def search_ab_loop(self, state: AbState):
@@ -152,3 +157,4 @@ class AbDev(AlphaBateSearch):
 
     def set_state_best_action(self, s: State, a: Action, depth):
         super().set_state_best_action(s, a, depth)
+        self.print_best_actions(a)

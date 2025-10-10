@@ -1,7 +1,7 @@
 from common.algo.search.algo import Algo
 from common.algo.search.state import State, Action
 from common.algo.search.alphabate_search import AbDev
-from common.algo.learn.sarse.mctssearch import MctsSearchDev
+from common.algo.search.mctssearch import MctsSearchDev
 from common.util.export import (
     logger,
     File,
@@ -12,7 +12,7 @@ from common.util.export import (
     progress_bar,
     os,
 )
-from common.third_util.export import PtTable, TableModel
+from common.third_util.pt_table import PtTable, TableModel
 import time
 
 
@@ -68,7 +68,7 @@ class ALgoManage:
     file_path = None
     record_model = AlgoInfo
 
-    def ab(self, n):
+    def ab(self, n=5):
         return AbDev(f"ab{n}").load(n).set_record_dir(self.record_dir)
 
     def am(self, n):

@@ -25,7 +25,7 @@ class TestState(AbState):
             for i in range(w):
                 r = random.randint(0, 10)
                 dst = util(w, h + 1, reward + (r if h % 2 == 0 else -r))
-                ret.actions[i] = Action(ret, i, dst).set_reward(r)
+                ret.actions[i] = Action(ret, "", dst).set_reward(r)
             return ret
 
         return util(width, 0, 0)
@@ -55,7 +55,6 @@ class TestState(AbState):
                 TestState.new(r=1),
                 TestState.new(r=-9),  # 不会选这个
             ),
-            max_reward=0,
             player_id=1,
         )
 

@@ -1,5 +1,5 @@
 from common.algo.search.state import State, Action
-from common.algo.learn.sarse.mctssearch import MctsState
+from common.algo.search.mctssearch import MctsState
 from common.algo.search.state import Action
 from common.algo.search.algo import Algo
 from common.util.export import List

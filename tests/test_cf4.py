@@ -46,7 +46,7 @@ class C4Test(TestBase):
         self.c.replay(self.init_state, self.al.am(1))
 
     def f1(self):
-        self.al.set_players([self.al.mc(1)], [self.al.mc(100)]).fight()
+        self.al.set_players([self.al.mc(10)], [self.al.mc(10)]).fight()
 
     def f2(self):
         self.al.set_players(self.al.ams(4), self.al.ams(4)).fight()

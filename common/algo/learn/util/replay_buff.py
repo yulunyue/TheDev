@@ -1,4 +1,3 @@
-from common.third_util.export import np
 import collections
 import random
 

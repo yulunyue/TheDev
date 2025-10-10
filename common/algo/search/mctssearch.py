@@ -1,10 +1,10 @@
-from common.algo.search.state import State, Action, MctsState
-from common.algo.learn.base import Base
+from .state import State, Action, MctsState
+from .algo import Algo
 from common.util.export import List, Dict, defaultdict, math, random, CT
 import time
 
 
-class MctsSearch(Base):
+class MctsSearch(Algo):
 
     def load(self, max_depath=-1, num_episodes=5000, max_t=-1, **kw):
         self.c = math.sqrt(2.0)
@@ -72,12 +72,12 @@ class MctsSearch(Base):
 class MctsSearchDev(MctsSearch):
     def backpropagate(self, vt_states: List[MctsState], node: MctsState):
         ret = super().backpropagate(vt_states, node)
-        self.log(f"[MctsSearchDev {self.ep}]")
-        for i in range(1, min(len(vt_states), 3)):
-            self.log(vt_states[i].show())
-        self.log(node.show())
+        # self.log(f"[MctsSearchDev {self.ep}]")
+        # for i in range(1, min(len(vt_states), 3)):
+        #     self.log(vt_states[i].show())
+        # self.log(node.show())
         return ret
 
     def search(self, state):
-        self.log(state.show())
+        # self.log(state.show())
         return super().search(state)
