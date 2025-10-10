@@ -141,7 +141,7 @@ class State:
     def set_next_states(self, states: List["State"]):
         return self.set_actions(
             [
-                Action(self, i, v.set_player_id(1 - self.player_id))
+                Action(self, "", v.set_player_id(1 - self.player_id))
                 for i, v in enumerate(states)
             ]
         )
@@ -208,7 +208,178 @@ class State:
             max_depth -= 1
         return ret
 
-    def dfs(self, max_depth=-1):
+    def dfs(self, call, max_depth=-1, call_pos="pre"):
+        def util(n: State, depth=0, action: Action = None):
+            if call_pos == "pre":
+                call(n, depth, action)
+            actions = n.get_sort_actions()
+            half = len(actions) // 2
+            for a in actions[:half]:
+                util(a.get_dst(), depth + 1, a)
+            if call_pos == "mid":
+                call(n, depth, action)
+            for a in actions[half:]:
+                util(a.get_dst(), depth + 1, a)
+            if call_pos == "after":
+                call(n, depth, action)
+
+        util(self, 0, Action(None, ""))
+
+    def print_tree(self):
+        ans = []
+
+        def util(n: State, depth, action: Action):
+            ans.append(n.show_titles(depth, action.action))
+
+        self.dfs(util, call_pos="pre")
+        return "\n".join(ans)
+
+    def get_reward(self, actions: List[Action] = None, params=None) -> int:
+        """
+        绝对优势 >0 表示先手优势 <0 表示后手优势
+        """
+        return self.reward
+
+    def get_max_action_reward(self):
+        reward = -inf
+        for a in self.get_actions().values():
+            ar = a.get_reward()
+            if ar > reward:
+                reward = ar
+        return reward
+
+    def set_data(self, **kw):
+        self.data.update(kw)
+        return self
+
+    def set_value(self, k, v):
+        self.data[k] = v
+        return self.data[k]
+
+    def title_show_keys(self):
+        return ["p", "r"]
+
+    def show_titles(self, depth=0, action=""):
+        ret = []
+        for k in self.title_show_keys():
+            if k.find("=") != -1:
+                ret.append(k)
+                continue
+            elif k == "p":
+                value = self.player_id
+            elif k == "r":
+                value = self.reward
+            else:
+                value = getattr(self, k)
+            ret.append(f"{k}={value}")
+        ans = "; ".join(ret)
+        return f'{"  " * depth}{action}->{self.state}: {ans}'
+
+    def show_body(self, info):
+        datas = [self.show_titles()]
+        view = self.to_str()
+        if view:
+            datas.append(view)
+        if self.data:
+            for k, v in self.data.items():
+                datas.append(f"{k}:{v}")
+        if isinstance(info, list):
+            datas.extend(info)
+        elif info:
+            datas.append(str(info))
+        return datas
+
+    def show(self, info="", title="", mask_max_len=100, body=None):
+        if not title:
+            title = "%x" % self.state
+        if len(title) > mask_max_len:
+            mask_max_len = len(title) + 8
+        if body is None:
+            body = self.show_body(info)
+        margin = (mask_max_len - len(title)) // 2
+        return f"\n".join(
+            ["-" * margin + title + "-" * margin] + body + ["-" * mask_max_len]
+        )
+
+    def get_win_player(self, rewards, player_idx, *args, **kw):
+        if self.done == 0:
+            return 0
+        elif self.done == 1:
+            return 1
+        return 2
+
+    def get_self_reward(self, *args, **kw):
+        r = self.get_reward()
+        if (
+            self.player_id == 0
+        ):  # Player1 回合结束，轮到Player0 走，返回对于Player1的价值 取反
+            return -r
+        return r
+
+    def get_sort_actions(self, **kw):
+        if self.actions is None:
+            self.actions = self.make_actions()
+        return self.actions
+
+    def get_data(self):
+        return dict(reward=self.reward)
+
+
+class MctsState(State):
+    def init_mcts(self):
+        self.expand_actions: List[Action] = []
+        self.need_expand_actions: List[Action] = None
+        self.visite_num = 0
+        self.visite_score = 0
+
+    def get_need_expand_actions(self):
+        if self.need_expand_actions is not None:
+            return self.need_expand_actions
+        self.need_expand_actions = self.get_sort_actions()[:]
+        return self.need_expand_actions
+
+    def is_fully_expanded(self):
+        return len(self.get_need_expand_actions()) == 0
+
+    def get_uct_best_child(self, exploration_param=1.4):
+        best_score = -float("inf")
+        best_child = None
+        for action in self.expand_actions:
+            child: MctsState = action.get_dst()
+            # UCT公式
+            exploit = child.visite_score / child.visite_num
+            explore = exploration_param * math.sqrt(
+                math.log(self.visite_num) / child.visite_num
+            )
+            score = exploit + explore
+            if score > best_score:
+                best_score = score
+                best_child = child
+        return best_child
+
+    def expand(self):
+        action = self.get_need_expand_actions().pop()
+        self.expand_actions.append(action)
+        return action.get_dst()
+
+    def show(self, info="", title=""):
+        # if self.visite_num and 0:
+        #     s = f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
+
+        return super().show(info=info, title=title)
+
+
+class AbState(MctsState):
+
+    def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
+        self.search_depth = search_depth
+        self.child_index = 0
+        self.alpha = alpha
+        self.bate = bate
+        self.ab_value = alpha
+        return self
+
+    def dfs2(self, max_depth=-1):
         tree_info = []
         DONE_S = "done"
 
@@ -252,137 +423,3 @@ class State:
     def dump_tree(self, max_depth=-1):
         tree_info = self.dfs(max_depth)
         return "\n".join(tree_info)
-
-    def get_reward(self, actions: List[Action] = None, params=None) -> int:
-        """
-        绝对优势 >0 表示先手优势 <0 表示后手优势
-        """
-        return self.reward
-
-    def get_max_action_reward(self):
-        reward = -inf
-        for a in self.get_actions().values():
-            ar = a.get_reward()
-            if ar > reward:
-                reward = ar
-        return reward
-
-    def set_data(self, **kw):
-        self.data.update(kw)
-        return self
-
-    def set_value(self, k, v):
-        self.data[k] = v
-        return self.data[k]
-
-    def title_show_keys(self):
-        return ["done", "player_id", "reward", "depth"]
-
-    def show_titles(self):
-        ret = []
-        for k in self.title_show_keys():
-            if k.find("=") != -1:
-                ret.append(k)
-            else:
-                ret.append(f"{k}={getattr(self,k)}")
-        return "; ".join(ret)
-
-    def show(self, info="", title=""):
-        datas = [self.show_titles(), self.to_str()]
-        if self.data:
-            for k, v in self.data.items():
-                datas.append(f"{k}:{v}")
-        if isinstance(info, list):
-            datas.extend(info)
-        elif info:
-            datas.append(str(info))
-        if isinstance(self.state, int):
-            mask = "%s:%x" % (title, self.state)
-        else:
-            mask = f"{title}:{self.state}"
-        mask_max_len = 60
-        if len(mask) > mask_max_len:
-            mask_max_len = len(mask) + 8
-        margin = (mask_max_len - len(mask)) // 2
-        return f"\n".join(
-            ["-" * margin + mask + "-" * margin] + datas + ["-" * mask_max_len]
-        )
-
-    def get_win_player(self, rewards, player_idx, *args, **kw):
-        if self.done == 0:
-            return 0
-        elif self.done == 1:
-            return 1
-        return 2
-
-    def get_self_reward(self, *args, **kw):
-        r = self.get_reward()
-        if (
-            self.player_id == 0
-        ):  # Player1 回合结束，轮到Player0 走，返回对于Player1的价值 取反
-            return -r
-        return r
-
-    def get_sort_actions(self, **kw):
-        if self.actions is None:
-            self.actions = self.make_actions()
-        return self.actions
-
-    def get_data(self):
-        return dict(reward=self.reward)
-
-
-class MctsState(State):
-    visite_num = 0
-    visite_score = 0
-
-    def init_mcts(self):
-        self.expand_actions: List[Action] = []
-        self.need_expand_actions: List[Action] = None
-
-    def get_need_expand_actions(self):
-        if self.need_expand_actions is not None:
-            return self.need_expand_actions
-        self.need_expand_actions = self.get_sort_actions()[:]
-        return self.need_expand_actions
-
-    def is_fully_expanded(self):
-        return len(self.get_need_expand_actions()) == 0
-
-    def get_uct_best_child(self, exploration_param=1.4):
-        best_score = -float("inf")
-        best_child = None
-        for action in self.expand_actions:
-            child: MctsState = action.get_dst()
-            # UCT公式
-            exploit = child.visite_score / child.visite_num
-            explore = exploration_param * math.sqrt(
-                math.log(self.visite_num) / child.visite_num
-            )
-            score = exploit + explore
-            if score > best_score:
-                best_score = score
-                best_child = child
-        return best_child
-
-    def expand(self):
-        action = self.get_need_expand_actions().pop()
-        self.expand_actions.append(action)
-        return action.get_dst()
-
-    def show(self, info="", title=""):
-        if self.visite_num and 0:
-            s = f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
-
-        return super().show(info=info, title=title)
-
-
-class AbState(MctsState):
-
-    def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
-        self.search_depth = search_depth
-        self.child_index = 0
-        self.alpha = alpha
-        self.bate = bate
-        self.ab_value = alpha
-        return self

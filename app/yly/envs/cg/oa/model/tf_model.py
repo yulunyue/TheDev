@@ -33,7 +33,7 @@ class OaTfModule(TfModule):
         csv_data: np.ndarray = np.fromfile(SAMPLES_FILE, dtype=np.float32).reshape(
             (-1, C.INPUT_SIZE + C.POLICY_SIZE + 2)
         )
-        print(csv_data.shape)
+
         cut_index = [
             (csv_data.shape)[1] - C.POLICY_SIZE - 2,
             (csv_data.shape)[1] - 2,
