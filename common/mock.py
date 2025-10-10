@@ -2,13 +2,17 @@ import json
 import sys
 import functools
 import heapq
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import math
 from collections import defaultdict, deque
 import os
 import random
 from itertools import permutations
 import bisect
+
+null = None
+true = True
+false = False
 
 
 def get_log(*args, **kw):

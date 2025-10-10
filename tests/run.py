@@ -1,5 +1,0 @@
-SECMASTER_ROOT_PATH = "/opt/cloud"
-ES_NAME = "isap-elase"
-ES_ROOT_PATH = SECMASTER_ROOT_PATH + "/" + ES_NAME
-CONF_NAME = "conf"
-CONF_PATH = ES_ROOT_PATH + "/" + CONF_NAME

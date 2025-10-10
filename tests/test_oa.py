@@ -1,7 +1,7 @@
 from common.util.export import TestBase, logger, Module, ii
 from common.third_service.export import CodingGame, uu, CGFrames
 from common.algo.export import AlphaBateSearch, ALgoManage, Algo, FIGHT_TYPE
-from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM
+from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM, OaTfModule
 
 
 class OaTest(TestBase):
@@ -30,6 +30,9 @@ class OaTest(TestBase):
 
     def debug(self):
         self.pk2()
+
+    def tf(self):
+        OaTfModule()
 
 
 if __name__ == "__main__":
