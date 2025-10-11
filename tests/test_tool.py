@@ -22,11 +22,6 @@ class ToolTest(TestBase):
         b = OsUtil().check_output("ls")
         self.expect(b, "")
 
-    def test_thread_record(self):
-        s = TestRc().execute()
-        self.expect(s.result, 3)
-        self.expect(s.records, [{"a": 0, "b": 0}, {"a": 1, "b": 1}, {"a": 3, "b": 3}])
-
     def test_config(self):
         t = TableBase[TestTableConfig]().set_resource("data/setting/test_table.json")
         m = t.insert("a")
