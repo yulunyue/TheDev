@@ -18,9 +18,11 @@ class ThreadRecord(threading.Thread):
 
     def __init__(self) -> None:
         super().__init__(target=self.exec)
-        self.records = []
         self.error_msg = ""
         self.result = None
+
+    def format(self):
+        return self.uk()
 
     def init(self):
         pass
@@ -49,23 +51,26 @@ class ThreadRecord(threading.Thread):
     def localtrace(self, frame, event, arg):
         if event == "return":
             return self.localtrace
-        print(frame, event, arg)
-        state = str(self)
+        # print(frame, event, arg)
+        state = self.uk()
         if state != self._last_state:
             # print(f"{state},{self._last_state},{self.to_josn()}")
+            self.msgs.append(self.format())
             self.records.append(self.to_josn())
         self._last_state = state
         return self.localtrace
 
     def execute(self, *args, **kw) -> "ThreadRecord":
         self.state = 0
+        self.records = []
+        self.msgs = []
         self.args = args
         self.kw = kw
         self.init()
         self.start()
         while not self.state:
             time.sleep(0.1)
-        return self.result
+        return self
 
     def exec_main(self, *args, **kw):
         raise Exception("todo")
@@ -77,6 +82,12 @@ class ThreadRecord(threading.Thread):
         for r in self.records:
             logger.map(**r)
 
+    def uk(self):
+        return ""
+
+    def cli(self, path, *args, **kw):
+        self.execute()
+
 
 class TestRc(ThreadRecord):
     def init(self):
@@ -84,12 +95,12 @@ class TestRc(ThreadRecord):
         self.b = 0
 
     def exec_main(self):
-        for i in range(3):
-            self.b += i
-            self.a += i
+        for _ in range(3):
+            self.a += 1
+            self.b += 1
         return self.a
 
-    def __str__(self):
+    def uk(self):
         return f"{self.a}"
 
     def to_josn(self):

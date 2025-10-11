@@ -178,6 +178,14 @@ class State:
             p = a.get_dst()
         return ret
 
+    def show_best_actions(self, mask_max_len=50):
+        actions = self.get_best_actions()
+        bodys = self.show_array(mask_max_len=mask_max_len)
+        for a in actions:
+            for i, d in enumerate(a.get_dst().show_array()):
+                bodys[i] += "|" + d
+        return "\n".join(bodys)
+
     def get_best_action(self):
         return self.best_action
 
@@ -189,7 +197,7 @@ class State:
         return actions[random.randint(0, len(actions) - 1)]
 
     def to_str(self):
-        return ""
+        return []
 
     def bfs(self, max_depth=-2) -> Dict[str, Tuple[List[Action], "State"]]:
         ret = {self.state: [[], self]}
@@ -229,7 +237,8 @@ class State:
         ans = []
 
         def util(n: State, depth, action: Action):
-            ans.append(n.show_titles(depth, action.action))
+            s = f'{"  " * depth}{action.action}->{n.state}: {n.show_titles()}'
+            ans.append(s)
 
         self.dfs(util, call_pos="pre")
         return "\n".join(ans)
@@ -242,8 +251,8 @@ class State:
 
     def get_max_action_reward(self):
         reward = -inf
-        for a in self.get_actions().values():
-            ar = a.get_reward()
+        for a in self.get_sort_actions():
+            ar = a.get_self_reward()
             if ar > reward:
                 reward = ar
         return reward
@@ -256,12 +265,20 @@ class State:
         self.data[k] = v
         return self.data[k]
 
+    header_title = ""
+
+    def set_headers(self, s):
+        self.header_title = s
+        return self
+
     def title_show_keys(self):
         return ["p", "r"]
 
-    def show_titles(self, depth=0, action=""):
+    def show_titles(self):
         ret = []
-        for k in self.title_show_keys():
+        for k in self.title_show_keys() + [self.header_title]:
+            if not k:
+                continue
             if k.find("=") != -1:
                 ret.append(k)
                 continue
@@ -269,17 +286,15 @@ class State:
                 value = self.player_id
             elif k == "r":
                 value = self.reward
+            elif k == "a":
+                value = self.ab_value
             else:
                 value = getattr(self, k)
             ret.append(f"{k}={value}")
-        ans = "; ".join(ret)
-        return f'{"  " * depth}{action}->{self.state}: {ans}'
+        return "; ".join(ret)
 
-    def show_body(self, info):
-        datas = [self.show_titles()]
-        view = self.to_str()
-        if view:
-            datas.append(view)
+    def show_body(self, info="", mask_max_len=50):
+        datas = [self.show_titles()] + self.to_str()
         if self.data:
             for k, v in self.data.items():
                 datas.append(f"{k}:{v}")
@@ -287,19 +302,27 @@ class State:
             datas.extend(info)
         elif info:
             datas.append(str(info))
-        return datas
+        return [(d + " " * mask_max_len)[:mask_max_len] for d in datas]
 
-    def show(self, info="", title="", mask_max_len=100, body=None):
+    def show_array(self, info="", title="", mask_max_len=50, body=None):
         if not title:
             title = "%x" % self.state
+        else:
+            title = "%s:%x" % (title, self.state)
         if len(title) > mask_max_len:
             mask_max_len = len(title) + 8
         if body is None:
-            body = self.show_body(info)
-        margin = (mask_max_len - len(title)) // 2
-        return f"\n".join(
-            ["-" * margin + title + "-" * margin] + body + ["-" * mask_max_len]
+            body = self.show_body(info, mask_max_len)
+        margin_left = (mask_max_len - len(title)) // 2
+        margin_right = mask_max_len - len(title) - margin_left
+        return (
+            ["-" * margin_left + title + "-" * margin_right]
+            + body
+            + ["-" * mask_max_len]
         )
+
+    def show(self, info="", title="", mask_max_len=40):
+        return f"\n".join(self.show_array(info="", title="", mask_max_len=mask_max_len))
 
     def get_win_player(self, rewards, player_idx, *args, **kw):
         if self.done == 0:

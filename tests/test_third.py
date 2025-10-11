@@ -1,13 +1,12 @@
 from common.util.export import TestBase, logger
-from common.third_util.export import LeetCode, EChart, Faker, opts, Draw, PtTable
+from common.third_util.draw import Draw
+from common.third_util.pt_table import PtTable
+from common.third_util.pynut_util import PynutUtil
 
 
 class ThirdTest(TestBase):
-    def run_lc(self):
-        l = LeetCode()
-        self.expect(l.submit(), 1)
 
-    def test_draw(self):
+    def draw(self):
         line_tmp_path = "data/draw/line"
         Draw().draw_line([4, 5, 6]).save(f"{line_tmp_path}/line1.svg")
         Draw().draw_lines(
@@ -17,9 +16,12 @@ class ThirdTest(TestBase):
             f"{line_tmp_path}/line3.svg"
         )
 
-    def test_pttable(self):
+    def pttable(self):
         p = PtTable().load_from_matrix([[1] * 12, [4] * 12], list(range(12)))
         logger.info(p)
+
+    def pynut(self):
+        PynutUtil().run()
 
 
 if __name__ == "__main__":

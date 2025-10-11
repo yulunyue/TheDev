@@ -22,10 +22,7 @@ class TestSearch(TestBase):
         self.check_algo(self.al.ab())
 
     def debug(self):
-        # c = self.al3.search(self.s.get_dst([1]))
-        # logger.info(c.action)
-        # self.check_algo(self.al3)
-        pass
+        self.dev()
 
 
 if __name__ == "__main__":

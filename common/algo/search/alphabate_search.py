@@ -53,30 +53,36 @@ class AlphaBateSearch(Algo):
         return alpha
 
     def get_depth_reward(self, s: State, actions: List[Action], **kw):
-        return s.get_self_reward(actions, params=self.params)
+        ret = -s.get_self_reward(actions, params=self.params)
+        self.set_state_reward(s, ret)
+        return ret
 
-    def set_state_best_action(self, state: State, a: Action, *args, **kw):
+    def set_state_reward(self, s: State, reward):
+        s.ab_value = reward
+        return self
+
+    def set_state_best_action(
+        self, state: State, a: Action, depth, reward, *args, **kw
+    ):
         state.set_best_action(a)
+        self.set_state_reward(state, reward)
 
     def search_dfs(
         self, state: AbState, actions: List[Action], depth=0, player_id=None, **kw
     ):
 
         if depth == self.max_depth or state.get_done() is not None:
-            state.ab_value = -self.get_depth_reward(state, depth)
-            return state.ab_value
+            return self.get_depth_reward(state, depth)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
-            state.ab_value = -self.get_depth_reward(state, depth)
-            return state.ab_value
-        state.ab_value = -inf
+            return self.get_depth_reward(state, depth)
+        self.set_state_reward(state, -inf)
         for a in mvs:
             reward = -self.search_dfs(
                 a.get_dst(), actions=actions + [a], depth=depth + 1, player_id=player_id
             )
             if reward > state.ab_value:
-                state.ab_value = reward
-                self.set_state_best_action(state, a, depth)
+                self.set_state_best_action(state, a, depth, reward)
 
         return state.ab_value
 
@@ -145,16 +151,14 @@ class AbDev(AlphaBateSearch):
     def search(self, state: State):
         self.state_num = 0
         ret = super().search(state)
-        action = ret.action if ret else None
-        self.logger.debug(state.show(title=f"BEGIN:{action}"))
-        for a in sorted(
-            state.get_sort_actions(),
-            key=lambda a: a.get_dst().ab_value,
-            # reverse=True,
-        ):
-            self.print_best_actions(a)
         return ret
 
-    def set_state_best_action(self, s: State, a: Action, depth):
-        super().set_state_best_action(s, a, depth)
-        self.print_best_actions(a)
+    def set_state_reward(self, s: State, reward):
+        s.header_title = f"a={reward}"
+        ret = super().set_state_reward(s, reward)
+        # self.logger.debug(s.show())
+        return ret
+
+    def set_state_best_action(self, s: State, a: Action, depth, reward):
+        super().set_state_best_action(s, a, depth, reward)
+        self.logger.debug(s.show_best_actions())

@@ -47,6 +47,7 @@ class TestState(AbState):
     def make_test_state():
         return TestState.new(
             TestState.new(r=1),
+            TestState.new(r=-7),
             TestState.new(
                 TestState.new(r=0),
                 TestState.new(r=-5),

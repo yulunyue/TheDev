@@ -79,9 +79,6 @@ class Algo:
     def reset(self):
         return self
 
-    def new_state(self, key):
-        pass
-
     def __str__(self):
         return f"<{self.__class__.__name__}  params:{self.params}>"
 
@@ -90,30 +87,6 @@ class Algo:
 
     def actor(self):
         pass
-
-    _log = None
-
-    def log(self, msg):
-        if self._log is None:
-            self._log = File(f"data/algo/log/{self.get_name()}.log").get_writer()
-        self._log.write(f"{msg}\n")
-        self._log.flush()
-
-    def debug(self, *args, **kw):
-        pass
-
-    def print_best_actions(self, a: Action):
-        actions = []
-        while a:
-            s = a.get_dst()
-            actions.append(str(a.action))
-            a = s.get_best_action()
-        self.logger.debug(
-            s.show(
-                info=[f"ab_value:{s.ab_value}"],
-                title=",".join(actions),
-            )
-        )
 
     def get_state_reward(self, s: State):
         return s.get_reward()
