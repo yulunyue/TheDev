@@ -1,5 +1,5 @@
 from common.mock import MockCf
-from common.util.export import List, Dict
+from common.util.export import List, Dict, defaultdict, logger
 
 O1 = """FP
 DEAD
@@ -11,151 +11,155 @@ J J J J J J D
 class CardBase:
     type: str
     is_use = False
+    title = ""
+    can_use = False
+    pre: "CardBase" = None
+    next: "CardBase" = None
 
-    def is_gl(self):
-        return self.type in {
-            CT.南猪入侵.type,
-            CT.万箭齐发.type,
-            CT.决斗.type,
-            CT.无懈可击.type,
-        }
-
-
-CARD_MAP = dict()
+    def use(self):
+        logger.debug(f"use {self.title}")
+        self.pre.next = self.next
 
 
-def C(k):
-    class Card(CardBase):
-        type = k
-
-    CARD_MAP[k] = Card
-    return CARD_MAP[k]
+class Tao(CardBase):
+    type = "P"
+    title = "桃"
+    can_use = True
 
 
-class CT:
-    桃: CardBase = C("P")
-    杀: CardBase = C("K")
-    闪: CardBase = C("D")
-    决斗: CardBase = C("F")
-    南猪入侵: CardBase = C("N")
-    万箭齐发: CardBase = C("W")
-    无懈可击: CardBase = C("J")
-    猪哥连弩: CardBase = C("Z")
+class Sha(CardBase):
+    type = "K"
+    title = "杀"
+    can_use = True
+
+
+class Shan(CardBase):
+    type = "D"
+    title = "闪"
+
+
+class Juedou(CardBase):
+    type = "F"
+    title = "决"
+    can_use = True
+
+
+class Nzrq(CardBase):
+    type = "N"
+    title = "南"
+    can_use = True
+
+
+class Wjqf(CardBase):
+    type = "W"
+    title = "万"
+    can_use = True
+
+
+class Wxkj(CardBase):
+    type = "J"
+    title = "无"
+
+
+class Zgll(CardBase):
+    type = "Z"
+    title = "诸"
+    can_use = True
+
+
+CARD_MAP = {s.type: s for s in CardBase.__subclasses__()}
 
 
 class Pig:
-    猪哥连弩 = None
+    has_zg = None
     power = 4
     state = 0
+    next: "Pig"
+    pre: "Pig"
+    IS_GOOD = 2
+    IS_BAD = -2
+    LIKE_GOOD = 1
+    LIKE_BAD = -1
 
     def __init__(self, g: "Game"):
         self.g = g
-        self.pos_idx = len(g.pigs)
-        g.pigs.append(self)
-
-    @property
-    def is_good(self):
-        return self.state == 2
-
-    @property
-    def is_bad(self):
-        return self.state == -2
-
-    @property
-    def like_good(self):
-        return self.state == 1
-
-    @property
-    def like_bad(self):
-        return self.state == -1
-
-    @property
-    def is_unknow(self):
-        return self.state == 0
+        self.head: CardBase = CardBase()
+        self.tail: CardBase = self.head
+        self.card_map: Dict[str, List[CardBase]] = defaultdict(list)
 
     @property
     def dead(self):
         return self.power == 0
 
-    def set_cards(self, cards):
-        self.cards: List[CardBase] = []
-        self.can_use_cards: List[CardBase] = []
-        self.card_map: Dict[str, List[CardBase]] = dict()
-        for c in cards:
-            self.add(c)
-        return self
-
-    def add(self, s: str):
+    def add_card(self, s: str):
         c: CardBase = CARD_MAP[s]()
-        self.cards.append(c)
-        self.can_use_cards.append(c)
+        c.pre = self.tail
+        self.tail.next = c
+        self.tail = c
         if c.type not in self.card_map:
             self.card_map[c.type] = []
         self.card_map[c.type].append(c)
         return self
 
-    def get_nexts(self):
-        ret: List[Pig] = []
-        nid = (self.pos_idx + 1) % len(self.g.pigs)
-        while nid != self.pos_idx:
-            n = self.g.pigs[nid]
-            nid = (nid + 1) % len(self.g.pigs)
-            if n.dead:
-                continue
-            ret.append(n)
-        return ret
+    def set_next(self, next: "Pig"):
+        self.next = next
+        next.pre = self
 
-    def view(self):
+    def view(self, key="type"):
         if not self.power:
             return "DEAD"
-        return " ".join([c.type for c in self.cards if not c.is_use])
+        ret = []
+        c = self.head.next
+        while c:
+            ret.append(getattr(c, key))
+            c = c.next
+        return " ".join(ret)
 
     def play(self):
-        i = 0
-        while i < len(self.can_use_cards):
-            c = self.can_use_cards[i]
-            if c.is_use:
-                self.can_use_cards.pop(i)
+        c = self.head.next
+        while c:
+            if not c.can_use:
+                c = c.next
                 continue
             if self.do_card(c):
-                c = self.can_use_cards.pop(i)
-                c.is_use = True
-                continue
-            i += 1
+                c.use()
+            c = c.next
 
     def do_card(self, c: CardBase):
-        if c.type == CT.桃.type and self.power < 4:
+        if c.type == Tao.type and self.power < 4:
             self.power += 1
             return True
-        if c.type == CT.猪哥连弩.type:
-            self.猪哥连弩 = c
+        if c.type == Zgll.type:
+            self.has_zg = True
             return True
-        if c.type == CT.万箭齐发.type or c.type == CT.南猪入侵.type:
-            self.push(c)
+        if c.type == Wjqf.type or c.type == Nzrq.type:
+            self.push_jl(c)
             return True
-        if c.type == CT.决斗.type:
-            return self.juedo(c)
-        return False
 
     def hander(self, c: CardBase):
-        if c.is_gl() and self.call_help(c):
-            pass
+        pass
 
     def hander_help(self, c: CardBase, f: "Pig"):
         if self.is_good():
             pass
 
-    def call_help(self, c: CardBase):
-        for d in self.get_nexts():
-            if d.hander_help(c, self):
-                return True
+    def call_help_wx(self, dst: "Pig", card: CardBase):
+        p = self.next
+        while p != self:
+            if p.card_map[Wxkj.type]:
+                if dst.state == Pig.IS_GOOD and p.state == Pig.IS_GOOD:
+                    p.card_map[Wxkj.type].pop(0).use()
+                    return True
 
-    def push(self, c):
-        for d in self.get_nexts():
-            d.hander(c)
+            p = p.next
+        return False
 
-    def juedo(self, c: CardBase):
-        pass
+    def push_jl(self, c):
+        p = self.next
+        while p != self:
+            if not self.call_help_wx(p, c):
+                p.hander(c)
+            p = p.next
 
 
 class Mp(Pig):
@@ -171,12 +175,18 @@ class Fp(Pig):
 
 
 class Game:
+    mp: Mp
+
     def __init__(self):
         self.pigs: List[Pig] = []
 
-    def add_pig(self, p: Pig):
-        if isinstance(p, Mp):
-            self.zp = p
+    def log(self, idx):
+        ret = [f"------round: {idx}------"]
+        for p in self.pigs:
+            if p.dead:
+                continue
+            ret.append(f"{p.__class__.__name__}->{p.view('title')}")
+        logger.debug("\n".join(ret))
 
 
 class Solution(MockCf):
@@ -192,23 +202,37 @@ class Solution(MockCf):
         ]
 
     def execute(self, hands: List[str], cards: str, **kw):
-
         mp_cls = dict(MP=Mp, ZP=Zp, FP=Fp)
-        g = Game()
-        for hand in hands:
-            tp, *args = hand.split()
-            p = mp_cls[tp](g).set_cards(args)
-            g.add_pig(p)
+        self.g = Game()
 
+        for i, hand in enumerate(hands):
+
+            tp, *args = hand.split()
+            p = mp_cls[tp](self.g)
+            for a in args:
+                p.add_card(a)
+            if isinstance(p, Mp):
+                self.g.mp = p
+            if self.g.pigs:
+                self.g.pigs[-1].set_next(p)
+            self.g.pigs.append(p)
+        p = self.g.pigs[0]
+        self.g.pigs[-1].set_next(self.g.pigs[0])
         card = cards.split()
-        p = g.zp
-        while card and not p.dead:
-            p.add(card.pop(0))
-            p.add(card.pop(0))
+        idx = 0
+        while card:
+            p.add_card(card.pop(0))
+            p.add_card(card.pop(0))
+            self.g.log(idx)
             p.play()
-            p = p.get_nexts()[0]
-        msgs = ["MP" if g.zp.power else "FP"]
-        for p in g.pigs:
+            p = p.next
+            idx += 1
+
+        return self.get_result()
+
+    def get_result(self):
+        msgs = ["MP" if self.g.mp.power else "FP"]
+        for p in self.g.pigs:
             msgs.append(p.view())
         return "\n".join(msgs)
 
