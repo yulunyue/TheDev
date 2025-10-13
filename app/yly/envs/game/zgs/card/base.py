@@ -13,13 +13,17 @@ class CardBase:
 
         self.owner: Pig = owner
 
-    def use(self):
-        logger.debug(f"{self.owner.name} use {self.title}")
+    def use(self, f: "CardBase" = None):
+        s = ""
+        if f:
+            s = f"for {f.owner.name} use {f.title}"
+        logger.debug(f"{self.owner.name} use {self.title} {s}")
         self.pre.next = self.next
         if self.next:
             self.next.pre = self.pre
         else:
             self.owner.tail = self.pre
+        return self
 
     def do(self, f: "CardBase" = None):
-        self.use()
+        self.use(f)

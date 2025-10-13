@@ -1,7 +1,7 @@
-from .base import CardBase
+from .nzrq import CardBase, Nzrq
 
 
-class Wjqf(CardBase):
+class Wjqf(Nzrq):
     type = "W"
     title = "万"
     can_use = True

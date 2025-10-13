@@ -1,4 +1,4 @@
-from common.util.export import List, Dict, defaultdict
+from common.util.export import List, Dict, defaultdict, logger
 from ..card.export import Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, CardBase
 
 
@@ -23,7 +23,7 @@ class Pig:
 
     @property
     def name(self):
-        return f"{self.__class__.__name__}_{self.idx}_{self.state}_{self.power}"
+        return f"{self.__class__.__name__}_{self.idx}"
 
     @property
     def dead(self):
@@ -64,11 +64,12 @@ class Pig:
         return False
 
     def power_change(self, num, c: "CardBase"):
+        logger.debug(f"{self.name} power {self.power}->{self.power+num}")
         self.power += num
         from ..util import tao
 
         if self.power == 0:
-            if tao(c.owner, self):
+            if tao(c.owner, self, c):
                 self.power = 1
             else:
                 self.pre.next = self.next
@@ -82,7 +83,7 @@ class Pig:
         if not self.card_map[stp]:
             self.power_change(-1, c)
             return False
-        self.card_map[stp].pop(0).use()
+        self.card_map[stp].pop(0).use(c)
         return True
 
     def lose_all_card(self):

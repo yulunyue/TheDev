@@ -8,7 +8,7 @@ CARD_MAP = {s.type: s for s in [Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, Zgll]}
 PG_CLS = dict(MP=Mp, ZP=Zp, FP=Fp)
 
 
-def wx(c: Pig, t: Pig, tp):
+def wx(c: Pig, t: Pig, tp, card: CardBase):
     cur = c.next
     while cur != c:
         s = cur.card_map[Wxkj.type]
@@ -16,21 +16,23 @@ def wx(c: Pig, t: Pig, tp):
             cur = cur.next
             continue
         if tp == Pig.IS_GOOD and cur.is_enemy(t):
-            s.pop(0).use()
-            return not wx(cur, t, -tp)
+            c1 = s.pop(0).use(card)
+            cur.state = Pig.IS_BAD if t.state == Pig.IS_GOOD else Pig.IS_GOOD
+            return not wx(cur, t, -tp, c1)
         if tp == Pig.IS_BAD and cur.is_firend(t):
-            s.pop(0).use()
-            return not wx(cur, t, -tp)
+            c1 = s.pop(0).use(card)
+            cur.state = Pig.IS_GOOD if t.state == Pig.IS_GOOD else Pig.IS_BAD
+            return not wx(cur, t, -tp, c1)
         cur = cur.next
     return False
 
 
-def tao(c: Pig, t: Pig):
+def tao(c: Pig, t: Pig, c1):
     cur = c
     while cur != c:
         s = cur.card_map[Tao.type]
         if s and cur.is_firend(t):
-            s.pop(0).use()
+            s.pop(0).use(c1)
             return True
         cur = cur.next
     return False

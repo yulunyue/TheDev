@@ -43,7 +43,7 @@ class LCTest(TestBase):
             File("data/test/b.txt").write_file(except_result)
 
     def test_debug(self):
-        self.cases("lc_3700")
+        self.cases("loj_p2885")
 
 
 if __name__ == "__main__":

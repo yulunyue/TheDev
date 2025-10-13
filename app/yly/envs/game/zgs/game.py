@@ -18,7 +18,7 @@ class Game:
         for p in self.players:
             if p.dead:
                 continue
-            ret.append(f"{p.name}->{p.view('title')}")
+            ret.append(f"{p.name} p={p.power} s={p.state}->{p.view('title')}")
         logger.debug("\n".join(ret))
 
     def add_pig(self, idx, tp, *cards):
