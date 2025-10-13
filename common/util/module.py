@@ -164,6 +164,7 @@ class Module:
             t = q
             q = []
             for v in t:
+                logger.debug(v)
                 lines.extend(v.lines)
                 for u in v.childs.values():
                     u.out_deg -= 1

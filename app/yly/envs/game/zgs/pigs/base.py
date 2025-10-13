@@ -12,11 +12,11 @@ class Pig:
     IS_BAD = -2
     LIKE_BAD = -1
     UN_KNOWN = 0
+    use_sha = False
 
-    def __init__(self, idx):
+    def __init__(self, idx, cards: List["CardBase"]):
         self.idx = idx
-        from ..card.base import CardBase
-
+        self.cards = cards
         self.head: CardBase = CardBase()
         self.tail: CardBase = self.head
         self.card_map: Dict[str, List[CardBase]] = defaultdict(list)
@@ -29,10 +29,7 @@ class Pig:
     def dead(self):
         return self.power == 0
 
-    def add_card(self, u):
-        from ..card.base import CardBase
-
-        c: CardBase = u
+    def add_card(self, c: "CardBase"):
         c.owner = self
         c.pre = self.tail
         self.tail.next = c
@@ -66,7 +63,7 @@ class Pig:
     def is_firend(self, c: "Pig"):
         return False
 
-    def power_change(self, num, c: CardBase):
+    def power_change(self, num, c: "CardBase"):
         self.power += num
         from ..util import tao
 
@@ -77,7 +74,7 @@ class Pig:
                 self.pre.next = self.next
                 self.next.pre = self.pre
 
-    def hander(self, c: CardBase):
+    def hander(self, c: "CardBase"):
         if isinstance(c, (Nzrq, Juedou)):
             stp = Sha.type
         elif isinstance(c, (Sha, Wjqf)):
@@ -92,3 +89,8 @@ class Pig:
         self.head.next = None
         self.has_zg = False
         self.card_map = defaultdict(list)
+
+    def get_num_card(self, num):
+        while self.cards and num > 0:
+            self.add_card(self.cards.pop(0))
+            num -= 1

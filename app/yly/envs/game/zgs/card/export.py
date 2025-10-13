@@ -6,3 +6,4 @@ from .wjqf import Wjqf
 from .shan import Shan
 from .juedou import Juedou
 from .wxkj import Wxkj
+from .zgll import Zgll

@@ -1,10 +1,10 @@
-from .card.export import Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, CardBase
+from .card.export import Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, CardBase, Zgll
 from .pigs.fp import Fp
 from .pigs.zp import Zp
 from .pigs.mp import Mp
 from .pigs.base import Pig
 
-CARD_MAP = {s.type: s for s in [Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan]}
+CARD_MAP = {s.type: s for s in [Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, Zgll]}
 PG_CLS = dict(MP=Mp, ZP=Zp, FP=Fp)
 
 

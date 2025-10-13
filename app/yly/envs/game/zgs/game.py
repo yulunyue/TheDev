@@ -10,6 +10,7 @@ class Game:
 
     def __init__(self):
         self.players: List[Pig] = []
+        self.cards = []
         self.round = 0
 
     def log(self):
@@ -21,7 +22,7 @@ class Game:
         logger.debug("\n".join(ret))
 
     def add_pig(self, idx, tp, *cards):
-        p: Pig = PG_CLS[tp](idx)
+        p: Pig = PG_CLS[tp](idx, self.cards)
         for c in cards:
             p.add_card(CARD_MAP[c]())
         if isinstance(p, Mp):
@@ -34,16 +35,23 @@ class Game:
         self.players[-1].set_next(self.players[0])
         self.cur_player = self.players[0]
 
-    def add_card(self, card0, card1):
-        self.cur_player.add_card(CARD_MAP[card0]())
-        self.cur_player.add_card(CARD_MAP[card1]())
-        self.log()
-        self.cur_player.do()
-        self.cur_player = self.cur_player.next
-        self.round += 1
-
     def get_result(self):
         msgs = ["MP" if self.mp.power else "FP"]
         for p in self.players:
             msgs.append(p.view())
         return "\n".join(msgs)
+
+    def set_cards(self, cards):
+        self.cards.extend([CARD_MAP[c]() for c in cards])
+
+    def run(self):
+        self.round += 1
+        while self.cards:
+            self.cur_player.use_sha = False
+            self.cur_player.get_num_card(2)
+            self.log()
+            self.cur_player.do()
+            if self.mp.dead:
+                break
+            self.cur_player = self.cur_player.next
+            self.round += 1

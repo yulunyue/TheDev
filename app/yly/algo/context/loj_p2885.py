@@ -5,8 +5,18 @@ from app.yly.envs.game.zgs.export import Game
 O1 = """FP
 DEAD
 DEAD
-J J J J J J D
-"""
+J J J J J J D"""
+O2 = """MP
+P
+
+N N J N J
+DEAD
+D P
+DEAD
+Z W
+DEAD
+DEAD
+DEAD"""
 
 
 class Solution(MockCf):
@@ -14,11 +24,27 @@ class Solution(MockCf):
 
     def get_cases(self):
         return [
+            # dict(
+            #     hands=["MP D D F F", "ZP N N N D", "FP J J J J"],
+            #     cards="F F D D J J F F K D",
+            #     result=O1,
+            # ),
             dict(
-                hands=["MP D D F F", "ZP N N N D", "FP J J J J"],
-                cards="F F D D J J F F K D",
-                result=O1,
-            )
+                hands=[
+                    "MP J P J Z",
+                    "ZP J J N J",
+                    "ZP F N N P",
+                    "ZP F W J Z",
+                    "ZP P D D P",
+                    "ZP F W J W",
+                    "ZP K Z P W",
+                    "FP J J J J",
+                    "FP J J K J",
+                    "FP J J Z J",
+                ],
+                cards="Z N J K Z",
+                result=O2,
+            ),
         ]
 
     def execute(self, hands: List[str], cards: str, **kw):
@@ -26,9 +52,8 @@ class Solution(MockCf):
         for i, hand in enumerate(hands):
             g.add_pig(i, *hand.split())
         g.load()
-        card = cards.split()
-        while card:
-            g.add_card(card.pop(0), card.pop(0))
+        g.set_cards(cards.split())
+        g.run()
         return g.get_result()
 
     def run(self):

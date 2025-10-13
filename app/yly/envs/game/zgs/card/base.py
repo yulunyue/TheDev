@@ -23,18 +23,3 @@ class CardBase:
 
     def do(self, f: "CardBase" = None):
         self.use()
-
-    def wx(self, t):
-        dst = self.owner.next
-        from .wxkj import Wxkj
-
-        while dst != self.owner:
-            wx = dst.card_map[Wxkj.type]
-            if not wx:
-                dst = dst.next
-                continue
-            if dst.is_firend(t) or dst.is_enemy(self.owner):
-                dst.card_map[Wxkj.type].pop(0).use()
-                return True
-            dst = dst.next
-        return False
