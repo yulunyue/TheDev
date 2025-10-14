@@ -17,11 +17,9 @@ def wx(c: Pig, t: Pig, tp, card: CardBase):
             continue
         if tp == Pig.IS_GOOD and cur.is_enemy(t):
             c1 = s.pop(0).use(card)
-            cur.state = Pig.IS_BAD if t.state == Pig.IS_GOOD else Pig.IS_GOOD
             return not wx(cur, t, -tp, c1)
         if tp == Pig.IS_BAD and cur.is_firend(t):
             c1 = s.pop(0).use(card)
-            cur.state = Pig.IS_GOOD if t.state == Pig.IS_GOOD else Pig.IS_BAD
             return not wx(cur, t, -tp, c1)
         cur = cur.next
     return False

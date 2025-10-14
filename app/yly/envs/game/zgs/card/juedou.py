@@ -4,7 +4,6 @@ from .base import CardBase
 class Juedou(CardBase):
     type = "F"
     title = "决"
-    can_use = True
 
     def do(self):
         from ..util import wx
@@ -15,5 +14,5 @@ class Juedou(CardBase):
                 self.use()
                 if not wx(self.owner, cur, self.owner.IS_BAD, self):
                     cur.hander(self)
-                    return
+                return
             cur = cur.next

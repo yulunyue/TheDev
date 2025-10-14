@@ -17,6 +17,9 @@ Z W
 DEAD
 DEAD
 DEAD"""
+O3 = """MP
+
+DEAD"""
 
 
 class Solution(MockCf):
@@ -29,21 +32,26 @@ class Solution(MockCf):
             #     cards="F F D D J J F F K D",
             #     result=O1,
             # ),
+            # dict(
+            #     hands=[
+            #         "MP J P J Z",
+            #         "ZP J J N J",
+            #         "ZP F N N P",
+            #         "ZP F W J Z",
+            #         "ZP P D D P",
+            #         "ZP F W J W",
+            #         "ZP K Z P W",
+            #         "FP J J J J",
+            #         "FP J J K J",
+            #         "FP J J Z J",
+            #     ],
+            #     cards="Z N J K Z",
+            #     result=O2,
+            # ),
             dict(
-                hands=[
-                    "MP J P J Z",
-                    "ZP J J N J",
-                    "ZP F N N P",
-                    "ZP F W J Z",
-                    "ZP P D D P",
-                    "ZP F W J W",
-                    "ZP K Z P W",
-                    "FP J J J J",
-                    "FP J J K J",
-                    "FP J J Z J",
-                ],
-                cards="Z N J K Z",
-                result=O2,
+                hands=["MP P P K K", "FP D Z K D"],
+                cards="D D Z P K D P P Z D K D P P P D P K D P K Z K K K D D K D D D D D D Z D P D K P P P K P P Z K P P P",
+                result=O3,
             ),
         ]
 

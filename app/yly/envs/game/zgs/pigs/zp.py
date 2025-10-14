@@ -4,10 +4,16 @@ from .mp import Mp
 
 class Zp(Pig):
     def is_enemy(self, c):
-        return c.state == self.IS_BAD
+        if c.state == self.IS_BAD:
+            self.state = self.IS_GOOD
+            return True
+        return False
 
     def is_firend(self, c):
-        return c.state == self.IS_GOOD
+        if c.state == self.IS_GOOD:
+            self.state = self.IS_GOOD
+            return True
+        return False
 
     def power_change(self, num, c):
         super().power_change(num, c)

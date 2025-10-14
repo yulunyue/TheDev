@@ -1,5 +1,5 @@
 from common.util.export import List, Dict, defaultdict, logger
-from ..card.export import Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, CardBase
+from ..card.export import Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, CardBase, Zgll
 
 
 class Pig:
@@ -30,6 +30,8 @@ class Pig:
         return self.power == 0
 
     def add_card(self, c: "CardBase"):
+        if isinstance(c, Zgll):
+            self.has_zg = True
         c.owner = self
         c.pre = self.tail
         self.tail.next = c
@@ -64,7 +66,7 @@ class Pig:
         return False
 
     def power_change(self, num, c: "CardBase"):
-        logger.debug(f"{self.name} power {self.power}->{self.power+num}")
+        # logger.debug(f"{self.name} power {self.power}->{self.power+num}")
         self.power += num
         from ..util import tao
 

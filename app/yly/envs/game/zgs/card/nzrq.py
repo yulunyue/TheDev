@@ -4,7 +4,6 @@ from .base import CardBase
 class Nzrq(CardBase):
     type = "N"
     title = "南"
-    can_use = True
 
     def do(self):
         dst = self.owner.next
