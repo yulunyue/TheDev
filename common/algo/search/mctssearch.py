@@ -6,11 +6,11 @@ import time
 
 class MctsSearch(Algo):
 
-    def load(self, max_depath=-1, num_episodes=5000, max_t=-1, **kw):
+    def load(self, max_depath=-1, max_t=-1, **kw):
         self.c = math.sqrt(2.0)
         self.max_depath = max_depath
         self.max_t = max_t / 1000
-        return super().load(num_episodes=num_episodes, **kw)
+        return super().load(**kw)
 
     def select(self, node: MctsState, vt_states: List[MctsState]) -> MctsState:
         cur = node
@@ -40,7 +40,9 @@ class MctsSearch(Algo):
         self.start_time = time.time()
         while True:
             vt_states: List[MctsState] = []  # 不要用parent记录因为尽可能有多个parent，
-            node = self.select(init_state, vt_states)  # 指导探索到待拓展的节点
+            node = self.select(
+                init_state.init_mcts(), vt_states
+            )  # 指导探索到待拓展的节点
             if node.get_done() is None:
                 expanded_node = node.expand()
                 vt_states.append(expanded_node)

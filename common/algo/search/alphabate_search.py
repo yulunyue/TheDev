@@ -13,64 +13,9 @@ class AlphaBateSearch(Algo):
         self.search_type = search_type
         return super().load(**kw)
 
-    def search_ab(
-        self,
-        state: State,
-        actions: List[Action],
-        depth=0,
-        alpha=-inf,
-        bate=inf,
-        player_id=None,
-        **kw,
-    ) -> None:
-
-        if depth == self.max_depth or state.get_done() is not None:
-            return -self.get_depth_reward(state, depth)
-        mvs: List[Action] = state.get_sort_actions(depth=depth)
-        if not mvs:
-            return -self.get_depth_reward(state, depth)
-        state.best_action = None
-        for a in mvs:
-            reward = -self.search_ab(
-                a.get_dst(),
-                actions + [a],
-                depth=depth + 1,
-                alpha=-bate,
-                bate=-alpha,
-                player_id=player_id,
-            )
-            # self.debug("ab", actions + [a], f"r:{reward}")
-            if reward >= bate:
-                # self.debug(actions + [a], f"r:{reward},b:{bate}")
-                alpha = bate
-                self.set_state_best_action(state, a, actions)
-
-                break
-            elif reward > alpha:
-                # self.debug(actions + [a], f"r:{reward},b:{alpha}")
-                self.set_state_best_action(state, a, actions)
-                alpha = reward
-        return alpha
-
-    def get_depth_reward(self, s: State, actions: List[Action], **kw):
-        ret = -s.get_self_reward(actions, params=self.params)
-        self.set_state_reward(s, ret)
-        return ret
-
-    def set_state_reward(self, s: State, reward):
-        s.ab_value = reward
-        return self
-
-    def set_state_best_action(
-        self, state: State, a: Action, depth, reward, *args, **kw
-    ):
-        state.set_best_action(a)
-        self.set_state_reward(state, reward)
-
     def search_dfs(
         self, state: AbState, actions: List[Action], depth=0, player_id=None, **kw
     ):
-
         if depth == self.max_depth or state.get_done() is not None:
             return self.get_depth_reward(state, depth)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
@@ -83,42 +28,73 @@ class AlphaBateSearch(Algo):
             )
             if reward > state.ab_value:
                 self.set_state_best_action(state, a, depth, reward)
-
         return state.ab_value
+
+    def search_ab(
+        self, state: AbState, actions: List[Action], depth=0, alpha=-inf, bate=inf, **kw
+    ) -> None:
+        if depth == self.max_depth or state.get_done() is not None:
+            return self.get_depth_reward(state, depth)
+        mvs: List[Action] = state.get_sort_actions(depth=depth)
+        if not mvs:
+            return self.get_depth_reward(state, depth)
+        self.set_state_reward(state, alpha, bate)
+        for a in mvs:
+            reward = -self.search_ab(
+                a.get_dst(),
+                actions + [a],
+                depth=depth + 1,
+                alpha=-state.bate,
+                bate=-state.alpha,
+            )
+            if reward >= state.bate:
+                state.alpha = state.bate
+                break
+            elif reward > state.alpha:
+                self.set_state_best_action(state, a, actions, reward)
+        return state.alpha
+
+    def get_depth_reward(self, s: State, actions: List[Action], **kw):
+        ret = -s.get_self_reward(actions, params=self.params)
+        self.set_state_reward(s, ret, inf)
+        return ret
+
+    def set_state_reward(self, s: AbState, alpha, bate):
+        s.alpha, s.bate = alpha, bate
+        return self
+
+    def set_state_best_action(
+        self, state: AbState, a: Action, depth, reward, *args, **kw
+    ):
+        state.set_best_action(a)
+        self.set_state_reward(state, reward, state.bate)
 
     def search_ab_loop(self, state: AbState):
         stacks = deque([state.load_ab()])
-
         pop_node: AbState = None
-        stacks[0].search_depth = 0
-        if state.get_done() is not None:
-            return
         while stacks:
             cur_node = stacks[-1]
             if (
                 cur_node.get_done() is not None
                 or cur_node.search_depth == self.max_depth
             ):
-                cur_node.ab_value = -self.get_depth_reward(cur_node, [cur_action])
+                self.get_depth_reward(cur_node, [cur_action])
                 pop_node = stacks.pop()
                 continue
             sort_actions = cur_node.get_sort_actions()
             if pop_node:
 
-                reward = -pop_node.ab_value
+                reward = -pop_node.alpha
                 sa = sort_actions[cur_node.child_index - 1]
-                # logger.debug(
-                #     f"a:{sa.action}; bate:{cur_node.bate}; alpha:{cur_node.alpha}; r:{reward}"
-                # )
+
                 if reward >= cur_node.bate:
-                    cur_node.ab_value = cur_node.alpha = cur_node.bate
+                    cur_node.alpha = cur_node.bate
                     pop_node = stacks.pop()
                     continue
                 if reward > cur_node.alpha:
-                    # self.debug(stacks + [pop_node], f"r:{reward},a:{cur_node.alpha}")
-                    cur_node.ab_value = cur_node.alpha = reward
-                    cur_node.set_best_action(sa)
-                # if cur_node.depth == 0:
+                    self.set_state_best_action(
+                        cur_node, sa, cur_node.search_depth, reward
+                    )
                 pop_node = None  # 根节点每次对比完 需要找新节点
 
             if cur_node.child_index >= len(sort_actions):
@@ -153,9 +129,9 @@ class AbDev(AlphaBateSearch):
         ret = super().search(state)
         return ret
 
-    def set_state_reward(self, s: State, reward):
-        s.header_title = f"a={reward}"
-        ret = super().set_state_reward(s, reward)
+    def set_state_reward(self, s: State, alpha, bate):
+        s.header_title = f"alpha={alpha} bate={bate}"
+        ret = super().set_state_reward(s, alpha, bate)
         # self.logger.debug(s.show())
         return ret
 

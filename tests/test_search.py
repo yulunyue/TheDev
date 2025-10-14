@@ -1,5 +1,18 @@
 from common.util.export import TestBase, logger
 from common.algo.export import TestState, AbDev, Algo, MctsSearch, ALgoManage
+from common.tool.export import ThreadRecord
+
+
+class Record(ThreadRecord):
+    def __init__(self, s: TestState):
+        self.s = s
+        super().__init__()
+
+    def uk(self):
+        return self.s.print_tree()
+
+    def set_search(self, algo: Algo):
+        return self.set_exec(lambda *args: algo.search(self.s))
 
 
 class TestSearch(TestBase):
@@ -12,14 +25,11 @@ class TestSearch(TestBase):
         ac = a.search(self.s)
         logger.debug(ac.get_dst().state)
 
-    def test_easy(self):
-        self.check_algo(self.al1)
-        self.check_algo(self.al2)
-        self.check_algo(self.al3)
-        self.check_algo(self.ms1)
-
     def dev(self):
         self.check_algo(self.al.ab())
+
+    def cli(self):
+        Record(self.s).set_search(self.al.mc()).cli()
 
     def debug(self):
         self.dev()

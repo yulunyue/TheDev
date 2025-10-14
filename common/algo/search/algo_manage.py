@@ -68,24 +68,24 @@ class ALgoManage:
     file_path = None
     record_model = AlgoInfo
 
-    def ab(self, n=5):
+    def ad(self, n=5):
         return AbDev(f"ab{n}").load(n).set_record_dir(self.record_dir)
 
-    def am(self, n):
+    def am(self, n=5):
         return (
             AbDev(f"am{n}")
             .load(n, search_type=AbDev.AB_MUCH)
             .set_record_dir(self.record_dir)
         )
 
-    def ad(self, n):
+    def ab(self, n=5):
         return (
             AbDev(f"ad{n}")
             .load(n, search_type=AbDev.AB_TYPE)
             .set_record_dir(self.record_dir)
         )
 
-    def mc(self, n):
+    def mc(self, n=100):
         return MctsSearchDev(f"mc{n}").load(max_t=n)
 
     def mcs(self, n):

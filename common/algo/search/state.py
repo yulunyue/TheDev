@@ -88,7 +88,6 @@ class State:
     actions: List[Action] = None
     data = None
     best_action: Action = None
-    ab_value = -inf
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -354,11 +353,13 @@ class MctsState(State):
         self.need_expand_actions: List[Action] = None
         self.visite_num = 0
         self.visite_score = 0
+        return self
 
     def get_need_expand_actions(self):
         if self.need_expand_actions is not None:
             return self.need_expand_actions
-        self.need_expand_actions = self.get_sort_actions()[:]
+        self.need_expand_actions = self.get_sort_actions()
+
         return self.need_expand_actions
 
     def is_fully_expanded(self):
@@ -385,12 +386,6 @@ class MctsState(State):
         self.expand_actions.append(action)
         return action.get_dst()
 
-    def show(self, info="", title=""):
-        # if self.visite_num and 0:
-        #     s = f"vt_num:{self.visite_num}; vt_score:{self.visite_score}; need_expand:{len(self.get_need_expand_actions())}; expand_actions:{len(self.expand_actions)}"
-
-        return super().show(info=info, title=title)
-
 
 class AbState(MctsState):
 
@@ -399,7 +394,6 @@ class AbState(MctsState):
         self.child_index = 0
         self.alpha = alpha
         self.bate = bate
-        self.ab_value = alpha
         return self
 
     def dfs2(self, max_depth=-1):

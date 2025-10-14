@@ -47,14 +47,14 @@ class TestState(AbState):
     def make_test_state():
         return TestState.new(
             TestState.new(r=1),
-            TestState.new(r=-7),
             TestState.new(
-                TestState.new(r=0),
+                TestState.new(r=2),
                 TestState.new(r=-5),
             ),
             TestState.new(
-                TestState.new(r=1),
+                TestState.new(r=3),
                 TestState.new(r=-9),  # 不会选这个
+                TestState.new(r=-3),  # 不会选这个
             ),
             player_id=1,
         )

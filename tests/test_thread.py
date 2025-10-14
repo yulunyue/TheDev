@@ -12,7 +12,10 @@ class TestThread(TestBase):
         )
 
     def run_rc(self):
-        TestRc().run()
+        TestRc().cli("data/log/view.txt")
+
+    def debug(self):
+        self.run_rc()
 
 
 if __name__ == "__main__":

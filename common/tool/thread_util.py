@@ -3,7 +3,7 @@ import threading
 import time
 from types import FrameType
 import traceback
-from common.util.export import logger
+from common.util.export import logger, File
 
 
 class FmInfo:
@@ -76,7 +76,7 @@ class ThreadRecord(threading.Thread):
         raise Exception("todo")
 
     def to_josn(self):
-        raise Exception("todo")
+        return dict()
 
     def log(self):
         for r in self.records:
@@ -85,8 +85,29 @@ class ThreadRecord(threading.Thread):
     def uk(self):
         return ""
 
-    def cli(self, path, *args, **kw):
-        self.execute()
+    def cli(self, path="data/log/thread_view.log", *args, **kw):
+        from common.third_util.pynut_util import PU_UTIL
+
+        self.execute(*args, **kw)
+        self.idx = 0
+
+        def show():
+            File(path).write_file(self.msgs[self.idx])
+
+        def left():
+            self.idx = (self.idx + len(self.msgs) - 1) % len(self.msgs)
+            show()
+
+        def right():
+            self.idx = (self.idx + 1) % len(self.msgs)
+            show()
+
+        show()
+        PU_UTIL.register(a=left, d=right).run()
+
+    def set_exec(self, fun):
+        self.exec_main = fun
+        return self
 
 
 class TestRc(ThreadRecord):
