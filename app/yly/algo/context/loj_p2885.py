@@ -2,60 +2,11 @@ from common.mock import MockCf
 from common.util.export import List, Dict, defaultdict, logger
 from app.yly.envs.game.zgs.export import Game
 
-O1 = """FP
-DEAD
-DEAD
-J J J J J J D"""
-O2 = """MP
-P
-
-N N J N J
-DEAD
-D P
-DEAD
-Z W
-DEAD
-DEAD
-DEAD"""
-O3 = """MP
-
-DEAD"""
-
 
 class Solution(MockCf):
     uri = "https://loj.ac/p/2885"
 
-    def get_cases(self):
-        return [
-            # dict(
-            #     hands=["MP D D F F", "ZP N N N D", "FP J J J J"],
-            #     cards="F F D D J J F F K D",
-            #     result=O1,
-            # ),
-            # dict(
-            #     hands=[
-            #         "MP J P J Z",
-            #         "ZP J J N J",
-            #         "ZP F N N P",
-            #         "ZP F W J Z",
-            #         "ZP P D D P",
-            #         "ZP F W J W",
-            #         "ZP K Z P W",
-            #         "FP J J J J",
-            #         "FP J J K J",
-            #         "FP J J Z J",
-            #     ],
-            #     cards="Z N J K Z",
-            #     result=O2,
-            # ),
-            dict(
-                hands=["MP P P K K", "FP D Z K D"],
-                cards="D D Z P K D P P Z D K D P P P D P K D P K Z K K K D D K D D D D D D Z D P D K P P P K P P Z K P P P",
-                result=O3,
-            ),
-        ]
-
-    def execute(self, hands: List[str], cards: str, **kw):
+    def do(self, hands: List[str], cards: str, **kw):
         g = Game()
         for i, hand in enumerate(hands):
             g.add_pig(i, *hand.split())
@@ -64,11 +15,11 @@ class Solution(MockCf):
         g.run()
         return g.get_result()
 
-    def run(self):
+    def execute(self):
         n, m = self.ii()
         hands = [self.input() for _ in range(n)]
-        print(self.execute(hands, self.input()))
+        return self.do(hands, self.input())
 
 
 if __name__ == "__main__":
-    Solution().run()
+    print(Solution().execute())

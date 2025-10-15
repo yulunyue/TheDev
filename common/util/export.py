@@ -21,5 +21,6 @@ from itertools import permutations, accumulate, pairwise
 from .str_util import StrUtil
 import os
 from threading import Thread
+from common.mock import MockCf
 
 null = None

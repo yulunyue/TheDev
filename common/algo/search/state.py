@@ -121,6 +121,10 @@ class State:
         self.best_action = a
         return self
 
+    def set_best_state(self, a: "State"):
+        self.best_state = a
+        return self
+
     def set_depth(self, depth):
         self.depth = depth
         return self
@@ -271,7 +275,7 @@ class State:
         return self
 
     def title_show_keys(self):
-        return ["p", "r"]
+        return ["p", "d", "r"]
 
     def show_titles(self):
         ret = []
@@ -284,9 +288,9 @@ class State:
             elif k == "p":
                 value = self.player_id
             elif k == "r":
-                value = self.reward
-            elif k == "a":
-                value = self.ab_value
+                value = self.get_reward()
+            elif k == "d":
+                value = self.get_done()
             else:
                 value = getattr(self, k)
             ret.append(f"{k}={value}")
@@ -347,47 +351,7 @@ class State:
         return dict(reward=self.reward)
 
 
-class MctsState(State):
-    def init_mcts(self):
-        self.expand_actions: List[Action] = []
-        self.need_expand_actions: List[Action] = None
-        self.visite_num = 0
-        self.visite_score = 0
-        return self
-
-    def get_need_expand_actions(self):
-        if self.need_expand_actions is not None:
-            return self.need_expand_actions
-        self.need_expand_actions = self.get_sort_actions()
-
-        return self.need_expand_actions
-
-    def is_fully_expanded(self):
-        return len(self.get_need_expand_actions()) == 0
-
-    def get_uct_best_child(self, exploration_param=1.4):
-        best_score = -float("inf")
-        best_child = None
-        for action in self.expand_actions:
-            child: MctsState = action.get_dst()
-            # UCT公式
-            exploit = child.visite_score / child.visite_num
-            explore = exploration_param * math.sqrt(
-                math.log(self.visite_num) / child.visite_num
-            )
-            score = exploit + explore
-            if score > best_score:
-                best_score = score
-                best_child = child
-        return best_child
-
-    def expand(self):
-        action = self.get_need_expand_actions().pop()
-        self.expand_actions.append(action)
-        return action.get_dst()
-
-
-class AbState(MctsState):
+class AbState(State):
 
     def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
         self.search_depth = search_depth
@@ -395,48 +359,3 @@ class AbState(MctsState):
         self.alpha = alpha
         self.bate = bate
         return self
-
-    def dfs2(self, max_depth=-1):
-        tree_info = []
-        DONE_S = "done"
-
-        def dfs(s: State, depth, action=None):
-            state = str(s.state)
-            if isinstance(s.state, int):
-                state = "%x" % s.state
-            tree_info.append(f'{"  " * depth}-{action}->{state}: {s.show_titles()}')
-            actions = s.get_sort_actions()
-            if s.get_done() is not None or depth == max_depth or not actions:
-                return s.set_value(DONE_S, s.get_done())
-            ct = defaultdict(int)
-            for a in actions:
-                dst = a.get_dst()
-                done = dfs(dst, depth + 1, a.action)
-                # if done == s.player_id:
-                #     return s.set_value(DONE_S, done)
-                ct[done] += 1
-            if ct[1 - s.player_id] == len(actions):
-                return s.set_value(DONE_S, 1 - s.player_id)
-            if ct[None]:
-                return s.set_value(DONE_S, None)
-            return s.set_value(DONE_S, -1)
-
-        def dfs1(s: State, depth, stacks):
-            actions = s.get_sort_actions()
-            if depth == max_depth or not actions:
-                return
-            if s.get_done() is not None:
-                return
-            for a in actions:
-                dst = a.get_dst()
-                if dst.data.get(DONE_S) != s.data[DONE_S]:
-                    continue
-                dfs1(dst, depth + 1, stacks + [str(a.action)])
-
-        dfs(self, 0)
-        dfs1(self, 0, [])
-        return tree_info
-
-    def dump_tree(self, max_depth=-1):
-        tree_info = self.dfs(max_depth)
-        return "\n".join(tree_info)

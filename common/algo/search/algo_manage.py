@@ -85,7 +85,7 @@ class ALgoManage:
             .set_record_dir(self.record_dir)
         )
 
-    def mc(self, n=100):
+    def mc(self, n=1000):
         return MctsSearchDev(f"mc{n}").load(max_t=n)
 
     def mcs(self, n):

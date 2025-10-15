@@ -16,7 +16,8 @@ class File:
     def __init__(self, path: str) -> None:
         self.path = path
         self.dirs = path.split("/")
-        names = self.dirs.pop().split(".")
+        self.file_name = self.dirs.pop()
+        names = self.file_name.split(".")
         self.name = names[0]
         self.type = names[-1]
         self.m_time = 0
@@ -25,11 +26,17 @@ class File:
     def get_m_time(self):
         return os.path.getmtime(self.path)
 
-    def make_dir_if_not_exist(self):
+    def child(self, name):
+        return File(self.path + "/" + name)
+
+    def make_dir_if_not_exist(self, is_dir=False):
         if self.exists():
             return
         root_path = ""
-        for p in self.dirs:
+        dirs = self.dirs[:]
+        if is_dir:
+            dirs.append(self.file_name)
+        for p in dirs:
             root_path += p
             if root_path and not os.path.isdir(root_path):
                 os.mkdir(root_path)
@@ -47,6 +54,11 @@ class File:
                 data = str(data)
             with open(self.path, "w", encoding=encoding) as f:
                 f.write(data)
+        return self
+
+    def write_if_not_exists(self, data=""):
+        if not self.exists():
+            self.write_file(data)
         return self
 
     def is_json_file(self):
@@ -75,13 +87,15 @@ class File:
     def exists(self):
         return os.path.exists(self.path)
 
-    def list_dir(self, depth=1) -> List["File"]:
+    def list_dir(self, depth=1, with_dir=False) -> List["File"]:
         if depth == 0:
             return []
         ret = []
         for name in os.listdir(self.path):
             f = File(self.path + "/" + name)
             if f.is_dir():
+                if with_dir:
+                    ret.append(f)
                 ret.extend(f.list_dir(depth - 1))
             else:
                 ret.append(f)

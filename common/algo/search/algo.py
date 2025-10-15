@@ -4,7 +4,7 @@ import random
 
 
 from typing import List, Dict
-from common.algo.search.state import State, inf, Action, MctsState
+from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict

@@ -23,10 +23,10 @@ class TestSearch(TestBase):
 
     def check_algo(self, a: Algo):
         ac = a.search(self.s)
-        logger.debug(ac.get_dst().state)
+        # logger.debug(ac.get_dst().state)
 
     def dev(self):
-        self.check_algo(self.al.ab())
+        self.check_algo(self.al.mc())
 
     def cli(self):
         Record(self.s).set_search(self.al.mc()).cli()

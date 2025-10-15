@@ -5,6 +5,9 @@ from common.util.export import (
     logger,
     File,
     run_catch_error,
+    get_log,
+    List,
+    Dict,
 )
 from common.tool.export import ThreadRecord
 from common.mock import MockCf
@@ -19,31 +22,63 @@ def get_ins(file_name):
     return ins
 
 
+class Case:
+    def __init__(self, path):
+        self.path = path
+        self.i = File(path + "/main.in").write_if_not_exists()
+        self.o = File(path + "/main.out").write_if_not_exists()
+        self.e = File(path + "/main.e").write_if_not_exists()
+
+    def get_loger(self):
+        return get_log(self.path + "/main.log")
+
+    def run_diff(self, result):
+        self.o.write_file(result)
+        e = None
+        if self.e.exists():
+            e = self.e.read_file()
+        if str(e) == str(result):
+            return ""
+        return f"{result}!={e}"
+
+    def get_input(self):
+        return dict()
+
+    def get_linput_lines(self):
+        return self.i.read_file()
+
+
+class CaseMgmt:
+    def __init__(self, file_name):
+        self.root = File(f"data/context/{file_name}")
+        self.root.child("case1").make_dir_if_not_exist(True)
+        self.load()
+
+    def load(self):
+        self.cases: Dict[str, Case] = dict()
+        for f in self.root.list_dir(with_dir=True):
+            if f.is_dir():
+                self.cases[f.name] = Case(f.path)
+
+    def get_cases(self, name):
+        if not name:
+            return self.cases.values()
+        return [self.cases[name]]
+
+
 class LCTest(TestBase):
 
-    def cases(self, file_name, fun_name="execute", case_idx=None):
+    def cases(self, file_name, fun_name="execute", case_name=""):
+        cm = CaseMgmt(file_name)
         ins: MockCf = get_ins(file_name)
-        cases = ins.get_cases()
-        if case_idx is None:
-            case_idx = list(range(len(cases)))
-        else:
-            case_idx = [int(case_idx)]
-        for cid in case_idx:
-            input_param = cases[cid]
-            except_result = (
-                input_param.pop("result") if "result" in input_param else None
-            )
-
-            r = getattr(ins, fun_name)(**input_param)
-            if isinstance(ins, ThreadRecord):
-                ins.log()
-            msg = f"{cases[cid]}\nlogger:\n{logger.get_and_clear_cache()}"
-            self.expect(r, except_result, msg)
-            File("data/test/a.txt").write_file(r)
-            File("data/test/b.txt").write_file(except_result)
+        for case in cm.get_cases(case_name):
+            ins.set_logger(case.get_loger())
+            ins.set_inputs(case.get_linput_lines())
+            r = getattr(ins, fun_name)(**case.get_input())
+            self.expect(case.run_diff(r), "", case.path)
 
     def test_debug(self):
-        self.cases("loj_p2885")
+        self.cases("lg_p1209")
 
 
 if __name__ == "__main__":

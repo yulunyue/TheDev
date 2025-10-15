@@ -103,7 +103,7 @@ class ThreadRecord(threading.Thread):
             show()
 
         show()
-        PU_UTIL.register(a=left, d=right).run()
+        PU_UTIL.register(left=left, right=right).run()
 
     def set_exec(self, fun):
         self.exec_main = fun

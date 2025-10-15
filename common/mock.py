@@ -37,6 +37,9 @@ class MockCf:
     dev = False
     inputs = None
 
+    def set_logger(self, log):
+        self.logger: logger = log
+
     def set_inputs(self, inputs: str):
         self.inputs = inputs.split("\n")
         return self
