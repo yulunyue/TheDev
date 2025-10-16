@@ -55,10 +55,13 @@ class MctsState:
     def get_reward(self):
         return self.s.get_reward()
 
+    def __str__(self):
+        return f"vt={self.visite_num}; vs={self.visite_score}; uct={'%.3f'%self.uct_score}; ep:{len(self.get_need_expand_states())}; vs:{len(self.expand_states)}"
+
 
 class MctsSearch(Algo):
 
-    def load(self, max_depath=-1, max_t=-1, num_episodes=1000, **kw):
+    def load(self, max_depath=-1, max_t=CT.inf, num_episodes=1000, **kw):
         self.c = math.sqrt(2.0)
         self.max_depath = max_depath
         self.max_t = max_t / 1000
@@ -128,9 +131,7 @@ class MctsSearchDev(MctsSearch):
 
     def back_vt(self, s, score):
         super().back_vt(s, score)
-        s.s.set_headers(
-            f"vt={s.visite_num}; vs={s.visite_score}; uct={'%.3f'%s.uct_score}; ep:{len(s.get_need_expand_states())}; vs:{len(s.expand_states)}"
-        )
+        s.s.set_headers()
 
     def search(self, state):
         return super().search(state)

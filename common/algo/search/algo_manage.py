@@ -86,7 +86,7 @@ class ALgoManage:
         )
 
     def mc(self, n=1000):
-        return MctsSearchDev(f"mc{n}").load(max_t=n)
+        return MctsSearchDev(f"mc{n}").load(num_episodes=n)
 
     def mcs(self, n):
         return [self.mc(i * 10) for i in range(3, n)]

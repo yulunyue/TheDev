@@ -51,7 +51,7 @@ class Algo:
         self.params: Params = params
         return self
 
-    def search(self, state: "MctsState") -> "Action":
+    def search(self, state: "State") -> "Action":
         self.reset()
         self.search_main(state.reset())
         return state.get_best_action()

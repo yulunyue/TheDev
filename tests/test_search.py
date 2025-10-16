@@ -19,10 +19,10 @@ class TestSearch(TestBase):
     def prepare(self, args=None):
         self.s = TestState.make_test_state()
         self.al = ALgoManage().set_record_dir("data/test/search")
-        logger.debug(self.s.print_tree())
 
     def check_algo(self, a: Algo):
         ac = a.search(self.s)
+        logger.debug(self.s.print_tree())
         # logger.debug(ac.get_dst().state)
 
     def dev(self):
