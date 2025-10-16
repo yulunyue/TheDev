@@ -5,7 +5,7 @@ import time
 
 
 class MctsState:
-    uct_score = None
+    uct_score = 0
 
     def __init__(self, state: State):
         self.s = state
@@ -30,7 +30,6 @@ class MctsState:
         best_child = None
         for child in self.expand_states:
 
-            # UCT公式
             score = self.calc_uct_value(child, exploration_param)
             if score > best_score:
                 best_score = score
@@ -129,7 +128,9 @@ class MctsSearchDev(MctsSearch):
 
     def back_vt(self, s, score):
         super().back_vt(s, score)
-        s.s.set_headers(f"vt={s.visite_num}; vs={s.visite_score}; uct={s.uct_score}")
+        s.s.set_headers(
+            f"vt={s.visite_num}; vs={s.visite_score}; uct={'%.3f'%s.uct_score}; ep:{len(s.get_need_expand_states())}; vs:{len(s.expand_states)}"
+        )
 
     def search(self, state):
         return super().search(state)

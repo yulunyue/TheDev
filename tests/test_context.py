@@ -11,6 +11,7 @@ from common.util.export import (
 )
 from common.tool.export import ThreadRecord
 from common.mock import MockCf
+import json
 
 
 def get_ins(file_name):
@@ -42,7 +43,11 @@ class Case:
         return f"{result}!={e}"
 
     def get_input(self):
-        return dict()
+        data = self.get_linput_lines()
+        try:
+            return json.loads(data)
+        except Exception as e:
+            return dict()
 
     def get_linput_lines(self):
         return self.i.read_file()
@@ -72,6 +77,7 @@ class LCTest(TestBase):
         cm = CaseMgmt(file_name)
         ins: MockCf = get_ins(file_name)
         for case in cm.get_cases(case_name):
+            logger.info(case.i.path)
             ins.set_logger(case.get_loger())
             ins.set_inputs(case.get_linput_lines())
             r = getattr(ins, fun_name)(**case.get_input())
