@@ -5,6 +5,20 @@ import random
 class TestState(AbState):
     idx = 0
 
+    def game_end(self):
+        if not self.get_sort_actions():
+            return True, self.get_done()
+        if self.get_done() is not None:
+            return True, self.get_done()
+        return False, None
+
+    def get_current_player(self):
+        return self.player_id
+
+    @property
+    def availables(self):
+        return self.get_sort_actions()
+
     @staticmethod
     def get_new_id():
         TestState.idx += 1
@@ -39,8 +53,13 @@ class TestState(AbState):
             ret.set_player_id(player_id)
         ret.max_reward = r if max_reward is None else max_reward
         ret.set_next_states(states or [])
+        if r == 0:
+            ret.set_done(2)
+        elif isinstance(r, int) and r < 0:
+            ret.set_done(0)
+        elif isinstance(r, int) and r > 0:
+            ret.set_done(1)
         ret.init_data()
-
         return ret
 
     @staticmethod

@@ -12,6 +12,7 @@ from common.util.export import File, logger, get_log
 
 
 def random_seed(v=1):
+    logger.info(f"random_seed {v}")
     np.random.seed(v)
     random.seed(v)
 

@@ -5,64 +5,44 @@ import time
 
 
 class MctsState:
-    uct_score = 0
 
-    def __init__(self, state: State):
+    def __init__(self, state: State, p: "MctsState" = None, p_action=None):
         self.s = state
-        self.expand_states: List[MctsState] = []
-        self.need_expand_states: List[MctsState] = None
-        self.visite_num = 0
-        self.visite_score = 0
+        self.children = None
+        self.n_visits = 0
+        self.u = 0
+        self.q = 0
+        self.p: MctsState = p
+        self.p_action = p_action
 
-    def get_need_expand_states(self):
-        if self.need_expand_states is not None:
-            return self.need_expand_states
-        self.need_expand_states = [
-            MctsState(a.get_dst()) for a in self.s.get_sort_actions()
+    def get_children(self):
+        if self.children is not None:
+            return self.children
+        self.children = [
+            MctsState(d.get_dst(), self, d) for d in self.s.get_sort_actions()
         ]
-        return self.need_expand_states
+        return self.children
 
-    def is_fully_expanded(self):
-        return len(self.get_need_expand_states()) == 0
-
-    def get_uct_best_child(self, exploration_param=1.4):
-        best_score = -float("inf")
-        best_child = None
-        for child in self.expand_states:
-
-            score = self.calc_uct_value(child, exploration_param)
-            if score > best_score:
-                best_score = score
-                best_child = child
-        return best_child
-
-    def calc_uct_value(self, child: "MctsState", exploration_param):
-        exploit = child.visite_score / child.visite_num
-        explore = exploration_param * math.sqrt(
-            math.log(self.visite_num) / child.visite_num
-        )
-        child.uct_score = exploit + explore
-        return child.uct_score
+    def update(self, leaf_value):
+        if self.p:
+            self.p.update(-leaf_value)
+        self.n_visits += 1
+        self.q += 1.0 * (leaf_value - self.q) / self.n_visits
 
     def expand(self):
-        s = self.get_need_expand_states().pop()
-        self.expand_states.append(s)
-        return s
+        return self.get_children()
 
-    def get_done(self):
-        return self.s.get_done()
-
-    def get_reward(self):
-        return self.s.get_reward()
+    def is_leaf(self):
+        return self.s.game_over or self.children is None
 
     def __str__(self):
-        return f"vt={self.visite_num}; vs={self.visite_score}; uct={'%.3f'%self.uct_score}; ep:{len(self.get_need_expand_states())}; vs:{len(self.expand_states)}"
+        return f"vt={self.n_visits}; q={'%.3f'%self.q}; u={'%.3f'%self.u}"
 
 
 class MctsSearch(Algo):
 
     def load(self, max_depath=-1, max_t=CT.inf, num_episodes=1000, **kw):
-        self.c = math.sqrt(2.0)
+        self.exploration_param = 1.4
         self.max_depath = max_depath
         self.max_t = max_t / 1000
         self.num_episodes = num_episodes
@@ -70,41 +50,52 @@ class MctsSearch(Algo):
 
     def select(self, node: MctsState) -> MctsState:
         cur = node
-        self.vt_states.append(cur)
-        while cur.get_done() is None and cur.is_fully_expanded():
-            cur = cur.get_uct_best_child(self.c)
-            self.vt_states.append(cur)
+        while not cur.is_leaf():
+            cur = self.get_uct_best_child(cur)
         return cur
 
-    def simulate(self, node: MctsState):
-        while node.get_done() is None:
-            states = node.get_need_expand_states()
-            random_id = random.randint(0, len(states) - 1)
-            node = states[random_id]
-        return node
+    def get_uct_best_child(self, cur: MctsState):
+        best_score = -float("inf")
+        best_child = None
+        for child in cur.get_children():
+            score = self.calc_uct_value(child)
+            if score > best_score:
+                best_score = score
+                best_child = child
+        return best_child
 
-    def backpropagate(self, score):
-        for i in range(len(self.vt_states) - 1, -1, -1):
-            self.back_vt(self.vt_states[i], score)
+    def calc_uct_value(self, c: "MctsState"):
+        c.u = self.exploration_param * math.sqrt(c.p.n_visits / (c.n_visits + 1))
+        return c.q + c.u
 
-    def back_vt(self, s: MctsState, score):
-        s.visite_score += score if s.s.player_id == 0 else -score
-        s.visite_num += 1
+    def simulate(self, root: State):
+        tail = root
+        while not tail.game_over:
+            actions = tail.get_sort_actions()
+            random_id = random.randint(0, len(actions) - 1)
+            tail = actions[random_id].get_dst()
+        reward = tail.get_self_reward()
+        return reward if root.player_id == tail.player_id else -reward
+
+    def backpropagate(self, node: MctsState, score):
+        while node:
+            self.update(node, score)
+            node = node.p
+            score = -score
+
+    def update(self, node: MctsState, score):
+        node.update(score)
 
     def search_main(self, init_state: State):
         self.ep = 0
         self.start_time = time.time()
         root = MctsState(init_state)
         while True:
-            self.vt_states: List[MctsState] = []  # 不要用parent记录因为尽可能
             node = self.select(root)  # 指导探索到待拓展的节点
-            if node.get_done() is None:
-                expanded_node = node.expand()
-                self.vt_states.append(expanded_node)
-                end_node = self.simulate(expanded_node)
-                self.backpropagate(end_node.get_reward())
-            else:
-                self.backpropagate(node.get_reward())
+            if not node.s.game_over:
+                node.expand()
+            value = self.simulate(node.s)
+            self.backpropagate(node, value)
             self.ep += 1
             cur_time = time.time()
             if self.ep >= self.num_episodes or cur_time - self.start_time >= self.max_t:
@@ -119,19 +110,18 @@ class MctsSearch(Algo):
         """
         best_state = None
         best_visits = -1
-        for a in node.expand_states:
-            if a.visite_num > best_visits:
-                best_visits = a.visite_num
+        for a in node.get_children():
+            if a.n_visits > best_visits:
+                best_visits = a.n_visits
                 best_state = a
-
-        node.s.set_best_state(best_state.s)
+        node.s.set_best_action(best_state.p_action)
 
 
 class MctsSearchDev(MctsSearch):
 
-    def back_vt(self, s, score):
-        super().back_vt(s, score)
-        s.s.set_headers()
+    def update(self, s: MctsState, score):
+        super().update(s, score)
+        s.s.set_headers(str(s))
 
     def search(self, state):
         return super().search(state)

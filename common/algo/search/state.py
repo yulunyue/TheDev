@@ -12,8 +12,8 @@ class Action:
 
     def __init__(self, src, action, dst=None):
         self.action = action
-        self.src: MctsState = src
-        self.dst: MctsState = dst
+        self.src: State = src
+        self.dst: State = dst
         self.data = dict()
 
     def get_regret(self):
@@ -144,7 +144,7 @@ class State:
     def set_next_states(self, states: List["State"]):
         return self.set_actions(
             [
-                Action(self, "", v.set_player_id(1 - self.player_id))
+                Action(self, v.state, v.set_player_id(1 - self.player_id))
                 for i, v in enumerate(states)
             ]
         )
@@ -349,6 +349,13 @@ class State:
 
     def get_data(self):
         return dict(reward=self.reward)
+
+    def do_move(self, action: Action):
+        return action.get_dst()
+
+    @property
+    def game_over(self):
+        return self.done is not None
 
 
 class AbState(State):

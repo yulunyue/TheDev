@@ -1,5 +1,12 @@
 from common.util.export import TestBase, logger
-from common.algo.export import TestState, AbDev, Algo, MctsSearch, ALgoManage
+from common.algo.export import (
+    TestState,
+    AbDev,
+    Algo,
+    MctsSearch,
+    ALgoManage,
+    random_seed,
+)
 from common.tool.export import ThreadRecord
 
 
@@ -31,9 +38,17 @@ class TestSearch(TestBase):
     def cli(self):
         Record(self.s).set_search(self.al.mc()).cli()
 
+    def dev1(self):
+        from app.dev.mcts_pure import MCTS
+
+        m = MCTS(n_playout=100)
+        m.get_move(self.s)
+        logger.debug(m._root.show())
+
     def debug(self):
         self.dev()
 
 
 if __name__ == "__main__":
+    random_seed(7)
     TestSearch().run()
