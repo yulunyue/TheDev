@@ -36,6 +36,7 @@ class CT:
 class MockCf:
     dev = False
     inputs = None
+    logger = logger
 
     def set_logger(self, log):
         self.logger: logger = log
