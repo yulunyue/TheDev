@@ -30,7 +30,7 @@ class Constant {
     TEXT_AREA_HEIGHT_1 = 100
     TEXT_AREA_HEIGHT_2 = 200
     TEXT_AREA_HEIGHT_3 = 400
-
+    WIDTH_TEXT = 200
 
     KEY_RIGHT = 'ArrowRight'
     KEY_LEFT = 'ArrowLeft'
