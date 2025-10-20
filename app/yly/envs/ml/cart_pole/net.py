@@ -1,9 +1,10 @@
-from common.third_util.export import TorchNet, TorchF, Linear, TorchDoubleNet, torch
+from common.third_util.torch_util import torch, Linear, TorchF, TorchDoubleNet
 from .constant import C
 
 
-class NetBase(TorchNet):
-    def init_net(self):
+class NetBase(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
         self.fc1 = Linear(C.STATE_DIM, C.NET_BASE_HIDDEN_DIM)
         self.fc2 = Linear(C.NET_BASE_HIDDEN_DIM, C.ACTION_DIM)
 

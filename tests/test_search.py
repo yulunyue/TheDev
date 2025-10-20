@@ -45,6 +45,12 @@ class TestSearch(TestBase):
         m.get_move(self.s)
         logger.debug(m._root.show())
 
+    def dev2(self):
+        s = TestState.make_random_state(1000)
+        b = self.al.ad().search(s)
+        logger.debug(s.print_tree())
+        logger.debug(s.show_best_actions())
+
     def debug(self):
         self.dev()
 

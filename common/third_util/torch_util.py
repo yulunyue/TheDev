@@ -5,32 +5,19 @@ from common.util.export import File
 from torch import Tensor
 import json
 
+SAVE_DIR = "data/model"
 
-class TorchNet:
-    SAVE_DIR = "data/model"
-    model_cls = Module
 
-    def __init__(self, name=""):
-        self.name = name or self.__class__.__name__
-        self.save_path = File(f"{self.SAVE_DIR}/{self.name}.pt")
-        self.init_net()
-
-    def init_net(self):
-        if self.save_path.exists():
-            self.model: Module = torch.jit.load(self.save_path.path)
-        else:
-            self.model: Module = self.model_cls()
-
-    def view(self):
-        ans = []
-        for k, s in self.model.state_dict().items():
-            v: Tensor = s
-            ans.append(f"key:{k} shape:{v.shape} type:{v.dtype}")
-        return "\n".join(ans)
+def view(self):
+    ans = []
+    for k, s in self.model.state_dict().items():
+        v: Tensor = s
+        ans.append(f"key:{k} shape:{v.shape} type:{v.dtype}")
+    return "\n".join(ans)
 
 
 class TorchDoubleNet:
-    model_cls = TorchNet
+    model_cls = Module
 
     def __init__(self):
         self.q_net = self.__class__.model_cls()

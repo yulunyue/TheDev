@@ -7,7 +7,7 @@ import time
 class MctsState:
 
     def __init__(self, state: State, p: "MctsState" = None, p_action=None):
-        self.s = state
+        self.state = state
         self.children = None
         self.n_visits = 0
         self.u = 0
@@ -19,7 +19,7 @@ class MctsState:
         if self.children is not None:
             return self.children
         self.children = [
-            MctsState(d.get_dst(), self, d) for d in self.s.get_sort_actions()
+            MctsState(d.get_dst(), self, d) for d in self.state.get_sort_actions()
         ]
         return self.children
 
@@ -33,7 +33,7 @@ class MctsState:
         return self.get_children()
 
     def is_leaf(self):
-        return self.s.game_over or self.children is None
+        return self.state.game_over or self.children is None
 
     def __str__(self):
         return f"vt={self.n_visits}; q={'%.3f'%self.q}; u={'%.3f'%self.u}"
@@ -92,9 +92,9 @@ class MctsSearch(Algo):
         root = MctsState(init_state)
         while True:
             node = self.select(root)  # 指导探索到待拓展的节点
-            if not node.s.game_over:
+            if not node.state.game_over:
                 node.expand()
-            value = self.simulate(node.s)
+            value = self.simulate(node.state)
             self.backpropagate(node, value)
             self.ep += 1
             cur_time = time.time()
@@ -114,14 +114,14 @@ class MctsSearch(Algo):
             if a.n_visits > best_visits:
                 best_visits = a.n_visits
                 best_state = a
-        node.s.set_best_action(best_state.p_action)
+        node.state.set_best_action(best_state.p_action)
 
 
 class MctsSearchDev(MctsSearch):
 
     def update(self, s: MctsState, score):
         super().update(s, score)
-        s.s.set_headers(str(s))
+        s.state.set_headers(str(s))
 
     def search(self, state):
         return super().search(state)

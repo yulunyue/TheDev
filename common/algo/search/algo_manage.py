@@ -68,7 +68,7 @@ class ALgoManage:
     file_path = None
     record_model = AlgoInfo
 
-    def ad(self, n=5):
+    def ad(self, n=-1):
         return AbDev(f"ab{n}").load(n).set_record_dir(self.record_dir)
 
     def am(self, n=5):
@@ -269,5 +269,5 @@ class ALgoManage:
     def view(self, msgs):
         self.log(msgs, name="view")
 
-    def train(self, players: List[Algo]):
+    def train(self, players: List[Algo], game_batch):
         pass

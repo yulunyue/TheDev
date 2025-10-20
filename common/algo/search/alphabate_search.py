@@ -21,14 +21,14 @@ class AlphaBateSearch(Algo):
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
             return self.get_depth_reward(state, depth)
-        self.set_state_reward(state, -inf)
+        self.set_state_reward(state, -inf, inf)
         for a in mvs:
             reward = -self.search_dfs(
                 a.get_dst(), actions=actions + [a], depth=depth + 1, player_id=player_id
             )
-            if reward > state.ab_value:
+            if reward > state.alpha:
                 self.set_state_best_action(state, a, depth, reward)
-        return state.ab_value
+        return state.alpha
 
     def search_ab(
         self, state: AbState, actions: List[Action], depth=0, alpha=-inf, bate=inf, **kw

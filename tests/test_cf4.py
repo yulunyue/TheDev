@@ -59,10 +59,13 @@ class C4Test(TestBase):
             logger.debug(a.show())
         logger.debug(s.dump_tree(1))
 
+    def train(self):
+        self.al.train([self.al.mc(100)])
+
     def debug(self):
         self.dev()
 
 
 if __name__ == "__main__":
-    random_seed()
+    random_seed(3)
     C4Test().run()

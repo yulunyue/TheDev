@@ -73,7 +73,7 @@ export class Dev extends Div {
         }))
     }
     on_mount(): void {
-        this.test_graph()
+        this.test_table_data()
     }
 
 }

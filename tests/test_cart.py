@@ -10,9 +10,9 @@ class TestCart(TestBase):
         self.dqn = Dqn().load(Net2().load())
         return super().prepare(args)
 
-    def train_dqn(self):
+    def train(self):
         self.dqn.train(self.state)
-        # dqn.search()
+        # self.dqn.search()
         # dqn.draw(self.get_temp_file("reawrd.svg"))
 
     def debug(self):

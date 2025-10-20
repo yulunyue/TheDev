@@ -18,27 +18,10 @@ from common.tool.export import TableConfig, TableBase, StrModel, DictModel
 LOCALS = locals()
 
 
-class RunModel(TableConfig):
-    calls = DictModel()
-
-
 class YlyTest:
-    def __init__(self):
-        self.tb = TableBase[RunModel]().set_resource("yly_random_run")
-        for k, v in LOCALS.items():
-            if isinstance(v, TestBase):
-                self.tb.insert(k, calls=dict(run_all_test=""))
-
-    def run_random(self):
-        calls = []
-        for t in self.tb.all():
-            s = LOCALS[t.key]()
-            for k, v in t.calls.get_value().items():
-                calls.append([s, k, v])
-        s, k, v = calls[random.randint(0, len(calls)) - 1]
-        args = [u for u in v.split("#")[0].split(",") if u]
-        getattr(s, k)(*args)
+    def run(self):
+        pass
 
 
 if __name__ == "__main__":
-    YlyTest().run_random()
+    YlyTest().run()

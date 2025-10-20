@@ -1,5 +1,5 @@
 from .state import Action, AbState, State
-import random
+from common.util.export import random, List
 
 
 class TestState(AbState):
@@ -25,40 +25,39 @@ class TestState(AbState):
         return TestState.idx
 
     @staticmethod
-    def make_random_state(width=3, height=3):
-        random.seed(3)
+    def make_random_state(size=40, min_v=2, max_v=6):
+        s = TestState.new().set_player_id(0)
+        q = [s]
+        while len(q) < size:
+            idx = random.randint(0, len(q) - 1)
+            cur_state = q.pop(idx)
+            states = []
+            for i in range(random.randint(min_v, max_v)):
+                states.append(TestState.new())
+                q.append(states[-1])
+            cur_state.set_next_states(states)
+        random.shuffle(q)
+        for i, v in enumerate(q):
+            v.set_reward(i - len(q) // 2)
+        return s
 
-        def util(w, h, reward):
-            ret = TestState.new(TestState.idx).set_reward(reward)
-            ret.player_id = h % 2
-            TestState.idx += 1
-            if h == height:
-                ret.set_done(True)
-                return ret
-            ret.actions = []
-            for i in range(w):
-                r = random.randint(0, 10)
-                dst = util(w, h + 1, reward + (r if h % 2 == 0 else -r))
-                ret.actions[i] = Action(ret, "", dst).set_reward(r)
-            return ret
-
-        return util(width, 0, 0)
-
-    max_reward = None
+    def set_reward(self, r):
+        if r == 0:
+            self.set_done(2)
+        elif isinstance(r, int) and r < 0:
+            self.set_done(0)
+        elif isinstance(r, int) and r > 0:
+            self.set_done(1)
+        return super().set_reward(r)
 
     @classmethod
-    def new(cls, *states, r=None, max_reward=None, player_id=None):
-        ret: TestState = super().new(TestState.get_new_id()).set_reward(r)
+    def new(cls, *states, r=None, player_id=None):
+        ret: TestState = super().new(TestState.get_new_id())
         if player_id is not None:
             ret.set_player_id(player_id)
-        ret.max_reward = r if max_reward is None else max_reward
+        if r is not None:
+            ret.set_reward(r)
         ret.set_next_states(states or [])
-        if r == 0:
-            ret.set_done(2)
-        elif isinstance(r, int) and r < 0:
-            ret.set_done(0)
-        elif isinstance(r, int) and r > 0:
-            ret.set_done(1)
         ret.init_data()
         return ret
 
