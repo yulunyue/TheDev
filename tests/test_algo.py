@@ -53,11 +53,11 @@ class TestAlgo(TestBase):
         self.expect(get_height_form_sa(s)[0], hi)
 
     def test_bin(self):
-        a = [1, 1, 1]
-        p = [1, 2, 2]
-        s = encode_data(a, p)
-        self.expect(bin(s), "0b10101")
-        self.expect(decode_data(s, p), a)
+        value = [1, 2, 1]
+        pos = [2, 1]
+        s = encode_data(value, pos)
+        self.expect(bin(s), "0b1101")
+        self.expect(decode_data(s, pos), value)
 
     def test_xor_bias(self):
         xs = [5, 3, 4, 7, 9, 2, 11]

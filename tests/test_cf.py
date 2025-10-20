@@ -3,7 +3,7 @@ from app.yly.envs.ml.ciff_walk.export import CfState, C, PiFunc, VFunc
 from common.algo.export import random_seed, ValueIteration
 
 
-class CfTest(TestBase):
+class TestCf(TestBase):
     def prepare(self, args=None):
         self.pf = PiFunc().load()
         self.vf = VFunc().load()
@@ -23,4 +23,4 @@ class CfTest(TestBase):
 
 if __name__ == "__main__":
     random_seed(0)
-    CfTest().run()
+    TestCf().run()

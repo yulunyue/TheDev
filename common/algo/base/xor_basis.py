@@ -32,7 +32,7 @@ class XorBais:
 
 class XorBarisDev(XorBais):
     def f(self, v):
-        return StrUtil(v).format_pre0_bin(self.n)
+        return StrUtil().format_pre0_bin(v, self.n)
 
     def show(self, msg):
         ret = "\n".join([f"--{msg}--"] + [self.f(v) for v in self.b] + ["----"])

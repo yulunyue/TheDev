@@ -8,6 +8,10 @@ class Diff:
         self.src = src
         self.key_join_char = "/"
 
+    def set_info(self, info):
+        self.info = info
+        return self
+
     def compare(self, dst):
         self.diff_result = []
         self.diff_any(self.src, dst, [])
@@ -26,6 +30,31 @@ class Diff:
             return
         self.diff_result.append(
             f"update[{self.key_join_char.join(keys)}][{src}][{dst}]"
+        )
+
+    def is_same(self, t):
+        pass
+
+    def expect_ndarray(self, a, e, wucha=0.000001):
+        import numpy as np
+
+        if getattr(a, "requires_grad", False):
+            a = a.detach().numpy()
+        if not isinstance(a, np.ndarray):
+            a = np.array(a)
+        if not isinstance(e, np.ndarray):
+            e = np.array(e)
+        cha = 0
+        if a.shape != e.shape:
+            not_equ = False
+        else:
+            cha = abs(a - e).sum()
+            not_equ = cha <= wucha
+        return self.expect(
+            not_equ,
+            True,
+            info=f"shape:{a.shape}\n{a}\n!=\nshape:{e.shape}\n{e}\ncha:{cha}\n",
+            stacklevel=3,
         )
 
     def diff_any(self, src, dst, keys):

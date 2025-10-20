@@ -1,7 +1,7 @@
 from common.algo.export import PolicyIteration
 from ..constant import C
 from common.util.export import defaultdict, logger
-from common.third_util.export import PtTable
+from common.third_util.pt_table import PtTable
 from ..env import CfState
 
 

@@ -20,7 +20,9 @@ export class Pagination extends Div {
                 new Node().set_value(10)
             ]
         })
-        this.cur_page = new Input().set_option(new Node().set_type(Constant.NUMBER))
+        this.cur_page = new Input().set_option(new Node().set_type(Constant.NUMBER)).set_style({
+            textAlign: "center"
+        }).set_value(this.option.data.cur_page)
         this.page_info = new Span()
         this.render_page_size()
         this.add_child(this.page_size_select)
@@ -37,13 +39,11 @@ export class Pagination extends Div {
     }
     jump(v: number) {
         let page_size = this.page_size_select.get_value().value
-        if (v < 0 || v * page_size > this.option.data.all_length) {
-            return 0
-        }
-
+        let max_page = Math.floor(this.option.data.all_length / page_size)
+        v = (v + max_page) % max_page
+        this.do_change(this.option.data.cur_page, v)
         this.option.data.cur_page = v
         this.render_option()
-        // this._on_change?.()
         return this
     }
     set_length(length: number) {
@@ -70,8 +70,17 @@ export class Pagination extends Div {
         this.page_info.set_value(`/${max_page_size}-${this.option.data.all_length}`)
 
     }
+    get_cur_idxs() {
+        let page_size = this.page_size_select.get_value().value
+        let cur_page = this.cur_page.get_int()
+        let ret = []
+        for (var i = 0; i < page_size; i++) {
+            ret.push(i + cur_page * page_size)
+        }
+        return ret
+    }
     on_mount() {
-        this.jump(0)
+        // this.jump(0)
     }
 
 }

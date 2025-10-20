@@ -35,15 +35,19 @@ export class Input extends Div {
         this.set_value(this.option.value)
     }
     set_value(value: any) {
+        // console.log("set_value", value)
         this.el.value = value
         return this
     }
     get_value() {
-        console.log(this.el.value)
         return this.el.value
     }
     get_int() {
-        return parseInt(this.get_value())
+        let ret = parseInt(this.get_value())
+        if (isNaN(ret)) {
+            ret = 0
+        }
+        return ret
     }
     on_change(call: any): this {
         // this.el.onchange = call

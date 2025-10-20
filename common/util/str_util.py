@@ -11,8 +11,8 @@ class StrUtil:
                 return True
         return False
 
-    def format_pre0_bin(self, n):
-        return format(self.s, f"0{n}b")
+    def format_pre0_bin(self, s, n):
+        return format(s, f"0{n}b")
 
     def set_prefix(self, prefixs: List[str]):
         self.prefixs = prefixs

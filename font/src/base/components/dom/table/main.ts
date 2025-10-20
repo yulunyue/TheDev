@@ -103,7 +103,6 @@ export class Table extends Div {
     filter() {
         let sv = this.search_input.get_value()
         this.option.data.rows = Util.filter_json_array(this.option.data.all_rows, sv)
-
         this.pagination.set_length(this.option.data.rows.length)
     }
     set_body(items: any[]) {
@@ -114,14 +113,15 @@ export class Table extends Div {
     }
     show_body() {
         this.body_div.clear()
-        let page_size = this.pagination.page_size_select.get_value().value
-        let start = this.pagination.cur_page.get_int() * page_size
-        for (var i = start; i < page_size + start; i++) {
-            let data = this.option.data.rows[i]
+        let idx = this.pagination.get_cur_idxs()
+
+        for (var i = 0; i < idx.length; i++) {
+            let data = this.option.data.rows[idx[i]]
+            console.log(data)
             if (!data) {
-                break
+                return
             }
-            let td = this.header_tr.new_dom_row(i).set_data(data)
+            let td = this.header_tr.new_dom_row(idx[i]).set_data(data)
             this.body_div.add_child(td)
         }
     }

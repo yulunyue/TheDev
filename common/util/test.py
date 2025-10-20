@@ -45,12 +45,13 @@ class TestBase:
         self.ep_cont = 0
         self.ok_count = 0
         start_time = time.time() * 1000
-        logger.info(f"---Test Begin {f.__name__}------")
+        self.fun_name = f.__name__
+        logger.debug(f"---Test Begin {self.fun_name}------")
         msg = ""
         f(*args, **kw)
         end_time = time.time() * 1000
-        logger.info(
-            f"---Test End {f.__name__} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
+        logger.debug(
+            f"---Test End {self.fun_name} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
         )
         self.after_case(*args)
         return msg
@@ -71,47 +72,11 @@ class TestBase:
 
     def expect(self, a, expect_value=True, info="", stacklevel=2):
         self.ep_cont += 1
-        if isinstance(a, float) and isinstance(expect_value, float):
-            is_eq = abs(a - expect_value) <= 0.000001
-        else:
-            is_eq = a == expect_value or str(a) == str(expect_value)
-        if is_eq:
+        d = Diff(expect_value).set_info(info)
+        if d.is_same(a):
             self.ok_count += 1
-            return True
-        msg = f"\ninfo:\n{info}\nresult:\n{a}\nexpect:\n{expect_value}"
-        if self.raise_err:
-            raise Exception(msg)
-        logger.info(
-            msg,
-            stacklevel=stacklevel,
-        )
-        return False
-
-    def expect_dfs(self, src, dst, info=""):
-        msg = Diff(src).compare(dst)
-        return self.expect(len(msg), 0, info + "\n".join(msg), stacklevel=3)
-
-    def expect_ndarray(self, a, e, wucha=0.000001):
-        import numpy as np
-
-        if getattr(a, "requires_grad", False):
-            a = a.detach().numpy()
-        if not isinstance(a, np.ndarray):
-            a = np.array(a)
-        if not isinstance(e, np.ndarray):
-            e = np.array(e)
-        cha = 0
-        if a.shape != e.shape:
-            not_equ = False
-        else:
-            cha = abs(a - e).sum()
-            not_equ = cha <= wucha
-        return self.expect(
-            not_equ,
-            True,
-            info=f"shape:{a.shape}\n{a}\n!=\nshape:{e.shape}\n{e}\ncha:{cha}\n",
-            stacklevel=3,
-        )
+        elif self.raise_err:
+            raise Exception(a, expect_value)
 
     def get_temp_path(self, name):
         return f"data/test/{self.__class__.__name__}/{name}"

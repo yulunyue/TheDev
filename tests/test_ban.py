@@ -1,6 +1,6 @@
 from app.yly.envs.ml.bandit.main import Bandit, BAN_ENV
 from common.util.export import TestBase, logger, json
-from common.third_util.export import Draw
+from common.third_util.draw import Draw
 from common.algo.export import (
     EpsilonGreedy,
     DecayingEpsilonGreedy,

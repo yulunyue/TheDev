@@ -10,7 +10,7 @@ from app.yly.envs.cg.cf4.export import (
 )
 
 
-class C4Test(TestBase):
+class TestCf4(TestBase):
     def run_algo(self, algo: Algo):
         for c, e in CASES.CASES.items():
             s = F4State.new(c)
@@ -68,4 +68,4 @@ class C4Test(TestBase):
 
 if __name__ == "__main__":
     random_seed(3)
-    C4Test().run()
+    TestCf4().run()
