@@ -21,7 +21,7 @@ class EpsilonGreedy(Base):
         return self.get_max_action(state)
 
     def get_max_action(self, s: State):
-        actions = list(s.get_actions().values())
+        actions = s.get_sort_actions()
         k = np.argmax([self.action_value[v.key] for v in actions])
         return actions[k]
 

@@ -2,6 +2,7 @@ import os
 import json
 from typing import List, Dict
 import zipfile
+import shutil
 
 
 def dump_default(v):
@@ -31,7 +32,7 @@ class File:
 
     def make_dir_if_not_exist(self, is_dir=False):
         if self.exists():
-            return
+            return self
         root_path = ""
         dirs = self.dirs[:]
         if is_dir:
@@ -41,6 +42,7 @@ class File:
             if root_path and not os.path.isdir(root_path):
                 os.mkdir(root_path)
             root_path += "/"
+        return self
 
     def write_file(self, data: str, encoding="utf-8"):
         if isinstance(data, dict) or isinstance(data, list):
@@ -107,6 +109,9 @@ class File:
     def is_dir(self):
         return os.path.isdir(self.path)
 
+    def is_file(self):
+        return os.path.isfile(self.path)
+
     def py_module_path(self):
         return self.path.replace("/", ".").replace(".py", "")
 
@@ -165,6 +170,12 @@ class File:
             data = data.replace(k, v)
         self.write_file(data)
         return self
+
+    def remove(self):
+        if self.is_dir():
+            shutil.rmtree(self.path)
+        elif self.is_file():
+            os.remove(self.path)
 
 
 class Cache:

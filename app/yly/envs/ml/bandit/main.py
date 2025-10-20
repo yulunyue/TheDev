@@ -40,12 +40,12 @@ class Bction(Action):
 
 class Bandit(State):
 
-    def make_actions(self, **kw) -> Dict[int, Bction]:
-        actions = dict()
+    def make_actions(self, **kw):
+        actions = []
         for action in range(BAN_ENV.K):
-            s = Bandit.new(action).set_done(True)
+            s = Bandit.new(action).set_done(1)
             a = Bction(self, action, s)
-            actions[action] = a
+            actions.append(a)
         return actions
 
     def get_reward(self, actions=None, params=None):

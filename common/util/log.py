@@ -26,19 +26,24 @@ DEFAULT_FMT = "".join(
 DEBUG_FMT = "%(message)s"
 
 
+def name_to_path(name):
+    if "/" not in name:
+        path = f"{LOG_DIR}/{name}"
+    else:
+        path = name
+    if not path.endswith(".log"):
+        path += ".log"
+    return path
+
+
 class Logger(logging.Logger):
 
     def __init__(self, name, fmt, mode="w") -> None:
         super().__init__(name)
         self.cache_msgs = []
         self.cache_enable = False
-        if "/" not in name:
-            self.path = f"{LOG_DIR}/{name}"
-        else:
-            self.path = name
-        if not self.path.endswith(".log"):
-            self.path += ".log"
-        File(self.path).make_dir_if_not_exist()
+        self.path = name_to_path(name)
+        self.fp = File(self.path).make_dir_if_not_exist()
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
@@ -109,9 +114,10 @@ class TheDevLoger:
 
 def get_log(name="", log_class="log", fmt=None, mode="w") -> Logger:
     if name not in LOG_MAP:
-        LOG_MAP[name] = {"default": TheDevLoger, "log": Logger}[log_class](
+        LOG_MAP[name] = {"dev": TheDevLoger, "log": Logger}[log_class](
             name, fmt, mode=mode
         )
+
     return LOG_MAP[name]
 
 

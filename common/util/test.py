@@ -10,12 +10,37 @@ logger = get_log("test")
 TEST_FN_PREFIX = "test_"
 
 
+class CaseFun:
+    def __init__(self, name, f):
+        self.ep_cont = 0
+        self.ok_count = 0
+        self.f = f
+        self.name = name
+        self.fun_name = f.__name__
+
+    def expect(self, a, expect_value, info):
+        self.ep_cont += 1
+        d = Diff(expect_value).set_info(info)
+        if d.is_same(a):
+            self.ok_count += 1
+        elif self.raise_err:
+            raise Exception(a, expect_value)
+
+    def run(self, *args, **kw):
+        self.error_logger = get_log(
+            f"data/test/error/{self.name}_{self.fun_name}", "dev"
+        )
+        try:
+            self.f(*args, **kw)
+        except Exception as e:
+            self.error_logger.exception(e)
+
+
 class TestBase:
     TEST_EMABLE = True
 
     def __init__(self, raise_err=False) -> None:
         self.prepare()
-        self.raise_err = raise_err
 
     def prepare(self, args=None):
         pass
@@ -42,19 +67,9 @@ class TestBase:
 
     def run_one_case(self, f, *args, **kw):
         self.prepare_case(*args)
-        self.ep_cont = 0
-        self.ok_count = 0
-        start_time = time.time() * 1000
-        self.fun_name = f.__name__
-        logger.debug(f"---Test Begin {self.fun_name}------")
-        msg = ""
-        f(*args, **kw)
-        end_time = time.time() * 1000
-        logger.debug(
-            f"---Test End {self.fun_name} [使用时间:{end_time-start_time} ms] [成功率:{self.ok_count}/{self.ep_cont}]---"
-        )
+        self.f = CaseFun(self.__class__.__name__, f)
+        self.f.run(*args, **kw)
         self.after_case(*args)
-        return msg
 
     def run_all_test(self):
         for key in dir(self):
@@ -71,12 +86,7 @@ class TestBase:
         pass
 
     def expect(self, a, expect_value=True, info="", stacklevel=2):
-        self.ep_cont += 1
-        d = Diff(expect_value).set_info(info)
-        if d.is_same(a):
-            self.ok_count += 1
-        elif self.raise_err:
-            raise Exception(a, expect_value)
+        self.f.expect(a, expect_value, info)
 
     def get_temp_path(self, name):
         return f"data/test/{self.__class__.__name__}/{name}"
