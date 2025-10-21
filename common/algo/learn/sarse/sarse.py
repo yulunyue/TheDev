@@ -1,9 +1,8 @@
 from common.algo.search.algo import Algo, Action, State, np
 from common.util.export import get_log, logger, List
-from common.algo.learn.base import Base
 
 
-class Td0(Base):
+class Td0(Algo):
     def load(self, n_step=1, **kw):
         self.n_step = n_step
         return super().load(**kw)
@@ -25,10 +24,7 @@ class Td0(Base):
         s = self.actions.pop(0)
         td_error = g - s.value
         s.value += self.alpha * td_error
-    
+
     def reset(self):
-        self.actions:List[Action] = []
+        self.actions: List[Action] = []
         return super().reset()
-
-    
-

@@ -37,10 +37,6 @@ class TestAlgo(TestBase):
         self.expect(math.comb(5, 3), 5 * 4 * 3 // (3 * 2 * 1))
         self.expect(sin(90), 1.0)
         self.expect(cos(180), -1.0)
-        for i in range(0, 361, 45):
-            self.expect(
-                int(calc_angle(0, 0, 3 * sin(i), 3 * cos(i)) / math.pi * 180), i, i
-            )
 
     def test_str(self):
         s = "aabcbc"

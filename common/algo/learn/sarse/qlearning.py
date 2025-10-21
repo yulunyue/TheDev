@@ -1,9 +1,8 @@
 from common.algo.search.algo import Algo, Action, State, np
 from common.util.export import get_log, logger, List
-from common.algo.learn.base import Base
 
 
-class Qlearning(Base):
+class Qlearning(Algo):
 
     def do_action(self, a: Action):
         self.reward_tmp_all += a.reward

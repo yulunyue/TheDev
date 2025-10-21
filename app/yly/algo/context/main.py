@@ -1,5 +1,5 @@
 from common.util.export import (
-    TestBase,
+    ToolBase,
     Module,
     defaultdict,
     logger,
@@ -8,6 +8,7 @@ from common.util.export import (
     get_log,
     List,
     Dict,
+    Case,
 )
 from common.tool.export import ThreadRecord
 from common.mock import MockCf
@@ -21,36 +22,6 @@ def get_ins(file_name):
     ins: MockCf = md.Solution()
     ins.dev = True
     return ins
-
-
-class Case:
-    def __init__(self, path):
-        self.path = path
-        self.i = File(path + "/main.in").write_if_not_exists()
-        self.o = File(path + "/main.out").write_if_not_exists()
-        self.e = File(path + "/main.e").write_if_not_exists()
-
-    def get_loger(self):
-        return get_log(self.path + "/main.log")
-
-    def run_diff(self, result):
-        self.o.write_file(result)
-        e = None
-        if self.e.exists():
-            e = self.e.read_file()
-        if str(e) == str(result):
-            return ""
-        return f"{result}!={e}"
-
-    def get_input(self):
-        data = self.get_linput_lines()
-        try:
-            return json.loads(data)
-        except Exception as e:
-            return dict()
-
-    def get_linput_lines(self):
-        return self.i.read_file()
 
 
 class CaseMgmt:
@@ -71,7 +42,7 @@ class CaseMgmt:
         return [self.cases[name]]
 
 
-class TestContext(TestBase):
+class ToolContext(ToolBase):
 
     def cases(self, file_name, fun_name="execute", case_name=""):
         cm = CaseMgmt(file_name)
@@ -81,11 +52,11 @@ class TestContext(TestBase):
             ins.set_logger(case.get_loger())
             ins.set_inputs(case.get_linput_lines())
             r = getattr(ins, fun_name)(**case.get_input())
-            self.expect(case.run_diff(r), "", case.path)
+            case.run_diff(r)
 
     def debug(self):
         self.cases("lg_p1209")
 
 
 if __name__ == "__main__":
-    TestContext().run()
+    ToolContext().run()

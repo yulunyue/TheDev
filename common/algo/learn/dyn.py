@@ -1,11 +1,10 @@
 from common.algo.search.algo import Algo, Action, State
-from common.algo.learn.base import Base
 from common.util.export import logger, defaultdict
 import numpy as np
 from typing import List
 
 
-class PolicyIteration(Base):
+class PolicyIteration(Algo):
     def load(self, pi=None, num_episodes=500, theta=0.001, gamma=0.9):
         self.theta = theta
         self.gamma = gamma

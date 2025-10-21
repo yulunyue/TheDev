@@ -1,9 +1,8 @@
 from common.algo.search.algo import Algo, Action, State, np
 from common.util.export import get_log, logger, random, List, defaultdict
-from common.algo.learn.base import Base
 
 
-class MctsEasy(Base):
+class MctsEasy(Algo):
     def load(
         self, alpha=0.1, gamma=0.5, epsilon=1, num_episodes=5000, mct_reward=None, **kw
     ):

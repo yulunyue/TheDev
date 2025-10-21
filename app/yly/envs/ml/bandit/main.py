@@ -1,52 +1,50 @@
-from common.algo.export import State, Action
-from common.util.export import logger, List, Dict
-import random
-from typing import List
+from .model import Bandit
+from common.util.export import ToolBase
+from common.third_util.draw import Draw
+from .algo.eg import EpsilonGreedy
+from .algo.deg import DecayingEpsilonGreedy
+from .algo.tms import ThompsonSampling
+from .algo.ucb import Ucb
+from .constant import C
+
+"""
+多臂老虎机是一个
+"""
 
 
-class BanditEnv:
+class ToolBan(ToolBase):
+    def prepare(self):
+        self.e = Bandit.new(10)
+        self.d = Draw()
 
-    def load(self, k=10):
-        self.pro = True
-        self.K = k
-        # self.probs = [random.random() for _ in range(self.K)]
-        self.probs = [0.19, 0.77, 0.41, 0.46, 0.47, 0.43, 0.97, 0.17, 0.21, 0.62]
-        self.max_idx = 0
-        for j in range(1, self.K):
-            if self.probs[j] > self.probs[self.max_idx]:
-                self.max_idx = j
-        return self
+    def run_eg(self):
+        self.run_algo(EpsilonGreedy().load(C.EG_EPSILION))
 
-    def calc_reward(self, a):
-        if a is None:
-            return 0
-        return 1 if random.random() < BAN_ENV.probs[a] else 0
+    def test_de(self):
+        self.algo(DecayingEpsilonGreedy().load(epsilon=0.1))
 
+    def test_ucb(self):
+        self.algo(Ucb().load())
 
-BAN_ENV = BanditEnv()
+    def test_ts(self):
+        self.algo(ThompsonSampling().load())
 
+    def test_mcts(self):
+        self.algo(MctsEasy().load())
 
-class Bction(Action):
+    def debug(self):
+        self.test_mcts()
 
-    def get_reward(self, **kw):
-        return self.dst.get_reward()
+    def main(self):
 
-    def get_regret(self):
-        return BAN_ENV.probs[self.action] - BAN_ENV.probs[BAN_ENV.max_idx]
+        self.d.draw_line(algo.rewards_record, title=algo.name)
 
-    def __repr__(self):
-        return str(self.action)
+    def run_algo(self, algo: EpsilonGreedy):
+        algo.simulation(self.e)
+
+    def exit(self):
+        return self.d.save(self.get_temp_file(f"all.svg"))
 
 
-class Bandit(State):
-
-    def make_actions(self, **kw):
-        actions = []
-        for action in range(BAN_ENV.K):
-            s = Bandit.new(action).set_done(1)
-            a = Bction(self, action, s)
-            actions.append(a)
-        return actions
-
-    def get_reward(self, actions=None, params=None):
-        return BAN_ENV.calc_reward(self.state)
+if __name__ == "__main__":
+    ToolBan().run()

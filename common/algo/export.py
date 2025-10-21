@@ -3,14 +3,7 @@ from common.algo.search.state import State, Action, PAction, AbState
 from common.algo.search.algo import Algo, random_seed, np, RandomAlgo
 from common.algo.search.mctssearch import MctsSearch, MctsState
 from common.algo.search.alphabate_search import AlphaBateSearch, AbDev
-from common.algo.learn.bernoulli import (
-    EpsilonGreedy,
-    DecayingEpsilonGreedy,
-    Ucb,
-    ThompsonSampling,
-)
 from common.algo.learn.sarse.sarse import Td0
-from common.algo.learn.base import Base as BaseLn
 from common.algo.learn.sarse.qlearning import Qlearning
 from common.algo.learn.sarse.dyn import DynaQ
 from common.algo.learn.sarse.mcts import MctsEasy

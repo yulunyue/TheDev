@@ -8,16 +8,12 @@ inf = float("inf")
 class Action:
     check_info = None
     reward = 0
-    regret = 0
 
     def __init__(self, src, action, dst=None):
         self.action = action
         self.src: State = src
         self.dst: State = dst
         self.data = dict()
-
-    def get_regret(self):
-        return self.regret
 
     @property
     def key(self):

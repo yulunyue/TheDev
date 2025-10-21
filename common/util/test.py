@@ -1,10 +1,11 @@
 import sys
 import time
-from common.util.fp import File
-from common.util.log import get_log, get_dev_log
-from common.util.tool import url_to_json
-from common.util.difftool import Diff
+from .fp import File
+from .log import get_log, get_dev_log
+from .tool import url_to_json
+from .difftool import Diff
 from typing import Dict, List
+import json
 
 logger = get_log("test")
 TEST_FN_PREFIX = "test_"
@@ -101,6 +102,58 @@ class TestBase:
 
     def get_temp_path(self, name):
         return f"data/test/{self.__class__.__name__}/{name}"
+
+    def get_temp_file(self, name):
+        path = self.get_temp_path(name)
+        File(path).make_dir_if_not_exist()
+        return path
+
+
+class Case:
+    def __init__(self, path):
+        self.path = path
+        self.i = File(path + "/main.in").write_if_not_exists()
+        self.o = File(path + "/main.out").write_if_not_exists()
+        self.e = File(path + "/main.e").write_if_not_exists()
+
+    def get_loger(self):
+        return get_log(self.path + "/main.log")
+
+    def run_diff(self, result):
+        self.o.write_file(result)
+        e = None
+        if self.e.exists():
+            e = self.e.read_file()
+        if str(e) == str(result):
+            return ""
+        return f"{result}!={e}"
+
+    def get_input(self):
+        data = self.get_linput_lines()
+        try:
+            return json.loads(data)
+        except Exception as e:
+            return dict()
+
+    def get_linput_lines(self):
+        return self.i.read_file()
+
+
+class ToolBase:
+    def prepare(self):
+        pass
+
+    def exit(self):
+        pass
+
+    def run(self):
+        self.prepare()
+        ret = getattr(self, sys.argv[1])(*sys.argv[2:])
+        logger.info(f"{sys.argv[1:]} {ret}")
+        self.exit()
+
+    def get_temp_path(self, name):
+        return f"data/tool/{self.__class__.__name__}/{name}"
 
     def get_temp_file(self, name):
         path = self.get_temp_path(name)
