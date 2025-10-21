@@ -7,14 +7,13 @@ from app.yly.envs.cg.cw.export import (
     CwStateDev,
     CASES,
     C,
-    lineHelp,
     BM,
 )
 
 from common.algo.export import ALgoManage, Algo, AbDev
 
 
-class CwTest(TestBase):
+class TestCw(TestBase):
     def prepare(self, args=None):
         self.c = CodingGame(CgCw.name)
         self.ab1 = AbDev(f"ab1").load(1)
@@ -63,4 +62,4 @@ class CwTest(TestBase):
 
 
 if __name__ == "__main__":
-    CwTest().run()
+    TestCw().run()

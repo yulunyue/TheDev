@@ -1,5 +1,5 @@
 from app.yly.envs.ml.bandit.main import Bandit, BAN_ENV
-from common.util.export import TestBase, logger, json
+from common.util.export import TestBase, json
 from common.third_util.draw import Draw
 from common.algo.export import (
     EpsilonGreedy,
@@ -37,7 +37,6 @@ class TestBan(TestBase):
     def algo(self, algo: EpsilonGreedy):
         b = Bandit()
         algo.train(b)
-        logger.debug(f"{algo.name} {algo.rewards_record[-1]}")
         self.expect(b.best_action.action, BAN_ENV.max_idx)
         self.d.draw_line(algo.rewards_record, title=algo.name)
 

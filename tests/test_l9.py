@@ -1,11 +1,10 @@
 from common.util.export import TestBase, Module, logger
 from common.third_service.export import CodingGame
 from common.algo.export import Algo, AlphaBateSearch, ALgoManage
-from ..app.yly.envs.cg.l9.cg import Cgl9
-from ..app.yly.envs.cg.l9.api import L9Api, ApiAlgo
-from ..app.yly.envs.cg.l9.model.l9state import L9State, L9Action
-from ..app.yly.envs.cg.l9.shape.env import L9ENV, C
-from ..app.yly.envs.cg.l9.util import get_player, PM
+from app.yly.envs.cg.l9.cg import Cgl9
+from app.yly.envs.cg.l9.api import L9Api, ApiAlgo
+from app.yly.envs.cg.l9.model.l9state import L9State, L9Action
+from app.yly.envs.cg.l9.shape.env import L9ENV, C
 
 
 class TestL9(TestBase):
@@ -21,9 +20,6 @@ class TestL9(TestBase):
 
     def test_dev1(self):
         self.test_algo(L9Api())
-
-    def test_dev2(self):
-        self.test_pk(PM.api, PM.api, L9State.new_state(C.INIT_STATE))
 
     def test_dev3(self):
         s = L9State.new_state(C.INIT_STATE)

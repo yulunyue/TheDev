@@ -1,4 +1,4 @@
-from common.third_util.torch_util import torch, TorchNet
+from common.third_util.torch_util import torch
 from common.util.export import TestBase, logger
 
 

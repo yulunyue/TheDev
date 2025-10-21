@@ -1,13 +1,13 @@
 from typing import List
 
-POS_MASK = [2**i - 1 for i in range(24)]
+POS_MASK = [(2**i) - 1 for i in range(24)]
 
 
 def encode_data(array, pos) -> int:
     """a[0] a[1] a[2]"""
     ans = array[0]
     for i in range(len(pos)):
-        ans = (ans << pos[i]) + (array[i + 1]) & POS_MASK[pos[i]]
+        ans = (ans << pos[i]) + (array[i + 1] & POS_MASK[pos[i]])
     return ans
 
 

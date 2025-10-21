@@ -1,4 +1,4 @@
-from common.third_util.export import PtTable
+from common.third_util.pt_table import PtTable
 from .state import StateBase
 
 

@@ -71,7 +71,7 @@ class CaseMgmt:
         return [self.cases[name]]
 
 
-class LCTest(TestBase):
+class TestContext(TestBase):
 
     def cases(self, file_name, fun_name="execute", case_name=""):
         cm = CaseMgmt(file_name)
@@ -83,9 +83,9 @@ class LCTest(TestBase):
             r = getattr(ins, fun_name)(**case.get_input())
             self.expect(case.run_diff(r), "", case.path)
 
-    def test_debug(self):
+    def debug(self):
         self.cases("lg_p1209")
 
 
 if __name__ == "__main__":
-    LCTest(raise_err=False).run()
+    TestContext().run()

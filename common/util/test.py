@@ -1,7 +1,7 @@
 import sys
 import time
 from common.util.fp import File
-from common.util.log import get_log
+from common.util.log import get_log, get_dev_log
 from common.util.tool import url_to_json
 from common.util.difftool import Diff
 from typing import Dict, List
@@ -12,28 +12,31 @@ TEST_FN_PREFIX = "test_"
 
 class CaseFun:
     def __init__(self, name, f):
-        self.ep_cont = 0
+        self.ep_count = 0
         self.ok_count = 0
         self.f = f
         self.name = name
         self.fun_name = f.__name__
 
     def expect(self, a, expect_value, info):
-        self.ep_cont += 1
-        d = Diff(expect_value).set_info(info)
-        if d.is_same(a):
+        self.ep_count += 1
+        result, msg = Diff(a).is_same(expect_value)
+        if result:
             self.ok_count += 1
-        elif self.raise_err:
-            raise Exception(a, expect_value)
+        else:
+            self.error_logger.info(f"-----{self.ep_count}-----\n{msg}\n{info}")
 
     def run(self, *args, **kw):
-        self.error_logger = get_log(
-            f"data/test/error/{self.name}_{self.fun_name}", "dev"
-        )
+        self.start_time = time.time()
+        self.error_logger = get_dev_log(f"data/test/error/{self.name}_{self.fun_name}")
+        self.msg = ""
         try:
             self.f(*args, **kw)
         except Exception as e:
+            self.msg = str(e)
             self.error_logger.exception(e)
+        self.end_time = time.time()
+        self.use_time = self.end_time - self.start_time
 
 
 class TestBase:
@@ -69,6 +72,14 @@ class TestBase:
         self.prepare_case(*args)
         self.f = CaseFun(self.__class__.__name__, f)
         self.f.run(*args, **kw)
+        pass_statu = (
+            "pass"
+            if self.f.ep_count > 0 and self.f.ok_count == self.f.ep_count
+            else "fail"
+        )
+        logger.debug(
+            f"run_test [{pass_statu} {self.f.ok_count}/{self.f.ep_count}] use_time[{'%05d'%int(self.f.use_time*1000)}] {self.__class__.__name__}::{f.__name__} {self.f.msg}"
+        )
         self.after_case(*args)
 
     def run_all_test(self):

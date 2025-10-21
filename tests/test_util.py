@@ -14,6 +14,7 @@ import threading
 import time
 from common.mock import CT
 
+
 class D:
     def get_value(self):
         pass
@@ -42,7 +43,6 @@ class TestUtil(TestBase):
     def test_fun(self):
         c = TestCls()
         a = get_function_info(Stack[int])
-        logger.info(a)
         info = get_function_info(c.test_fun)
         self.expect(info.data["kwargs"], dict(a=None, b=2))
 
@@ -70,7 +70,7 @@ class TestUtil(TestBase):
         File(path + ".zip").unzip()
 
     def test_ct(self):
-        self.expect(CT.min(1,2),1)
+        self.expect(CT.min(1, 2), 1)
 
 
 if __name__ == "__main__":

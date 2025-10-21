@@ -125,7 +125,6 @@ class ALgoManage:
     def fight(self):
         for i, p in enumerate(self.players):
             self.pk(p)
-            progress_bar(i + 1, len(self.players))
         logger.debug(self.show())
         return self
 

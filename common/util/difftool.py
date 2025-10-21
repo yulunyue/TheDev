@@ -8,10 +8,6 @@ class Diff:
         self.src = src
         self.key_join_char = "/"
 
-    def set_info(self, info):
-        self.info = info
-        return self
-
     def compare(self, dst):
         self.diff_result = []
         self.diff_any(self.src, dst, [])
@@ -32,8 +28,10 @@ class Diff:
             f"update[{self.key_join_char.join(keys)}][{src}][{dst}]"
         )
 
-    def is_same(self, t):
-        pass
+    def is_same(self, dst):
+        ret = str(self.src) == str(dst)
+        info = f"expect_value: {self.src}\nresult_value: {dst}"
+        return ret, info
 
     def expect_ndarray(self, a, e, wucha=0.000001):
         import numpy as np

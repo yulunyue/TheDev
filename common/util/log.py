@@ -7,6 +7,7 @@ import sys
 import traceback
 from common.util.tool import json_dumps
 
+
 LOG_DIR = "data/log"
 JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
 LOG_MAP = dict()
@@ -17,7 +18,7 @@ DEFAULT_FMT = "".join(
         "[%(asctime)s]",
         # "levelname",
         # "process)s:%(threadName",
-        "[%(pathname)s:%(lineno)s]",
+        "[%(module)s:%(lineno)s]",
         "[%(funcName)s]",
         " %(message)s",
     ]
@@ -55,7 +56,7 @@ class Logger(logging.Logger):
                 encoding="utf-8",
             ),
             logging.DEBUG,
-            fmt=DEBUG_FMT,
+            fmt=fmt,
         )
 
     def enable_cache(self):
@@ -96,28 +97,38 @@ class Logger(logging.Logger):
             fmt = DEFAULT_FMT
         elif fmt == "":
             fmt = "%(message)s"
-        fm = logging.Formatter(fmt)
+        fm = logging.Formatter(fmt, datefmt="%H:%M:%S")
         h.setFormatter(fm)
         h.setLevel(level)
         self.addHandler(h)
 
 
 class TheDevLoger:
-    def __init__(self, name):
-        self.path = f"./data/log/{name}.log"
-        self.fp = open(self.path, "w", encoding="utf-8")
+    def __init__(self, name, *args, **kw):
+        self.fp = File(name_to_path(name)).remove()
+
+    def write(self, msg):
+        w = self.fp.get_writer()
+        w.write(f"{msg}\n")
+        w.flush()
 
     def info(self, msg):
-        self.fp.write(str(msg) + "\n")
-        self.fp.flush()
+        self.write(msg)
+
+    def exception(self, msg):
+        self.write(msg)
+        self.write("\n".join(traceback.format_stack()))
 
 
-def get_log(name="", log_class="log", fmt=None, mode="w") -> Logger:
+def get_dev_log(name) -> TheDevLoger:
     if name not in LOG_MAP:
-        LOG_MAP[name] = {"dev": TheDevLoger, "log": Logger}[log_class](
-            name, fmt, mode=mode
-        )
+        LOG_MAP[name] = TheDevLoger(name)
+    return LOG_MAP[name]
 
+
+def get_log(name="", fmt=None, mode="w") -> Logger:
+    if name not in LOG_MAP:
+        LOG_MAP[name] = Logger(name, fmt, mode=mode)
     return LOG_MAP[name]
 
 

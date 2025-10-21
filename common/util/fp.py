@@ -3,6 +3,7 @@ import json
 from typing import List, Dict
 import zipfile
 import shutil
+import io
 
 
 def dump_default(v):
@@ -143,7 +144,7 @@ class File:
 
     WITHE_FILE_HANDER = dict()
 
-    def get_writer(self):
+    def get_writer(self) -> io.TextIOWrapper:
         if self.path in self.WITHE_FILE_HANDER:
             return self.WITHE_FILE_HANDER[self.path]
         self.make_dir_if_not_exist()
@@ -176,6 +177,7 @@ class File:
             shutil.rmtree(self.path)
         elif self.is_file():
             os.remove(self.path)
+        return self
 
 
 class Cache:

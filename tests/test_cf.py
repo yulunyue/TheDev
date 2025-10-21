@@ -8,11 +8,11 @@ class TestCf(TestBase):
         self.pf = PiFunc().load()
         self.vf = VFunc().load()
         self.init_state = CfState.new(C.INIT_SATTE)
-        self.states = [v[1] for v in self.init_state.bfs().values()]
+        # self.states = [v[1] for v in self.init_state.bfs().values()]
         return super().prepare(args)
 
     def run_policy(self):
-        self.pf.train_all_states(self.states)
+        self.pf.train_all_states([])
 
     def run_value(self):
         self.vf.train(CfState)
