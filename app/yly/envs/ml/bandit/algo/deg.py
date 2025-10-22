@@ -3,7 +3,6 @@ from .eg import EpsilonGreedy, Bandit, Action
 
 class DecayingEpsilonGreedy(EpsilonGreedy):
 
-    def take_action(self, state: Bandit):
-        r = super().take_action(state)
+    def update_action(self, a, r):
         self.total_count += 1
-        return r
+        return super().update_action(a, r)

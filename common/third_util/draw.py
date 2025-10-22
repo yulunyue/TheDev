@@ -1,7 +1,7 @@
 import json
 import sys
 import matplotlib.pyplot as plt
-from common.util.export import List, defaultdict, File
+from common.util.export import List, defaultdict, File, logger
 
 
 def lines_data(datas):
@@ -99,9 +99,12 @@ class Draw:
                 add_edge(k, k1, *args)
         g.render(format="png")
 
-    def save(self, path):
-        File(path).make_dir_if_not_exist()
-        plt.savefig(path)
+    def save(self, f):
+        if isinstance(f, str):
+            f = File(f)
+        f.make_dir_if_not_exist()
+        logger.info(f.path)
+        plt.savefig(f.path)
         return self
 
     def draw_graph(self, path: str):

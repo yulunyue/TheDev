@@ -4,7 +4,6 @@ from common.util.export import (
     File,
     get_cache,
     hash_any,
-    SingletonUtil,
     ThreadManage,
 )
 from common.tool.export import NumberModel, StrModel, ConfigBase, TableBase, DictModel

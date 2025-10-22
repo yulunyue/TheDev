@@ -126,7 +126,7 @@ class Case:
             e = self.e.read_file()
         if str(e) == str(result):
             return ""
-        return f"{result}!={e}"
+        return f"[{result}]!=[{e}]"
 
     def get_input(self):
         data = self.get_linput_lines()
@@ -152,10 +152,6 @@ class ToolBase:
         logger.info(f"{sys.argv[1:]} {ret}")
         self.exit()
 
-    def get_temp_path(self, name):
-        return f"data/tool/{self.__class__.__name__}/{name}"
-
     def get_temp_file(self, name):
-        path = self.get_temp_path(name)
-        File(path).make_dir_if_not_exist()
-        return path
+        path = f"data/tool/{self.__class__.__name__}/{name}"
+        return File(path)

@@ -1,5 +1,5 @@
 from .model import Bandit
-from common.util.export import ToolBase
+from common.util.export import ToolBase, logger
 from common.third_util.draw import Draw
 from .algo.eg import EpsilonGreedy
 from .algo.deg import DecayingEpsilonGreedy
@@ -14,36 +14,35 @@ from .constant import C
 
 class ToolBan(ToolBase):
     def prepare(self):
-        self.e = Bandit.new(10)
+        self.s = Bandit.new(C.K)
         self.d = Draw()
 
     def run_eg(self):
-        self.run_algo(EpsilonGreedy().load(C.EG_EPSILION))
+        self.run_algo(EpsilonGreedy().load(C.EG_EPSILION1).set_name("eg1"))
+        self.run_algo(EpsilonGreedy().load(C.EG_EPSILION2).set_name("eg3"))
 
-    def test_de(self):
-        self.algo(DecayingEpsilonGreedy().load(epsilon=0.1))
+    def run_de(self):
+        self.run_algo(DecayingEpsilonGreedy().load(C.DE_EPSILION).set_name("de"))
 
-    def test_ucb(self):
-        self.algo(Ucb().load())
-
-    def test_ts(self):
-        self.algo(ThompsonSampling().load())
-
-    def test_mcts(self):
-        self.algo(MctsEasy().load())
+    def run_ucb(self):
+        self.run_algo(Ucb().load(C.COEF).set_name("ucb"))
 
     def debug(self):
         self.test_mcts()
 
     def main(self):
-
-        self.d.draw_line(algo.rewards_record, title=algo.name)
+        self.run_eg()
+        self.run_de()
+        self.run_ucb()
 
     def run_algo(self, algo: EpsilonGreedy):
-        algo.simulation(self.e)
+        result = algo.search(self.s, C.EPOLLS)
+        self.d.draw_line(result, title=algo.get_name())
+        logger.debug(f"\n{algo.show()}\n{self.s.show()}")
 
     def exit(self):
-        return self.d.save(self.get_temp_file(f"all.svg"))
+        path = self.get_temp_file(f"all.svg")
+        return self.d.save(path)
 
 
 if __name__ == "__main__":

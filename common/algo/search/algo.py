@@ -52,36 +52,34 @@ class Algo:
         self.params: Params = params
         return self
 
-    def search(self, state: "State") -> "Action":
+    use_time = 0
+
+    def search(self, state: "State", *args, **kw):
         self.reset()
-        self.search_main(state.reset())
-        return state.get_best_action()
+        start_time = time.time()
+        ret = self.search_main(state.reset(), *args, **kw)
+        self.use_time = time.time() - start_time
+        return ret
+
+    def info(self):
+        return []
+
+    def show(self):
+        return "\n".join(
+            [f"---name:{self.get_name()} use_time:{self.use_time}---"] + self.info()
+        )
 
     def search_main(self, state: "State"):
         raise Exception("todo")
 
-    def get_random_action(self, state: State, **kw):
-        s = random.random() * state.get_p_sum()
-        for a in state.get_actions().values():
-            if s <= a.p:
-                return a
-            s -= a.p
-
-    def get_max_action(self, state: State) -> Action:
-        actions = list(state.get_actions().values())
-        return actions[np.argmax([a.get_reward() for a in actions])]
-
     def take_action(self, state: "State") -> Action:
         raise Exception("todo")
 
-    def update_action(self, a: "Action"):
+    def update_action(self, a: Action, *args):
         pass
 
     def reset(self):
         return self
-
-    def __str__(self):
-        return f"<{self.__class__.__name__}  params:{self.params}>"
 
     def get_name(self):
         return self.name

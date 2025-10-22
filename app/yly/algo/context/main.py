@@ -15,18 +15,21 @@ from common.mock import MockCf
 import json
 
 
-def get_ins(file_name):
-    md = Module().load_module(f"app.yly.algo.context.{file_name}")
-    Module().compile_one(f"app/yly/algo/context/{file_name}.py")
-    # logger.enable_cache()
-    ins: MockCf = md.Solution()
-    ins.dev = True
+def get_ins(file_name: str):
+    if file_name.endswith(".py"):
+        md = Module().load_module(f"app.yly.algo.context.{file_name[:-3]}")
+        Module().compile_one(f"app/yly/algo/context/{file_name}")
+        # logger.enable_cache()
+        ins: MockCf = md.Solution()
+        ins.dev = True
+    elif file_name.endswith(".cpp"):
+        pass
     return ins
 
 
 class CaseMgmt:
-    def __init__(self, file_name):
-        self.root = File(f"data/context/{file_name}")
+    def __init__(self, file_name: str):
+        self.root = File(f"data/context/{file_name.replace('.py','')}")
         self.root.child("case1").make_dir_if_not_exist(True)
         self.load()
 
@@ -44,7 +47,7 @@ class CaseMgmt:
 
 class ToolContext(ToolBase):
 
-    def cases(self, file_name, fun_name="execute", case_name=""):
+    def test(self, file_name, fun_name="execute", case_name=""):
         cm = CaseMgmt(file_name)
         ins: MockCf = get_ins(file_name)
         for case in cm.get_cases(case_name):
@@ -52,7 +55,9 @@ class ToolContext(ToolBase):
             ins.set_logger(case.get_loger())
             ins.set_inputs(case.get_linput_lines())
             r = getattr(ins, fun_name)(**case.get_input())
-            case.run_diff(r)
+            msg = case.run_diff(r)
+            if msg:
+                logger.info(msg)
 
     def debug(self):
         self.cases("lg_p1209")
