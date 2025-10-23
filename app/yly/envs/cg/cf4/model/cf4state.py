@@ -2,27 +2,16 @@ from .cf4action import F4Action
 from .constant import C
 from common.algo.search.state import AbState
 from common.util.export import List, Dict, logger
+from .env import ENV
 
 
 class F4State(AbState):
 
     def __init__(self, state):
         super().__init__(state)
-
-        self.depth = 0
-        self.state = state
-        self.point_score = dict()
-
-        s: int = self.state
-        for i in range(C.WIDTH):
-            s1: int = s & C.MASK_HEIGHT
-            self.widths[i] = s1
-            self.heights[i] = s1.bit_length() - 1
-            s = s >> C.HEIGHT
-            self.depth += self.heights[i]
+        ENV.set_state(state)
+        self.depth = ENV.step
         self.player_id = self.depth % 2
-        if self.depth == C.SIZE:
-            self.done = 2
 
     def make_actions(self):
         actions = []

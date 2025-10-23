@@ -4,6 +4,7 @@ from common.third_service.export import CodingGame, uu
 from app.yly.envs.cg.cf4.export import (
     F4StateDev as F4State,
     CgMuiltCf4,
+    ENV,
     C,
     CASES,
     Kagle,
@@ -13,7 +14,7 @@ from app.yly.envs.cg.cf4.export import (
 class ToolCf4(ToolBase):
 
     def prepare(self, args=None):
-        C.load(1)
+        ENV.set_shape(1)
         self.c = CodingGame(CgMuiltCf4.name)
         self.init_state = F4State.new(C.INIT_MASK)
         self.al = (
