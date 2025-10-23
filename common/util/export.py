@@ -1,4 +1,4 @@
-from .log import File, get_log, Logger
+from .log import File, get_log, Logger, TheDevLoger, get_dev_log
 from .module import Module, get_function_info
 from .tool import uid, re_search, hash_any, json_dumps, ii
 from .test import TestBase, logger, ToolBase, Case

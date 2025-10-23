@@ -6,16 +6,7 @@ class UniFind:
     def __init__(self) -> None:
         self.p = dict()
         self.size = defaultdict(int)
-        self.value = defaultdict(int)
-        self.init()
-
-    def init(self):
-        pass
-
-    def set_values(self, vals):
-        for i, v in enumerate(vals):
-            self.value[i] = v
-        return self
+        self.dis = defaultdict(int)
 
     def merge(self, parent, child):
         parent1 = self.find(parent)
@@ -23,6 +14,7 @@ class UniFind:
         if parent1 == child1:
             return parent1, False
         self.p[child1] = parent1
+        self.dis[child1] = self.dis[parent] + 1
         self.size[parent1] += self.size[child1] + 1
         self.size[child1] = 0
         return parent1, True
@@ -32,15 +24,20 @@ class UniFind:
             self.p[v] = v
             self.size[v] = 0
         if self.p[v] != v:
-            self.p[v] = self.find(self.p[v])
+            p = self.find(self.p[v])  # 带路径权需要先更新 self.dis[self.p[v]]
+            self.dis[v] += self.dis[self.p[v]]
+            self.p[v] = p
         return self.p[v]
 
-    def update(self):
-        for k in self.p:
-            self.find(k)
-
-    def get_pkeys(self):
-        return set(list(self.p.values()))
-
-    def __str__(self):
-        return f"{self.p}"
+    def show(self):
+        mp = defaultdict(list)
+        for k in self.p.keys():
+            if k == self.find(k):
+                continue
+            mp[self.find(k)].append(f"{k}: dis={self.dis[k]}")
+        ret = []
+        for k, value in mp.items():
+            ret.append(f"---{k}: dis={self.dis[k]}---")
+            ret.extend(value)
+            ret.append("-------")
+        return "\n".join(ret)

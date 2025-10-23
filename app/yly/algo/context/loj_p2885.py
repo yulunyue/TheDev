@@ -1,10 +1,13 @@
 from common.mock import MockCf
 from common.util.export import List, Dict, defaultdict, logger
-from app.yly.envs.game.zgs.export import Game
+from app.yly.envs.game.zgs.export import Game, logger
 
 
 class Solution(MockCf):
     uri = "https://loj.ac/p/2885"
+
+    def set_logger(self, log):
+        logger.logger = log
 
     def do(self, hands: List[str], cards: str, **kw):
         g = Game()

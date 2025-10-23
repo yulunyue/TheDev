@@ -117,7 +117,7 @@ class Case:
         self.e = File(path + "/main.e").write_if_not_exists()
 
     def get_loger(self):
-        return get_log(self.path + "/main.log")
+        return get_dev_log(self.path + "/main.log")
 
     def run_diff(self, result):
         self.o.write_file(result)

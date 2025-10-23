@@ -8,8 +8,7 @@ class F4State(AbState):
 
     def __init__(self, state):
         super().__init__(state)
-        self.heights = [0] * C.WIDTH
-        self.widths = [0] * C.WIDTH
+
         self.depth = 0
         self.state = state
         self.point_score = dict()
@@ -164,9 +163,6 @@ class F4StateDev(F4State):
             a,
         ]
         return ret
-
-    def title_show_keys(self):
-        return super().title_show_keys() + ["ab_value", f"pt={self.score2[0][1]}"]
 
     def show(self, info=None, title=""):
         self.get_reward()

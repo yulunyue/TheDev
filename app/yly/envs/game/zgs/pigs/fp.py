@@ -1,4 +1,5 @@
 from .base import Pig
+from ..log import logger
 
 
 class Fp(Pig):
@@ -17,4 +18,6 @@ class Fp(Pig):
     def power_change(self, num, c):
         super().power_change(num, c)
         if self.power == 0:
-            c.owner.get_num_card(3)
+            logger.fz_num -= 1
+            if logger.fz_num:
+                c.owner.get_num_card(3)

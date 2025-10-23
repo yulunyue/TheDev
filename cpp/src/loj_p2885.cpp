@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <stdio.h>
 using namespace std;
 const bool diff[3][3] = {{0, 0, 1}, {0, 0, 1}, {1, 1, 0}};
 const int M = 2005;
@@ -9,20 +10,38 @@ struct PIGS {
     char cards[M];
 } a[15];
 deque <char> cards_pile;
-void _file() {
-    freopen("pigs.in", "r", stdin);
-    freopen("pigs.out", "w", stdout);
+FILE *IN_FILE = fopen("data/context/loj_p2885/case1/main.in","r");
+FILE *LOG_FILE = fopen("data/context/loj_p2885/case1/c.log","w");
+void log(const char *format, ...) {
+    char s[2048];
+    va_list args;
+    
+    va_start(args, format);
+    
+    // 使用 vsnprintf 防止缓冲区溢出
+    int len = vsnprintf(s, sizeof(s), format, args);
+    
+    va_end(args);
+    
+    if (len > 0) {
+        // 使用 fwrite 写入实际长度
+        fwrite(s, 1, len, LOG_FILE);
+        // 或者更简单的方式：
+        // fputs(s, LOG_FILE);
+    }
+    
+    fflush(LOG_FILE);
 }
 inline char read() {
-    ch = getchar();
+    ch = fgetc(IN_FILE);
 
     while (ch < 'A' || ch > 'Z')
-        ch = getchar();
+        ch = fgetc(IN_FILE);
 
     return ch;
 }
 void _init() {
-    scanf("%d%d", &n, &m), fanzhu = deadfan = 0;
+    fscanf(IN_FILE,"%d%d", &n, &m), fanzhu = deadfan = 0;
 
     for (int i = 1, las = 0; i <= n; i++) {
         a[i].bloods = a[i].cnt = 4, a[i].dead = a[i].perfo = a[i].equip = 0, a[i].nxt = i % n + 1;
@@ -325,12 +344,55 @@ void do_wanjian(int cur) {
 void do_zhuge(int cur) {
     a[cur].equip = 1;
 }
-bool dis_cards(int cur) {
+const char *PIG_TYPE[3] = {"Mp", "Zp", "Fp"};
+string card_format(char v){
+    if(v=='P'){
+        return "桃";
+    }else if(v=='K'){
+        return "杀";
+    }else if(v=='F'){
+        return "决";
+    }else if(v=='N'){
+        return "南";
+    }else if(v=='D'){
+        return "闪";
+    }else if(v=='W'){
+        return "万";
+    }else if(v=='J'){
+        return "无";
+    }else if(v=='Z'){
+        return "诸";
+    }
+    return "";
+}
+void log_game(int cur){
+    static int rd = 1;
+    log("------round: %d; card: %d; p:%d------\n", rd, cards_pile.size(),cur);
+    rd += 1;
+   
+    for (int j = 1; j <= n; j++)
+    {
+        string tmp_str;
+        if(a[j].dead){
+            continue;
+        }
+        for (int k = 1; k <= a[j].cnt;k++){
+            tmp_str +=card_format(a[j].cards[k]);
+            if(k!=0){
+                tmp_str += " ";
+            }
+        }
+        log("%s_%d p=%d->%s\n", PIG_TYPE[a[j].iden], j - 1, a[j].bloods, tmp_str.c_str());
+    }
+}
+bool dis_cards(int cur)
+{
     memset(used, 0, sizeof used);
     int i, cntused, totkill = 0, counts, ret = -1, aim;
     char now;
+    for (rounds = 1;; rounds++)
+    {
 
-    for (rounds = 1; ; rounds++) {
         cntused = counts = 0;
 
         for (i = 1; i <= a[cur].cnt; i++)
@@ -403,12 +465,16 @@ bool dis_cards(int cur) {
 }
 bool playing(int cur) {
     get_cards(cur), get_cards(cur);
+    log_game(cur);
     return dis_cards(cur);
 }
 void _duel() {
+    
     for (int i = 1, event = 0; !event && fanzhu > 0; i = a[i].nxt)
-        if (!a[i].dead)
+        if (!a[i].dead){
             event = playing(i);
+        }
+    log_game(0);
 }
 void _print() {
     printf("%s\n", a[1].dead ? "FP" : "MP");

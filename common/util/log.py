@@ -37,6 +37,15 @@ def name_to_path(name):
     return path
 
 
+def dict_to_str(kw: dict, indent=None):
+    if indent is not None:
+        return json_dumps(kw)
+    ret = []
+    for k, v in kw.items():
+        ret.append(f"{'%s'%k}:{v}")
+    return " ".join(ret)
+
+
 class Logger(logging.Logger):
 
     def __init__(self, name, fmt, mode="w") -> None:
@@ -69,13 +78,7 @@ class Logger(logging.Logger):
         return "\n".join([str(v) for v in ret])
 
     def map(self, indent=None, **kw):
-        ret = []
-        for k, v in kw.items():
-            ret.append(f"{'%s'%k}:{v}")
-        if indent is None:
-            self.debug(" ".join(ret), stacklevel=2)
-        else:
-            self.debug(json_dumps(kw, indent=indent))
+        self.debug(dict_to_str(kw, indent=indent), stacklevel=2)
 
     def info(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
@@ -107,6 +110,9 @@ class TheDevLoger:
     def __init__(self, name, *args, **kw):
         self.fp = File(name_to_path(name)).remove()
 
+    def get_writer(self):
+        return self.fp.get_writer()
+
     def write(self, msg):
         w = self.fp.get_writer()
         w.write(f"{msg}\n")
@@ -115,9 +121,15 @@ class TheDevLoger:
     def info(self, msg):
         self.write(msg)
 
+    def debug(self, msg):
+        self.write(msg)
+
     def exception(self, msg):
         self.write(msg)
         self.write("\n".join(traceback.format_stack()))
+
+    def map(self, indent=None, **kw):
+        self.info(dict_to_str(kw, indent=indent))
 
 
 def get_dev_log(name) -> TheDevLoger:

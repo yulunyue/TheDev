@@ -31,7 +31,7 @@ class Constant:
         [0, -(10**3), -10, 0, 10**4, 10**2],
     ]
 
-    def load(self, s):
+    def set_shape(self, s):
         self.HEIGHT, self.WIDTH = self.SHAPES[s]
         self.INIT_MASK = 0
         self.SIZE = self.WIDTH * self.HEIGHT

@@ -1,4 +1,5 @@
-from common.util.export import logger
+from common.util.export import List
+from ..log import logger
 
 
 class CardBase:
@@ -26,7 +27,7 @@ class CardBase:
             s = f"to {self.dst.name}"
         if f:
             s = f"for {f.owner.name} use {f.title}"
-        logger.debug(f"{self.owner.name} use {self.title} {s}")
+        # logger.debug(f"{self.owner.name} use {self.title} {s}")
         self.pre.next = self.next
         if self.next:
             self.next.pre = self.pre

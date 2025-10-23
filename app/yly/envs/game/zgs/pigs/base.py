@@ -1,5 +1,6 @@
-from common.util.export import List, Dict, defaultdict, logger
+from common.util.export import List, Dict, defaultdict
 from ..card.export import Tao, Sha, Nzrq, Wjqf, Juedou, Wxkj, Shan, CardBase, Zgll
+from ..log import logger
 
 
 class Pig:
@@ -30,6 +31,10 @@ class Pig:
         return self.power == 0
 
     def add_card(self, c: "CardBase"):
+        from ..util import CARD_MAP
+
+        if isinstance(c, str):
+            c = CARD_MAP[c]()
         if isinstance(c, Zgll):
             self.has_zg = True
         c.owner = self
@@ -95,5 +100,7 @@ class Pig:
 
     def get_num_card(self, num):
         while self.cards and num > 0:
-            self.add_card(self.cards.pop(0))
+            self.add_card(self.cards[0])
             num -= 1
+            if len(self.cards) > 1:
+                self.cards.pop(0)

@@ -51,16 +51,15 @@ class ToolContext(ToolBase):
         cm = CaseMgmt(file_name)
         ins: MockCf = get_ins(file_name)
         for case in cm.get_cases(case_name):
-            logger.info(case.i.path)
             ins.set_logger(case.get_loger())
             ins.set_inputs(case.get_linput_lines())
             r = getattr(ins, fun_name)(**case.get_input())
             msg = case.run_diff(r)
             if msg:
-                logger.info(msg)
+                logger.info(case.i.path)
 
     def debug(self):
-        self.cases("lg_p1209")
+        self.test("loj_p2885.py")
 
 
 if __name__ == "__main__":

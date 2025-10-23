@@ -1,4 +1,4 @@
-from common.util.export import TestBase, logger, Module, List
+from common.util.export import ToolBase, logger, Module, List
 from common.algo.export import random_seed, ALgoManage, Algo
 from common.third_service.export import CodingGame, uu
 from app.yly.envs.cg.cf4.export import (
@@ -10,12 +10,7 @@ from app.yly.envs.cg.cf4.export import (
 )
 
 
-class TestCf4(TestBase):
-    def run_algo(self, algo: Algo):
-        for c, e in CASES.CASES.items():
-            s = F4State.new(c)
-            a = algo.search(s)
-            self.expect(a.action, e, s.show())
+class ToolCf4(ToolBase):
 
     def prepare(self, args=None):
         C.load(1)
@@ -46,7 +41,7 @@ class TestCf4(TestBase):
         self.c.replay(self.init_state, self.al.am(1))
 
     def f1(self):
-        self.al.set_players([self.al.mc(10)], [self.al.mc(10)]).fight()
+        self.al.set_players([self.al.mc()], [self.al.mc()]).fight()
 
     def f2(self):
         self.al.set_players(self.al.ams(4), self.al.ams(4)).fight()
@@ -68,4 +63,4 @@ class TestCf4(TestBase):
 
 if __name__ == "__main__":
     random_seed(3)
-    TestCf4().run()
+    ToolCf4().run()

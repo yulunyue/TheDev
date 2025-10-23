@@ -25,6 +25,9 @@ class logger:
     debug = get_log
 
 
+TheDevLoger = logger
+
+
 class CT:
     MOD = (10**9) + 7
     inf = float("inf")

@@ -148,7 +148,7 @@ class File:
         if self.path in self.WITHE_FILE_HANDER:
             return self.WITHE_FILE_HANDER[self.path]
         self.make_dir_if_not_exist()
-        self.WITHE_FILE_HANDER[self.path] = open(self.path, "w")
+        self.WITHE_FILE_HANDER[self.path] = open(self.path, "w", encoding="utf-8")
         return self.WITHE_FILE_HANDER[self.path]
 
     def zip(self):
@@ -178,6 +178,9 @@ class File:
         elif self.is_file():
             os.remove(self.path)
         return self
+
+    def rename(self, src, dst):
+        return File(self.path.replace(src, dst))
 
 
 class Cache:

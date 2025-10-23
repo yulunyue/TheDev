@@ -1,6 +1,6 @@
-from common.util.export import logger, List
-
-from .util import CARD_MAP, Mp, Pig, PG_CLS
+from common.util.export import Logger, List
+from .log import logger
+from .util import CARD_MAP, Mp, Pig, PG_CLS, Fp
 
 
 class Game:
@@ -13,20 +13,24 @@ class Game:
         self.cards = []
         self.round = 0
 
-    def log(self):
-        ret = [f"------round: {self.round}------"]
+    def log(self, idx):
+        self.round += 1
+        ret = [f"------round: {self.round}; card: {len(self.cards)}; p:{idx}------"]
         for p in self.players:
             if p.dead:
                 continue
-            ret.append(f"{p.name} p={p.power} s={p.state}->{p.view('title')}")
+            # s={p.state}
+            ret.append(f"{p.name} p={p.power}->{p.view('title')}")
         logger.debug("\n".join(ret))
 
     def add_pig(self, idx, tp, *cards):
         p: Pig = PG_CLS[tp](idx, self.cards)
         for c in cards:
-            p.add_card(CARD_MAP[c]())
+            p.add_card(c)
         if isinstance(p, Mp):
             self.mp = p
+        if isinstance(p, Fp):
+            logger.fz_num += 1
         if self.players:
             self.players[-1].set_next(p)
         self.players.append(p)
@@ -42,16 +46,17 @@ class Game:
         return "\n".join(msgs)
 
     def set_cards(self, cards):
-        self.cards.extend([CARD_MAP[c]() for c in cards])
+        self.cards.extend(cards)
 
     def run(self):
-        self.round += 1
-        while self.cards:
-            self.cur_player.use_sha = False
-            self.cur_player.get_num_card(2)
-            self.log()
-            self.cur_player.do()
+        while self.cards and self.round < 3000:
             if self.mp.dead:
                 break
+            if logger.fz_num == 0:
+                break
+            self.cur_player.use_sha = False
+            self.cur_player.get_num_card(2)
+            self.log(self.cur_player.idx + 1)
+            self.cur_player.do()
             self.cur_player = self.cur_player.next
-            self.round += 1
+        self.log(0)

@@ -1,18 +1,27 @@
 import subprocess
-from common.util.export import logger, Logger, File
+from common.util.export import File, TheDevLoger, get_dev_log
+
+logger = get_dev_log("os")
 
 
 class OsUtil:
+    def __init__(self, fun_name):
+        self.fun_name = fun_name
+        self.root_path = "./"
+        self.logger: TheDevLoger = logger
+
     def check_output(self):
+        cmd = self.get_cmd()
+        self.logger.debug(cmd)
         return subprocess.check_output(
-            self.get_cmd(),
+            cmd,
             shell=True,
             stderr=self.logger.get_writer(),
             cwd=self.root_path,
         )
 
     def set_logger(self, logger):
-        self.logger: File = logger
+        self.logger: TheDevLoger = logger
         return self
 
     def set_env(self, root, fun_name):
@@ -25,4 +34,4 @@ class OsUtil:
 
     def run(self, *args):
         self.args = " ".join(args)
-        return self.check_output()
+        return self.check_output().decode()
