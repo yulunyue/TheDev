@@ -46,6 +46,9 @@ class Solution(MockCf):
         self.ans = None
 
         def check(cnt):
+            is_limt = False
+            for i, v in enumerate(n):
+                pass
             min_value = []
             for v in cnt:
                 min_value.extend([v] * v)
