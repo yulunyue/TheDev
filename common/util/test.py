@@ -133,10 +133,12 @@ class Case:
         try:
             return json.loads(data)
         except Exception as e:
+            logger.info(f"{self.i.path} {e}")
             return dict()
 
     def get_linput_lines(self):
-        return self.i.read_file()
+        ret = self.i.read_file()
+        return ret
 
 
 class ToolBase:

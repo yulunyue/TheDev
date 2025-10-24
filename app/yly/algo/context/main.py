@@ -47,19 +47,19 @@ class CaseMgmt:
 
 class ToolContext(ToolBase):
 
-    def test(self, file_name, fun_name="execute", case_name=""):
+    def test(self, file_name, case_name=""):
         cm = CaseMgmt(file_name)
         ins: MockCf = get_ins(file_name)
         for case in cm.get_cases(case_name):
             ins.set_logger(case.get_loger())
             ins.set_inputs(case.get_linput_lines())
-            r = getattr(ins, fun_name)(**case.get_input())
+            r = getattr(ins, "execute")(**case.get_input())
             msg = case.run_diff(r)
             if msg:
                 logger.info(case.i.path)
 
     def debug(self):
-        self.test("loj_p2885.py")
+        self.test("lc_2048.py", "case1")
 
 
 if __name__ == "__main__":
