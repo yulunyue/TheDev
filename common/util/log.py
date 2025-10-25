@@ -108,7 +108,7 @@ class Logger(logging.Logger):
 
 class TheDevLoger:
     def __init__(self, name, *args, **kw):
-        self.fp = File(name_to_path(name)).remove()
+        self.fp = File(name_to_path(name)).make_dir_if_not_exist()
 
     def get_writer(self):
         return self.fp.get_writer()

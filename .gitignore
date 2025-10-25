@@ -167,3 +167,4 @@ font/src/demo/secmaster
 config
 *.pdf
 rust/the_dev/Cargo.lock
+cpp/src/test.cpp.exe

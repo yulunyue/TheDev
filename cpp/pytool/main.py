@@ -1,5 +1,6 @@
 from common.util.export import ToolBase, File, logger
 from common.tool.export import OsUtil
+from .cmake import CMake
 from .constant import C
 
 
@@ -18,6 +19,9 @@ class PyBuildTool(ToolBase):
         self.build(path)
         ret = OsUtil(self.target.path).run(*args)
         logger.info(ret)
+
+    def cmake(self, path):
+        CMake(path).execute()
 
 
 if __name__ == "__main__":

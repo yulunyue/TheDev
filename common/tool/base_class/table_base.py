@@ -78,4 +78,6 @@ class TableBase(Generic[T]):
         self.config[row.key][ins.key] = vlaue
 
     def get_param_value(self, row: ConfigBase, ins: BaseModel):
-        return self.config[row.key].get(ins.key, ins.default_value)
+        if ins.key not in self.config[row.key]:
+            self.config[row.key][ins.key] = ins.default_value
+        return self.config[row.key][ins.key]

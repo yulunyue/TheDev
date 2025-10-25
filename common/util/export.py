@@ -23,5 +23,6 @@ from .list_util import ListUtil
 import os
 from threading import Thread
 from common.mock import MockCf
+import sys
 
 null = None

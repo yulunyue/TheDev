@@ -75,17 +75,22 @@ class StrModel(BaseModel):
 
 
 class NumberModel(BaseModel):
-    def get_value(self):
-        try:
-            return int(super().get_value())
-        except Exception as e:
-            raise e
+    def __init__(self, key=None, default_value=0, data_source=None):
+        super().__init__(key, default_value, data_source)
 
 
 def number(v):
     if isinstance(v, NumberModel):
         return v
     return NumberModel(v)
+
+
+class ListModel(BaseModel):
+    value: list
+
+    def __init__(self, key=None, default_value=None, data_source=None):
+        default_value = default_value or []
+        super().__init__(key, default_value, data_source)
 
 
 class DictModel(BaseModel):

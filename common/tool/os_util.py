@@ -8,11 +8,11 @@ class OsUtil:
     def __init__(self, fun_name):
         self.fun_name = fun_name
         self.root_path = "./"
-        self.logger: TheDevLoger = logger
+        self.logger: TheDevLoger = logger  # 用TheDev 主要是方便writer 重定向
 
     def check_output(self):
         cmd = self.get_cmd()
-        self.logger.debug(cmd)
+        self.logger.info(cmd)
         return subprocess.check_output(
             cmd,
             shell=True,

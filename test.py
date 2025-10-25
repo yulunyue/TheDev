@@ -1,4 +1,4 @@
-from common.util.export import File, Module, TestBase, logger
+from common.util.export import File, Module, TestBase, logger, sys, random
 
 
 class TestMain:
@@ -16,6 +16,20 @@ class TestMain:
             except Exception as e:
                 logger.exception(e)
 
+    def random(self):
+        cmds = []
+        for line in File("todo.md").read_line():
+            if line.startswith("#"):
+                continue
+            cmds.append(line)
+        logger.info(cmds[random.randint(0, len(cmds) - 1)])
+
+    def main(self):
+        fun_name = "run"
+        if len(sys.argv) > 1:
+            fun_name = sys.argv[1]
+        getattr(self, fun_name)(*sys.argv[2:])
+
 
 if __name__ == "__main__":
-    TestMain().run()
+    TestMain().main()
