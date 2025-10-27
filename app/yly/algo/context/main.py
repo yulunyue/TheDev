@@ -53,7 +53,9 @@ class ToolContext(ToolBase):
         for case in cm.get_cases(case_name):
             ins.set_logger(case.get_loger())
             ins.set_inputs(case.get_linput_lines())
-            r = getattr(ins, "execute")(**case.get_input())
+            f = getattr(ins, "execute")
+            inp = case.get_input()
+            r = f(**inp)
             msg = case.run_diff(r)
             if msg:
                 logger.info(case.i.path)
