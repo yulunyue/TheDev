@@ -21,7 +21,7 @@ class OsUtil:
         )
 
     def run(self):
-        pass
+        subprocess.run()
 
     def set_logger(self, logger):
         self.logger: TheDevLoger = logger

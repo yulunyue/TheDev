@@ -27,10 +27,7 @@ class TestMain:
         logger.info(cmds[random.randint(0, len(cmds) - 1)])
 
     def main(self):
-        fun_name = "run"
-        if len(sys.argv) > 1:
-            fun_name = sys.argv[1]
-        getattr(self, fun_name)(*sys.argv[2:])
+        getattr(self, sys.argv[1])(*sys.argv[2:])
 
 
 if __name__ == "__main__":

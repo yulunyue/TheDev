@@ -25,6 +25,7 @@ class Constant:
         [0, 1],
     ]  # x,y
     IN_ROW = 4
+    NULL_POS = 2
     CALC_SCORE_MAX_DEPTH = 1
     SCORES = [
         [0, 10**4, 10**2, 0, -(10**3), -10],
