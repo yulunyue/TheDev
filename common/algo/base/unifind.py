@@ -5,8 +5,7 @@ from collections import defaultdict
 class UniFind:
     def __init__(self) -> None:
         self.p = dict()
-        self.size = defaultdict(int)
-        self.dis = defaultdict(int)
+        
 
     def merge(self, parent, child):
         parent1 = self.find(parent)
@@ -14,11 +13,10 @@ class UniFind:
         if parent1 == child1:
             return parent1, False
         self.p[child1] = parent1
-        self.dis[child1] = self.dis[parent] + 1
-        self.size[parent1] += self.size[child1] + 1
-        self.size[child1] = 0
+        self.union(child,child1,parent,parent1)
         return parent1, True
-
+    def union(self,ca,cb,pa,pb):
+        pass
     def find(self, v):
         if v not in self.p:
             self.p[v] = v

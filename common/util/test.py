@@ -150,7 +150,12 @@ class ToolBase:
 
     def run(self):
         self.prepare()
-        ret = getattr(self, sys.argv[1])(*sys.argv[2:])
+        f = getattr(self, sys.argv[1], None)
+        if f is None:
+            logger.info(list(dir(self)))
+            self.exit()
+            return
+        ret = f(*sys.argv[2:])
         logger.info(f"{sys.argv[1:]} {ret}")
         self.exit()
 

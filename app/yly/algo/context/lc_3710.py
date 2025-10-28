@@ -36,11 +36,12 @@ class Solution(MockCf):
 
         while h:
             v, i, j = h.pop(0)
+            self.logger.map(i=i,j=j,v=v,s=uf.show())
             if not uf.merge(i, j):
                 return v
         return 0
 
-    def maxPartitionFactor(self, points: List[List[int]]) -> int:
+    def maxPartitionFactor1(self, points: List[List[int]]) -> int:
         """
         二分答案+二分图
         """
