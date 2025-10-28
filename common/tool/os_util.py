@@ -20,6 +20,9 @@ class OsUtil:
             cwd=self.root_path,
         )
 
+    def run(self):
+        pass
+
     def set_logger(self, logger):
         self.logger: TheDevLoger = logger
         return self

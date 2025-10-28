@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from common.util.export import File, Module, TestBase, logger, sys, random
 
 
