@@ -29,9 +29,17 @@ class Diff:
         )
 
     def is_same(self, dst):
-        ret = str(self.src) == str(dst)
-        info = f"expect_value: {self.src}\nresult_value: {dst}"
-        return ret, info
+        src = self.src
+        if isinstance(dst, str) and isinstance(self.src, (list, dict)):
+            dst = json.loads(dst)
+        if isinstance(self.src, str) and isinstance(dst, (list, dict)):
+            self.src = json.loads(self.src)
+        ret = self.compare(dst)
+        info = ""
+        if ret:
+            msg = "\n".join(ret)
+            info = f"expect_value: {self.src}\nresult_value: {dst}\nlogger: \n{msg}"
+        return info
 
     def expect_ndarray(self, a, e, wucha=0.000001):
         import numpy as np

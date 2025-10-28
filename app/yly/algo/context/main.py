@@ -58,10 +58,10 @@ class ToolContext(ToolBase):
             r = f(**inp)
             msg = case.run_diff(r)
             if msg:
-                logger.info(case.i.path)
+                logger.info(f"{case.i.path}\n{msg[:100]}")
 
     def debug(self):
-        self.test("lc_2048.py", "case1")
+        self.test("lc_399", "case1")
 
 
 if __name__ == "__main__":

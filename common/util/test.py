@@ -124,9 +124,7 @@ class Case:
         e = None
         if self.e.exists():
             e = self.e.read_file()
-        if str(e) == str(result):
-            return ""
-        return f"[{result}]!=[{e}]"
+        return Diff(e).is_same(result)
 
     def get_input(self):
         data = self.get_linput_lines()

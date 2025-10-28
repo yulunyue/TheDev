@@ -6,25 +6,33 @@ class UniFind:
     def __init__(self) -> None:
         self.p = dict()
 
-    def merge(self, parent, child, *args):
+    def merge(self, child, parent, *args):
         parent1 = self.find(parent)
         child1 = self.find(child)
         if parent1 == child1:
-            self.union(child, child1, parent, parent1, *args)
             return parent1, False
         self.p[child1] = parent1
         self.union(child, child1, parent, parent1, *args)
         return parent1, True
 
-    def union(self, ca, cb, pa, pb, *args):
-        pass
+    def union(self, from_, x, to, y, *args):
+        """
+        乘法的带权并查集
+        #    x      y
+        #  /       /
+        # from_   to
+        x/from_ = self.value[from_]
+        y/to = self.value[to]
+        to/from_ = value
+        y/x = (to/from_)*(y/to)/(x/form_)
+        """
 
     def find(self, v):
         if v not in self.p:
             self.p[v] = v
         if self.p[v] != v:
             p = self.find(self.p[v])  # 带路径权需要先更新 self.dis[self.p[v]]
-            self.connect(v, p)
+            self.connect(v, self.p[v])
             self.p[v] = p
         return self.p[v]
 
