@@ -53,12 +53,15 @@ class Diff:
             cha = abs(a - e).sum()
             equ = cha <= wucha
         if not equ:
-            return f"shape:{a.shape}{a}", f"!=\nshape:{e.shape}{e}", f"cha:{cha}"
-        return ""
+            self.diff_result.append(
+                f"shape:{a.shape}{a}", f"!=\nshape:{e.shape}{e}", f"cha:{cha}"
+            )
 
     def diff_any(self, src, dst, keys):
         if src is None or dst is None:
-            return "" if src is None and dst is None else f"{src}!={dst}"
+            self.diff_result.append(
+                "" if src is None and dst is None else f"{src}!={dst}"
+            )
         elif isinstance(src, dict) and isinstance(dst, dict):
             for key in set(src.keys() + dst.keys()):
                 k = keys + [key]
@@ -82,4 +85,4 @@ class Diff:
         ):
             self.diff(keys, src, dst)
         else:
-            return self.expect_ndarray(src, dst)
+            self.expect_ndarray(src, dst)

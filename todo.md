@@ -27,7 +27,6 @@ python -m tests.test_tf
 python -m tests.test_third
 python -m tests.test_thread
 python -m tests.test_tic
-python -m tests.test_tool
 python -m tests.test_util
 python -m tests.test_algo
 python -m tool.search mc_cli

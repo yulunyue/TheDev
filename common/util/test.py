@@ -74,7 +74,7 @@ class TestBase:
             if self.f.ep_count > 0 and self.f.ok_count == self.f.ep_count
             else "fail"
         )
-        logger.debug(
+        logger.info(
             f"run_test [{pass_statu} {self.f.ok_count}/{self.f.ep_count}] use_time[{'%05d'%int(self.f.use_time*1000)}] {self.__class__.__name__}::{f.__name__} {self.f.msg}"
         )
         self.after_case(*args)

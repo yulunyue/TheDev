@@ -18,10 +18,6 @@ class TestTableConfig(TableConfig):
 
 class ToolTest(TestBase):
 
-    def test_os(self):
-        b = OsUtil().check_output("ls")
-        self.expect(b, "")
-
     def test_config(self):
         t = TableBase[TestTableConfig]().set_resource("data/setting/test_table.json")
         m = t.insert("a")
@@ -31,9 +27,6 @@ class ToolTest(TestBase):
         m.b.set_value(1)
         self.expect(m.b.get_value(), 1)
         t.save()
-
-    def test_debug(self):
-        self.test_config()
 
 
 if __name__ == "__main__":

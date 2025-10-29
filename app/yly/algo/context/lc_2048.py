@@ -16,19 +16,21 @@ def find(e, b=1):
 
 class Solution(MockCf):
     def zero_one_ksack(self, a: List[int], target: int):
-        pass
+        n = len(a)
+        f = [[False] * (target + 1)]
 
     def nextBeautifulNumber(self, n: int) -> int:
         s = [0] + [int(v) for v in str(n)]
         m = len(s)
-        cnt = [0]
-        # for i in range(1, m):
-        #     cnt[s[i]] += 1
+        mx = 10
+        cnt = [0] * mx
+        for i in range(1, m):
+            cnt[s[i]] += 1
         for i in range(m - 1, -1, -1):
-            # if i > 0:
-            #     cnt[s[i]] -= 1
+            if i > 0:
+                cnt[s[i]] -= 1
             for j in range(s[i] + 1, 10):
-                # s[i] = j
+                cnt[j] += 1
                 tail = [j]
                 for k, c in enumerate(cnt):
                     if c < 0:
@@ -39,7 +41,7 @@ class Solution(MockCf):
                 return int("".join(map(str, s[:i] + tail)))
         return -1
 
-    def nextBeautifulNumber(self, n: int) -> int:
+    def nextBeautifulNumber2(self, n: int) -> int:
         s = [int(v) for v in str(n)]
         m = len(s)
         a = find(m)
