@@ -124,4 +124,6 @@ class MctsSearchDev(MctsSearch):
         s.state.set_headers(str(s))
 
     def search(self, state):
-        return super().search(state)
+        action: Action = super().search(state)
+        self.logger.info(action)
+        return action

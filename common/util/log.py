@@ -169,3 +169,6 @@ def std_mock(with_trace=True):
 
     sys.stdout = Tmp()
     # sys.stderr = sys.stdout
+
+
+logger = get_log("test")

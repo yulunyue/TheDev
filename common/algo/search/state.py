@@ -50,29 +50,14 @@ class Action:
             ret += f", rlos: {self.reward}"
         return ret
 
-
-class PAction(Action):
-    dst = None
-
-    def __init__(self, src, action):
-        self.src: State = src
-        self.action = action
-        self.dst_p = dict()
-        self.max_p = 0
-        self.data = dict()
-
-    def add_dst(self, state: "State", p):
-        if state.state in self.dst_p:
-            return
-        self.dst_p[state.state] = [state, p]
-        self.max_p += p
-
-    def get_dst(self):
-        a = random.random() * self.max_p
-        for s, p in self.dst_p.values():
-            if a <= p:
-                return s
-            a -= p
+    def show_best_actions(self):
+        a = self
+        ret = []
+        while a:
+            ret.append(a.show())
+            ret.append(a.get_dst().show())
+            a = a.get_dst().get_action()
+        return "\n".join(ret)
 
 
 class State:
@@ -176,14 +161,6 @@ class State:
             ret.append(a)
             p = a.get_dst()
         return ret
-
-    def show_best_actions(self, mask_max_len=50):
-        actions = self.get_best_actions()
-        bodys = self.show_array(mask_max_len=mask_max_len)
-        for a in actions:
-            for i, d in enumerate(a.get_dst().show_array()):
-                bodys[i] += "|" + d
-        return "\n".join(bodys)
 
     def get_best_action(self):
         return self.best_action

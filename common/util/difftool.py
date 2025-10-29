@@ -20,29 +20,25 @@ class Diff:
         self.diff_result.append(f"delete[{self.key_join_char.join(keys)}][{value}]")
 
     def diff(self, keys, src, dst):
-        if isinstance(src, float) and abs(src - dst) <= 0.0001:
+        if (isinstance(src, float) or isinstance(dst, float)) and abs(
+            src - dst
+        ) <= 0.00001:
             return
-        if src == dst:
+        if str(src) == str(dst):
             return
         self.diff_result.append(
             f"update[{self.key_join_char.join(keys)}][{src}][{dst}]"
         )
 
     def is_same(self, dst):
-        src = self.src
         if isinstance(dst, str) and isinstance(self.src, (list, dict)):
             dst = json.loads(dst)
         if isinstance(self.src, str) and isinstance(dst, (list, dict)):
             self.src = json.loads(self.src)
-        ret = self.compare(dst)
-        info = ""
-        if ret:
-            msg = "\n".join(ret)
-            info = f"expect_value: {self.src}\nresult_value: {dst}\nlogger: \n{msg}"
-        return info
+        return "\n".join(self.compare(dst))
 
     def expect_ndarray(self, a, e, wucha=0.000001):
-        import numpy as np
+        from common.third_util.np_util import np
 
         if getattr(a, "requires_grad", False):
             a = a.detach().numpy()
@@ -52,19 +48,18 @@ class Diff:
             e = np.array(e)
         cha = 0
         if a.shape != e.shape:
-            not_equ = False
+            equ = False
         else:
             cha = abs(a - e).sum()
-            not_equ = cha <= wucha
-        return self.expect(
-            not_equ,
-            True,
-            info=f"shape:{a.shape}\n{a}\n!=\nshape:{e.shape}\n{e}\ncha:{cha}\n",
-            stacklevel=3,
-        )
+            equ = cha <= wucha
+        if not equ:
+            return f"shape:{a.shape}{a}", f"!=\nshape:{e.shape}{e}", f"cha:{cha}"
+        return ""
 
     def diff_any(self, src, dst, keys):
-        if isinstance(src, dict) and isinstance(dst, dict):
+        if src is None or dst is None:
+            return "" if src is None and dst is None else f"{src}!={dst}"
+        elif isinstance(src, dict) and isinstance(dst, dict):
             for key in set(src.keys() + dst.keys()):
                 k = keys + [key]
                 if key not in src:
@@ -87,4 +82,4 @@ class Diff:
         ):
             self.diff(keys, src, dst)
         else:
-            raise Exception(f"can not diff {keys} {src} {dst}")
+            return self.expect_ndarray(src, dst)

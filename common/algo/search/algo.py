@@ -8,7 +8,7 @@ from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
-from common.util.export import File, logger, get_log
+from common.util.export import File, logger, get_log, get_dev_log
 
 
 def random_seed(v=1):
@@ -32,13 +32,16 @@ class Algo:
         self.name = name or self.__class__.__name__
         self.params = None
 
+    record_dir = ""
+
     def set_record_dir(self, path):
         self.record_dir = path
         return self
 
     @property
     def logger(self):
-        return get_log(f"{self.record_dir}/algo/{self.name}")
+        record_dir = self.record_dir or "data/test"
+        return get_dev_log(f"{record_dir}/algo/{self.get_name()}")
 
     def set_name(self, name):
         self.name = name

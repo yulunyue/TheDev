@@ -1,13 +1,13 @@
 import sys
 import time
 from .fp import File
-from .log import get_log, get_dev_log
+from .log import get_log, get_dev_log, logger
 from .tool import url_to_json
 from .difftool import Diff
 from typing import Dict, List
 import json
 
-logger = get_log("test")
+
 TEST_FN_PREFIX = "test_"
 
 
@@ -19,10 +19,10 @@ class CaseFun:
         self.name = name
         self.fun_name = f.__name__
 
-    def expect(self, a, expect_value, info):
+    def expect(self, a, expect_value, info, call):
         self.ep_count += 1
-        result, msg = Diff(a).is_same(expect_value)
-        if result:
+        msg = call(a, expect_value)
+        if not msg:
             self.ok_count += 1
         else:
             self.error_logger.info(f"-----{self.ep_count}-----\n{msg}\n{info}")
@@ -31,11 +31,7 @@ class CaseFun:
         self.start_time = time.time()
         self.error_logger = get_dev_log(f"data/test/error/{self.name}_{self.fun_name}")
         self.msg = ""
-        try:
-            self.f(*args, **kw)
-        except Exception as e:
-            self.msg = str(e)
-            self.error_logger.exception(e)
+        self.f(*args, **kw)
         self.end_time = time.time()
         self.use_time = self.end_time - self.start_time
 
@@ -98,7 +94,7 @@ class TestBase:
         pass
 
     def expect(self, a, expect_value=True, info="", stacklevel=2):
-        self.f.expect(a, expect_value, info)
+        self.f.expect(a, expect_value, info, lambda a, dst: Diff(a).is_same(dst))
 
     def get_temp_path(self, name):
         return f"data/test/{self.__class__.__name__}/{name}"

@@ -5,18 +5,30 @@ from common.algo.base.unifind import UniFind
 class Uf(UniFind):
     def __init__(self):
         super().__init__()
-        self.x=defaultdict(int)
+        self.x = defaultdict(int)
 
-    def connect(self, c, p):
-        pass
-    def union(self,f,x,t,y):
+    def connect(self, f, y):
         """
-        f^x=1
-        t^y=1
+        已知
+            f->x 的关系为 self.x[f]
+            x->y 的关系为 self.x[x]
+        更新
+            f->y的关系为
+        """
+        self.x[f] ^= self.x[y]
+
+    def can_merge(self, f, x, t, y):
+        """
+        f^x
+        t^y
         f^t=1
         x^y
         """
-        v=self.x[]
+        if x == y:
+            return self.x[f] != self.x[t]
+        self.x[x] = self.x[f] ^ self.x[t] ^ 1
+        return True
+
 
 class Solution(MockCf):
 
@@ -43,12 +55,16 @@ class Solution(MockCf):
 
         while h:
             v, i, j = h.pop(0)
-            self.logger.map(i=i,j=j,v=v,s=uf.show())
-            if not uf.merge(i, j):
+            # self.logger.map(i=i, j=j, v=v)
+            if not uf.merge(i, j)[1]:
+                # self.logger.info(uf.show())
                 return v
+            # self.logger.info(uf.show())
+            # self.logger.info(dict(uf.x))
+            # self.logger.info("\n\n")
         return 0
 
-    def maxPartitionFactor1(self, points: List[List[int]]) -> int:
+    def maxPartitionFactor(self, points: List[List[int]]) -> int:
         """
         二分答案+二分图
         """
@@ -73,6 +89,7 @@ class Solution(MockCf):
                     return True
             return False
 
-        return bisect.bisect_left(range(0, len(h)), True, key=check)
+        idx = bisect.bisect_left(range(0, len(h)), True, key=check)
+        return h[idx][0]
 
     execute = maxPartitionFactor

@@ -1,5 +1,13 @@
-from .state import Action, AbState, State
-from common.util.export import random, List
+from common.util.export import ToolBase, logger, Module, random
+from common.algo.export import (
+    AbState,
+    AbDev,
+    Algo,
+    MctsSearch,
+    ALgoManage,
+    random_seed,
+)
+from common.tool.export import ThreadRecord
 
 
 class TestState(AbState):
@@ -52,6 +60,8 @@ class TestState(AbState):
 
     @classmethod
     def new(cls, *states, r=None, player_id=None):
+        if not states and not r:
+            return TestState.make_test_state()
         ret: TestState = super().new(TestState.get_new_id())
         if player_id is not None:
             ret.set_player_id(player_id)
@@ -83,3 +93,36 @@ class TestState(AbState):
         if self.get_reward() == 0:
             return 2
         return 0 if self.get_reward() > 0 else 1
+
+
+class Record(ThreadRecord):
+    def __init__(self, s: TestState):
+        self.s = s
+        super().__init__()
+
+    def uk(self):
+        return self.s.print_tree()
+
+    def set_search(self, algo: Algo):
+        return self.set_exec(lambda *args: algo.search(self.s))
+
+
+class SearchTool(ToolBase):
+    def prepare(self, args=None, cls=None, **kw):
+        if cls is not None:
+            cls = Module().load_module(cls)
+        else:
+            cls = TestState
+        self.s = cls.new()
+        self.al = ALgoManage().set_record_dir("data/test/search")
+
+    def mc_cli(self):
+        Record(self.s).set_search(self.al.mc()).cli()
+
+    def mc(self):
+        self.al.mc().search(self.s)
+
+
+if __name__ == "__main__":
+    random_seed(7)
+    SearchTool().run()
