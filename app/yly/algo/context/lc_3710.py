@@ -1,15 +1,22 @@
-from common.util.export import MockCf, List, heapq, defaultdict, bisect
+from common.util.export import MockCf, List, heapq, defaultdict, bisect, defaultdict
 from common.algo.base.unifind import UniFind
 
 
 class Uf(UniFind):
+    def __init__(self):
+        super().__init__()
+        self.x=defaultdict(int)
 
-    def merge(self, parent, child):
-        _, flag = super().merge(parent, child)
-        if flag:
-            return True
-        return (self.dis[parent] + self.dis[child]) % 2 == 1
-
+    def connect(self, c, p):
+        pass
+    def union(self,f,x,t,y):
+        """
+        f^x=1
+        t^y=1
+        f^t=1
+        x^y
+        """
+        v=self.x[]
 
 class Solution(MockCf):
 

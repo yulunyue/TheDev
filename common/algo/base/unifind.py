@@ -11,9 +11,10 @@ class UniFind:
         child1 = self.find(child)
         if parent1 == child1:
             return parent1, False
-        self.p[child1] = parent1
-        self.union(child, child1, parent, parent1, *args)
-        return parent1, True
+        if self.union(child, child1, parent, parent1, *args):
+            self.p[child1] = parent1
+            return parent1, True
+        return parent1, False
 
     def union(self, from_, x, to, y, *args):
         """
@@ -26,6 +27,7 @@ class UniFind:
         to/from_ = value
         y/x = (to/from_)*(y/to)/(x/form_)
         """
+        return True
 
     def find(self, v):
         if v not in self.p:
