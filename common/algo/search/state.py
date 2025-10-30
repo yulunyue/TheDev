@@ -17,7 +17,7 @@ class Action:
 
     @property
     def key(self):
-        return f"{self.src.state}_{self.action}"
+        return f"{self.src.state}->{self.action}"
 
     def get_dst(self):
         return self.dst
@@ -65,7 +65,6 @@ class State:
     parent: "State" = None
     done = None
     STATE_STORE: Dict[str, "State"] = dict()
-    reward = None
     actions: List[Action] = None
     data = None
     best_action: Action = None
@@ -73,7 +72,7 @@ class State:
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
         self.depth = depth
-        self.player_id = player_id
+        self.player_id = player_id  # 下一回合的执行者
 
     def init_data(self):
         self.data = dict()
@@ -114,30 +113,15 @@ class State:
         self.done = done
         return self
 
-    def set_reward(self, reward):
-        self.reward = reward
-        return self
-
     def set_actions(self, actions):
         self.actions = actions
         return self
-
-    def set_next_states(self, states: List["State"]):
-        return self.set_actions(
-            [
-                Action(self, v.state, v.set_player_id(1 - self.player_id))
-                for i, v in enumerate(states)
-            ]
-        )
 
     def reset(self):
         return self
 
     def reset_env(self):
         return self
-
-    def get_dst(self, actions):
-        return self.get_action(actions).get_dst()
 
     def get_action(self, actions) -> Action:
         if not isinstance(actions, list):
@@ -192,8 +176,11 @@ class State:
             max_depth -= 1
         return ret
 
-    def dfs(self, call, max_depth=-1, call_pos="pre"):
+    def dfs(self, call, max_depth=15, call_pos="pre"):
         def util(n: State, depth=0, action: Action = None):
+            if depth > max_depth:
+                logger.warning(f"stack over {max_depth}")
+                return
             if call_pos == "pre":
                 call(n, depth, action)
             actions = n.get_sort_actions()
@@ -207,28 +194,25 @@ class State:
             if call_pos == "after":
                 call(n, depth, action)
 
-        util(self, 0, Action(None, ""))
+        util(self, 0, None)
 
     def print_tree(self):
         ans = []
 
         def util(n: State, depth, action: Action):
-            s = f'{"  " * depth}{action.action}->{n.state}: {n.show_titles()}'
+            key = ""
+            if action is not None:
+                key = action.key
+            s = f'{"  " * depth}{key}: {n.show_titles()}'
             ans.append(s)
 
         self.dfs(util, call_pos="pre")
         return "\n".join(ans)
 
-    def get_reward(self, actions: List[Action] = None, params=None) -> int:
-        """
-        绝对优势 >0 表示先手优势 <0 表示后手优势
-        """
-        return self.reward
-
     def get_max_action_reward(self):
         reward = -inf
         for a in self.get_sort_actions():
-            ar = a.get_self_reward()
+            ar = a.get_reward()
             if ar > reward:
                 reward = ar
         return reward
@@ -241,33 +225,8 @@ class State:
         self.data[k] = v
         return self.data[k]
 
-    header_title = ""
-
-    def set_headers(self, s):
-        self.header_title = s
-        return self
-
-    def title_show_keys(self):
-        return ["p", "d", "r"]
-
     def show_titles(self):
-        ret = []
-        for k in self.title_show_keys() + [self.header_title]:
-            if not k:
-                continue
-            if k.find("=") != -1:
-                ret.append(k)
-                continue
-            elif k == "p":
-                value = self.player_id
-            elif k == "r":
-                value = self.get_reward()
-            elif k == "d":
-                value = self.get_done()
-            else:
-                value = getattr(self, k)
-            ret.append(f"{k}={value}")
-        return "; ".join(ret)
+        return "show_titles"
 
     def show_body(self, info="", mask_max_len=50):
         datas = [self.show_titles()] + self.to_str()
@@ -281,10 +240,13 @@ class State:
         return [(d + " " * mask_max_len)[:mask_max_len] for d in datas]
 
     def show_array(self, info="", title="", mask_max_len=50, body=None):
-        if not title:
-            title = "%x" % self.state
+        if isinstance(self.state, int):
+            if not title:
+                title = "%x" % self.state
+            else:
+                title = "%s:%x" % (title, self.state)
         else:
-            title = "%s:%x" % (title, self.state)
+            title = str(self.state)
         if len(title) > mask_max_len:
             mask_max_len = len(title) + 8
         if body is None:
@@ -307,28 +269,20 @@ class State:
             return 1
         return 2
 
-    def get_self_reward(self, *args, **kw):
-        r = self.get_reward()
-        if (
-            self.player_id == 0
-        ):  # Player1 回合结束，轮到Player0 走，返回对于Player1的价值 取反
-            return -r
-        return r
-
     def get_sort_actions(self, **kw):
         if self.actions is None:
             self.actions = self.make_actions()
         return self.actions
 
     def get_data(self):
-        return dict(reward=self.reward)
+        return self.data
 
     def do_move(self, action: Action):
         return action.get_dst()
 
     @property
     def game_over(self):
-        return self.done is not None
+        return self.done is not None or len(self.get_sort_actions()) == 0
 
 
 class AbState(State):

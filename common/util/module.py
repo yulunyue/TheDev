@@ -7,11 +7,9 @@ from importlib import import_module, invalidate_caches
 
 from common.util.fp import File
 from common.util.str_util import StrUtil
-from common.util.log import get_log
+from common.util.log import get_log, logger
 from collections import defaultdict
 import traceback
-
-logger = get_log("module")
 
 
 def get_function_info(v):
@@ -164,7 +162,7 @@ class Module:
             t = q
             q = []
             for v in t:
-                logger.debug(v)
+                # logger.debug(v)
                 lines.extend(v.lines)
                 for u in v.childs.values():
                     u.out_deg -= 1

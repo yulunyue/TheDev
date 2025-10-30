@@ -1,8 +1,10 @@
-from common.util.export import ToolBase, logger, Module, random
+from common.util.export import ToolBase, logger, Module, random, List
 from common.algo.export import (
     AbState,
     AbDev,
     Algo,
+    Action,
+    State,
     MctsSearch,
     ALgoManage,
     random_seed,
@@ -49,50 +51,53 @@ class TestState(AbState):
             v.set_reward(i - len(q) // 2)
         return s
 
-    def set_reward(self, r):
-        if r == 0:
-            self.set_done(2)
-        elif isinstance(r, int) and r < 0:
-            self.set_done(0)
-        elif isinstance(r, int) and r > 0:
-            self.set_done(1)
-        return super().set_reward(r)
+    @classmethod
+    def new(cls, state=None, **kw):
+        if state is None:
+            state = TestState.get_new_id()
+        return super().new(state, **kw)
+
+    money = 0
 
     @classmethod
-    def new(cls, *states, r=None, player_id=None):
-        if not states and not r:
-            return TestState.make_test_state()
-        ret: TestState = super().new(TestState.get_new_id())
+    def make(cls, *states, r=0, player_id=None):
+        ret: TestState = cls.new()
         if player_id is not None:
             ret.set_player_id(player_id)
-        if r is not None:
-            ret.set_reward(r)
+        ret.money = r
         ret.set_next_states(states or [])
-        ret.init_data()
         return ret
+
+    def set_next_states(self, states: List["TestState"]):
+        return self.set_actions(
+            [
+                Action(self, i, v.set_player_id(1 - self.player_id))
+                for i, v in enumerate(states)
+            ]
+        )
 
     @staticmethod
     def make_test_state():
-        return TestState.new(
-            TestState.new(r=1),
-            TestState.new(
-                TestState.new(r=2),
-                TestState.new(r=-5),
+        return TestState.make(
+            TestState.make(r=1),
+            TestState.make(
+                TestState.make(r=2),
+                TestState.make(r=-5),
+                r=4,
             ),
-            TestState.new(
-                TestState.new(r=3),
-                TestState.new(r=-9),  # 不会选这个
-                TestState.new(r=-3),  # 不会选这个
+            TestState.make(
+                TestState.make(r=3),
+                TestState.make(r=-9),
+                TestState.make(r=-3),
+                r=-3,
             ),
             player_id=1,
         )
 
-    def get_done(self):
-        if self.get_sort_actions():
-            return
-        if self.get_reward() == 0:
-            return 2
-        return 0 if self.get_reward() > 0 else 1
+    def show_titles(self):
+        if self.game_over:
+            return f"r:{self.money}"
+        return f"p:{self.player_id}; r:{self.money}"
 
 
 class Record(ThreadRecord):
@@ -110,10 +115,10 @@ class Record(ThreadRecord):
 class SearchTool(ToolBase):
     def prepare(self, args=None, cls=None, **kw):
         if cls is not None:
-            cls = Module().load_module(cls)
+            self.s = Module().load_module(cls).new()
         else:
-            cls = TestState
-        self.s = cls.new()
+            self.s = TestState.make_test_state()
+        logger.debug(self.s.print_tree())
         self.al = ALgoManage().set_record_dir("data/test/search")
 
     def mc_cli(self):
@@ -121,6 +126,11 @@ class SearchTool(ToolBase):
 
     def mc(self):
         self.al.mc().search(self.s)
+
+    def ql(self):
+        algo = self.al.ql()
+        algo.train(self.s)
+        logger.debug(algo.show())
 
 
 if __name__ == "__main__":

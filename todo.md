@@ -11,7 +11,7 @@ python -m app.yly.algo.context.main test lc_3559.py
 python -m app.yly.algo.context.main test lc_3710.py
 python -m tests.test_algo
 python -m tests.test_bp
-python -m tests.test_cart
+python -m app.yly.envs.ml.cart_pole.main dqn
 python -m tests.test_cf
 python -m tests.test_cw
 python -m app.yly.envs.cg.l9.main cg
@@ -22,13 +22,13 @@ python -m tests.test_mrcf
 python -m tests.test_oa
 python -m tests.test_pdl
 python -m tests.test_search
-python -m tests.test_task
 python -m tests.test_tf
 python -m tests.test_third
-python -m tests.test_thread
 python -m tests.test_tic
 python -m tests.test_util
 python -m tests.test_algo
 python -m tool.search mc_cli
+python -m tool.search mc
+python -m tool.search ql
 # c语言的构建工具
-python -m cpp.pytool.main execute cpp/src/test.cpp
+python -m cpp.pytool.main execute cpp/src/loj_p2885.cpp

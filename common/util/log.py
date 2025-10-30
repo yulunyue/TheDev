@@ -18,7 +18,7 @@ DEFAULT_FMT = "".join(
         "[%(asctime)s]",
         # "levelname",
         # "process)s:%(threadName",
-        "[%(module)s:%(lineno)s]",
+        "[%(pathname)s:%(lineno)s]",
         "[%(funcName)s]",
         " %(message)s",
     ]
@@ -51,7 +51,6 @@ class Logger(logging.Logger):
     def __init__(self, name, fmt, mode="w") -> None:
         super().__init__(name)
         self.cache_msgs = []
-        self.cache_enable = False
         self.path = name_to_path(name)
         self.fp = File(self.path).make_dir_if_not_exist()
         self.add_file_hander(fmt, mode)
@@ -65,12 +64,8 @@ class Logger(logging.Logger):
                 encoding="utf-8",
             ),
             logging.DEBUG,
-            fmt=fmt,
+            fmt=DEBUG_FMT,
         )
-
-    def enable_cache(self):
-        self.cache_enable = True
-        return self
 
     def get_and_clear_cache(self):
         ret = self.cache_msgs[:]
@@ -83,9 +78,7 @@ class Logger(logging.Logger):
     def info(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
     ):
-        if self.cache_enable:
-            self.cache_msgs.append(str(msg))
-            return
+
         return super().info(
             msg,
             *args,
@@ -109,7 +102,7 @@ class Logger(logging.Logger):
 class TheDevLoger:
     def __init__(self, name, *args, **kw):
         self.fp = File(name_to_path(name)).make_dir_if_not_exist()
-        logger.info(self.fp.path)
+        logger.info(self.fp.path, stacklevel=3)
 
     def get_writer(self):
         return self.fp.get_writer()
@@ -141,7 +134,9 @@ def get_dev_log(name) -> TheDevLoger:
 
 def get_log(name="", fmt=None, mode="w") -> Logger:
     if name not in LOG_MAP:
-        LOG_MAP[name] = Logger(name, fmt, mode=mode)
+        l = Logger(name, fmt, mode=mode)
+        LOG_MAP[name] = l
+        l.info(l.path, stacklevel=2)
     return LOG_MAP[name]
 
 

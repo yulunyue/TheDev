@@ -1,8 +1,8 @@
-from common.util.export import TestBase
+from common.util.export import ToolBase
 from common.tool.export import Task, get_task, TASK_MANAGER
 
 
-class TestTask(TestBase):
+class TaskTool(ToolBase):
     def loop(self):
         t = get_task()
         t.loop()
@@ -15,4 +15,4 @@ class TestTask(TestBase):
 
 
 if __name__ == "__main__":
-    TestTask().run()
+    TaskTool().run()
