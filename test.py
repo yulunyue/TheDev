@@ -1,4 +1,9 @@
-#!/usr/bin/python
+
+
+
+
+
+
 
 from common.util.export import File, Module, TestBase, logger, sys, random
 
@@ -21,7 +26,7 @@ class TestMain:
     def random(self):
         cmds = []
         for line in File("todo.md").read_line():
-            if line.startswith("#"):
+            if line.startswith("#") or not line:
                 continue
             cmds.append(line)
         logger.info(cmds[random.randint(0, len(cmds) - 1)])
