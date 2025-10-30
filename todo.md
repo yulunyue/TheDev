@@ -31,4 +31,4 @@ python -m tests.test_util
 python -m tests.test_algo
 python -m tool.search mc_cli
 # c语言的构建工具
-python -m cpp.pytool.main build cpp/src/test.cpp
+python -m cpp.pytool.main execute cpp/src/test.cpp
