@@ -8,7 +8,7 @@ class CartTool(ToolBase):
         self.state = CartPoleState()
 
     def dqn(self):
-        dqn = Dqn().load(Net2().load())
+        dqn = Dqn().load().set_model(Net2().load())
         dqn.train(self.state)
         # self.dqn.search()
         # dqn.draw(self.get_temp_file("reawrd.svg"))

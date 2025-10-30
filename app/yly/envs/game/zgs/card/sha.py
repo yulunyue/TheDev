@@ -6,7 +6,7 @@ class Sha(CardBase):
     title = "杀"
 
     def do(self, f=None):
-        if not self.owner.has_zg and self.owner.use_sha:
+        if self.owner.use_sha and not self.owner.haz_zg():
             return
         if self.owner.is_enemy(self.owner.next):
             self.set_dst(self.owner.next)

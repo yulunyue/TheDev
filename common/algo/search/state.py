@@ -226,7 +226,7 @@ class State:
         return self.data[k]
 
     def show_titles(self):
-        raise Exception("todo")
+        return "show_titles"
 
     def show_body(self, info="", mask_max_len=50):
         datas = [self.show_titles()] + self.to_str()
@@ -240,10 +240,13 @@ class State:
         return [(d + " " * mask_max_len)[:mask_max_len] for d in datas]
 
     def show_array(self, info="", title="", mask_max_len=50, body=None):
-        if not title:
-            title = "%x" % self.state
+        if isinstance(self.state, int):
+            if not title:
+                title = "%x" % self.state
+            else:
+                title = "%s:%x" % (title, self.state)
         else:
-            title = "%s:%x" % (title, self.state)
+            title = str(self.state)
         if len(title) > mask_max_len:
             mask_max_len = len(title) + 8
         if body is None:

@@ -37,6 +37,7 @@ class Qlearning(Algo):
         self.q[a0.key] += self.alpha * actions_value
 
     def update_action(self, a0: Action):
+        self.actions.append(a0)
         self.q_learning(a0)
         for _ in range(self.n_planning):
             s = random.choice(list(self.all_actions.values()))
@@ -44,12 +45,16 @@ class Qlearning(Algo):
 
     def train(self, state: State):
         self.reset()
-        for _ in range(self.train_epoll):
-            s = state.reset()
-            while not s.game_over:
-                a = self.take_action(s)
-                self.update_action(a)
-                s = a.get_dst()
+        for i in range(self.train_epoll):
+            self.train_one(i, state)
+
+    def train_one(self, i, state: State):
+        s = state.reset()
+        self.actions = []
+        while not s.game_over:
+            a = self.take_action(s)
+            self.update_action(a)
+            s = a.get_dst()
 
     def show(self):
         ret = []

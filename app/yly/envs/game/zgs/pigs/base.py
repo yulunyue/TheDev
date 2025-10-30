@@ -4,7 +4,7 @@ from ..log import logger
 
 
 class Pig:
-    has_zg = None
+
     power = 4
     state = 0
     next: "Pig"
@@ -24,7 +24,19 @@ class Pig:
 
     @property
     def name(self):
-        return f"{self.__class__.__name__}_{self.idx}"
+        state = 1
+        if self.state in {self.IS_GOOD, self.IS_BAD}:
+            state = 2
+        elif self.state == self.LIKE_BAD:
+            state = 0
+        return f"{self.__class__.__name__}_{self.idx}_{state}"
+
+    _has_zg = False
+
+    def haz_zg(self):
+        if self.card_map[Zgll.type] and not self._has_zg:
+            self.card_map[Zgll.type][0].do()
+        return self._has_zg
 
     @property
     def dead(self):
@@ -35,8 +47,6 @@ class Pig:
 
         if isinstance(c, str):
             c = CARD_MAP[c]()
-        if isinstance(c, Zgll):
-            self.has_zg = True
         c.owner = self
         c.pre = self.tail
         self.tail.next = c
@@ -60,7 +70,7 @@ class Pig:
 
     def do(self) -> None:
         c = self.head.next
-        while c:
+        while c and not logger.game_over():
             c.do()
             c = c.next
 
@@ -73,34 +83,39 @@ class Pig:
     def power_change(self, num, c: "CardBase"):
         # logger.debug(f"{self.name} power {self.power}->{self.power+num}")
         self.power += num
-        from ..util import tao
 
         if self.power == 0:
-            if tao(c.owner, self, c):
+            logger.debug(f"{self.name} need 桃")
+            s = self.card_map[Tao.type]
+            if s:
+                s[0].use()
                 self.power = 1
             else:
                 self.pre.next = self.next
                 self.next.pre = self.pre
 
     def hander(self, c: "CardBase"):
-        if isinstance(c, (Nzrq, Juedou)):
+        if c.type in {Nzrq.type, Juedou.type}:
             stp = Sha.type
-        elif isinstance(c, (Sha, Wjqf)):
+        elif c.type in {Sha.type, Wjqf.type}:
             stp = Shan.type
         if not self.card_map[stp]:
             self.power_change(-1, c)
             return False
-        self.card_map[stp].pop(0).use(c)
+        self.card_map[stp][0].use(c)
         return True
 
     def lose_all_card(self):
         self.head.next = None
-        self.has_zg = False
+        self._has_zg = False
         self.card_map = defaultdict(list)
 
     def get_num_card(self, num):
+        from ..util import CARD_MAP
+
         while self.cards and num > 0:
             self.add_card(self.cards[0])
+            logger.debug(f"{self.name} get {CARD_MAP[self.cards[0]].title}")
             num -= 1
             if len(self.cards) > 1:
                 self.cards.pop(0)

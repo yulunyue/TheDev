@@ -5,34 +5,75 @@ const bool diff[3][3] = {{0, 0, 1}, {0, 0, 1}, {1, 1, 0}};
 const int M = 2005;
 int n, m, fanzhu, deadfan, rounds, tmp[M], used[M];
 char ch, cu;
-struct PIGS {
+struct PIGS
+{
     int iden, bloods, perfo, dead, nxt, equip, cnt;
     char cards[M];
 } a[15];
-deque <char> cards_pile;
-FILE *IN_FILE = fopen("data/context/loj_p2885/case2/main.in","r");
-FILE *LOG_FILE = fopen("data/context/loj_p2885/case2/c.log","w");
-void log(const char *format, ...) {
+deque<char> cards_pile;
+FILE *IN_FILE = fopen("data/context/loj_p2885/case1/main.in", "r");
+FILE *LOG_FILE = fopen("data/context/loj_p2885/case1/c.log", "w");
+void log(const char *format, ...)
+{
     char s[2048];
     va_list args;
-    
+
     va_start(args, format);
-    
+
     // 使用 vsnprintf 防止缓冲区溢出
     int len = vsnprintf(s, sizeof(s), format, args);
-    
+
     va_end(args);
-    
-    if (len > 0) {
+
+    if (len > 0)
+    {
         // 使用 fwrite 写入实际长度
         fwrite(s, 1, len, LOG_FILE);
         // 或者更简单的方式：
         // fputs(s, LOG_FILE);
     }
-    
+
     fflush(LOG_FILE);
 }
-inline char read() {
+const char *PIG_TYPE[3] = {"Mp", "Zp", "Fp"};
+string card_format(char v)
+{
+    if (v == 'P')
+    {
+        return "桃";
+    }
+    else if (v == 'K')
+    {
+        return "杀";
+    }
+    else if (v == 'F')
+    {
+        return "决";
+    }
+    else if (v == 'N')
+    {
+        return "南";
+    }
+    else if (v == 'D')
+    {
+        return "闪";
+    }
+    else if (v == 'W')
+    {
+        return "万";
+    }
+    else if (v == 'J')
+    {
+        return "无";
+    }
+    else if (v == 'Z')
+    {
+        return "诸";
+    }
+    return "";
+}
+inline char read()
+{
     ch = fgetc(IN_FILE);
 
     while (ch < 'A' || ch > 'Z')
@@ -40,13 +81,19 @@ inline char read() {
 
     return ch;
 }
-void _init() {
-    fscanf(IN_FILE,"%d%d", &n, &m), fanzhu = deadfan = 0;
+void _init()
+{
+    fscanf(IN_FILE, "%d%d", &n, &m), fanzhu = deadfan = 0;
 
-    for (int i = 1, las = 0; i <= n; i++) {
-        a[i].bloods = a[i].cnt = 4, a[i].dead = a[i].perfo = a[i].equip = 0, a[i].nxt = i % n + 1;
-        cu = read(), fanzhu += (cu == 'F'), a[i].iden = (cu != 'F') ? ((cu != 'Z') ? 0 : 1) : 2, cu = read();
-
+    for (int i = 1, las = 0; i <= n; i++)
+    {
+        a[i].bloods = a[i].cnt = 4;
+        a[i].dead = a[i].perfo = a[i].equip = 0;
+        a[i].nxt = i % n + 1;
+        cu = read();
+        fanzhu += (cu == 'F');
+        a[i].iden = (cu != 'F') ? ((cu != 'Z') ? 0 : 1) : 2;
+        cu = read();
         for (int j = 1; j <= 4; j++)
             a[i].cards[j] = read();
     }
@@ -56,13 +103,15 @@ void _init() {
     for (int i = 1; i <= m; i++)
         cards_pile.push_back(read());
 }
-void get_cards(int cur) {
+void get_cards(int cur)
+{
     a[cur].cards[++a[cur].cnt] = cards_pile.front();
-
+    log("%s_%d_%d get %s\n", PIG_TYPE[a[cur].iden], cur - 1, a[cur].perfo + 1, card_format(cards_pile.front()).c_str());
     if (cards_pile.size() > 1)
         cards_pile.pop_front();
 }
-bool ought(int cur) {
+bool ought(int cur)
+{
     int nxt = a[cur].nxt;
 
     if (a[nxt].perfo == 0)
@@ -72,7 +121,8 @@ bool ought(int cur) {
     else
         return a[cur].iden == 0;
 }
-int atk(int cur) {
+int atk(int cur)
+{
     if (a[cur].iden == 2)
         return 1;
 
@@ -83,70 +133,67 @@ int atk(int cur) {
 
     return -1;
 }
-void pend(int x, int y) {
-    if (a[x].iden == 0 && a[y].iden == 1) {
+void pend(int x, int y)
+{
+    if (a[x].iden == 0 && a[y].iden == 1)
+    {
         for (int i = 1; i <= a[x].cnt; i++)
             used[i] = rounds;
 
         a[x].equip = 0;
-    } else if (a[y].iden == 2)
+    }
+    else if (a[y].iden == 2)
         get_cards(x), get_cards(x), get_cards(x);
 }
-int find(int cur, char aim) {
+int find(int cur, char aim)
+{
     for (int i = 1; i <= a[cur].cnt; i++)
         if (a[cur].cards[i] == aim)
             return i;
 
     return 0;
 }
-const char *PIG_TYPE[3] = {"Mp", "Zp", "Fp"};
-string card_format(char v){
-    if(v=='P'){
-        return "桃";
-    }else if(v=='K'){
-        return "杀";
-    }else if(v=='F'){
-        return "决";
-    }else if(v=='N'){
-        return "南";
-    }else if(v=='D'){
-        return "闪";
-    }else if(v=='W'){
-        return "万";
-    }else if(v=='J'){
-        return "无";
-    }else if(v=='Z'){
-        return "诸";
-    }
-    return "";
+
+void log_card(int cur, char card)
+{
+    log("%s_%d_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, a[cur].perfo + 1, card_format(card).c_str());
 }
-void adjust(int cur, int s, int t) {
-    log("%s_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, card_format(a[cur].cards[s]).c_str());
+void adjust(int cur, int s, int t)
+{
+    log("%s_%d_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, a[cur].perfo + 1, card_format(a[cur].cards[s]).c_str());
     for (int i = s; i < t; i++)
         a[cur].cards[i] = a[cur].cards[i + 1];
 }
-void respond_peach(int cur, int user) {
+void respond_peach(int cur, int user)
+{
     int re = find(cur, 'P');
-
-    if (cur == user) {
+    log("%s_%d_%d need 桃\n", PIG_TYPE[a[cur].iden], cur - 1, a[cur].perfo + 1);
+    if (cur == user)
+    {
         re = 0;
 
         for (int i = 1; i <= a[cur].cnt; i++)
-            if (used[i] != rounds && a[cur].cards[i] == 'P') {
+            if (used[i] != rounds && a[cur].cards[i] == 'P')
+            {
                 re = i;
                 break;
             }
 
         if (re)
-            used[re] = rounds, a[cur].bloods++;
-
+        {
+            used[re] = rounds;
+            a[cur].bloods++;
+        }
         return;
     }
 
     if (re)
+    {
         a[cur].bloods++, adjust(cur, re, a[cur].cnt), a[cur].cnt--;
+    }
 }
-bool respond_dodge(int cur) {
+bool respond_dodge(int cur)
+{
     int re = find(cur, 'D');
 
     if (re)
@@ -154,14 +201,17 @@ bool respond_dodge(int cur) {
 
     return re;
 }
-bool respond_kill(int cur, int user) {
+bool respond_kill(int cur, int user)
+{
     int re = find(cur, 'K');
 
-    if (cur == user) {
+    if (cur == user)
+    {
         re = 0;
 
         for (int i = 1; i <= a[cur].cnt; i++)
-            if (used[i] != rounds && a[cur].cards[i] == 'K') {
+            if (used[i] != rounds && a[cur].cards[i] == 'K')
+            {
                 re = i;
                 break;
             }
@@ -177,55 +227,67 @@ bool respond_kill(int cur, int user) {
 
     return re;
 }
-bool respond_wuxie(int cur, int user) {
+bool respond_wuxie(int cur, int user)
+{
     int re = find(cur, 'J');
 
-    if (cur == user) {
+    if (cur == user)
+    {
         re = 0;
 
         for (int i = 1; i <= a[cur].cnt; i++)
-            if (used[i] != rounds && a[cur].cards[i] == 'J') {
+            if (used[i] != rounds && a[cur].cards[i] == 'J')
+            {
                 re = i;
                 break;
             }
 
         if (re)
+        {
             used[re] = rounds;
-
+            a[cur].perfo = 1;
+            log_card(cur, 'J');
+        }
         return re;
     }
 
     if (re)
+    {
+        a[cur].perfo = 1;
         adjust(cur, re, a[cur].cnt), a[cur].cnt--;
-
+    }
     return re;
 }
-void lose_blood(int cur, int user) {
+void lose_blood(int cur, int user)
+{
     a[cur].bloods--;
 
     if (a[cur].bloods < 1)
         respond_peach(cur, user);
 }
-void change_link(int cur) {
+void change_link(int cur)
+{
     for (int pre = 1; pre <= n; pre++)
-        if (!a[pre].dead && a[pre].nxt == cur) {
+        if (!a[pre].dead && a[pre].nxt == cur)
+        {
             a[pre].nxt = a[cur].nxt;
             break;
         }
 }
-void log_card(int cur,char card){
-    log("%s_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, card_format(card).c_str());
-}
-void do_peach(int cur) {
+
+void do_peach(int cur)
+{
     log_card(cur, 'P');
     a[cur].bloods++;
 }
-void do_kill(int cur) {
-    log_card(cur, 'K');
+void do_kill(int cur)
+{
+
     int nxt = a[cur].nxt;
     a[cur].perfo = 1;
-
-    if (!respond_dodge(nxt)) {
+    log_card(cur, 'K');
+    if (!respond_dodge(nxt))
+    {
         lose_blood(nxt, cur);
 
         if (a[nxt].bloods < 1)
@@ -238,21 +300,26 @@ void do_kill(int cur) {
             pend(cur, nxt);
     }
 }
-bool do_wuxie(int user, int cur, int aim, int now) {
+bool do_wuxie(int user, int cur, int aim, int now)
+{
     bool ret = now;
-    log_card(cur, 'J');
-    for (int nxt = cur; ;)
-        if (!a[nxt].dead) {
-            if (!now) {
+
+    for (int nxt = cur;;)
+        if (!a[nxt].dead)
+        {
+            if (!now)
+            {
                 if (!diff[a[nxt].iden][a[aim].iden])
-                    if (respond_wuxie(nxt, user)) {
-                        a[nxt].perfo = 1;
+                    if (respond_wuxie(nxt, user))
+                    {
                         return do_wuxie(user, nxt, aim, 1 - now);
                     }
-            } else {
+            }
+            else
+            {
                 if (diff[a[nxt].iden][a[aim].iden])
-                    if (respond_wuxie(nxt, user)) {
-                        a[nxt].perfo = 1;
+                    if (respond_wuxie(nxt, user))
+                    {
                         return do_wuxie(user, nxt, aim, 1 - now);
                     }
             }
@@ -265,16 +332,20 @@ bool do_wuxie(int user, int cur, int aim, int now) {
 
     return ret;
 }
-void do_fight(int cur, int aim, int user) {
+void do_fight(int cur, int aim, int user)
+{
     a[cur].perfo = 1;
     log_card(cur, 'F');
-    if (a[aim].perfo == 1) {
+    if (a[aim].perfo == 1)
+    {
         if (do_wuxie(cur, cur, aim, 0))
             return;
     }
 
-    for (; ;) {
-        if (a[cur].iden == 0 && a[aim].iden == 1) {
+    for (;;)
+    {
+        if (a[cur].iden == 0 && a[aim].iden == 1)
+        {
             lose_blood(aim, user);
 
             if (a[aim].bloods < 1)
@@ -287,7 +358,9 @@ void do_fight(int cur, int aim, int user) {
                 pend(cur, aim);
 
             return;
-        } else if (!respond_kill(aim, user)) {
+        }
+        else if (!respond_kill(aim, user))
+        {
             lose_blood(aim, user);
 
             if (a[aim].bloods < 1)
@@ -302,7 +375,8 @@ void do_fight(int cur, int aim, int user) {
             return;
         }
 
-        if (!respond_kill(cur, user)) {
+        if (!respond_kill(cur, user))
+        {
             lose_blood(cur, user);
 
             if (a[cur].bloods < 1)
@@ -318,16 +392,20 @@ void do_fight(int cur, int aim, int user) {
         }
     }
 }
-void do_nanzhu(int cur) {
+void do_nanzhu(int cur)
+{
     log_card(cur, 'N');
     for (int nxt = a[cur].nxt; nxt != cur; nxt = a[nxt].nxt)
-        if (!a[nxt].dead) {
-            if (a[nxt].perfo == 1) {
+        if (!a[nxt].dead)
+        {
+            if (a[nxt].perfo == 1)
+            {
                 if (do_wuxie(cur, cur, nxt, 0))
                     continue;
             }
 
-            if (!respond_kill(nxt, cur)) {
+            if (!respond_kill(nxt, cur))
+            {
                 lose_blood(nxt, cur);
 
                 if (nxt == 1 && a[cur].perfo == 0)
@@ -344,16 +422,20 @@ void do_nanzhu(int cur) {
             }
         }
 }
-void do_wanjian(int cur) {
+void do_wanjian(int cur)
+{
     log_card(cur, 'W');
     for (int nxt = a[cur].nxt; nxt != cur; nxt = a[nxt].nxt)
-        if (!a[nxt].dead) {
-            if (a[nxt].perfo == 1) {
+        if (!a[nxt].dead)
+        {
+            if (a[nxt].perfo == 1)
+            {
                 if (do_wuxie(cur, cur, nxt, 0))
                     continue;
             }
 
-            if (!respond_dodge(nxt)) {
+            if (!respond_dodge(nxt))
+            {
                 lose_blood(nxt, cur);
 
                 if (nxt == 1 && a[cur].perfo == 0)
@@ -370,29 +452,34 @@ void do_wanjian(int cur) {
             }
         }
 }
-void do_zhuge(int cur) {
+void do_zhuge(int cur)
+{
     log_card(cur, 'Z');
     a[cur].equip = 1;
 }
 
-void log_game(int cur){
+void log_game(int cur)
+{
     static int rd = 1;
-    log("------round: %d; card: %d; p:%d------\n", rd, cards_pile.size(),cur);
+    log("------round: %d; card: %d; p:%d------\n", rd, cards_pile.size(), cur);
     rd += 1;
-   
+
     for (int j = 1; j <= n; j++)
     {
         string tmp_str;
-        if(a[j].dead){
+        if (a[j].dead)
+        {
             continue;
         }
-        for (int k = 1; k <= a[j].cnt;k++){
-            tmp_str +=card_format(a[j].cards[k]);
-            if(k!=0){
+        for (int k = 1; k <= a[j].cnt; k++)
+        {
+            tmp_str += card_format(a[j].cards[k]);
+            if (k != 0)
+            {
                 tmp_str += " ";
             }
         }
-        log("%s_%d p=%d->%s\n", PIG_TYPE[a[j].iden], j - 1, a[j].bloods, tmp_str.c_str());
+        log("%s_%d_%d p=%d->%s\n", PIG_TYPE[a[j].iden], j - 1, a[j].perfo + 1, a[j].bloods, tmp_str.c_str());
     }
 }
 
@@ -407,10 +494,12 @@ bool dis_cards(int cur)
         cntused = counts = 0;
 
         for (i = 1; i <= a[cur].cnt; i++)
-            if (used[i] != rounds) {
+            if (used[i] != rounds)
+            {
                 now = a[cur].cards[i];
 
-                switch (now) {
+                switch (now)
+                {
                 case 'P':
                     if (a[cur].bloods < 4)
                         do_peach(cur), used[i] = rounds, cntused++, i = a[cur].cnt;
@@ -447,20 +536,23 @@ bool dis_cards(int cur)
                     break;
                 }
 
-                if (fanzhu == deadfan || a[1].dead) {
+                if (fanzhu == deadfan || a[1].dead)
+                {
                     ret = 1;
                     break;
                 }
 
-                if (a[cur].dead) {
+                if (a[cur].dead)
+                {
                     ret = 0;
                     break;
                 }
             }
 
         for (int i = 1; i <= a[cur].cnt; i++)
-            if (used[i] != rounds){
-                //log("%s_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, card_format(a[cur].cards[i]).c_str());
+            if (used[i] != rounds)
+            {
+                // log("%s_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, card_format(a[cur].cards[i]).c_str());
                 tmp[++counts] = a[cur].cards[i];
             }
 
@@ -476,26 +568,32 @@ bool dis_cards(int cur)
             return ret;
     }
 }
-bool playing(int cur) {
+bool playing(int cur)
+{
     get_cards(cur), get_cards(cur);
     log_game(cur);
     return dis_cards(cur);
 }
-void _duel() {
-    
+void _duel()
+{
+
     for (int i = 1, event = 0; !event && fanzhu > 0; i = a[i].nxt)
-        if (!a[i].dead){
+        if (!a[i].dead)
+        {
             event = playing(i);
         }
     log_game(0);
 }
-void _print() {
+void _print()
+{
     printf("%s\n", a[1].dead ? "FP" : "MP");
 
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++)
+    {
         if (a[i].dead)
             printf("%s", "DEAD");
-        else {
+        else
+        {
             if (a[i].cnt > 0)
                 printf("%c", a[i].cards[1]);
 
@@ -506,7 +604,8 @@ void _print() {
         puts("");
     }
 }
-int main() {
+int main()
+{
     _init();
     _duel();
     _print();

@@ -32,16 +32,18 @@ class Algo:
         self.name = name or self.__class__.__name__
         self.params = None
 
-    record_dir = ""
+    record_dir = "data/test/algo"
 
     def set_record_dir(self, path):
         self.record_dir = path
         return self
 
+    def get_tmp_file_path(self, name):
+        return f"{self.record_dir}/{name}"
+
     @property
     def logger(self):
-        record_dir = self.record_dir or "data/test"
-        return get_dev_log(f"{record_dir}/algo/{self.get_name()}")
+        return get_dev_log(self.get_tmp_file_path(self.get_name()))
 
     def set_name(self, name):
         self.name = name
