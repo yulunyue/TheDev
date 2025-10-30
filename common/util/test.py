@@ -127,7 +127,6 @@ class Case:
         try:
             return json.loads(data)
         except Exception as e:
-            logger.info(f"{self.i.path} {e}")
             return dict()
 
     def get_linput_lines(self):
@@ -136,20 +135,22 @@ class Case:
 
 
 class ToolBase:
-    def prepare(self):
+    def prepare(self, *args, **kw):
         pass
 
     def exit(self):
         pass
 
     def run(self):
-        self.prepare()
-        f = getattr(self, sys.argv[1], None)
+        self.argvs, self.kw = url_to_json(sys.argv[1:])
+        fun_name = self.argvs.pop(0)
+        self.prepare(*self.argvs, **self.kw)
+        f = getattr(self, fun_name, None)
         if f is None:
             logger.info(list(dir(self)))
             self.exit()
             return
-        ret = f(*sys.argv[2:])
+        ret = f(*self.argvs, **self.kw)
         logger.info(f"{sys.argv[1:]} {ret}")
         self.exit()
 

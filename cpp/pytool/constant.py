@@ -1,5 +1,5 @@
 class Constant:
-    GCC = "gcc"
+    GCC = "g++"
     O_FLAG = "-o"
     DEBUG_FLAG = "-g"
     CPP_SUFIX = ".cpp"

@@ -1,6 +1,4 @@
-from common.util.export import get_log
-
-logger = get_log("bp")
+from common.util.export import get_log, logger
 
 
 class BpRecord:

@@ -9,8 +9,8 @@ PG_CLS = dict(MP=Mp, ZP=Zp, FP=Fp)
 
 
 def wx(c: Pig, t: Pig, tp, card: CardBase):
-    cur = c.next
-    while cur != c:
+    cur = c
+    while True:
         s = cur.card_map[Wxkj.type]
         if not s:
             cur = cur.next
@@ -22,6 +22,8 @@ def wx(c: Pig, t: Pig, tp, card: CardBase):
             c1 = s.pop(0).use(card)
             return not wx(cur, t, -tp, c1)
         cur = cur.next
+        if cur == c:
+            break
     return False
 
 

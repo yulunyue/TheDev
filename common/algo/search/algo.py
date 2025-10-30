@@ -93,6 +93,9 @@ class Algo:
     def get_state_reward(self, s: State):
         return s.get_reward()
 
+    def train(self):
+        raise Exception("todo")
+
 
 class RandomAlgo(Algo):
     def search_main(self, s: State, **kw):

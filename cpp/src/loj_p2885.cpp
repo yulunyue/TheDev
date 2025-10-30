@@ -10,8 +10,8 @@ struct PIGS {
     char cards[M];
 } a[15];
 deque <char> cards_pile;
-FILE *IN_FILE = fopen("data/context/loj_p2885/case1/main.in","r");
-FILE *LOG_FILE = fopen("data/context/loj_p2885/case1/c.log","w");
+FILE *IN_FILE = fopen("data/context/loj_p2885/case2/main.in","r");
+FILE *LOG_FILE = fopen("data/context/loj_p2885/case2/c.log","w");
 void log(const char *format, ...) {
     char s[2048];
     va_list args;
@@ -99,7 +99,29 @@ int find(int cur, char aim) {
 
     return 0;
 }
+const char *PIG_TYPE[3] = {"Mp", "Zp", "Fp"};
+string card_format(char v){
+    if(v=='P'){
+        return "桃";
+    }else if(v=='K'){
+        return "杀";
+    }else if(v=='F'){
+        return "决";
+    }else if(v=='N'){
+        return "南";
+    }else if(v=='D'){
+        return "闪";
+    }else if(v=='W'){
+        return "万";
+    }else if(v=='J'){
+        return "无";
+    }else if(v=='Z'){
+        return "诸";
+    }
+    return "";
+}
 void adjust(int cur, int s, int t) {
+    log("%s_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, card_format(a[cur].cards[s]).c_str());
     for (int i = s; i < t; i++)
         a[cur].cards[i] = a[cur].cards[i + 1];
 }
@@ -191,10 +213,15 @@ void change_link(int cur) {
             break;
         }
 }
+void log_card(int cur,char card){
+    log("%s_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, card_format(card).c_str());
+}
 void do_peach(int cur) {
+    log_card(cur, 'P');
     a[cur].bloods++;
 }
 void do_kill(int cur) {
+    log_card(cur, 'K');
     int nxt = a[cur].nxt;
     a[cur].perfo = 1;
 
@@ -213,7 +240,7 @@ void do_kill(int cur) {
 }
 bool do_wuxie(int user, int cur, int aim, int now) {
     bool ret = now;
-
+    log_card(cur, 'J');
     for (int nxt = cur; ;)
         if (!a[nxt].dead) {
             if (!now) {
@@ -240,7 +267,7 @@ bool do_wuxie(int user, int cur, int aim, int now) {
 }
 void do_fight(int cur, int aim, int user) {
     a[cur].perfo = 1;
-
+    log_card(cur, 'F');
     if (a[aim].perfo == 1) {
         if (do_wuxie(cur, cur, aim, 0))
             return;
@@ -292,6 +319,7 @@ void do_fight(int cur, int aim, int user) {
     }
 }
 void do_nanzhu(int cur) {
+    log_card(cur, 'N');
     for (int nxt = a[cur].nxt; nxt != cur; nxt = a[nxt].nxt)
         if (!a[nxt].dead) {
             if (a[nxt].perfo == 1) {
@@ -317,6 +345,7 @@ void do_nanzhu(int cur) {
         }
 }
 void do_wanjian(int cur) {
+    log_card(cur, 'W');
     for (int nxt = a[cur].nxt; nxt != cur; nxt = a[nxt].nxt)
         if (!a[nxt].dead) {
             if (a[nxt].perfo == 1) {
@@ -342,29 +371,10 @@ void do_wanjian(int cur) {
         }
 }
 void do_zhuge(int cur) {
+    log_card(cur, 'Z');
     a[cur].equip = 1;
 }
-const char *PIG_TYPE[3] = {"Mp", "Zp", "Fp"};
-string card_format(char v){
-    if(v=='P'){
-        return "桃";
-    }else if(v=='K'){
-        return "杀";
-    }else if(v=='F'){
-        return "决";
-    }else if(v=='N'){
-        return "南";
-    }else if(v=='D'){
-        return "闪";
-    }else if(v=='W'){
-        return "万";
-    }else if(v=='J'){
-        return "无";
-    }else if(v=='Z'){
-        return "诸";
-    }
-    return "";
-}
+
 void log_game(int cur){
     static int rd = 1;
     log("------round: %d; card: %d; p:%d------\n", rd, cards_pile.size(),cur);
@@ -385,6 +395,7 @@ void log_game(int cur){
         log("%s_%d p=%d->%s\n", PIG_TYPE[a[j].iden], j - 1, a[j].bloods, tmp_str.c_str());
     }
 }
+
 bool dis_cards(int cur)
 {
     memset(used, 0, sizeof used);
@@ -448,8 +459,10 @@ bool dis_cards(int cur)
             }
 
         for (int i = 1; i <= a[cur].cnt; i++)
-            if (used[i] != rounds)
+            if (used[i] != rounds){
+                //log("%s_%d use %s\n", PIG_TYPE[a[cur].iden], cur - 1, card_format(a[cur].cards[i]).c_str());
                 tmp[++counts] = a[cur].cards[i];
+            }
 
         for (int i = 1; i <= counts; i++)
             a[cur].cards[i] = tmp[i];

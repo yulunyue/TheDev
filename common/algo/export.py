@@ -5,7 +5,6 @@ from common.algo.search.mctssearch import MctsSearch, MctsState
 from common.algo.search.alphabate_search import AlphaBateSearch, AbDev
 from common.algo.learn.sarse.sarse import Td0
 from common.algo.learn.sarse.qlearning import Qlearning
-from common.algo.learn.sarse.dyn import DynaQ
 from common.algo.learn.sarse.mcts import MctsEasy
 from common.algo.learn.dqn import Dqn
 from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE
