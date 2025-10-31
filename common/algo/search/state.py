@@ -282,7 +282,9 @@ class State:
 
     @property
     def game_over(self):
-        return self.done is not None or len(self.get_sort_actions()) == 0
+        if self.done is None or self.done == False:
+            return False
+        return True
 
 
 class AbState(State):

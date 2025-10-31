@@ -60,7 +60,7 @@ class Qlearning(Algo):
         ret = []
         for k, v in self.q.items():
             ret.append(f"{k} = {v}")
-        return super().show() + "\n".join(ret)
+        return super().show() + "\n" + "\n".join(ret)
 
     def search_main(self, state):
         return self.get_max_q_action(state)

@@ -22,7 +22,7 @@ class CartPoleState(State):
         self.done = False
         super().__init__(state, player_id, depth)
 
-    def make_actions(self, depth=1, **kw):
+    def get_sort_actions(self, **kw):
 
         actions = []
         for i in range(CartPoleState._env.action_space.n):
