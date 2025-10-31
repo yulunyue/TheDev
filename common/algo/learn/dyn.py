@@ -5,11 +5,14 @@ from typing import List
 
 
 class PolicyIteration(Algo):
-    def load(self, pi=None, train_epoll=100, num_episodes=1000, theta=0.001, gamma=0.9):
+    def set_pi(self, pi):
+        self.pi = pi
+        return self
+
+    def load(self, train_epoll=100, num_episodes=1000, theta=0.001, gamma=0.9):
         self.theta = theta
         self.gamma = gamma
         self.train_epoll = train_epoll
-        self.pi = pi
         self.num_episodes = num_episodes
         return super().load()
 
@@ -25,7 +28,7 @@ class PolicyIteration(Algo):
 
     def policy_evaluation(self, states: List[State]):
         self.p_cnt = 0
-        while self.num_episodes > 0 and self.p_cnt < self.num_episodes:
+        while self.num_episodes < 0 or self.p_cnt < self.num_episodes:
             new_values = defaultdict(int)
             max_diff = 0
             for src in states:
@@ -33,40 +36,38 @@ class PolicyIteration(Algo):
                 actions = src.get_sort_actions()
                 if not actions:
                     continue
-                pi = 1 / len(actions)
                 for action in actions:
-                    if self.pi:
-                        pi = self.pi[src.state][action.action]
+                    pi = self.pi[src.state][action.action]
                     qsalst.append(self.get_action_value(action) * pi)
                 new_values[src.state] = self.get_qsa_value(qsalst)
                 max_diff = max(max_diff, abs(new_values[src.state] - self.v[src.state]))
             self.v = new_values
             self.p_cnt += 1
-            self.log_value(max_diff)
+
             if max_diff < self.theta:
                 break
+        self.log_value(max_diff)
 
     def policy_improvement(self, states: List[State]):  # 策略提升
-        pi = dict()
+        pi = self.pi.copy()
         for s in states:
-            actions = s.get_sort_actions()
-            if not actions:
+            values = [self.get_action_value(a) for a in s.get_sort_actions()]
+            if not values:
                 continue
             maxq = float("-inf")
             cntq = 0
-            for a in actions:
-                q = self.get_action_value(a)
+            for q in values:
                 if q > maxq:
-                    s.set_best_action(a)
                     maxq = q
                     cntq = 1
                 elif q == maxq:
                     cntq += 1
-            pi[s.state] = {
-                a.action: 1 / cntq if self.get_action_value(a) == maxq else 0
-                for a in actions
-            }
-
+            pi[s.state] = []
+            for a in values:
+                if a == maxq:
+                    pi[s.state].append(1 / cntq)
+                else:
+                    pi[s.state].append(0)
         return pi
 
     def train_all_states(self, states: List[State]):

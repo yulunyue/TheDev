@@ -6,28 +6,34 @@ from ..env import CfState
 
 
 class PiFunc(PolicyIteration):
-    def load(self, num_episodes=500, theta=0.001, gamma=0.9):
-        pi = defaultdict(lambda: [0.25] * 4)
-        return super().load(pi, num_episodes, theta, gamma)
+    def reset(self):
+        self.set_pi(defaultdict(lambda: [0.25] * 4))
+        return super().reset()
 
-    def policy_evaluation(self, states, *args):
-        cnt = super().policy_evaluation(states, *args)
-        self.log(f"cnt:{cnt} states:{len(states)}")
-        return cnt
+    def log_value(self, diff):
+        logger.debug(
+            f"---log_value----round:{self.cnt}--ep:{self.p_cnt}--diff:{diff}--\n{self.to_matrix(self.v)}"
+        )
 
-    def log(self, msg):
-        logger.debug(msg)
-        p = PtTable().load_from_matrix(self.to_matrix(lambda v: "%.2f" % self.v[v]))
-        logger.debug(p.show())
+    def log_policy(self):
+        logger.debug(
+            f"---log_policy----round:{self.cnt}-----\n{self.to_matrix(self.pi)}"
+        )
 
-    def to_matrix(self, util):
+    def to_matrix(self, p):
         ret = []
         for i in range(C.nrow):
             ret.append([])
             for j in range(C.ncol):
                 k = i * C.ncol + j
-                ret[-1].append(util(k))
-        return ret
+                v = p.get(k, None)
+                if isinstance(v, float):
+                    v = "%.3f" % (v)
+                elif isinstance(v, list):
+                    v = ",".join(["%.2f" % (s) for s in v])
+                ret[-1].append(v)
+        p = PtTable().load_from_matrix(ret)
+        return p.show()
 
 
 class VFunc(PiFunc):

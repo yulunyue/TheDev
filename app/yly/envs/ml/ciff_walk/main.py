@@ -22,7 +22,7 @@ class CfTool(ToolBase):
         self.run_value()
 
     def debug(self):
-        self.run_value()
+        self.run_policy_all_state()
 
 
 if __name__ == "__main__":

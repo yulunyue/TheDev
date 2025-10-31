@@ -12,6 +12,8 @@ class CfState(State):
 
     def make_actions(self):
         actions = []
+        if self.game_over:
+            return actions
         for i, (dy, dx) in enumerate(C.ACTIONS):
             reward = -1
             ny, nx = dy + self.y, dx + self.x

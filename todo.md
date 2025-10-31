@@ -1,4 +1,4 @@
-
+python -m app.yly.algo.context.main test lc_974.py
 python -m app.yly.algo.context.main test lc_3729.py
 python -m app.yly.algo.context.main test lc_3725.py
 python -m app.yly.algo.context.main test lc_2965.py
