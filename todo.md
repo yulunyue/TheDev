@@ -1,4 +1,10 @@
-python -m app.yly.algo.context.main test loj_p2885.py
+
+python -m app.yly.algo.context.main test lc_3729.py
+python -m app.yly.algo.context.main test lc_3725.py
+python -m app.yly.algo.context.main test lc_2965.py
+python -m app.yly.algo.context.main test lc_3721.py
+python -m app.yly.algo.context.main test lc_3719.py
+python -m app.yly.algo.context.main test lc_3289.py
 python -m app.yly.algo.context.main test lc_3710.py
 python -m app.yly.algo.context.main test lc_2048.py
 python -m app.yly.envs.cg.cf4.main f1
