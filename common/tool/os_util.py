@@ -1,14 +1,12 @@
 import subprocess
-from common.util.export import File, TheDevLoger, get_dev_log
-
-logger = get_dev_log("os")
+from common.util.export import File, TheDevLoger, get_dev_log, logger
 
 
 class OsUtil:
     def __init__(self, fun_name):
         self.fun_name = fun_name
         self.root_path = "./"
-        self.logger: TheDevLoger = logger  # 用TheDev 主要是方便writer 重定向
+        self.logger: TheDevLoger = get_dev_log("os")  # 用TheDev 主要是方便writer 重定向
 
     def check_output(self):
         cmd = self.get_cmd()

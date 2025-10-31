@@ -14,7 +14,7 @@ class Game:
         self.round = 0
 
     def log(self, idx):
-        self.round += 1
+
         ret = [f"------round: {self.round}; card: {len(self.cards)}; p:{idx}------"]
         for p in self.players:
             if p.dead:
@@ -29,13 +29,15 @@ class Game:
             p.add_card(c)
         if isinstance(p, Mp):
             self.mp = p
+            logger.set_mp(p)
         if isinstance(p, Fp):
-            logger.fz_num += 1
+            logger.fz_num_change(1)
         if self.players:
             self.players[-1].set_next(p)
         self.players.append(p)
 
     def load(self):
+
         self.players[-1].set_next(self.players[0])
         self.cur_player = self.players[0]
 
@@ -52,11 +54,13 @@ class Game:
         while self.cards and self.round < 3000:
             if self.mp.dead:
                 break
-            if logger.fz_num == 0:
+            if logger.game_over():
                 break
             self.cur_player.use_sha = False
             self.cur_player.get_num_card(2)
+            self.round += 1
             self.log(self.cur_player.idx + 1)
             self.cur_player.do()
             self.cur_player = self.cur_player.next
+        self.round += 1
         self.log(0)

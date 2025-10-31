@@ -2,6 +2,7 @@ from common.algo.search.algo import Algo
 from common.algo.search.state import State, Action
 from common.algo.search.alphabate_search import AbDev
 from common.algo.search.mctssearch import MctsSearchDev
+from common.algo.learn.sarse.qlearning import Qlearning
 from common.util.export import (
     logger,
     File,
@@ -85,6 +86,9 @@ class ALgoManage:
             .set_record_dir(self.record_dir)
         )
 
+    def dqn(self):
+        pass
+
     def mc(self, n=100):
         return MctsSearchDev(f"mc{n}").load(num_episodes=n)
 
@@ -99,6 +103,9 @@ class ALgoManage:
 
     def ad5(self):
         return [self.ad(i + 1) for i in range(5)]
+
+    def ql(self):
+        return Qlearning().load()
 
     def set_players(self, players1: List[Algo], players2: List[Algo]):
         self.players: List[List[Algo]] = []

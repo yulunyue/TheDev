@@ -63,7 +63,7 @@ class Diff:
                 "" if src is None and dst is None else f"{src}!={dst}"
             )
         elif isinstance(src, dict) and isinstance(dst, dict):
-            for key in set(src.keys() + dst.keys()):
+            for key in set(list(src.keys()) + list(dst.keys())):
                 k = keys + [key]
                 if key not in src:
                     self.insert(k, dst[key])

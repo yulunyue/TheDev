@@ -18,6 +18,6 @@ class Fp(Pig):
     def power_change(self, num, c):
         super().power_change(num, c)
         if self.power == 0:
-            logger.fz_num -= 1
-            if logger.fz_num:
+            logger.fz_num_change(-1)
+            if not logger.game_over():
                 c.owner.get_num_card(3)

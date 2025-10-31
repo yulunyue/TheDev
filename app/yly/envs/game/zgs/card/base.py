@@ -27,7 +27,8 @@ class CardBase:
             s = f"to {self.dst.name}"
         if f:
             s = f"for {f.owner.name} use {f.title}"
-        # logger.debug(f"{self.owner.name} use {self.title} {s}")
+        self.owner.card_map[self.type].pop(0)
+        logger.debug(f"{self.owner.name} use {self.title}")
         self.pre.next = self.next
         if self.next:
             self.next.pre = self.pre

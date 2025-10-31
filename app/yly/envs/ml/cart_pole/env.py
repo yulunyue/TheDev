@@ -37,7 +37,7 @@ class CartPoleState(State):
         return actions
 
     def to_str(self):
-        return f"{self.state}"
+        return []
 
     def render(self):
         CartPoleState._env.state = self.state
