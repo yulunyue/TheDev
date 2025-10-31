@@ -11,7 +11,7 @@ class CfState(State):
         super().__init__(state)
 
     def make_actions(self):
-        actions = dict()
+        actions = []
         for i, (dy, dx) in enumerate(C.ACTIONS):
             reward = -1
             ny, nx = dy + self.y, dx + self.x
@@ -24,5 +24,8 @@ class CfState(State):
                     reward = -100
                 next_state.set_done(True)
             a = Action(self, i, next_state).set_reward(reward)
-            actions[i] = a
+            actions.append(a)
         return actions
+
+    def bfs(self, max_depth=-2):
+        return [d[1] for d in super().bfs(max_depth).values()]

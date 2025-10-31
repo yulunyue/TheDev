@@ -67,5 +67,5 @@ class PtTable:
             self.pr.add_row(m)
         return self
 
-    def __str__(self):
-        return "\n" + str(self.pr)
+    def show(self):
+        return str(self.pr)

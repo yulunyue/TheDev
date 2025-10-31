@@ -12,9 +12,13 @@ class PiFunc(PolicyIteration):
 
     def policy_evaluation(self, states, *args):
         cnt = super().policy_evaluation(states, *args)
-        logger.debug(f"cnt:{cnt} states:{len(states)}")
+        self.log(f"cnt:{cnt} states:{len(states)}")
+        return cnt
+
+    def log(self, msg):
+        logger.debug(msg)
         p = PtTable().load_from_matrix(self.to_matrix(lambda v: "%.2f" % self.v[v]))
-        logger.debug(p)
+        logger.debug(p.show())
 
     def to_matrix(self, util):
         ret = []

@@ -18,7 +18,7 @@ python -m app.yly.algo.context.main test lc_3710.py
 python -m tests.test_algo
 python -m tests.test_bp
 python -m app.yly.envs.ml.cart_pole.main dqn
-python -m tests.test_cf
+python -m app.yly.envs.ml.ciff_walk.main run
 python -m tests.test_cw
 python -m app.yly.envs.cg.l9.main cg
 python -m tool.search mc cls=app.yly.envs.cg.l9.model.l9state.L9State
