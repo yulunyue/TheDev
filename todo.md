@@ -6,7 +6,6 @@ python -m app.yly.algo.context.main test lc_3721.py
 python -m app.yly.algo.context.main test lc_3719.py
 python -m app.yly.algo.context.main test lc_3289.py
 python -m app.yly.algo.context.main test lc_3710.py
-python -m app.yly.algo.context.main test lc_2048.py
 python -m app.yly.envs.cg.cf4.main f1
 python -m app.yly.algo.context.main test lc_3715.py
 python -m app.yly.algo.context.main test lc_1625.py
@@ -24,7 +23,7 @@ python -m app.yly.envs.cg.l9.main cg
 python -m tool.search mc cls=app.yly.envs.cg.l9.model.l9state.L9State
 python -m tests.test_lulu
 python -m tests.test_mpr
-python -m tests.test_mrcf
+python -m app.yly.envs.ml.mrcf.main dev
 python -m tests.test_oa
 python -m tests.test_pdl
 python -m tests.test_search
