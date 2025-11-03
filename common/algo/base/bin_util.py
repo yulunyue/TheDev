@@ -1,6 +1,7 @@
 from typing import List
+from common.util.export import logger
 
-POS_MASK = [(2**i) - 1 for i in range(24)]
+POS_MASK = [(2**i) - 1 for i in range(128)]
 
 
 def encode_data(array, pos) -> int:
@@ -22,10 +23,13 @@ def decode_data(mask, pos: List[int]) -> List[int]:
     return ans
 
 
-def set_mask(mask, low_idx, high_idx, value):
-    mask_high = mask >> high_idx
-    mask_mid = (mask_high << (high_idx - low_idx)) + value
-    return (mask_mid << low_idx) + (mask & ((1 << low_idx) - 1))
+def set_mask(mask, low_idx, num, value):
+    mask_high = (mask >> (low_idx + num)) << (low_idx + num)
+    mask_mid = value << low_idx
+    mask_low = mask & POS_MASK[low_idx]
+    ret = mask_high | mask_mid | mask_low
+    # logger.info(f"{bin(mask)}\n{num}:{value}\n{bin(ret)}")
+    return ret
 
 
 def low_bits(j):

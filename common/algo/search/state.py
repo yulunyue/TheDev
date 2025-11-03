@@ -43,11 +43,11 @@ class Action:
         return self.reward
 
     def show(self):
-        ret = f"action: {self.action}, data:{self.data}"
+        ret = f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}, data:{self.data}"
         if self.reward > 0:
-            ret += f", rwin: {self.reward}"
+            ret += f", rwin:{self.reward}"
         elif self.reward < 0:
-            ret += f", rlos: {self.reward}"
+            ret += f", rlos:{self.reward}"
         return ret
 
     def show_best_actions(self):
@@ -269,7 +269,6 @@ class State:
     def do_move(self, action: Action):
         return action.get_dst()
 
-    @property
     def game_over(self):
         if self.done is None or self.done == False:
             return False
