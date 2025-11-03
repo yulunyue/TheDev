@@ -226,9 +226,9 @@ class State:
         return self.data[k]
 
     def show_titles(self):
-        return "show_titles"
+        return "head"
 
-    def show_body(self, info="", mask_max_len=50):
+    def show_body(self, info):
         datas = [self.show_titles()] + self.to_str()
         if self.data:
             for k, v in self.data.items():
@@ -237,9 +237,9 @@ class State:
             datas.extend(info)
         elif info:
             datas.append(str(info))
-        return [(d + " " * mask_max_len)[:mask_max_len] for d in datas]
+        return datas
 
-    def show_array(self, info="", title="", mask_max_len=50, body=None):
+    def show(self, title=None, info=None):
         if isinstance(self.state, int):
             if not title:
                 title = "%x" % self.state
@@ -247,20 +247,9 @@ class State:
                 title = "%s:%x" % (title, self.state)
         else:
             title = str(self.state)
-        if len(title) > mask_max_len:
-            mask_max_len = len(title) + 8
-        if body is None:
-            body = self.show_body(info, mask_max_len)
-        margin_left = (mask_max_len - len(title)) // 2
-        margin_right = mask_max_len - len(title) - margin_left
-        return (
-            ["-" * margin_left + title + "-" * margin_right]
-            + body
-            + ["-" * mask_max_len]
-        )
-
-    def show(self, info="", title="", mask_max_len=40):
-        return f"\n".join(self.show_array(info="", title="", mask_max_len=mask_max_len))
+        body = self.show_body(info)
+        head = "--" + title + "--"
+        return "\n".join([head] + body + ["-" * len(head)])
 
     def get_win_player(self, rewards, player_idx, *args, **kw):
         if self.done == 0:

@@ -6,19 +6,19 @@ POS_MASK = [(2**i) - 1 for i in range(24)]
 def encode_data(array, pos) -> int:
     """a[0] a[1] a[2]"""
     ans = array[0]
-    for i in range(len(pos)):
-        ans = (ans << pos[i]) + (array[i + 1] & POS_MASK[pos[i]])
+    for i in range(len(array) - 1):
+        p = pos[i] if isinstance(pos, list) else pos
+        ans = (ans << p) + (array[i + 1] & POS_MASK[p])
     return ans
 
 
 def decode_data(mask, pos: List[int]) -> List[int]:
     ans = []
-    for j in range(len(pos) - 1, -1, -1):
-        i = pos[j]
-        m = 1 << i
-        ans.insert(0, mask & (m - 1))
-        mask = mask >> i
-    ans.insert(0, mask)
+    r = 0
+    while pos:
+        p = pos.pop()
+        ans.insert(0, mask & POS_MASK[p])
+        mask >>= p
     return ans
 
 

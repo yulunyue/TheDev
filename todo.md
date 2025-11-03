@@ -7,6 +7,8 @@ python -m app.yly.algo.context.main test lc_3719.py
 python -m app.yly.algo.context.main test lc_3289.py
 python -m app.yly.algo.context.main test lc_3710.py
 python -m app.yly.envs.cg.cf4.main f1
+python -m app.yly.envs.game.c5.main debug
+python -m app.yly.envs.game.cube.main debug
 python -m app.yly.algo.context.main test lc_3715.py
 python -m app.yly.algo.context.main test lc_1625.py
 python -m app.yly.algo.context.main test lc_3721.py

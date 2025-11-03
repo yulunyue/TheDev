@@ -147,7 +147,13 @@ class ToolBase:
         self.prepare(*self.argvs, **self.kw)
         f = getattr(self, fun_name, None)
         if f is None:
-            logger.info(list(dir(self)))
+            logger.info(
+                [
+                    v
+                    for v in list(dir(self))
+                    if not v[0] == "_" and callable(getattr(self, v, None))
+                ]
+            )
             self.exit()
             return
         ret = f(*self.argvs, **self.kw)
