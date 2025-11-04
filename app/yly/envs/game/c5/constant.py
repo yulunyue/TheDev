@@ -82,7 +82,8 @@ class Constant:
         self.pos_status[player_id].add(idx)
         self.pos_status[self.grid[idx]].remove(idx)
         self.grid[idx] = player_id
-        return ans, set_mask(self.state, idx * self.BIT_SIZE, self.BIT_SIZE, player_id)
+        self.state = set_mask(self.state, idx * self.BIT_SIZE, self.BIT_SIZE, player_id)
+        return ans, self.state
 
     def set_mask(self, state):
         if self.state == state:

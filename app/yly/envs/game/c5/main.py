@@ -10,6 +10,9 @@ class C5Tool(ToolBase):
             logger.debug(a.show())
             logger.debug(a.get_dst().show())
 
+    def debug(self):
+        self.test()
+
 
 if __name__ == "__main__":
     C5Tool().run()
