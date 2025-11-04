@@ -1,5 +1,14 @@
 from common.algo.search.algo import Algo, Action, State, np
-from common.util.export import get_log, logger, List, random, defaultdict, CT, ListUtil
+from common.util.export import (
+    get_log,
+    logger,
+    List,
+    random,
+    defaultdict,
+    CT,
+    ListUtil,
+    progress_bar,
+)
 
 
 class Qlearning(Algo):
@@ -37,7 +46,6 @@ class Qlearning(Algo):
         self.q[a0.key] += self.alpha * actions_value
 
     def update_action(self, a0: Action):
-        self.actions.append(a0)
         self.q_learning(a0)
         for _ in range(self.n_planning):
             s = random.choice(list(self.all_actions.values()))
@@ -46,13 +54,15 @@ class Qlearning(Algo):
     def train(self, state: State):
         self.reset()
         for i in range(self.train_epoll):
+            progress_bar(i + 1, self.train_epoll, msg="QLEARNING_TRAIN")
             self.train_one(i, state)
 
     def train_one(self, i, state: State):
         s = state.reset()
         self.actions = []
-        while not s.game_over:
+        while not s.game_over():
             a = self.take_action(s)
+            self.actions.append(a)
             self.update_action(a)
             s = a.get_dst()
 

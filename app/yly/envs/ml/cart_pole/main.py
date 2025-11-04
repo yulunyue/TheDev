@@ -5,11 +5,11 @@ from common.algo.export import Dqn, Qlearning, np
 
 class CartTool(ToolBase):
     def prepare(self):
-        self.state = CartPoleState()
+        self.s = CartPoleState()
 
     def dqn(self, train_epoll=1000):
         dqn = Dqn().load(train_epoll=int(train_epoll)).set_model(Net2().load())
-        dqn.train(self.state)
+        dqn.train(self.s)
         logger.debug(dqn.show())
         # self.dqn.search()
         # dqn.draw(self.get_temp_file("reawrd.svg"))

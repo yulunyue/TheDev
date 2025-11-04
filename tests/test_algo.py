@@ -11,7 +11,7 @@ from common.algo.export import (
     encode_data,
     decode_data,
     XorBarisDev as XorBais,
-    BeiZhenTree,
+    Tree,
     GaussElimination,
 )
 
@@ -26,7 +26,7 @@ class TestAlgo(TestBase):
            6
            7
         """
-        nodes = BeiZhenTree.load_from_edges(
+        nodes = Tree.load_from_edges(
             [[0, 1], [0, 2], [1, 3], [3, 4], [3, 5], [5, 6], [6, 7]]
         )
         root = nodes[0].bei_zhen()

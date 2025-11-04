@@ -14,7 +14,6 @@ python -m app.yly.main test lc_1625.py
 python -m app.yly.main test lc_3721.py
 python -m app.yly.main test lg_p2123.py
 python -m app.yly.main test lc_3003.py
-python -m app.yly.main test lc_3559.py
 python -m app.yly.main test lc_3710.py
 python -m tests.test_algo
 python -m tests.test_bp

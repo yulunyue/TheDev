@@ -3,23 +3,23 @@ from common.algo.base.node import Node, load_from_edges
 from common.util.export import logger, defaultdict
 
 
-class BeiZhenTree(Node):
+class Tree(Node):
     def __init__(self, key):
         super().__init__(key)
-        self.bei_zen_list: List[BeiZhenTree] = []
+        self.bei_zen_list: List[Tree] = []
         self.path_value = 0
         self.depth = 0
 
     def set_root(self):
-        self.nodes: Dict[int, BeiZhenTree] = dict()
+        self.nodes: Dict[int, Tree] = dict()
         self.depth = 0
 
-        def dfs(t: BeiZhenTree, p: BeiZhenTree = None):
+        def dfs(t: Tree, p: Tree = None):
             self.nodes[t.key] = t
             if p is not None:
                 t.bei_zen_list.append(p)
             for e in t.out_edges.values():
-                dst: BeiZhenTree = e.dst
+                dst: Tree = e.dst
                 if p and p.key == dst.key:
                     continue
                 dst.depth = e.src.depth + 1
@@ -32,7 +32,7 @@ class BeiZhenTree(Node):
     def bei_zhen(self):
         self.set_root()
         parent_idx = 0
-        nodes: List[BeiZhenTree] = self.nodes.values()
+        nodes: List[Tree] = self.nodes.values()
         while nodes:
             q = nodes
             nodes = []
@@ -48,7 +48,7 @@ class BeiZhenTree(Node):
             parent_idx += 1
         return self
 
-    def get_k_parent(self, f: "BeiZhenTree", k):
+    def get_k_parent(self, f: "Tree", k):
         i = 0
         while k > 0 and i < len(f.bei_zen_list):
             if k & 1:
@@ -57,8 +57,8 @@ class BeiZhenTree(Node):
             i += 1
         return f
 
-    def get_up_dis(self, dst: int) -> "BeiZhenTree":
-        x: BeiZhenTree = self
+    def get_up_dis(self, dst: int) -> "Tree":
+        x: Tree = self
         m = len(x.bei_zen_list)
         for i in range(m - 1, -1, -1):
             if i >= len(x.bei_zen_list):
@@ -68,7 +68,7 @@ class BeiZhenTree(Node):
                 x = p
         return x
 
-    def get_last_lcm_parent(self, f: "BeiZhenTree", t: "BeiZhenTree"):
+    def get_last_lcm_parent(self, f: "Tree", t: "Tree"):
         if f.depth < t.depth:
             t = self.get_k_parent(t, t.depth - f.depth)
         elif f.depth > t.depth:
@@ -87,6 +87,14 @@ class BeiZhenTree(Node):
                 ret = pf
         return ret
 
+    def get_two_dis(self, f, t):
+        if not isinstance(f, Tree):
+            f = self.nodes[f]
+        if not isinstance(t, Tree):
+            t = self.nodes[t]
+        p = self.get_last_lcm_parent(f, t)
+        return f.depth + t.depth - 2 * p.depth
+
     @classmethod
-    def load_from_edges(cls, edges) -> Dict[any, "BeiZhenTree"]:
+    def load_from_edges(cls, edges) -> Dict[any, "Tree"]:
         return load_from_edges(cls, edges)
