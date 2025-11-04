@@ -89,7 +89,7 @@ class Module:
         # sys.path.pop()
         return ret
 
-    def load_module_object(self, module_name: str, path: str):
+    def load_module_object(self, module_name: str, path: str = None):
         rpaths = module_name.replace("/", ".").split(".")
         object_name = rpaths.pop()
         return self.load_module(".".join(rpaths), path=path, fun_name=object_name)

@@ -120,8 +120,9 @@ class State:
     def reset(self):
         return self
 
-    def reset_env(self):
-        return self
+    @classmethod
+    def reset_env(cls):
+        pass
 
     def get_action(self, actions) -> Action:
         if not isinstance(actions, list):

@@ -70,12 +70,13 @@ class MctsSearch(Algo):
 
     def simulate(self, root: State):
         tail = root
-        while not tail.game_over:
+        action_history: List[Action] = []
+        while not tail.game_over():
             actions = tail.get_sort_actions()
             random_id = random.randint(0, len(actions) - 1)
+            action_history.append(actions[random_id])
             tail = actions[random_id].get_dst()
-        reward = tail.get_self_reward()
-        return reward if root.player_id == tail.player_id else -reward
+        return action_history[-1].get_reward(player_id=root.player_id)
 
     def backpropagate(self, node: MctsState, score):
         while node:

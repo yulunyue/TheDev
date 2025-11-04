@@ -112,25 +112,33 @@ class Record(ThreadRecord):
         return self.set_exec(lambda *args: algo.search(self.s))
 
 
+def get_s(cls=None, **kw):
+    if cls is not None:
+        md = Module().load_module_object(cls)
+        md.reset_env(**kw)
+        return md.new(**kw)
+    else:
+        return TestState.make_test_state()
+
+
 class SearchTool(ToolBase):
-    def prepare(self, args=None, cls=None, **kw):
-        if cls is not None:
-            self.s = Module().load_module(cls).new()
-        else:
-            self.s = TestState.make_test_state()
-        logger.debug(self.s.print_tree())
+    def prepare(self, **kw):
         self.al = ALgoManage().set_record_dir("data/test/search")
 
     def mc_cli(self):
         Record(self.s).set_search(self.al.mc()).cli()
 
-    def mc(self):
-        self.al.mc().search(self.s)
+    def mc(self, cls=None):
+        s = get_s(cls)
+        self.al.mc().search(s)
 
     def ql(self):
         algo = self.al.ql()
         algo.train(self.s)
         logger.debug(algo.show())
+
+    def debug(self):
+        self.mc("app.yly.envs.game.c5.state.State")
 
 
 if __name__ == "__main__":

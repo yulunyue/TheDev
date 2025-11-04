@@ -1,30 +1,30 @@
-from common.algo.search.state import State,MctsState
+from common.algo.search.state import State
 
-from app.yly.envs.cg.tic_toc.shape.cell81 import E,Cell9
+from app.yly.envs.cg.tic_toc.shape.cell81 import E, Cell9
 from app.yly.envs.cg.tic_toc.constant import C
 from app.yly.envs.cg.tic_toc.model.ttaction import TtAction
 from typing import List, Dict
 
 
-class TtState(MctsState):
+class TtState(State):
     def __init__(self, state):
-        self.board,self.last_pos = C.decode_state(state)
+        self.board, self.last_pos = C.decode_state(state)
         E.set_state(self.board)
         depth = E.ct_num[1] + E.ct_num[2]
         self.set_done(E.get_done()).set_reward(E.get_reward())
-        super().__init__(state,depth%2,depth)
+        super().__init__(state, depth % 2, depth)
 
     def make_actions(self, depth=1, **kw):
         actions = dict()
         e = E.set_state(self.board)
-        idx=C.pos_op(self.last_pos)
-        cells:List[Cell9] = []
-        if E.cells[idx].get_value()==0:
-            cells.extend(E.cells[idx].cell_map[1+self.player_id].values())
+        idx = C.pos_op(self.last_pos)
+        cells: List[Cell9] = []
+        if E.cells[idx].get_value() == 0:
+            cells.extend(E.cells[idx].cell_map[1 + self.player_id].values())
         else:
             for c in E.cells:
-                if c.get_value()==0:
-                    cells.extend(c.cell_map[1+self.player_id].values())
+                if c.get_value() == 0:
+                    cells.extend(c.cell_map[1 + self.player_id].values())
 
         for c in cells:
             k = C.encode_state(self.board, self.player_id, c.key)
@@ -66,7 +66,7 @@ class TtState(MctsState):
         if self.done is None:
             self.get_actions()
         return self.done
-    
+
     def to_str(self):
         E.set_state(self.state)
         ret = []
@@ -82,12 +82,12 @@ class TtState(MctsState):
         for i in range(C.ALL_SIZE1):
             g = E.cells[i]
             y, x = (g.key // 3) * 4, (g.key % 3) * 3
-        #     if g.value: XX#
-        #         ret[y + 1][(x + 1) * 2] = str(g.value)
-        #         continue
+            #     if g.value: XX#
+            #         ret[y + 1][(x + 1) * 2] = str(g.value)
+            #         continue
             for j in range(C.ALL_SIZE1):
                 c = g.cells[j]
-                k = c.key%9
+                k = c.key % 9
                 dy, dx = k // 3, k % 3
                 ret[y + dy][(x + dx) * 2] = " XO"[c.value]
         return "\n".join(["".join(row) for row in ret])
