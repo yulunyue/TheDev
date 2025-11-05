@@ -16,7 +16,6 @@ python -m app.yly.main test lg_p2123.py
 python -m app.yly.main test lc_3003.py
 python -m app.yly.main test lc_3710.py
 python -m tests.test_algo
-python -m tests.test_bp
 python -m app.yly.envs.ml.cart_pole.main dqn
 python -m app.yly.envs.ml.ciff_walk.main run
 python -m tests.test_cw
