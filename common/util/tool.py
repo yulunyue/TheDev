@@ -5,6 +5,8 @@ from collections import defaultdict
 import sys
 import re
 import json
+import hashlib
+import base64
 
 UK_MAP = dict()
 
@@ -14,6 +16,10 @@ def uid(s):
         UK_MAP[s] = -1
     UK_MAP[s] += 1
     return f"{s}_{UK_MAP[s]}"
+
+
+def base64_encode(s: str):
+    return base64.b64encode(s.encode()).decode()
 
 
 def ii(s: str):
@@ -45,6 +51,11 @@ def hash_any(c):
     else:
         res += str(c)
     return res
+
+
+def md5(c: str):
+    h = hashlib.md5(c.encode())
+    return h.hexdigest()
 
 
 def dp(c: dict, k="", mp=None):
@@ -116,4 +127,3 @@ def merge_dict(src, dst):
 
     util(src, dst, [])
     return src, record
-

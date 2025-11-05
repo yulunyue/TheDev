@@ -20,7 +20,6 @@ python -m tests.test_bp
 python -m app.yly.envs.ml.cart_pole.main dqn
 python -m app.yly.envs.ml.ciff_walk.main run
 python -m tests.test_cw
-python -m app.yly.envs.cg.l9.main cg
 python -m app.yly.envs.game.c5.main test
 python -m tool.search mc cls=app.yly.envs.cg.l9.model.l9state.L9State
 python -m tool.search mc cls=app.yly.envs.cg.tic_toc.model.ttstate
@@ -34,9 +33,8 @@ python -m tests.test_search
 python -m tests.test_tf
 python -m tests.test_third
 python -m tests.test_util
-python -m tests.test_algo
 python -m tool.search mc_cli
 python -m tool.search mc
 python -m tool.search ql
-# c语言的构建工具
-python -m cpp.pytool.main execute cpp/src/loj_p2885.cpp
+
+

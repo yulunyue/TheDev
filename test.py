@@ -1,11 +1,19 @@
+from common.util.export import (
+    File,
+    Module,
+    TestBase,
+    logger,
+    sys,
+    random,
+    md5,
+    base64_encode,
+)
 
 
-
-
-
-
-
-from common.util.export import File, Module, TestBase, logger, sys, random
+def make_file(md5_value, name, msg=""):
+    f = File(f"doc/life/{md5_value}/{name}")
+    f.write_if_not_exists(msg)
+    return f.path, f.read_line().pop()
 
 
 class TestMain:
@@ -29,7 +37,13 @@ class TestMain:
             if line.startswith("#") or not line:
                 continue
             cmds.append(line)
-        logger.info(cmds[random.randint(0, len(cmds) - 1)])
+        cmd: str = cmds[random.randint(0, len(cmds) - 1)]
+        md5_value = md5(cmd)
+        infos = [f"\ncmd->{cmd};    md5->{md5_value}"]
+        for name in ["背景.md", "分析.md", "目标.md", "日志.md"]:
+            path, info = make_file(md5_value, name)
+            infos.append(f"{path} -> {info}")
+        logger.info("\n".join(infos))
 
     def main(self):
         getattr(self, sys.argv[1])(*sys.argv[2:])

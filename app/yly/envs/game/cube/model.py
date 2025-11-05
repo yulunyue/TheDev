@@ -19,7 +19,7 @@ class CubeState(State):
 
     def make_actions(self):
         ret = []
-        for i in range(C.SIZE):
+        for i in range(C.AXIS_NUM):
             for j in range(C.n):
                 for a in C.MOVE_ACTION:
                     mask = C.get_converts(self.state, i, j, a, self.grid)

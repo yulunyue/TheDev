@@ -3,22 +3,21 @@ from common.util.export import logger
 
 
 class Ct:
-    WHITE = 0
-    RED = 2
-    ORANGE = 3
-    GREEN = 4
-    LEFT = 5
-    YELLOW = 1
     SIZE = 6
     SHAPE2 = 2
+    AXIS_NUM = 3
     BIT_SIZE = 3
     ACTIONS = {
         SHAPE2: {
-            (0, 0): [[2, 0, 1, 3], [8, 4, 16, 12], [9, 5, 17, 13]],
-            (0, 1): [[20, 22, 23, 21], [10, 6, 18, 14], [11, 7, 19, 15]],
-            (1, 0): [[5, 4, 6, 7], [8, 0, 19, 20], [2, 17, 22, 10]],
+            (0, 0): [[0, 1, 3, 2], [4, 16, 12, 8], [17, 13, 9, 5]],
+            (0, 1): [[20, 21, 23, 22], [7, 11, 15, 19], [10, 14, 18, 6]],
+            (1, 0): [[4, 5, 7, 6], [17, 8, 10, 19], [0, 2, 20, 22]],
+            (1, 1): [[12, 13, 15, 14], [3, 16], [9, 1]],
+            (2, 0): [[8, 9, 11, 10], [], []],
+            (2, 1): [[16, 17, 19, 18], [], []],
         },
     }
+
     MOVE_ACTION = [-1, 1, 2]
 
     def load(self, n=SHAPE2):
@@ -34,9 +33,7 @@ class Ct:
         return encode_data(array, self.BIT_SIZE)
 
     def get_converts(self, mask, i, j, tp, grid):
-        ar1 = self.ACTIONS[self.n].get((i, j), [])
-        if not ar1:
-            return mask
+        ar1 = self.ACTIONS[self.n][(i, j)]
         for a2 in ar1:
             for ii, a in enumerate(a2):
                 b = self.all_size - 1 - a2[(ii + tp) % len(a2)]

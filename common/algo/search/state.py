@@ -157,6 +157,14 @@ class State:
         actions = self.get_sort_actions()
         return actions[random.randint(0, len(actions) - 1)]
 
+    def random_step(self, n):
+        ret = self
+        for _ in range(n):
+            if ret.game_over():
+                return ret
+            ret = ret.get_random_action().get_dst()
+        return ret
+
     def to_str(self):
         return []
 

@@ -25,7 +25,9 @@ class CaseFun:
         if not msg:
             self.ok_count += 1
         else:
-            self.error_logger.info(f"-----{self.ep_count}-----\n{msg}\n{info}")
+            self.error_logger.info(
+                f"-----{self.ep_count}-----\rret:{a}\nexp:{expect_value}\ndiff:\n{msg}\n{info}"
+            )
 
     def run(self, *args, **kw):
         self.start_time = time.time()

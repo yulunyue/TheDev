@@ -50,7 +50,7 @@ class TestAlgo(TestBase):
 
     def test_bin(self):
         value = [1, 2, 1]
-        pos = [2, 1]
+        pos = [1, 2, 1]
         s = encode_data(value, pos)
         self.expect(bin(s), "0b1101")
         self.expect(decode_data(s, pos), value)

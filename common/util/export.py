@@ -1,6 +1,6 @@
 from .log import File, get_log, Logger, TheDevLoger, get_dev_log
 from .module import Module, get_function_info
-from .tool import uid, re_search, hash_any, json_dumps, ii
+from .tool import uid, re_search, hash_any, json_dumps, ii, md5, base64_encode
 from .test import TestBase, logger, ToolBase, Case
 from .fp import File, get_cache
 from .module import Module, run_catch_error
@@ -24,5 +24,6 @@ import os
 from threading import Thread
 from common.mock import MockCf
 import sys
+import hashlib
 
 null = None
