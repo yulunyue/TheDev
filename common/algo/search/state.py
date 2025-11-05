@@ -283,6 +283,10 @@ class State:
             return False
         return True
 
+    @classmethod
+    def get_root(cls):
+        return cls.new()
+
 
 class AbState(State):
 

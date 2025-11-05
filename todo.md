@@ -21,9 +21,7 @@ python -m app.yly.envs.ml.cart_pole.main dqn
 python -m app.yly.envs.ml.ciff_walk.main run
 python -m tests.test_cw
 python -m app.yly.envs.game.c5.main test
-python -m tool.search mc cls=app.yly.envs.cg.l9.model.l9state.L9State
-python -m tool.search mc cls=app.yly.envs.cg.tic_toc.model.ttstate
-python -m tool.search mc cls=app.yly.envs.game.c5.state.State
+
 python -m tests.test_lulu
 python -m tests.test_mpr
 python -m app.yly.envs.ml.mrcf.main dev
@@ -33,8 +31,6 @@ python -m tests.test_search
 python -m tests.test_tf
 python -m tests.test_third
 python -m tests.test_util
-python -m tool.search mc_cli
-python -m tool.search mc
-python -m tool.search ql
+python -m tool.search debug
 
 
