@@ -11,7 +11,11 @@ class Diff:
     def compare(self, dst):
         self.diff_result = []
         self.diff_any(self.src, dst, [])
-        return self.diff_result
+        ret = self.diff_result
+        if self.diff_result:
+            self.diff_result.insert(0, f"ret:{dst}")
+            self.diff_result.insert(1, f"exp:{self.src}")
+        return ret
 
     def insert(self, keys, value):
         self.diff_result.append(f"insert[{self.key_join_char.join(keys)}][{value}]")
