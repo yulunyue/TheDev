@@ -16,7 +16,7 @@ class State(AbState):
         can_moves = list(C.pos_status[C.STATE_NULL])
         for pos in can_moves:
             obs, state = C.get_next_state(pos, self.player_id + 1)
-            dst = State.new(state)
+            dst = State.new(state).set_player_id(1 - self.player_id)
             a = Action(self, pos, dst).set_data(obs=obs)
             if obs.get(C.in_row, 0) > 0:
                 dst.set_done(2)
