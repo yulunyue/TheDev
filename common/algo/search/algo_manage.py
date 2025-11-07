@@ -197,7 +197,7 @@ class ALgoManage:
         """
         返还赢的玩家ID
         """
-
+        self.current_players = players
         self.turn_idx = 0
         s = self.state
         s.reset_env()
@@ -216,9 +216,9 @@ class ALgoManage:
                     s.get_win_player(),
                     self.turn_idx,
                 )
-            self.a_r[p.get_name()].update(
-                int((time.time() - b) * 1000), p.state_num, a.get_reward()
-            )
+            # self.a_r[p.get_name()].update(
+            #     int((time.time() - b) * 1000), p.state_num, a.get_reward()
+            # )
             self.record(p, a)
             s = s.do_action(a)
         return s.get_win_player(), self.turn_idx
@@ -235,7 +235,7 @@ class ALgoManage:
         self.log("\n".join(msgs))
 
     def log(self, msgs: str, name="pk"):
-        file_name = "_pk_".join([v.get_name() for v in self.current_player])
+        file_name = "_pk_".join([v.get_name() for v in self.current_players])
         get_dev_log(f"{self.record_dir}/{name}/{file_name}.log").info(msgs)
 
     def train(self, players: List[Algo], game_batch):

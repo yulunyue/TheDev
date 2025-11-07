@@ -107,6 +107,8 @@ class Constant:
 
         for y in range(self.height):
             state3, state4 = state1 & self.mask_cloumn, state2 & self.mask_cloumn
+            state1 = state1 >> self.row_bit
+            state2 = state2 >> self.row_bit
             if state3 == state4:
                 continue
             for x in range(self.width):
@@ -115,8 +117,7 @@ class Constant:
                     self.change_chess_statu(idx, player_id)
                 state4 = state4 >> self.BIT_SIZE
                 state3 = state3 >> self.BIT_SIZE
-            state1 = state1 >> self.row_bit
-            state2 = state2 >> self.row_bit
+
         self.state = state
         return self
 

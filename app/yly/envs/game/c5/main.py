@@ -16,6 +16,9 @@ class C5Tool(ToolBase):
             logger.debug(a.show())
             logger.debug(a.get_dst().show())
 
+    def view_state(self):
+        logger.debug(State.new(0x4000).show())
+
     def view_random(self):
         s = self.s
         logger.debug(s.show())
@@ -34,7 +37,7 @@ class C5Tool(ToolBase):
         logger.info(self.al.actor([self.al.mc()]))
 
     def test(self):
-        self.view_random()
+        self.mcactor()
 
 
 if __name__ == "__main__":

@@ -19,10 +19,13 @@ class State(AbState):
             dst = State.new(state).set_player_id(1 - self.player_id)
             a = Action(self, pos, dst).set_data(obs=obs)
             if obs.get(C.in_row, 0) > 0:
-                dst.set_done(2)
+                dst.set_done(AbState.SECONEND_WIN)
                 return [a]
             elif obs.get(-C.in_row, 0) > 0:
-                dst.set_done(1)
+                dst.set_done(AbState.FIRST_WIN)
+                return [a]
+            if len(can_moves) == 1:
+                dst.set_done(AbState.NO_WIN)
                 return [a]
             if (self.player_id == 0 and obs.get(C.in_row - 1, 0) > 0) or (
                 self.player_id == 1 and obs.get(1 - C.in_row, 0) > 0
@@ -31,7 +34,7 @@ class State(AbState):
                 continue
             actions.append(a)
         if not actions and not actions_op_win:
-            raise Exception(self.state)
+            raise Exception(self.show())
         return actions_op_win if actions_op_win else actions
 
     def to_str(self):

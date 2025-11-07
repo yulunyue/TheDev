@@ -14,14 +14,13 @@ python -m app.yly.main test lg_p2123.py
 python -m app.yly.main test lc_3003.py
 python -m app.yly.envs.ml.cart_pole.main dqn
 python -m app.yly.envs.ml.ciff_walk.main run
-python -m tests.test_cw
+python -m app.yly.envs.cg.cw.main dev
 python -m app.yly.envs.game.c5.main test
-
 python -m tests.test_lulu
 python -m tests.test_mpr
 python -m app.yly.envs.ml.mrcf.main dev
 python -m tests.test_oa
-python -m tests.test_pdl
+python -m app.yly.envs.ml.pendulum.main dev
 python -m tests.test_search
 python -m tests.test_util
 python -m tool.search debug

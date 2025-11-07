@@ -108,6 +108,7 @@ class MctsSearch(Algo):
             if self.ep >= self.num_episodes or cur_time - self.start_time >= self.max_t:
                 break
         self.update_max_action(root)
+        return init_state.best_action
 
     def update_max_action(self, node: MctsState):
         """
@@ -128,9 +129,7 @@ class MctsSearchDev(MctsSearch):
 
     def update(self, s: MctsState, score):
         super().update(s, score)
-        s.state.set_headers(str(s))
 
     def search(self, state):
         action: Action = super().search(state)
-        self.logger.info(action)
         return action

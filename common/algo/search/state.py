@@ -61,6 +61,9 @@ class Action:
 
 
 class State:
+    NO_WIN = -1
+    FIRST_WIN = 1
+    SECONEND_WIN = 2
     name = "state"
     parent: "State" = None
     done = None
@@ -260,12 +263,8 @@ class State:
         head = "--" + title + "--"
         return "\n".join([head] + body + ["-" * len(head)])
 
-    def get_win_player(self, rewards, player_idx, *args, **kw):
-        if self.done == 0:
-            return 0
-        elif self.done == 1:
-            return 1
-        return 2
+    def get_win_player(self, *args, **kw):
+        return self.done
 
     def get_sort_actions(self, **kw):
         if self.actions is None:
