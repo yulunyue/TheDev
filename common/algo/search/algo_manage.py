@@ -12,6 +12,7 @@ from common.util.export import (
     ThreadManage,
     progress_bar,
     os,
+    get_dev_log,
 )
 from common.third_util.pt_table import PtTable, TableModel
 import time
@@ -65,7 +66,7 @@ class FIGHT_TYPE:
 
 
 class ALgoManage:
-    record_dir = ""
+    record_dir = "data/algo"
     file_path = None
     record_model = AlgoInfo
 
@@ -123,11 +124,6 @@ class ALgoManage:
     def set_state(self, state):
         self.state: State = state
         return self
-
-    def get_state(self, idx, dst=None) -> State:
-        if callable(self.state):
-            return self.state(idx, dst)
-        return dst
 
     def fight(self):
         for i, p in enumerate(self.players):
@@ -197,83 +193,50 @@ class ALgoManage:
         logger.debug(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
         return win_idx
 
-    max_turn = 250
-
-    def actor(self, players: List[Algo], num=-1):
+    def actor(self, players: List[Algo], max_turn=1000):
         """
         返还赢的玩家ID
         """
 
-        player_idx = 0
         self.turn_idx = 0
-        s = self.get_state(0, self.state).reset_env()
+        s = self.state
+        s.reset_env()
         for p in players:
             p.reset()
-        self.rewards = [[0] * len(players)]
-        while num != 0:
-            num -= 1
-            if s.get_done() is not None:
-                self.record(players, None, player_idx, s)
+        while self.turn_idx < max_turn:
+            if s.game_over():
                 break
+            p = players[self.turn_idx % len(players)]
+            self.turn_idx += 1
             b = time.time()
-            p = players[player_idx]
             p.state_num = 0
             a = p.search(s)
             if a is None:
-                self.record(players, a, player_idx, s)
                 return (
-                    s.get_win_player(self.rewards, (player_idx + 1) % len(players)),
+                    s.get_win_player(),
                     self.turn_idx,
                 )
             self.a_r[p.get_name()].update(
                 int((time.time() - b) * 1000), p.state_num, a.get_reward()
             )
-            self.record(players, a, player_idx, s)
-            player_idx = (player_idx + 1) % len(players)
-            self.turn_idx += 1
-            if self.turn_idx >= self.max_turn:
-                break
-            s = self.get_state(self.turn_idx, s.do_action(a))
-        # if s:
-        #     self.record(players, s)
-        return s.get_win_player(self.rewards, player_idx), self.turn_idx
+            self.record(p, a)
+            s = s.do_action(a)
+        return s.get_win_player(), self.turn_idx
 
     def set_record_dir(self, path: str):
         self.record_dir = path
         return self
 
-    def record(self, players: List[Algo], a: Action, player_idx, s: State):
-        if not self.record_dir:
-            return
-        self.rewards.append(self.rewards[-1].copy())
-        reward = 0
-
-        action_s = ""
-        if a is not None:
-            reward = a.get_reward()
-            action_s = a.show()
+    def record(self, p: Algo, a: Action):
         msgs = [
-            s.show(),
-            f"turn: {self.turn_idx}; reward_all: {self.rewards[-1]};",
-            f"{players[player_idx].get_name()} do {action_s}",
-            "",
+            f"turn: {self.turn_idx}; {p.get_name()} do {a.show()}",
+            f"{a.get_dst().show()}",
         ]
-        self.rewards[-1][player_idx] += reward
-        self.log(msgs)
+        self.log("\n".join(msgs))
 
-    def log(self, msgs, name="pk"):
+    def log(self, msgs: str, name="pk"):
         file_name = "_pk_".join([v.get_name() for v in self.current_player])
-        self.file_path = f"{self.record_dir}/{name}/{file_name}.log"
-        msgs = "\n".join(msgs)
-        if name == "pk":
-            fp = File(self.file_path).get_writer()
-            fp.write(msgs)
-            fp.flush()
-        else:
-            File(self.file_path).write_file(msgs)
-
-    def view(self, msgs):
-        self.log(msgs, name="view")
+        get_dev_log(f"{self.record_dir}/{name}/{file_name}.log").info(msgs)
 
     def train(self, players: List[Algo], game_batch):
         pass

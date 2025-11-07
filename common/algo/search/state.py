@@ -25,8 +25,8 @@ class Action:
     def get_data(self, key, default_value):
         return self.data.get(key, default_value)
 
-    def set_data(self, key, value):
-        self.data[key] = value
+    def set_data(self, **kw):
+        self.data.update(kw)
         return self
 
     p = None

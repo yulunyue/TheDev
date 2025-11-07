@@ -13,18 +13,19 @@ class State(AbState):
         C.set_mask(self.state)
         actions = []
         actions_op_win = []
-        for pos in list(C.pos_status[C.STATE_NULL]):
-            obs, state = C.put_chess(pos, self.player_id + 1)
+        can_moves = list(C.pos_status[C.STATE_NULL])
+        for pos in can_moves:
+            obs, state = C.get_next_state(pos, self.player_id + 1)
             dst = State.new(state)
-            a = Action(self, pos, dst)
-            if obs[C.in_row] > 0:
+            a = Action(self, pos, dst).set_data(obs=obs)
+            if obs.get(C.in_row, 0) > 0:
                 dst.set_done(2)
                 return [a]
-            elif obs[-C.in_row]:
+            elif obs.get(-C.in_row, 0) > 0:
                 dst.set_done(1)
                 return [a]
-            if (self.player_id == 0 and obs[C.in_row - 1]) or (
-                self.player_id == 1 and obs[1 - C.in_row]
+            if (self.player_id == 0 and obs.get(C.in_row - 1, 0) > 0) or (
+                self.player_id == 1 and obs.get(1 - C.in_row, 0) > 0
             ):
                 actions_op_win.append(a)
                 continue
