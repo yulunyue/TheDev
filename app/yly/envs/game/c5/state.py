@@ -13,24 +13,28 @@ class State(AbState):
         C.set_mask(self.state)
         actions = []
         actions_op_win = []
-        for pos in list(C.pos_status[C.STATE_NULL]):
-            obs, state = C.put_chess(pos, self.player_id + 1)
-            dst = State.new(state)
-            a = Action(self, pos, dst)
-            if obs[C.in_row] > 0:
-                dst.set_done(2)
+        can_moves = list(C.pos_status[C.STATE_NULL])
+        for pos in can_moves:
+            obs, state = C.get_next_state(pos, self.player_id + 1)
+            dst = State.new(state).set_player_id(1 - self.player_id)
+            a = Action(self, pos, dst).set_data(obs=obs)
+            if obs.get(C.in_row, 0) > 0:
+                dst.set_done(AbState.SECONEND_WIN)
                 return [a]
-            elif obs[-C.in_row]:
-                dst.set_done(1)
+            elif obs.get(-C.in_row, 0) > 0:
+                dst.set_done(AbState.FIRST_WIN)
                 return [a]
-            if (self.player_id == 0 and obs[C.in_row - 1]) or (
-                self.player_id == 1 and obs[1 - C.in_row]
+            if len(can_moves) == 1:
+                dst.set_done(AbState.NO_WIN)
+                return [a]
+            if (self.player_id == 0 and obs.get(C.in_row - 1, 0) > 0) or (
+                self.player_id == 1 and obs.get(1 - C.in_row, 0) > 0
             ):
                 actions_op_win.append(a)
                 continue
             actions.append(a)
         if not actions and not actions_op_win:
-            raise Exception(self.state)
+            raise Exception(self.show())
         return actions_op_win if actions_op_win else actions
 
     def to_str(self):

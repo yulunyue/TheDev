@@ -68,13 +68,19 @@ class MctsSearch(Algo):
         c.u = self.exploration_param * math.sqrt(c.p.n_visits / (c.n_visits + 1))
         return c.q + c.u
 
-    def simulate(self, root: State):
+    def simulate(self, root: State, max_round=1000):
         tail = root
         action_history: List[Action] = []
         while not tail.game_over():
             actions = tail.get_sort_actions()
             random_id = random.randint(0, len(actions) - 1)
             action_history.append(actions[random_id])
+
+            max_round -= 1
+            if max_round <= 0:
+                raise Exception(
+                    f"simulate max  src:{tail.show()} action:{actions[random_id].show()} dst:{actions[random_id].get_dst().show()}"
+                )
             tail = actions[random_id].get_dst()
         return action_history[-1].get_reward(player_id=root.player_id)
 
@@ -102,6 +108,7 @@ class MctsSearch(Algo):
             if self.ep >= self.num_episodes or cur_time - self.start_time >= self.max_t:
                 break
         self.update_max_action(root)
+        return init_state.best_action
 
     def update_max_action(self, node: MctsState):
         """
@@ -122,9 +129,7 @@ class MctsSearchDev(MctsSearch):
 
     def update(self, s: MctsState, score):
         super().update(s, score)
-        s.state.set_headers(str(s))
 
     def search(self, state):
         action: Action = super().search(state)
-        self.logger.info(action)
         return action

@@ -74,7 +74,7 @@ class Algo:
             [f"---name:{self.get_name()} use_time:{self.use_time}---"] + self.info()
         )
 
-    def search_main(self, state: "State"):
+    def search_main(self, state: "State") -> Action:
         raise Exception("todo")
 
     def take_action(self, state: "State") -> Action:

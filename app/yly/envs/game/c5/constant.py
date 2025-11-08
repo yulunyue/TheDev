@@ -1,5 +1,5 @@
 from common.algo.export import encode_data, decode_data, set_mask
-from common.util.export import List, Dict, defaultdict
+from common.util.export import List, Dict, defaultdict, logger
 
 
 class Constant:
@@ -7,7 +7,7 @@ class Constant:
     STATE_FIRST = 1
     STATE_SECONED = 2
     BIT_SIZE = 2
-    DR = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    DR = [[0, 1], [1, 0], [1, 1], [1, -1]]
     in_row = 4
 
     def __init__(self):
@@ -27,7 +27,7 @@ class Constant:
             if ct[1] == 0 and ct[2]:
                 self.mask_state[mk] = -ct[2]
             if ct[2] == 0 and ct[1]:
-                self.mask_state[mk] = ct[2]
+                self.mask_state[mk] = ct[1]
 
     def load(self, width=6, height=6):
         self.width = width
@@ -50,6 +50,7 @@ class Constant:
 
     def init_lines(self):
         self.lines = [[] for _ in range(self.size)]
+        self.line_pos = []
         self.line_state = []
         for i in range(self.size):
             y, x = i // self.size, i % self.size
@@ -59,47 +60,65 @@ class Constant:
                     y1, x1 = dy * k + y, dx * k + x
                     if y1 < 0 or x1 < 0 or y1 >= self.height or x1 >= self.width:
                         continue
-                    poss.append([dy, dx, k])
+                    poss.append([y1, x1, k])
                 if len(poss) != self.in_row:
                     continue
                 line_id = len(self.line_state)
+                self.line_pos.append(poss)
                 for y1, x1, k in poss:
                     j = y1 * self.width + x1
                     self.lines[j].append([line_id, k])
                 self.line_state.append(0)
 
-    def put_chess(self, idx, player_id):
-        ans = defaultdict(int)
+    def get_move_info(self, idx, player_id):
+        ans = dict()
         if self.grid[idx] == player_id:
-            raise Exception(idx, player_id)
+            return
         for lid, pos in self.lines[idx]:
             old_state = self.line_state[lid]
             new_state = set_mask(
                 old_state, pos * self.BIT_SIZE, self.BIT_SIZE, player_id
             )
-            ans[self.mask_state[old_state]] -= 1
-            ans[self.mask_state[new_state]] += 1
+            if self.mask_state[old_state]:
+                ans[self.mask_state[old_state]] = (
+                    ans.get(self.mask_state[old_state], 0) - 1
+                )
+            if self.mask_state[new_state]:
+                ans[self.mask_state[new_state]] = (
+                    ans.get(self.mask_state[new_state], 0) + 1
+                )
+        return ans
+
+    def change_chess_statu(self, idx, player_id):
         self.pos_status[player_id].add(idx)
         self.pos_status[self.grid[idx]].remove(idx)
+        # logger.map(idx=idx, cid=self.grid[idx], newid=player_id)
         self.grid[idx] = player_id
-        self.state = set_mask(self.state, idx * self.BIT_SIZE, self.BIT_SIZE, player_id)
-        return ans, self.state
+
+    def get_next_state(self, idx, player_id):
+        return self.get_move_info(idx, player_id), set_mask(
+            self.state, idx * self.BIT_SIZE, self.BIT_SIZE, player_id
+        )
 
     def set_mask(self, state):
         if self.state == state:
             return self
         state1, state2 = self.state, state
+
         for y in range(self.height):
             state3, state4 = state1 & self.mask_cloumn, state2 & self.mask_cloumn
+            state1 = state1 >> self.row_bit
+            state2 = state2 >> self.row_bit
             if state3 == state4:
                 continue
             for x in range(self.width):
-                if state3 & self.mask_bit != state4 & self.mask_bit:
-                    self.put_chess(y * self.width + x, state4 & self.mask_bit)
-                state4 >> self.BIT_SIZE
-                state3 >> self.BIT_SIZE
-            state1 = state1 >> self.row_bit
-            state2 = state2 >> self.row_bit
+                idx, player_id = y * self.width + x, state4 & self.mask_bit
+                if self.get_move_info(idx, player_id) is not None:
+                    self.change_chess_statu(idx, player_id)
+                state4 = state4 >> self.BIT_SIZE
+                state3 = state3 >> self.BIT_SIZE
+
+        self.state = state
         return self
 
 

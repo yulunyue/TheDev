@@ -1,19 +1,15 @@
-from common.util.export import TestBase, logger, Module
+from .cg import CgCw, World
+from .model.state import CwState, CwStateDev
+from .model.constant import CASES, C
+from .shape.b_line_help import BlineHelp, BM
+from common.util.export import ToolBase, logger, Module
 from common.third_service.export import CodingGame, uu
-from app.yly.envs.cg.cw.export import (
-    CgCw,
-    World,
-    CwState,
-    CwStateDev,
-    CASES,
-    C,
-    BM,
-)
+
 
 from common.algo.export import ALgoManage, Algo, AbDev
 
 
-class TestCw(TestBase):
+class TestCw(ToolBase):
     def prepare(self, args=None):
         self.c = CodingGame(CgCw.name)
         self.ab1 = AbDev(f"ab1").load(1)
@@ -41,7 +37,7 @@ class TestCw(TestBase):
     def run_bl(self):
         BM.test()
 
-    def debug(self):
+    def dev(self):
         self.fight()
 
     def run_base(self, aim_id=1):
