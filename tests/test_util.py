@@ -20,7 +20,7 @@ class D:
         pass
 
 
-def cls_gen(info) -> TypeVar(D):
+def cls_gen(info) -> TypeVar(D):  # type: ignore
     class C(D):
         type_info = dict(type="select", info=info)
 
@@ -28,7 +28,7 @@ def cls_gen(info) -> TypeVar(D):
 
 
 class TestCls:
-    def test_fun(self, a: int, c: cls_gen("xx"), b=2):
+    def test_fun(self, a: int, c: cls_gen("xx"), b=2):  # type: ignore
         return a + b + c
 
 
