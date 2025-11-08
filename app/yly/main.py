@@ -61,7 +61,7 @@ class ToolContext(ToolBase):
                 logger.info(f"{case.i.path}\n{msg[:100]}")
 
     def debug(self):
-        self.test("lc_2048.py", "case2")
+        self.test("lc_3318.py", "case2")
 
 
 if __name__ == "__main__":
