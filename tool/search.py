@@ -50,14 +50,6 @@ class SearchTool(ToolBase):
         algo.train(s)
         logger.debug(algo.show())
 
-    def debug(self):
-        """
-        python -m tool.search mc cls=app.yly.envs.cg.l9.model.l9state.L9State
-        python -m tool.search mc cls=app.yly.envs.cg.tic_toc.model.ttstate
-        python -m tool.search mc cls=app.yly.envs.game.c5.state.State
-        """
-        self.ql()
-
 
 if __name__ == "__main__":
     random_seed(7)
