@@ -8,10 +8,6 @@ class Constant:
     STATE_SECONED = 2
     BIT_SIZE = 2
     DR = [[0, 1], [1, 0], [1, 1], [1, -1]]
-    in_row = 4
-
-    def __init__(self):
-        self.init_mask_state()
 
     def init_mask_state(self):
         self.max_state = (1 << (self.BIT_SIZE * self.in_row)) - 1
@@ -28,10 +24,19 @@ class Constant:
                 self.mask_state[mk] = -ct[2]
             if ct[2] == 0 and ct[1]:
                 self.mask_state[mk] = ct[1]
+            if ct[1] == 1 and ct[2] == 3:
+                self.mask_state[mk] = self.op_win_state
+            if ct[2] == 1 and ct[1] == 3:
+                self.mask_state[mk] = -self.op_win_state
+        self.score = dict()
+        for row in range(2):
+            pass
 
-    def load(self, width=6, height=6):
+    def load(self, width=6, height=6, in_row=4):
         self.width = width
         self.height = height
+        self.in_row = in_row
+        self.op_win_state = self.in_row + 1
         self.size = self.width * self.height
         self.row_bit = self.BIT_SIZE * self.width
         self.height_bit = self.BIT_SIZE * self.height
@@ -45,6 +50,7 @@ class Constant:
             self.STATE_SECONED: set(),
         }
         self.state = 0
+        self.init_mask_state()
         self.init_lines()
         return self
 
@@ -53,27 +59,26 @@ class Constant:
         self.line_pos = []
         self.line_state = []
         for i in range(self.size):
-            y, x = i // self.size, i % self.size
+            y, x = i // self.width, i % self.width
             for dy, dx in self.DR:
                 poss = []
                 for k in range(self.in_row):
                     y1, x1 = dy * k + y, dx * k + x
                     if y1 < 0 or x1 < 0 or y1 >= self.height or x1 >= self.width:
                         continue
-                    poss.append([y1, x1, k])
+
+                    poss.append([y1 * self.width + x1, k])
                 if len(poss) != self.in_row:
                     continue
                 line_id = len(self.line_state)
                 self.line_pos.append(poss)
-                for y1, x1, k in poss:
-                    j = y1 * self.width + x1
+                for j, k in poss:
                     self.lines[j].append([line_id, k])
                 self.line_state.append(0)
 
     def get_move_info(self, idx, player_id):
         ans = dict()
-        if self.grid[idx] == player_id:
-            return
+
         for lid, pos in self.lines[idx]:
             old_state = self.line_state[lid]
             new_state = set_mask(
@@ -93,6 +98,10 @@ class Constant:
         self.pos_status[player_id].add(idx)
         self.pos_status[self.grid[idx]].remove(idx)
         # logger.map(idx=idx, cid=self.grid[idx], newid=player_id)
+        for lid, pos in self.lines[idx]:
+            self.line_state[lid] = set_mask(
+                self.line_state[lid], pos * self.BIT_SIZE, self.BIT_SIZE, player_id
+            )
         self.grid[idx] = player_id
 
     def get_next_state(self, idx, player_id):
@@ -113,7 +122,8 @@ class Constant:
                 continue
             for x in range(self.width):
                 idx, player_id = y * self.width + x, state4 & self.mask_bit
-                if self.get_move_info(idx, player_id) is not None:
+                if self.grid[idx] != player_id:
+                    self.get_move_info(idx, player_id)
                     self.change_chess_statu(idx, player_id)
                 state4 = state4 >> self.BIT_SIZE
                 state3 = state3 >> self.BIT_SIZE

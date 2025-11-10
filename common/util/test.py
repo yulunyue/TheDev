@@ -137,6 +137,10 @@ class Case:
 
 
 class ToolBase:
+    @property
+    def logger(self):
+        return get_log(f"data/tool/{self.__class__.__name__}.log")
+
     def prepare(self, *args, **kw):
         pass
 

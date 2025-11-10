@@ -42,6 +42,9 @@ class Action:
     def get_reward(self, **kwargs):
         return self.reward
 
+    def get_src_reward(self, **kw):
+        pass
+
     def show(self):
         ret = f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}, data:{self.data}"
         if self.reward > 0:
@@ -158,7 +161,8 @@ class State:
 
     def get_random_action(self) -> Action:
         actions = self.get_sort_actions()
-        return actions[random.randint(0, len(actions) - 1)]
+        idx = random.randint(0, len(actions) - 1)
+        return actions[idx]
 
     def random_step(self, n):
         ret = self
