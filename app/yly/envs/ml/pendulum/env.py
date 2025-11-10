@@ -6,19 +6,21 @@ from .constant import C
 class PenduState(State):
     _env = None
 
-    def __init__(self, state=None):
+    @property
+    def env(self):
         if PenduState._env is None:
             import gymnasium as gym
-            from gymnasium.envs.classic_control.pendulum import PendulumEnv
 
             PenduState._env = gym.make("Pendulum-v1", render_mode="rgb_array")
-            PenduState._env_ins: PendulumEnv = PenduState._env.env.env.env
+        return PenduState._env
+
+    def __init__(self, state=None):
         if state is None:
-            state, _ = PenduState._env.reset()
+            state, _ = self.env.reset()
         self.done = False
         super().__init__(state)
 
-    def get_actions(self, depth=1, **kw):
+    def make_actions(self, depth=1, **kw):
         if self.actions:
             return self.actions
         self.actions = dict()

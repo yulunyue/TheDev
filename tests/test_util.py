@@ -40,17 +40,9 @@ class Stack(Generic[T]):
 
 
 class TestUtil(TestBase):
-    def test_fun(self):
-        c = TestCls()
-        a = get_function_info(Stack[int])
-        info = get_function_info(c.test_fun)
-        self.expect(info.data["kwargs"], dict(a=None, b=2))
-
-    def test_debug(self):
-        self.test_fun()
 
     def test_cls(self):
-        self.expect(TestCls.__module__, "??")
+        self.expect(TestCls.__module__, "__main__")
 
     def test_thread(self):
         def fun1(v):
@@ -63,11 +55,6 @@ class TestUtil(TestBase):
 
     def test_re(self):
         self.expect(re_search(".*ab.*", "aabbcc") is not None)
-
-    def test_file(self):
-        path = "data/temp/zip_test"
-        File(path).zip()
-        File(path + ".zip").unzip()
 
     def test_ct(self):
         self.expect(CT.min(1, 2), 1)

@@ -8,8 +8,8 @@ class FenWickTree:
     """
 
     def set_range(self, size, default_value=0):
-        self.size = size + 1
-        self.array = [default_value] * (size + 1)
+        self.size = size
+        self.array = [default_value] * size
         return self
 
     def update(self, i, v):
@@ -17,7 +17,7 @@ class FenWickTree:
             self.array[i] = self.calc(self.array[i], v)
             i += i & -i
 
-    def query(self, i):
+    def query_one(self, i):
         if i <= 0:
             return 0
         ret = 0
@@ -25,6 +25,9 @@ class FenWickTree:
             ret = self.calc(ret, self.array[i])
             i &= i - 1
         return ret
+
+    def query(self, l, r):
+        return self.query_one(r) - self.query_one(l - 1)
 
     def calc(self, a, b):
         return a + b

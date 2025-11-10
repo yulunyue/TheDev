@@ -66,7 +66,10 @@ class Diff:
             self.diff_result.append(
                 "" if src is None and dst is None else f"{src}!={dst}"
             )
-        elif isinstance(src, dict) and isinstance(dst, dict):
+        elif isinstance(src, dict) or isinstance(dst, dict):
+            if not isinstance(src, dict) or not isinstance(dst, dict):
+                self.diff_result.append(f"datatype need dict")
+                return
             for key in set(list(src.keys()) + list(dst.keys())):
                 k = keys + [key]
                 if key not in src:

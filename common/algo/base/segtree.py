@@ -24,8 +24,8 @@ class SegTreeNode:
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
 
-    def merge(self, l, r):
-        raise Exception(l, r)
+    def merge(self, lvalue, rvalue):
+        raise Exception(lvalue, rvalue)
 
     def set_range(self, l, r):
         self.l = l
