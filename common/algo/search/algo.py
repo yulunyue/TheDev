@@ -101,4 +101,4 @@ class Algo:
 
 class RandomAlgo(Algo):
     def search_main(self, s: State, **kw):
-        s.set_best_action(s.get_random_action())
+        return s.get_random_action()

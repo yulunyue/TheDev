@@ -13,6 +13,11 @@ class F4State(AbState):
         self.depth = ENV.step
         self.player_id = self.depth % 2
 
+    @classmethod
+    def new_shape(cls, shape):
+        ENV.set_shape(shape)
+        return cls.new(ENV.INIT_MASK)
+
     def make_actions(self):
         actions = []
         op_win_actions = []

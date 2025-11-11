@@ -1,4 +1,4 @@
-from common.algo.search.algo import Algo
+from common.algo.search.algo import Algo, RandomAlgo
 from common.algo.search.state import State, Action
 from common.algo.search.alphabate_search import AbDev
 from common.algo.search.mctssearch import MctsSearchDev
@@ -107,6 +107,9 @@ class ALgoManage:
 
     def ql(self):
         return Qlearning().load()
+
+    def rd(self):
+        return RandomAlgo().load()
 
     def set_players(self, players1: List[Algo], players2: List[Algo]):
         self.players: List[List[Algo]] = []

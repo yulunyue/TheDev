@@ -1,6 +1,8 @@
 python -m app.yly.main test lc_3318.py
 python -m app.yly.main test lc_2965.py
-python -m app.yly.main test lc_3721.py
+python -m app.yly.main test lc_3734.py
+python -m app.yly.main test lc_3743.py
+python -m app.yly.main test lc_3339.py
 python -m app.yly.envs.cg.cf4.main dev
 python -m app.yly.envs.game.c5.main dev
 python -m app.yly.envs.game.cube.main dev
