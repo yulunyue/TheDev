@@ -1,8 +1,9 @@
-import torch
-import torch.nn.functional as TorchF
-from torch.nn import Linear, Module
+from common.tool.export import Mock
+try:
+    import torch
+except Exception as e:
+    torch=Mock("torch")
 from common.util.export import File
-from torch import Tensor
 import json
 
 SAVE_DIR = "data/model"
@@ -17,7 +18,7 @@ def view(self):
 
 
 class TorchDoubleNet:
-    model_cls = Module
+    model_cls = None
 
     def __init__(self):
         self.q_net = self.__class__.model_cls()

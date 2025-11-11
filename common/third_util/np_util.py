@@ -1,10 +1,8 @@
-
-
-
+from common.tool.export import Mock
 try:
     import numpy as np
+    np.set_printoptions(suppress=True, precision=4)
 except Exception as e:
-    pass
+    np=Mock("np")
 
 
-np.set_printoptions(suppress=True, precision=4)

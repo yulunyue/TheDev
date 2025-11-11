@@ -1,5 +1,4 @@
 python -m app.yly.main test lc_3318.py
-python -m app.yly.main test lc_2965.py
 python -m app.yly.main test lc_3734.py
 python -m app.yly.main test lc_3743.py
 python -m app.yly.main test lc_3339.py
