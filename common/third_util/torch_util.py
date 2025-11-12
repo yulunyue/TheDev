@@ -1,8 +1,4 @@
-from common.tool.export import Mock
-try:
-    import torch
-except Exception as e:
-    torch=Mock("torch")
+import torch
 from common.util.export import File
 import json
 
@@ -12,13 +8,13 @@ SAVE_DIR = "data/model"
 def view(self):
     ans = []
     for k, s in self.model.state_dict().items():
-        v: Tensor = s
+        v: torch.Tensor = s
         ans.append(f"key:{k} shape:{v.shape} type:{v.dtype}")
     return "\n".join(ans)
 
 
 class TorchDoubleNet:
-    model_cls = None
+    model_cls = torch.nn.Module
 
     def __init__(self):
         self.q_net = self.__class__.model_cls()
