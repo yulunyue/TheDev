@@ -62,7 +62,6 @@ def prime_gcds(max_value):
         while j < max_value:
             ret[j].add(i)
             j += i
-        i += 1
     return ret
 
 
