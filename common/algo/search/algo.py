@@ -8,7 +8,7 @@ from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
-from common.util.export import File, logger, get_log, get_dev_log
+from common.util.export import File, logger, get_log, get_dev_log, progress_bar
 
 
 def random_seed(v=1):
@@ -92,11 +92,24 @@ class Algo:
     def actor(self):
         pass
 
-    def get_state_reward(self, s: State):
-        return s.get_reward()
+    def set_train_epoll(self, train_epoll):
+        self.train_epoll = train_epoll
+        return self
 
-    def train(self):
-        raise Exception("todo")
+    def train(self, state: State):
+        self.reset()
+        for i in range(self.train_epoll):
+            progress_bar(i + 1, self.train_epoll, msg="train...")
+            self.train_one(i, state)
+
+    def train_one(self, i, state: State):
+        s = state.reset()
+        self.actions = []
+        while not s.game_over():
+            a = self.take_action(s)
+            self.actions.append(a)
+            self.update_action(a)
+            s = a.get_dst()
 
 
 class RandomAlgo(Algo):

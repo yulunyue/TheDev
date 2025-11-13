@@ -38,8 +38,9 @@ class TestMain:
                 continue
             cmds.append(line)
         cmd: str = cmds[random.randint(0, len(cmds) - 1)]
+        file_path = cmd.split(" ")[2].replace(".", "/") + ".py"
         md5_value = md5(cmd)
-        infos = [f"\ncmd->{cmd};    md5->{md5_value}"]
+        infos = [f"\ncmd->{cmd};    md5->{md5_value};  file->{file_path}"]
         for name in ["背景.md", "分析.md", "目标.md", "日志.md"]:
             path, info = make_file(md5_value, name)
             infos.append(f"{path} -> {info}")

@@ -6,7 +6,7 @@ from typing import List
 
 class PolicyIteration(Algo):
     def set_pi(self, pi):
-        self.pi = pi
+        self.pi: dict = pi
         return self
 
     def load(self, train_epoll=100, num_episodes=1000, theta=0.001, gamma=0.9):
@@ -43,31 +43,20 @@ class PolicyIteration(Algo):
                 max_diff = max(max_diff, abs(new_values[src.state] - self.v[src.state]))
             self.v = new_values
             self.p_cnt += 1
-
+            self.log_value(max_diff)
             if max_diff < self.theta:
                 break
-        self.log_value(max_diff)
 
     def policy_improvement(self, states: List[State]):  # 策略提升
         pi = self.pi.copy()
         for s in states:
-            values = [self.get_action_value(a) for a in s.get_sort_actions()]
-            if not values:
+            spi = {a.action: self.get_action_value(a) for a in s.get_sort_actions()}
+            if not spi:
                 continue
-            maxq = float("-inf")
-            cntq = 0
-            for q in values:
-                if q > maxq:
-                    maxq = q
-                    cntq = 1
-                elif q == maxq:
-                    cntq += 1
-            pi[s.state] = []
-            for a in values:
-                if a == maxq:
-                    pi[s.state].append(1 / cntq)
-                else:
-                    pi[s.state].append(0)
+            maxq = max(spi.values())
+            cntq = sum(1 if v == maxq else 0 for v in spi.values())
+            pi[s.state] = {k: 1 / cntq if spi[k] == maxq else 0 for k in spi}
+        self.log_policy(pi)
         return pi
 
     def train_all_states(self, states: List[State]):
@@ -75,11 +64,10 @@ class PolicyIteration(Algo):
         while self.cnt < self.train_epoll:
             self.policy_evaluation(states)
             pi = self.policy_improvement(states)
+            self.cnt += 1
             if self.pi and self.pi == pi:
                 break
-            self.cnt += 1
             self.pi = pi
-            self.log_policy()
         return self
 
     def log_value(self, diff):
@@ -93,8 +81,7 @@ class ValueIteration(PolicyIteration):
     def get_qsa_value(self, qsalst):
         return max(qsalst)
 
-    def train_all_state(self, state: State):
-        states = state.bfs().values()
+    def train_all_states(self, states: List[State]):
         self.policy_evaluation(states)
         self.policy_improvement(states)
         return self

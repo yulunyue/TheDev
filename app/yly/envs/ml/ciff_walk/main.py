@@ -1,7 +1,8 @@
 from common.util.export import ToolBase, logger
 from .env import CfState, C
-from .util.value_func import PiFunc, VFunc
-from common.algo.export import random_seed, ValueIteration
+from .util.value_func import PiFunc, VFunc, to_matrix
+from .util.study_replay import RealTimeValueIteration
+from common.algo.export import random_seed, ValueIteration, Qlearning
 
 
 class CfTool(ToolBase):
@@ -12,17 +13,24 @@ class CfTool(ToolBase):
         f = PiFunc().load()
         f.train_all_states(self.s.bfs())
 
-    def run_value(self):
-        f = ValueIteration().load()
-        f.train_all_states(self.init_state.bfs())
-        logger.debug(v.show())
+    def run_value_all_state(self):
+        f = VFunc().load()
+        f.train_all_states(self.s.bfs())
 
-    def run_all(self):
-        self.run_policy()
-        self.run_value()
+    def run_study_replay(self):
+        f = RealTimeValueIteration().load()
+        f.train(self.s)
+
+    def run_ql(self):
+        f = Qlearning().load()
+        f.train(self.s)
+        logger.debug(to_matrix(f))
+
+    def dev(self):
+        self.run_ql()
 
     def debug(self):
-        self.run_policy_all_state()
+        self.dev()
 
 
 if __name__ == "__main__":

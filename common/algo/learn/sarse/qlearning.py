@@ -51,21 +51,6 @@ class Qlearning(Algo):
             s = random.choice(list(self.all_actions.values()))
             self.q_learning(s)
 
-    def train(self, state: State):
-        self.reset()
-        for i in range(self.train_epoll):
-            progress_bar(i + 1, self.train_epoll, msg="QLEARNING_TRAIN")
-            self.train_one(i, state)
-
-    def train_one(self, i, state: State):
-        s = state.reset()
-        self.actions = []
-        while not s.game_over():
-            a = self.take_action(s)
-            self.actions.append(a)
-            self.update_action(a)
-            s = a.get_dst()
-
     def show(self):
         ret = []
         for k, v in self.q.items():

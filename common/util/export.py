@@ -26,4 +26,5 @@ from common.mock import MockCf
 import sys
 import hashlib
 
+inf = float("inf")
 null = None
