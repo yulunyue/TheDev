@@ -33,7 +33,6 @@ class CwAction(Action):
             ans[0] += f" {action}"
         else:
             ans[0] += f" {self.t_id}"
-        ans += [f"reward:{self.get_dst().get_reward()}"]
         return ";".join(ans)
 
     def get_dst(self):

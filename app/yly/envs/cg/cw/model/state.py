@@ -64,7 +64,8 @@ class CwStateDev(CwState):
             s.append(tmp)
         s.append([C.WALL_S] * (CwState.g.width + 1))
         actions = sorted(
-            self.get_actions().values(), key=lambda a: a.get_reward(), reverse=True
+            self.get_sort_actions().values(), key=lambda a: a.get_reward(), reverse=True
         )
+        s=[str(v) for v in s]
         s.append(",".join([a.show() for a in actions]))
-        return "\n".join(["".join(r) for r in s])
+        return s
