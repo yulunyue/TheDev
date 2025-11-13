@@ -11,10 +11,10 @@ class Solution(ToolBase):
             logger.debug(a.get_dst().show())
 
     def view2(self):
-        s = CubeState.new_shape(C.SHAPE2).random_step(3)
+        s = CubeState.new_shape(C.SHAPE2).random_step(10)
         logger.debug(s.show())
 
-    def view(self):
+    def dev(self):
         self.view2()
 
 
