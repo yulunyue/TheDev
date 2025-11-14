@@ -10,6 +10,7 @@ from common.algo.export import (
     random_seed,
 )
 from common.tool.export import ThreadRecord
+from app.yly.envs.game.study.state import TestState
 
 
 class Record(ThreadRecord):
@@ -40,15 +41,18 @@ class SearchTool(ToolBase):
         Record(self.s).set_search(self.al.mc()).cli()
 
     def mc(self, cls=None):
-        s = get_s(cls)
+        s = TestState
         self.al.mc().search(s)
 
-    def ql(self, cls="app.yly.envs.game.study.state.TestState"):
+    def ql(self, cls=""):
         s: State = get_s(cls)
         logger.debug(s.print_tree())
         algo = self.al.ql()
         algo.train(s)
         logger.debug(algo.show())
+
+    def dev(self):
+        pass
 
 
 if __name__ == "__main__":

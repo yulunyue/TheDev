@@ -12,7 +12,7 @@ class CubeState(State):
     @classmethod
     def new_shape(cls, n):
         C.load(n)
-        return CubeState.new(C.init_mask)
+        return CubeState.new(C.init_mask).get_action((0, 0, 1)).get_dst()
 
     def game_over(self):
         return self.state == C.init_mask
