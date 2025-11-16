@@ -8,8 +8,7 @@ import xml.etree.ElementTree as ET
 
 # --- 配置 ---
 # 请在这里设置你的代码仓库的绝对路径
-REPO_PATH = "rich"
-# 要进行测试的基础 commit 哈希
+REPO_PATH = "/data/data/com.termux/files/home/code/rich"
 BASE_COMMIT = "5ba9cb56e68dcdf2db50c214d8f1412c8a50761b"
 # 实例ID，用于结果文件的顶级键
 INSTANCE_ID = 'Textualize__rich-3518'
