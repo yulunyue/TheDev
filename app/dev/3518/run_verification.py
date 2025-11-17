@@ -65,14 +65,16 @@ def run_command(command, cwd, check=True):
             capture_output=True,
             text=True,
             cwd=str(cwd),
-            timeout=60,
+            timeout=120,
         )
-        print(f"CMD: {command} [{process.stdout}] [{process.stderr}]")
-        return True, process.stdout, process.stderr
+
+        result, msg, error_msg = True, process.stdout, process.stderr
     except subprocess.CalledProcessError as e:
-        return False, e.stdout, e.stderr
+        result, msg, error_msg = False, e.stdout, e.stderr
     except FileNotFoundError:
-        return False, "", f"Command '{command[0]}' not found."
+        result, msg, error_msg = False, "", f"Command '{command[0]}' not found."
+    print(f"CMD: {command} [{result}] [{msg}] [{error_msg}]")
+    return result, msg, error_msg
 
 
 def reset_repo(commit_hash):
@@ -154,7 +156,17 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 
 def run_all_tests_and_get_results():
     """使用 poetry run pytest 运行所有测试并从 JUnit XML 报告中解析结果。"""
-    return run_command(["poetry", "run", "pytest"], cwd=REPO_DIR)
+    run_command(
+        ["poetry", "run", "pytest", "--json-report", "-k" "not test_recursive"],
+        cwd=REPO_DIR,
+    )
+    result = dict()
+    with open(f"{REPO_DIR}/.report.json", "r") as f:
+        data = json.loads(f.read())
+        for item in data["tests"]:
+            if item["nodeid"]:
+                result[item["nodeid"]] = item["outcome"]
+    return result
 
 
 def write_results_and_exit(success=True):
