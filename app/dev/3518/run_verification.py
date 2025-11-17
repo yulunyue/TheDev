@@ -8,8 +8,12 @@ import xml.etree.ElementTree as ET
 
 # --- 配置 ---
 # 请在这里设置你的代码仓库的绝对路径
+<<<<<<< HEAD
+REPO_PATH = "/data/data/com.termux/files/home/code/rich"
+=======
 REPO_PATH = "D:/thebug/rich"
 # 要进行测试的基础 commit 哈希
+>>>>>>> 591d42ef1c35509eb1f71948919e51ac79481b0c
 BASE_COMMIT = "5ba9cb56e68dcdf2db50c214d8f1412c8a50761b"
 # 实例ID，用于结果文件的顶级键
 INSTANCE_ID = "Textualize__rich-3518"
@@ -277,5 +281,4 @@ if __name__ == "__main__":
         print(f"{Colors.YELLOW}请修改脚本顶部的 `REPO_PATH` 变量。{Colors.ENDC}")
         print(f"{Colors.YELLOW}当前配置路径: '{REPO_PATH}'{Colors.ENDC}")
         sys.exit(1)
-
     main()
