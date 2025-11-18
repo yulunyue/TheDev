@@ -22,3 +22,11 @@ class StrUtil:
         if self.str_prefix_match():
             return True
         return False
+
+    def format(self, s: str, **kw):
+        array = s.split("%{")
+        result = array.pop(0)
+        for v in array:
+            idx = v.index("}")
+            result += kw[v[:idx]] + v[idx + 1 :]
+        return result

@@ -1,5 +1,6 @@
 import subprocess
 from common.util.export import File, TheDevLoger, get_dev_log, logger
+import os
 
 
 class OsUtil:
@@ -11,15 +12,14 @@ class OsUtil:
     def check_output(self):
         cmd = self.get_cmd()
         self.logger.info(cmd)
-        return subprocess.check_output(
+        ret = subprocess.check_output(
             cmd,
             shell=True,
             stderr=self.logger.get_writer(),
             cwd=self.root_path,
         )
-
-    def run(self):
-        subprocess.run()
+        self.logger.debug(ret)
+        return ret
 
     def set_logger(self, logger):
         self.logger: TheDevLoger = logger
@@ -36,3 +36,9 @@ class OsUtil:
     def run(self, *args):
         self.args = " ".join(args)
         return self.check_output().decode()
+
+    def system(self, *args):
+        self.args = " ".join(args)
+        cmd = f"{self.fun_name} {self.args}"
+        self.logger.info(cmd)
+        return os.system(cmd)

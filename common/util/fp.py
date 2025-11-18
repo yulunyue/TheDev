@@ -25,6 +25,9 @@ class File:
         self.m_time = 0
         self.data = b""
 
+    def parent(self):
+        return File("/".join(self.dirs))
+
     def get_m_time(self):
         return os.path.getmtime(self.path)
 
@@ -78,7 +81,30 @@ class File:
         data = self.read_data()
         if self.is_json_file():
             return json.loads(data.decode(encoding))
+        elif self.file_name.endswith(".cfg") or self.file_name.endswith(".ini"):
+            from configparser import ConfigParser
+
+            config = ConfigParser()
+            config.read(self.path)
+            data = {}
+            for section in config.sections():
+                data[section] = {}
+                for key, val in config.items(section):
+                    data[section][key] = val
+            return data
         return data.decode(encoding)
+
+    _config = None
+
+    def get(self, *keys, default_value=None):
+        if self._config is None:
+            self._config = self.read_file()
+        tmp = self._config
+        for k in keys:
+            if k not in tmp:
+                return default_value
+            tmp = tmp[k]
+        return tmp
 
     def read_fast_file(self):
         m_time = self.get_m_time()
@@ -90,18 +116,24 @@ class File:
     def exists(self):
         return os.path.exists(self.path)
 
-    def list_dir(self, depth=1, with_dir=False) -> List["File"]:
+    def list_dir(self, depth=1, with_dir=False, filter=None) -> List["File"]:
         if depth == 0:
             return []
         ret = []
+
+        def append(f):
+            if filter and not filter(f):
+                return
+            ret.append(f)
+
         for name in os.listdir(self.path):
             f = File(self.path + "/" + name)
             if f.is_dir():
                 if with_dir:
-                    ret.append(f)
+                    append(f)
                 ret.extend(f.list_dir(depth - 1))
             else:
-                ret.append(f)
+                append(f)
         return ret
 
     def list_tree_file(self):

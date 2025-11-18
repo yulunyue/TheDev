@@ -23,4 +23,7 @@ class Solution(MockCf):
         )  # nums[max_i] 是最后一个数
         return CT.max(ans1, ans2)
 
+    def maximumScore(self, nums: List[int], k: int) -> int:
+        n, c = len(nums), 0
+
     execute = maximumScore
