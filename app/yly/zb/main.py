@@ -22,6 +22,7 @@ class ToolMain(ToolBase):
         self.git_cmd = OsUtil("git")
         if not self.local_repo.exists():
             self.git_cmd.run("clone", self.repo_uri, self.local_repo.path)
+        self.setup_env_sh = self.input_dir.child("setup_env.sh")
         self.git_cmd.set_env(self.local_repo.path)
 
     def rest_repo(self):
@@ -88,6 +89,12 @@ class ToolMain(ToolBase):
                 ]
             )
         )
+
+    def pytest(self):
+        OsUtil().set_env(self.local_repo.path).run("-m", "pytest")
+
+    def install(self):
+        OsUtil().run(self.setup_env_sh.path)
 
     def make_main_py(self):
         self.main_py_file.write_file(

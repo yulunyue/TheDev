@@ -151,8 +151,8 @@ class ToolBase:
 
     def run(self):
         self.argvs, self.kw = url_to_json(sys.argv[1:])
-        fun_name = self.argvs.pop(0)
-        call_func_auto(self.prepare, *self.argvs, **self.kw)
+        fun_name = self.argvs.pop()
+        self.prepare(*self.argvs[1:])
         f = getattr(self, fun_name, None)
         if f is None:
             logger.info(
@@ -164,7 +164,7 @@ class ToolBase:
             )
             self.exit()
             return
-        ret = call_func_auto(f, *self.argvs, **self.kw)
+        ret = call_func_auto(f, **self.kw)
         logger.info(f"{sys.argv[1:]} {ret}")
         self.exit()
 
