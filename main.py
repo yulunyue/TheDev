@@ -1,4 +1,7 @@
 import sys
+import os
+
+os.environ.setdefault("THE_DEV_LOGER_SUFIX", "main")
 from common.service.export import run, PORT
 from app.tool.export import ROUTES
 from common.util.export import File

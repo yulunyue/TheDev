@@ -7,7 +7,7 @@ import sys
 import traceback
 from common.util.tool import json_dumps
 
-
+LOG_SUFF = os.environ.get("THE_DEV_LOGER_SUFIX", "")
 LOG_DIR = "data/log"
 JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
 LOG_MAP = dict()
@@ -34,7 +34,7 @@ def name_to_path(name):
         path = name
     if not path.endswith(".log"):
         path += ".log"
-    return path
+    return path + LOG_SUFF
 
 
 def dict_to_str(kw: dict, indent=None):
