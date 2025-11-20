@@ -9,6 +9,8 @@ class ToolMain(ToolBase):
     def prepare(self, name):
         self.name: str = name
         self.input_dir = File(f"{INPUTS_DIR}/{name}")
+        if not self.input_dir.exists():
+            File(self.input_dir.path + ".zip").unzip()
         self.config_json_file = self.input_dir.child(f"{name}.json")
         self.config: Dict[str, str] = self.config_json_file.read_file()
         self.base_commit = self.config["base_commit"]
@@ -36,6 +38,7 @@ class ToolMain(ToolBase):
             logger.info([stdout, stderr])
 
     def pip_install(self, exec_flag=True):
+        raise Exception("todo")
         pip_packages = {"pytest-json-report"}
         set_up_file = self.local_repo.child("setup.cfg")
         if set_up_file.exists():
@@ -77,7 +80,6 @@ class ToolMain(ToolBase):
         return pkg.replace(";", ",").split(",")[0]
 
     def make_setup_repo_sh(self):
-
         self.input_dir.child("setup_repo.sh").write_file(
             "\n".join(
                 [
@@ -97,9 +99,17 @@ class ToolMain(ToolBase):
             )
         )
 
+    def make_env(self):
+        env_path = f"data/env/{self.name}"
+        if not File(env_path).exists():
+            OsUtil().run("-m", "venv", env_path)
+        logger.info(f"attach env->{env_path}/Scripts/Activate.ps1")
+
     def init(self):
+        self.make_setup_repo_sh()
         self.make_main_py()
-        self.prepare_repo()
+        self.make_env()
+        self.rest_repo()
         logger.info(self.local_repo.path)
         logger.info(f"python {self.main_py_file.path}")
 

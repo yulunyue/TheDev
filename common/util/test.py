@@ -29,6 +29,7 @@ class CaseFun:
             self.error_logger.info(
                 f"-----{self.ep_count}-----\rret:{a}\nexp:{expect_value}\ndiff:\n{msg}\n{info}"
             )
+            logger.info(f"{a}!={expect_value}", stack_info=True)
 
     def run(self, *args, **kw):
         self.start_time = time.time()

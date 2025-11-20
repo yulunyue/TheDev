@@ -200,6 +200,7 @@ class File:
         with zipfile.ZipFile(self.path) as zf:
             for member in zf.namelist():
                 zf.extract(member, path=output_dir)
+        return self
 
     def replace(self, info: dict):
         data = self.read_file()

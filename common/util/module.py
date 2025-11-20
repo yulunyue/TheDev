@@ -12,6 +12,18 @@ from collections import defaultdict
 import traceback
 
 
+class FunInfo:
+    def load(self, name, doc, args, kw, has_args, has_kw, has_self):
+        self.name = name
+        self.doc = doc
+        self.args = args
+        self.kw = kw
+        self.has_args = has_args
+        self.has_kw = has_kw
+        self.has_self = has_self
+        return self
+
+
 def check_func_arg_kw(v):
     has_args = False
     has_kw = False
@@ -35,56 +47,50 @@ def check_func_arg_kw(v):
 
 
 def call_func_auto(func, *args, **kw):
-    # arg_count = func.__code__.co_argcount
-    # var_names = func.__code__.co_varnames
-    # # p_or_k_ct, p_ct, k_ct, has_args, has_kw = check_func_arg_kw(f)
-    # # if has_args and has_kw:
-    # #     return f(*args, **kw)
-    # # elif has_args:
-    # #     return f(*args)
-    # # elif has_kw:
-    # #     return f(**kw)
-    # print(func, arg_count, var_names, args, kw)
-    return func(*args, **kw)
+    info = get_function_info(func)
+    if info.has_args and info.has_kw:
+        return func(*args, **kw)
+    elif info.has_args:
+        return func(*args)
+    elif info.has_kw:
+        return func(**kw)
+    return func(*args[: len(info.args)])
 
 
 def get_function_info(v):
     argspec = inspect.getfullargspec(v)
-
-    kg = {}
-    if argspec.defaults is None:
+    has_self = False
+    df = argspec.defaults
+    kgs = []
+    if df is None:
         args = argspec.args
     else:
-        df = argspec.defaults
-        args = argspec.args[0 : -len(df)]
-        kg.update(dict(zip(argspec.args[-len(df) :], df)))
-    for a in args:
-        if a == "self":
-            continue
-        kg[a] = None
+        args, kgs = argspec.args[0 : -len(df)], argspec.args[len(df) + 1 :]
+    kw = dict()
 
-    def a_help(key, default_value):
+    def a_help(key, default_value, is_pos):
         cls = argspec.annotations.get(key, None)
-        ret = dict(key=key, default_value=default_value, type=None)
+        ret = dict(key=key, default_value=default_value, type=None, is_pos=is_pos)
+
         if hasattr(cls, "type_info"):
             ret.update(cls.type_info)
         elif cls is not None:
             ret.update(type=cls.__name__)
+        elif default_value is not None:
+            ret.update(type=default_value.__class__.__name__)
         return ret
 
-    from common.service.export import Node
-
-    return Node(
-        key=v.__name__,
-        title=v.__name__,
-        data=dict(
-            doc=v.__doc__,
-            args=args,
-            # annotated=str(v.__annotations__),
-            kwargs={k: a_help(k, v) for k, v in kg.items()},
-            # code=str(v),
-        ),
-    )
+    ag = []
+    for a in args:
+        if a == "self":
+            has_self = True
+            continue
+        ag.append(a)
+        kw[a] = a_help(a, None, True)
+    for i in range(len(kgs)):
+        kw[kgs[i]] = a_help(kgs[i], df[i], False)
+    p_or_k_ct, p_ct, k_ct, has_args, has_kw = check_func_arg_kw(v)
+    return FunInfo().load(v.__name__, v.__doc__, ag, kw, has_args, has_kw, has_self)
 
 
 def run_catch_error(f, limit=0, **kw):

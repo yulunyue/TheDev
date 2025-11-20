@@ -62,9 +62,8 @@ class Diff:
 
     def diff_any(self, src, dst, keys):
         if src is None or dst is None:
-            self.diff_result.append(
-                "" if src is None and dst is None else f"{src}!={dst}"
-            )
+            if src is not None or dst is not None:
+                self.diff_result.append(f"{src}!={dst}")
         elif isinstance(src, dict) or isinstance(dst, dict):
             if not isinstance(src, dict) or not isinstance(dst, dict):
                 self.diff_result.append(f"datatype need dict")
