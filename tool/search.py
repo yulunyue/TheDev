@@ -13,18 +13,6 @@ from common.tool.export import ThreadRecord
 from app.yly.envs.game.study.state import TestState
 
 
-class Record(ThreadRecord):
-    def __init__(self, s: State):
-        self.s = s
-        super().__init__()
-
-    def uk(self):
-        return self.s.print_tree()
-
-    def set_search(self, algo: Algo):
-        return self.set_exec(lambda *args: algo.search(self.s))
-
-
 def get_s(cls=None, **kw):
     md = Module().load_module_object(cls)
     return md.get_root(**kw)
@@ -34,7 +22,7 @@ DEFAULT_CLS = 1
 
 
 class SearchTool(ToolBase):
-    def prepare(self, **kw):
+    def prepare(self):
         self.al = ALgoManage().set_record_dir("data/test/search")
 
     def mc_cli(self):

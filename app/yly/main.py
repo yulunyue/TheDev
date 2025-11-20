@@ -46,14 +46,17 @@ class CaseMgmt:
 
 
 class ToolContext(ToolBase):
+    def prepare(self, file_name):
+        self.cm = CaseMgmt(file_name)
+        self.ins: MockCf = get_ins(file_name)
+        return self
 
-    def test(self, file_name, case_name=""):
-        cm = CaseMgmt(file_name)
-        ins: MockCf = get_ins(file_name)
-        for case in cm.get_cases(case_name):
-            ins.set_logger(case.get_loger())
-            ins.set_inputs(case.get_linput_lines())
-            f = getattr(ins, "execute")
+    def test(self, case_name=""):
+
+        for case in self.cm.get_cases(case_name):
+            self.ins.set_logger(case.get_loger())
+            self.ins.set_inputs(case.get_linput_lines())
+            f = getattr(self.ins, "execute")
             inp = case.get_input()
             r = f(**inp)
             msg = case.run_diff(r)

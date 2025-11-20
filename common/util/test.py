@@ -143,7 +143,7 @@ class ToolBase:
     def logger(self):
         return get_log(f"data/tool/{self.__class__.__name__}.log")
 
-    def prepare(self, *args, **kw):
+    def prepare(self):
         pass
 
     def exit(self):
@@ -152,7 +152,8 @@ class ToolBase:
     def run(self):
         self.argvs, self.kw = url_to_json(sys.argv[1:])
         fun_name = self.argvs.pop()
-        self.prepare(*self.argvs[1:])
+        print(self.argvs)
+        self.prepare(*self.argvs)
         f = getattr(self, fun_name, None)
         if f is None:
             logger.info(
@@ -164,7 +165,7 @@ class ToolBase:
             )
             self.exit()
             return
-        ret = call_func_auto(f, **self.kw)
+        ret = f(**self.kw)
         logger.info(f"{sys.argv[1:]} {ret}")
         self.exit()
 
