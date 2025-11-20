@@ -34,6 +34,9 @@ class File:
     def child(self, name):
         return File(self.path + "/" + name)
 
+    def get_abs_path(self):
+        return os.getcwd().replace("\\", "/") + "/" + self.path
+
     def make_dir_if_not_exist(self, is_dir=False):
         if self.exists():
             return self
@@ -49,6 +52,7 @@ class File:
         return self
 
     def write_file(self, data: str, encoding="utf-8"):
+
         if isinstance(data, dict) or isinstance(data, list):
             data = json_dump(data)
         self.make_dir_if_not_exist()

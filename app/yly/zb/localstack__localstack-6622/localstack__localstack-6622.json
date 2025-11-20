@@ -10,6 +10,9 @@
     "environment_setup_commit": "18dea696609c28dba9c4bb2f32b5a959911c8e66",
     "pr_url": "https://github.com/localstack/localstack/pull/6622",
     "issue_url": "https://github.com/localstack/localstack/issues/6620",
+    "pip": {
+        "Werkzeug": "2.1.2"
+    },
     "issue_numbers": [
         "6620"
     ]

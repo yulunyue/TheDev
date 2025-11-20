@@ -6,11 +6,11 @@ from common.util.export import (
     hash_any,
     ThreadManage,
 )
-from common.tool.export import NumberModel, StrModel, ConfigBase, TableBase, DictModel
 import urllib3
 
 urllib3.disable_warnings()
 logger = get_log("api")
+from common.tool.export import NumberModel, StrModel, ConfigBase, TableBase, DictModel
 
 
 class ApiConfig(ConfigBase):
@@ -20,13 +20,72 @@ class ApiConfig(ConfigBase):
     timeout = NumberModel(default_value=10)
 
 
+API_CONFIG = TableBase[ApiConfig]().set_resource("api")
+
+
+def get_proxy(key=None):
+    ret = API_CONFIG.get("default").proxy.get_value() or dict(https=None, http=None)
+    if key is None:
+        return ret
+    return ret[key]
+
+
+def request_mock():
+    import socket
+
+    socket.setdefaulttimeout(1)
+
+    def mock(fun, method: str):
+        def wrap(url, timeout=None, proxies=None, self=None, verify=False, **kw):
+            if timeout is None:
+                timeout = API_CONFIG.get("default").timeout.get_value()
+            if proxies is None:
+                proxies = get_proxy()
+            if verify:
+                verify = False
+            err_msg = ""
+            logger.debug(f"pre {method} {url} {timeout} {proxies} {kw}")
+            try:
+                if self is None:
+                    ret: requests.Response = fun(
+                        url, timeout=timeout, proxies=proxies, verify=verify, **kw
+                    )
+                else:
+                    ret: requests.Response = fun(
+                        self, url, timeout=timeout, proxies=proxies, verify=verify, **kw
+                    )
+                err_msg = f"{ret.status_code}"
+            except Exception as e:
+                err_msg = str(e)
+                raise Exception(e)
+            finally:
+                logger.debug(f"finish {url} {err_msg}")
+            return ret
+
+        def wrap_cls(self, url, timeout=None, proxies=None, **kw):
+            return wrap(url, timeout=timeout, proxies=proxies, self=self, **kw)
+
+        if method.startswith("s_"):
+            return wrap_cls
+        return wrap
+
+    class MockSession(requests.Session):
+        get = mock(requests.Session.get, "s_get")
+        post = mock(requests.Session.get, "s_post")
+
+    requests.Session = MockSession
+    requests.get = mock(requests.get, "get")
+    requests.post = mock(requests.post, "post")
+    requests.put = mock(requests.put, "put")
+
+
 class Api:
     CONTENT_TYPE = "content-type"
     APPLICATION_JSON = "application/json;charset=UTF-8"
 
     def __init__(self):
         self._name = self.__class__.__name__
-        self.c = TableBase[ApiConfig]().set_resource("api")
+
         self.cache = None
 
     @property
@@ -43,7 +102,7 @@ class Api:
         return self
 
     def get_endpoint(self):
-        return self.c.get(self.name).endpoint.get_value()
+        return API_CONFIG.get(self.name).endpoint.get_value()
 
     def url(self, path):
         if isinstance(path, list):
@@ -74,7 +133,7 @@ class Api:
         return ret
 
     def get_proxy(self):
-        return self.c.get(self.name).proxy.get_value()
+        return API_CONFIG.get(self.name).proxy.get_value()
 
     def get_mock_data(self, uri, method, param):
         k = method + "|" + hash_any(uri) + "|" + hash_any(param)
@@ -83,7 +142,7 @@ class Api:
         return k, None
 
     def get_timeout(self):
-        return self.c.get(self.name).timeout.get_value()
+        return API_CONFIG.get(self.name).timeout.get_value()
 
     def http(self, method, path, data=None, headers=None, param=None):
         if headers is None:
@@ -108,7 +167,7 @@ class Api:
                 params.update(dict(params=param))
             if data is not None:
                 params.update(dict(json=data))
-        cookies = self.c.get(self.name).cookie.get_value() or {}
+        cookies = API_CONFIG.get(self.name).cookie.get_value() or {}
         res: requests.Response = requests.request(
             url=uri,
             headers=headers,

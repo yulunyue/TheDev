@@ -12,8 +12,45 @@ from collections import defaultdict
 import traceback
 
 
+def check_func_arg_kw(v):
+    has_args = False
+    has_kw = False
+    p_or_k_ct = p_ct = k_ct = 0
+    sig = inspect.signature(v)
+    for param in sig.parameters.values():
+        if param.kind == param.VAR_POSITIONAL:
+            has_args = True
+        elif param.kind == param.VAR_KEYWORD:
+            has_kw = True
+        elif param.kind == param.KEYWORD_ONLY:
+            k_ct += 1
+        elif param.kind == param.POSITIONAL_ONLY:
+            p_ct += 1
+        elif param.kind == param.POSITIONAL_OR_KEYWORD:
+            p_or_k_ct += 1
+        else:
+            raise Exception(param)
+
+    return p_or_k_ct, p_ct, k_ct, has_args, has_kw
+
+
+def call_func_auto(func, *args, **kw):
+    # arg_count = func.__code__.co_argcount
+    # var_names = func.__code__.co_varnames
+    # # p_or_k_ct, p_ct, k_ct, has_args, has_kw = check_func_arg_kw(f)
+    # # if has_args and has_kw:
+    # #     return f(*args, **kw)
+    # # elif has_args:
+    # #     return f(*args)
+    # # elif has_kw:
+    # #     return f(**kw)
+    # print(func, arg_count, var_names, args, kw)
+    return func(*args, **kw)
+
+
 def get_function_info(v):
     argspec = inspect.getfullargspec(v)
+
     kg = {}
     if argspec.defaults is None:
         args = argspec.args

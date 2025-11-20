@@ -3,6 +3,7 @@ import time
 from .fp import File
 from .log import get_log, get_dev_log, logger
 from .tool import url_to_json
+from .module import Module, call_func_auto
 from .difftool import Diff
 from typing import Dict, List
 import json
@@ -150,7 +151,7 @@ class ToolBase:
     def run(self):
         self.argvs, self.kw = url_to_json(sys.argv[1:])
         fun_name = self.argvs.pop(0)
-        self.prepare(*self.argvs, **self.kw)
+        call_func_auto(self.prepare, *self.argvs, **self.kw)
         f = getattr(self, fun_name, None)
         if f is None:
             logger.info(
@@ -162,7 +163,7 @@ class ToolBase:
             )
             self.exit()
             return
-        ret = f(*self.argvs, **self.kw)
+        ret = call_func_auto(f, *self.argvs, **self.kw)
         logger.info(f"{sys.argv[1:]} {ret}")
         self.exit()
 
