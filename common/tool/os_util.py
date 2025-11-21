@@ -13,7 +13,7 @@ class OsUtil:
 
     def check_output(self):
         cmds = self.get_cmd()
-        self.logger.info(cmds)
+        self.logger.info(f"{self.root_path}->{cmds}")
         cmd = [v for v in cmds.split(" ") if v]
         try:
             process = subprocess.run(
