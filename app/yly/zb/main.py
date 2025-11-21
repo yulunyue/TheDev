@@ -1,5 +1,6 @@
 from common.util.export import ToolBase, File, logger, Dict, List, StrUtil
 from common.tool.os_util import OsUtil
+import os
 
 INPUTS_DIR = "app/yly/zb"
 REPO_BASE = "data/repo"
@@ -107,7 +108,7 @@ class ToolMain(ToolBase):
         )
 
     def make_env(self):
-        env_path = f"data/env/{self.name}"
+        env_path = f"data/env_{os.name}/{self.name}"
         if not File(env_path).exists():
             OsUtil().run("-m", "venv", env_path)
         logger.info(f"attach env->{env_path}/Scripts/Activate.ps1")
