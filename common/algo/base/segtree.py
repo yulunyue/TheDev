@@ -110,4 +110,4 @@ class SegTreeNode:
             util(p.right, depth + 2)
 
         util(self, 0)
-        return "\n" + "\n".join(ret)
+        return "\n".join(["-" * 10] + ret + ["-" * 10])

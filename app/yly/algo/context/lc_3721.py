@@ -33,19 +33,19 @@ class Solution(MockCf):
         t = T().set_range(0, len(nums))
         last = dict()
         ans = cur_sum = 0
-        for i, x in enumerate(nums):
+        for i, x in enumerate(nums, 1):
             v = 1 if x % 2 else -1
             if x not in last:
                 cur_sum += v
-                t.update(i, n - 1, v)
+                t.update(i, n, v)
             else:
-                t.update(last[x], i - 1, -1)
+                t.update(last[x], i - 1, -v)
             last[x] = i
-            j = t.find(0, i - 1 - ans, cur_sum)
+            j = t.find(0, i - ans - 1, cur_sum)
             if j >= 0:
-                ans = i - j + 1
-            self.logger.map(x=x, i=i, j=j, ans=ans, cur_sum=cur_sum)
-            self.logger.info(t)
+                ans = i - j
+            # self.logger.map(x=x, i=i, j=j, ans=ans, cur_sum=cur_sum)
+            # self.logger.info(t)
 
         return ans
 
