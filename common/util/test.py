@@ -152,7 +152,6 @@ class ToolBase:
     def run(self):
         self.argvs, self.kw = url_to_json(sys.argv[1:])
         fun_name = self.argvs.pop()
-        print(self.argvs)
         self.prepare(*self.argvs)
         f = getattr(self, fun_name, None)
         if f is None:

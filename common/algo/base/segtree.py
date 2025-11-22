@@ -19,7 +19,7 @@ class SegTreeNode:
         self._right: SegTreeNode = None
 
     def do(self, v):
-        self.value = v
+        raise Exception(v)
 
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
@@ -84,11 +84,26 @@ class SegTreeNode:
             self.right.do(self.todo)
             self.todo = 0
 
+    def find(self, ql: int, qr: int, target: int) -> int:
+        if self.l > qr or self.r < ql:
+            return -1
+        if self.l == self.r:
+            return self.l
+        self.down()
+        idx = self.left.find(ql, qr, target)
+        if idx < 0:
+            # 去右子树找
+            idx = self.right.find(ql, qr, target)
+        return idx
+
+    def show(self):
+        return f"v:{self.value}"
+
     def __str__(self):
         ret = []
 
         def util(p: SegTreeNode, depth):
-            ret.append(f"{' '*depth}{p.l}-{p.r}: v={p.value} todo={p.todo}")
+            ret.append(f"{' '*depth}{p.l}-{p.r}: v={p.show()} todo={p.todo}")
             if p.l == p.r:
                 return
             util(p.left, depth + 2)
