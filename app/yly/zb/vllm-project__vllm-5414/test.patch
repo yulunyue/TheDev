@@ -1,0 +1,224 @@
+diff --git a/.buildkite/test-pipeline.yaml b/.buildkite/test-pipeline.yaml
+index 5afe3730210e..a4ba379d7968 100644
+--- a/.buildkite/test-pipeline.yaml
++++ b/.buildkite/test-pipeline.yaml
+@@ -46,7 +46,7 @@ steps:
+   - TEST_DIST_MODEL=meta-llama/Llama-2-7b-hf DISTRIBUTED_EXECUTOR_BACKEND=mp pytest -v -s distributed/test_basic_distributed_correctness.py
+   - TEST_DIST_MODEL=facebook/opt-125m DISTRIBUTED_EXECUTOR_BACKEND=mp pytest -v -s distributed/test_chunked_prefill_distributed.py
+   - TEST_DIST_MODEL=meta-llama/Llama-2-7b-hf DISTRIBUTED_EXECUTOR_BACKEND=mp pytest -v -s distributed/test_chunked_prefill_distributed.py
+-  - pytest -v -s spec_decode/e2e/test_integration_dist.py
++  - pytest -v -s spec_decode/e2e/test_integration_dist_tp2.py
+   - CUDA_VISIBLE_DEVICES=0,1 pytest -v -s test_sharded_state_loader.py
+   - CUDA_VISIBLE_DEVICES=0,1 pytest -v -s distributed/test_utils.py
+ 
+@@ -60,6 +60,7 @@ steps:
+   # See https://github.com/vllm-project/vllm/pull/5473#issuecomment-2166601837 for context.
+   - TEST_DIST_MODEL=facebook/opt-125m DISTRIBUTED_EXECUTOR_BACKEND=ray pytest -v -s distributed/test_basic_distributed_correctness.py
+   - TEST_DIST_MODEL=facebook/opt-125m DISTRIBUTED_EXECUTOR_BACKEND=mp pytest -v -s distributed/test_basic_distributed_correctness.py
++  - pytest -v -s spec_decode/e2e/test_integration_dist_tp4.py
+ 
+ - label: Engine Test
+   mirror_hardwares: [amd]
+diff --git a/tests/spec_decode/e2e/test_integration_dist_tp2.py b/tests/spec_decode/e2e/test_integration_dist_tp2.py
+new file mode 100644
+index 000000000000..5534b80c0aaa
+--- /dev/null
++++ b/tests/spec_decode/e2e/test_integration_dist_tp2.py
+@@ -0,0 +1,111 @@
++"""Tests which cover integration of the speculative decoding framework with
++tensor parallelism.
++"""
++
++import pytest
++import torch
++
++from vllm.utils import is_hip
++
++from .conftest import run_greedy_equality_correctness_test
++
++
++@pytest.mark.skipif(torch.cuda.device_count() < 2,
++                    reason="Need at least 2 GPUs to run the test.")
++@pytest.mark.parametrize(
++    "common_llm_kwargs",
++    [{
++        "model": "JackFram/llama-68m",
++
++        # Skip cuda graph recording for fast test.
++        "enforce_eager": True,
++
++        # Required for spec decode.
++        "use_v2_block_manager": True,
++        "tensor_parallel_size": 2,
++
++        # Use AsyncLLM engine, so that the engine runs in its own process.
++        # Otherwise, since vLLM does not follow true SPMD, the test runner
++        # process will have both the engine and the rank0 worker. NCCL is not
++        # cleaned up properly, and its server host thread leaks, causing the
++        # second run of the test to fail with internal NCCL error.
++        "use_async": True,
++    }])
++@pytest.mark.parametrize("per_test_common_llm_kwargs", [{}])
++@pytest.mark.parametrize("baseline_llm_kwargs", [{}])
++@pytest.mark.parametrize("test_llm_kwargs", [
++    {
++        "speculative_model": "JackFram/llama-68m",
++        "num_speculative_tokens": 3,
++    },
++    {
++        "speculative_model": "[ngram]",
++        "num_speculative_tokens": 5,
++        "ngram_prompt_lookup_max": 3,
++    },
++])
++@pytest.mark.parametrize("batch_size", [2])
++@pytest.mark.parametrize(
++    "output_len",
++    [
++        # Use smaller output len for fast test.
++        32,
++    ])
++@pytest.mark.parametrize("seed", [1])
++def test_target_model_tp_gt_1(baseline_llm_generator, test_llm_generator,
++                              batch_size: int, output_len: int):
++    """Verify greedy equality when tensor parallelism is used.
++    """
++    if is_hip():
++        pytest.skip("hip is not well-supported yet")
++    run_greedy_equality_correctness_test(baseline_llm_generator,
++                                         test_llm_generator,
++                                         batch_size,
++                                         max_output_len=output_len,
++                                         force_output_len=True)
++
++
++@pytest.mark.skipif(torch.cuda.device_count() < 2,
++                    reason="Need at least 2 GPUs to run the test.")
++@pytest.mark.parametrize(
++    "common_llm_kwargs",
++    [{
++        # Use a small model for a fast test.
++        # Note this is repeated in the test body; to initialize a tokenizer.
++        "model": "JackFram/llama-68m",
++
++        # Skip cuda graph recording for fast test.
++        "enforce_eager": True,
++
++        # Required for spec decode.
++        "use_v2_block_manager": True,
++        "tensor_parallel_size": 2,
++
++        # Use AsyncLLM engine, so that the engine runs in its own process.
++        # Otherwise, since vLLM does not follow true SPMD, the test runner
++        # process will have both the engine and the rank0 worker. NCCL is not
++        # cleaned up properly, and its server host thread leaks, causing the
++        # second run of the test to fail with internal NCCL error.
++        "use_async": True,
++    }])
++@pytest.mark.parametrize("per_test_common_llm_kwargs", [{}])
++@pytest.mark.parametrize("baseline_llm_kwargs", [{}])
++@pytest.mark.parametrize("test_llm_kwargs", [
++    {
++        "speculative_model": "JackFram/llama-68m",
++        "num_speculative_tokens": 5,
++        "speculative_draft_tensor_parallel_size": 1,
++    },
++])
++@pytest.mark.parametrize("batch_size", [2])
++@pytest.mark.parametrize("seed", [1])
++def test_draft_model_tp_lt_target_model_tp2(test_llm_generator,
++                                            baseline_llm_generator,
++                                            batch_size: int):
++    """Verify spec decode works well with smaller tp for draft models.
++    """
++    run_greedy_equality_correctness_test(baseline_llm_generator,
++                                         test_llm_generator,
++                                         batch_size,
++                                         max_output_len=32,
++                                         force_output_len=True)
+diff --git a/tests/spec_decode/e2e/test_integration_dist.py b/tests/spec_decode/e2e/test_integration_dist_tp4.py
+similarity index 62%
+rename from tests/spec_decode/e2e/test_integration_dist.py
+rename to tests/spec_decode/e2e/test_integration_dist_tp4.py
+index d444ef24cbfd..56cb0147d9e4 100644
+--- a/tests/spec_decode/e2e/test_integration_dist.py
++++ b/tests/spec_decode/e2e/test_integration_dist_tp4.py
+@@ -5,16 +5,16 @@
+ import pytest
+ import torch
+ 
+-from vllm.utils import is_hip
+-
+ from .conftest import run_greedy_equality_correctness_test
+ 
+ 
+-@pytest.mark.skipif(torch.cuda.device_count() < 2,
+-                    reason="Need at least 2 GPUs to run the test.")
++@pytest.mark.skipif(torch.cuda.device_count() < 4,
++                    reason="Need at least 4 GPUs to run the test.")
+ @pytest.mark.parametrize(
+     "common_llm_kwargs",
+     [{
++        # Use a small model for a fast test.
++        # Note this is repeated in the test body; to initialize a tokenizer.
+         "model": "JackFram/llama-68m",
+ 
+         # Skip cuda graph recording for fast test.
+@@ -22,7 +22,7 @@
+ 
+         # Required for spec decode.
+         "use_v2_block_manager": True,
+-        "tensor_parallel_size": 2,
++        "tensor_parallel_size": 4,
+ 
+         # Use AsyncLLM engine, so that the engine runs in its own process.
+         # Otherwise, since vLLM does not follow true SPMD, the test runner
+@@ -31,35 +31,30 @@
+         # second run of the test to fail with internal NCCL error.
+         "use_async": True,
+     }])
+-@pytest.mark.parametrize("per_test_common_llm_kwargs", [{}])
+-@pytest.mark.parametrize("baseline_llm_kwargs", [{}])
+-@pytest.mark.parametrize("test_llm_kwargs", [
++@pytest.mark.parametrize("per_test_common_llm_kwargs", [
+     {
+         "speculative_model": "JackFram/llama-68m",
+-        "num_speculative_tokens": 3,
+-    },
+-    {
+-        "speculative_model": "[ngram]",
+         "num_speculative_tokens": 5,
+-        "ngram_prompt_lookup_max": 3,
+     },
+ ])
+-@pytest.mark.parametrize("batch_size", [2])
++@pytest.mark.parametrize("baseline_llm_kwargs", [{}])
+ @pytest.mark.parametrize(
+-    "output_len",
++    "test_llm_kwargs",
+     [
+-        # Use smaller output len for fast test.
+-        32,
++        #TODO(wooyeon): add spec_draft_dp=2 case
++        {
++            "speculative_draft_tensor_parallel_size": 1,
++        },
+     ])
++@pytest.mark.parametrize("batch_size", [2])
+ @pytest.mark.parametrize("seed", [1])
+-def test_target_model_tp_gt_1(baseline_llm_generator, test_llm_generator,
+-                              batch_size: int, output_len: int):
+-    """Verify greedy equality when tensor parallelism is used.
++def test_draft_model_tp_lt_target_model_tp4(test_llm_generator,
++                                            baseline_llm_generator,
++                                            batch_size: int):
++    """Verify spec decode works well with smaller tp for draft models.
+     """
+-    if is_hip():
+-        pytest.skip("hip is not well-supported yet")
+     run_greedy_equality_correctness_test(baseline_llm_generator,
+                                          test_llm_generator,
+                                          batch_size,
+-                                         max_output_len=output_len,
++                                         max_output_len=32,
+                                          force_output_len=True)

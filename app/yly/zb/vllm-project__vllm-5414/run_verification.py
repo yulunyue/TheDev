@@ -9,12 +9,12 @@ import xml.etree.ElementTree as ET
 sys.stdout.reconfigure(encoding="utf-8")
 # --- 配置 ---
 # 请在这里设置你的代码仓库的绝对路径
-INSTANCE_ID = "vllm-project__vllm-3868"
+INSTANCE_ID = "vllm-project__vllm-5414"
 REPO_PATH = "data/repo/vllm-project/vllm"
 # 要进行测试的基础 commit 哈希
-BASE_COMMIT = "37e84a403d6d11b670a42e84153204cd8b76b849"
+BASE_COMMIT = "edd5fe5fa29b8f9cc5fa37a30cc7211e0ff37067"
 # 实例ID，用于结果文件的顶级键
-PY_MAIN_CMD = "tests/entrypoints/test_guided_processors.py"
+PY_MAIN_CMD = "tests/spec_decode/e2e/test_integration_dist_tp2.py tests/spec_decode/e2e/test_integration_dist_tp4.py"
 
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent

@@ -14,7 +14,7 @@ REPO_PATH = "%{REPO_PATH}"
 # 要进行测试的基础 commit 哈希
 BASE_COMMIT = "%{BASE_COMMIT}"
 # 实例ID，用于结果文件的顶级键
-
+PY_MAIN_CMD = "%{PY_MAIN_CMD}"
 
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -149,7 +149,7 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 
 def run_py_test():
     run_command(
-        ["pytest", "--json-report"],
+        ["pytest", "--json-report", PY_MAIN_CMD],
         cwd=REPO_DIR,
     )
     result = dict()
@@ -224,7 +224,7 @@ def main():
     all_tests_run = set(pre_patch_results.keys()) | set(post_patch_results.keys())
 
     for test in sorted(list(all_tests_run)):
-        pre_status = pre_patch_results.get(test, "passed")
+        pre_status = pre_patch_results.get(test, "failed")
         post_status = post_patch_results.get(test, "failed")
 
         if pre_status == "failed" and post_status == "passed":

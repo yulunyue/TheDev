@@ -92,6 +92,9 @@ class ListModel(BaseModel):
         default_value = default_value or []
         super().__init__(key, default_value, data_source)
 
+    def get_value(self) -> list:
+        return super().get_value()
+
 
 class DictModel(BaseModel):
     value: dict

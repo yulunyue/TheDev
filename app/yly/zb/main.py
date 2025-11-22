@@ -1,14 +1,32 @@
 from common.util.export import ToolBase, File, logger, Dict, List, StrUtil
-from common.tool.os_util import OsUtil
+from common.tool.export import (
+    OsUtil,
+    TableConfig,
+    TableBase,
+    StrModel,
+    ListModel,
+    DictModel,
+)
+
+
+class Task(TableConfig):
+    test_main = StrModel()
+    setup_env = ListModel()
+    result = DictModel()
+
+
 import os
 
 INPUTS_DIR = "app/yly/zb"
 REPO_BASE = "data/repo"
 
+CONFIG_RESOURCE = TableBase[Task]().set_resource("zb")
+
 
 class ToolMain(ToolBase):
     def prepare(self, name):
         self.name: str = name
+        self.model = CONFIG_RESOURCE.get(name)
         self.input_dir = File(f"{INPUTS_DIR}/{name}")
         if not self.input_dir.exists():
             File(self.input_dir.path + ".zip").unzip()
@@ -27,7 +45,9 @@ class ToolMain(ToolBase):
         self.test_patch = self.input_dir.child("test.patch")
         self.code_patch = self.input_dir.child("code.patch")
         self.git_cmd.set_env(self.local_repo.path)
-        self.change_py_test_files: List[File] = []
+        self.change_py_test_files: Dict[str, File] = dict()
+        self.get_update_file_by_batch(self.test_patch)
+        self.get_update_file_by_batch(self.code_patch)
 
     def json_report_parse(self, fp: File):
         result = dict()
@@ -42,8 +62,9 @@ class ToolMain(ToolBase):
         for s in fp.read_line():
             if s.startswith("+++ b/"):
                 f = self.local_repo.child(s[6:])
-                if f.exists() and f.path.endswith(".py"):
-                    self.change_py_test_files.append(f)
+                if f.path.endswith(".py") and f.name.startswith("test_"):
+                    key = f.path.replace(self.local_repo.path + "/", "")
+                    self.change_py_test_files[key] = f
 
     def rest_repo(self):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""
@@ -58,9 +79,8 @@ class ToolMain(ToolBase):
         if not success:
             logger.info([stdout, stderr])
 
-    def pip_install(self, exec_flag=True):
-        raise Exception("todo")
-        pip_packages = {"pytest-json-report"}
+    def init_setup_cfg(self):
+        pip_packages = []
         set_up_file = self.local_repo.child("setup.cfg")
         if set_up_file.exists():
             pkgs: List[str] = []
@@ -77,25 +97,9 @@ class ToolMain(ToolBase):
                 if not pkg:
                     continue
                 pip_packages.add(pkg)
-        setup_env_sh = []
-        for pkg in pip_packages:
-            if exec_flag:
-                OsUtil(error_exit_flag=False).run("-m", "pip", "install", pkg)
-            setup_env_sh.append(f"python -m pip install {pkg}")
-        self.input_dir.child("setup_env.sh").write_file("\n".join(setup_env_sh))
 
     def apply_patch(self, f: File):
-        self.get_update_file_by_batch(f)
-        success, stdout, stderr = self.git_cmd.run("apply", f.get_abs_path())
-        if not success:
-            logger.error([stdout, stderr])
-
-    def run_test(self):
-
-        self.apply_patch(self.test_patch)
-
-    def run_code(self):
-        self.apply_patch(self.code_patch)
+        self.git_cmd.run("apply", f.get_abs_path())
 
     def pkg_repair(self, pkg: str):
         if pkg.startswith("amazon_kclpy"):
@@ -112,34 +116,33 @@ class ToolMain(ToolBase):
             )
         )
 
-    def py_test(self):
+    def get_py_test_cmds(self):
+        files = list(self.change_py_test_files.keys())
+        logger.info(f"get change_file_form patch {files}")
+        model_py_test = self.model.test_main.get_value()
+        if model_py_test:
+            return model_py_test
+        return " ".join(files)
+
+    def py_test(self, key):
         report_json_fp = self.local_repo.child(".report.json")
         if report_json_fp.exists():
             report_json_fp.remove()
-        files = set(
-            f.path.replace(self.local_repo.path + "/", "")
-            for f in self.change_py_test_files
+        OsUtil(error_exit_flag=False).set_env(self.local_repo.path).run(
+            "-m", "pytest", "--json-report", self.get_py_test_cmds()
         )
-        files.remove("tests/entrypoints/test_openai_server.py")
-        OsUtil(error_exit_flag=True).set_env(self.local_repo.path).run(
-            "-m", "pytest", "--json-report", *list(files)
-        )
+        result = self.model.result.get_value()
+        result[key] = self.json_report_parse(report_json_fp)
 
-        ret = self.json_report_parse(report_json_fp)
-        if not ret:
-            raise Exception(files)
-        return ret
-
-    def print_result(self, old: dict, new: dict):
+    def print_result(self):
+        result = self.model.result.get_value()
+        old, new = result["test"], result["code"]
         for k in list(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
                 logger.info(f"{k} {old_statu}->{new_statu}")
             elif old_statu == new_statu and new_statu != "success":
                 logger.info(f"{k} {old_statu}->{new_statu}")
-
-    def install(self):
-        OsUtil().run(self.setup_env_sh.path)
 
     def make_main_py(self):
         self.main_py_file.write_file(
@@ -148,32 +151,60 @@ class ToolMain(ToolBase):
                 REPO_PATH=self.local_repo.path,
                 BASE_COMMIT=self.base_commit,
                 INSTANCE_ID=self.config["instance_id"],
+                PY_MAIN_CMD=self.get_py_test_cmds(),
             )
         )
 
-    veny_enable = False
+    venv_enable = True
 
     def make_env(self):
-        if self.veny_enable:
-            env_path = f"data/env_{os.name}/{self.name}"
-            if not File(env_path).exists():
-                OsUtil().run("-m", "venv", env_path)
-            logger.info(f"attach env->{env_path}/Scripts/Activate.ps1")
+        if not self.venv_enable:
+            return
+        env_path = f"data/env_{os.name}/{self.name}"
+        if not File(env_path).exists():
+            OsUtil().run("-m", "venv", env_path)
+        if os.name == "nt":
+            logger.info(f"{env_path}/Scripts/Activate.ps1")
+        else:
+            logger.info(f"source {env_path}/bin/activate")
 
-    def main(self):
+    def make_setup_env_sh(self):
+        etup_env_sh = [
+            "python -m pip install --upgrade pip",
+            "python -m pip install pytest-json-report",
+            "cd data/repo/vllm-project/vllm",
+        ]
+        etup_env_sh.extend(self.model.setup_env.get_value())
+        self.input_dir.child("setup_env.sh").write_file("\n".join(etup_env_sh))
+
+    def init(self):
         self.make_setup_repo_sh()
+        self.make_setup_env_sh()
         self.make_main_py()
         self.make_env()
-        self.rest_repo()
-        test_result = dict()
-        self.run_test()
-        # test_result = self.py_test()
-        self.run_code()
-        code_result = self.py_test()
-        self.print_result(test_result, code_result)
+        logger.info(self.config.get("pr_url"))
+        logger.info(self.config.get("issue_url"))
         logger.info(self.local_repo.path)
         logger.info(f"python {self.main_py_file.path}")
+
+    def run1(self):
+        self.rest_repo()
+        self.apply_patch(self.test_patch)
+        self.py_test("test")
+
+    def run2(self):
+        self.rest_repo()
+        self.apply_patch(self.test_patch)
+        self.apply_patch(self.code_patch)
+        self.py_test("code")
+
+    def main(self):
+        self.init()
+        self.run1()
+        self.run2()
+        self.print_result()
 
 
 if __name__ == "__main__":
     ToolMain().run()
+    CONFIG_RESOURCE.save()

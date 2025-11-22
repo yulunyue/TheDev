@@ -1,0 +1,30 @@
+{
+    "vllm-project__vllm-3868": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "tests/entrypoints/test_guided_processors.py::test_guided_logits_processor_black_box[lm-format-enforcer]",
+                    "tests/entrypoints/test_guided_processors.py::test_guided_logits_processor_black_box[outlines]",
+                    "tests/entrypoints/test_guided_processors.py::test_guided_logits_processors"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}
