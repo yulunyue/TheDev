@@ -175,7 +175,7 @@ class State:
     def to_str(self):
         return []
 
-    def bfs(self, max_depth=-2) -> Dict[str, Tuple[List[Action], "State"]]:
+    def bfs(self, max_depth=3) -> Dict[str, Tuple[List[Action], "State"]]:
         ret = {self.state: [[], self]}
         q = [self]
         while q and max_depth != -1:

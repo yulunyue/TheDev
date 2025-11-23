@@ -10,9 +10,9 @@ class CubeState(State):
         self.grid = decode_data(state, [C.BIT_SIZE] * (C.SIZE * C.n * C.n))
 
     @classmethod
-    def new_shape(cls, n):
+    def new_shape(cls, n) -> "CubeState":
         C.load(n)
-        return CubeState.new(C.init_mask).get_action((0, 0, 1)).get_dst()
+        return CubeState.new(C.init_mask)
 
     def game_over(self):
         return self.state == C.init_mask
