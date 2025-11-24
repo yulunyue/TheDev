@@ -47,16 +47,26 @@ class Draw:
         plt.legend()
         return self
 
-    def draw_graph(self, datas):
+    def draw_graph(self, datas: dict):
+        # if isinstance(datas, str):
+        #     out_put = datas.replace(".json", "")
+        #     data = {}
+        #     with open(datas, "r", encoding="utf-8") as f:
+        #         data.update(json.loads(f.read()))
+        #     self.draw_net_work2(data, out_put)
+        #     return
         import networkx as nx
 
         plt.figure(figsize=(8, 8))
         g = nx.DiGraph()
         nodes = []
         edges = dict()
-        for f, t in datas:
-            edges[(f, t)] = f"{f}_{t}"
-            nodes.append((f, t))
+        for node_id, n_edges in datas.items():
+
+            for title, nextid in n_edges:
+                nextid = str(nextid)
+                edges[(node_id, nextid)] = str(title)
+                nodes.append((node_id, nextid))
         g.add_edges_from(nodes)
         pos = nx.layout.spring_layout(g, iterations=1, seed=227)
         nx.draw(
@@ -106,13 +116,6 @@ class Draw:
         logger.info(f.path)
         plt.savefig(f.path)
         return self
-
-    def draw_graph(self, path: str):
-        out_put = path.replace(".json", "")
-        data = {}
-        with open(path, "r", encoding="utf-8") as f:
-            data.update(json.loads(f.read()))
-        self.draw_net_work2(data, out_put)
 
     def show(self):
         plt.show()

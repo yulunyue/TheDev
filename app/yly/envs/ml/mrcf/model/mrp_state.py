@@ -1,4 +1,4 @@
-from common.algo.export import State, np, Action, PAction
+from common.algo.export import State, np, Action
 from .constant import C1
 from common.util.export import List, Dict
 import random
@@ -25,21 +25,28 @@ class MrpAction(Action):
 class MrpState(State):
 
     @classmethod
-    def new(cls, state=None, **kw):
+    def new(cls, state=0, **kw) -> "MrpState":
         return super().new(state, **kw)
 
     def make_actions(self, depth=1, **kw):
-        actions = dict()
+        actions = []
         for i in range(N):
-            if self.state is None:
-                p = 1
-            else:
-                p = C1.MRP_P[self.state][i]
-            if p == 0:
-                continue
-            nx = MrpState.new(i).set_reward(C1.MRP_REWARD[i])
-            actions[i] = MrpAction(self, i, nx).set_p(p)
+            p = C1.MRP_P[self.state][i]
+            nx = MrpState.new(i)
+            a = MrpAction(self, i, nx).set_p(p).set_reward(C1.MRP_REWARD[i])
+            actions.append(a)
         return actions
 
     def get_done(self):
         return self.state == 5
+
+    def get_reward_by_actions(self, chains, gamma):
+        g = 1
+        r = 0
+        s = self
+        for a in chains:
+            ac = s.get_action(a - 1)
+            r += ac.get_reward() * g
+            s = ac.get_dst()
+            g *= gamma
+        return r

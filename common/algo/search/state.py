@@ -7,13 +7,16 @@ inf = float("inf")
 
 class Action:
     check_info = None
-    reward = 0
 
     def __init__(self, src, action, dst=None):
         self.action = action
         self.src: State = src
         self.dst: State = dst
         self.data = dict()
+
+    @property
+    def title(self):
+        return self.action
 
     @property
     def key(self):
@@ -175,7 +178,7 @@ class State:
     def to_str(self):
         return []
 
-    def bfs(self, max_depth=3) -> Dict[str, Tuple[List[Action], "State"]]:
+    def bfs(self, max_depth=15) -> Dict[str, Tuple[List[Action], "State"]]:
         ret = {self.state: [[], self]}
         q = [self]
         while q and max_depth != -1:
@@ -255,17 +258,14 @@ class State:
             datas.append(str(info))
         return datas
 
-    def show(self, title=None, info=None):
-        if isinstance(self.state, int):
-            if not title:
-                title = "%x" % self.state
-            else:
-                title = "%s:%x" % (title, self.state)
-        else:
-            title = str(self.state)
+    def show(self, info=None):
         body = self.show_body(info)
-        head = "--" + title + "--"
+        head = f"--{self.title}--"
         return "\n".join([head] + body + ["-" * len(head)])
+
+    @property
+    def title(self):
+        return str(self.state)
 
     def get_win_player(self, *args, **kw):
         return self.done
@@ -289,6 +289,17 @@ class State:
     @classmethod
     def get_root(cls):
         return cls.new()
+
+    def draw_graph(self):
+        from common.third_util.draw import Draw
+
+        states = self.bfs().values()
+        ret = dict()
+        for _, s in states:
+            ret[s.title] = []
+            for a in s.get_sort_actions():
+                ret[s.title].append([a.title, a.get_dst().title])
+        Draw().draw_graph(ret).save(f"data/state/{self.name}.svg")
 
 
 class AbState(State):

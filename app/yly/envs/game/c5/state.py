@@ -60,10 +60,4 @@ class State(AbState):
         return actions_op_win if actions_op_win else actions
 
     def to_str(self):
-        C.set_mask(self.state)
-        ret = [[f"{i}"] + [" "] * C.width for i in range(C.height)]
-        for i, v in enumerate(C.grid):
-            y, x = i // C.width, i % C.width
-            ret[y][x + 1] = [" ", "O", "X"][v]
-        ret.append([" "] + [str(v) for v in range(C.width)])
-        return [" ".join(row) for row in ret]
+        return C.to_str(self.state)

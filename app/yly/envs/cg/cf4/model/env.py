@@ -1,79 +1,45 @@
 from .constant import C, List
+from app.yly.envs.game.c5.constant import Constant, set_mask
+from common.util.export import logger
 
 
-class Env:
-    def load(self, s):
-        self.HEIGHT, self.WIDTH = C.SHAPES[s]
-        self.INIT_MASK = 0
-        self.SIZE = self.WIDTH * self.HEIGHT
-        self.MASK_FULL = (1 << self.SIZE) - 1
-        # self.WIDTH_MASK: List[int] = []
-        self.MASK_HEIGHT = (1 << self.HEIGHT) - 1
-        self.MASK_POS: List[int] = []
-        # self.HEIGHT_CLEAR: List[int] = []
-        self.POINTS: List[List[List[int]]] = []
-        self.ACTION_SCORE: List[int] = []
-        # self.POS_REWARD: List[List[int]] = []
-        for i in range(self.HEIGHT):
-            self.MASK_POS.append(1 << i)
-        for i in range(self.WIDTH):
-            pass
-            # self.HEIGHT_CLEAR.append(self.MASK_HEIGHT - self.MASK_POS[-1])
-        for i in range(self.WIDTH):
-            self.INIT_MASK = (self.INIT_MASK << self.HEIGHT) + 1
-            # self.WIDTH_MASK.append(
-            #     self.MASK_FULL - (self.MASK_HEIGHT << (i * self.HEIGHT))
-            # )
-            # self.ACTION_SCORE.append(self.pos_score(i))
-            self.POINTS.append([])
-            for j in range(self.HEIGHT):
-                self.POINTS[-1].append([])
-                for k, (dy, dx) in enumerate(self.DR):
-                    tmp = []
-                    for l in range(-3, 4):
-                        if l == 0:
-                            continue
-                        x, y = i + dx * l, j + dy * l
-                        if x < 0 or x >= self.WIDTH or y < 0 or y >= self.HEIGHT - 1:
-                            continue
-                        tmp.append([x, y])
-                    if len(tmp) >= 3:
-                        self.POINTS[-1][-1].append(tmp)
+class Env(Constant):
+    BIT_SIZE = 1
 
     def set_shape(self, shape_idx):
-        self.load(shape_idx)
-        self.widths = [0] * C.WIDTH
-        self.heights = [0] * C.WIDTH
-        self.grid = [[C.NULL_POS] * C.HEIGHT for _ in range(C.WIDTH)]
-        self.step = 0
-        self.state = C.INIT_MASK
+        w, h = C.SHAPES[shape_idx]
+        self.load(w, h, in_row=C.IN_ROW)
+        self.INIT_MASK = 0
+        for _ in range(self.width):
+            self.INIT_MASK = (self.INIT_MASK << self.height_bit) + 1
+        self.state = self.INIT_MASK
         return self
 
-    def set_state(self, state: int):
-        if self.state == state:
-            return self
-        for i in range(C.WIDTH):
-            s1: int = state & C.MASK_HEIGHT
+    def get_next_state(self, pos: int, player_id: int):
+        state = (self.state >> (pos * self.height_bit)) & self.mask_row
+        idx = state.bit_length() + pos * self.height_bit - 1
+        s = set_mask(self.state, idx * self.BIT_SIZE, 2, player_id + 2)
+        return self.get_move_info(idx, player_id), s
 
-            self.set_column(i, s1)
-        return self
+    def get_yx(self, i):
+        return i % self.height, i // self.height
 
-    def set_column(self, i, s1: int):
-        if s1 == self.widths[i]:
-            return self
-        step = s1.bit_length() - 1
-        self.step += step - self.heights[i]
-        s = s1
-        for j in range(step):
-            self.set_pos(i, j, s & 1)
-            s = s >> 1
-        for j in range(step, C.HEIGHT):
-            self.set_pos(i, j, -1)
-        self.heights[i] = step
-        self.widths[i] = s1
+    def change_col(self, x, state4: int):
+        h = state4.bit_length()
+        for y in range(self.get_loop2()):
+            idx = x * self.height + y
+            if y >= h - 1:
+                player_id = 0
+            else:
+                player_id = (state4 & self.mask_bit) + 1
+            self.set_pos_player_id(idx, player_id)
+            state4 = state4 >> self.BIT_SIZE
 
-    def set_pos(self, i, j, s):
-        pass
+    def get_loop1(self):
+        return self.width
+
+    def get_loop2(self):
+        return self.height
 
 
 ENV = Env()

@@ -206,6 +206,7 @@ class ALgoManage:
         s.reset_env()
         for p in players:
             p.reset()
+        self.log(s.show())
         while self.turn_idx < max_turn:
             if s.game_over():
                 break
@@ -219,9 +220,7 @@ class ALgoManage:
                     s.get_win_player(),
                     self.turn_idx,
                 )
-            # self.a_r[p.get_name()].update(
-            #     int((time.time() - b) * 1000), p.state_num, a.get_reward()
-            # )
+
             self.record(p, a)
             s = s.do_action(a)
         return s.get_win_player(), self.turn_idx

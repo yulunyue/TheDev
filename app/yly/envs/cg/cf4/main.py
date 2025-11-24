@@ -30,8 +30,14 @@ class ToolCf4(ToolBase):
     def debug(self):
         self.dev()
 
+    def dev1(self):
+        logger.debug(self.init_state.show())
+        for a in self.init_state.get_sort_actions():
+            logger.debug(a.show())
+            logger.debug(a.get_dst().show())
+
     def dev(self):
-        self.random()
+        self.dev1()
 
 
 if __name__ == "__main__":

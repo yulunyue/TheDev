@@ -1,4 +1,4 @@
-from common.algo.search.state import np, State, Action, PAction
+from common.algo.search.state import State, Action
 from common.util.export import List, Dict
 from .constant import C2
 import random
@@ -11,7 +11,9 @@ class MdpState(State):
 
     @classmethod
     def new(cls, state=None, **kw) -> "MdpState":
-        return super().new(state, **kw).set_reward(0)
+        if state is None:
+            state = 0
+        return super().new(state, **kw)
 
     def make_actions(self, depth=1, **kw):
         actions: Dict[str, PAction] = dict()

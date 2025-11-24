@@ -75,6 +75,18 @@ class Logger(logging.Logger):
     def map(self, indent=None, **kw):
         self.debug(dict_to_str(kw, indent=indent), stacklevel=2)
 
+    def debug(
+        self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
+    ):
+        return super().debug(
+            msg,
+            *args,
+            exc_info=exc_info,
+            stack_info=stack_info,
+            stacklevel=stacklevel,
+            extra=extra,
+        )
+
     def info(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
     ):
