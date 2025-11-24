@@ -68,7 +68,7 @@ class F4State(AbState):
         return ret
 
     def to_str(self):
-        return ENV.to_str(self.state)[::-1]
+        return ENV.to_str(self.state)
 
 
 class F4StateDev(F4State):

@@ -37,10 +37,14 @@ class Constant:
         self.step = 0
         self.in_row = in_row
         self.op_win_state = self.in_row + 1  #
-        self.size = self.width * self.height
+        self.init_size()
+
         self.init_mask()
         self.init_mask_state()
         self.init_lines()
+
+    def init_size(self):
+        self.size = self.width * self.height
 
     def init_mask(self):
         self.row_bit = self.BIT_SIZE * self.width
@@ -138,9 +142,12 @@ class Constant:
 
     def get_dis(self, l1, l2, dy, dx, k):
         l3, l4 = dy * k + l1, dx * k + l2
-        if l3 < 0 or l4 < 0 or l3 >= self.get_loop1() or l4 >= self.get_loop2():
+        if not self.is_valide_pos(l3, l4):
             return None
         return self.get_idx(l3, l4)
+
+    def is_valide_pos(self, l3, l4):
+        return 0 <= l3 < self.get_loop1() and 0 <= l4 < self.get_loop2()
 
     def change_col(self, l1, state4):
         for l2 in range(self.get_loop2()):
