@@ -96,6 +96,11 @@ class File:
                 for key, val in config.items(section):
                     data[section][key] = val
             return data
+        elif self.file_name.endswith(".toml"):
+            import toml
+
+            return toml.load(self.path)
+
         return data.decode(encoding)
 
     _config = None

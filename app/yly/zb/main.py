@@ -79,9 +79,8 @@ class ToolMain(ToolBase):
         if not success:
             logger.info([stdout, stderr])
 
-    def init_setup_cfg(self):
+    def init_setup_cfg(set_up_file):
         pip_packages = []
-        set_up_file = self.local_repo.child("setup.cfg")
         if set_up_file.exists():
             pkgs: List[str] = []
             for section_name, depends in {
@@ -102,9 +101,8 @@ class ToolMain(ToolBase):
         self.git_cmd.run("apply", f.get_abs_path())
 
     def pkg_repair(self, pkg: str):
-        if pkg.startswith("amazon_kclpy"):
-            return
-        return pkg.replace(";", ",").split(",")[0]
+        pkg = pkg.replace(";", ",").split(",")[0].replace(" ", "")
+        return f"python -m pip install {pkg}"
 
     def make_setup_repo_sh(self):
         self.input_dir.child("setup_repo.sh").write_file(
@@ -141,7 +139,7 @@ class ToolMain(ToolBase):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
                 logger.info(f"{k} {old_statu}->{new_statu}")
-            elif old_statu == new_statu and new_statu != "success":
+            elif old_statu == new_statu and new_statu != "passed":
                 logger.info(f"{k} {old_statu}->{new_statu}")
 
     def make_main_py(self):
@@ -171,11 +169,19 @@ class ToolMain(ToolBase):
     def make_setup_env_sh(self):
         etup_env_sh = [
             "python -m pip install --upgrade pip",
-            "python -m pip install pytest-json-report",
-            "cd data/repo/vllm-project/vllm",
+            "python -m pip install pytest pytest-json-report toml",
+            f"cd {self.local_repo.path}",
         ]
         etup_env_sh.extend(self.model.setup_env.get_value())
-        self.input_dir.child("setup_env.sh").write_file("\n".join(etup_env_sh))
+        pyproject_toml = self.local_repo.child("pyproject.toml")
+        if pyproject_toml.exists():
+            etup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
+        self.setup_env_sh.write_file("\n".join(etup_env_sh))
+        logger.info(f"sh {self.setup_env_sh.path}")
+
+    def pip_install_pyproject_toml(self, f: File):
+        data = f.get("project", "dependencies")
+        return [self.pkg_repair(v) for v in data]
 
     def init(self):
         self.make_setup_repo_sh()
