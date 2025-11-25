@@ -13,6 +13,7 @@ class CwAction(Action):
         self.method = method
         self.param0 = param0
         self.owner = f.owner
+        self.reward = 0
         super().__init__(src, self.get_action_str())
 
     def get_action_str(self):

@@ -9,9 +9,6 @@ class World:
     maps = None
     show_msgs = []
 
-    def __init__(self, maps: str):
-        self.load(maps)
-
     def load(self, maps: str):
         self.maps = maps
         maps = maps.split(",")
