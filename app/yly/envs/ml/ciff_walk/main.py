@@ -7,7 +7,7 @@ from common.algo.export import random_seed, ValueIteration, Qlearning
 
 class CfTool(ToolBase):
     def prepare(self, *args, **kw):
-        self.s = CfState.new(C.INIT_SATTE)
+        self.s: CfState = CfState.new(C.INIT_SATTE)
 
     def run_policy_all_state(self):
         f = PiFunc().load()
@@ -22,7 +22,7 @@ class CfTool(ToolBase):
         f.train(self.s)
 
     def run_ql(self):
-        f = Qlearning().load()
+        f = Qlearning().load(train_epoll=1000)
         f.train(self.s)
         logger.debug(to_matrix(f))
 

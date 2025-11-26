@@ -7,8 +7,7 @@ import random
 def computer(rewards, pi, gamma=0.5, **kw):
     reward = np.array(rewards).reshape((-1, 1))
     k = len(rewards)
-    eye = np.eye(k, k)
-    eye += -gamma * np.array(pi)
+    eye = np.eye(k, k) - gamma * np.array(pi)
     r: np.ndarray = np.dot(np.linalg.inv(eye), reward)
     return r.reshape((1, -1))[0]
 

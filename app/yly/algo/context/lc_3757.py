@@ -1,8 +1,8 @@
 from common.util.export import List, MockCf, functools, CT
+from common.algo.base.bin_util import get_sub_bits, p2
 
-P2 = [1] * ((10**5) + 1)
-for i in range(1, len(P2)):
-    P2[i] = (P2[i - 1] * 2) % CT.MOD
+
+P2 = p2(mod=CT.MOD)
 
 
 class Solution(MockCf):
@@ -46,6 +46,7 @@ class Solution(MockCf):
         f = [0] * u
         for x in nums:
             f[x] += 1
+        self.logger.map(a=bin(or_all))
         for i in range(w):
             bit = 1 << i
             if or_all & bit == 0:
@@ -54,16 +55,14 @@ class Solution(MockCf):
             while s < u:
                 s |= bit
                 f[s] += f[s ^ bit]
+                # self.logger.map(b=bin(bit), s=bin(s), f=f[s])
                 s += 1
         ans = P2[n]
         sub = or_all
-        while True:
+        for sub in get_sub_bits(or_all):
             p2 = P2[f[sub]]
             flag = (or_all ^ sub).bit_count() % 2
             ans -= -p2 if flag else p2
-            if sub == 0:
-                break
-            sub = (sub - 1) & or_all
         return ans % CT.MOD
 
     execute = countEffective

@@ -10,6 +10,7 @@ from common.algo.export import (
     Comb,
     encode_data,
     decode_data,
+    get_sub_bits,
     XorBarisDev as XorBais,
     Tree,
     GaussElimination,
@@ -63,6 +64,13 @@ class TestAlgo(TestBase):
     def test_ge(self):
         x = GaussElimination([[2, 1, 1], [6, 2, 1], [-2, 2, 1]], [1, -1, 7]).calc()
         self.expect(x, [-1.0, 2.0, 1.0])
+
+    def test_sub_bits(self):
+        self.expect(get_sub_bits(0b11), [0b11, 0b10, 0b1, 0])
+        self.expect(
+            get_sub_bits(0b1101),
+            [0b1101, 0b1100, 0b1001, 0b1000, 0b101, 0b100, 0b1, 0],
+        )
 
 
 if __name__ == "__main__":

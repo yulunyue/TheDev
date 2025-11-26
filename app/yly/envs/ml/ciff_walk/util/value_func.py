@@ -12,7 +12,10 @@ def to_matrix(p):
         for j in range(C.ncol):
             k = i * C.ncol + j
             if isinstance(p, Algo):
-                v = p.take_action(CfState.new(k)).action
+                s = CfState.new(k)
+                v = "N"
+                if not s.game_over():
+                    v = p.take_action(s).action
             else:
                 v = p.get(k, "")
             if isinstance(v, float):

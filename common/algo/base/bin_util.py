@@ -1,7 +1,17 @@
 from typing import List
 from common.util.export import logger
 
-POS_MASK = [(2**i) - 1 for i in range(128)]
+
+def p2(num=10**6, mod=None):
+    result = [1] * num
+    for i in range(1, num):
+        result[i] = result[i - 1] * 2
+        if mod is not None:
+            result[i] = result[i] % mod
+    return result
+
+
+POS_MASK = p2(64)
 
 
 def encode_data(array, pos) -> int:
@@ -42,10 +52,12 @@ def low_bits(j):
     return ret
 
 
-def get_sub_bits(i):
+def get_sub_bits(i) -> List[int]:
     j = i
     ret = []
-    while j:
+    while True:
         ret.append(j)
+        if j == 0:
+            break
         j = (j - 1) & i
     return ret

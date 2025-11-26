@@ -7,6 +7,7 @@ inf = float("inf")
 
 class Action:
     check_info = None
+    reward = None
 
     def __init__(self, src, action, dst=None):
         self.action = action
@@ -48,11 +49,15 @@ class Action:
     def get_src_reward(self, **kw):
         pass
 
-    def show(self):
-        ret = f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}, data:{self.data}"
-        if self.reward > 0:
+    def show(self, msg=None):
+        ret = f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}"
+        if self.data:
+            ret += f", data:{self.data}"
+        if msg:
+            ret += f", msg:{msg}"
+        if self.reward is not None and self.reward > 0:
             ret += f", rwin:{self.reward}"
-        elif self.reward < 0:
+        elif self.reward is not None and self.reward < 0:
             ret += f", rlos:{self.reward}"
         return ret
 
@@ -245,7 +250,7 @@ class State:
         return self.data[k]
 
     def show_titles(self):
-        return "head"
+        return "todo"
 
     def show_body(self, info):
         datas = [self.show_titles()] + self.to_str()

@@ -81,7 +81,7 @@ class Algo:
         raise Exception("todo")
 
     def update_action(self, a: Action, *args):
-        pass
+        raise Exception("todo")
 
     def reset(self):
         return self
@@ -98,18 +98,28 @@ class Algo:
 
     def train(self, state: State):
         self.reset()
+        rewards = []
         for i in range(self.train_epoll):
             progress_bar(i + 1, self.train_epoll, msg="train...")
-            self.train_one(i, state)
+            total_reward = self.train_one(i, state)
+            rewards.append(total_reward)
+            if i % 100 == 0:
+                logger.debug(f"Episode {i}, Total Reward: {total_reward}")
+        return rewards
 
     def train_one(self, i, state: State):
         s = state.reset()
+        r = 0
         self.actions = []
-        while not s.game_over():
+        steps = 0
+        while not s.game_over() and steps < 1000:
             a = self.take_action(s)
+            r += a.get_reward()
             self.actions.append(a)
             self.update_action(a)
             s = a.get_dst()
+            steps += 1
+        return r
 
 
 class RandomAlgo(Algo):
