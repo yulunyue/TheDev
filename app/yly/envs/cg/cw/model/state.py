@@ -1,7 +1,6 @@
 from common.algo.search.state import State, Action
-from ..shape.world import World, C
-
-ENV = World()
+from ..shape.world import World, C, ENV
+from common.util.export import logger
 
 
 class CwState(State):
@@ -11,16 +10,6 @@ class CwState(State):
         ENV.load_shapes(self.board)
         self.player_id = 0
 
-    def calc_reward(self, g: World):
-        self.reward = 0
-        g.hp
-        g.owner
-        if g.leaders[self.player_id]:
-            min_v, sum_v, max_v = g.leaders[self.player_id].calc_dis(
-                g.cultists[C.OWNER_NEUTRAL].values()
-            )
-            self.reward += min_v * 0.2 + sum_v * 0.1 - max_v * 0.1
-
     def make_actions(self):
 
         from .action import CwAction
@@ -29,6 +18,9 @@ class CwState(State):
         cultists = list(ENV.cultists[self.player_id].values())
         if ENV.leaders[self.player_id]:
             cultists += [ENV.leaders[self.player_id]]
+        op_cultists = list(ENV.cultists[1 - self.player_id].values())
+        if ENV.leaders[1 - self.player_id]:
+            op_cultists += [ENV.leaders[1 - self.player_id]]
         for src in cultists:
             for dst in src.get_nexts_tiles():
                 if dst.unit_type == C.TYPE_NULL:
@@ -40,12 +32,33 @@ class CwState(State):
                 ):
                     actions.append(CwAction(self, src, C.ACTION_CONVERT, dst))
             if src.unit_type == C.TYPE_CULTIST:
-                for d, dis in src.path.can_shoot_units:
-                    actions.append(CwAction(self, src, C.ACTION_SHOOT, d, param0=dis))
+                for dst in op_cultists:
+                    if src.min_step[dst.k] >= C.VALUE_DAMAGE_MAX:
+                        continue
+                    # logger.map(
+                    #     s=src.view(),
+                    #     ps=src.k,
+                    #     d=dst.view(),
+                    #     ds=dst.k,
+                    #     d1=src.min_step[dst.k],
+                    #     d2=src.get_abs_dis(dst),
+                    # )
+                    if ENV.can_shoot_flag[src.k, dst.k]:
+                        actions.append(
+                            CwAction(
+                                self,
+                                src,
+                                C.ACTION_SHOOT,
+                                dst,
+                                C.VALUE_DAMAGE_MAX - src.get_abs_dis(dst),
+                            )
+                        )
+
         return actions
 
     def to_str(self):
         s = [
+            " " + "".join(["%02d" % i for i in range(ENV.width)]),
             C.WALL_S * (ENV.width + 1),
         ]
         for i, row in enumerate(ENV.grid):
@@ -59,5 +72,5 @@ class CwState(State):
             self.get_sort_actions(), key=lambda a: a.get_reward(), reverse=True
         )
         # s = [str(v) for v in s]
-        s.append(",".join([a.show() for a in actions]))
+        s.extend([a.show() for a in actions])
         return s

@@ -1,7 +1,5 @@
 from app.yly.envs.cg.cw.model.constant import C
 from common.util.export import logger, List, defaultdict, Dict
-from .b_line_help import BM
-from .path import Path
 
 
 class ShapeBase:
@@ -9,15 +7,14 @@ class ShapeBase:
     owner = C.OWNER_NEUTRAL
     unit_type = C.TYPE_NULL
 
-    def __init__(self, g, shape_type, y, x):
-        from app.yly.envs.cg.cw.shape.world import World
-
+    def __init__(self, shape_type, y, x):
+        self.min_step = defaultdict(lambda: C.INVALID_STEP)
         self.y: int = y
         self.x: int = x
         self.shape_type = shape_type
-        self.g: World = g
 
     def load(self, unit_id, unit_type, hp, owner):
+        # logger.map(id=id(self), unit_id=unit_id, y=self.y, x=self.x)
         self.unit_type = unit_type
         self.owner = owner
         self.hp = hp
@@ -28,7 +25,6 @@ class ShapeBase:
         self.unit_type = C.TYPE_NULL
         self.owner = C.OWNER_NEUTRAL
         self.unit_id = None
-        self._path = None
         return self
 
     def view(self):
@@ -53,12 +49,14 @@ class ShapeBase:
     def get_nexts_tiles(self) -> List["ShapeBase"]:
         if self.nexts_tiles is not None:
             return self.nexts_tiles
+        from .world import ENV
+
         self.nexts_tiles: List[ShapeBase] = []
         for dy, dx in C.DR:
             y, x = self.y + dy, self.x + dx
-            if y < 0 or x < 0 or y >= self.g.height or x >= self.g.width:
+            if y < 0 or x < 0 or y >= ENV.height or x >= ENV.width:
                 continue
-            p = self.g.grid[y][x]
+            p = ENV.grid[y][x]
             if p.shape_type == C.TYPE_OBS:
                 continue
             self.nexts_tiles.append(p)
@@ -69,32 +67,6 @@ class ShapeBase:
 
     def get_abs_dis(self, aim: "ShapeBase"):
         return abs(self.x - aim.x) + abs(self.y - aim.y)
-
-    _path: Path = None
-
-    @property
-    def path(self):
-        if self._path:
-            return self._path
-        q: List[ShapeBase] = [self]
-        l = 1
-
-        self._path = Path(self)
-        self._path.shpae_dis[self.k] = 0
-        while q:
-            tmp = q
-            q = []
-            for s in tmp:
-                for p in s.get_nexts_tiles():
-                    if p.k in self._path.shpae_dis:
-                        continue
-                    self._path.shpae_dis[p.k] = l
-                    if p.unit_type == C.TYPE_NULL:
-                        q.append(p)
-                    else:
-                        self._path.add_shape(l, p)
-            l += 1
-        return self._path
 
     def calc_dis(self, ss: List["ShapeBase"]):
         min_v, sum_v, max_v = float("inf"), 0, float("-inf")

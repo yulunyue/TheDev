@@ -143,7 +143,7 @@ class ToolBase:
     def logger(self):
         return get_log(f"data/tool/{self.__class__.__name__}.log")
 
-    def prepare(self):
+    def prepare(self, *args):
         pass
 
     def exit(self):

@@ -21,6 +21,7 @@ class Constant:
     TYPE_NULL = "."
     VALUE_DAMAGE_MAX = 7
     UNITS_CULTIST_NUM = 12
+    INVALID_STEP = 10000
     OWNER_NEUTRAL = 2
     OWNER_PLAYER1 = 0
     OWNER_PLAYER2 = 1
@@ -29,6 +30,7 @@ class Constant:
     TYPE_CULT_LEADER = 1
     DEFAULT_HP = 10
     DR = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    DR_VIEW = {(0, 1): ">", (1, 0): "v", (0, -1): "<", (-1, 0): "^"}
     WALL_S = "**"
     DATA_POS_unit_id = 0
     DATA_POS_unit_type = 1

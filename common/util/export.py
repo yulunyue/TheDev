@@ -9,6 +9,7 @@ from typing import List, Dict, TypeVar, Generic, get_origin, get_args, Tuple, Op
 from collections import defaultdict, deque, Counter
 import functools
 import json
+import copy
 from common.constant import THE_DEV_CONSTANT, CT
 import bisect
 import math
