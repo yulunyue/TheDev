@@ -6,47 +6,43 @@ import random
 N = 5
 
 
-class MdpState(State):
-    count = 0
+class PAction(Action):
+    def __init__(self, src, action, dst=None):
+        super().__init__(src, action, dst)
+        self.rewards = []
 
-    @classmethod
-    def new(cls, state=None, **kw) -> "MdpState":
-        if state is None:
-            state = 0
-        return super().new(state, **kw)
+    def add_preward(self, p, r, dst):
+        self.rewards.append([p, r, dst])
 
-    def make_actions(self, depth=1, **kw):
-        actions: Dict[str, PAction] = dict()
-        if self.state is None:
-            return {
-                i: Action(self, i, MdpState.new(i + 1)).set_reward(0) for i in range(N)
-            }
+
+class Mdp1State(State):
+    P: Dict[str, int] = C2.Pi_1
+
+    def make_actions(self, **kw):
+        actions = []
+
         for pk, p in C2.P.items():
             f, a, d = pk.split("-")
             if int(f[1]) != self.state:
                 continue
             name = f + "-" + a
-            if name not in actions:
-                actions[name] = PAction(self, name).set_reward(C2.R[name])
-            actions[name].add_dst(MdpState.new(int(d[1])), p)
+            ac = PAction(self, a)
+            for k, r in C2.R.items():
+                if k.startswith(name):
+                    ac.add_preward(p, r, int(k.split("-")[-1][-1]) - 1)
+            if ac.rewards:
+                actions.append(ac)
         return actions
 
-    def get_pi_reawrd(self, pi):
-        ret = self.get_reward()
-        for a in self.get_actions().values():
-            ret += a.get_reward() * pi[a.action]
-        return ret
+    @classmethod
+    def get_mrp_form_mdp(cls):
+        ans = [[0] * N for _ in range(N)]
+        for k, v in cls.P.items():
+            s, t = k.split("-")
+            s, t = int(s[1]) - 1, int(t[1]) - 1
+            ans[s][t] = v
+        return ans
 
-    def get_done(self):
-        return self.state == 5
 
-
-def get_mrp_form_mdp(pi: Dict[str, int]):
-    ans = [[0] * N for _ in range(N)]
-    for k, v in pi.items():
-        a1, _ = k.split("-")
-        s = MdpState.new(int(a1[1]))
-        ac: PAction = s.get_action(k)
-        for a, p in ac.dst_p.values():
-            ans[s.state - 1][a.state - 1] += p * v
-    return ans
+class Mdp2State(Mdp1State):
+    P = C2.Pi_2
