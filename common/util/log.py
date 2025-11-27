@@ -180,3 +180,4 @@ def std_mock(with_trace=True):
 
 
 logger = get_log("test")
+log = get_dev_log("log")

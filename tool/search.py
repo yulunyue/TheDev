@@ -1,4 +1,4 @@
-from common.util.export import ToolBase, logger, Module, random, List
+from common.util.export import ToolBase, logger, Module, random, List, log, logger
 from common.algo.export import (
     AbState,
     AbDev,
@@ -13,23 +13,21 @@ from common.tool.export import ThreadRecord
 from app.yly.envs.game.study.state import TestState
 
 
-def get_s(cls=None, **kw):
-    md = Module().load_module_object(cls)
-    return md.get_root(**kw)
-
-
-DEFAULT_CLS = 1
-
-
 class SearchTool(ToolBase):
     def prepare(self):
-        self.al = ALgoManage().set_record_dir("data/test/search")
+        self.al = ALgoManage()
 
-    def mc_cli(self):
-        Record(self.s).set_search(self.al.mc()).cli()
+    def print(self):
+        s = TestState.make_test_state()
+        log.debug(s.print_tree())
+        log.debug(f"-----")
+        s = TestState.new_random_state()
+        log.debug(s.print_tree())
+
+    def random(self):
+        pass
 
     def mc(self, cls=None):
-        s = TestState
         self.al.mc().search(s)
 
     def ql(self, cls=""):
@@ -40,7 +38,7 @@ class SearchTool(ToolBase):
         logger.debug(algo.show())
 
     def dev(self):
-        pass
+        self.print()
 
 
 if __name__ == "__main__":

@@ -24,20 +24,18 @@ class TestState(AbState):
         return cls.idx
 
     @classmethod
-    def make_random_state(cls, size=40, min_v=2, max_v=6):
+    def new_random_state(cls, size=20, min_v=2, max_v=6):
         s = TestState.new().set_player_id(0)
         q = [s]
         while len(q) < size:
             idx = random.randint(0, len(q) - 1)
-            cur_state = q.pop(idx)
+            cur_state: TestState = q.pop(idx)
             states = []
             for i in range(random.randint(min_v, max_v)):
-                states.append(TestState.new())
+                states.append(TestState.make(r=None))
                 q.append(states[-1])
             cur_state.set_next_states(states)
-        random.shuffle(q)
-        for i, v in enumerate(q):
-            v.set_reward(i - len(q) // 2)
+
         return s
 
     @classmethod
@@ -51,6 +49,8 @@ class TestState(AbState):
     @classmethod
     def make(cls, *states, r=0, player_id=None):
         ret: TestState = cls.new()
+        if r is None:
+            r = random.randint(-10, 10)
         if player_id is not None:
             ret.set_player_id(player_id)
         ret.money = r
@@ -84,9 +84,9 @@ class TestState(AbState):
         )
 
     def show_titles(self):
-        if self.game_over:
-            return f"r:{self.money}"
-        return f"p:{self.player_id}; r:{self.money}"
+        if self.game_over():
+            return f"s:{self.state}; r:{self.money}"
+        return f"s:{self.state} p:{self.player_id}; r:{self.money}"
 
     @classmethod
     def get_root(cls):

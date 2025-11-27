@@ -7,7 +7,6 @@ python -m app.yly.envs.game.c5.main dev
 python -m app.yly.envs.game.cube.main dev
 python -m app.yly.main lc_3721.py test
 python -m app.yly.main lg_p2123.py test
-python -m app.yly.main lc_3003.py test
 python -m app.yly.envs.ml.cart_pole.main dev
 python -m app.yly.envs.ml.ciff_walk.main dev
 python -m app.yly.envs.cg.cw.main dev

@@ -139,6 +139,8 @@ class State:
 
     def set_actions(self, actions):
         self.actions = actions
+        if not actions:
+            self.set_done(True)
         return self
 
     def reset(self):
@@ -234,7 +236,7 @@ class State:
         ans = []
 
         def util(n: State, depth, action: Action):
-            key = ""
+            key = "Root"
             if action is not None:
                 key = action.key
             s = f'{"  " * depth}{key}: {n.show_titles()}'
