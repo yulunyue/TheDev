@@ -63,9 +63,6 @@ class ToolContext(ToolBase):
             if msg:
                 logger.info(f"{case.i.path}\n{msg[:100]}")
 
-    def debug(self):
-        self.test("lc_3318.py", "case1")
-
 
 if __name__ == "__main__":
     ToolContext().run()

@@ -11,7 +11,3 @@ class NetBase(torch.nn.Module):
     def forward(self, x):
         x = torch.functional.F.relu(self.fc1(x))
         return self.fc2(x)
-
-
-class Net2(TorchDoubleNet):
-    model_cls = NetBase

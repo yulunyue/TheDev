@@ -1,13 +1,36 @@
 from common.algo.export import Action, State
-from common.util.export import logger
+from common.util.export import logger, List
 from .constant import C
+from common.third_util.torch_util import torch
+from common.third_util.np_util import np
 
 
 class CartAction(Action):
-    def get_dst(self):
+    def do(self):
+        if self.reward is not None:
+            raise Exception("do 2")
         new_state, self.reward, termina, _, _ = CartPoleState.env.step(self.action)
-        logger.debug([self, termina])
-        return CartPoleState(new_state).set_done(termina)
+        # logger.map(
+        #     src=f"{self.src.state}",
+        #     dst=new_state,
+        #     termina=termina,
+        #     action=self.action,
+        #     reward=self.reward,
+        # )
+        self.dst = CartPoleState(new_state).set_done(termina)
+
+    def get_dqn_network_params(self, acs: List["CartAction"]):
+        states = torch.tensor(np.array([a.src.state for a in acs]), dtype=torch.float)
+        actions = torch.tensor([a.action for a in acs]).view(-1, 1)
+        rewards = torch.tensor([a.reward for a in acs], dtype=torch.float).view(-1, 1)
+        next_states = torch.tensor(
+            np.array([(a.dst.state) for a in acs]), dtype=torch.float
+        )
+        dones = torch.tensor([a.dst.done for a in acs], dtype=torch.float).view(-1, 1)
+
+        # 下个状态的最大Q值
+
+        return states, actions, rewards, dones, next_states
 
 
 class CartPoleState(State):

@@ -4,7 +4,7 @@ from .tool import uid, re_search, hash_any, json_dumps, ii, md5, base64_encode
 from .test import TestBase, logger, ToolBase, Case
 from .fp import File, get_cache
 from .module import Module, run_catch_error
-from .thread_poll import ThreadManage, ThreadExec, progress_bar
+from .thread_poll import ThreadManage, ThreadExec
 from typing import List, Dict, TypeVar, Generic, get_origin, get_args, Tuple, Optional
 from collections import defaultdict, deque, Counter
 import functools

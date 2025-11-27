@@ -15,16 +15,6 @@ class ThreadExec:
         return self.future
 
 
-def progress_bar(current, total, bar_length=100, msg=""):
-    percent = float(current) * 100 / total
-    arrow = "-" * int(percent / 100 * bar_length - 1) + ">"
-    spaces = " " * (bar_length - len(arrow))
-    sys.stdout.write(f"\r{msg}进度: [{arrow}{spaces}] [{current}/{total}]")
-    sys.stdout.flush()
-    if current == total:
-        print("")
-
-
 class ThreadManage:
     def __init__(self) -> None:
         self.executor = ThreadPoolExecutor()

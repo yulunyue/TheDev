@@ -2,12 +2,12 @@ import sys
 import time
 from .fp import File
 from .log import get_log, get_dev_log, logger
-from .tool import url_to_json
+from .tool import url_to_json, md5
 from .module import Module, call_func_auto
 from .difftool import Diff
 from typing import Dict, List
 import json
-
+import os
 
 TEST_FN_PREFIX = "test_"
 
@@ -165,7 +165,19 @@ class ToolBase:
             self.exit()
             return
         ret = f(**self.kw)
-        logger.info(f"{sys.argv[1:]} {ret}")
+
+        pym = " ".join(
+            [
+                sys.argv[0]
+                .replace(".py", "")
+                .replace(os.getcwd() + "\\", "python -m ")
+                .replace("\\", ".")
+            ]
+            + sys.argv[1:]
+        )
+        log_path = f"doc/life/{md5(pym)}/日志.md"
+        logger.info(f"{pym} = {ret}")
+        logger.info(log_path)
         self.exit()
 
     def get_temp_file(self, name):

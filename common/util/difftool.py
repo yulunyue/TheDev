@@ -57,7 +57,7 @@ class Diff:
             equ = cha <= wucha
         if not equ:
             self.diff_result.append(
-                f"shape:{a.shape}{a}", f"!=\nshape:{e.shape}{e}", f"cha:{cha}"
+                f"shape:{a.shape}{a}\n!=\nshape:{e.shape}{e}\ncha:{cha}"
             )
 
     def diff_any(self, src, dst, keys):

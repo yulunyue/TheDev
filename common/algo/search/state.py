@@ -70,6 +70,16 @@ class Action:
             a = a.get_dst().get_action()
         return "\n".join(ret)
 
+    def do(self):
+        """ """
+        pass
+
+    def get_dqn_network_params(self, actions: List["Action"]):
+        """
+        rewards, dones, q_values, max_next_q_values
+        """
+        pass
+
 
 class State:
     NO_WIN = -1

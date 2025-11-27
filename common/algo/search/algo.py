@@ -8,7 +8,7 @@ from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
-from common.util.export import File, logger, get_log, get_dev_log, progress_bar
+from common.util.export import File, logger, get_log, get_dev_log
 
 
 def random_seed(v=1):
@@ -99,26 +99,29 @@ class Algo:
     def train(self, state: State):
         self.reset()
         rewards = []
-        for i in range(self.train_epoll):
-            progress_bar(i + 1, self.train_epoll, msg="train...")
+        from common.third_util.draw import Draw
+        from common.third_util.tqdm_util import tqdm
+
+        logger.info("begin trainging")
+        for i in tqdm(range(self.train_epoll)):
             total_reward = self.train_one(i, state)
             rewards.append(total_reward)
-            if i % 100 == 0:
-                logger.debug(f"Episode {i}, Total Reward: {total_reward}")
+            if (i + 1) % (self.train_epoll // 10) == 0:
+                logger.map(Episode=i, TotalReward=sum(rewards) / len(rewards))
+        Draw().draw_line(rewards).save(self.get_tmp_file_path("result.svg"))
         return rewards
 
     def train_one(self, i, state: State):
         s = state.reset()
         r = 0
-        self.actions = []
-        steps = 0
-        while not s.game_over() and steps < 1000:
+        self.steps = 0
+        while not s.game_over():
             a = self.take_action(s)
+            a.do()
             r += a.get_reward()
-            self.actions.append(a)
             self.update_action(a)
             s = a.get_dst()
-            steps += 1
+            self.steps += 1
         return r
 
 

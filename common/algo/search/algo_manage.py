@@ -10,7 +10,6 @@ from common.util.export import (
     defaultdict,
     Dict,
     ThreadManage,
-    progress_bar,
     os,
     get_dev_log,
 )

@@ -64,7 +64,7 @@ class Logger(logging.Logger):
                 encoding="utf-8",
             ),
             logging.DEBUG,
-            fmt=DEBUG_FMT,
+            fmt=fmt,
         )
 
     def get_and_clear_cache(self):
@@ -83,7 +83,7 @@ class Logger(logging.Logger):
             *args,
             exc_info=exc_info,
             stack_info=stack_info,
-            stacklevel=stacklevel,
+            stacklevel=stacklevel + 1,
             extra=extra,
         )
 
