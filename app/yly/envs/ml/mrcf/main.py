@@ -1,7 +1,7 @@
 from common.util.export import ToolBase, logger, random
 
 from .model.mrp_state import MrpState, computer, C1
-from .model.mdp_state import Mdp1State, Mdp2State
+from .model.mdp_state import Mdp1State, Mdp2State, C2
 
 
 class Main(ToolBase):
@@ -17,10 +17,14 @@ class Main(ToolBase):
 
     def dev_mdp(self):
         mdp1 = Mdp1State.get_mrp_form_mdp()
+        logger.info(computer(C2.MRP_REWARD, mdp1))
         logger.info(mdp1)
 
     def dev(self):
         self.dev_mdp()
+
+    def debug(self):
+        self.dev()
 
 
 if __name__ == "__main__":
