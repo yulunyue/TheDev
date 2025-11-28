@@ -37,7 +37,7 @@ class Mdp1State(State):
     @classmethod
     def get_mrp_form_mdp(cls):
         ans = [[0] * N for _ in range(N)]
-        for k, v in cls.P.items():
+        for s in range(N):
             s, t = k.split("-")
             s, t = int(s[1]) - 1, int(t[1]) - 1
             ans[s][t] = v
