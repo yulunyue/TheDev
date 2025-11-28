@@ -41,8 +41,7 @@ class Dqn(Qlearning):
         q_values: torch.Tensor = self.q_net(states)
         # logger.map(s=states.shape, q=q_values.shape, a=actions.shape)
         q_values = q_values.gather(1, actions)  # Q值
-        max_next_q_values: torch.Tensor = self.target_q_net(next_states)
-        max_next_q_values = max_next_q_values.max(1)[0].view(-1, 1)
+        max_next_q_values = self.calc_max_next_q_values(next_states)
         q_targets = rewards + self.gamma * max_next_q_values * (1 - dones)  # TD误差目标
         dqn_loss = torch.mean(
             torch.nn.functional.mse_loss(q_values, q_targets)
@@ -54,7 +53,17 @@ class Dqn(Qlearning):
         if self.steps % self.target_update == 0:
             self.target_q_net.load_state_dict(self.q_net.state_dict())
 
+    def calc_max_next_q_values(self, next_states):
+        max_next_q_values: torch.Tensor = self.target_q_net(next_states)
+        return max_next_q_values.max(1)[0].view(-1, 1)
+
     def get_max_q_action(self, s: State):
         states = torch.tensor(s.state, dtype=torch.float)
         values: torch.Tensor = self.q_net(states)
         return s.get_action(values.argmax().item())
+
+
+class DoubleDqn(Dqn):
+    def calc_max_next_q_values(self, next_states):
+        max_action = self.q_net(next_states).max(1)[1].view(-1, 1)
+        return self.target_q_net(next_states).gather(1, max_action)

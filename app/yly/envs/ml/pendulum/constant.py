@@ -1,9 +1,6 @@
 class Ct:
-    min = -2
-    max = 2
-    n = 12
-    step = (max - min) / n
-    state_size = 3
+    ACTION_DIM = 11
+    NET_BASE_HIDDEN_DIM = 128
 
 
 C = Ct()

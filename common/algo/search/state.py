@@ -77,11 +77,24 @@ class Action:
     def undo(self):
         pass
 
-    def get_dqn_network_params(self, actions: List["Action"]):
+    def get_dqn_network_params(self, acs: List["Action"]):
         """
         rewards, dones, q_values, max_next_q_values
         """
-        pass
+        from common.third_util.torch_util import torch
+        from common.third_util.np_util import np
+
+        states = torch.tensor(np.array([a.src.state for a in acs]), dtype=torch.float)
+        actions = torch.tensor([a.action for a in acs]).view(-1, 1)
+        rewards = torch.tensor([a.reward for a in acs], dtype=torch.float).view(-1, 1)
+        next_states = torch.tensor(
+            np.array([(a.dst.state) for a in acs]), dtype=torch.float
+        )
+        dones = torch.tensor([a.dst.done for a in acs], dtype=torch.float).view(-1, 1)
+
+        # 下个状态的最大Q值
+
+        return states, actions, rewards, dones, next_states
 
 
 class State:
@@ -90,7 +103,7 @@ class State:
     SECONEND_WIN = 2
     name = "state"
     parent: "State" = None
-    done = None
+    done = False
     STATE_STORE: Dict[str, "State"] = dict()
     actions: List[Action] = None
     data = None

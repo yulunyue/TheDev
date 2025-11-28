@@ -6,7 +6,7 @@ from common.algo.search.alphabate_search import AlphaBateSearch, AbDev
 from common.algo.learn.sarse.sarse import Td0
 from common.algo.learn.sarse.qlearning import Qlearning
 from common.algo.learn.sarse.mcts import MctsEasy
-from common.algo.learn.dqn import Dqn
+from common.algo.learn.dqn import Dqn, DoubleDqn
 from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE
 from common.algo.base.math_util import sin, cos, calc_angle
 from common.algo.base.comb import Comb
