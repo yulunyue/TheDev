@@ -1,5 +1,5 @@
 from common.algo.search.state import State, Action
-from common.util.export import List, Dict
+from common.util.export import List, Dict, logger
 from .constant import C2
 import random
 
@@ -18,29 +18,34 @@ class PAction(Action):
 class Mdp1State(State):
     P: Dict[str, int] = C2.Pi_1
 
+    @property
+    def idx(self):
+        return int(self.state[-1]) - 1
+
     def make_actions(self, **kw):
         actions = []
 
-        for pk, p in C2.P.items():
-            f, a, d = pk.split("-")
-            if int(f[1]) != self.state:
+        for action, r in C2.R.items():
+            # logger.map(action=action, s=self.state, r=action.startswith(self.state))
+            if not action.startswith(self.state):
                 continue
-            name = f + "-" + a
-            ac = PAction(self, a)
-            for k, r in C2.R.items():
-                if k.startswith(name):
-                    ac.add_preward(p, r, int(k.split("-")[-1][-1]) - 1)
-            if ac.rewards:
-                actions.append(ac)
+            a = PAction(self, action)
+            for k, p in C2.P.items():
+                if k.startswith(action):
+                    a.add_preward(p, r, self.__class__.new(k.split("-").pop()))
+
+            actions.append(a)
         return actions
 
     @classmethod
     def get_mrp_form_mdp(cls):
         ans = [[0] * N for _ in range(N)]
-        for s in range(N):
-            s, t = k.split("-")
-            s, t = int(s[1]) - 1, int(t[1]) - 1
-            ans[s][t] = v
+        for i in range(N):
+            s = cls.new(f"s{i+1}")
+            for a in s.get_sort_actions():
+                for p, r, ns in a.rewards:
+                    ans[i][ns.idx] = cls.P[a.action] * p
+
         return ans
 
 
