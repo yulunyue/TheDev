@@ -69,19 +69,19 @@ class ALgoManage:
     file_path = None
     record_model = AlgoInfo
 
-    def ad(self, n=-1):
-        return AbDev(f"ab{n}").load(n).set_record_dir(self.record_dir)
+    def ad(self, n=10):
+        return AbDev(f"ad{n}").load(n).set_record_dir(self.record_dir)
 
-    def am(self, n=5):
+    def am(self, n=10):
         return (
             AbDev(f"am{n}")
             .load(n, search_type=AbDev.AB_MUCH)
             .set_record_dir(self.record_dir)
         )
 
-    def ab(self, n=5):
+    def ab(self, n=10):
         return (
-            AbDev(f"ad{n}")
+            AbDev(f"ab{n}")
             .load(n, search_type=AbDev.AB_TYPE)
             .set_record_dir(self.record_dir)
         )
@@ -211,7 +211,7 @@ class ALgoManage:
                 break
             p = players[self.turn_idx % len(players)]
             self.turn_idx += 1
-            b = time.time()
+            # b = time.time()
             p.state_num = 0
             a = p.search(s)
             if a is None:

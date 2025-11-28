@@ -44,10 +44,10 @@ class Action:
         return self
 
     def get_reward(self, **kwargs):
-        return self.reward
+        return self.reward  # 值越大越好
 
-    def get_src_reward(self, **kw):
-        pass
+    def get_src_reward(self, actions: List["Action"], **kw):
+        return self.get_reward()
 
     def show(self, msg=None):
         ret = f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}"
@@ -74,6 +74,9 @@ class Action:
         """ """
         pass
 
+    def undo(self):
+        pass
+
     def get_dqn_network_params(self, actions: List["Action"]):
         """
         rewards, dones, q_values, max_next_q_values
@@ -92,6 +95,7 @@ class State:
     actions: List[Action] = None
     data = None
     best_action: Action = None
+    extra = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -139,8 +143,6 @@ class State:
 
     def set_actions(self, actions):
         self.actions = actions
-        if not actions:
-            self.set_done(True)
         return self
 
     def reset(self):

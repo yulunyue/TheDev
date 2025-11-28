@@ -13,7 +13,8 @@ class MctsState:
         self.u = 0
         self.q = 0
         self.p: MctsState = p
-        self.p_action = p_action
+        state.extra = self
+        self.p_action: Action = p_action
 
     def get_children(self):
         if self.children is not None:
@@ -33,7 +34,7 @@ class MctsState:
         return self.get_children()
 
     def is_leaf(self):
-        return self.state.game_over or self.children is None
+        return self.state.game_over() or self.children is None
 
     def __str__(self):
         return f"vt={self.n_visits}; q={'%.3f'%self.q}; u={'%.3f'%self.u}"
@@ -82,7 +83,7 @@ class MctsSearch(Algo):
                     f"simulate max  src:{tail.show()} action:{actions[random_id].show()} dst:{actions[random_id].get_dst().show()}"
                 )
             tail = actions[random_id].get_dst()
-        return action_history[-1].get_reward(player_id=root.player_id)
+        return action_history[-1].get_src_reward(action_history)
 
     def backpropagate(self, node: MctsState, score):
         while node:
@@ -93,15 +94,17 @@ class MctsSearch(Algo):
     def update(self, node: MctsState, score):
         node.update(score)
 
-    def search_main(self, init_state: State):
+    def search_main(self, init_state: State, **kw):
         self.ep = 0
         self.start_time = time.time()
         root = MctsState(init_state)
         while True:
             node = self.select(root)  # 指导探索到待拓展的节点
-            if not node.state.game_over:
+            if not node.state.game_over():
                 node.expand()
-            value = self.simulate(node.state)
+                value = self.simulate(node.state)
+            else:
+                value = node.p_action.get_src_reward([node.p_action])
             self.backpropagate(node, value)
             self.ep += 1
             cur_time = time.time()

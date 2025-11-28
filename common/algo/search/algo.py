@@ -62,7 +62,7 @@ class Algo:
     def search(self, state: "State", *args, **kw):
         self.reset()
         start_time = time.time()
-        ret = self.search_main(state.reset(), *args, **kw)
+        ret = self.search_main(state.reset(), algo=self, *args, **kw)
         self.use_time = time.time() - start_time
         return ret
 
@@ -74,7 +74,7 @@ class Algo:
             [f"---name:{self.get_name()} use_time:{self.use_time}---"] + self.info()
         )
 
-    def search_main(self, state: "State") -> Action:
+    def search_main(self, state: "State", algo=None) -> Action:
         raise Exception("todo")
 
     def take_action(self, state: "State") -> Action:

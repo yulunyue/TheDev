@@ -12,7 +12,5 @@ python -m app.yly.envs.ml.ciff_walk.main dev
 python -m app.yly.envs.cg.cw.main dev
 python -m app.yly.envs.ml.mrcf.main dev
 python -m app.yly.envs.ml.pendulum.main dev
-python -m tool.search dev
-
 
 

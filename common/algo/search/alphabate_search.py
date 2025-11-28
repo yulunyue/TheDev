@@ -17,15 +17,17 @@ class AlphaBateSearch(Algo):
         self, state: AbState, actions: List[Action], depth=0, player_id=None, **kw
     ):
         if depth == self.max_depth or state.get_done() is not None:
-            return self.get_depth_reward(actions)
+            return -self.get_depth_reward(actions)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
-            return self.get_depth_reward(state, depth)
+            return -self.get_depth_reward(actions)
         self.set_state_reward(state, -inf, inf)
         for a in mvs:
+            a.do()
             reward = -self.search_dfs(
                 a.get_dst(), actions=actions + [a], depth=depth + 1, player_id=player_id
             )
+            a.undo()
             if reward > state.alpha:
                 self.set_state_best_action(state, a, depth, reward)
         return state.alpha
@@ -34,12 +36,13 @@ class AlphaBateSearch(Algo):
         self, state: AbState, actions: List[Action], depth=0, alpha=-inf, bate=inf, **kw
     ) -> None:
         if depth == self.max_depth or state.get_done() is not None:
-            return self.get_depth_reward(actions)
+            return -self.get_depth_reward(actions)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
-            return self.get_depth_reward(state, depth)
+            return -self.get_depth_reward(actions)
         self.set_state_reward(state, alpha, bate)
         for a in mvs:
+            a.do()
             reward = -self.search_ab(
                 a.get_dst(),
                 actions + [a],
@@ -47,6 +50,7 @@ class AlphaBateSearch(Algo):
                 alpha=-state.bate,
                 bate=-state.alpha,
             )
+            a.undo()
             if reward >= state.bate:
                 state.alpha = state.bate
                 break
@@ -76,7 +80,7 @@ class AlphaBateSearch(Algo):
                 cur_node.get_done() is not None
                 or cur_node.search_depth == self.max_depth
             ):
-                self.get_depth_reward(cur_node, [cur_action])
+                cur_node.alpha = -self.get_depth_reward([cur_action])
                 pop_node = stacks.pop()
                 continue
             sort_actions = cur_node.get_sort_actions()
@@ -106,21 +110,20 @@ class AlphaBateSearch(Algo):
             stacks.append(next_node)
             cur_node.child_index += 1
 
-    def get_state_reward(self, s: AbState):
-        return s.ab_value
-
     def search_main(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
-            return self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
+            self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
         elif self.search_type == AlphaBateSearch.AB_MUCH:
-            return self.search_ab_loop(state)
-        return self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
+            self.search_ab_loop(state)
+        else:
+            self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
+        return state.best_action
 
 
 class AbDev(AlphaBateSearch):
-    def get_depth_reward(self, s, *args, **kw):
+    def get_depth_reward(self, actions: List[Action], *args, **kw):
         self.state_num += 1
-        return super().get_depth_reward(s, *args, **kw)
+        return super().get_depth_reward(actions, *args, **kw)
 
     def search(self, state: State):
         self.state_num = 0
@@ -128,11 +131,14 @@ class AbDev(AlphaBateSearch):
         return ret
 
     def set_state_reward(self, s: State, alpha, bate):
-        s.header_title = f"alpha={alpha} bate={bate}"
+        # s.header_title = f"alpha={alpha} bate={bate}"
         ret = super().set_state_reward(s, alpha, bate)
         # self.logger.debug(s.show())
         return ret
 
     def set_state_best_action(self, s: State, a: Action, depth, reward):
         super().set_state_best_action(s, a, depth, reward)
-        self.logger.debug(s.show_best_actions())
+        # self.logger.debug(s.show_best_actions())
+
+    def info(self):
+        return [f"state_num:{self.state_num}"]

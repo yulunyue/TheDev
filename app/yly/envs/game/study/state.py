@@ -1,10 +1,22 @@
 from common.algo.export import AbState, Action
-from common.util.export import List, Dict
+from common.util.export import List, Dict, logger
 import random
+
+
+class TestAction(Action):
+    def get_reward(self, **kwargs):
+        d: TestState = self.get_dst()
+        d.vt = True
+        return d.money if self.src.player_id == 0 else -d.money
+
+    def do(self):
+        d: TestState = self.get_dst()
+        return super().do()
 
 
 class TestState(AbState):
     idx = 0
+    vt = False
 
     def game_over(self):
         if not self.get_sort_actions():
@@ -13,6 +25,13 @@ class TestState(AbState):
 
     def get_current_player(self):
         return self.player_id
+
+    def reset(self):
+        def util(s: TestState, *args):
+            s.vt = False
+
+        self.dfs(util)
+        return self
 
     @property
     def availables(self):
@@ -48,6 +67,7 @@ class TestState(AbState):
 
     @classmethod
     def make(cls, *states, r=0, player_id=None):
+
         ret: TestState = cls.new()
         if r is None:
             r = random.randint(-10, 10)
@@ -60,7 +80,7 @@ class TestState(AbState):
     def set_next_states(self, states: List["TestState"]):
         return self.set_actions(
             [
-                Action(self, i, v.set_player_id(1 - self.player_id))
+                TestAction(self, i, v.set_player_id(1 - self.player_id))
                 for i, v in enumerate(states)
             ]
         )
@@ -72,21 +92,28 @@ class TestState(AbState):
             cls.make(
                 cls.make(r=2),
                 cls.make(r=-5),
-                r=4,
             ),
             cls.make(
                 cls.make(r=3),
                 cls.make(r=-9),
                 cls.make(r=-3),
-                r=-3,
             ),
             player_id=1,
         )
 
     def show_titles(self):
         if self.game_over():
-            return f"s:{self.state}; r:{self.money}"
-        return f"s:{self.state} p:{self.player_id}; r:{self.money}"
+            ans = f"s:{self.state}; r:{self.money}"
+            if self.vt:
+                ans += " *"
+        else:
+            ans = f"s:{self.state}; p:{self.player_id}"
+            if hasattr(self, "alpha"):
+                alpha = self.alpha if self.player_id == 0 else -self.alpha
+                ans += f"; alpha:{alpha}"
+        if self.extra:
+            ans += f"; vt={self.extra.n_visits}; qv={'%.3f'%self.extra.q}; uv={'%.3f'%self.extra.u}"
+        return ans
 
     @classmethod
     def get_root(cls):
