@@ -1,5 +1,4 @@
 python -m app.yly.main lc_757.py test
-python -m app.yly.main lc_3743.py test
 python -m app.yly.main lc_3753.py test
 python -m app.yly.main lc_3757.py test
 python -m app.yly.envs.cg.cf4.main dev

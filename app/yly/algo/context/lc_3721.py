@@ -30,7 +30,7 @@ class Solution(MockCf):
 
     def longestBalanced(self, nums: List[int]) -> int:
         n = len(nums)
-        t = T().set_range(0, len(nums))
+        t = T().set_range(0, n)
         last = dict()
         ans = cur_sum = 0
         for i, x in enumerate(nums, 1):
