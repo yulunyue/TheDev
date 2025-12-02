@@ -159,7 +159,7 @@ class Constant:
         if self.grid[idx] != player_id:
             self.get_move_info(idx, player_id)
             self.change_chess_statu(idx, player_id)
-            logger.map(idx=idx, player_id=player_id)
+            # logger.map(idx=idx, player_id=player_id)
 
     def get_l(self, i):
         return i // self.get_loop2(), i % self.get_loop2()
