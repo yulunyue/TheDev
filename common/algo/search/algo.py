@@ -75,13 +75,13 @@ class Algo:
         )
 
     def search_main(self, state: "State", algo=None) -> Action:
-        raise Exception("todo")
+        pass
 
     def take_action(self, state: "State") -> Action:
-        raise Exception("todo")
+        return state.get_random_action()
 
     def update_action(self, a: Action, *args):
-        raise Exception("todo")
+        pass
 
     def reset(self):
         return self
@@ -106,7 +106,7 @@ class Algo:
         for i in tqdm(range(self.train_epoll)):
             total_reward = self.train_one(i, state)
             self.rewards.append(total_reward)
-            if (i + 1) % (self.train_epoll // 10) == 0:
+            if self.train_epoll >= 10 and (i + 1) % (self.train_epoll // 10) == 0:
                 logger.map(Episode=i, TotalReward=sum(self.rewards) / len(self.rewards))
 
     def show(self):
@@ -117,13 +117,15 @@ class Algo:
     def train_one(self, i, state: State):
         s = state.reset()
         r = 0
+        self.actions: List[Action] = []
         self.steps = 0
         while not s.game_over():
             a = self.take_action(s)
             a.do()
             r += a.get_reward()
-            self.update_action(a)
             s = a.get_dst()
+            self.actions.append(a)
+            self.update_action(a)
             self.steps += 1
         return r
 

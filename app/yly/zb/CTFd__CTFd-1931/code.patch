@@ -1,0 +1,85 @@
+diff --git a/CTFd/api/v1/config.py b/CTFd/api/v1/config.py
+index a0368ff51f..9a734717dd 100644
+--- a/CTFd/api/v1/config.py
++++ b/CTFd/api/v1/config.py
+@@ -89,9 +89,6 @@ def post(self):
+         response = schema.load(req)
+ 
+         if response.errors:
+-            # Inject config key into error
+-            config_key = response.data["key"]
+-            response.errors["value"][0] = f"{config_key} config is too long"
+             return {"success": False, "errors": response.errors}, 400
+ 
+         db.session.add(response.data)
+@@ -117,9 +114,6 @@ def patch(self):
+         for key, value in req.items():
+             response = schema.load({"key": key, "value": value})
+             if response.errors:
+-                # Inject config key into error
+-                config_key = response.data["key"]
+-                response.errors["value"][0] = f"{config_key} config is too long"
+                 return {"success": False, "errors": response.errors}, 400
+             set_config(key=key, value=value)
+ 
+@@ -169,11 +163,11 @@ def patch(self, config_key):
+             schema = ConfigSchema()
+             data["key"] = config_key
+             response = schema.load(data)
+-            db.session.add(response.data)
+ 
+         if response.errors:
+-            return response.errors, 400
++            return {"success": False, "errors": response.errors}, 400
+ 
++        db.session.add(response.data)
+         db.session.commit()
+ 
+         response = schema.dump(response.data)
+diff --git a/CTFd/schemas/config.py b/CTFd/schemas/config.py
+index ec5dbe6e2f..266c18f025 100644
+--- a/CTFd/schemas/config.py
++++ b/CTFd/schemas/config.py
+@@ -1,10 +1,28 @@
+-from marshmallow import validate
++from marshmallow import fields
++from marshmallow.exceptions import ValidationError
+ from marshmallow_sqlalchemy import field_for
+ 
+ from CTFd.models import Configs, ma
+ from CTFd.utils import string_types
+ 
+ 
++class ConfigValueField(fields.Field):
++    """
++    Custom value field for Configs so that we can perform validation of values
++    """
++
++    def _deserialize(self, value, attr, data, **kwargs):
++        if isinstance(value, str):
++            # 65535 bytes is the size of a TEXT column in MySQL
++            # You may be able to exceed this in other databases
++            # but MySQL is our database of record
++            if len(value) > 65535:
++                raise ValidationError(f'{data["key"]} config is too long')
++            return value
++        else:
++            return value
++
++
+ class ConfigSchema(ma.ModelSchema):
+     class Meta:
+         model = Configs
+@@ -13,11 +31,7 @@ class Meta:
+ 
+     views = {"admin": ["id", "key", "value"]}
+     key = field_for(Configs, "key", required=True)
+-    value = field_for(
+-        Configs,
+-        "value",
+-        validate=[validate.Length(max=64000, error="Config is too long")],
+-    )
++    value = ConfigValueField(allow_none=True, required=True)
+ 
+     def __init__(self, view=None, *args, **kwargs):
+         if view:

@@ -1,0 +1,313 @@
+diff --git a/CTFd/challenges.py b/CTFd/challenges.py
+index e61d84e6c7..b6364f2bb5 100644
+--- a/CTFd/challenges.py
++++ b/CTFd/challenges.py
+@@ -3,7 +3,11 @@
+ from CTFd.constants.config import ChallengeVisibilityTypes, Configs
+ from CTFd.utils.config import is_teams_mode
+ from CTFd.utils.dates import ctf_ended, ctf_paused, ctf_started
+-from CTFd.utils.decorators import during_ctf_time_only, require_verified_emails
++from CTFd.utils.decorators import (
++    during_ctf_time_only,
++    require_complete_profile,
++    require_verified_emails,
++)
+ from CTFd.utils.decorators.visibility import check_challenge_visibility
+ from CTFd.utils.helpers import get_errors, get_infos
+ from CTFd.utils.user import authed, get_current_team
+@@ -12,6 +16,7 @@
+ 
+ 
+ @challenges.route("/challenges", methods=["GET"])
++@require_complete_profile
+ @during_ctf_time_only
+ @require_verified_emails
+ @check_challenge_visibility
+diff --git a/CTFd/forms/self.py b/CTFd/forms/self.py
+index 13a32035bd..b5475e0795 100644
+--- a/CTFd/forms/self.py
++++ b/CTFd/forms/self.py
+@@ -6,6 +6,7 @@
+ from CTFd.forms.fields import SubmitField
+ from CTFd.forms.users import attach_custom_user_fields, build_custom_user_fields
+ from CTFd.utils.countries import SELECT_COUNTRIES_LIST
++from CTFd.utils.user import get_current_user
+ 
+ 
+ def SettingsForm(*args, **kwargs):
+@@ -21,14 +22,25 @@ class _SettingsForm(BaseForm):
+ 
+         @property
+         def extra(self):
++            fields_kwargs = _SettingsForm.get_field_kwargs()
+             return build_custom_user_fields(
+                 self,
+                 include_entries=True,
+-                fields_kwargs={"editable": True},
++                fields_kwargs=fields_kwargs,
+                 field_entries_kwargs={"user_id": session["id"]},
+             )
+ 
+-    attach_custom_user_fields(_SettingsForm, editable=True)
++        @staticmethod
++        def get_field_kwargs():
++            user = get_current_user()
++            field_kwargs = {"editable": True}
++            if user.filled_all_required_fields is False:
++                # Show all fields
++                field_kwargs = {}
++            return field_kwargs
++
++    field_kwargs = _SettingsForm.get_field_kwargs()
++    attach_custom_user_fields(_SettingsForm, **field_kwargs)
+ 
+     return _SettingsForm(*args, **kwargs)
+ 
+diff --git a/CTFd/forms/teams.py b/CTFd/forms/teams.py
+index 5b0abfa026..cdffe2b036 100644
+--- a/CTFd/forms/teams.py
++++ b/CTFd/forms/teams.py
+@@ -6,6 +6,7 @@
+ from CTFd.forms.fields import SubmitField
+ from CTFd.models import TeamFieldEntries, TeamFields
+ from CTFd.utils.countries import SELECT_COUNTRIES_LIST
++from CTFd.utils.user import get_current_team
+ 
+ 
+ def build_custom_team_fields(
+@@ -122,13 +123,22 @@ class _TeamSettingsForm(BaseForm):
+ 
+         @property
+         def extra(self):
++            fields_kwargs = _TeamSettingsForm.get_field_kwargs()
+             return build_custom_team_fields(
+                 self,
+                 include_entries=True,
+-                fields_kwargs={"editable": True},
++                fields_kwargs=fields_kwargs,
+                 field_entries_kwargs={"team_id": self.obj.id},
+             )
+ 
++        def get_field_kwargs():
++            team = get_current_team()
++            field_kwargs = {"editable": True}
++            if team.filled_all_required_fields is False:
++                # Show all fields
++                field_kwargs = {}
++            return field_kwargs
++
+         def __init__(self, *args, **kwargs):
+             """
+             Custom init to persist the obj parameter to the rest of the form
+@@ -138,7 +148,9 @@ def __init__(self, *args, **kwargs):
+             if obj:
+                 self.obj = obj
+ 
+-    attach_custom_team_fields(_TeamSettingsForm)
++    field_kwargs = _TeamSettingsForm.get_field_kwargs()
++    attach_custom_team_fields(_TeamSettingsForm, **field_kwargs)
++
+     return _TeamSettingsForm(*args, **kwargs)
+ 
+ 
+diff --git a/CTFd/models/__init__.py b/CTFd/models/__init__.py
+index f4652c0b00..be7fe695f8 100644
+--- a/CTFd/models/__init__.py
++++ b/CTFd/models/__init__.py
+@@ -367,6 +367,22 @@ def place(self):
+         else:
+             return None
+ 
++    @property
++    def filled_all_required_fields(self):
++        required_user_fields = {
++            u.id
++            for u in UserFields.query.with_entities(UserFields.id)
++            .filter_by(required=True)
++            .all()
++        }
++        submitted_user_fields = {
++            u.field_id
++            for u in UserFieldEntries.query.with_entities(UserFieldEntries.field_id)
++            .filter_by(user_id=self.id)
++            .all()
++        }
++        return required_user_fields.issubset(submitted_user_fields)
++
+     def get_fields(self, admin=False):
+         if admin:
+             return self.field_entries
+@@ -538,6 +554,22 @@ def place(self):
+         else:
+             return None
+ 
++    @property
++    def filled_all_required_fields(self):
++        required_team_fields = {
++            u.id
++            for u in TeamFields.query.with_entities(TeamFields.id)
++            .filter_by(required=True)
++            .all()
++        }
++        submitted_team_fields = {
++            u.field_id
++            for u in TeamFieldEntries.query.with_entities(TeamFieldEntries.field_id)
++            .filter_by(team_id=self.id)
++            .all()
++        }
++        return required_team_fields.issubset(submitted_team_fields)
++
+     def get_fields(self, admin=False):
+         if admin:
+             return self.field_entries
+diff --git a/CTFd/schemas/teams.py b/CTFd/schemas/teams.py
+index 017a7d54ea..2f8aab0ebf 100644
+--- a/CTFd/schemas/teams.py
++++ b/CTFd/schemas/teams.py
+@@ -259,22 +259,22 @@ def validate_fields(self, data):
+                 # # Check that we have an existing field for this. May be unnecessary b/c the foriegn key should enforce
+                 field = TeamFields.query.filter_by(id=field_id).first_or_404()
+ 
++                # Get the existing field entry if one exists
++                entry = TeamFieldEntries.query.filter_by(
++                    field_id=field.id, team_id=current_team.id
++                ).first()
++
+                 if field.required is True and value.strip() == "":
+                     raise ValidationError(
+                         f"Field '{field.name}' is required", field_names=["fields"]
+                     )
+ 
+-                if field.editable is False:
++                if field.editable is False and entry is not None:
+                     raise ValidationError(
+                         f"Field '{field.name}' cannot be editted",
+                         field_names=["fields"],
+                     )
+ 
+-                # Get the existing field entry if one exists
+-                entry = TeamFieldEntries.query.filter_by(
+-                    field_id=field.id, team_id=current_team.id
+-                ).first()
+-
+                 if entry:
+                     f["id"] = entry.id
+                     provided_ids.append(entry.id)
+diff --git a/CTFd/schemas/users.py b/CTFd/schemas/users.py
+index 76c55db470..04c3379959 100644
+--- a/CTFd/schemas/users.py
++++ b/CTFd/schemas/users.py
+@@ -245,22 +245,22 @@ def validate_fields(self, data):
+                 # # Check that we have an existing field for this. May be unnecessary b/c the foriegn key should enforce
+                 field = UserFields.query.filter_by(id=field_id).first_or_404()
+ 
++                # Get the existing field entry if one exists
++                entry = UserFieldEntries.query.filter_by(
++                    field_id=field.id, user_id=current_user.id
++                ).first()
++
+                 if field.required is True and value.strip() == "":
+                     raise ValidationError(
+                         f"Field '{field.name}' is required", field_names=["fields"]
+                     )
+ 
+-                if field.editable is False:
++                if field.editable is False and entry is not None:
+                     raise ValidationError(
+                         f"Field '{field.name}' cannot be editted",
+                         field_names=["fields"],
+                     )
+ 
+-                # Get the existing field entry if one exists
+-                entry = UserFieldEntries.query.filter_by(
+-                    field_id=field.id, user_id=current_user.id
+-                ).first()
+-
+                 if entry:
+                     f["id"] = entry.id
+                     provided_ids.append(entry.id)
+diff --git a/CTFd/utils/decorators/__init__.py b/CTFd/utils/decorators/__init__.py
+index 8f979aa22f..782016433f 100644
+--- a/CTFd/utils/decorators/__init__.py
++++ b/CTFd/utils/decorators/__init__.py
+@@ -5,9 +5,9 @@
+ from CTFd.cache import cache
+ from CTFd.utils import config, get_config
+ from CTFd.utils import user as current_user
++from CTFd.utils.config import is_teams_mode
+ from CTFd.utils.dates import ctf_ended, ctf_started, ctftime, view_after_ctf
+-from CTFd.utils.modes import TEAMS_MODE
+-from CTFd.utils.user import authed, get_current_team, is_admin
++from CTFd.utils.user import authed, get_current_team, get_current_user, is_admin
+ 
+ 
+ def during_ctf_time_only(f):
+@@ -143,7 +143,7 @@ def admins_only_wrapper(*args, **kwargs):
+ def require_team(f):
+     @functools.wraps(f)
+     def require_team_wrapper(*args, **kwargs):
+-        if get_config("user_mode") == TEAMS_MODE:
++        if is_teams_mode():
+             team = get_current_team()
+             if team is None:
+                 if request.content_type == "application/json":
+@@ -186,3 +186,39 @@ def ratelimit_function(*args, **kwargs):
+         return ratelimit_function
+ 
+     return ratelimit_decorator
++
++
++def require_complete_profile(f):
++    from CTFd.utils.helpers import info_for
++
++    @functools.wraps(f)
++    def _require_complete_profile(*args, **kwargs):
++        if authed():
++            if is_admin():
++                return f(*args, **kwargs)
++            else:
++                user = get_current_user()
++
++                if user.filled_all_required_fields is False:
++                    info_for(
++                        "views.settings",
++                        "Please fill out all required profile fields before continuing",
++                    )
++                    return redirect(url_for("views.settings"))
++
++                if is_teams_mode():
++                    team = get_current_team()
++
++                    if team and team.filled_all_required_fields is False:
++                        # This is an abort because it's difficult for us to flash information on the teams page
++                        return abort(
++                            403,
++                            description="Please fill in all required team profile fields",
++                        )
++
++                return f(*args, **kwargs)
++        else:
++            # Fallback to whatever behavior the route defaults to
++            return f(*args, **kwargs)
++
++    return _require_complete_profile
+diff --git a/CTFd/views.py b/CTFd/views.py
+index 782d1a4a88..c14eb28afd 100644
+--- a/CTFd/views.py
++++ b/CTFd/views.py
+@@ -304,6 +304,7 @@ def notifications():
+ @authed_only
+ def settings():
+     infos = get_infos()
++    errors = get_errors()
+ 
+     user = get_current_user()
+     name = user.name
+@@ -336,6 +337,7 @@ def settings():
+         tokens=tokens,
+         prevent_name_change=prevent_name_change,
+         infos=infos,
++        errors=errors,
+     )
+ 
+ 

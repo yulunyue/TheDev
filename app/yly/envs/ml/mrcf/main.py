@@ -1,7 +1,8 @@
 from common.util.export import ToolBase, logger, random
-
+from common.algo.export import random_seed
 from .model.mrp_state import MrpState, computer, C1
 from .model.mdp_state import Mdp1State, Mdp2State, C2
+from .value_func import Mcts
 
 
 class Main(ToolBase):
@@ -20,12 +21,18 @@ class Main(ToolBase):
         logger.info(computer(C2.MRP_REWARD, mdp1))
         logger.info(mdp1)
 
+    def dev_mct(self):
+        al = Mcts().load(0.5).set_train_epoll(1000)
+        al.train(Mdp1State.new())
+        logger.info(dict(al.vs))
+
     def dev(self):
-        self.dev_mdp()
+        self.dev_mct()
 
     def debug(self):
         self.dev()
 
 
 if __name__ == "__main__":
+    random_seed(1)
     Main().run()

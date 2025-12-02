@@ -1,0 +1,17 @@
+diff --git a/CTFd/models/__init__.py b/CTFd/models/__init__.py
+index 6b241fcb85..f4652c0b00 100644
+--- a/CTFd/models/__init__.py
++++ b/CTFd/models/__init__.py
+@@ -122,6 +122,12 @@ def html(self):
+ 
+         return markup(build_markdown(self.description))
+ 
++    @property
++    def plugin_class(self):
++        from CTFd.plugins.challenges import get_chal_class
++
++        return get_chal_class(self.type)
++
+     def __init__(self, *args, **kwargs):
+         super(Challenges, self).__init__(**kwargs)
+ 

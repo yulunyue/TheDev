@@ -1,0 +1,16 @@
+{
+    "instance_id": "CTFd__CTFd-1925",
+    "patch": "diff --git a/CTFd/models/__init__.py b/CTFd/models/__init__.py\nindex 6b241fcb85..f4652c0b00 100644\n--- a/CTFd/models/__init__.py\n+++ b/CTFd/models/__init__.py\n@@ -122,6 +122,12 @@ def html(self):\n \n         return markup(build_markdown(self.description))\n \n+    @property\n+    def plugin_class(self):\n+        from CTFd.plugins.challenges import get_chal_class\n+\n+        return get_chal_class(self.type)\n+\n     def __init__(self, *args, **kwargs):\n         super(Challenges, self).__init__(**kwargs)\n \n",
+    "repo": "CTFd/CTFd",
+    "base_commit": "ff6e093fa6bf23b526ecddf9271195b429240ff4",
+    "hints_text": "",
+    "created_at": "2021-06-26T18:00:11Z",
+    "test_patch": "diff --git a/tests/test_plugin_utils.py b/tests/test_plugin_utils.py\nindex c4c958878b..24403fb147 100644\n--- a/tests/test_plugin_utils.py\n+++ b/tests/test_plugin_utils.py\n@@ -14,7 +14,13 @@\n     register_plugin_script,\n     register_user_page_menu_bar,\n )\n-from tests.helpers import create_ctfd, destroy_ctfd, login_as_user, setup_ctfd\n+from tests.helpers import (\n+    create_ctfd,\n+    destroy_ctfd,\n+    gen_challenge,\n+    login_as_user,\n+    setup_ctfd,\n+)\n \n \n def test_register_plugin_asset():\n@@ -204,3 +210,17 @@ def bypass_csrf_protection_test_route():\n             assert r.status_code == 200\n             assert output == \"Success\"\n     destroy_ctfd(app)\n+\n+\n+def test_challenges_model_access_plugin_class():\n+    \"\"\"\n+    Test that the Challenges model can access its plugin class\n+    \"\"\"\n+    app = create_ctfd()\n+\n+    with app.app_context():\n+        from CTFd.plugins.challenges import get_chal_class\n+\n+        chal = gen_challenge(app.db)\n+        assert chal.plugin_class == get_chal_class(\"standard\")\n+    destroy_ctfd(app)\n",
+    "problem_statement": "Consider passing challenge class over into the view.html context\nThis makes it a little easier for the challenge view to access Python code. Not sure if this looks best as challenge.class.read() or challenge_class.read(). \n",
+    "environment_setup_commit": "ff6e093fa6bf23b526ecddf9271195b429240ff4",
+    "pr_url": "https://github.com/CTFd/CTFd/pull/1925",
+    "issue_url": "https://github.com/CTFd/CTFd/issues/1879",
+    "issue_numbers": [
+        "1879"
+    ]
+}

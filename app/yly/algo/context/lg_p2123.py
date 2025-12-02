@@ -1,4 +1,4 @@
-from common.util.export import List, Dict, MockCf
+from common.util.export import List, Dict, MockCf, CT
 
 
 class Solution(MockCf):
@@ -7,18 +7,40 @@ class Solution(MockCf):
     MA[i] = SUM(A[:i+1])
     C[i] = A[i] + B[i] i==1
          = max(C[i-1], MA[i]) + B[i] i>=2
-    考虑 位置 i, j=i+1, k=i-1
+    考虑 位置 i, i+1,i-1
     不交换
-    C[j] = max(max(), MA[k]+A[i]+A[j])+B[j]
+    C[i+1] = max(
+        C[i-1] + B[i] + B[i+1], 
+        MA[i-1] + A[i] + B[i] + B[i+1],
+        MA[i-1]+ A[i]+ A[i+1]+ B[i+1]
+    )
+    交换 i,i+1
+    C[i+1] = max(
+        C[i-1]+B[i+1]+B[i],
+        MA[i-1]+A[i+1]+B[i+1]+B[i],
+        MA[i-1]+A[i]+A[i+1]+B[i],
+    )
+    则不交换不会变差
+    min(A[i],B[i+1])<=min(A[i+1],B[i])
+
+
     """
 
     def calc(self, a, b):
-        ans = 0
+        c = c1 = 0
         n = len(a)
-        for i in range(n):
-            if i == 0:
+        ai, bi = a[0], b[0]
+        for i in range(1, n):
+            aj, bj = a[i], b[i]
+            bs += bj
+            c1 = c
+            if CT.min(ai, bj) > CT.min(aj, bi):
                 pass
-        return ans
+            else:
+                c1 = max()
+            ai, bi, c1 = aj, bj, c
+
+        return c1
 
     def execute(self):
         ans = []
