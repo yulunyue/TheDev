@@ -31,14 +31,13 @@ class Qlearning(Algo):
         return self.get_max_q_action(s)
 
     def train_one(self, i, state):
-        # self.e_greed = 0.1 * (1 - i / self.train_epoll)
+
         return super().train_one(i, state)
 
     def update_action(self, a0: Action):
         next_action_value = [self.q[a.key] for a in a0.get_dst().get_sort_actions()]
         next_max_q = max(next_action_value) if next_action_value else 0
-        current_q = self.q[a0.key]
-        r = a0.get_reward() + self.gamma * next_max_q - current_q
+        r = a0.get_reward() + self.gamma * next_max_q - self.q[a0.key]
         self.q[a0.key] += self.lr * r
         # logger.info(a0.show(self.q[a0.key]))
 

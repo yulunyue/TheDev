@@ -1,7 +1,7 @@
 from common.util.export import ToolBase, File, logger, Dict, List, StrUtil
 from common.tool.export import (
     OsUtil,
-    TableConfig,
+    ConfigBase,
     TableBase,
     StrModel,
     ListModel,
@@ -9,10 +9,17 @@ from common.tool.export import (
 )
 
 
-class Task(TableConfig):
+class Cg(ConfigBase):
     test_main = StrModel()
     setup_env = ListModel()
     result = DictModel()
+    after_setup_env = DictModel()
+    base_commit = StrModel()
+    pr_url = StrModel()
+    repo = StrModel()
+    instance_id = StrModel()
+    issue_url = StrModel()
+    code_commit = StrModel(default_value="code.patch")
 
 
 import os
@@ -20,23 +27,20 @@ import os
 INPUTS_DIR = "app/yly/zb"
 REPO_BASE = "data/repo"
 
-CONFIG_RESOURCE = TableBase[Task]().set_resource("zb")
-
 
 class ToolMain(ToolBase):
     def prepare(self, name):
         self.name: str = name
-        self.model = CONFIG_RESOURCE.get(name)
+        self.cfg: Cg = Cg(name)
+        self.cfg.set_resource(f"{INPUTS_DIR}/{name}/{name}.json")
         self.input_dir = File(f"{INPUTS_DIR}/{name}")
         if not self.input_dir.exists():
             File(self.input_dir.path + ".zip").unzip()
-        self.config_json_file = self.input_dir.child(f"{name}.json")
-        self.config: Dict[str, str] = self.config_json_file.read_file()
-        self.base_commit = self.config["base_commit"]
-        self.repo_uri = self.config["pr_url"].split("/pull")[0] + ".git"
+
+        self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
         self.local_repo = File(
-            f"{REPO_BASE}/{self.config['repo']}"
+            f"{REPO_BASE}/{self.cfg.repo.get_value()}"
         ).make_dir_if_not_exist()
         self.git_cmd = OsUtil("git")
         if not self.local_repo.exists():
@@ -66,9 +70,11 @@ class ToolMain(ToolBase):
                     key = f.path.replace(self.local_repo.path + "/", "")
                     self.change_py_test_files[key] = f
 
-    def rest_repo(self):
+    def rest_repo(self, commid_id=None):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""
-        success, stdout, stderr = self.git_cmd.run("reset", "--hard", self.base_commit)
+        if commid_id is None:
+            commid_id = self.cfg.base_commit.get_value()
+        success, stdout, stderr = self.git_cmd.run("reset", "--hard", commid_id)
         if not success:
             logger.info([stdout, stderr])
             return False
@@ -117,7 +123,7 @@ class ToolMain(ToolBase):
     def get_py_test_cmds(self):
         files = list(self.change_py_test_files.keys())
         logger.info(f"get change_file_form patch {files}")
-        model_py_test = self.model.test_main.get_value()
+        model_py_test = self.cfg.test_main.get_value()
         if model_py_test:
             return model_py_test
         return " ".join(files)
@@ -129,11 +135,11 @@ class ToolMain(ToolBase):
         OsUtil(error_exit_flag=False).set_env(self.local_repo.path).run(
             "-m", "pytest", "--json-report", self.get_py_test_cmds()
         )
-        result = self.model.result.get_value()
+        result = self.cfg.result.get_value()
         result[key] = self.json_report_parse(report_json_fp)
 
     def print_result(self):
-        result = self.model.result.get_value()
+        result = self.cfg.result.get_value()
         old, new = result["test"], result["code"]
         for k in list(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
@@ -147,9 +153,10 @@ class ToolMain(ToolBase):
             StrUtil().format(
                 File(f"{INPUTS_DIR}/template.py").read_file(),
                 REPO_PATH=self.local_repo.path,
-                BASE_COMMIT=self.base_commit,
-                INSTANCE_ID=self.config["instance_id"],
+                BASE_COMMIT=self.cfg.base_commit.get_value(),
+                INSTANCE_ID=self.cfg.instance_id.get_value(),
                 PY_MAIN_CMD=self.get_py_test_cmds(),
+                CODE_PATCH=self.cfg.code_commit.get_value(),
             )
         )
 
@@ -172,10 +179,14 @@ class ToolMain(ToolBase):
             "python -m pip install pytest pytest-json-report toml",
             f"cd {self.local_repo.path}",
         ]
-        etup_env_sh.extend(self.model.setup_env.get_value())
+
         pyproject_toml = self.local_repo.child("pyproject.toml")
         if pyproject_toml.exists():
             etup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
+        require_txt = self.local_repo.child("requirements.txt")
+        if require_txt.exists():
+            etup_env_sh.append(f"python -m pip install -r {require_txt.file_name}")
+        etup_env_sh.extend(self.cfg.setup_env.get_value())
         self.setup_env_sh.write_file("\n".join(etup_env_sh))
         logger.info(f"sh {self.setup_env_sh.path}")
 
@@ -188,8 +199,8 @@ class ToolMain(ToolBase):
         self.make_setup_env_sh()
         self.make_main_py()
         self.make_env()
-        logger.info(self.config.get("pr_url"))
-        logger.info(self.config.get("issue_url"))
+        logger.info(self.cfg.pr_url.get_value())
+        logger.info(self.cfg.issue_url.get_value())
         logger.info(self.local_repo.path)
         logger.info(f"python {self.main_py_file.path}")
 
@@ -199,9 +210,13 @@ class ToolMain(ToolBase):
         self.py_test("test")
 
     def run2(self):
-        self.rest_repo()
-        self.apply_patch(self.test_patch)
-        self.apply_patch(self.code_patch)
+        code_commit = self.cfg.code_commit.get_value()
+        if code_commit.endswith(".patch"):
+            self.rest_repo()
+            self.apply_patch(self.test_patch)
+            self.apply_patch(self.code_patch)
+        else:
+            self.rest_repo(code_commit)
         self.py_test("code")
 
     def main(self):
@@ -210,7 +225,12 @@ class ToolMain(ToolBase):
         self.run2()
         self.print_result()
 
+    def debug(self):
+        pass
+
+    def exit(self):
+        self.cfg.save()
+
 
 if __name__ == "__main__":
     ToolMain().run()
-    CONFIG_RESOURCE.save()

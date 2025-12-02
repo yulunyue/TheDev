@@ -13,6 +13,7 @@ from common.algo.export import (
     get_sub_bits,
     XorBarisDev as XorBais,
     Tree,
+    set_mask,
     GaussElimination,
 )
 
@@ -48,6 +49,9 @@ class TestAlgo(TestBase):
         )  #'a#a#b#c#b#c'
         self.expect(get_sa_prefix_doubling(s), (sa, rk))
         self.expect(get_height_form_sa(s)[0], hi)
+
+    def test_mask(self):
+        self.expect(set_mask(7, 1, 2, 2), 5)
 
     def test_bin(self):
         value = [1, 2, 1]

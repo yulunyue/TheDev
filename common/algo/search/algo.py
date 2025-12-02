@@ -98,18 +98,21 @@ class Algo:
 
     def train(self, state: State):
         self.reset()
-        rewards = []
-        from common.third_util.draw import Draw
+        self.rewards = []
+
         from common.third_util.tqdm_util import tqdm
 
         logger.info("begin trainging")
         for i in tqdm(range(self.train_epoll)):
             total_reward = self.train_one(i, state)
-            rewards.append(total_reward)
+            self.rewards.append(total_reward)
             if (i + 1) % (self.train_epoll // 10) == 0:
-                logger.map(Episode=i, TotalReward=sum(rewards) / len(rewards))
-        Draw().draw_line(rewards).save(self.get_tmp_file_path("result.svg"))
-        return rewards
+                logger.map(Episode=i, TotalReward=sum(self.rewards) / len(self.rewards))
+
+    def show(self):
+        from common.third_util.draw import Draw
+
+        Draw().draw_line(self.rewards).save(self.get_tmp_file_path("result.svg"))
 
     def train_one(self, i, state: State):
         s = state.reset()

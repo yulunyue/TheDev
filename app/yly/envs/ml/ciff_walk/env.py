@@ -5,6 +5,12 @@ import numpy as np
 from .constant import C
 
 
+class CAction(Action):
+    @property
+    def key(self):
+        return f"{self.src.state}:{C.ACS[self.action]}"
+
+
 class CfState(State):
     def __init__(self, state):
         self.y, self.x = state // C.ncol, state % C.ncol
@@ -25,7 +31,7 @@ class CfState(State):
                 if nx != C.ncol - 1:
                     reward = -100
                 next_state.set_done(True)
-            a = Action(self, i, next_state).set_reward(reward)
+            a = CAction(self, i, next_state).set_reward(reward)
             actions.append(a)
         return actions
 

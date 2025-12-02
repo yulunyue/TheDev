@@ -34,7 +34,6 @@ class Constant:
     def load(self, width=6, height=6, in_row=4):
         self.width = width
         self.height = height
-        self.step = 0
         self.in_row = in_row
         self.op_win_state = self.in_row + 1  #
         self.init_size()
@@ -128,9 +127,10 @@ class Constant:
             state3, state4 = state1 & self.mask_cloumn, state2 & self.mask_cloumn
             state1 = state1 >> self.row_bit
             state2 = state2 >> self.row_bit
+
             if state3 == state4:
                 continue
-            self.change_col(l1, state4)
+            self.change_col(l1, state3, state4)
         self.state = state
         return self
 
@@ -149,7 +149,7 @@ class Constant:
     def is_valide_pos(self, l3, l4):
         return 0 <= l3 < self.get_loop1() and 0 <= l4 < self.get_loop2()
 
-    def change_col(self, l1, state4):
+    def change_col(self, l1, state3: int, state4: int):
         for l2 in range(self.get_loop2()):
             player_id = state4 & self.mask_bit
             self.set_pos_player_id(self.get_idx(l1, l2), player_id)
@@ -157,10 +157,9 @@ class Constant:
 
     def set_pos_player_id(self, idx, player_id):
         if self.grid[idx] != player_id:
-            self.step += 1 if player_id else -1
             self.get_move_info(idx, player_id)
             self.change_chess_statu(idx, player_id)
-            # logger.map(step=self.step, idx=idx, player_id=player_id)
+            logger.map(idx=idx, player_id=player_id)
 
     def get_l(self, i):
         return i // self.get_loop2(), i % self.get_loop2()

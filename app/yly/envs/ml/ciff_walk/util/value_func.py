@@ -5,7 +5,7 @@ from common.third_util.pt_table import PtTable
 from ..env import CfState
 
 
-def to_matrix(p):
+def to_matrix(p, tp=None):
     ret = []
     for i in range(C.nrow):
         ret.append([])
@@ -15,7 +15,10 @@ def to_matrix(p):
                 s = CfState.new(k)
                 v = "N"
                 if not s.game_over():
-                    v = p.take_action(s).action
+                    if tp is None:
+                        v = p.take_action(s).action
+                    else:
+                        v = [p.q.get(a.key) for a in s.get_sort_actions()]
             else:
                 v = p.get(k, "")
             if isinstance(v, float):
