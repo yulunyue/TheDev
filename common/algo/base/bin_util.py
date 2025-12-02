@@ -2,12 +2,12 @@ from typing import List
 from common.util.export import logger
 
 
-def p2(num=10**6, mod=None):
-    result = [1] * num
+def p2(num=10**6, mod=None, extern=1):
+    result = [0]
     for i in range(1, num):
-        result[i] = result[i - 1] * 2
+        result.append(result[i - 1] * 2 + extern)
         if mod is not None:
-            result[i] = result[i] % mod
+            result[-1] = result[-1] % mod
     return result
 
 

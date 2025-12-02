@@ -42,15 +42,13 @@ class CaseFun:
 
 class TestBase:
     TEST_EMABLE = True
-
-    def __init__(self, raise_err=False) -> None:
-        self.prepare()
+    f = None
 
     def prepare(self, args=None):
         pass
 
     def run(self, args=None):
-
+        self.prepare()
         if args is None:
             args = sys.argv[1:]
         self.argvs, self.kw = url_to_json(args)
@@ -98,7 +96,10 @@ class TestBase:
         pass
 
     def expect(self, a, expect_value=True, info="", stacklevel=2):
-        self.f.expect(a, expect_value, info, lambda a, dst: Diff(a).is_same(dst))
+        if self.f:
+            self.f.expect(a, expect_value, info, lambda a, dst: Diff(a).is_same(dst))
+        else:
+            assert a == expect_value
 
     def get_temp_path(self, name):
         return f"data/test/{self.__class__.__name__}/{name}"

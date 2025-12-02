@@ -9,9 +9,9 @@ from common.tool.base_class.model import BaseModel, StrModel
 class ConfigBase:
     _params_cls_map: Dict[str, BaseModel] = None
 
-    def __init__(self, key):
+    def __init__(self, key: str):
         self.key = key
-        self.params = dict()
+        self.params: Dict[str, BaseModel] = dict()
         for k, v in self._params_cls_map.items():
             c = v.clone().set_datasource(self).set_key(k)
             setattr(self, k, c)
@@ -21,8 +21,10 @@ class ConfigBase:
     def init(self):
         pass
 
-    def set_resource(self, resource):
-        self.resource = resource
+    def set_resource(self, resource: str):
+        if isinstance(resource, str):
+            resource = File(resource)
+        self.resource: File = resource
         return self
 
     def __new__(cls, *args) -> None:
@@ -68,4 +70,12 @@ class ConfigBase:
             cls._params_cls_map[key] = v.set_key(key)
 
     def to_json(self):
-        return {v.key: v.get_value() for v in self._params.values()}
+        return {v.key: v.get_value() for v in self.params.values()}
+
+    def save(self):
+        cg = dict()
+        if self.resource.exists():
+            cg = self.resource.read_file()
+        cg.update(self.to_json())
+        self.resource.write_file(cg)
+        return self

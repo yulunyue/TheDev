@@ -25,6 +25,9 @@ class File:
         self.m_time = 0
         self.data = b""
 
+    def get_param_value(self, p, param):
+        return self.get(param.key, default_value=param.default_value)
+
     def parent(self):
         return File("/".join(self.dirs))
 
@@ -62,7 +65,9 @@ class File:
         else:
             if not isinstance(data, str):
                 data = str(data)
-            with open(self.path, "w", encoding=encoding) as f:
+            with open(
+                self.path, "w", newline="", encoding=encoding
+            ) as f:  # newline="" 可以写LF 而不是CRLF \n 而不是 \r\n
                 f.write(data)
         return self
 

@@ -1,7 +1,7 @@
 from .cf4action import F4Action
 from .constant import C
 from common.algo.search.state import AbState, Action
-from common.util.export import List, Dict, logger
+from common.util.export import List, Dict, logger, log
 from .env import ENV
 
 
@@ -11,7 +11,6 @@ class C4ACtion(Action):
         self.obs: dict = obs
 
     def show(self):
-
         return f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}{ENV.s(self.src.player_id+1)}, obs:{self.obs}"
 
     def is_self_win(self):
@@ -27,9 +26,6 @@ class F4State(AbState):
 
     def __init__(self, state):
         super().__init__(state)
-        ENV.set_state(state)
-        self.depth = ENV.step
-        self.player_id = self.depth % 2
 
     @classmethod
     def new_shape(cls, shape):
@@ -40,9 +36,14 @@ class F4State(AbState):
         return f"depth:{self.depth}, s:{ENV.s(self.player_id+1)}"
 
     def get_action(self, pos):
-        ENV.set_mask(self.state)
-        obs, state = ENV.get_next_state(pos, self.player_id)
-        s = F4State.new(state)
+        idx, state = ENV.get_next_state(self.state, pos, self.player_id)
+        s = (
+            F4State.new(state)
+            .set_player_id(1 - self.player_id)
+            .set_depth(self.depth + 1)
+        )
+        ENV.set_state(self.state)
+        obs = ENV.get_move_info(idx, self.player_id)
         return C4ACtion(self, pos, s, obs=obs)
 
     def make_actions(self):

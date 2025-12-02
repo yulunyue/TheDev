@@ -18,11 +18,11 @@ class Env(Constant):
     def init_size(self):
         self.size = self.width * self.height
 
-    def get_next_state(self, pos: int, player_id: int):
-        state = (self.state >> (pos * self.height_bit)) & self.mask_row
+    def get_next_state(self, old_state, pos: int, player_id: int):
+        state = (old_state >> (pos * self.height_bit)) & self.mask_row
         idx = state.bit_length() + pos * self.height_bit - 1
-        s = set_mask(self.state, idx * self.BIT_SIZE, 2, player_id + 2)
-        return self.get_move_info(idx, player_id), s
+        s = set_mask(old_state, idx * self.BIT_SIZE, 2, player_id + 2)
+        return idx, s
 
     def get_yx(self, i):
         return self.height - 1 - i % self.height, i // self.height
@@ -30,7 +30,7 @@ class Env(Constant):
     def is_valide_pos(self, l3, l4):
         return 0 <= l3 < self.get_loop1() and 0 <= l4 < self.get_loop2() - 1
 
-    def change_col(self, x, state4: int):
+    def change_col(self, x, state3: int, state4: int):
         h = state4.bit_length()
         for y in range(self.get_loop2()):
             idx = x * self.height + y

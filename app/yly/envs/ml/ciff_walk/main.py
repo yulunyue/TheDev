@@ -1,13 +1,15 @@
-from common.util.export import ToolBase, logger
+from common.util.export import ToolBase, logger, log
 from .env import CfState, C
 from .util.value_func import PiFunc, VFunc, to_matrix
 from .util.study_replay import RealTimeValueIteration
+from .util.ql import Ql, Qlearning
 from common.algo.export import random_seed, ValueIteration, Qlearning
 
 
 class CfTool(ToolBase):
     def prepare(self, *args, **kw):
         self.s: CfState = CfState.new(C.INIT_SATTE)
+        log.debug(C.ACS)
 
     def run_policy_all_state(self):
         f = PiFunc().load()
@@ -24,7 +26,8 @@ class CfTool(ToolBase):
     def run_ql(self):
         f = Qlearning().load(train_epoll=1000)
         f.train(self.s)
-        logger.debug(to_matrix(f))
+        log.debug(to_matrix(f, tp="info"))
+        log.debug(to_matrix(f))
 
     def dev(self):
         self.run_ql()

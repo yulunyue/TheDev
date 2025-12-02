@@ -1,4 +1,4 @@
-from common.util.export import ToolBase, logger, Module, List
+from common.util.export import ToolBase, logger, Module, List, log
 from common.algo.export import random_seed, ALgoManage, Algo
 from common.third_service.export import CodingGame, uu
 from app.yly.envs.cg.cf4.export import (
@@ -13,7 +13,7 @@ from app.yly.envs.cg.cf4.export import (
 class ToolCf4(ToolBase):
 
     def prepare(self, args=None):
-        self.init_state = F4State.new_shape(0)
+        self.init_state: F4State = F4State.new_shape(0)
         self.al = (
             ALgoManage().set_state(self.init_state).set_record_dir(uu(CgMuiltCf4.name))
         )
@@ -27,17 +27,23 @@ class ToolCf4(ToolBase):
     def train(self):
         self.al.train([self.al.mc(100)])
 
-    def debug(self):
-        self.dev()
+    def dev2(self):
+        s = self.init_state.get_action(0).get_dst()
+        logger.debug(s.show())
+        s = s.get_action(0).get_dst()
+        logger.debug(s.show())
 
     def dev1(self):
-        logger.debug(self.init_state.show())
+        log.debug(self.init_state.show())
         for a in self.init_state.get_sort_actions():
-            logger.debug(a.show())
-            logger.debug(a.get_dst().show())
+            log.debug(a.show())
+            log.debug(a.get_dst().show())
 
     def dev(self):
-        self.dev1()
+        self.dev2()
+
+    def debug(self):
+        self.dev2()
 
 
 if __name__ == "__main__":

@@ -9,13 +9,13 @@ import xml.etree.ElementTree as ET
 sys.stdout.reconfigure(encoding="utf-8")
 # --- 配置 ---
 # 请在这里设置你的代码仓库的绝对路径
-INSTANCE_ID = "vllm-project__vllm-3868"
-REPO_PATH = "data/repo/vllm-project/vllm"
+INSTANCE_ID = "CTFd__CTFd-1922"
+REPO_PATH = "data/repo/CTFd/CTFd"
 # 要进行测试的基础 commit 哈希
-BASE_COMMIT = "37e84a403d6d11b670a42e84153204cd8b76b849"
+BASE_COMMIT = "31e8261bad4b927ab5cbf58588b3ee12d073535e"
 # 实例ID，用于结果文件的顶级键
-PY_MAIN_CMD = "tests/entrypoints/test_guided_processors.py"
-
+PY_MAIN_CMD = "tests/admin/test_csv.py"
+CODE_PATCH = "945aa5472e3e5235a2ef608472b258f5fee750fe"
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_DIR = Path(REPO_PATH)
@@ -208,10 +208,14 @@ def main():
     # --- 补丁后运行 ---
     if not reset_repo(BASE_COMMIT):
         write_results_and_exit(False)
-    if not apply_patch(SCRIPT_DIR / "test.patch"):
-        write_results_and_exit(False)
-    if not apply_patch(SCRIPT_DIR / "code.patch"):
-        write_results_and_exit(False)
+    if not CODE_PATCH.endswith(".patch"):
+        if not reset_repo(CODE_PATCH):
+            write_results_and_exit(False)
+    else:
+        if not apply_patch(SCRIPT_DIR / "test.patch"):
+            write_results_and_exit(False)
+        elif not apply_patch(SCRIPT_DIR / CODE_PATCH):
+            write_results_and_exit(False)
     results[INSTANCE_ID]["patch_successfully_applied"] = True
 
     print_header("STEP 2: POST-PATCH - Running tests with both patches")
