@@ -70,21 +70,13 @@ class ALgoManage:
     record_model = AlgoInfo
 
     def ad(self, n=10):
-        return AbDev(f"ad{n}").load(n).set_record_dir(self.record_dir)
+        return AbDev(f"ad{n}").load(n)
 
     def am(self, n=10):
-        return (
-            AbDev(f"am{n}")
-            .load(n, search_type=AbDev.AB_MUCH)
-            .set_record_dir(self.record_dir)
-        )
+        return AbDev(f"am{n}").load(n, search_type=AbDev.AB_MUCH)
 
     def ab(self, n=10):
-        return (
-            AbDev(f"ab{n}")
-            .load(n, search_type=AbDev.AB_TYPE)
-            .set_record_dir(self.record_dir)
-        )
+        return AbDev(f"ab{n}").load(n, search_type=AbDev.AB_TYPE)
 
     def dqn(self):
         pass

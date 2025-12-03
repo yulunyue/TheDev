@@ -151,6 +151,7 @@ class ToolBase:
         pass
 
     def run(self):
+        self.msgs = []
         self.argvs, self.kw = url_to_json(sys.argv[1:])
         fun_name = self.argvs.pop()
         pym = " ".join(
@@ -178,9 +179,30 @@ class ToolBase:
             self.exit()
             return
 
-        ret = f(**self.kw)
+        f(**self.kw)
         self.exit()
+
+    def cli(self):
+        fi, fo = self.get_temp_file("inp.txt"), self.get_temp_file("out.txt")
+        fi.write_if_not_exists("inp")
+        last_cmd = None
+        while True:
+            time.sleep(1)
+            cmd = fi.read_fast_file()
+            if cmd == last_cmd:
+                continue
+            self.msgs.clear()
+            self.do_cmd(*cmd.split(" "))
+            fo.write_file("\n".join(self.msgs))
+            last_cmd = cmd
+
+    def do_cmd(self, *cmd):
+        pass
+
+    def info(self, msg):
+        self.msgs.append(msg)
 
     def get_temp_file(self, name):
         path = f"data/tool/{self.__class__.__name__}/{name}"
+        logger.info(path)
         return File(path)

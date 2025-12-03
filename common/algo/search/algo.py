@@ -1,14 +1,18 @@
 from common.third_util.np_util import np
-import time
-import random
-
-
-from typing import List, Dict
 from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
 from collections import defaultdict
-from common.util.export import File, logger, get_log, get_dev_log
+from common.util.export import (
+    File,
+    logger,
+    get_log,
+    get_dev_log,
+    time,
+    random,
+    List,
+    Dict,
+)
 
 
 def random_seed(v=1):
@@ -31,19 +35,6 @@ class Algo:
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
         self.params = None
-
-    record_dir = "data/test/algo"
-
-    def set_record_dir(self, path):
-        self.record_dir = path
-        return self
-
-    def get_tmp_file_path(self, name):
-        return f"{self.record_dir}/{name}"
-
-    @property
-    def logger(self):
-        return get_dev_log(self.get_tmp_file_path(self.get_name()))
 
     def set_name(self, name):
         self.name = name
@@ -99,7 +90,7 @@ class Algo:
     def train(self, state: State):
         self.reset()
         self.rewards = []
-
+        start_time = time.time()
         from common.third_util.tqdm_util import tqdm
 
         logger.info("begin trainging")
@@ -108,11 +99,7 @@ class Algo:
             self.rewards.append(total_reward)
             if self.train_epoll >= 10 and (i + 1) % (self.train_epoll // 10) == 0:
                 logger.map(Episode=i, TotalReward=sum(self.rewards) / len(self.rewards))
-
-    def show(self):
-        from common.third_util.draw import Draw
-
-        Draw().draw_line(self.rewards).save(self.get_tmp_file_path("result.svg"))
+        self.use_time = time.time() - start_time
 
     def train_one(self, i, state: State):
         s = state.reset()

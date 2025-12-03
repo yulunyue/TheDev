@@ -16,7 +16,7 @@ class AlphaBateSearch(Algo):
     def search_dfs(
         self, state: AbState, actions: List[Action], depth=0, player_id=None, **kw
     ):
-        if depth == self.max_depth or state.get_done() is not None:
+        if depth == self.max_depth or state.game_over():
             return -self.get_depth_reward(actions)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
@@ -35,7 +35,7 @@ class AlphaBateSearch(Algo):
     def search_ab(
         self, state: AbState, actions: List[Action], depth=0, alpha=-inf, bate=inf, **kw
     ) -> None:
-        if depth == self.max_depth or state.get_done() is not None:
+        if depth == self.max_depth or state.game_over():
             return -self.get_depth_reward(actions)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
         if not mvs:
@@ -76,10 +76,7 @@ class AlphaBateSearch(Algo):
         pop_node: AbState = None
         while stacks:
             cur_node = stacks[-1]
-            if (
-                cur_node.get_done() is not None
-                or cur_node.search_depth == self.max_depth
-            ):
+            if cur_node.game_over() or cur_node.search_depth == self.max_depth:
                 cur_node.alpha = -self.get_depth_reward([cur_action])
                 pop_node = stacks.pop()
                 continue

@@ -24,8 +24,15 @@ class C4ACtion(Action):
 
 class F4State(AbState):
 
-    def __init__(self, state):
-        super().__init__(state)
+    @classmethod
+    def new(cls, state, depth=None, player_id=None, **kw):
+        if depth is None:
+            ENV.set_mask(state)
+            depth = len(ENV.pos_status[ENV.STATE_FIRST]) + len(
+                ENV.pos_status[ENV.STATE_SECONED]
+            )
+            player_id = depth % 2
+        return super().new(state, depth=depth, player_id=player_id, **kw)
 
     @classmethod
     def new_shape(cls, shape):
@@ -37,11 +44,7 @@ class F4State(AbState):
 
     def get_action(self, pos):
         idx, state = ENV.get_next_state(self.state, pos, self.player_id)
-        s = (
-            F4State.new(state)
-            .set_player_id(1 - self.player_id)
-            .set_depth(self.depth + 1)
-        )
+        s = F4State.new(state, depth=self.depth + 1, player_id=1 - self.player_id)
         ENV.set_state(self.state)
         obs = ENV.get_move_info(idx, self.player_id)
         return C4ACtion(self, pos, s, obs=obs)
@@ -53,7 +56,7 @@ class F4State(AbState):
             a = self.get_action(pos)
             if a is None:
                 continue
-            if a.get_dst().depth == ENV.size:
+            if a.get_dst().depth == ENV.pos_status:
                 a.dst.set_done(AbState.NO_WIN)
                 return [a]
             if a.is_self_win():

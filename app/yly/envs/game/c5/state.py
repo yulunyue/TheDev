@@ -32,15 +32,21 @@ class C5ACtion(Action):
 
 class State(AbState):
     @classmethod
-    def new(cls, state=None, **kw) -> "State":
+    def new(cls, state=None, player_id=None, depth=None) -> "State":
         if state is None:
             state = C.state
-        return super().new(state, **kw)
+        if depth is None:
+            C.set_mask(state)
+            depth = len(C.pos_status[C.STATE_FIRST]) + len(
+                C.pos_status[C.STATE_SECONED]
+            )
+            player_id = depth % 2
+        return super().new(state, player_id=player_id, depth=depth)
 
     def get_action(self, pos):
         C.set_mask(self.state)
         obs, state = C.get_next_state(pos, self.player_id + 1)
-        dst = State.new(state).set_player_id(1 - self.player_id)
+        dst = State.new(state, player_id=1 - self.player_id, depth=self.depth + 1)
         a = C5ACtion(self, pos, dst, obs=obs)
         return a
 
@@ -68,3 +74,6 @@ class State(AbState):
 
     def to_str(self):
         return C.to_str(self.state)
+
+    def show_titles(self):
+        return f"depath:{self.depth}; player:{self.player_id}{C.s(self.player_id+1)}"

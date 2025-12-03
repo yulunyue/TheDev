@@ -1,6 +1,6 @@
 from .state import State, Action
 from .algo import Algo
-from common.util.export import List, Dict, defaultdict, math, random, CT
+from common.util.export import List, Dict, defaultdict, math, random, CT, logger
 import time
 
 
@@ -14,6 +14,7 @@ class MctsState:
         self.q = 0
         self.p: MctsState = p
         state.extra = self
+        self.leaf_value = 0
         self.p_action: Action = p_action
 
     def get_children(self):
@@ -30,14 +31,19 @@ class MctsState:
         self.n_visits += 1
         self.q += 1.0 * (leaf_value - self.q) / self.n_visits
 
+    def calc_uct_value(self, exploration_param):
+        self.u = exploration_param * math.sqrt(self.p.n_visits / (self.n_visits + 1))
+        return self.q + self.u
+
     def expand(self):
         return self.get_children()
 
     def is_leaf(self):
         return self.state.game_over() or self.children is None
 
-    def __str__(self):
-        return f"vt={self.n_visits}; q={'%.3f'%self.q}; u={'%.3f'%self.u}"
+    def show(self):
+        msg = f"s={self.state.state}; depth:{self.state.depth}; vt={self.n_visits}; q={'%.3f'%self.q}; u={'%.3f'%self.u};"
+        return self.state.show(msg)
 
 
 class MctsSearch(Algo):
@@ -59,15 +65,11 @@ class MctsSearch(Algo):
         best_score = -float("inf")
         best_child = None
         for child in cur.get_children():
-            score = self.calc_uct_value(child)
+            score = child.calc_uct_value(self.exploration_param)
             if score > best_score:
                 best_score = score
                 best_child = child
         return best_child
-
-    def calc_uct_value(self, c: "MctsState"):
-        c.u = self.exploration_param * math.sqrt(c.p.n_visits / (c.n_visits + 1))
-        return c.q + c.u
 
     def simulate(self, root: State, max_round=1000):
         tail = root
@@ -83,34 +85,29 @@ class MctsSearch(Algo):
                     f"simulate max  src:{tail.show()} action:{actions[random_id].show()} dst:{actions[random_id].get_dst().show()}"
                 )
             tail = actions[random_id].get_dst()
-        return action_history[-1].get_src_reward(action_history)
+
+        return action_history
 
     def backpropagate(self, node: MctsState, score):
-        while node:
-            self.update(node, score)
-            node = node.p
-            score = -score
-
-    def update(self, node: MctsState, score):
         node.update(score)
 
     def search_main(self, init_state: State, **kw):
         self.ep = 0
         self.start_time = time.time()
-        root = MctsState(init_state)
+        self.root = MctsState(init_state)
         while True:
-            node = self.select(root)  # 指导探索到待拓展的节点
+            node = self.select(self.root)  # 指导探索到待拓展的节点
+            action = node.p_action
             if not node.state.game_over():
                 node.expand()
-                value = self.simulate(node.state)
-            else:
-                value = node.p_action.get_src_reward([node.p_action])
+                action = self.simulate(node.state)[-1]
+            value = action.get_src_reward([action])
             self.backpropagate(node, value)
             self.ep += 1
             cur_time = time.time()
             if self.ep >= self.num_episodes or cur_time - self.start_time >= self.max_t:
                 break
-        self.update_max_action(root)
+        self.update_max_action(self.root)
         return init_state.best_action
 
     def update_max_action(self, node: MctsState):
@@ -136,3 +133,18 @@ class MctsSearchDev(MctsSearch):
     def search(self, state):
         action: Action = super().search(state)
         return action
+
+    def info(self):
+        ret = [f"ep:{self.ep}"]
+
+        def util(c: MctsState, depth=1):
+            if not c.n_visits:
+                return
+            ret.append(c.show())
+            if not c.children or depth == 0:
+                return
+            for d in c.children:
+                util(d, depth - 1)
+
+        util(self.root)
+        return ret

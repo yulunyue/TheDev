@@ -1,13 +1,26 @@
-from common.util.export import ToolBase, logger, log
-from common.algo.export import ALgoManage, random_seed
+from common.util.export import ToolBase, logger, log, time, File
+from common.algo.export import ALgoManage, random_seed, Algo
 from .state import State, C
+from .case import CASE
 
 
 class C5Tool(ToolBase):
     def prepare(self, *args, **kw):
         self.s = State.new()
+        # self.s = State.new(295292022567525683857)  # 一个普通的中局
         self.al = ALgoManage().set_state(self.s)
         return super().prepare(*args, **kw)
+
+    def do_cmd(self, method, *args):
+        try:
+            if method == "put":
+                pos = int(args[0]) * C.width + int(args[1])
+                self.s = self.s.get_action(pos).get_dst()
+            self.info(f"{method} {args}")
+            self.info(self.s.show())
+        except Exception as e:
+            self.info(f"{method} {args} {e}")
+            self.info(self.s.show())
 
     def view1(self):
         log.debug(self.s.show())
@@ -39,18 +52,26 @@ class C5Tool(ToolBase):
         self.al.actor([self.al.ab(5), self.al.ab(5)])
 
     def mc(self):
-        a = self.al.mc().search(self.s)
-        logger.debug(a.show())
-        logger.debug(a.get_dst().show())
+        s = State.new(CASE.get_case_6_61())
+        log.debug(s.show())
+        al = self.al.mc(1000)
+        a = al.search(s)
+        log.debug(a.show())
+        log.debug(a.get_dst().show())
+        log.debug(al.show())
 
     def mcactor(self):
         log.info(self.al.actor([self.al.mc()]))
 
+    def ad(self):
+        s = State.new(CASE.get_case_6_61())
+        log.info(self.al.set_state(s).actor([self.al.ad(1)]))
+
     def dev(self):
-        self.mcactor()
+        self.mc()
 
     def debug(self):
-        self.view3()
+        self.dev()
 
 
 if __name__ == "__main__":
