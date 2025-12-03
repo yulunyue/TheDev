@@ -12,5 +12,10 @@
     "issue_url": "https://github.com/Kozea/WeasyPrint/issues/1956",
     "issue_numbers": [
         "1956"
-    ]
+    ],
+    "after_setup_env": {},
+    "code_commit": "code.patch",
+    "result": {},
+    "setup_env": [],
+    "test_main": null
 }

@@ -15,7 +15,7 @@ REPO_PATH = "data/repo/Kozea/WeasyPrint"
 BASE_COMMIT = "2c09a8617476090aa634ac5e28e60c8d89247cb1"
 # 实例ID，用于结果文件的顶级键
 PY_MAIN_CMD = "tests/layout/test_table.py"
-
+CODE_PATCH = "code.patch"
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_DIR = Path(REPO_PATH)
@@ -149,7 +149,7 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 
 def run_py_test():
     run_command(
-        ["pytest", "--json-report", PY_MAIN_CMD],
+        ["pytest", "--json-report"] + PY_MAIN_CMD.split(" "),
         cwd=REPO_DIR,
     )
     result = dict()
@@ -208,10 +208,14 @@ def main():
     # --- 补丁后运行 ---
     if not reset_repo(BASE_COMMIT):
         write_results_and_exit(False)
-    if not apply_patch(SCRIPT_DIR / "test.patch"):
-        write_results_and_exit(False)
-    if not apply_patch(SCRIPT_DIR / "code.patch"):
-        write_results_and_exit(False)
+    if not CODE_PATCH.endswith(".patch"):
+        if not reset_repo(CODE_PATCH):
+            write_results_and_exit(False)
+    else:
+        if not apply_patch(SCRIPT_DIR / "test.patch"):
+            write_results_and_exit(False)
+        elif not apply_patch(SCRIPT_DIR / CODE_PATCH):
+            write_results_and_exit(False)
     results[INSTANCE_ID]["patch_successfully_applied"] = True
 
     print_header("STEP 2: POST-PATCH - Running tests with both patches")

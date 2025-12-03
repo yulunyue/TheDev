@@ -1,16 +1,17 @@
-from common.util.export import ToolBase, logger, Module
+from common.util.export import ToolBase, logger, Module, log
 from .model import CubeState, C
 from .algo import Al
 
 
 class Solution(ToolBase):
-    def view1(self):
+    def random(self, step=10):
         s = CubeState.new_shape(C.SHAPE2)
-        logger.debug(s.show())
-        logger.debug(len(s.get_sort_actions()))
-        for a in s.get_sort_actions():
-            logger.debug(a.show())
-            logger.debug(a.get_dst().show())
+        log.debug(s.show())
+        for _ in range(step):
+            a = s.get_random_action()
+            log.debug(a.show())
+            log.debug(a.get_dst().show())
+        return s
 
     def view2(self):
         s = CubeState.new_shape(C.SHAPE2).random_step(10)
@@ -21,7 +22,7 @@ class Solution(ToolBase):
             logger.debug(a.get_dst().show())
 
     def dev(self):
-        self.view1()
+        self.random()
 
 
 if __name__ == "__main__":

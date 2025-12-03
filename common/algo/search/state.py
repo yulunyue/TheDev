@@ -54,9 +54,10 @@ class Action:
             ret += f", data:{self.data}"
         if msg:
             ret += f", msg:{msg}"
-        if self.reward is not None and self.reward > 0:
+        reward = getattr(self, "reward", None)
+        if reward is not None and self.reward > 0:
             ret += f", rwin:{self.reward}"
-        elif self.reward is not None and self.reward < 0:
+        elif reward is not None and self.reward < 0:
             ret += f", rlos:{self.reward}"
         return ret
 

@@ -7,6 +7,7 @@ class Ct:
     SHAPE2 = 2
     AXIS_NUM = 3
     BIT_SIZE = 3
+    COLORS = ["红", "黄", "蓝", "绿", "橙", "白"]
     ACTIONS = {
         SHAPE2: {
             (0, 0): [[0, 1, 3, 2], [19, 4, 23, 21], [13, 17, 6, 12]],

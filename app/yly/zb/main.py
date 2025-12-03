@@ -120,11 +120,7 @@ class ToolMain(ToolBase):
         if not pkg or pkg.startswith("#") or pkg.startswith("-"):
             return
         pkg = pkg.replace("#", ",").replace(";", ",").split(",")[0].replace(" ", "")
-        # if pkg.startswith("gevent="):
-        #     pkg = "gevent"
-        # elif pkg.startswith("pybluemonday="):
-        #     pkg = "pybluemonday"
-        return f"python -m pip install {pkg}"
+        return f'python -m pip install "{pkg}"'
 
     def make_setup_repo_sh(self):
         self.input_dir.child("setup_repo.sh").write_file(
@@ -181,7 +177,8 @@ class ToolMain(ToolBase):
     def make_env(self):
         if not self.venv_enable:
             return
-        env_path = f"data/env_{os.name}/{self.name}"
+        name = self.name.split("-")[0]
+        env_path = f"data/env_{os.name}/{name}"
         if not File(env_path).exists():
             OsUtil().run("-m", "venv", env_path)
         if os.name == "nt":
@@ -194,6 +191,7 @@ class ToolMain(ToolBase):
             "python -m pip install --upgrade pip",
             f"cd {self.local_repo.path}",
         ]
+        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
         pyproject_toml = self.local_repo.child("pyproject.toml")
         if pyproject_toml.exists():
             setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
@@ -204,8 +202,7 @@ class ToolMain(ToolBase):
                     self.pip_install_requirements(self.local_repo.child(pkg))
                 )
             else:
-                setup_env_sh.append(f"python -m pip install {pkg}")
-        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
+                setup_env_sh.append(f'python -m pip install "{pkg}"')
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
         logger.info(f"sh {self.setup_env_sh.path}")
 
@@ -213,11 +210,18 @@ class ToolMain(ToolBase):
         data = f.get("project", "dependencies")
         return [self.pkg_repair(v) for v in data]
 
+    def make_zip(self):
+        zip_file = self.input_dir.child(f".zip")
+        if zip_file.exists():
+            zip_file.remove()
+        self.input_dir.zip()
+
     def init(self):
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
         self.make_env()
+        self.make_zip()
         logger.info(self.cfg.pr_url.get_value())
         logger.info(self.cfg.issue_url.get_value())
         logger.info(self.local_repo.path)
