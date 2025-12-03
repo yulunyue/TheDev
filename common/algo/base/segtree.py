@@ -72,10 +72,10 @@ class SegTreeNode:
             self.do(value)
             return
         self.down()
-        if self.m >= l:
-            self.left.update(l, r, value)
         if self.m < r:
             self.right.update(l, r, value)
+        if self.m >= l:
+            self.left.update(l, r, value)
         self.up()
 
     def down(self):

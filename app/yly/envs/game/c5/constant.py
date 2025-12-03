@@ -41,6 +41,7 @@ class Constant:
         self.init_mask()
         self.init_mask_state()
         self.init_lines()
+        return self
 
     def init_size(self):
         self.size = self.width * self.height
@@ -171,7 +172,7 @@ class Constant:
         return l1 * self.get_loop2() + l2
 
     def s(self, v):
-        return [" ", "O", "X"][v]
+        return ["-", "O", "X"][v]
 
     def to_str(self, state):
         self.set_mask(state)
@@ -183,4 +184,4 @@ class Constant:
         return [" ".join(row) for row in ret]
 
 
-C = Constant().load()
+C = Constant()

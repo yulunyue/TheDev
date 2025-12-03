@@ -1,0 +1,40 @@
+{
+    "CTFd__CTFd-1925": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "tests/test_plugin_utils.py::test_challenges_model_access_plugin_class"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "tests/test_plugin_utils.py::test_admin_override_template",
+                    "tests/test_plugin_utils.py::test_bypass_csrf_protection",
+                    "tests/test_plugin_utils.py::test_override_template",
+                    "tests/test_plugin_utils.py::test_register_admin_plugin_menu_bar",
+                    "tests/test_plugin_utils.py::test_register_admin_plugin_script",
+                    "tests/test_plugin_utils.py::test_register_admin_plugin_stylesheet",
+                    "tests/test_plugin_utils.py::test_register_plugin_asset",
+                    "tests/test_plugin_utils.py::test_register_plugin_assets_directory",
+                    "tests/test_plugin_utils.py::test_register_plugin_script",
+                    "tests/test_plugin_utils.py::test_register_plugin_stylesheet",
+                    "tests/test_plugin_utils.py::test_register_user_page_menu_bar"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}

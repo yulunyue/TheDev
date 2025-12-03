@@ -103,11 +103,27 @@ class ToolMain(ToolBase):
                     continue
                 pip_packages.add(pkg)
 
+    def pip_install_requirements(self, f: File):
+        ret = []
+        for ln in f.read_line():
+            if not ln or ln.startswith("#"):
+                continue
+            pkg_install_cmd = self.pkg_repair(ln)
+            if pkg_install_cmd:
+                ret.append(pkg_install_cmd)
+        return ret
+
     def apply_patch(self, f: File):
         self.git_cmd.run("apply", f.get_abs_path())
 
     def pkg_repair(self, pkg: str):
-        pkg = pkg.replace(";", ",").split(",")[0].replace(" ", "")
+        if not pkg or pkg.startswith("#") or pkg.startswith("-"):
+            return
+        pkg = pkg.replace("#", ",").replace(";", ",").split(",")[0].replace(" ", "")
+        # if pkg.startswith("gevent="):
+        #     pkg = "gevent"
+        # elif pkg.startswith("pybluemonday="):
+        #     pkg = "pybluemonday"
         return f"python -m pip install {pkg}"
 
     def make_setup_repo_sh(self):
@@ -174,20 +190,23 @@ class ToolMain(ToolBase):
             logger.info(f"source {env_path}/bin/activate")
 
     def make_setup_env_sh(self):
-        etup_env_sh = [
+        setup_env_sh = [
             "python -m pip install --upgrade pip",
-            "python -m pip install pytest pytest-json-report toml",
             f"cd {self.local_repo.path}",
         ]
-
         pyproject_toml = self.local_repo.child("pyproject.toml")
         if pyproject_toml.exists():
-            etup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
-        require_txt = self.local_repo.child("requirements.txt")
-        if require_txt.exists():
-            etup_env_sh.append(f"python -m pip install -r {require_txt.file_name}")
-        etup_env_sh.extend(self.cfg.setup_env.get_value())
-        self.setup_env_sh.write_file("\n".join(etup_env_sh))
+            setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
+        pkgs: List[str] = self.cfg.setup_env.get_value()
+        for pkg in pkgs:
+            if pkg.endswith(".txt"):
+                setup_env_sh.extend(
+                    self.pip_install_requirements(self.local_repo.child(pkg))
+                )
+            else:
+                setup_env_sh.append(f"python -m pip install {pkg}")
+        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
+        self.setup_env_sh.write_file("\n".join(setup_env_sh))
         logger.info(f"sh {self.setup_env_sh.path}")
 
     def pip_install_pyproject_toml(self, f: File):
@@ -224,6 +243,9 @@ class ToolMain(ToolBase):
         self.run1()
         self.run2()
         self.print_result()
+
+    def setup_env(self):
+        OsUtil("sh").run(self.setup_env_sh.path)
 
     def debug(self):
         pass

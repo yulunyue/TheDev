@@ -149,7 +149,7 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 
 def run_py_test():
     run_command(
-        ["pytest", "--json-report", PY_MAIN_CMD],
+        ["pytest", "--json-report"] + PY_MAIN_CMD.split(" "),
         cwd=REPO_DIR,
     )
     result = dict()

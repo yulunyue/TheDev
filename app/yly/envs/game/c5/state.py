@@ -1,15 +1,25 @@
-from common.algo.export import AbState, Action, List
+from common.algo.export import AbState, Action
+from common.util.export import List
 from .constant import C
+
+C.load()
 
 
 class C5ACtion(Action):
     def __init__(self, src, action, dst=None, obs=None):
         super().__init__(src, action, dst)
+        self.set_obs(obs)
+
+    def set_obs(self, obs):
         self.obs: dict = obs
+        r = 0
+        if self.is_self_win():
+            r = 1
+        self.set_reward(r)
 
     def show(self):
         y, x = self.action // C.width, self.action % C.width
-        return f"src:{self.src.state}, dst:{self.dst.state}, action:{y},{x}, obs:{self.obs}"
+        return f"src:{self.src.state}, dst:{self.dst.state}, action:{y},{x},{C.s(self.src.player_id+1)}, obs:{self.obs} r:{self.get_reward()}"
 
     def is_self_win(self):
         win_in = C.in_row if self.src.player_id == 0 else -C.in_row
@@ -18,9 +28,6 @@ class C5ACtion(Action):
     def is_op_win(self):
         op_state = C.op_win_state if self.src.player_id == 0 else -C.op_win_state
         return self.obs.get(op_state, 0) > 0
-
-    def get_src_reward(self, actions: List[Action]):
-        pass
 
 
 class State(AbState):

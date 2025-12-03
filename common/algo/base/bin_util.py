@@ -11,7 +11,7 @@ def p2(num=10**6, mod=None, extern=1):
     return result
 
 
-POS_MASK = p2(64)
+POS_MASK = p2(256)
 
 
 def encode_data(array, pos) -> int:

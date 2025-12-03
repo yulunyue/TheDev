@@ -1,5 +1,5 @@
-from common.util.export import ToolBase, logger
-from common.algo.export import ALgoManage
+from common.util.export import ToolBase, logger, log
+from common.algo.export import ALgoManage, random_seed
 from .state import State, C
 
 
@@ -7,14 +7,13 @@ class C5Tool(ToolBase):
     def prepare(self, *args, **kw):
         self.s = State.new()
         self.al = ALgoManage().set_state(self.s)
-
         return super().prepare(*args, **kw)
 
     def view1(self):
-        logger.debug(self.s.show())
+        log.debug(self.s.show())
         for a in self.s.get_sort_actions():
-            logger.debug(a.show())
-            logger.debug(a.get_dst().show())
+            log.debug(a.show())
+            log.debug(a.get_dst().show())
 
     def view3(self):
         a = State.new(0x40200000000000000).get_action(25)
@@ -24,16 +23,16 @@ class C5Tool(ToolBase):
     def view_state(self):
         logger.debug(State.new(0x4000).show())
 
-    def view_random(self):
+    def random(self):
         s = self.s
-        logger.debug(s.show())
+        log.debug(s.show())
         idx = 0
         while not s.game_over():
             a = s.get_random_action()
-            logger.debug(idx)
-            logger.debug(a.show())
+            log.debug(f"turn:{idx}")
+            log.debug(a.show())
             s = a.get_dst()
-            logger.debug(s.show())
+            log.debug(s.show())
             idx += 1
 
     def actor(self):
@@ -45,11 +44,15 @@ class C5Tool(ToolBase):
         logger.debug(a.get_dst().show())
 
     def mcactor(self):
-        logger.info(self.al.actor([self.al.mc()]))
+        log.info(self.al.actor([self.al.mc()]))
+
+    def dev(self):
+        self.mcactor()
 
     def debug(self):
         self.view3()
 
 
 if __name__ == "__main__":
+    random_seed(4)
     C5Tool().run()

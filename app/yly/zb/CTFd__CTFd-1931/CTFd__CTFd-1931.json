@@ -12,5 +12,25 @@
     "issue_url": "https://github.com/CTFd/CTFd/issues/1928",
     "issue_numbers": [
         "1928"
-    ]
+    ],
+    "after_setup_env": {},
+    "code_commit": "code.patch",
+    "result": {
+        "code": {
+            "tests/api/v1/test_config.py::test_config_value_types": "passed",
+            "tests/api/v1/test_config.py::test_api_configs_get_admin": "passed",
+            "tests/api/v1/test_config.py::test_api_config_patch_admin": "passed",
+            "tests/api/v1/test_config.py::test_api_configs_patch_admin": "passed",
+            "tests/api/v1/test_config.py::test_api_configs_get_non_admin": "passed",
+            "tests/api/v1/test_config.py::test_api_configs_post_admin": "passed",
+            "tests/api/v1/test_config.py::test_api_config_get_admin": "passed",
+            "tests/api/v1/test_config.py::test_api_config_delete_admin": "passed"
+        }
+    },
+    "setup_env": [
+        "requirements.txt",
+        "development.txt",
+        "jinja2==2.11.3"
+    ],
+    "test_main": null
 }

@@ -12,5 +12,57 @@
     "issue_url": "https://github.com/CTFd/CTFd/issues/1895",
     "issue_numbers": [
         "1895"
-    ]
+    ],
+    "after_setup_env": {},
+    "code_commit": "code.patch",
+    "result": {
+        "code": {
+            "tests/users/test_auth.py::test_contact_for_password_reset": "passed",
+            "tests/users/test_auth.py::test_register_whitelisted_email": "passed",
+            "tests/users/test_auth.py::test_registration_code_required": "passed",
+            "tests/users/test_auth.py::test_user_bad_login": "passed",
+            "tests/users/test_auth.py::test_register_user": "passed",
+            "tests/users/test_auth.py::test_register_unicode_user": "passed",
+            "tests/users/test_auth.py::test_user_get_logout": "passed",
+            "tests/users/test_auth.py::test_invalid_reset_password_link": "passed",
+            "tests/users/test_auth.py::test_register_duplicate_username": "passed",
+            "tests/users/test_auth.py::test_user_can_reset_password": "passed",
+            "tests/users/test_auth.py::test_expired_confirmation_links": "passed",
+            "tests/users/test_auth.py::test_user_isnt_admin": "passed",
+            "tests/users/test_auth.py::test_banned_user": "passed",
+            "tests/users/test_auth.py::test_register_duplicate_email": "passed",
+            "tests/users/test_auth.py::test_user_can_confirm_email": "passed",
+            "tests/users/test_auth.py::test_user_login_with_email": "passed",
+            "tests/users/test_auth.py::test_user_login": "passed",
+            "tests/users/test_auth.py::test_invalid_confirmation_links": "passed",
+            "tests/users/test_auth.py::test_expired_reset_password_link": "passed"
+        },
+        "test": {
+            "tests/users/test_auth.py::test_user_login": "passed",
+            "tests/users/test_auth.py::test_user_login_with_email": "passed",
+            "tests/users/test_auth.py::test_register_duplicate_username": "passed",
+            "tests/users/test_auth.py::test_register_duplicate_email": "passed",
+            "tests/users/test_auth.py::test_user_get_logout": "passed",
+            "tests/users/test_auth.py::test_user_can_reset_password": "passed",
+            "tests/users/test_auth.py::test_user_isnt_admin": "passed",
+            "tests/users/test_auth.py::test_register_unicode_user": "passed",
+            "tests/users/test_auth.py::test_user_bad_login": "passed",
+            "tests/users/test_auth.py::test_banned_user": "passed",
+            "tests/users/test_auth.py::test_registration_code_required": "failed",
+            "tests/users/test_auth.py::test_register_user": "passed",
+            "tests/users/test_auth.py::test_expired_reset_password_link": "passed",
+            "tests/users/test_auth.py::test_contact_for_password_reset": "passed",
+            "tests/users/test_auth.py::test_expired_confirmation_links": "passed",
+            "tests/users/test_auth.py::test_user_can_confirm_email": "passed",
+            "tests/users/test_auth.py::test_invalid_reset_password_link": "passed",
+            "tests/users/test_auth.py::test_register_whitelisted_email": "passed",
+            "tests/users/test_auth.py::test_invalid_confirmation_links": "passed"
+        }
+    },
+    "setup_env": [
+        "development.txt",
+        "requirements.txt",
+        "pybluemonday"
+    ],
+    "test_main": null
 }

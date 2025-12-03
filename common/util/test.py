@@ -153,6 +153,18 @@ class ToolBase:
     def run(self):
         self.argvs, self.kw = url_to_json(sys.argv[1:])
         fun_name = self.argvs.pop()
+        pym = " ".join(
+            [
+                sys.argv[0]
+                .replace(".py", "")
+                .replace(os.getcwd() + "\\", "python -m ")
+                .replace("\\", ".")
+            ]
+            + sys.argv[1:]
+        )
+        log_path = f"doc/life/{md5(pym)}/日志.md"
+        logger.info(pym)
+        logger.info(log_path)
         self.prepare(*self.argvs)
         f = getattr(self, fun_name, None)
         if f is None:
@@ -165,20 +177,8 @@ class ToolBase:
             )
             self.exit()
             return
-        ret = f(**self.kw)
 
-        pym = " ".join(
-            [
-                sys.argv[0]
-                .replace(".py", "")
-                .replace(os.getcwd() + "\\", "python -m ")
-                .replace("\\", ".")
-            ]
-            + sys.argv[1:]
-        )
-        log_path = f"doc/life/{md5(pym)}/日志.md"
-        logger.info(f"{pym} = {ret}")
-        logger.info(log_path)
+        ret = f(**self.kw)
         self.exit()
 
     def get_temp_file(self, name):

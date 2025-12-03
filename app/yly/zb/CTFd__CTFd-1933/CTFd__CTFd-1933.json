@@ -12,5 +12,42 @@
     "issue_url": "https://github.com/CTFd/CTFd/issues/1926",
     "issue_numbers": [
         "1926"
-    ]
+    ],
+    "setup_env": [
+        "requirements.txt",
+        "development.txt",
+        "jinja2==2.11.3",
+        "markupsafe==1.1.1",
+        "pybluemonday",
+        "gevent"
+    ],
+    "after_setup_env": {},
+    "code_commit": "code.patch",
+    "result": {
+        "code": {
+            "tests/users/test_fields.py::test_fields_required_on_register": "passed",
+            "tests/users/test_fields.py::test_boolean_checkbox_field": "passed",
+            "tests/users/test_fields.py::test_fields_properties": "passed",
+            "tests/users/test_fields.py::test_user_needs_all_required_fields": "passed",
+            "tests/users/test_fields.py::test_new_fields_show_on_pages": "passed",
+            "tests/teams/test_fields.py::test_team_needs_all_required_fields": "passed",
+            "tests/teams/test_fields.py::test_new_fields_show_on_pages": "passed",
+            "tests/teams/test_fields.py::test_teams_boolean_checkbox_field": "passed",
+            "tests/teams/test_fields.py::test_team_fields_properties": "passed",
+            "tests/teams/test_fields.py::test_team_fields_required_on_creation": "passed"
+        },
+        "test": {
+            "tests/teams/test_fields.py::test_team_needs_all_required_fields": "failed",
+            "tests/teams/test_fields.py::test_team_fields_properties": "passed",
+            "tests/teams/test_fields.py::test_new_fields_show_on_pages": "passed",
+            "tests/teams/test_fields.py::test_teams_boolean_checkbox_field": "passed",
+            "tests/teams/test_fields.py::test_team_fields_required_on_creation": "passed",
+            "tests/users/test_fields.py::test_user_needs_all_required_fields": "failed",
+            "tests/users/test_fields.py::test_boolean_checkbox_field": "passed",
+            "tests/users/test_fields.py::test_fields_required_on_register": "passed",
+            "tests/users/test_fields.py::test_new_fields_show_on_pages": "passed",
+            "tests/users/test_fields.py::test_fields_properties": "passed"
+        }
+    },
+    "test_main": null
 }

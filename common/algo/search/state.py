@@ -7,7 +7,6 @@ inf = float("inf")
 
 class Action:
     check_info = None
-    reward = None
 
     def __init__(self, src, action, dst=None):
         self.action = action
@@ -292,7 +291,7 @@ class State:
 
     def show(self, info=None):
         body = self.show_body(info)
-        head = f"--{self.title}--"
+        head = f"-----{self.title}-----"
         return "\n".join([head] + body + ["-" * len(head)])
 
     @property

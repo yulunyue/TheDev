@@ -1,0 +1,47 @@
+{
+    "CTFd__CTFd-1946": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": true,
+        "resolved": true,
+        "tests_status": {
+            "FAIL_TO_PASS": {
+                "success": [
+                    "tests/users/test_auth.py::test_registration_code_required"
+                ],
+                "failure": []
+            },
+            "PASS_TO_PASS": {
+                "success": [
+                    "tests/users/test_auth.py::test_banned_user",
+                    "tests/users/test_auth.py::test_contact_for_password_reset",
+                    "tests/users/test_auth.py::test_expired_confirmation_links",
+                    "tests/users/test_auth.py::test_expired_reset_password_link",
+                    "tests/users/test_auth.py::test_invalid_confirmation_links",
+                    "tests/users/test_auth.py::test_invalid_reset_password_link",
+                    "tests/users/test_auth.py::test_register_duplicate_email",
+                    "tests/users/test_auth.py::test_register_duplicate_username",
+                    "tests/users/test_auth.py::test_register_unicode_user",
+                    "tests/users/test_auth.py::test_register_user",
+                    "tests/users/test_auth.py::test_register_whitelisted_email",
+                    "tests/users/test_auth.py::test_user_bad_login",
+                    "tests/users/test_auth.py::test_user_can_confirm_email",
+                    "tests/users/test_auth.py::test_user_can_reset_password",
+                    "tests/users/test_auth.py::test_user_get_logout",
+                    "tests/users/test_auth.py::test_user_isnt_admin",
+                    "tests/users/test_auth.py::test_user_login",
+                    "tests/users/test_auth.py::test_user_login_with_email"
+                ],
+                "failure": []
+            },
+            "FAIL_TO_FAIL": {
+                "success": [],
+                "failure": []
+            },
+            "PASS_TO_FAIL": {
+                "success": [],
+                "failure": []
+            }
+        }
+    }
+}
