@@ -13,16 +13,15 @@ class Solution(ToolBase):
             log.debug(a.get_dst().show())
         return s
 
-    def view2(self):
-        s = CubeState.new_shape(C.SHAPE2).random_step(10)
+    def view_all(self):
+        s = CubeState.new_shape(C.SHAPE2)
         logger.debug(s.show())
-        actions = s.bfs()[C.init_mask][0]
-        for a in actions:
+        for a in s.get_sort_actions():
             logger.debug(a.show())
             logger.debug(a.get_dst().show())
 
     def dev(self):
-        self.random()
+        self.view_all()
 
 
 if __name__ == "__main__":

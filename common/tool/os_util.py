@@ -24,13 +24,15 @@ class OsUtil:
                 cwd=self.root_path,
                 stderr=self.logger.get_writer(),
                 stdout=self.logger.get_writer(),
-                timeout=20 * 60,
+                timeout=60 * 60,
             )
             statu, stdout, stderror = True, process.stdout, process.stderr
         except subprocess.CalledProcessError as e:
             statu, stdout, stderror = False, e.stdout, e.stderr
         except FileNotFoundError:
             statu, stdout, stderror = False, "", f"Command '{cmd[0]}' not found."
+        except Exception as e:
+            statu, stdout, stderror = False, "", f"{e}"
         if not statu:
             self.error([cmds, stdout, stderror])
         return statu, stdout, stderror

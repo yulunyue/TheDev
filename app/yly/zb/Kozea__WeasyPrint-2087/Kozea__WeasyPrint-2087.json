@@ -13,9 +13,20 @@
     "issue_numbers": [
         "1956"
     ],
-    "after_setup_env": {},
     "code_commit": "code.patch",
-    "result": {},
-    "setup_env": [],
-    "test_main": null
+    "result": {
+        "code": {
+            "tests/layout/test_table.py::test_layout_table_auto_9": "passed",
+            "tests/layout/test_table.py::test_layout_table_auto_32": "passed"
+        },
+        "test": {
+            "tests/layout/test_table.py::test_layout_table_auto_9": "passed",
+            "tests/layout/test_table.py::test_layout_table_auto_32": "failed"
+        }
+    },
+    "setup_env": [
+        "apt -y install libpango-1.0-0 libpangoft2-1.0-0 ghostscript"
+    ],
+    "test_main": "tests/layout/test_table.py::test_layout_table_auto_9 tests/layout/test_table.py::test_layout_table_auto_32",
+    "after_setup_env": {}
 }

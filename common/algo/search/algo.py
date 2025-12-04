@@ -112,7 +112,7 @@ class Algo:
             r += a.get_reward()
             s = a.get_dst()
             self.actions.append(a)
-            self.update_action(a)
+            self.update_action(a, idx=len(self.actions) - 1)
             self.steps += 1
         return r
 

@@ -28,6 +28,12 @@ for k in range(1, MAXN):
 
 
 class Solution(MockCf):
+    """
+    Docstring for Solution
+    给定一个闭区间 [n1, n2]
+    求所有n, n1<=n<=n2 波峰波谷数量和
+    """
+
     def totalWaviness(self, num1: int, num2: int) -> int:
         n1 = list(map(int, str(num1)))
         n2 = list(map(int, str(num2)))

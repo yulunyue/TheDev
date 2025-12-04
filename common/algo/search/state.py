@@ -104,7 +104,7 @@ class State:
     name = "state"
     parent: "State" = None
     done = False
-    STATE_STORE: Dict[str, "State"] = dict()
+    STATE_STORE: Dict[str, "State"] = None
     actions: List[Action] = None
     data = None
     best_action: Action = None
@@ -125,6 +125,8 @@ class State:
 
     @classmethod
     def new(cls, state=None, **kw):
+        if cls.STATE_STORE is None:
+            cls.STATE_STORE = dict()
         if state not in cls.STATE_STORE:
             cls.STATE_STORE[state] = cls(state, **kw)
         return cls.STATE_STORE[state]

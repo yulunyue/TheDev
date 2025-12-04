@@ -148,10 +148,18 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 
 
 def run_py_test():
-    run_command(
-        ["pytest", "--json-report", PY_MAIN_CMD],
-        cwd=REPO_DIR,
-    )
+    py_file = __file__.replace("run_verification.py", "py_test_main.py")
+    print(py_file)
+    if os.path.exists(py_file):
+        run_command(
+            ["python", py_file],
+            cwd=REPO_DIR,
+        )
+    else:
+        run_command(
+            ["pytest", "--json-report"] + PY_MAIN_CMD.split(" "),
+            cwd=REPO_DIR,
+        )
     result = dict()
     with open(f"{REPO_DIR}/.report.json", "r") as f:
         data = json.loads(f.read())

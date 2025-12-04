@@ -18,8 +18,8 @@
     "result": {
         "code": {
             "tests/admin/test_csv.py::test_export_csv_works": "passed",
-            "tests/admin/test_csv.py::test_import_csv_works": "passed",
-            "tests/admin/test_csv.py::test_import_challenge_csv_with_json": "passed"
+            "tests/admin/test_csv.py::test_import_challenge_csv_with_json": "passed",
+            "tests/admin/test_csv.py::test_import_csv_works": "passed"
         },
         "test": {
             "tests/admin/test_csv.py::test_export_csv_works": "failed",
@@ -29,7 +29,10 @@
     "setup_env": [
         "requirements.txt",
         "development.txt",
-        "jinja2==2.11.3"
+        "python -m pip install pybluemonday",
+        "python -m pip install 'flask==2.1.3'",
+        "python -m pip install 'werkzeug==2.2.3'"
     ],
+    "tmp": [],
     "test_main": null
 }

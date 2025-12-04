@@ -6,11 +6,11 @@ from .constant import C
 
 class CubeAction(Action):
     def show(self, msg=None):
-        axix, d, r = self.action
+        c, d, r = self.action
         if r == -1:
             r = 3
 
-        return super().show(f"{C.COLORS[d]}色，第{c}层，顺时针旋转{r}圈")
+        return super().show(f"{C.COLORS[c]}色，第{d}层，顺时针旋转{r}圈")
 
 
 class CubeState(State):

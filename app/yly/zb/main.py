@@ -120,6 +120,8 @@ class ToolMain(ToolBase):
         if not pkg or pkg.startswith("#") or pkg.startswith("-"):
             return
         pkg = pkg.replace("#", ",").replace(";", ",").split(",")[0].replace(" ", "")
+        if not pkg:
+            return
         return f'python -m pip install "{pkg}"'
 
     def make_setup_repo_sh(self):
@@ -144,9 +146,12 @@ class ToolMain(ToolBase):
         report_json_fp = self.local_repo.child(".report.json")
         if report_json_fp.exists():
             report_json_fp.remove()
-        OsUtil(error_exit_flag=False).set_env(self.local_repo.path).run(
-            "-m", "pytest", "--json-report", self.get_py_test_cmds()
-        )
+        o = OsUtil(error_exit_flag=False).set_env(self.local_repo.path)
+        py_main = self.input_dir.child("py_test_main.py")
+        if py_main.exists():
+            o.run(py_main.get_abs_path())
+        else:
+            o.run("-m", "pytest", "--json-report", self.get_py_test_cmds())
         result = self.cfg.result.get_value()
         result[key] = self.json_report_parse(report_json_fp)
 
@@ -202,7 +207,7 @@ class ToolMain(ToolBase):
                     self.pip_install_requirements(self.local_repo.child(pkg))
                 )
             else:
-                setup_env_sh.append(f'python -m pip install "{pkg}"')
+                setup_env_sh.append(pkg)
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
         logger.info(f"sh {self.setup_env_sh.path}")
 
@@ -217,6 +222,7 @@ class ToolMain(ToolBase):
         self.input_dir.zip()
 
     def init(self):
+        self.pre2()
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
@@ -232,7 +238,7 @@ class ToolMain(ToolBase):
         self.apply_patch(self.test_patch)
         self.py_test("test")
 
-    def run2(self):
+    def pre2(self):
         code_commit = self.cfg.code_commit.get_value()
         if code_commit.endswith(".patch"):
             self.rest_repo()
@@ -240,6 +246,9 @@ class ToolMain(ToolBase):
             self.apply_patch(self.code_patch)
         else:
             self.rest_repo(code_commit)
+
+    def run2(self):
+        self.pre2()
         self.py_test("code")
 
     def main(self):

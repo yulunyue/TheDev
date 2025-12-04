@@ -16,20 +16,7 @@
     "after_setup_env": {},
     "code_commit": "code.patch",
     "result": {
-        "code": {
-            "tests/test_plugin_utils.py::test_register_plugin_stylesheet": "passed",
-            "tests/test_plugin_utils.py::test_register_admin_plugin_menu_bar": "passed",
-            "tests/test_plugin_utils.py::test_register_plugin_script": "passed",
-            "tests/test_plugin_utils.py::test_admin_override_template": "passed",
-            "tests/test_plugin_utils.py::test_register_user_page_menu_bar": "passed",
-            "tests/test_plugin_utils.py::test_bypass_csrf_protection": "passed",
-            "tests/test_plugin_utils.py::test_override_template": "passed",
-            "tests/test_plugin_utils.py::test_register_admin_plugin_stylesheet": "passed",
-            "tests/test_plugin_utils.py::test_register_admin_plugin_script": "passed",
-            "tests/test_plugin_utils.py::test_register_plugin_asset": "passed",
-            "tests/test_plugin_utils.py::test_challenges_model_access_plugin_class": "passed",
-            "tests/test_plugin_utils.py::test_register_plugin_assets_directory": "passed"
-        },
+        "code": {},
         "test": {
             "tests/test_plugin_utils.py::test_register_admin_plugin_script": "passed",
             "tests/test_plugin_utils.py::test_register_admin_plugin_stylesheet": "passed",
@@ -46,15 +33,11 @@
         }
     },
     "setup_env": [
-        "python -m pip install -r development.txt",
-        "python -m pip install flask==1.1.2",
-        "python -m pip install jinja2==2.11.3",
-        "python -m pip install markupsafe==1.1.1",
-        "python -m pip install itsdangerous==1.1.0",
-        "python -m pip install werkzeug==1.0.1",
-        "python -m pip install sqlalchemy==1.3.17",
-        "python -m pip install alembic==1.4.3",
-        "python -m pip install pybluemonday"
+        "requirements.txt",
+        "development.txt",
+        "python -m pip install pybluemonday",
+        "python -m pip install 'flask==2.1.3'",
+        "python -m pip install 'werkzeug==2.2.3'"
     ],
     "test_main": null
 }

@@ -14,7 +14,7 @@ REPO_PATH = "data/repo/Kozea/WeasyPrint"
 # 要进行测试的基础 commit 哈希
 BASE_COMMIT = "2c09a8617476090aa634ac5e28e60c8d89247cb1"
 # 实例ID，用于结果文件的顶级键
-PY_MAIN_CMD = "tests/layout/test_table.py"
+PY_MAIN_CMD = "tests/layout/test_table.py::test_layout_table_auto_9 tests/layout/test_table.py::test_layout_table_auto_32"
 CODE_PATCH = "code.patch"
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent

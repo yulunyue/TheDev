@@ -2,7 +2,7 @@ from common.util.export import ToolBase, logger, random
 from common.algo.export import random_seed
 from .model.mrp_state import MrpState, computer, C1
 from .model.mdp_state import Mdp1State, Mdp2State, C2
-from .value_func import Mcts
+from .value_func import Mcts, Ocur
 
 
 class Main(ToolBase):
@@ -25,6 +25,13 @@ class Main(ToolBase):
         al = Mcts().load(0.5).set_train_epoll(1000)
         al.train(Mdp1State.new())
         logger.info(dict(al.vs))
+
+    def dev_occu(self):
+        al = Ocur().load().set_train_epoll(1000)
+        al.train(Mdp1State.new())  # 多了个s0所以多乘了个0.5
+        logger.info(al.rho["s4->s4-概率前往"])
+        al.train(Mdp2State.new())
+        logger.info(al.rho["s4->s4-概率前往"])
 
     def dev(self):
         self.dev_mct()
