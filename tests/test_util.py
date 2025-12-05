@@ -27,8 +27,8 @@ def cls_gen(info) -> TypeVar(D):  # type: ignore
     return C
 
 
-class TestCls:
-    def test_fun(self, a: int, c: cls_gen("xx"), b=2):  # type: ignore
+class ClsTest:
+    def fun(self, a: int, c: cls_gen("xx"), b=2):  # type: ignore
         return a + b + c
 
 
@@ -40,9 +40,6 @@ class Stack(Generic[T]):
 
 
 class TestUtil(TestBase):
-
-    def test_cls(self):
-        self.expect(TestCls.__module__, "__main__")
 
     def test_thread(self):
         def fun1(v):

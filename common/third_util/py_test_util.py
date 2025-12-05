@@ -1,10 +1,22 @@
 import pytest
+from common.util.export import logger
+import urllib3
+
+urllib3.disable_warnings()
 
 
 class PyTestUtil:
     def __init__(self):
-        self.flag_map = dict()
-        self.flags = ["-vs", "--full-trace", "--json-report"]
+        self.flag_map = {
+            # "--show-capture": "log",
+            "--log-file": "data/log/pytest.log",
+        }
+        self.flags = ["--json-report"]
+
+    def debug(self):
+        """--full-trace"""
+        self.flag_map["-vs"] = ""
+        return self
 
     def set_root(self, path):
         self.flag_map["--rootdir"] = path
@@ -17,5 +29,9 @@ class PyTestUtil:
     def main(self):
         flags = self.flags[:]
         for k, v in self.flag_map.items():
-            flags.extend([k, v])
+            if v:
+                flags.append(f"{k}={v}")
+            else:
+                flags.append(k)
+        logger.info(flags)
         pytest.main(flags)

@@ -28,5 +28,4 @@ class ThreadManage:
         ret = []
         for future in as_completed(futures):
             ret.append(future.result())
-            progress_bar(len(ret), len(self.tasks))
         return ret

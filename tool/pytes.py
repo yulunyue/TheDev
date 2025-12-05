@@ -10,13 +10,8 @@ class PyTestMain(ToolBase):
         self.root = root
         self.u = PyTestUtil().set_root(root)
 
-    def dev(self):
-        aim1 = self.root + "/tests/admin/test_csv.py"
-        self.u.set_flags(aim1).main()
-
-    def dev1(self):
-        aim1 = "tests/test_pytest.py"
-        self.u.set_flags(aim1).main()
+    def dev(self, test_path="tests"):
+        self.u.set_flags(test_path).main()
 
     def debug(self):
         self.dev()

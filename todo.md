@@ -10,3 +10,4 @@ python -m app.yly.envs.ml.cart_pole.main dev
 python -m app.yly.envs.ml.ciff_walk.main dev
 python -m app.yly.envs.cg.cw.main dev
 python -m app.yly.envs.ml.pendulum.main dev
+python -m tool.pytes ./ dev test_path=tests
