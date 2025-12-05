@@ -9,6 +9,7 @@ class CwState(State):
         self.board = [[int(s) for s in v.split()] for v in state.split(",")]
         ENV.load_shapes(self.board)
         self.player_id = 0
+        self.depth=0
 
     def make_actions(self):
 
