@@ -31,9 +31,9 @@ class TestMain:
             except Exception as e:
                 logger.exception(e)
 
-    def random(self):
+    def random(self,name="todo"):
         cmds = []
-        for line in File("todo.md").read_line():
+        for line in File(f"{name}.md").read_line():
             if line.startswith("#") or not line:
                 continue
             cmds.append(line)

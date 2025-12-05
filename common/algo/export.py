@@ -2,11 +2,15 @@ from common.algo.learn.dyn import PolicyIteration, ValueIteration
 from common.algo.search.state import State, Action, AbState
 from common.algo.search.algo import Algo, random_seed, np, RandomAlgo
 from common.algo.search.mctssearch import MctsSearch, MctsState
+from common.util.export import logger
 from common.algo.search.alphabate_search import AlphaBateSearch, AbDev
-from common.algo.learn.sarse.sarse import Td0
-from common.algo.learn.sarse.qlearning import Qlearning
-from common.algo.learn.sarse.mcts import MctsEasy
-from common.algo.learn.dqn import Dqn, DoubleDqn
+try:
+    from common.algo.learn.sarse.sarse import Td0
+    from common.algo.learn.sarse.qlearning import Qlearning
+    from common.algo.learn.sarse.mcts import MctsEasy
+    from common.algo.learn.dqn import Dqn, DoubleDqn
+except Exception as e:
+    logger.error(e)
 from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE
 from common.algo.base.math_util import sin, cos, calc_angle
 from common.algo.base.comb import Comb
@@ -20,4 +24,3 @@ from common.algo.base.gaussian_elimination import GaussElimination
 from common.algo.base.lazyheap import LazyHeapMinMax, LazyMinHeap, LazyMaxHeap
 from common.algo.base.bin_util import encode_data, decode_data, set_mask, get_sub_bits
 from common.algo.base.xor_basis import XorBais, XorBarisDev
-from sortedcontainers import SortedList
