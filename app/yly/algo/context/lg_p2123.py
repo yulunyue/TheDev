@@ -64,31 +64,29 @@ class Solution(MockCf):
 
     """
 
-    def calc(self, nums: list):
-        s = 0
-        n = len(nums)
-        c = [0] * (n + 1)
-
-        def compare(task1, task2):
-            x1, y1 = task1
-            x2, y2 = task2
-            # 比较 min(x1, y2) 和 min(y1, x2)
-            val1 = CT.min(x1, y2)
-            val2 = CT.min(y1, x2)
-            if val1 < val2:
-                return -1
-            elif val1 > val2:
-                return 1
+    def calc(self, tasks: list):
+        c = s = 0
+        n = len(tasks)
+        nums = []
+        for x, y in tasks:
+            if x > y:
+                d = 1
+            elif x < y:
+                d = -1
             else:
-                return 0
-
-        nums.sort(key=functools.cmp_to_key(compare))
-        for i in range(1, n + 1):
-            x, y = nums[i - 1]
+                d = 0
+            nums.append((x, y, d))
+        nums.sort(
+            key=lambda task: (
+                task[2],  # 先按d排序
+                task[0] if task[2] <= 0 else -task[1],  # d<=0按x升序，d>0按y降序
+            )
+        )
+        for x, y, _ in nums:
             s += x
-            c[i] = CT.max(c[i - 1], s) + y
+            c = CT.max(c, s) + y
 
-        return c[n]
+        return c
 
     def execute(self):
         ans = []
