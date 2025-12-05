@@ -71,7 +71,7 @@ class Algo:
     def take_action(self, state: "State") -> Action:
         return state.get_random_action()
 
-    def update_action(self, a: Action, *args):
+    def update_action(self, a: Action, **kwargs):
         pass
 
     def reset(self):
@@ -100,6 +100,13 @@ class Algo:
             if self.train_epoll >= 10 and (i + 1) % (self.train_epoll // 10) == 0:
                 logger.map(Episode=i, TotalReward=sum(self.rewards) / len(self.rewards))
         self.use_time = time.time() - start_time
+
+    def draw_reward(self):
+        from common.third_util.draw import Draw
+
+        path = f"data/algo/{self.get_name()}.svg"
+        logger.info(path)
+        Draw().draw_line(self.rewards).save(path)
 
     def train_one(self, i, state: State):
         s = state.reset()

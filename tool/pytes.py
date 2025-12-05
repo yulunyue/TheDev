@@ -6,12 +6,18 @@ from common.util.export import ToolBase
 
 
 class PyTestMain(ToolBase):
-    def prepare(self, root, **kw):
+    def prepare(self, root, aim, **kw):
         self.root = root
-        self.u = PyTestUtil().set_root(root)
+        self.u = PyTestUtil().set_aim(aim).set_root(root)
 
-    def dev(self, test_path="tests"):
-        self.u.set_flags(test_path).main()
+    def main(self):
+        self.u.main()
+
+    def cover(self):
+        self.u.coverage()
+
+    def dev(self):
+        self.main()
 
     def debug(self):
         self.dev()

@@ -37,14 +37,13 @@ class Constant:
         self.in_row = in_row
         self.op_win_state = self.in_row + 1  #
         self.init_size()
-
         self.init_mask()
         self.init_mask_state()
         self.init_lines()
         return self
 
     def init_size(self):
-        self.size = self.width * self.height
+        self.size = self.width * (self.height - 1)
 
     def init_mask(self):
         self.row_bit = self.BIT_SIZE * self.width
@@ -82,23 +81,34 @@ class Constant:
                     self.lines[j].append([line_id, k])
                 self.line_state.append(0)
 
-    def get_move_info(self, idx, player_id):
-        ans = dict()
-
+    def get_move_obs(self, idx, player_id):
+        obs = dict()
         for lid, pos in self.lines[idx]:
             old_state = self.line_state[lid]
             new_state = set_mask(
                 old_state, pos * self.CHESS_SIZE, self.CHESS_SIZE, player_id
             )
-            if self.mask_state[old_state]:
-                ans[self.mask_state[old_state]] = (
-                    ans.get(self.mask_state[old_state], 0) - 1
-                )
-            if self.mask_state[new_state]:
-                ans[self.mask_state[new_state]] = (
-                    ans.get(self.mask_state[new_state], 0) + 1
-                )
-        return ans
+            old_statu, new_statu = (
+                self.mask_state[old_state],
+                self.mask_state[new_state],
+            )
+            if old_statu:
+                obs[old_statu] = obs.get(old_statu, 0) - 1
+            if new_statu:
+                obs[new_statu] = obs.get(new_statu, 0) + 1
+            # if old_state or new_statu:
+            #     logger.map(
+            #         idx=idx,
+            #         pos=pos,
+            #         player_id=player_id,
+            #         lid=self.line_pos[lid],
+            #         old_state=bin(old_state),
+            #         old_statu=old_statu,
+            #         new_state=bin(new_state),
+            #         new_statu=new_statu,
+            #         indent="\n",
+            #     )
+        return obs
 
     def change_chess_statu(self, idx, player_id):
         self.pos_status[player_id].add(idx)
@@ -111,14 +121,14 @@ class Constant:
         self.grid[idx] = player_id
 
     def get_next_state(self, idx, player_id):
-        return self.get_move_info(idx, player_id), set_mask(
+        return self.get_move_obs(idx, player_id), set_mask(
             self.state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id
         )
 
     def set_mask(self, state):
         if self.state == state:
-            return self
-        return self.change_mask(state)
+            return
+        self.change_mask(state)
 
     set_state = set_mask
 
@@ -158,7 +168,7 @@ class Constant:
 
     def set_pos_player_id(self, idx, player_id):
         if self.grid[idx] != player_id:
-            self.get_move_info(idx, player_id)
+            # self.update_move_obs(idx, player_id)
             self.change_chess_statu(idx, player_id)
             # logger.map(idx=idx, player_id=player_id)
 
@@ -176,7 +186,7 @@ class Constant:
 
     def to_str(self, state):
         self.set_mask(state)
-        ret = [[f"{i}"] + [" "] * self.width for i in range(self.height)]
+        ret = [[f"{i}"] + [" "] * self.width for i in range(self.size // self.width)]
         for i, v in enumerate(self.grid):
             y, x = self.get_yx(i)
             ret[y][x + 1] = self.s(v)

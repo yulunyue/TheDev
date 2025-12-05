@@ -1,35 +1,37 @@
 from common.util.export import ToolBase, logger
-from common.algo.export import Dqn, Qlearning, np, random_seed
+from common.algo.export import Dqn, Qlearning, np, random_seed, DoubleDqn
 from .env import CartPoleState
 from .net import NetBase
 
 
 class CartTool(ToolBase):
-    def prepare(self):
-        self.s = CartPoleState()
+    uri = """
+    https://hrl.boyuai.com/chapter/2/dqn%E6%94%B9%E8%BF%9B%E7%AE%97%E6%B3%95
+"""
 
-    def dqn(self):
-        dqn = (
-            Dqn()
-            .load(
-                train_epoll=500,
-                learning_rate=2e-3,
-                gamma=0.98,
-                e_greed=0.01,
-            )
-            .set_model(NetBase, target_update=10)
-        )
+    def prepare(self, algo):
+        self.s = CartPoleState()
+        if algo == "dqn2":
+            self.al = DoubleDqn()
+        else:
+            self.al = Dqn()
+
+    def train(self, train_epoll=500):
+        dqn = self.al.load(
+            train_epoll=int(train_epoll),
+            learning_rate=2e-3,
+            gamma=0.98,
+            e_greed=0.01,
+        ).set_model(NetBase, target_update=10)
         dqn.train(self.s)
-        logger.debug(dqn.show())
-        # self.dqn.search()
-        # dqn.draw(self.get_temp_file("reawrd.svg"))
+        logger.debug(dqn.draw_reward())
 
     def run_base(self):
         s = CartPoleState()
         logger.debug(s.show())
 
     def dev(self):
-        self.dqn()
+        pass
 
     def debug(self):
         self.dev()

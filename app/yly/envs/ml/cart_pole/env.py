@@ -7,16 +7,9 @@ from common.third_util.np_util import np
 
 class CartAction(Action):
     def do(self):
-        if self.reward is not None:
+        if self.dst is not None:  # 用dst会更好，因为reward可能会不存在
             raise Exception("do 2")
         new_state, self.reward, termina, _, _ = CartPoleState.env.step(self.action)
-        # logger.map(
-        #     src=f"{self.src.state}",
-        #     dst=new_state,
-        #     termina=termina,
-        #     action=self.action,
-        #     reward=self.reward,
-        # )
         self.dst = CartPoleState(new_state).set_done(termina)
 
     def get_dqn_network_params(self, acs: List["CartAction"]):

@@ -37,13 +37,13 @@ def name_to_path(name):
     return path + LOG_SUFF
 
 
-def dict_to_str(kw: dict, indent=None):
-    if indent is not None:
-        return json_dumps(kw)
-    ret = []
+def dict_to_str(kw: dict, indent=" "):
+    if isinstance(indent, int):
+        return json_dumps(kw, indent=indent)
+    ret = [""]
     for k, v in kw.items():
-        ret.append(f"{'%s'%k}:{v}")
-    return " ".join(ret)
+        ret.append(f"{'%s'%k}: {v}")
+    return indent.join(ret)
 
 
 class Logger(logging.Logger):

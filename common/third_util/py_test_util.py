@@ -1,6 +1,7 @@
 import pytest
 from common.util.export import logger
 import urllib3
+from coverage import Coverage
 
 urllib3.disable_warnings()
 
@@ -22,7 +23,7 @@ class PyTestUtil:
         self.flag_map["--rootdir"] = path
         return self
 
-    def set_flags(self, *args):
+    def set_aim(self, *args):
         self.flags.extend(args)
         return self
 
@@ -35,3 +36,11 @@ class PyTestUtil:
                 flags.append(k)
         logger.info(flags)
         pytest.main(flags)
+
+    def coverage(self):
+
+        cov = Coverage()
+        cov.start()
+        self.main()
+        cov.stop()
+        cov.html_report(directory="data/coverage")

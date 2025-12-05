@@ -21,13 +21,17 @@ class Dqn(Qlearning):
         return self
 
     def reset(self):
-        self.actions = []
+        self.train_actions = (
+            []
+        )  # actions 为一次模拟的action 记录，这应该是全局action 用于train
 
-    def update_action(self, a0: Action):
-        self.actions.append(a0)
-        if len(self.actions) >= self.minimal_size:
+    def update_action(self, a0: Action, **kw):
+        self.train_actions.append(a0)
+        if len(self.train_actions) >= self.minimal_size:
             self.update_net_work(
-                *a0.get_dqn_network_params(random.sample(self.actions, self.batch_size))
+                *a0.get_dqn_network_params(
+                    random.sample(self.train_actions, self.batch_size)
+                )
             )
 
     def update_net_work(

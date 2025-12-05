@@ -34,7 +34,7 @@ class Qlearning(Algo):
 
         return super().train_one(i, state)
 
-    def update_action(self, a0: Action):
+    def update_action(self, a0: Action, **kw):
         next_action_value = [self.q[a.key] for a in a0.get_dst().get_sort_actions()]
         next_max_q = max(next_action_value) if next_action_value else 0
         r = a0.get_reward() + self.gamma * next_max_q - self.q[a0.key]
