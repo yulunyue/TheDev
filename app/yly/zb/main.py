@@ -20,6 +20,9 @@ class Cg(ConfigBase):
     instance_id = StrModel()
     issue_url = StrModel()
     code_commit = StrModel(default_value="code.patch")
+    content_category = StrModel(
+        ""
+    )  # 计算、通⽤、⼯具、可视化、系统、时间、⽹络、加密、其他
 
 
 import os
