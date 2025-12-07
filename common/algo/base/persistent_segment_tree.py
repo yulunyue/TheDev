@@ -24,9 +24,19 @@ class D3SegmentTree(SegTreeNode):
         return o
 
     def kth(self, l: "D3SegmentTree", k: int):
+
         if self.l == self.r:
             return self.l
-        lcnt = self.left.cnt - l.left.cnt
-        if k <= lcnt:
-            return self.left.kth(l.left, k)
-        return self.right.kth(l.right, k - lcnt)
+        lcnt = self._left.cnt - l._left.cnt
+        if k <= lcnt:  #'''k 从1开始 用<'''
+            return self._left.kth(l._left, k)
+        return self._right.kth(l._right, k - lcnt)
+
+    def query(self, l: "D3SegmentTree", i: int):
+        if self.r <= i:
+            return self.cnt - l.cnt
+        st = self.left.query(l.left, i)
+        if i > self.m:
+            a = self.right.query(l.right, i)
+            st += a
+        return st

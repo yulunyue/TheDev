@@ -42,7 +42,7 @@ def dict_to_str(kw: dict, indent=" "):
         return json_dumps(kw, indent=indent)
     ret = [""]
     for k, v in kw.items():
-        ret.append(f"{'%s'%k}: {v}")
+        ret.append(f"{'%s'%k}: {v};")
     return indent.join(ret)
 
 
@@ -72,7 +72,7 @@ class Logger(logging.Logger):
         self.cache_msgs.clear()
         return "\n".join([str(v) for v in ret])
 
-    def map(self, indent=None, **kw):
+    def map(self, indent=" ", **kw):
         self.debug(dict_to_str(kw, indent=indent), stacklevel=2)
 
     def debug(
@@ -134,7 +134,7 @@ class TheDevLoger:
         self.write(msg)
         self.write("\n".join(traceback.format_stack()))
 
-    def map(self, indent=None, **kw):
+    def map(self, indent=" ", **kw):
         self.info(dict_to_str(kw, indent=indent))
 
 

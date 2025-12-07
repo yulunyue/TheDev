@@ -41,7 +41,7 @@ class PenduState(State):
         if PenduState._env is None:
             import gymnasium as gym
 
-            PenduState._env = gym.make("Pendulum-v1", render_mode="human")
+            PenduState._env = gym.make("Pendulum-v1", render_mode="rgb_array")
 
         return PenduState._env
 

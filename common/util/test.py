@@ -161,7 +161,7 @@ class ToolBase:
                 .replace(os.getcwd() + "\\", "python -m ")
                 .replace("\\", ".")
             ]
-            + sys.argv[1:]
+            + ["dev"]
         )
         log_path = f"doc/life/{md5(pym)}/日志.md"
         logger.info(pym)

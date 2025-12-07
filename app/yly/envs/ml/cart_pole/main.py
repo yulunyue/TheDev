@@ -9,8 +9,14 @@ class CartTool(ToolBase):
     https://hrl.boyuai.com/chapter/2/dqn%E6%94%B9%E8%BF%9B%E7%AE%97%E6%B3%95
 """
 
+    def get_init_state(self):
+        return CartPoleState()
+
+    def get_moudle_cls(self):
+        return NetBase
+
     def prepare(self, algo):
-        self.s = CartPoleState()
+        self.s = self.get_init_state()
         if algo == "dqn2":
             self.al = DoubleDqn()
         else:
@@ -22,11 +28,11 @@ class CartTool(ToolBase):
             learning_rate=2e-3,
             gamma=0.98,
             e_greed=0.01,
-        ).set_model(NetBase, target_update=10)
+        ).set_model(self.get_moudle_cls(), target_update=10)
         dqn.train(self.s)
         logger.debug(dqn.draw_reward())
 
-    def run_base(self):
+    def show(self):
         s = CartPoleState()
         logger.debug(s.show())
 

@@ -12,6 +12,8 @@ class SegTreeNode:
     8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     """
 
+    __slots__ = "_left", "_right"
+
     def __init__(self, idx=1) -> None:
         self.idx = idx
         self.todo = 0

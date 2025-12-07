@@ -105,15 +105,16 @@ class Algo:
         from common.third_util.draw import Draw
 
         path = f"data/algo/{self.get_name()}.svg"
-        logger.info(path)
         Draw().draw_line(self.rewards).save(path)
+
+    max_train_round = 200
 
     def train_one(self, i, state: State):
         s = state.reset()
         r = 0
         self.actions: List[Action] = []
         self.steps = 0
-        while not s.game_over():
+        while not s.game_over() and self.steps <= self.max_train_round:
             a = self.take_action(s)
             a.do()
             r += a.get_reward()
