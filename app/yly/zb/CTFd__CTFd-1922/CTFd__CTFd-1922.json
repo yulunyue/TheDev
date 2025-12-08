@@ -34,5 +34,6 @@
         "python -m pip install 'werkzeug==2.2.3'"
     ],
     "tmp": [],
-    "test_main": null
+    "test_main": null,
+    "content_category": "其他"
 }

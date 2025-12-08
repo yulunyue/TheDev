@@ -21,7 +21,7 @@ class Cg(ConfigBase):
     issue_url = StrModel()
     code_commit = StrModel(default_value="code.patch")
     content_category = StrModel(
-        ""
+        "其他"
     )  # 计算、通⽤、⼯具、可视化、系统、时间、⽹络、加密、其他
 
 
@@ -177,6 +177,7 @@ class ToolMain(ToolBase):
                 INSTANCE_ID=self.cfg.instance_id.get_value(),
                 PY_MAIN_CMD=self.get_py_test_cmds(),
                 CODE_PATCH=self.cfg.code_commit.get_value(),
+                content_category=self.cfg.content_category.get_value(),
             )
         )
 

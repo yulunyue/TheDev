@@ -170,4 +170,3 @@ rust/the_dev/Cargo.lock
 cpp/src/test.cpp.exe
 common/third_util/jwt_util.py
 .report.json
-*.zip

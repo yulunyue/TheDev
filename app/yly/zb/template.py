@@ -38,6 +38,7 @@ results = {
         "patch_exists": True,
         "patch_successfully_applied": False,
         "resolved": False,
+        "content_category": "%{content_category}",
         "tests_status": {
             "FAIL_TO_PASS": {"success": [], "failure": []},
             "PASS_TO_PASS": {"success": [], "failure": []},
