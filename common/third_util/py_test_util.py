@@ -12,7 +12,7 @@ class PyTestUtil:
             # "--show-capture": "log",
             "--log-file": "data/log/pytest.log",
         }
-        self.flags = ["--json-report"]
+        self.flags = ["--json-report --json-report-file=result.json"]
 
     def debug(self):
         """--full-trace"""

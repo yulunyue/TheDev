@@ -3,14 +3,11 @@
         "patch_is_None": false,
         "patch_exists": true,
         "patch_successfully_applied": true,
-        "resolved": true,
+        "resolved": false,
+        "content_category": "其他",
         "tests_status": {
             "FAIL_TO_PASS": {
-                "success": [
-                    "tests/admin/test_csv.py::test_export_csv_works",
-                    "tests/admin/test_csv.py::test_import_challenge_csv_with_json",
-                    "tests/admin/test_csv.py::test_import_csv_works"
-                ],
+                "success": [],
                 "failure": []
             },
             "PASS_TO_PASS": {
@@ -19,11 +16,15 @@
             },
             "FAIL_TO_FAIL": {
                 "success": [],
-                "failure": []
+                "failure": [
+                    "tests/admin/test_csv.py::test_import_csv_works"
+                ]
             },
             "PASS_TO_FAIL": {
                 "success": [],
-                "failure": []
+                "failure": [
+                    "tests/admin/test_csv.py::test_export_csv_works"
+                ]
             }
         }
     }

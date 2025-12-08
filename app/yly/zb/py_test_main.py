@@ -2,7 +2,7 @@ import pytest
 import os
 import subprocess
 
-PY_MAIN_CMD = "tests/admin/test_csv.py"
+PY_MAIN_CMD = "%{PY_MAIN_CMD}"
 RESULT_JSON_FILE = "result.json"
 
 
@@ -26,9 +26,40 @@ def mock_markupsafe():
     markupsafe.soft_unicode = lambda a: str(a)
 
 
+class Mock:
+    def __init__(self, name, *args, **kw):
+        self.name = name
+        self.args = args
+        self.kw = kw
+
+    def __getattribute__(self, name):
+        return self
+
+    def __gt__(self, other):
+        return False
+
+    def __call__(self, *args, **kw):
+        return self
+
+
+def mock_cffi():
+    import cffi
+
+    class FFIMOCK(cffi.FFI):
+        def dlopen(self, *args, **kw):
+            try:
+                ret = super().dlopen(*args, **kw)
+            except Exception as e:
+                ret = Mock("cffi.FFI", *args, **kw)
+            return ret
+
+    # cffi.FFI = Mock("cffi.FFI")
+
+
 def mock_py():
     mock_fun(mock_markupsafe)
     mock_fun(mock_flask)
+    mock_fun(mock_cffi)
 
 
 def run_py_test():

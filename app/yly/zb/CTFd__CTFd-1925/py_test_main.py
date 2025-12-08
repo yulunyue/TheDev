@@ -2,7 +2,7 @@ import pytest
 import os
 import subprocess
 
-PY_MAIN_CMD = "tests/admin/test_csv.py"
+PY_MAIN_CMD = "tests/test_plugin_utils.py"
 RESULT_JSON_FILE = "result.json"
 
 

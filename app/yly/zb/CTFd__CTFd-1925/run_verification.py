@@ -14,11 +14,11 @@ REPO_PATH = "data/repo/CTFd/CTFd"
 # 要进行测试的基础 commit 哈希
 BASE_COMMIT = "ff6e093fa6bf23b526ecddf9271195b429240ff4"
 # 实例ID，用于结果文件的顶级键
-PY_MAIN_CMD = "tests/test_plugin_utils.py"
 CODE_PATCH = "code.patch"
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_DIR = Path(REPO_PATH)
+RESULT_JSON_FILE = "result.json"
 
 
 class Colors:
@@ -38,6 +38,7 @@ results = {
         "patch_exists": True,
         "patch_successfully_applied": False,
         "resolved": False,
+        "content_category": "其他",
         "tests_status": {
             "FAIL_TO_PASS": {"success": [], "failure": []},
             "PASS_TO_PASS": {"success": [], "failure": []},
@@ -147,21 +148,9 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
     return test_results
 
 
-def run_py_test():
-    py_file = __file__.replace("run_verification.py", "py_test_main.py")
-    print(py_file)
-    if os.path.exists(py_file):
-        run_command(
-            ["python", py_file],
-            cwd=REPO_DIR,
-        )
-    else:
-        run_command(
-            ["pytest", "--json-report"] + PY_MAIN_CMD.split(" "),
-            cwd=REPO_DIR,
-        )
+def get_result():
     result = dict()
-    with open(f"{REPO_DIR}/.report.json", "r") as f:
+    with open(f"{REPO_DIR}/{RESULT_JSON_FILE}", "r") as f:
         data = json.loads(f.read())
         for item in data["tests"]:
             if item["nodeid"]:
@@ -169,10 +158,22 @@ def run_py_test():
     return result
 
 
+def run_py_test():
+    path = __file__.replace("run_verification.py", "py_test_main.py")
+    with open(f"{REPO_DIR}/py_test_main.py", "wb") as f:
+        with open(path, "rb") as d:
+            f.write(d.read())
+    statu_code, msg, msg1 = run_command(
+        [sys.executable, "py_test_main.py"], cwd=REPO_DIR
+    )
+    return statu_code, msg, msg1
+
+
 def run_all_tests_and_get_results():
     """使用 poetry run pytest 运行所有测试并从 JUnit XML 报告中解析结果。"""
     # TODO
-    return run_py_test()
+    run_py_test()
+    return get_result()
 
 
 def write_results_and_exit(success=True):
@@ -180,8 +181,8 @@ def write_results_and_exit(success=True):
     output_path = SCRIPT_DIR / "results.json"
     print_header("FINAL STEP: WRITING results.json")
     try:
-        with open(output_path, "w") as f:
-            json.dump(results, f, indent=4)
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=4, ensure_ascii=False)
         print(
             f"{Colors.GREEN}✅ Successfully wrote results to {output_path}{Colors.ENDC}"
         )

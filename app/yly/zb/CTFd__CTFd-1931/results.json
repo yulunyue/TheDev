@@ -1,5 +1,5 @@
 {
-    "Kozea__WeasyPrint-2087": {
+    "CTFd__CTFd-1931": {
         "patch_is_None": false,
         "patch_exists": true,
         "patch_successfully_applied": true,
@@ -8,13 +8,19 @@
         "tests_status": {
             "FAIL_TO_PASS": {
                 "success": [
-                    "tests/layout/test_table.py::test_layout_table_auto_32"
+                    "tests/api/v1/test_config.py::test_config_value_types"
                 ],
                 "failure": []
             },
             "PASS_TO_PASS": {
                 "success": [
-                    "tests/layout/test_table.py::test_layout_table_auto_9"
+                    "tests/api/v1/test_config.py::test_api_config_delete_admin",
+                    "tests/api/v1/test_config.py::test_api_config_get_admin",
+                    "tests/api/v1/test_config.py::test_api_config_patch_admin",
+                    "tests/api/v1/test_config.py::test_api_configs_get_admin",
+                    "tests/api/v1/test_config.py::test_api_configs_get_non_admin",
+                    "tests/api/v1/test_config.py::test_api_configs_patch_admin",
+                    "tests/api/v1/test_config.py::test_api_configs_post_admin"
                 ],
                 "failure": []
             },

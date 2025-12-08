@@ -1,4 +1,4 @@
-from common.util.export import ToolBase, File, logger, Dict, List, StrUtil
+from common.util.export import ToolBase, File, logger, Dict, List, StrUtil, Module
 from common.tool.export import (
     OsUtil,
     ConfigBase,
@@ -20,10 +20,15 @@ class Cg(ConfigBase):
     instance_id = StrModel()
     issue_url = StrModel()
     code_commit = StrModel(default_value="code.patch")
+    language = StrModel(default_value="python")
+    FAIL_TO_PASS = ListModel()
+    PASS_TO_PASS = ListModel()
     content_category = StrModel(
-        "其他"
+        default_value="其他"
     )  # 计算、通⽤、⼯具、可视化、系统、时间、⽹络、加密、其他
 
+
+PIP_INSTALL_WITH_NO_DEPENDDS = {}
 
 import os
 
@@ -42,6 +47,7 @@ class ToolMain(ToolBase):
 
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
+        self.py_test_main_py = self.input_dir.child("py_test_main.py")
         self.local_repo = File(
             f"{REPO_BASE}/{self.cfg.repo.get_value()}"
         ).make_dir_if_not_exist()
@@ -125,7 +131,12 @@ class ToolMain(ToolBase):
         pkg = pkg.replace("#", ",").replace(";", ",").split(",")[0].replace(" ", "")
         if not pkg:
             return
-        return f'python -m pip install "{pkg}"'
+        pkg_name, *version = pkg.replace("<=", "==").replace(">=", "==").split("=")
+        flags = ["python -m pip install"]
+        if pkg_name in PIP_INSTALL_WITH_NO_DEPENDDS:
+            flags.append("--no-deps")
+        flags.append(f'"{pkg}"')
+        return " ".join(flags)
 
     def make_setup_repo_sh(self):
         self.input_dir.child("setup_repo.sh").write_file(
@@ -146,38 +157,49 @@ class ToolMain(ToolBase):
         return " ".join(files)
 
     def py_test(self, key):
-        report_json_fp = self.local_repo.child(".report.json")
+        report_json_fp = self.local_repo.child("result.json")
         if report_json_fp.exists():
             report_json_fp.remove()
-        o = OsUtil(error_exit_flag=False).set_env(self.local_repo.path)
-        py_main = self.input_dir.child("py_test_main.py")
-        if py_main.exists():
-            o.run(py_main.get_abs_path())
-        else:
-            o.run("-m", "pytest", "--json-report", self.get_py_test_cmds())
+        f = Module().load_module_object(
+            "run_verification.run_py_test", self.input_dir.path
+        )
+        statu_code, msg, msg1 = f()
+        logger.debug(f"statu_code={statu_code},msg={msg},msg1={msg1}")
         result = self.cfg.result.get_value()
         result[key] = self.json_report_parse(report_json_fp)
 
     def print_result(self):
         result = self.cfg.result.get_value()
         old, new = result["test"], result["code"]
+        f_to_p, p_t_p = (
+            self.cfg.FAIL_TO_PASS.get_value(),
+            self.cfg.PASS_TO_PASS.get_value(),
+        )
         for k in list(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
                 logger.info(f"{k} {old_statu}->{new_statu}")
+                if new_statu == "passed":
+                    f_to_p.append(k)
             elif old_statu == new_statu and new_statu != "passed":
                 logger.info(f"{k} {old_statu}->{new_statu}")
+                p_t_p.append(k)
 
     def make_main_py(self):
         self.main_py_file.write_file(
             StrUtil().format(
-                File(f"{INPUTS_DIR}/template.py").read_file(),
+                File(f"{INPUTS_DIR}/{self.main_py_file.name}.py").read_file(),
                 REPO_PATH=self.local_repo.path,
                 BASE_COMMIT=self.cfg.base_commit.get_value(),
                 INSTANCE_ID=self.cfg.instance_id.get_value(),
-                PY_MAIN_CMD=self.get_py_test_cmds(),
                 CODE_PATCH=self.cfg.code_commit.get_value(),
                 content_category=self.cfg.content_category.get_value(),
+            )
+        )
+        self.py_test_main_py.write_file(
+            StrUtil().format(
+                File(f"{INPUTS_DIR}/{self.py_test_main_py.name}.py").read_file(),
+                PY_MAIN_CMD=self.get_py_test_cmds(),
             )
         )
 
@@ -200,7 +222,6 @@ class ToolMain(ToolBase):
             "python -m pip install --upgrade pip",
             f"cd {self.local_repo.path}",
         ]
-        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
         pyproject_toml = self.local_repo.child("pyproject.toml")
         if pyproject_toml.exists():
             setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
@@ -212,6 +233,7 @@ class ToolMain(ToolBase):
                 )
             else:
                 setup_env_sh.append(pkg)
+        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
         logger.info(f"sh {self.setup_env_sh.path}")
 
@@ -236,6 +258,10 @@ class ToolMain(ToolBase):
         logger.info(self.cfg.issue_url.get_value())
         logger.info(self.local_repo.path)
         logger.info(f"python {self.main_py_file.path}")
+
+    def run0(self):
+        self.rest_repo()
+        self.py_test("test")
 
     def run1(self):
         self.rest_repo()
@@ -263,9 +289,6 @@ class ToolMain(ToolBase):
 
     def setup_env(self):
         OsUtil("sh").run(self.setup_env_sh.path)
-
-    def debug(self):
-        pass
 
     def exit(self):
         self.cfg.save()

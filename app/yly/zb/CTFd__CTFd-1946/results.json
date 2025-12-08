@@ -4,6 +4,7 @@
         "patch_exists": true,
         "patch_successfully_applied": true,
         "resolved": true,
+        "content_category": "其他",
         "tests_status": {
             "FAIL_TO_PASS": {
                 "success": [

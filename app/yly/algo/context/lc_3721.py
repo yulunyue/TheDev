@@ -1,4 +1,4 @@
-from common.util.export import MockCf, List, CT
+from common.util.export import MockCf, List, CT, math
 from common.algo.base.segtree import SegTreeNode
 
 
@@ -25,7 +25,9 @@ class T(SegTreeNode):
 
 class Solution(MockCf):
     """
-    分块
+    给定一个数组，求最长连续子数组的长度，
+    该子数组奇数数量等于偶数数量
+    重复元素只计一次
     """
 
     def longestBalanced(self, nums: List[int]) -> int:
@@ -48,5 +50,15 @@ class Solution(MockCf):
             # self.logger.info(t)
 
         return ans
+
+    def longestBalanced(self, nums: List[int]) -> int:
+        n = len(nums)
+        b = int(math.sqrt(n + 1)) / 2 + 1
+        sm = [0] * (n + 1)
+
+        class Node:
+            def __init__(self):
+                self.l = 0
+                self.r = 0
 
     execute = longestBalanced

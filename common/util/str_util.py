@@ -26,7 +26,6 @@ class StrUtil:
     def format(self, s: str, **kw):
         array = s.split("%{")
         result = array.pop(0)
-        print(kw, array)
         for v in array:
             idx = v.index("}")
             result += kw[v[:idx]] + v[idx + 1 :]

@@ -28,5 +28,12 @@
         "apt -y install libpango-1.0-0 libpangoft2-1.0-0 ghostscript"
     ],
     "test_main": "tests/layout/test_table.py::test_layout_table_auto_9 tests/layout/test_table.py::test_layout_table_auto_32",
-    "after_setup_env": {}
+    "after_setup_env": {},
+    "content_category": "其他",
+    "FAIL_TO_PASS": [
+        "tests/layout/test_table.py::test_layout_table_auto_32",
+        "tests/layout/test_table.py::test_layout_table_auto_32"
+    ],
+    "PASS_TO_PASS": [],
+    "language": "python"
 }
