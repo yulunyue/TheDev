@@ -43,6 +43,9 @@ class Pig:
         return self.power == 0
 
     def add_card(self, c: "CardBase"):
+        """
+        反死了，摸牌可以继续出
+        """
         from ..util import CARD_MAP
 
         if isinstance(c, str):
@@ -70,6 +73,13 @@ class Pig:
 
     def do(self) -> None:
         c = self.head.next
+        while c and not logger.game_over():
+            c.do()
+            c = c.next
+        """
+        反死了，摸牌可以继续出
+        """
+        c = self.tail
         while c and not logger.game_over():
             c.do()
             c = c.next

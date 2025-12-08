@@ -51,14 +51,37 @@ class Solution(MockCf):
 
         return ans
 
-    def longestBalanced(self, nums: List[int]) -> int:
+    def longestBalanced1(self, nums: List[int]) -> int:
         n = len(nums)
-        b = int(math.sqrt(n + 1)) / 2 + 1
+        b_size = int(math.sqrt(n + 1)) / 2 + 1
         sm = [0] * (n + 1)
 
         class Node:
-            def __init__(self):
-                self.l = 0
-                self.r = 0
+            def __init__(self, l, r, todo, pos):
+                self.l = l  # [l,r) 左闭右开
+                self.r = r
+                self.todo = todo
+                self.pos = pos
+
+        blocks: List[Node] = []
+
+        def cal_pos(l, r):
+            pos = dict()
+            for j in range(r - 1, l - 1, -1):
+                pos[sm[j]] = j
+            return pos
+
+        def range_add(l, r, v):
+            for i, b in enumerate(blocks):
+                if b.r <= l:
+                    continue
+
+        def findFirst(r, v):
+            pass
+
+        for i in range(0, n + 1, b_size):
+            r = min(i + b_size, n + 1)
+            pos = cal_pos(i, r)
+            blocks.append(Node(i, r, 0, pos))
 
     execute = longestBalanced

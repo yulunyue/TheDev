@@ -11,8 +11,8 @@ struct PIGS
     char cards[M];
 } a[15];
 deque<char> cards_pile;
-FILE *IN_FILE = fopen("data/context/loj_p2885/case1/main.in", "r");
-FILE *LOG_FILE = fopen("data/context/loj_p2885/case1/c.log", "w");
+FILE *IN_FILE = fopen("data/context/loj_p2885/case3/main.in", "r");
+FILE *LOG_FILE = fopen("data/context/loj_p2885/case3/c.log", "w");
 void log(const char *format, ...)
 {
     char s[2048];
