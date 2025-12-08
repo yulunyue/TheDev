@@ -19,6 +19,7 @@ class Cg(ConfigBase):
     repo = StrModel()
     instance_id = StrModel()
     issue_url = StrModel()
+    env = StrModel(default_value="")
     code_commit = StrModel(default_value="code.patch")
     language = StrModel(default_value="python")
     FAIL_TO_PASS = ListModel()
@@ -209,7 +210,7 @@ class ToolMain(ToolBase):
         if not self.venv_enable:
             return
         name = self.name.split("-")[0]
-        env_path = f"data/env_{os.name}/{name}"
+        env_path = f"data/env_{os.name}/{name}{self.cfg.env.get_value()}"
         if not File(env_path).exists():
             OsUtil().run("-m", "venv", env_path)
         if os.name == "nt":
