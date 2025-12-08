@@ -12,7 +12,7 @@ struct PIGS
 } a[15];
 deque<char> cards_pile;
 FILE *IN_FILE = fopen("data/context/loj_p2885/case3/main.in", "r");
-FILE *LOG_FILE = fopen("data/context/loj_p2885/case3/c.log", "w");
+FILE *LOG_FILE = fopen("data/context/loj_p2885/case3/cpp.log", "w");
 void log(const char *format, ...)
 {
     char s[2048];
@@ -34,6 +34,9 @@ void log(const char *format, ...)
     }
 
     fflush(LOG_FILE);
+}
+void log2(int j,string tmp_str){
+    log("%s_%d_%d_%d p=%d->%s\n", PIG_TYPE[a[j].iden], j - 1, a[j].perfo + 1, a[j].bloods, tmp_str.c_str());
 }
 const char *PIG_TYPE[3] = {"Mp", "Zp", "Fp"};
 string card_format(char v)
@@ -106,7 +109,7 @@ void _init()
 void get_cards(int cur)
 {
     a[cur].cards[++a[cur].cnt] = cards_pile.front();
-    log("%s_%d_%d get %s\n", PIG_TYPE[a[cur].iden], cur - 1, a[cur].perfo + 1, card_format(cards_pile.front()).c_str());
+    log2(cur, card_format(cards_pile.front()).c_str());
     if (cards_pile.size() > 1)
         cards_pile.pop_front();
 }

@@ -18,7 +18,7 @@ class Pig:
     def __init__(self, idx, cards: List["CardBase"]):
         self.idx = idx
         self.cards = cards
-        self.head: CardBase = CardBase()
+        self.head: CardBase = None
         self.tail: CardBase = self.head
         self.card_map: Dict[str, List[CardBase]] = defaultdict(list)
 
@@ -29,7 +29,7 @@ class Pig:
             state = 2
         elif self.state == self.LIKE_BAD:
             state = 0
-        return f"{self.__class__.__name__}_{self.idx}_{state}"
+        return f"{self.__class__.__name__}_{self.idx}_{state}_{self.power}"
 
     _has_zg = False
 
@@ -51,8 +51,11 @@ class Pig:
         if isinstance(c, str):
             c = CARD_MAP[c]()
         c.owner = self
-        c.pre = self.tail
-        self.tail.next = c
+        if self.head is None:
+            self.head = c
+        else:
+            c.pre = self.tail
+            self.tail.next = c
         self.tail = c
         self.card_map[c.type].append(c)
         return self
@@ -65,21 +68,14 @@ class Pig:
         if not self.power:
             return "DEAD"
         ret = []
-        c = self.head.next
+        c = self.head
         while c:
             ret.append(getattr(c, key))
             c = c.next
         return " ".join(ret)
 
     def do(self) -> None:
-        c = self.head.next
-        while c and not logger.game_over():
-            c.do()
-            c = c.next
-        """
-        反死了，摸牌可以继续出
-        """
-        c = self.tail
+        c = self.head
         while c and not logger.game_over():
             c.do()
             c = c.next
@@ -120,12 +116,15 @@ class Pig:
         self._has_zg = False
         self.card_map = defaultdict(list)
 
-    def get_num_card(self, num):
+    def get_num_card(self, num, is_pid_dead=False):
         from ..util import CARD_MAP
 
+        need_use_card = is_pid_dead and self.head is None
         while self.cards and num > 0:
             self.add_card(self.cards[0])
             logger.debug(f"{self.name} get {CARD_MAP[self.cards[0]].title}")
             num -= 1
             if len(self.cards) > 1:
                 self.cards.pop(0)
+        if need_use_card:  # 反死了，摸牌可以继续出
+            self.do()

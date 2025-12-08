@@ -29,7 +29,10 @@ class CardBase:
             s = f"for {f.owner.name} use {f.title}"
         self.owner.card_map[self.type].pop(0)
         logger.debug(f"{self.owner.name} use {self.title}")
-        self.pre.next = self.next
+        if self.pre:
+            self.pre.next = self.next
+        else:
+            self.owner.head = self.next
         if self.next:
             self.next.pre = self.pre
         else:
