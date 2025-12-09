@@ -10,6 +10,9 @@ class Sha(CardBase):
             return
         if self.owner.is_enemy(self.owner.next):
             self.set_dst(self.owner.next)
-            super().do(f)
+            self.use(f)
+
+    def hander(self):  # 使用中再处理
+        if self.dst:
             self.owner.use_sha = True
-            self.owner.next.hander(self)
+            self.dst.hander(self)

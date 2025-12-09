@@ -29,7 +29,7 @@ class Pig:
             state = 2
         elif self.state == self.LIKE_BAD:
             state = 0
-        return f"{self.__class__.__name__}_{self.idx}_{state}_{self.power}"
+        return f"{self.__class__.__name__}_{self.idx}_{state}"
 
     _has_zg = False
 
@@ -74,11 +74,20 @@ class Pig:
             c = c.next
         return " ".join(ret)
 
+    use_card: "CardBase" = None
+
     def do(self) -> None:
-        c = self.head
-        while c and not logger.game_over():
+        self.use_card = self.head
+        while self.use_card and not logger.game_over():
+            self.use_card.do()
+            if self.dead:
+                return
+            self.use_card = self.use_card.next
+        judmps = self.card_map[Juedou.type][:] + self.card_map[Sha.type]
+        for c in judmps:
+            if logger.game_over() or self.dead:
+                return
             c.do()
-            c = c.next
 
     def is_enemy(self, c: "Pig"):
         return False
@@ -103,28 +112,28 @@ class Pig:
     def hander(self, c: "CardBase"):
         if c.type in {Nzrq.type, Juedou.type}:
             stp = Sha.type
+
         elif c.type in {Sha.type, Wjqf.type}:
             stp = Shan.type
         if not self.card_map[stp]:
             self.power_change(-1, c)
             return False
+        c.set_dst(None)
         self.card_map[stp][0].use(c)
         return True
 
     def lose_all_card(self):
-        self.head.next = None
+        self.use_card.next = None
+        self.head = self.tail = None
         self._has_zg = False
         self.card_map = defaultdict(list)
 
     def get_num_card(self, num, is_pid_dead=False):
         from ..util import CARD_MAP
 
-        need_use_card = is_pid_dead and self.head is None
         while self.cards and num > 0:
             self.add_card(self.cards[0])
             logger.debug(f"{self.name} get {CARD_MAP[self.cards[0]].title}")
             num -= 1
             if len(self.cards) > 1:
                 self.cards.pop(0)
-        if need_use_card:  # 反死了，摸牌可以继续出
-            self.do()

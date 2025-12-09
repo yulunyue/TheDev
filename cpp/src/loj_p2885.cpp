@@ -11,8 +11,8 @@ struct PIGS
     char cards[M];
 } a[15];
 deque<char> cards_pile;
-FILE *IN_FILE = fopen("data/context/loj_p2885/case3/main.in", "r");
-FILE *LOG_FILE = fopen("data/context/loj_p2885/case3/cpp.log", "w");
+FILE *IN_FILE = fopen("data/context/loj_p2885/case14/main.in", "r");
+FILE *LOG_FILE = fopen("data/context/loj_p2885/case14/cpp.log", "w");
 void log(const char *format, ...)
 {
     char s[2048];
@@ -35,9 +35,7 @@ void log(const char *format, ...)
 
     fflush(LOG_FILE);
 }
-void log2(int j,string tmp_str){
-    log("%s_%d_%d_%d p=%d->%s\n", PIG_TYPE[a[j].iden], j - 1, a[j].perfo + 1, a[j].bloods, tmp_str.c_str());
-}
+
 const char *PIG_TYPE[3] = {"Mp", "Zp", "Fp"};
 string card_format(char v)
 {
@@ -74,6 +72,10 @@ string card_format(char v)
         return "诸";
     }
     return "";
+}
+void log2(int j, string tmp_str)
+{
+    log("%s_%d_%d get %s\n", PIG_TYPE[a[j].iden], j - 1, a[j].perfo + 1, tmp_str.c_str());
 }
 inline char read()
 {
