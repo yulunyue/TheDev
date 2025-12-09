@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 
-PY_MAIN_CMD = "%{PY_MAIN_CMD}"
+PY_MAIN_CMD = "tests/platforms/web/static/test_build.py"
 RESULT_JSON_FILE = "result.json"
 sys.path.append("D:/thebug/TheDev/data/repo/beeware/briefcase/src")
 

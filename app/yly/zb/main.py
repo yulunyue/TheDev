@@ -95,23 +95,21 @@ class ToolMain(ToolBase):
         if not success:
             logger.info([stdout, stderr])
 
-    def init_setup_cfg(set_up_file):
-        pip_packages = []
-        if set_up_file.exists():
-            pkgs: List[str] = []
-            for section_name, depends in {
-                "options": ["install_requires"],
-                "options.extras_require": ["runtime", "test"],
-            }.items():
-                for dp in depends:
-                    pkgs.extend(
-                        set_up_file.get(section_name, dp, default_value="").split("\n")
-                    )
-            for pkg in pkgs:
-                pkg = self.pkg_repair(pkg)
-                if not pkg:
-                    continue
-                pip_packages.add(pkg)
+    def pip_install_setup_cfg(self, set_up_file: File):
+
+        pkgs: List[str] = []
+        for section_name, depends in {
+            "options": ["install_requires"],
+            "options.extras_require": ["runtime", "test"],
+        }.items():
+            for dp in depends:
+                lns = set_up_file.get(section_name, dp, default_value="").split("\n")
+                for ln in lns:
+                    pkg = self.pkg_repair(ln)
+                    if not pkg:
+                        continue
+                    pkgs.append(pkg)
+        return pkgs
 
     def pip_install_requirements(self, f: File):
         ret = []
@@ -226,6 +224,9 @@ class ToolMain(ToolBase):
         pyproject_toml = self.local_repo.child("pyproject.toml")
         if pyproject_toml.exists():
             setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
+        setup_cfg = self.local_repo.child("setup.cfg")
+        if setup_cfg.exists():
+            setup_env_sh.extend(self.pip_install_setup_cfg(setup_cfg))
         pkgs: List[str] = self.cfg.setup_env.get_value()
         for pkg in pkgs:
             if pkg.endswith(".txt"):
@@ -240,7 +241,10 @@ class ToolMain(ToolBase):
 
     def pip_install_pyproject_toml(self, f: File):
         data = f.get("project", "dependencies")
-        return [self.pkg_repair(v) for v in data]
+        ret = []
+        if data:
+            ret.extend([self.pkg_repair(v) for v in data])
+        return ret
 
     def make_zip(self):
         zip_file = self.input_dir.child(f".zip")

@@ -31,8 +31,15 @@ class Io:
     def run(self):
         pass
 
+    def receive_msg(self, client: "Io", msg):
+        logger.debug(f"{self} receive from {client}")
+
     def start(self):
         Thread(target=self.run, daemon=True).start()
+
+    @property
+    def logger(self):
+        return logger
 
     def __repr__(self):
         return f"{self.__class__.__name__} src={self.src_ip}:{self.src_port} dst={self.dst_ip}:{self.dst_port}"

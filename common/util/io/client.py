@@ -1,12 +1,9 @@
-from .server import Server
 from .base import Io
 from common.util.export import get_log
 
-logger = get_log("io_client")
-
 
 class Client(Io):
-    server: "Server"
+    server: "Io"
 
     def run(self):
         while True:
@@ -14,7 +11,7 @@ class Client(Io):
             if not data:
                 self.close()
                 break
-            self.server
+            self.server.receive_msg(self, data)
 
     def close(self):
-        logger.debug(f"{self} close")
+        self.logger.debug(f"{self} close")
