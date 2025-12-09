@@ -1,15 +1,29 @@
-from common.util.export import Thread, socket, logger, Dict, time
+from common.util.export import (
+    Thread,
+    socket,
+    logger,
+    Dict,
+    time,
+    Logger,
+    get_log,
+    json_dumps,
+)
 
 
 class Io:
     sock: socket.socket
     childs: Dict[str, "Io"]
+    _logger: Logger = None
 
-    def set_addr(self, src_ip, src_port, dst_ip=None, dst_port=None):
+    def set_addr(self, src_ip=None, src_port=None, dst_ip=None, dst_port=None):
         self.src_ip: str = src_ip
         self.src_port = src_port
         self.dst_ip = dst_ip
         self.dst_port = dst_port
+        return self
+
+    def set_logger(self, t):
+        self._logger = t
         return self
 
     def set_sock(self, sock):
@@ -31,15 +45,26 @@ class Io:
     def run(self):
         pass
 
-    def receive_msg(self, client: "Io", msg):
-        logger.debug(f"{self} receive from {client}")
+    def write(self, data):
+        if isinstance(data, dict):
+            data = json_dumps(data)
+        if isinstance(data, str):
+            data = data.encode("utf-8")
+        self.send(data)
+
+    def send(self, data):
+        pass
 
     def start(self):
         Thread(target=self.run, daemon=True).start()
 
     @property
     def logger(self):
-        return logger
+        if self._logger is None:
+            self._logger = get_log(
+                f"data/io/{self.__class__.__name__}/{self.src_ip}_{self.src_port}.log"
+            )
+        return self._logger
 
     def __repr__(self):
         return f"{self.__class__.__name__} src={self.src_ip}:{self.src_port} dst={self.dst_ip}:{self.dst_port}"

@@ -1,5 +1,5 @@
 {
-    "CTFd__CTFd-1931": {
+    "beeware__briefcase-1006": {
         "patch_is_None": false,
         "patch_exists": true,
         "patch_successfully_applied": true,
@@ -8,19 +8,16 @@
         "tests_status": {
             "FAIL_TO_PASS": {
                 "success": [
-                    "tests/api/v1/test_config.py::test_config_value_types"
+                    "tests/platforms/web/static/test_build.py::test_build_app",
+                    "tests/platforms/web/static/test_build.py::test_build_app_no_requirements"
                 ],
                 "failure": []
             },
             "PASS_TO_PASS": {
                 "success": [
-                    "tests/api/v1/test_config.py::test_api_config_delete_admin",
-                    "tests/api/v1/test_config.py::test_api_config_get_admin",
-                    "tests/api/v1/test_config.py::test_api_config_patch_admin",
-                    "tests/api/v1/test_config.py::test_api_configs_get_admin",
-                    "tests/api/v1/test_config.py::test_api_configs_get_non_admin",
-                    "tests/api/v1/test_config.py::test_api_configs_patch_admin",
-                    "tests/api/v1/test_config.py::test_api_configs_post_admin"
+                    "tests/platforms/web/static/test_build.py::test_app_package_fail",
+                    "tests/platforms/web/static/test_build.py::test_build_app_missing_wheel_dir",
+                    "tests/platforms/web/static/test_build.py::test_dependency_fail"
                 ],
                 "failure": []
             },

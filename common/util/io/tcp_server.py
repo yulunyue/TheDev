@@ -5,8 +5,10 @@ from .tcp_client import TcpClient
 class TcpServer(Server):
     def create_socket(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.setblocking(True)
 
     def loop(self):
+        self.sock.listen(2048)
         while True:
             client_sock, addr = self.sock.accept()
             t = (
@@ -19,5 +21,5 @@ class TcpServer(Server):
                 )
                 .set_sock(client_sock)
             )
-            t.start()
             self.new_connection(addr, t)
+            t.start()

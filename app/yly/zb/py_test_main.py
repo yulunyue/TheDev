@@ -3,16 +3,32 @@ import os
 import subprocess
 import sys
 
+
 PY_MAIN_CMD = "%{PY_MAIN_CMD}"
 RESULT_JSON_FILE = "result.json"
-sys.path.append("D:/thebug/TheDev/data/repo/beeware/briefcase/src")
+sys.path.append("src")
 
 
-def mock_fun(f):
+def mock_fun(f, *args, default_value="", **kw):
+    ret = default_value
     try:
-        f()
+        ret = f(*args, **kw)
     except Exception as e:
         print(f, e)
+    return ret
+
+
+def wrap_fun(f, default_value=""):
+
+    def wrap(*args, **kw):
+        ret = default_value
+        try:
+            ret = f()
+        except Exception as e:
+            pass
+        return ret
+
+    return wrap
 
 
 def mock_flask():
@@ -58,10 +74,17 @@ def mock_cffi():
     # cffi.FFI = Mock("cffi.FFI")
 
 
+def mock_importlib():
+    from importlib import metadata
+
+    metadata.version = wrap_fun(metadata.version, default_value="0.0.0")
+
+
 def mock_py():
     mock_fun(mock_markupsafe)
     mock_fun(mock_flask)
     mock_fun(mock_cffi)
+    mock_fun(mock_importlib)
 
 
 def run_py_test():

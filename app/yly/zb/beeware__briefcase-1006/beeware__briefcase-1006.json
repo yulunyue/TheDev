@@ -13,14 +13,32 @@
     "issue_numbers": [
         "1004"
     ],
-    "FAIL_TO_PASS": [],
+    "FAIL_TO_PASS": [
+        "tests/platforms/web/static/test_build.py::test_build_app",
+        "tests/platforms/web/static/test_build.py::test_build_app_no_requirements"
+    ],
     "PASS_TO_PASS": [],
     "after_setup_env": {},
     "code_commit": "code.patch",
     "content_category": "其他",
     "env": "",
     "language": "python",
-    "result": {},
+    "result": {
+        "code": {
+            "tests/platforms/web/static/test_build.py::test_build_app": "passed",
+            "tests/platforms/web/static/test_build.py::test_build_app_missing_wheel_dir": "passed",
+            "tests/platforms/web/static/test_build.py::test_build_app_no_requirements": "passed",
+            "tests/platforms/web/static/test_build.py::test_app_package_fail": "passed",
+            "tests/platforms/web/static/test_build.py::test_dependency_fail": "passed"
+        },
+        "test": {
+            "tests/platforms/web/static/test_build.py::test_build_app": "failed",
+            "tests/platforms/web/static/test_build.py::test_build_app_missing_wheel_dir": "passed",
+            "tests/platforms/web/static/test_build.py::test_build_app_no_requirements": "failed",
+            "tests/platforms/web/static/test_build.py::test_app_package_fail": "passed",
+            "tests/platforms/web/static/test_build.py::test_dependency_fail": "passed"
+        }
+    },
     "setup_env": [],
     "test_main": null
 }
