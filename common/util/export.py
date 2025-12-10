@@ -28,7 +28,7 @@ from common.mock import MockCf
 import sys
 import hashlib
 import time
-from .io import TcpServer, UdpClient, UdpServer
+from .io.export import TcpServer, TcpClient
 
 inf = float("inf")
 null = None

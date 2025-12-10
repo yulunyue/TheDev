@@ -7,6 +7,23 @@ from common.tool.export import (
     ListModel,
     DictModel,
 )
+from common.service.api import Api
+
+
+class ApiZb(Api):
+    def load(self):
+        self.task_name = "SWEBench/任务/发布的-12.3"
+        return self
+
+    def download_zip_file(self, name, pr):
+        return self.get(
+            f"https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/{self.task_name}/{name}/{name}-{pr}.zip",
+            dict(
+                OSSAccessKeyId="LTAI5tB2Etp2wUEVtkT7zckM",
+                Signature="4HOEZZj5yA3EbYIGclOQ6DOQqZU",
+                Expires=1766157704,
+            ),
+        )
 
 
 class Cg(ConfigBase):
@@ -34,17 +51,23 @@ PIP_INSTALL_WITH_NO_DEPENDDS = {}
 import os
 
 INPUTS_DIR = "app/yly/zb"
-REPO_BASE = "data/repo"
+REPO_BASE = "/testbed"
 
 
 class ToolMain(ToolBase):
-    def prepare(self, name):
+    def prepare(self, name: str):
         self.name: str = name
+        self.repo_name, self.pr = name.split("-")
         self.cfg: Cg = Cg(name)
         self.cfg.set_resource(f"{INPUTS_DIR}/{name}/{name}.json")
         self.input_dir = File(f"{INPUTS_DIR}/{name}")
+
         if not self.input_dir.exists():
-            File(self.input_dir.path + ".zip").unzip()
+            zip_file = File(self.input_dir.path + ".zip")
+            if not zip_file.exists():
+                data = ApiZb().load().download_zip_file(self.repo_name, self.pr)
+                zip_file.write_file(data)
+            zip_file.unzip()
 
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
@@ -95,23 +118,21 @@ class ToolMain(ToolBase):
         if not success:
             logger.info([stdout, stderr])
 
-    def init_setup_cfg(set_up_file):
-        pip_packages = []
-        if set_up_file.exists():
-            pkgs: List[str] = []
-            for section_name, depends in {
-                "options": ["install_requires"],
-                "options.extras_require": ["runtime", "test"],
-            }.items():
-                for dp in depends:
-                    pkgs.extend(
-                        set_up_file.get(section_name, dp, default_value="").split("\n")
-                    )
-            for pkg in pkgs:
-                pkg = self.pkg_repair(pkg)
-                if not pkg:
-                    continue
-                pip_packages.add(pkg)
+    def pip_install_setup_cfg(self, set_up_file: File):
+
+        pkgs: List[str] = []
+        for section_name, depends in {
+            "options": ["install_requires"],
+            "options.extras_require": ["runtime", "test"],
+        }.items():
+            for dp in depends:
+                lns = set_up_file.get(section_name, dp, default_value="").split("\n")
+                for ln in lns:
+                    pkg = self.pkg_repair(ln)
+                    if not pkg:
+                        continue
+                    pkgs.append(pkg)
+        return pkgs
 
     def pip_install_requirements(self, f: File):
         ret = []
@@ -124,6 +145,7 @@ class ToolMain(ToolBase):
         return ret
 
     def apply_patch(self, f: File):
+        f.write_file(f.read_file().replace("\r", ""))
         self.git_cmd.run("apply", f.get_abs_path())
 
     def pkg_repair(self, pkg: str):
@@ -143,8 +165,10 @@ class ToolMain(ToolBase):
         self.input_dir.child("setup_repo.sh").write_file(
             "\n".join(
                 [
+                    "set -e",
                     f"mkdir -p {self.local_repo.parent().path}",
                     f"git clone {self.repo_uri} {self.local_repo.path}",
+                    f"conda environment testbed",
                 ]
             )
         )
@@ -172,11 +196,13 @@ class ToolMain(ToolBase):
     def print_result(self):
         result = self.cfg.result.get_value()
         old, new = result["test"], result["code"]
-        f_to_p, p_t_p = (
+        f_to_p, p_to_p = (
             self.cfg.FAIL_TO_PASS.get_value(),
             self.cfg.PASS_TO_PASS.get_value(),
         )
-        for k in list(list(old.keys()) + list(new.keys())):
+        f_to_p.clear()
+        p_to_p.clear()
+        for k in set(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
                 logger.info(f"{k} {old_statu}->{new_statu}")
@@ -184,7 +210,7 @@ class ToolMain(ToolBase):
                     f_to_p.append(k)
             elif old_statu == new_statu and new_statu != "passed":
                 logger.info(f"{k} {old_statu}->{new_statu}")
-                p_t_p.append(k)
+                p_to_p.append(k)
 
     def make_main_py(self):
         self.main_py_file.write_file(
@@ -226,6 +252,9 @@ class ToolMain(ToolBase):
         pyproject_toml = self.local_repo.child("pyproject.toml")
         if pyproject_toml.exists():
             setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
+        setup_cfg = self.local_repo.child("setup.cfg")
+        if setup_cfg.exists():
+            setup_env_sh.extend(self.pip_install_setup_cfg(setup_cfg))
         pkgs: List[str] = self.cfg.setup_env.get_value()
         for pkg in pkgs:
             if pkg.endswith(".txt"):
@@ -240,7 +269,10 @@ class ToolMain(ToolBase):
 
     def pip_install_pyproject_toml(self, f: File):
         data = f.get("project", "dependencies")
-        return [self.pkg_repair(v) for v in data]
+        ret = []
+        if data:
+            ret.extend([self.pkg_repair(v) for v in data])
+        return ret
 
     def make_zip(self):
         zip_file = self.input_dir.child(f".zip")

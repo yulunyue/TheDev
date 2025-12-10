@@ -10,4 +10,5 @@ python -m app.yly.main loj_p2885.py test
 python -m app.yly.envs.ml.ciff_walk.main dev
 python -m app.yly.envs.cg.cw.main dev
 python -m app.yly.envs.ml.pendulum.main dev
-python -m tool.io udpserver 0.0.0.0 50000 Base
+python -m tool.io tcp_server src_ip=0.0.0.0 src_port=50000
+python -m tool.io tcp_client dst_ip=0.0.0.0 dst_port=50000
