@@ -7,3 +7,10 @@ from .base_class.model import StrModel, NumberModel, DictModel, ListModel
 from .bp.node import BpNode
 from .mock import Mock
 from .bp.compile import BpCompile, BP
+
+
+class GloablConfg(ConfigBase):
+    chrome_bin_path = StrModel("")
+
+
+GC = GloablConfg("GC").set_resource("gloabl_setting")

@@ -2,6 +2,7 @@ import subprocess
 from common.util.export import File, TheDevLoger, get_dev_log, logger
 import os
 import sys
+import re
 
 
 class OsUtil:
@@ -11,20 +12,28 @@ class OsUtil:
         self.root_path = "./"
         self.logger: TheDevLoger = get_dev_log("os")  # 用TheDev 主要是方便writer 重定向
 
-    def check_output(self):
-        cmds = self.get_cmd()
+    def check_output(self, cmds=None, capture_output=False):
+        if cmds is None:
+            cmds = self.get_cmd()
         self.logger.info(f"{self.root_path}->{cmds}")
         cmd = [v for v in cmds.split(" ") if v]
+        param = dict()
+        if not capture_output:
+            param.update(
+                dict(
+                    stderr=self.logger.get_writer(),
+                    stdout=self.logger.get_writer(),
+                )
+            )
         try:
             process = subprocess.run(
                 cmd,
                 check=True,
-                capture_output=False,
+                capture_output=capture_output,
                 text=True,
                 cwd=self.root_path,
-                stderr=self.logger.get_writer(),
-                stdout=self.logger.get_writer(),
                 timeout=60 * 60,
+                **param,
             )
             statu, stdout, stderror = True, process.stdout, process.stderr
         except subprocess.CalledProcessError as e:
@@ -65,3 +74,16 @@ class OsUtil:
         ret = os.system(cmd)
         if ret:
             self.error(cmd)
+
+    def check_port_with_netstat(self, port):
+        statu, result, stderror = self.check_output("netstat -ano", capture_output=True)
+
+        # 查找端口
+        pattern = rf":{port}\s+"
+        for line in result.split("\n"):
+            if re.search(pattern, line):
+                return line.strip()
+        return ""
+
+    def check_port(self, port):
+        return self.check_port_with_netstat(port)

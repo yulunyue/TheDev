@@ -2,7 +2,7 @@ import json
 from common.util.fp import File
 from typing import List, Dict
 
-CONFIG_SETTING_DIR = "data/setting"
+CONFIG_SETTING_DIR = "config/setting"
 from common.tool.base_class.model import BaseModel, StrModel
 
 
@@ -23,11 +23,13 @@ class ConfigBase:
 
     def set_resource(self, resource: str):
         if isinstance(resource, str):
-            resource = File(resource)
+            if "/" not in resource:
+                resource = CONFIG_SETTING_DIR + "/" + resource + ".json"
+            resource = File(resource).write_if_not_exists(dict())
         self.resource: File = resource
         return self
 
-    def __new__(cls, *args) -> None:
+    def __new__(cls, *args):
         cls.init_param()
         return super().__new__(cls)
 
