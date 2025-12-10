@@ -10,7 +10,9 @@ class OsUtil:
         self.fun_name = fun_name or sys.executable
         self.error_exit_flag = error_exit_flag
         self.root_path = "./"
-        self.logger: TheDevLoger = get_dev_log("os")  # 用TheDev 主要是方便writer 重定向
+        self.logger: TheDevLoger = get_dev_log(
+            f"data/log/os/{self.fun_name.split('/').pop()}"
+        )  # 用TheDev 主要是方便writer 重定向
 
     def check_output(self, cmds=None, capture_output=False):
         if cmds is None:

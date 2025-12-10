@@ -19,6 +19,9 @@ CODE_PATCH = "%{CODE_PATCH}"
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_DIR = Path(REPO_PATH)
 RESULT_JSON_FILE = "result.json"
+PY_TEST_MAIN_CODE = """
+%{PY_TEST_MAIN_CODE}
+"""
 
 
 class Colors:
@@ -159,10 +162,8 @@ def get_result():
 
 
 def run_py_test():
-    path = __file__.replace("run_verification.py", "py_test_main.py")
-    with open(f"{REPO_DIR}/py_test_main.py", "wb") as f:
-        with open(path, "rb") as d:
-            f.write(d.read())
+    with open(f"{REPO_DIR}/py_test_main.py", "w", encoding="utf-8") as f:
+        f.write(PY_TEST_MAIN_CODE)
     statu_code, msg, msg1 = run_command(
         [sys.executable, "py_test_main.py"], cwd=REPO_DIR
     )

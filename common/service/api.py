@@ -18,6 +18,8 @@ class ApiConfig(ConfigBase):
     cookie = DictModel()
     proxy = DictModel()
     timeout = NumberModel(default_value=10)
+    user_name = StrModel()
+    pass_word = StrModel()
 
 
 API_CONFIG = TableBase[ApiConfig]().set_resource("api")

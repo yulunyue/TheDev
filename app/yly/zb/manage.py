@@ -4,7 +4,7 @@ from .util import WT
 
 class ZbMangae(ToolBase):
     def query(self):
-        WT.run()
+        WT.start()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 python -m pip install --upgrade pip
-cd data/repo/beeware/briefcase
+cd /testbed/beeware/briefcase
 python -m pip install "pip>=22"
 python -m pip install "setuptools>=60"
 python -m pip install "wheel~=0.37"

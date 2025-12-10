@@ -7,6 +7,7 @@ from common.tool.export import (
     ListModel,
     DictModel,
 )
+from common.third_util.docker_util import DockerUtil
 
 
 class Cg(ConfigBase):
@@ -25,7 +26,7 @@ class Cg(ConfigBase):
     FAIL_TO_PASS = ListModel()
     PASS_TO_PASS = ListModel()
     content_category = StrModel(
-        default_value="其他"
+        default_value="通用工具"
     )  # 计算、通⽤、⼯具、可视化、系统、时间、⽹络、加密、其他
 
 
@@ -54,7 +55,6 @@ class ToolMain(ToolBase):
 
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
-        self.py_test_main_py = self.input_dir.child("py_test_main.py")
         self.local_repo = File(
             f"{REPO_BASE}/{self.cfg.repo.get_value()}"
         ).make_dir_if_not_exist()
@@ -150,8 +150,9 @@ class ToolMain(ToolBase):
                 [
                     "set -e",
                     f"mkdir -p {self.local_repo.parent().path}",
+                    f"git config --global http.sslVerify false",
                     f"git clone {self.repo_uri} {self.local_repo.path}",
-                    f"conda environment testbed",
+                    f"conda create -n testbed -y",
                 ]
             )
         )
@@ -204,18 +205,16 @@ class ToolMain(ToolBase):
                 INSTANCE_ID=self.cfg.instance_id.get_value(),
                 CODE_PATCH=self.cfg.code_commit.get_value(),
                 content_category=self.cfg.content_category.get_value(),
-            )
-        )
-        self.py_test_main_py.write_file(
-            StrUtil().format(
-                File(f"{INPUTS_DIR}/{self.py_test_main_py.name}.py").read_file(),
-                PY_MAIN_CMD=self.get_py_test_cmds(),
+                PY_TEST_MAIN_CODE=StrUtil().format(
+                    File(f"{INPUTS_DIR}/py_test_main.py").read_file(),
+                    PY_MAIN_CMD=self.get_py_test_cmds(),
+                ),
             )
         )
 
     venv_enable = True
 
-    def make_env(self):
+    def make_venv(self):
         if not self.venv_enable:
             return
         name = self.name.split("-")[0]
@@ -226,6 +225,10 @@ class ToolMain(ToolBase):
             logger.info(f"{env_path}/Scripts/Activate.ps1")
         else:
             logger.info(f"source {env_path}/bin/activate")
+
+    def docker_build(self):
+        image_name = f"swebench/sweb.eval.x_86_64.{self.repo_name}-{self.pr}"
+        DockerUtil().build(self.input_dir.get_abs_path(), image_name)
 
     def make_setup_env_sh(self):
         setup_env_sh = [
@@ -268,7 +271,7 @@ class ToolMain(ToolBase):
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
-        self.make_env()
+        # self.make_env()
         self.make_zip()
         logger.info(self.cfg.pr_url.get_value())
         logger.info(self.cfg.issue_url.get_value())

@@ -20,7 +20,7 @@
     "PASS_TO_PASS": [],
     "after_setup_env": {},
     "code_commit": "code.patch",
-    "content_category": "其他",
+    "content_category": "通用工具",
     "env": "",
     "language": "python",
     "result": {

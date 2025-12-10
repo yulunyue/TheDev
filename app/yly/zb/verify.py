@@ -1,12 +1,12 @@
-      
 import os
 import json
 import re
 import docker
 from pathlib import Path
+import sys
 
-TASKS_DIR = Path(r"aesara-devs__aesara-1501")
-IMAGE_NAME_TEMPLATE = "swebench/sweb.eval.x_86_64.{repo_owner}_1776_{repo_name}-{pr_id}"
+TASKS_DIR = Path(sys.argv[1])
+IMAGE_NAME_TEMPLATE = "swebench/sweb.eval.x_86_64.{repo_owner}__{repo_name}-{pr_id}"
 
 
 class DockerImageManager:
@@ -155,6 +155,7 @@ class DockerImageManager:
             self.client.images.get(image_name)
             return True
         except docker.errors.ImageNotFound:
+            print(self.client.images.list(all=True))
             return False
 
     def run_validation(self, json_file_path: Path, image_name: str, instance_id: str):
@@ -262,11 +263,11 @@ class DockerImageManager:
 
             # 2. 检查 instance_id 并验证文件名
             instance_id = data.get("instance_id")
-            
+
             # 如果 JSON 中没有 instance_id，或者文件名不等于 "{instance_id}.json"，则跳过
             if not instance_id:
                 continue
-            
+
             expected_filename = f"{instance_id}.json"
             if json_file.name != expected_filename:
                 continue
@@ -314,5 +315,3 @@ def verify():
 
 if __name__ == "__main__":
     verify()
-
-    
