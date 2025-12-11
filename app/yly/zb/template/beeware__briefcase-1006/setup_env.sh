@@ -1,0 +1,20 @@
+python -m pip install --upgrade pip
+cd /testbed/beeware/briefcase
+python -m pip install "pip>=22"
+python -m pip install "setuptools>=60"
+python -m pip install "wheel~=0.37"
+python -m pip install "cookiecutter~=2.1"
+python -m pip install "tomli~=2.0"
+python -m pip install "importlib_metadata>=4.4"
+python -m pip install "requests~=2.28"
+python -m pip install "GitPython~=3.1"
+python -m pip install "dmgbuild~=1.6"
+python -m pip install "psutil~=5.9"
+python -m pip install "rich~=12.6"
+python -m pip install "platformdirs~=2.6"
+python -m pip install "packaging~=22.0"
+python -m pip install "tomli_w~=1.0"
+python -m pip install "pytest~=7.2"
+python -m pip install "pytest-tldr~=0.2"
+python -m pip install "pytest-cov~=4.0"
+python -m pip install pytest pytest-json-report toml

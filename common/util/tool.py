@@ -80,6 +80,23 @@ def str_mid(s: str, size, fill="-"):
     return fill * l + s + fill * (l + y)
 
 
+def cmd_parse(s: str):
+    args, kw = [], dict()
+    if isinstance(s, str):
+        s = s.split(" ")
+    for v in s:
+        key, *value = v.split("=")
+        if value:
+            kw[key] = "=".join(value)
+        else:
+            args.append(key)
+    return args, kw
+
+
+THE_DEV_LOGER_PREFIX = "THE_DEV_LOGER_PREFIX"
+SYS_ARGS, SYS_KW = cmd_parse(sys.argv[1:])
+
+
 def url_to_json(params):
     args, kw = [], dict()
     if isinstance(params, str):

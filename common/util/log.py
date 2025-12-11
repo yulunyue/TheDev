@@ -1,15 +1,22 @@
 import logging
 import logging.handlers
 import os
-from common.constant import Constant
-from common.util.fp import File
+from .fp import File
+from .tool import SYS_ARGS, SYS_KW
 import sys
 import traceback
-from common.util.tool import json_dumps
+from common.util.tool import json_dumps, THE_DEV_LOGER_PREFIX
 
-LOG_SUFF = os.environ.get("THE_DEV_LOGER_SUFIX", "")
+
+def LOGER_PREFIX(name):
+    return f"{THE_DEV_LOGER_PREFIX}={name}"
+
+
+LOG_PREFIX = ""
 LOG_DIR = "data/log"
 JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
+if THE_DEV_LOGER_PREFIX in SYS_KW:
+    LOG_DIR += f"/{SYS_KW.pop(THE_DEV_LOGER_PREFIX)}"
 LOG_MAP = dict()
 LOGGER_MODE = "LOGGER_MODE"
 
@@ -28,13 +35,10 @@ DEBUG_FMT = "%(message)s"
 
 
 def name_to_path(name):
-    if "/" not in name:
-        path = f"{LOG_DIR}/{name}"
-    else:
-        path = name
+    path = LOG_DIR + "/" + name
     if not path.endswith(".log"):
         path += ".log"
-    return path + LOG_SUFF
+    return path
 
 
 def dict_to_str(kw: dict, indent=" "):
@@ -52,6 +56,7 @@ class Logger(logging.Logger):
         super().__init__(name)
         self.cache_msgs = []
         self.path = name_to_path(name)
+
         self.fp = File(self.path).make_dir_if_not_exist()
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)

@@ -136,16 +136,15 @@ class File:
         ret = []
 
         def append(f):
-            if filter and not filter(f):
-                return
-            ret.append(f)
+            if not filter or filter(f):
+                ret.append(f)
 
         for name in os.listdir(self.path):
             f = File(self.path + "/" + name)
             if f.is_dir():
                 if with_dir:
                     append(f)
-                ret.extend(f.list_dir(depth - 1))
+                ret.extend(f.list_dir(depth - 1, with_dir=with_dir, filter=filter))
             else:
                 append(f)
         return ret
@@ -197,16 +196,19 @@ class File:
         self.WITHE_FILE_HANDER[self.path] = open(self.path, "w", encoding="utf-8")
         return self.WITHE_FILE_HANDER[self.path]
 
-    def zip(self):
-        with zipfile.ZipFile(self.path + ".zip", "w", zipfile.ZIP_DEFLATED) as f:
+    def zip(self, dst=None):
+        if dst is None:
+            dst = self.path + ".zip"
+        with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as f:
             for c in self.list_tree_file():
                 arc_name = os.path.relpath(c.path, self.path)
                 f.write(c.path, arcname=arc_name)
-        f.close()
         return self
 
-    def unzip(self):
+    def unzip(self, cover=True):
         output_dir = self.path.replace(".zip", "")
+        if not cover and File(output_dir).exists():
+            return self
         with zipfile.ZipFile(self.path) as zf:
             for member in zf.namelist():
                 zf.extract(member, path=output_dir)

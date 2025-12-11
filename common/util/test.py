@@ -2,7 +2,7 @@ import sys
 import time
 from .fp import File
 from .log import get_log, get_dev_log, logger
-from .tool import url_to_json, md5
+from .tool import url_to_json, md5, SYS_ARGS, SYS_KW
 from .module import Module, call_func_auto
 from .difftool import Diff
 from typing import Dict, List
@@ -142,7 +142,7 @@ class Case:
 class ToolBase:
     @property
     def logger(self):
-        return get_log(f"data/tool/{self.__class__.__name__}.log")
+        return get_log(f"tool/{self.__class__.__name__}.log")
 
     def prepare(self, *args):
         pass
@@ -152,20 +152,8 @@ class ToolBase:
 
     def run(self):
         self.msgs = []
-        self.argvs, self.kw = url_to_json(sys.argv[1:])
+        self.argvs, self.kw = SYS_ARGS.copy(), SYS_KW.copy()
         fun_name = self.argvs.pop()
-        pym = " ".join(
-            [
-                sys.argv[0]
-                .replace(".py", "")
-                .replace(os.getcwd() + "\\", "python -m ")
-                .replace("\\", ".")
-            ]
-            + ["dev"]
-        )
-        log_path = f"doc/life/{md5(pym)}/日志.md"
-        logger.info(pym)
-        logger.info(log_path)
         self.prepare(*self.argvs)
         f = getattr(self, fun_name, None)
         if f is None:

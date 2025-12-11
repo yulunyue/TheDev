@@ -6,19 +6,36 @@ import re
 
 
 class OsUtil:
-    def __init__(self, fun_name=None, error_exit_flag=True):
-        self.fun_name = fun_name or sys.executable
+    def __init__(self, fun_name, error_exit_flag=True):
+        self.fun_name = fun_name
         self.error_exit_flag = error_exit_flag
         self.root_path = "./"
+        self.and_cmds = []
         self.logger: TheDevLoger = get_dev_log(
-            f"data/log/os/{self.fun_name.split('/').pop()}"
+            f"os/{self.fun_name.split('/').pop()}"
         )  # 用TheDev 主要是方便writer 重定向
+
+    def set_venv(self, name):
+        env_path = f"data/env_{os.name}/{name}"
+        if not File(env_path).exists():
+            OsUtil("python").run("-m", "venv", env_path)
+
+        if os.name == "nt":
+            self.logger.debug(f"{env_path}/Scripts/Activate.ps1")
+            self.and_cmds = [
+                f"call {env_path}/Scripts/activate.bat",
+                "&&",
+            ]
+        else:
+            self.and_cmds = [f"source {env_path}/bin/activate", "&&"]
+            self.logger.debug(f"source {env_path}/bin/activate")
+        return self
 
     def check_output(self, cmds=None, capture_output=False):
         if cmds is None:
             cmds = self.get_cmd()
         self.logger.info(f"{self.root_path}->{cmds}")
-        cmd = [v for v in cmds.split(" ") if v]
+        cmd = " ".join([v for v in self.and_cmds + cmds.split(" ") if v])
         param = dict()
         if not capture_output:
             param.update(
@@ -31,6 +48,7 @@ class OsUtil:
             process = subprocess.run(
                 cmd,
                 check=True,
+                shell=True,
                 capture_output=capture_output,
                 text=True,
                 cwd=self.root_path,
