@@ -28,6 +28,9 @@ class File:
     def get_param_value(self, p, param):
         return self.get(param.key, default_value=param.default_value)
 
+    def update_param_value(self, p, param, value):
+        self.get_config()[param.key] = value
+
     def parent(self):
         return File("/".join(self.dirs))
 
@@ -110,10 +113,13 @@ class File:
 
     _config = None
 
-    def get(self, *keys, default_value=None):
+    def get_config(self):
         if self._config is None:
             self._config = self.read_file()
-        tmp = self._config
+        return self._config
+
+    def get(self, *keys, default_value=None):
+        tmp = self.get_config()
         for k in keys:
             if k not in tmp:
                 return default_value
@@ -222,6 +228,8 @@ class File:
         return self
 
     def remove(self):
+        if not self.exists():
+            return self
         if self.is_dir():
             shutil.rmtree(self.path)
         elif self.is_file():

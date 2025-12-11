@@ -1,11 +1,22 @@
 from common.util.export import logger, File, time
-from common.tool.export import ConfigBase, TableBase, StrModel, ListModel, DictModel
+from common.tool.export import (
+    ConfigBase,
+    TableBase,
+    StrModel,
+    ListModel,
+    DictModel,
+    BoolModel,
+)
 
-
+PASS_TO_PASS = "PASS_TO_PASS"
+PASS_TO_FAIL = "PASS_TO_FAIL"
+FAIL_TO_PASS = "FAIL_TO_PASS"
 INPUTS_DIR = File("app/yly/zb")
 TASK_DIR = INPUTS_DIR.child("task")
 REPO_BASE = "/testbed"
 PASSED = "passed"
+SUCCESS = "success"
+FAILURE = "failure"
 
 
 def get_info_by_name(file_name: str):
@@ -30,10 +41,11 @@ class Cg(ConfigBase):
 
 class TaskCfg(ConfigBase):
     test_main = StrModel()
+    error_msg = StrModel()
+    skip = BoolModel()
     setup_env = ListModel()
     result = DictModel()
     after_setup_env = DictModel()
-    env = StrModel(default_value="")
 
 
 TB = TableBase[TaskCfg]().set_resource(INPUTS_DIR.child("all.json"))

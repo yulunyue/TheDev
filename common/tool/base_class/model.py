@@ -71,7 +71,13 @@ class BaseModel:
 
 
 class StrModel(BaseModel):
-    pass
+    def __init__(self, key=None, default_value="", data_source=None):
+        super().__init__(key, default_value, data_source)
+
+
+class BoolModel(BaseModel):
+    def __init__(self, key=None, default_value=False, data_source=None):
+        super().__init__(key, default_value, data_source)
 
 
 class NumberModel(BaseModel):

@@ -12,7 +12,19 @@ from common.tool.export import (
     OsUtil,
 )
 
-from .util import INPUTS_DIR, REPO_BASE, Cg, TB, get_info_by_name, PASSED
+from .util import (
+    INPUTS_DIR,
+    REPO_BASE,
+    Cg,
+    TB,
+    get_info_by_name,
+    PASSED,
+    PASS_TO_PASS,
+    FAIL_TO_PASS,
+    PASS_TO_FAIL,
+    SUCCESS,
+    FAILURE,
+)
 
 PIP_INSTALL_WITH_NO_DEPENDDS = {}
 
@@ -22,7 +34,7 @@ import os
 class ZbTask(ToolBase):
     @property
     def logger(self):
-        return get_log(f"{self.repo}/{self.task_id}_{self.pr}")
+        return get_log(f"zb/{self.repo}/{self.task_id}_{self.pr}")
 
     def prepare(self, path):
         self.input_dir = File(path)
@@ -31,9 +43,6 @@ class ZbTask(ToolBase):
             self.input_dir = INPUTS_DIR.child(f"task/{path}")
         if not self.input_dir.exists():
             raise Exception(self.input_dir.path, "not exist")
-        result_json = self.input_dir.child("result.json")
-        if result_json.exists():
-            result_json.remove()
         self.owner, self.task_id, self.repo, self.pr = get_info_by_name(
             self.input_dir.name
         )
@@ -179,13 +188,15 @@ class ZbTask(ToolBase):
         )
         return result[key]
 
-    def finish(self, statu, msgs):
+    def finish(self, statu, msgs, skip_msg=""):
+        self.local_cfg.error_msg.set_value(msgs)
+        if skip_msg:
+            self.zip_file.parent().child("skip.txt").write_file(skip_msg)
         if statu:
-            logger.info(f"{self.input_dir.path} SUCCESS")
+            logger.info(f"{self.input_json.path} SUCCESS {skip_msg}")
             self.input_dir.zip(self.zip_file.path)
         else:
-            logger.info(f"{self.input_dir.path} FAIL")
-            self.logger.debug(f"{self.input_dir.path} {msgs}")
+            logger.info(f"{self.input_json.path} FAIL")
             self.zip_file.parent().remove()
             raise Exception("FAIL", msgs)
 
@@ -239,25 +250,51 @@ class ZbTask(ToolBase):
         self.docker_image_name = image_name
         return self
 
+    def update_result(self, fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass):
+        local_result = self.local_cfg.result.get_value()
+        local_result["fail_to_fail"] = fail_to_fail
+        local_result["pass_to_fail"] = pass_to_fail
+        local_result["fail_to_pass"] = fail_to_pass
+        self.cfg.PASS_TO_PASS.set_value(pass_to_pass)
+        if fail_to_pass and not fail_to_fail and not pass_to_fail:
+            self.cfg.FAIL_TO_PASS.set_value(fail_to_pass)
+            self.finish(True, "")
+        else:
+            self.finish(False, f"gg")
+
     def docker_verify(self, **kw):
         """
         OsUtil("python").run(INPUTS_DIR.child("verify.py").path, self.input_dir.path)
         """
         from common.third_util.docker_util import DockerUtil
 
+        result_file = self.input_dir.child("result.json")
+        result_file.remove()
         dock_util = DockerUtil(self.docker_image_name)
         status, msg = dock_util.run(
-            "/bin/bash -i -c 'cd /testbed && python run_verification.py && cp -f results.json /testbed_output/result.json 2>/dev/null || true'",
+            "/bin/bash -i -c 'cd /testbed && python run_verification.py;cp -f results.json /testbed_output/result.json 2>/dev/null || true'",
             {
                 self.code_patch.get_abs_path(): f"{REPO_BASE}/{self.code_patch.file_name}",
                 self.test_patch.get_abs_path(): f"{REPO_BASE}/{self.test_patch.file_name}",
                 self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
+                self.input_dir.get_abs_path(): "/testbed_output",
             },
             REPO_BASE,
             env={"INSTANCE_ID": self.cfg.instance_id.get_value()},
         )
-        logger.map(status=status, msg=msg)
-        self.finish(status == 0, msg)
+        self.logger.debug(msg)
+        if result_file.exists():
+            result_json = result_file.read_file()[self.cfg.instance_id.get_value()][
+                "tests_status"
+            ]
+            self.update_result(
+                result_json["FAIL_TO_FAIL"]["failure"],
+                result_json["PASS_TO_FAIL"]["failure"],
+                result_json["FAIL_TO_PASS"]["success"],
+                result_json[PASS_TO_PASS][SUCCESS],
+            )
+        else:
+            self.finish(False, "UnKnow")
 
     def make_setup_env_sh(self):
         setup_env_sh = [
@@ -319,11 +356,22 @@ class ZbTask(ToolBase):
         self.print_result()
 
     def main(self, **kw):
+        error_msg = self.local_cfg.error_msg.get_value()
+        if self.zip_file.exists() and not error_msg:
+            return
         self.init()
-        if self.docker_image_name:
-            self.docker_verify()
-        else:
-            self.verify_with_no_docker()
+        skip = self.local_cfg.skip.get_value()
+        if skip and not error_msg:
+            if isinstance(skip, str):
+                self.finish(True, "", skip_msg=skip)
+            return
+        try:
+            if self.docker_image_name:
+                self.docker_verify()
+            else:
+                self.verify_with_no_docker()
+        except Exception as e:
+            logger.debug(e, stack_info=True)
 
     def verify_with_no_docker(self):
         """

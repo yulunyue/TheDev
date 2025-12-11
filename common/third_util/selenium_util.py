@@ -12,6 +12,86 @@ from selenium.webdriver.remote.webelement import WebElement
 class SeleniumUtil:
     driver: webdriver.Chrome = None
 
+    @property
+    def logger(self):
+        return logger
+
+    def get_xpath_from_chrome_devtools(self, element):
+        """
+        模拟 Chrome DevTools 复制 XPath 的功能
+        """
+        js_code = """
+        function getXPathForElement(element) {
+            const idx = (sib, name) => sib 
+                ? idx(sib.previousElementSibling, name||sib.localName) + (sib.localName == name)
+                : 1;
+            const segs = elm => !elm || elm.nodeType !== 1 
+                ? ['']
+                : elm.id && document.getElementById(elm.id) === elm
+                    ? [`//*[@id="${elm.id}"]`]
+                    : [...segs(elm.parentNode), `${elm.localName.toLowerCase()}[${idx(elm)}]`];
+            return segs(element).join('/');
+        }
+        return getXPathForElement(arguments[0]);
+        """
+
+        return self.driver.execute_script(js_code, element)
+
+    def e_format(self, element: WebElement, text_max_size=100):
+        ret = []
+        element_id = element.get_attribute("id")
+        tag_name = element.tag_name
+        # 获取其他有用的属性
+        class_attr = element.get_attribute("class") or ""
+        name_attr = element.get_attribute("name") or ""
+        url = element.get_attribute("url") or ""
+        # 获取位置和大小
+        location_str = ""
+        try:
+            location = element.location
+            size = element.size
+            location_str = f"位置: ({location['x']}, {location['y']}); 大小: {size['width']}x{size['height']}"
+
+        except:
+            location_str = ""
+        # 获取可见文本（截断）
+        try:
+            text = element.text.strip()
+            if len(text) > text_max_size * 2:
+                text = text[:text_max_size] + "..." + text[-text_max_size:]
+        except:
+            text = ""
+        ret.append(f"\n 标签: <{tag_name}>; ID: '{element_id}'")
+        ret.append(f"   XPATH:{self.get_xpath_from_chrome_devtools(element)} ")
+        if class_attr:
+            ret.append(f"   类: {class_attr};")
+
+        if name_attr:
+            ret.append(f"   Name: {name_attr}")
+        if url:
+            ret.append(f"   uri: {url}")
+        ret.append(f"   {location_str}")
+        if text:
+            ret.append(f"   文本: {text}")
+
+        return "\n".join(ret)
+
+    def print_info(self):
+        for e in self.find_elements_by_xpath("//*[text()!='']"):
+            try:
+                er = self.e_format(e)
+            except Exception as e2:
+                er = f"{e}:{e2}"
+            self.logger.debug(er)
+
+    def play(self, fun):
+        try:
+            fun()
+        except Exception as e:
+            raise Exception(e)
+        finally:
+            self.print_info()
+
     def get_element_by_id(self, key):
         return self.wait.until(EC.presence_of_element_located((By.ID, key)))
 
@@ -86,7 +166,7 @@ class SeleniumUtil:
             else:
                 self.options.add_argument("--headless")
             self.driver = webdriver.Chrome(options=self.options, service=service)
-            self.wait = WebDriverWait(self.driver, 10)
+            self.wait = WebDriverWait(self.driver, 5)
             # self.driver.set_page_load_timeout(10)
 
         return self
@@ -106,13 +186,6 @@ class SeleniumUtil:
             logger.info(f"HTTP重定向到: {current_url}")
 
         return current_url
-
-    def run(self):
-        pass
-
-    def start(self):
-        self.load()
-        self.run()
 
     def wait_for_window(self):
         """等待新窗口打开"""

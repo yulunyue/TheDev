@@ -1,12 +1,14 @@
 from common.util.export import ToolBase, logger, File, os, LOGER_PREFIX
 from common.tool.export import OsUtil
 from .util import TB, INPUTS_DIR, TASK_DIR, get_info_by_name
+from .auto import WT
 from .main import ZbTask
 
 
 class ZbMangae(ToolBase):
-    def query(self):
-        WT.start()
+    def web_run(self):
+        c = WT.load()
+        c.play(c.get_job_info)
 
     def dev(self):
         r = File("../../downloads")
@@ -24,9 +26,11 @@ class ZbMangae(ToolBase):
             t = ZbTask()
             t.prepare(f.path.replace(".zip", ""))
             t.set_docker_image_name("zb:latest")
+
             t.main()
             t.exit()
             # owner, task_id, repo, pr = get_info_by_name(f.name)
+        TB.save()
 
 
 if __name__ == "__main__":
