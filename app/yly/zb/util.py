@@ -13,7 +13,10 @@ PASS_TO_FAIL = "PASS_TO_FAIL"
 FAIL_TO_PASS = "FAIL_TO_PASS"
 INPUTS_DIR = File("app/yly/zb")
 TASK_DIR = INPUTS_DIR.child("task")
-REPO_BASE = "/testbed"
+class GConfig(ConfigBase):
+    repo_path=StrModel(default_value="/testbed")
+GC=GConfig("zb").set_resource("zb")
+REPO_BASE = GC.repo_path.get_value()
 PASSED = "passed"
 SUCCESS = "success"
 FAILURE = "failure"

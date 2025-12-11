@@ -247,6 +247,9 @@ class ZbTask(ToolBase):
     docker_image_name = None
 
     def set_docker_image_name(self, image_name="zb:latest"):
+        from common.third_util.docker_util import DockerUtil
+        if DockerUtil():
+
         self.docker_image_name = image_name
         return self
 

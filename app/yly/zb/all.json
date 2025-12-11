@@ -41,7 +41,7 @@
         "setup_env": [],
         "skip": false,
         "test_main": null,
-        "error_msg": "gg"
+        "error_msg": "UnKnow"
     },
     "beeware_6037_briefcase-1078": {
         "after_setup_env": {},
