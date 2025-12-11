@@ -1,58 +1,52 @@
-from common.util.export import ToolBase, File, logger, Dict, List, StrUtil, Module
+from common.util.export import (
+    ToolBase,
+    File,
+    logger,
+    Dict,
+    List,
+    StrUtil,
+    Module,
+    get_log,
+)
 from common.tool.export import (
     OsUtil,
-    ConfigBase,
-    TableBase,
-    StrModel,
-    ListModel,
-    DictModel,
 )
-from common.third_util.docker_util import DockerUtil
 
-
-class Cg(ConfigBase):
-    test_main = StrModel()
-    setup_env = ListModel()
-    result = DictModel()
-    after_setup_env = DictModel()
-    base_commit = StrModel()
-    pr_url = StrModel()
-    repo = StrModel()
-    instance_id = StrModel()
-    issue_url = StrModel()
-    env = StrModel(default_value="")
-    code_commit = StrModel(default_value="code.patch")
-    language = StrModel(default_value="python")
-    FAIL_TO_PASS = ListModel()
-    PASS_TO_PASS = ListModel()
-    content_category = StrModel(
-        default_value="通用工具"
-    )  # 计算、通⽤、⼯具、可视化、系统、时间、⽹络、加密、其他
-
+from .util import INPUTS_DIR, REPO_BASE, Cg, TB, get_info_by_name, PASSED
 
 PIP_INSTALL_WITH_NO_DEPENDDS = {}
 
 import os
 
-INPUTS_DIR = "app/yly/zb"
-REPO_BASE = "/testbed"
 
+class ZbTask(ToolBase):
+    @property
+    def logger(self):
+        return get_log(f"{self.repo}/{self.task_id}_{self.pr}")
 
-class ToolMain(ToolBase):
-    def prepare(self, name: str):
-        self.name: str = name
-        self.repo_name, self.pr = name.split("-")
-        self.cfg: Cg = Cg(name)
-        self.cfg.set_resource(f"{INPUTS_DIR}/{name}/{name}.json")
-        self.input_dir = File(f"{INPUTS_DIR}/{name}")
+    def prepare(self, path):
+        self.input_dir = File(path)
 
         if not self.input_dir.exists():
-            zip_file = File(self.input_dir.path + ".zip")
-            if not zip_file.exists():
-                data = ApiZb().load().download_zip_file(self.repo_name, self.pr)
-                zip_file.write_file(data)
-            zip_file.unzip()
-
+            self.input_dir = INPUTS_DIR.child(f"task/{path}")
+        if not self.input_dir.exists():
+            raise Exception(self.input_dir.path, "not exist")
+        result_json = self.input_dir.child("result.json")
+        if result_json.exists():
+            result_json.remove()
+        self.owner, self.task_id, self.repo, self.pr = get_info_by_name(
+            self.input_dir.name
+        )
+        self.name: str = f"{self.owner}/{self.repo}"
+        self.local_cfg = TB.get(self.input_dir.name)
+        self.cfg: Cg = Cg(self.name)
+        self.input_json = self.input_dir.child(
+            f"{self.owner}__{self.repo}-{self.pr}.json"
+        )
+        self.zip_file = INPUTS_DIR.child(
+            f"result/{self.task_id}/{self.input_json.name}.zip"
+        ).make_dir_if_not_exist()
+        self.cfg.set_resource(self.input_json)
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
         self.local_repo = File(
@@ -68,8 +62,11 @@ class ToolMain(ToolBase):
         self.change_py_test_files: Dict[str, File] = dict()
         self.get_update_file_by_batch(self.test_patch)
         self.get_update_file_by_batch(self.code_patch)
+        return self
 
     def json_report_parse(self, fp: File):
+        if not fp.exists():
+            return dict()
         result = dict()
         data = fp.read_file()
         for item in data["tests"]:
@@ -90,16 +87,17 @@ class ToolMain(ToolBase):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""
         if commid_id is None:
             commid_id = self.cfg.base_commit.get_value()
+        self.logger.debug(f"git reset {commid_id}")
         success, stdout, stderr = self.git_cmd.run("reset", "--hard", commid_id)
         if not success:
-            logger.info([stdout, stderr])
+            self.finish(success, f"git reset fail")
             return False
         self.clear_repo()
 
     def clear_repo(self, *args, **kw):
         success, stdout, stderr = self.git_cmd.run("clean", "-fdx")
         if not success:
-            logger.info([stdout, stderr])
+            self.logger.info([stdout, stderr])
 
     def pip_install_setup_cfg(self, set_up_file: File):
 
@@ -129,6 +127,7 @@ class ToolMain(ToolBase):
 
     def apply_patch(self, f: File):
         f.write_file(f.read_file().replace("\r", ""))
+        self.logger.debug(f"apply {f.get_abs_path()}")
         self.git_cmd.run("apply", f.get_abs_path())
 
     def pkg_repair(self, pkg: str):
@@ -159,13 +158,13 @@ class ToolMain(ToolBase):
 
     def get_py_test_cmds(self):
         files = list(self.change_py_test_files.keys())
-        logger.info(f"get change_file_form patch {files}")
-        model_py_test = self.cfg.test_main.get_value()
+        self.logger.debug(f"get change_file_form patch {files}")
+        model_py_test = self.local_cfg.test_main.get_value()
         if model_py_test:
             return model_py_test
         return " ".join(files)
 
-    def py_test(self, key):
+    def py_test(self, key) -> dict:
         report_json_fp = self.local_repo.child("result.json")
         if report_json_fp.exists():
             report_json_fp.remove()
@@ -173,40 +172,60 @@ class ToolMain(ToolBase):
             "run_verification.run_py_test", self.input_dir.path
         )
         statu_code, msg, msg1 = f()
-        logger.debug(f"statu_code={statu_code},msg={msg},msg1={msg1}")
-        result = self.cfg.result.get_value()
+        result = self.local_cfg.result.get_value()
         result[key] = self.json_report_parse(report_json_fp)
+        self.logger.debug(
+            f"statu_code={statu_code}\nstdout={msg}\nstderr={msg1}\nresult={result[key]}"
+        )
+        return result[key]
+
+    def finish(self, statu, msgs):
+        if statu:
+            logger.info(f"{self.input_dir.path} SUCCESS")
+            self.input_dir.zip(self.zip_file.path)
+        else:
+            logger.info(f"{self.input_dir.path} FAIL")
+            self.logger.debug(f"{self.input_dir.path} {msgs}")
+            self.zip_file.parent().remove()
+            raise Exception("FAIL", msgs)
 
     def print_result(self):
-        result = self.cfg.result.get_value()
+        result = self.local_cfg.result.get_value()
         old, new = result["test"], result["code"]
         f_to_p, p_to_p = (
             self.cfg.FAIL_TO_PASS.get_value(),
             self.cfg.PASS_TO_PASS.get_value(),
         )
+        p_to_f = []
         f_to_p.clear()
         p_to_p.clear()
         for k in set(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
-                logger.info(f"{k} {old_statu}->{new_statu}")
-                if new_statu == "passed":
+                self.logger.debug(f"{k} {old_statu}->{new_statu}")
+                if new_statu == PASSED:
                     f_to_p.append(k)
-            elif old_statu == new_statu and new_statu != "passed":
-                logger.info(f"{k} {old_statu}->{new_statu}")
+                else:
+                    p_to_f.append(k)
+            elif old_statu == new_statu and new_statu != PASSED:
+                self.logger.debug(f"{k} {old_statu}->{new_statu}")
                 p_to_p.append(k)
+
+        if f_to_p and not p_to_f:
+            self.finish(True, f"f_to_p:{f_to_p}")
+        else:
+            self.finish(False, f"f_to_p:{f_to_p} p_to_f:{p_to_f}")
 
     def make_main_py(self):
         self.main_py_file.write_file(
             StrUtil().format(
-                File(f"{INPUTS_DIR}/{self.main_py_file.name}.py").read_file(),
+                INPUTS_DIR.child("run_verification.py").read_file(),
                 REPO_PATH=self.local_repo.path,
                 BASE_COMMIT=self.cfg.base_commit.get_value(),
                 INSTANCE_ID=self.cfg.instance_id.get_value(),
-                CODE_PATCH=self.cfg.code_commit.get_value(),
                 content_category=self.cfg.content_category.get_value(),
                 PY_TEST_MAIN_CODE=StrUtil().format(
-                    File(f"{INPUTS_DIR}/py_test_main.py").read_file(),
+                    INPUTS_DIR.child("py_test_main.py").read_file(),
                     PY_MAIN_CMD=self.get_py_test_cmds(),
                 ),
             )
@@ -214,21 +233,31 @@ class ToolMain(ToolBase):
 
     venv_enable = True
 
-    def make_venv(self):
-        if not self.venv_enable:
-            return
-        name = self.name.split("-")[0]
-        env_path = f"data/env_{os.name}/{name}{self.cfg.env.get_value()}"
-        if not File(env_path).exists():
-            OsUtil().run("-m", "venv", env_path)
-        if os.name == "nt":
-            logger.info(f"{env_path}/Scripts/Activate.ps1")
-        else:
-            logger.info(f"source {env_path}/bin/activate")
+    docker_image_name = None
 
-    def docker_build(self):
-        image_name = f"swebench/sweb.eval.x_86_64.{self.repo_name}-{self.pr}"
-        DockerUtil().build(self.input_dir.get_abs_path(), image_name)
+    def set_docker_image_name(self, image_name="zb:latest"):
+        self.docker_image_name = image_name
+        return self
+
+    def docker_verify(self, **kw):
+        """
+        OsUtil("python").run(INPUTS_DIR.child("verify.py").path, self.input_dir.path)
+        """
+        from common.third_util.docker_util import DockerUtil
+
+        dock_util = DockerUtil(self.docker_image_name)
+        status, msg = dock_util.run(
+            "/bin/bash -i -c 'cd /testbed && python run_verification.py && cp -f results.json /testbed_output/result.json 2>/dev/null || true'",
+            {
+                self.code_patch.get_abs_path(): f"{REPO_BASE}/{self.code_patch.file_name}",
+                self.test_patch.get_abs_path(): f"{REPO_BASE}/{self.test_patch.file_name}",
+                self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
+            },
+            REPO_BASE,
+            env={"INSTANCE_ID": self.cfg.instance_id.get_value()},
+        )
+        logger.map(status=status, msg=msg)
+        self.finish(status == 0, msg)
 
     def make_setup_env_sh(self):
         setup_env_sh = [
@@ -241,7 +270,7 @@ class ToolMain(ToolBase):
         setup_cfg = self.local_repo.child("setup.cfg")
         if setup_cfg.exists():
             setup_env_sh.extend(self.pip_install_setup_cfg(setup_cfg))
-        pkgs: List[str] = self.cfg.setup_env.get_value()
+        pkgs: List[str] = self.local_cfg.setup_env.get_value()
         for pkg in pkgs:
             if pkg.endswith(".txt"):
                 setup_env_sh.extend(
@@ -251,7 +280,7 @@ class ToolMain(ToolBase):
                 setup_env_sh.append(pkg)
         setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
-        logger.info(f"sh {self.setup_env_sh.path}")
+        self.logger.debug(f"sh {self.setup_env_sh.path}")
 
     def pip_install_pyproject_toml(self, f: File):
         data = f.get("project", "dependencies")
@@ -260,58 +289,67 @@ class ToolMain(ToolBase):
             ret.extend([self.pkg_repair(v) for v in data])
         return ret
 
-    def make_zip(self):
-        zip_file = self.input_dir.child(f".zip")
-        if zip_file.exists():
-            zip_file.remove()
-        self.input_dir.zip()
-
     def init(self):
-        self.pre2()
+        self.rest_repo()
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
-        # self.make_env()
-        self.make_zip()
-        logger.info(self.cfg.pr_url.get_value())
-        logger.info(self.cfg.issue_url.get_value())
-        logger.info(self.local_repo.path)
-        logger.info(f"python {self.main_py_file.path}")
+        self.logger.debug(self.cfg.pr_url.get_value())
+        self.logger.debug(self.cfg.issue_url.get_value())
+        self.logger.debug(self.local_repo.path)
+        self.logger.debug(f"python {self.main_py_file.path}")
 
     def run0(self):
         self.rest_repo()
-        self.py_test("test")
+        pre_result = self.py_test("pre")
+        pre_failes = [k for k, v in pre_result.items() if v != PASSED]
+        if pre_failes:
+            self.finish(False, f"pre_failed:{pre_failes}")
 
     def run1(self):
         self.rest_repo()
         self.apply_patch(self.test_patch)
         self.py_test("test")
 
-    def pre2(self):
-        code_commit = self.cfg.code_commit.get_value()
-        if code_commit.endswith(".patch"):
-            self.rest_repo()
-            self.apply_patch(self.test_patch)
-            self.apply_patch(self.code_patch)
-        else:
-            self.rest_repo(code_commit)
-
     def run2(self):
-        self.pre2()
+        self.rest_repo()
+        self.apply_patch(self.test_patch)
+        self.apply_patch(self.code_patch)
         self.py_test("code")
-
-    def main(self):
-        self.init()
-        self.run1()
-        self.run2()
         self.print_result()
 
-    def setup_env(self):
+    def main(self, **kw):
+        self.init()
+        if self.docker_image_name:
+            self.docker_verify()
+        else:
+            self.verify_with_no_docker()
+
+    def verify_with_no_docker(self):
+        """
+        o = OsUtil("python").set_venv(repo)
+            o.run(
+                "-m",
+                "app.yly.zb.main",
+                f.path.replace(".zip", ""),
+                method,
+                LOGER_PREFIX(repo),
+            )
+        """
+        raise Exception("虚拟环境跑")
+        self.setup_env()
+        self.run0()
+        self.run1()
+        self.run2()
+
+    def setup_env(self, **kw):
+        raise Exception("第一次跑，在json里标记状态")
         OsUtil("sh").run(self.setup_env_sh.path)
 
     def exit(self):
         self.cfg.save()
+        return super().exit()
 
 
 if __name__ == "__main__":
-    ToolMain().run()
+    ZbTask().run()

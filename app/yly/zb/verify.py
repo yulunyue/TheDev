@@ -4,9 +4,12 @@ import re
 import docker
 from pathlib import Path
 import sys
+import io
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 TASKS_DIR = Path(sys.argv[1])
 IMAGE_NAME_TEMPLATE = "swebench/sweb.eval.x_86_64.{repo_owner}__{repo_name}-{pr_id}"
+IMAGE_NAME_TEMPLATE = "zb:latest"
 
 
 class DockerImageManager:

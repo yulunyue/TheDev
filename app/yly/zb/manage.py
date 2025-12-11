@@ -1,18 +1,32 @@
-from common.util.export import ToolBase,logger,File
-from .util import WT
+from common.util.export import ToolBase, logger, File, os, LOGER_PREFIX
+from common.tool.export import OsUtil
+from .util import TB, INPUTS_DIR, TASK_DIR, get_info_by_name
+from .main import ZbTask
 
 
 class ZbMangae(ToolBase):
     def query(self):
         WT.start()
+
     def dev(self):
-        r=File("../../downloads")
+        r = File("../../downloads")
         for f in r.list_dir():
             if not f.path.endswith(".zip"):
                 continue
-            name,pr=f.name.split("-")
-            owner,task_id,repo_name=name.split("_")
-            f.copy
+
+    def main(self, key=""):
+        def ft(f: File):
+            return key in f.name and f.path.endswith(".zip")
+
+        fps = TASK_DIR.list_dir(-1, filter=ft)
+        for f in fps:
+            f.unzip(False)
+            t = ZbTask()
+            t.prepare(f.path.replace(".zip", ""))
+            t.set_docker_image_name("zb:latest")
+            t.main()
+            t.exit()
+            # owner, task_id, repo, pr = get_info_by_name(f.name)
 
 
 if __name__ == "__main__":

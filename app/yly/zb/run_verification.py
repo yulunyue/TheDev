@@ -14,7 +14,7 @@ REPO_PATH = "%{REPO_PATH}"
 # 要进行测试的基础 commit 哈希
 BASE_COMMIT = "%{BASE_COMMIT}"
 # 实例ID，用于结果文件的顶级键
-CODE_PATCH = "%{CODE_PATCH}"
+CODE_PATCH = "code.patch"
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_DIR = Path(REPO_PATH)
@@ -218,14 +218,10 @@ def main():
     # --- 补丁后运行 ---
     if not reset_repo(BASE_COMMIT):
         write_results_and_exit(False)
-    if not CODE_PATCH.endswith(".patch"):
-        if not reset_repo(CODE_PATCH):
-            write_results_and_exit(False)
-    else:
-        if not apply_patch(SCRIPT_DIR / "test.patch"):
-            write_results_and_exit(False)
-        elif not apply_patch(SCRIPT_DIR / CODE_PATCH):
-            write_results_and_exit(False)
+    if not apply_patch(SCRIPT_DIR / "test.patch"):
+        write_results_and_exit(False)
+    elif not apply_patch(SCRIPT_DIR / CODE_PATCH):
+        write_results_and_exit(False)
     results[INSTANCE_ID]["patch_successfully_applied"] = True
 
     print_header("STEP 2: POST-PATCH - Running tests with both patches")

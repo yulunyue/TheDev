@@ -14,7 +14,7 @@ def mock_fun(f, *args, default_value="", **kw):
     try:
         ret = f(*args, **kw)
     except Exception as e:
-        print(f, e)
+        pass
     return ret
 
 
@@ -83,7 +83,7 @@ def mock_importlib():
 def mock_py():
     mock_fun(mock_markupsafe)
     mock_fun(mock_flask)
-    mock_fun(mock_cffi)
+    # mock_fun(mock_cffi)
     mock_fun(mock_importlib)
 
 
@@ -93,7 +93,6 @@ def run_py_test():
         "--json-report",
         f"--json-report-file={RESULT_JSON_FILE}",
     ]
-    print(py_test_args)
     pytest.main(py_test_args)
 
 
