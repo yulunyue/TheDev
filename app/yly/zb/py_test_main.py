@@ -9,13 +9,11 @@ RESULT_JSON_FILE = "result.json"
 sys.path.append("src")
 
 
-def mock_fun(f, *args, default_value="", **kw):
-    ret = default_value
+def mock_fun(f):
     try:
-        ret = f(*args, **kw)
+        f()
     except Exception as e:
         pass
-    return ret
 
 
 def wrap_fun(f, default_value=""):
@@ -24,6 +22,8 @@ def wrap_fun(f, default_value=""):
         ret = default_value
         try:
             ret = f()
+            if callable(default_value):
+                return default_value(ret)
         except Exception as e:
             pass
         return ret
@@ -80,9 +80,22 @@ def mock_importlib():
     metadata.version = wrap_fun(metadata.version, default_value="0.0.0")
 
 
+def mock_platform():
+    import platform
+
+    def util(v):
+        a, b, c = v
+        if not a:
+            a = "0.0.0"
+        return a, b, c
+
+    platform.mac_ver = wrap_fun(platform.mac_ver, default_value=util)
+
+
 def mock_py():
     mock_fun(mock_markupsafe)
     mock_fun(mock_flask)
+    mock_fun(mock_platform)
     # mock_fun(mock_cffi)
     mock_fun(mock_importlib)
 

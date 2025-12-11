@@ -1,6 +1,7 @@
 import json
 from common.util.fp import File
 from typing import List, Dict
+from common.util.export import logger
 
 CONFIG_SETTING_DIR = "config/setting"
 from common.tool.base_class.model import BaseModel, StrModel
@@ -79,5 +80,6 @@ class ConfigBase:
         if self.resource.exists():
             cg = self.resource.get_config()
         cg.update(self.to_json())
-        self.resource.write_file()
+        logger.debug(self.resource)
+        self.resource.write_file(cg)
         return self

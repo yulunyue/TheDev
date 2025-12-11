@@ -239,6 +239,9 @@ class File:
     def rename(self, src, dst):
         return File(self.path.replace(src, dst))
 
+    def __repr__(self):
+        return f"{self.path}"
+
 
 class Cache:
     def __init__(self, name):

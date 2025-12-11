@@ -203,7 +203,7 @@ class ZbTask(ToolBase):
 
     def print_result(self):
         result = self.local_cfg.result.get_value()
-        old, new = result["test"], result["code"]
+        old, new = result.get("test", dict()), result["code"]
         fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass = [], [], [], []
 
         for k in set(list(old.keys()) + list(new.keys())):
@@ -345,7 +345,7 @@ class ZbTask(ToolBase):
         self.apply_patch(self.test_patch)
         self.py_test("test")
 
-    def run2(self):
+    def run2(self, **kw):
         self.rest_repo()
         self.apply_patch(self.test_patch)
         self.apply_patch(self.code_patch)
@@ -389,14 +389,14 @@ class ZbTask(ToolBase):
             raise Exception("虚拟环境跑", sys.executable)
         self.setup_env()
         # self.run0()
-        self.run1()
-        self.run2()
+        # self.run1()
+        # self.run2()
 
     def setup_env(self, **kw):
         if self.local_cfg.need_setup_env.get_value():
             # OsUtil("sh").run(self.setup_env_sh.path)
             self.local_cfg.need_setup_env.set_value(False)
-            self.local_cfg.save()
+        self.local_cfg.save()
 
     def exit(self):
         self.cfg.save()
