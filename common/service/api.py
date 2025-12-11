@@ -118,8 +118,16 @@ class Api:
             end_point = "https://" + end_point
         return f"{end_point}{path}"
 
-    def get(self, url, data=None, headers=None):
-        return self.http("GET", url, data=data, headers=headers)
+    def get(self, url, data=None, timeout=None, headers=None):
+        return self.http("GET", url, data=data, headers=headers, timeout=timeout)
+
+    def download(self, url: str, dst=None, data=None):
+        if dst is None:
+            dst = f"data/download/{url.split('/').pop()}"
+        f = File(dst)
+        if f.exists():
+            return f
+        return f.write_file(self.get(url, data, timeout=60))
 
     def post(self, url, data=None, headers=None):
         return self.http("POST", url, data=data, headers=headers)

@@ -61,6 +61,14 @@ class Logger(logging.Logger):
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
+    def run_capture_error(self, f):
+        try:
+            f()
+        except Exception as e:
+            import traceback
+
+            self.debug("\n".join(traceback.format_stack()))
+
     def add_file_hander(self, fmt, mode):
         self.add_hander(
             logging.FileHandler(

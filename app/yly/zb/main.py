@@ -7,11 +7,12 @@ from common.util.export import (
     StrUtil,
     Module,
     get_log,
+    sys,
 )
 from common.tool.export import (
     OsUtil,
 )
-
+from common.third_service.git_util import GitUtil
 from .util import (
     INPUTS_DIR,
     REPO_BASE,
@@ -61,9 +62,9 @@ class ZbTask(ToolBase):
         self.local_repo = File(
             f"{REPO_BASE}/{self.cfg.repo.get_value()}"
         ).make_dir_if_not_exist()
-        self.git_cmd = OsUtil("git")
+        self.git_cmd = GitUtil()
         if not self.local_repo.exists():
-            self.git_cmd.run("clone", self.repo_uri, self.local_repo.path)
+            self.git_cmd.clone(self.repo_uri, self.local_repo.path)
         self.setup_env_sh = self.input_dir.child("setup_env.sh")
         self.test_patch = self.input_dir.child("test.patch")
         self.code_patch = self.input_dir.child("code.patch")
@@ -203,29 +204,22 @@ class ZbTask(ToolBase):
     def print_result(self):
         result = self.local_cfg.result.get_value()
         old, new = result["test"], result["code"]
-        f_to_p, p_to_p = (
-            self.cfg.FAIL_TO_PASS.get_value(),
-            self.cfg.PASS_TO_PASS.get_value(),
-        )
-        p_to_f = []
-        f_to_p.clear()
-        p_to_p.clear()
+        fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass = [], [], [], []
+
         for k in set(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
-                self.logger.debug(f"{k} {old_statu}->{new_statu}")
-                if new_statu == PASSED:
-                    f_to_p.append(k)
-                else:
-                    p_to_f.append(k)
-            elif old_statu == new_statu and new_statu != PASSED:
-                self.logger.debug(f"{k} {old_statu}->{new_statu}")
-                p_to_p.append(k)
 
-        if f_to_p and not p_to_f:
-            self.finish(True, f"f_to_p:{f_to_p}")
-        else:
-            self.finish(False, f"f_to_p:{f_to_p} p_to_f:{p_to_f}")
+                if new_statu == PASSED:
+                    fail_to_pass.append(k)
+                elif old_statu == PASSED:
+                    pass_to_fail.append(k)
+            elif old_statu == new_statu:
+                if new_statu != PASSED:
+                    pass_to_pass.append(k)
+                else:
+                    fail_to_fail.append(k)
+        self.update_result(fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass)
 
     def make_main_py(self):
         self.main_py_file.write_file(
@@ -248,9 +242,9 @@ class ZbTask(ToolBase):
 
     def set_docker_image_name(self, image_name="zb:latest"):
         from common.third_util.docker_util import DockerUtil
-        if DockerUtil():
 
-        self.docker_image_name = image_name
+        if DockerUtil(image_name).check_image_exists():
+            self.docker_image_name = image_name
         return self
 
     def update_result(self, fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass):
@@ -358,7 +352,13 @@ class ZbTask(ToolBase):
         self.py_test("code")
         self.print_result()
 
-    def main(self, **kw):
+    def execute(self):
+        if self.docker_image_name:
+            self.docker_verify()
+        else:
+            self.verify_with_no_docker()
+
+    def main(self, run_type=None, **kw):
         error_msg = self.local_cfg.error_msg.get_value()
         if self.zip_file.exists() and not error_msg:
             return
@@ -368,34 +368,35 @@ class ZbTask(ToolBase):
             if isinstance(skip, str):
                 self.finish(True, "", skip_msg=skip)
             return
-        try:
-            if self.docker_image_name:
-                self.docker_verify()
-            else:
-                self.verify_with_no_docker()
-        except Exception as e:
-            logger.debug(e, stack_info=True)
+        if run_type == "debug":
+            self.execute()
+        else:
+            logger.run_capture_error(self.execute)
 
     def verify_with_no_docker(self):
         """
-        o = OsUtil("python").set_venv(repo)
-            o.run(
-                "-m",
-                "app.yly.zb.main",
-                f.path.replace(".zip", ""),
-                method,
-                LOGER_PREFIX(repo),
-            )
+        {env_path}/Scripts/Activate.ps1
+        o.run(
+            "-m",
+            "app.yly.zb.main",
+            f.path.replace(".zip", ""),
+            method,
+            LOGER_PREFIX(repo),
+        )
         """
-        raise Exception("虚拟环境跑")
+        o = OsUtil("python")
+        if not os.getenv("VIRTUAL_ENV"):
+            raise Exception("虚拟环境跑", sys.executable)
         self.setup_env()
-        self.run0()
+        # self.run0()
         self.run1()
         self.run2()
 
     def setup_env(self, **kw):
-        raise Exception("第一次跑，在json里标记状态")
-        OsUtil("sh").run(self.setup_env_sh.path)
+        if self.local_cfg.need_setup_env.get_value():
+            # OsUtil("sh").run(self.setup_env_sh.path)
+            self.local_cfg.need_setup_env.set_value(False)
+            self.local_cfg.save()
 
     def exit(self):
         self.cfg.save()

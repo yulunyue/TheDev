@@ -77,7 +77,7 @@ class ConfigBase:
     def save(self):
         cg = dict()
         if self.resource.exists():
-            cg = self.resource.read_file()
+            cg = self.resource.get_config()
         cg.update(self.to_json())
-        self.resource.write_file(cg)
+        self.resource.write_file()
         return self

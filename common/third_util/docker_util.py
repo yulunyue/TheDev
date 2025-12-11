@@ -24,6 +24,13 @@ class DockerUtil:
             self._client.ping()
         return self._client
 
+    def check_image_exists(self):
+        try:
+            self.client.images.get(self.image_name)
+            return True
+        except Exception as e:
+            return False
+
     def build(self, path):
         """
         self.o.set_env(path)

@@ -10,7 +10,10 @@ from .bp.compile import BpCompile, BP
 
 
 class GloablConfg(ConfigBase):
-    chrome_bin_path = StrModel("")
+    chrome_bin_path = StrModel(
+        "data/chrome_bin"
+    )  # https://googlechromelabs.github.io/chrome-for-testing/
+    git_proxy_prefix = StrModel("")  # https://ghproxy.link/
 
 
 GC = GloablConfg("GC").set_resource("gloabl_setting")

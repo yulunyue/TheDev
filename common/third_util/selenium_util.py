@@ -1,5 +1,6 @@
 from selenium import webdriver
 from common.tool.export import OsUtil, GC
+from common.service.export import Api
 from selenium.webdriver.chrome.options import Options
 from common.util.export import File, logger, time, List
 from selenium.webdriver.chrome.service import Service
@@ -139,7 +140,12 @@ class SeleniumUtil:
 
     def load(self, dev_port=9222):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
-        os_util = OsUtil(GC.chrome_bin_path.get_value())
+        chrome_exe = File(GC.chrome_bin_path.get_value())
+        if not chrome_exe.exists():
+            Api().download(
+                "https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chrome-win64.zip"
+            ).zip(chrome_exe.path)
+        os_util = OsUtil(chrome_exe.child("chrome.exe").path)
         if dev_port:
             info = os_util.check_port(dev_port)
             if not info:

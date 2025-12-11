@@ -8,6 +8,7 @@ python -m tool.dfx app.yly.envs.cg.cw.main.Solution dev execute
 python -m tool.docker_cli build app/yly/zb/CTFd__CTFd-1922/Dockerfile
 
 
-python -m app.yly.zb.main briefcase/beeware_6034_briefcase-1006 docker_build
+python -m app.yly.zb.main briefcase/beeware_6036_briefcase-1066 main
 python -m app.yly.zb.main briefcase/beeware_6034_briefcase-1006 docker_verify
-python -m app.yly.zb.manage main key=6034 method=main
+python -m app.yly.zb.manage main key=6034
+python -m app.yly.zb.manage web_run
