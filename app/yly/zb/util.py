@@ -1,68 +1,39 @@
-from common.third_util.selenium_util import SeleniumUtil, By
-from common.service.export import Api, API_CONFIG
-from common.util.export import logger
-import time
-
-USER_CONFIG = API_CONFIG.get("Zb")
+from common.util.export import logger, File, time
+from common.tool.export import ConfigBase, TableBase, StrModel, ListModel, DictModel
 
 
-class ApiZb(Api):
-    def load(self):
-        self.task_name = "SWEBench/任务/发布的-12.3"
-        return self
-
-    def download_zip_file(self, name, pr):
-        return self.get(
-            f"https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/{self.task_name}/{name}/{name}-{pr}.zip",
-            dict(
-                OSSAccessKeyId="LTAI5tB2Etp2wUEVtkT7zckM",
-                Signature="4HOEZZj5yA3EbYIGclOQ6DOQqZU",
-                Expires=1766157704,
-            ),
-        )
+INPUTS_DIR = File("app/yly/zb")
+TASK_DIR = INPUTS_DIR.child("task")
+REPO_BASE = "/testbed"
+PASSED = "passed"
 
 
-class WebTool(SeleniumUtil):
-    JOB_URL = "https://ui.appen.com.cn/v3/worker-job/21e77e76-372e-49c4-b6f0-edcc35fe0663?businessType=WORK&from=Ii92My93b3JrZXItam9icy90YXNrcy9pbi1wcm9ncmVzcz9wYWdlSW5kZXg9MSZqb2JOYW1lPSZwYWdlU2l6ZT0xMCI%3D&projectId=30c9f72d-c822-4534-9dab-691656d4209f"
-
-    def run(self):
-
-        self.get(self.JOB_URL)
-        # ele = self.get_clickable_by_xpath(
-        #     '//*[@id="rc-tabs-1-panel-1"]/div/div/div/ul/li[9]/div'
-        # )
-        # self.script_scroll(ele)
-        # ele.click()
-        # time.sleep(0.5)
-        # page_100 = self.get_clickable_by_xpath(
-        #     '//*[@id="rc-tabs-1-panel-1"]/div/div/div/ul/li[9]/div/div[2]/div/div/div/div[2]/div/div/div/div[5]'
-        # )
-        # page_100.click()
-        time.sleep(3)
-        # self.script_scroll(ele)
-        tr_rows = self.get_element_by_id("rc-tabs-1-panel-1").find_elements(
-            By.TAG_NAME, "tr"
-        )
-        for e in tr_rows:
-            texts = [v for v in str(e.text).split(" ") if v]
-            logger.info(texts)
-            if texts[-1] != "执行":
-                continue
-            self.script_scroll(e)
-            time.sleep(0.5)
-            e.find_element(By.TAG_NAME, "button").click()
-            self.switch_to_window()
-            self.get_element_by_tag("button")
-            btn = self.find_elements_by_tag("button", text="点击下载")[0]
-            logger.info(btn.get_attribute("url"))
-            break
-
-    def login(self):
-        self.get_element_by_id("name").send_keys(USER_CONFIG.user_name.get_value())
-        self.get_element_by_id("password").send_keys(USER_CONFIG.pass_word.get_value())
-        self.get_clickable_by_xpath("button", "submit").click()
-        self.wait_url_contains("worker-jobs")
+def get_info_by_name(file_name: str):
+    name, pr = file_name.split("-")
+    owner, task_id, repo = name.split("_")
+    return owner, task_id, repo, pr
 
 
-API = ApiZb().load()
-WT = WebTool()
+class Cg(ConfigBase):
+    base_commit = StrModel()
+    pr_url = StrModel()
+    repo = StrModel()
+    instance_id = StrModel()
+    issue_url = StrModel()
+    language = StrModel(default_value="python")
+    FAIL_TO_PASS = ListModel()
+    PASS_TO_PASS = ListModel()
+    content_category = StrModel(
+        default_value="通用工具"
+    )  # 计算、通⽤、⼯具、可视化、系统、时间、⽹络、加密、其他
+
+
+class TaskCfg(ConfigBase):
+    test_main = StrModel()
+    setup_env = ListModel()
+    result = DictModel()
+    after_setup_env = DictModel()
+    env = StrModel(default_value="")
+
+
+TB = TableBase[TaskCfg]().set_resource(INPUTS_DIR.child("all.json"))

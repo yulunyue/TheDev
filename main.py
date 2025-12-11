@@ -1,7 +1,8 @@
 import sys
 import os
+from common.util.tool import SYS_KW, THE_DEV_LOGER_PREFIX
 
-os.environ.setdefault("THE_DEV_LOGER_SUFIX", "main")
+SYS_KW[THE_DEV_LOGER_PREFIX] = "main"
 from common.service.export import run, PORT
 from app.tool.export import ROUTES
 from common.util.export import File
