@@ -153,20 +153,25 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 
 def get_result():
     result = dict()
-    with open(f"{REPO_DIR}/{RESULT_JSON_FILE}", "r") as f:
+    result_file = f"{REPO_DIR}/{RESULT_JSON_FILE}"
+    with open(result_file, "r") as f:
         data = json.loads(f.read())
         for item in data["tests"]:
             if item["nodeid"]:
                 result[item["nodeid"]] = item["outcome"]
+    os.system(f"rm -rf {result_file}")
     return result
 
 
 def run_py_test():
-    with open(f"{REPO_DIR}/py_test_main.py", "w", encoding="utf-8") as f:
+    py_path = f"{REPO_DIR}/py_test_main.py"
+    with open(py_path, "w", encoding="utf-8") as f:
         f.write(PY_TEST_MAIN_CODE)
+
     statu_code, msg, msg1 = run_command(
         [sys.executable, "py_test_main.py"], cwd=REPO_DIR
     )
+    os.system(f"rm -rf {py_path}")
     return statu_code, msg, msg1
 
 

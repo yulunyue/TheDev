@@ -6,7 +6,7 @@ import sys
 
 PY_MAIN_CMD = "%{PY_MAIN_CMD}"
 RESULT_JSON_FILE = "result.json"
-sys.path.append("src")
+sys.path.insert(0, "src")
 
 
 def mock_fun(f):
@@ -97,7 +97,7 @@ def mock_py():
     mock_fun(mock_flask)
     mock_fun(mock_platform)
     # mock_fun(mock_cffi)
-    mock_fun(mock_importlib)
+    # mock_fun(mock_importlib)
 
 
 def run_py_test():

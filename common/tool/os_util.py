@@ -31,12 +31,14 @@ class OsUtil:
             self.logger.debug(f"source {env_path}/bin/activate")
         return self
 
-    def check_output(self, cmds=None, capture_output=False):
+    def check_output(self, cmds=None, capture_output=False, env=None):
         if cmds is None:
             cmds = self.get_cmd()
+        cmd = [v for v in self.and_cmds + cmds.split(" ") if v]
+        cmds = " ".join(cmd)
         self.logger.info(f"{self.root_path}->{cmds}")
-        cmd = " ".join([v for v in self.and_cmds + cmds.split(" ") if v])
         param = dict()
+        env = env or dict()
         if not capture_output:
             param.update(
                 dict(
@@ -48,11 +50,12 @@ class OsUtil:
             process = subprocess.run(
                 cmd,
                 check=True,
-                shell=True,
+                shell=False,
                 capture_output=capture_output,
                 text=True,
                 cwd=self.root_path,
                 timeout=60 * 60,
+                env=env,
                 **param,
             )
             statu, stdout, stderror = True, process.stdout, process.stderr
@@ -83,9 +86,9 @@ class OsUtil:
     def get_cmd(self):
         return f"{self.fun_name} {self.args}"
 
-    def run(self, *args):
+    def run(self, *args, capture_output=False, env=None):
         self.args = " ".join(args)
-        return self.check_output()
+        return self.check_output(capture_output=capture_output, env=env)
 
     def system(self, *args):
         self.args = " ".join(args)

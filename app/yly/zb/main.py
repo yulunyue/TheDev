@@ -15,6 +15,7 @@ from common.tool.export import (
 from common.third_service.git_util import GitUtil
 from .util import (
     INPUTS_DIR,
+    INFO_DIR,
     REPO_BASE,
     Cg,
     TaskCfg,
@@ -49,7 +50,7 @@ class ZbTask(ToolBase):
         )
         self.name: str = f"{self.owner}/{self.repo}"
         self.local_cfg = TaskCfg(self.input_dir.name).set_resource(
-            INPUTS_DIR.child(f"info/{self.input_dir.name}.json")
+            INFO_DIR.child(f"{self.input_dir.name}.json")
         )
         self.cfg: Cg = Cg(self.name)
         self.input_json = self.input_dir.child(
@@ -85,6 +86,7 @@ class ZbTask(ToolBase):
         for item in data["tests"]:
             if item["nodeid"]:
                 result[item["nodeid"]] = item["outcome"]
+        fp.remove()
         return result
 
     def get_update_file_by_batch(self, fp: File):
@@ -139,7 +141,13 @@ class ZbTask(ToolBase):
         return ret
 
     def apply_patch(self, f: File):
-        f.write_file(f.read_file().replace("\r", ""))
+        name = f.file_name.replace(".", "_")
+        data = getattr(self.local_cfg, name).get_value()
+        if not data:
+            data = f.read_file().replace("\r", "")
+        else:
+            getattr(self.cfg, name).set_value(data)
+        f.write_file(data)
         self.logger.debug(f"apply {f.get_abs_path()}")
         self.git_cmd.run("apply", f.get_abs_path())
 
@@ -171,7 +179,7 @@ class ZbTask(ToolBase):
 
     def get_py_test_cmds(self):
         files = list(self.change_py_test_files.keys())
-        self.logger.debug(f"get change_file_form patch {files}")
+        logger.info(f"get change_file_form patch {files}")
         model_py_test = self.local_cfg.test_main.get_value()
         if model_py_test:
             return model_py_test
@@ -191,6 +199,39 @@ class ZbTask(ToolBase):
             f"statu_code={statu_code}\nstdout={msg}\nstderr={msg1}\nresult={result[key]}"
         )
         return result[key]
+
+    def make_patch(self, path: str, name):
+        info_dir = INFO_DIR.child(name).child(self.input_dir.name)
+
+        for p in path.split(" "):
+            src = info_dir.child(p)
+            logger.info(src)
+            dst = self.local_repo.child(p)
+            if not src.exists():
+                dst.copy_to(src)
+            src.copy_to(dst)
+        self.git_cmd.run("add", ".")
+        self.git_cmd.run("config", "--global", "user.name", "xx", env=dict(HOME="./"))
+        self.git_cmd.run(
+            "config", "--global", "user.email", "xx@xx.com", env=dict(HOME="./")
+        )
+        self.git_cmd.run(
+            "commit",
+            "-m",
+            name,
+            env=dict(GIT_AUTHOR_NAME="xx", GIT_AUTHOR_EMAIL="xx@xx.com", HOME="./"),
+        )
+        self.git_cmd.run("format-patch", "-1")
+        ret = self.local_repo.child(f"0001-{name}.patch").read_file()
+
+        return ret
+
+    def py_test_repair(self, path=""):
+        self.rest_repo()
+        self.apply_patch(self.test_patch)
+        data = self.make_patch(path, "test")
+        self.local_cfg.test_patch.set_value(data)
+        self.run1()
 
     def finish(self, statu, msgs, skip_msg=""):
         self.local_cfg.error_msg.set_value(msgs)
@@ -213,13 +254,12 @@ class ZbTask(ToolBase):
         for k in set(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
-
                 if new_statu == PASSED:
                     fail_to_pass.append(k)
                 elif old_statu == PASSED:
                     pass_to_fail.append(k)
             elif old_statu == new_statu:
-                if new_statu != PASSED:
+                if new_statu == PASSED:
                     pass_to_pass.append(k)
                 else:
                     fail_to_fail.append(k)
@@ -242,8 +282,6 @@ class ZbTask(ToolBase):
 
     venv_enable = True
 
-    docker_image_name = None
-
     def set_docker_image_name(self, image_name="zb:latest"):
         from common.third_util.docker_util import DockerUtil
 
@@ -251,11 +289,18 @@ class ZbTask(ToolBase):
             self.docker_image_name = image_name
         return self
 
+    def docker_build(self, image_name="zb:latest"):
+        from common.third_util.docker_util import DockerUtil
+
+        self.init()
+        DockerUtil(image_name).build(self.input_dir.get_abs_path())
+
     def update_result(self, fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass):
         local_result = self.local_cfg.result.get_value()
         local_result["fail_to_fail"] = fail_to_fail
         local_result["pass_to_fail"] = pass_to_fail
         local_result["fail_to_pass"] = fail_to_pass
+        local_result["pass_to_pass"] = pass_to_pass
         self.cfg.PASS_TO_PASS.set_value(pass_to_pass)
         if fail_to_pass and not fail_to_fail and not pass_to_fail:
             self.cfg.FAIL_TO_PASS.set_value(fail_to_pass)
@@ -299,15 +344,19 @@ class ZbTask(ToolBase):
 
     def make_setup_env_sh(self):
         setup_env_sh = [
-            "python -m pip install --upgrade pip",
             f"cd {self.local_repo.path}",
+            f"git reset --hard {self.cfg.base_commit.get_value()}",
+            "conda activate testbed",
+            "python -m pip install --upgrade pip",
         ]
+        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
         pyproject_toml = self.local_repo.child("pyproject.toml")
-        if pyproject_toml.exists():
-            setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
         setup_cfg = self.local_repo.child("setup.cfg")
-        if setup_cfg.exists():
-            setup_env_sh.extend(self.pip_install_setup_cfg(setup_cfg))
+        setup_py = self.local_repo.child("setup.py")
+        if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
+            # setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
+            # setup_env_sh.extend(self.pip_install_setup_cfg(setup_cfg))
+            setup_env_sh.append("python -m pip install .")
         pkgs: List[str] = self.local_cfg.setup_env.get_value()
         for pkg in pkgs:
             if pkg.endswith(".txt"):
@@ -316,7 +365,7 @@ class ZbTask(ToolBase):
                 )
             else:
                 setup_env_sh.append(pkg)
-        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
+
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
         self.logger.debug(f"sh {self.setup_env_sh.path}")
 
@@ -347,7 +396,13 @@ class ZbTask(ToolBase):
     def run1(self):
         self.rest_repo()
         self.apply_patch(self.test_patch)
-        self.py_test("test")
+        self.run_py_test()
+
+    def run_py_test(self):
+        test_info = self.py_test("test")
+        test_failes = [k for k, v in test_info.items() if v != PASSED]
+        if not test_failes:
+            self.finish(False, f"not test fail")
 
     def run2(self, **kw):
         self.rest_repo()
@@ -362,7 +417,7 @@ class ZbTask(ToolBase):
         else:
             self.verify_with_no_docker()
 
-    def main(self, run_type=None, **kw):
+    def main(self, **kw):
         error_msg = self.local_cfg.error_msg.get_value()
         if self.zip_file.exists() and not error_msg:
             return
@@ -372,10 +427,7 @@ class ZbTask(ToolBase):
             if isinstance(skip, str):
                 self.finish(True, "", skip_msg=skip)
             return
-        if run_type == "debug":
-            self.execute()
-        else:
-            logger.run_capture_error(self.execute)
+        logger.run_capture_error(self.execute)
 
     def verify_with_no_docker(self):
         """
@@ -389,23 +441,22 @@ class ZbTask(ToolBase):
         )
         """
         o = OsUtil("python")
-        if not os.getenv("VIRTUAL_ENV"):
-            raise Exception("虚拟环境跑", sys.executable)
+        if self.local_cfg.need_setup_env.get_value():
+            self.setup_env()
+            self.local_cfg.need_setup_env.set_value(False)
         self.setup_env()
-        # self.run0()
-        # self.run1()
-        # self.run2()
+        self.run1()
+        self.run2()
 
     def setup_env(self, **kw):
-        if self.local_cfg.need_setup_env.get_value():
-            # OsUtil("sh").run(self.setup_env_sh.path)
-            self.local_cfg.need_setup_env.set_value(False)
+        OsUtil("sh").run(self.setup_env_sh.path)
 
-    def exit(self):
+    def save(self):
         self.cfg.save()
         self.local_cfg.save()
 
-    save = exit
+    def exit(self):
+        self.save()
 
 
 if __name__ == "__main__":

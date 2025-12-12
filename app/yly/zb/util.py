@@ -13,6 +13,7 @@ PASS_TO_FAIL = "PASS_TO_FAIL"
 FAIL_TO_PASS = "FAIL_TO_PASS"
 INPUTS_DIR = File("app/yly/zb")
 TASK_DIR = INPUTS_DIR.child("task")
+INFO_DIR = INPUTS_DIR.child("info")
 
 
 class GConfig(ConfigBase):
@@ -40,6 +41,8 @@ class Cg(ConfigBase):
     issue_url = StrModel()
     language = StrModel(default_value="python")
     FAIL_TO_PASS = ListModel()
+    test_patch = StrModel()
+    patch = StrModel()
     PASS_TO_PASS = ListModel()
     content_category = StrModel(
         default_value="通用工具"
@@ -48,11 +51,11 @@ class Cg(ConfigBase):
 
 class TaskCfg(ConfigBase):
     test_main = StrModel()
+    test_patch = StrModel()
+    code_patch = StrModel()
     error_msg = StrModel()
     skip = BoolModel()
     setup_env = ListModel()
     result = DictModel()
     after_setup_env = DictModel()
     need_setup_env = BoolModel(True)
-
-

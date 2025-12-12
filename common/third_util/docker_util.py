@@ -34,6 +34,8 @@ class DockerUtil:
     def build(self, path):
         """
         self.o.set_env(path)
+        安装ssh
+        sudo apt install openssh-server -y
 
         """
 
@@ -60,6 +62,9 @@ class DockerUtil:
         return ret
 
     def run(self, command, volumes, working_dir, env: dict = None):
+        """
+        docker run -v d:/thebug/TheDev:/TheDev -it zb:latest
+        """
         exit_code = 1
         msgs = ""
         volumes = self.get_volumes(volumes)

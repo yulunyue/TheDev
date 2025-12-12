@@ -89,6 +89,13 @@ class File:
     def read_line(self):
         return self.read_data().decode("utf-8").replace("\r", "").split("\n")
 
+    def copy_to(self, dst: "File"):
+        if isinstance(dst, str):
+            dst = File(dst)
+        if self.is_file():
+            dst.write_file(self.read_data())
+        return dst
+
     def read_file(self, encoding="utf-8"):
         data = self.read_data()
         if self.is_json_file():
@@ -105,17 +112,21 @@ class File:
                     data[section][key] = val
             return data
         elif self.file_name.endswith(".toml"):
-            import toml
+            try:
+                import tomllib
 
-            return toml.load(self.path)
+                return tomllib.loads(data.decode(encoding))
+            except:
+                import toml
 
+                return toml.load(self.path)
         return data.decode(encoding)
 
     _config = None
 
     def get_config(self):
         if self._config is None:
-            self._config=dict()
+            self._config = dict()
             if self.exists():
                 self._config.update(self.read_file())
         return self._config
@@ -136,6 +147,8 @@ class File:
         return self.data
 
     def exists(self):
+        if os.path.islink(self.path):
+            return True
         return os.path.exists(self.path)
 
     def list_dir(self, depth=1, with_dir=False, filter=None) -> List["File"]:
