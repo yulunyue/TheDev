@@ -39,12 +39,20 @@ class ZbTask(ToolBase):
         return get_log(f"zb/{self.repo}/{self.task_id}_{self.pr}")
 
     def prepare(self, path):
-        self.input_dir = File(path)
-
-        if not self.input_dir.exists():
-            self.input_dir = INPUTS_DIR.child(f"task/{path}")
-        if not self.input_dir.exists():
-            raise Exception(self.input_dir.path, "not exist")
+        if isinstance(path, str):
+            self.input_dir = File(path)
+            if not self.input_dir.exists():
+                self.input_dir = INPUTS_DIR.child(f"task/{path}")
+            if not self.input_dir.exists():
+                self.input_dir = INPUTS_DIR.list_dir(
+                    depth=3, filter=lambda v: path in v.name and v.type == "zip"
+                )[0]
+            if not self.input_dir.exists():
+                raise Exception(self.input_dir.path, "not exist")
+        else:
+            self.input_dir = path
+        if self.input_dir.type == "zip":
+            self.input_dir = self.input_dir.unzip()
         self.owner, self.task_id, self.repo, self.pr = get_info_by_name(
             self.input_dir.name
         )

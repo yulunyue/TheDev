@@ -22,15 +22,13 @@ class ZbMangae(ToolBase):
 
         fps = TASK_DIR.list_dir(-1, filter=ft)
         for f in fps:
-            f.unzip(False)
-            t = ZbTask()
-            t.prepare(f.path.replace(".zip", ""))
-            t.set_docker_image_name("zb:latest")
 
+            t = ZbTask()
+            t.prepare(f)
+            t.set_docker_image_name("zb:latest")
             t.main()
             t.exit()
             # owner, task_id, repo, pr = get_info_by_name(f.name)
-    
 
 
 if __name__ == "__main__":

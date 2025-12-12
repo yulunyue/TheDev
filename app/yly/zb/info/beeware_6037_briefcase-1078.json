@@ -18,5 +18,7 @@
     },
     "setup_env": [],
     "skip": false,
-    "test_main": "tests/commands/dev/test_call.py"
+    "test_main": "tests/commands/dev/test_call.py",
+    "code_patch": "",
+    "test_patch": ""
 }
