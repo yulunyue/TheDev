@@ -48,7 +48,9 @@ class ZbTask(ToolBase):
             self.input_dir.name
         )
         self.name: str = f"{self.owner}/{self.repo}"
-        self.local_cfg = TaskCfg(self.input_dir.name)
+        self.local_cfg = TaskCfg(self.input_dir.name).set_resource(
+            INPUTS_DIR.child(f"info/{self.input_dir.name}.json")
+        )
         self.cfg: Cg = Cg(self.name)
         self.input_json = self.input_dir.child(
             f"{self.owner}__{self.repo}-{self.pr}.json"
@@ -56,7 +58,7 @@ class ZbTask(ToolBase):
         self.zip_file = INPUTS_DIR.child(
             f"result/{self.task_id}/{self.input_json.name}.zip"
         ).make_dir_if_not_exist()
-        self.local_cfg.set_resource(INPUTS_DIR.child(f"config/{self.input_dir.name}.json"))
+
         self.cfg.set_resource(self.input_json)
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
@@ -402,7 +404,8 @@ class ZbTask(ToolBase):
     def exit(self):
         self.cfg.save()
         self.local_cfg.save()
-    save=exit
+
+    save = exit
 
 
 if __name__ == "__main__":
