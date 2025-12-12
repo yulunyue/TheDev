@@ -288,8 +288,8 @@ class ZbTask(ToolBase):
             )
         )
 
-    venv_enable = True
-
+    
+    docker_image_name=None
     def set_docker_image_name(self, image_name="zb:latest"):
         from common.third_util.docker_util import DockerUtil
 
