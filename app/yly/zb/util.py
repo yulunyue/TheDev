@@ -56,4 +56,3 @@ class TaskCfg(ConfigBase):
     need_setup_env = BoolModel(True)
 
 
-TB = TableBase[TaskCfg]().set_resource(INPUTS_DIR.child("all.json"))

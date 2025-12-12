@@ -1,6 +1,6 @@
 from common.util.export import ToolBase, logger, File, os, LOGER_PREFIX
 from common.tool.export import OsUtil
-from .util import TB, INPUTS_DIR, TASK_DIR, get_info_by_name
+from .util import INPUTS_DIR, TASK_DIR, get_info_by_name
 from .auto import WT
 from .main import ZbTask
 
@@ -30,7 +30,7 @@ class ZbMangae(ToolBase):
             t.main()
             t.exit()
             # owner, task_id, repo, pr = get_info_by_name(f.name)
-        TB.save()
+    
 
 
 if __name__ == "__main__":
