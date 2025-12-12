@@ -1,32 +1,39 @@
 {
     "after_setup_env": {},
-    "error_msg": "fail_to_pass",
+    "error_msg": "",
     "need_setup_env": false,
     "result": {
         "test": {
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
-            "tests/console/test_Printer.py::test_to_console": "passed",
-            "tests/console/test_Printer.py::test_to_log": "passed",
-            "tests/console/test_Printer.py::test_very_long_line": "passed"
+            "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_older_sdk_error": "failed"
         },
         "code": {
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
-            "tests/console/test_Printer.py::test_to_console": "passed",
-            "tests/console/test_Printer.py::test_to_log": "passed",
-            "tests/console/test_Printer.py::test_very_long_line": "passed"
+            "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_older_sdk_error": "passed"
         },
         "fail_to_fail": [],
         "pass_to_fail": [],
-        "fail_to_pass": [],
+        "fail_to_pass": [
+            "tests/integrations/android_sdk/ADB/test_run.py::test_older_sdk_error"
+        ],
         "pass_to_pass": [
-            "tests/console/test_Printer.py::test_to_log",
-            "tests/console/test_Printer.py::test_very_long_line",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]",
-            "tests/console/test_Printer.py::test_to_console",
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]"
-        ]
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command"
+        ],
+        "pre": {
+            "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]": "passed"
+        }
     },
     "setup_env": [],
     "skip": false,

@@ -24,7 +24,6 @@ class ZbMangae(ToolBase):
 
         fps = TASK_DIR.list_dir(-1, filter=ft)
         for f in fps:
-
             t = ZbTask()
             t.prepare(f)
             t.set_docker_image_name("zb:latest")

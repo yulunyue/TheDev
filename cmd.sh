@@ -11,7 +11,7 @@ python -m tool.docker_cli build app/yly/zb/CTFd__CTFd-1922/Dockerfile
 python -m app.yly.zb.main briefcase/beeware_6038_briefcase-1188 run1
 python -m app.yly.zb.main briefcase/beeware_6038_briefcase-1188 docker_build
 python -m app.yly.zb.main briefcase/beeware_6034_briefcase-1006 docker_verify
-python -m app.yly.zb.manage main key=6034
+python -m app.yly.zb.manage main
 python -m app.yly.zb.manage web_run
 docker rm zb
 docker run -v d:/thebug/TheDev:/TheDev --name zb -it zb:latest

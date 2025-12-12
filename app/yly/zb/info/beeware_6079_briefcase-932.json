@@ -2,7 +2,23 @@
     "after_setup_env": {},
     "error_msg": "",
     "need_setup_env": false,
-    "result": {},
+    "result": {
+        "pre": {},
+        "test": {},
+        "code": {
+            "tests/integrations/cookiecutter/test_TOMLEscape.py::test_escape_toml[Hello World-Hello World]": "passed",
+            "tests/integrations/cookiecutter/test_TOMLEscape.py::test_escape_toml[Hello \" World-Hello \" World]": "passed",
+            "tests/integrations/cookiecutter/test_TOMLEscape.py::test_escape_toml[Hello \\\\ World-Hello \\\\\\\\ World]": "passed"
+        },
+        "fail_to_fail": [],
+        "pass_to_fail": [],
+        "fail_to_pass": [
+            "tests/integrations/cookiecutter/test_TOMLEscape.py::test_escape_toml[Hello World-Hello World]",
+            "tests/integrations/cookiecutter/test_TOMLEscape.py::test_escape_toml[Hello \" World-Hello \" World]",
+            "tests/integrations/cookiecutter/test_TOMLEscape.py::test_escape_toml[Hello \\\\ World-Hello \\\\\\\\ World]"
+        ],
+        "pass_to_pass": []
+    },
     "setup_env": [],
     "skip": false,
     "test_main": ""

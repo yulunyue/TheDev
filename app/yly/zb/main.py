@@ -426,6 +426,8 @@ class ZbTask(ToolBase):
         self.py_test("code")
 
     def execute(self):
+        if not self.get_py_test_cmds():
+            self.finish(False, "NOT FIND CASES")
         if self.docker_image_name:
             self.docker_verify()
         else:
@@ -441,6 +443,7 @@ class ZbTask(ToolBase):
             if isinstance(skip, str):
                 self.finish(True, "", skip_msg=skip)
             return
+
         logger.run_capture_error(self.execute)
 
     def verify_with_no_docker(self):

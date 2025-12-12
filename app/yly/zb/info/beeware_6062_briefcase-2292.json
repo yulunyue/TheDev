@@ -8,7 +8,8 @@
         "fail_to_fail": [],
         "pass_to_fail": [],
         "fail_to_pass": [],
-        "pass_to_pass": []
+        "pass_to_pass": [],
+        "pre": {}
     },
     "setup_env": [],
     "skip": false,

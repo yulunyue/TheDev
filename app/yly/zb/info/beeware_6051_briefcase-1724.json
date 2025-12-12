@@ -1,32 +1,64 @@
 {
-    "error_msg": "fail_to_pass",
+    "error_msg": "fail_to_fail",
     "after_setup_env": {},
     "need_setup_env": false,
     "result": {
-        "fail_to_fail": [],
+        "fail_to_fail": [
+            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pygame",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6",
+            "tests/commands/new/test_build_context.py::test_question_sequence_none",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input",
+            "tests/commands/new/test_build_context.py::test_question_sequence_toga"
+        ],
         "pass_to_fail": [],
         "fail_to_pass": [],
         "test": {
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
-            "tests/console/test_Printer.py::test_to_console": "passed",
-            "tests/console/test_Printer.py::test_to_log": "passed",
-            "tests/console/test_Printer.py::test_very_long_line": "passed"
+            "tests/commands/new/test_build_context.py::test_question_sequence_toga": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pygame": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_none": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context": "passed"
         },
         "code": {
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
-            "tests/console/test_Printer.py::test_to_console": "passed",
-            "tests/console/test_Printer.py::test_to_log": "passed",
-            "tests/console/test_Printer.py::test_very_long_line": "passed"
+            "tests/commands/new/test_build_context.py::test_question_sequence_toga": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pygame": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_none": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context": "passed"
         },
         "pass_to_pass": [
-            "tests/console/test_Printer.py::test_to_log",
-            "tests/console/test_Printer.py::test_very_long_line",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]",
-            "tests/console/test_Printer.py::test_to_console",
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]"
-        ]
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override",
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap"
+        ],
+        "pre": {
+            "tests/commands/new/test_build_context.py::test_question_sequence_toga": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pygame": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_none": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context": "passed"
+        }
     },
     "setup_env": [],
     "skip": false,

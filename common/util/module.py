@@ -119,17 +119,17 @@ class Module:
         pass
 
     def load_module(self, module_name, path=None, fun_name=""):
-        if path and path not in sys.path:
-            logger.info(f"add path {path}")
+        if path:
             sys.path.append(path)
         invalidate_caches()
-        ret = import_module(module_name)
+        ret = md = import_module(module_name)
 
         if fun_name:
             for attr in fun_name.split("."):
                 ret = getattr(ret, attr)
         sys.modules.pop(module_name)
-        # sys.path.pop()
+        if path:
+            sys.path.pop()  # 同名插件
         return ret
 
     def load_module_object(self, module_name: str, path: str = None):

@@ -1,11 +1,50 @@
 {
-    "error_msg": "gg",
+    "error_msg": "fail_to_fail",
     "after_setup_env": {},
     "need_setup_env": false,
     "result": {
-        "fail_to_fail": [],
+        "fail_to_fail": [
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_linux",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_linux"
+        ],
         "pass_to_fail": [],
-        "fail_to_pass": []
+        "fail_to_pass": [
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_windows",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode_in_windows",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_windows",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_in_windows"
+        ],
+        "pre": {
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_windows": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_windows": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_linux": "skipped",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_linux": "skipped"
+        },
+        "test": {
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_in_windows": "failed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode_in_windows": "failed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_windows": "failed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_windows": "failed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source": "skipped",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode": "skipped",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_linux": "skipped",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_linux": "skipped"
+        },
+        "code": {
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_in_windows": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode_in_windows": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_windows": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_windows": "passed",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source": "skipped",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode": "skipped",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_linux": "skipped",
+            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_linux": "skipped"
+        },
+        "pass_to_pass": []
     },
     "setup_env": [],
     "skip": false,

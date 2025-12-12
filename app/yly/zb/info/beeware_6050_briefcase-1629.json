@@ -1,32 +1,50 @@
 {
     "after_setup_env": {},
-    "error_msg": "fail_to_pass",
+    "error_msg": "",
     "need_setup_env": false,
     "result": {
         "test": {
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
-            "tests/console/test_Printer.py::test_to_console": "passed",
-            "tests/console/test_Printer.py::test_to_log": "passed",
-            "tests/console/test_Printer.py::test_very_long_line": "passed"
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_devices": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_model": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_one_emulator": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_multiple_devices": "failed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_adb_error": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_daemon_start": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_physical_device_macOS": "failed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_device_permissions": "failed"
         },
         "code": {
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
-            "tests/console/test_Printer.py::test_to_console": "passed",
-            "tests/console/test_Printer.py::test_to_log": "passed",
-            "tests/console/test_Printer.py::test_very_long_line": "passed"
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_devices": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_model": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_one_emulator": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_multiple_devices": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_adb_error": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_daemon_start": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_physical_device_macOS": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_device_permissions": "passed"
         },
         "fail_to_fail": [],
         "pass_to_fail": [],
-        "fail_to_pass": [],
+        "fail_to_pass": [
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_device_permissions",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_physical_device_macOS",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_multiple_devices"
+        ],
         "pass_to_pass": [
-            "tests/console/test_Printer.py::test_to_log",
-            "tests/console/test_Printer.py::test_very_long_line",
-            "tests/console/test_Printer.py::test_call[False-a line of output-]",
-            "tests/console/test_Printer.py::test_to_console",
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]"
-        ]
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_one_emulator",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_model",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_daemon_start",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_adb_error",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_devices"
+        ],
+        "pre": {
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_devices": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_model": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_one_emulator": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_multiple_devices": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_adb_error": "passed",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_daemon_start": "passed"
+        }
     },
     "setup_env": [],
     "skip": false,
