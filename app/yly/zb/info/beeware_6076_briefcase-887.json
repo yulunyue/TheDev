@@ -1,0 +1,43 @@
+{
+    "error_msg": "gg",
+    "after_setup_env": {},
+    "need_setup_env": false,
+    "result": {
+        "fail_to_fail": [
+            "tests/test_cmdline.py::test_bare_command",
+            "tests/test_cmdline.py::test_bare_command_help",
+            "tests/test_cmdline.py::test_bare_command_show_formats",
+            "tests/test_cmdline.py::test_command_disable_input",
+            "tests/test_cmdline.py::test_command_explicit_format",
+            "tests/test_cmdline.py::test_command_explicit_format_help",
+            "tests/test_cmdline.py::test_command_explicit_format_show_formats",
+            "tests/test_cmdline.py::test_command_explicit_platform",
+            "tests/test_cmdline.py::test_command_explicit_platform_case_handling",
+            "tests/test_cmdline.py::test_command_explicit_platform_help",
+            "tests/test_cmdline.py::test_command_explicit_platform_show_formats",
+            "tests/test_cmdline.py::test_command_explicit_unsupported_format",
+            "tests/test_cmdline.py::test_command_options",
+            "tests/test_cmdline.py::test_command_unknown_format",
+            "tests/test_cmdline.py::test_linux_default",
+            "tests/test_cmdline.py::test_unknown_command_options",
+            "tests/test_mainline.py::test_command_error",
+            "tests/test_mainline.py::test_interrupted_command",
+            "tests/test_mainline.py::test_interrupted_command_with_log",
+            "tests/test_mainline.py::test_unknown_command_error"
+        ],
+        "pass_to_fail": [],
+        "fail_to_pass": [
+            "tests/commands/base/test_app_module_path.py::test_hyphen_source",
+            "tests/commands/base/test_app_module_path.py::test_no_match",
+            "tests/commands/base/test_app_module_path.py::test_no_source",
+            "tests/integrations/android_sdk/AndroidSDK/test_start_emulator.py::test_emulator_fail_to_boot",
+            "tests/integrations/android_sdk/AndroidSDK/test_start_emulator.py::test_start_emulator",
+            "tests/integrations/android_sdk/AndroidSDK/test_start_emulator.py::test_start_emulator_fast_start",
+            "tests/test_mainline.py::test_command",
+            "tests/test_mainline.py::test_help"
+        ]
+    },
+    "setup_env": [],
+    "skip": false,
+    "test_main": ""
+}

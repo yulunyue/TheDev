@@ -1,0 +1,22 @@
+{
+    "error_msg": "",
+    "after_setup_env": {},
+    "need_setup_env": false,
+    "result": {
+        "fail_to_fail": [],
+        "pass_to_fail": [],
+        "fail_to_pass": [
+            "tests/commands/dev/test_call.py::test_no_args_one_app",
+            "tests/commands/dev/test_call.py::test_run_test",
+            "tests/commands/dev/test_call.py::test_run_test_uninstalled",
+            "tests/commands/dev/test_call.py::test_run_uninstalled",
+            "tests/commands/dev/test_call.py::test_update_requirements",
+            "tests/commands/dev/test_call.py::test_update_uninstalled",
+            "tests/commands/dev/test_call.py::test_with_arg_one_app",
+            "tests/commands/dev/test_call.py::test_with_arg_two_apps"
+        ]
+    },
+    "setup_env": [],
+    "skip": false,
+    "test_main": "tests/commands/dev/test_call.py"
+}

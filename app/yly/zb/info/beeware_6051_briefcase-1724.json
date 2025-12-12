@@ -1,0 +1,20 @@
+{
+    "error_msg": "gg",
+    "after_setup_env": {},
+    "need_setup_env": false,
+    "result": {
+        "fail_to_fail": [
+            "tests/commands/new/test_build_context.py::test_question_sequence_none",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pygame",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6",
+            "tests/commands/new/test_build_context.py::test_question_sequence_toga",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input"
+        ],
+        "pass_to_fail": [],
+        "fail_to_pass": []
+    },
+    "setup_env": [],
+    "skip": false,
+    "test_main": ""
+}
