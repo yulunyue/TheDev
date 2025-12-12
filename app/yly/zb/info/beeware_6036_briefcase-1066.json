@@ -581,5 +581,7 @@
     },
     "setup_env": [],
     "skip": false,
-    "test_main": ""
+    "test_main": "",
+    "code_patch": "",
+    "test_patch": ""
 }
