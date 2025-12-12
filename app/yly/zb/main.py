@@ -149,12 +149,11 @@ class ZbTask(ToolBase):
         return ret
 
     def apply_patch(self, f: File):
-        name = f.file_name.replace(".", "_")
-        data = getattr(self.local_cfg, name).get_value()
-        if not data:
-            data = f.read_file().replace("\r", "")
+        if f.name == "test":
+            data = self.cfg.test_patch.get_value()
         else:
-            getattr(self.cfg, name).set_value(data)
+            data = self.cfg.patch.get_value()
+        data = data.replace("\r", "")
         f.write_file(data)
         self.logger.debug(f"apply {f.get_abs_path()}")
         self.git_cmd.run("apply", f.get_abs_path())
@@ -209,15 +208,9 @@ class ZbTask(ToolBase):
         return result[key]
 
     def make_patch(self, path: str, name):
-        info_dir = INFO_DIR.child(name).child(self.input_dir.name)
-
         for p in path.split(" "):
-            src = info_dir.child(p)
-            logger.info(src)
-            dst = self.local_repo.child(p)
-            if not src.exists():
-                dst.copy_to(src)
-            src.copy_to(dst)
+            logger.info(self.local_repo.child(p))
+        input(f"WAIT {name}")
         self.git_cmd.run("add", ".")
         self.git_cmd.run("config", "--global", "user.name", "xx", env=dict(HOME="./"))
         self.git_cmd.run(
@@ -229,17 +222,27 @@ class ZbTask(ToolBase):
             name,
             env=dict(GIT_AUTHOR_NAME="xx", GIT_AUTHOR_EMAIL="xx@xx.com", HOME="./"),
         )
+        # self.git_cmd.run("switch", "-c", f"zzb_{name}_branch")
         self.git_cmd.run("format-patch", "-1")
         ret = self.local_repo.child(f"0001-{name}.patch").read_file()
-
         return ret
 
-    def py_test_repair(self, path=""):
+    def re_init(self):
+        self.input_dir.remove()
+        File(self.input_dir.path + ".zip").unzip()
+        self.init()
+
+    def patch_repair(self, path=""):
+        self.re_init()
         self.rest_repo()
         self.apply_patch(self.test_patch)
+        self.apply_patch(self.code_patch)
         data = self.make_patch(path, "test")
-        self.local_cfg.test_patch.set_value(data)
-        self.run1()
+        self.test_patch.write_file(data)
+        self.cfg.test_patch.set_value(data)
+        data = self.make_patch(path, "code")
+        self.code_patch.write_file(data)
+        self.cfg.patch.set_value(data)
 
     def finish(self, statu, msgs, skip_msg=""):
         self.local_cfg.error_msg.set_value(msgs)
@@ -250,7 +253,7 @@ class ZbTask(ToolBase):
             logger.info(f"{self.input_json.path} SUCCESS {skip_msg}")
             self.input_dir.zip(self.zip_file.path)
         else:
-            logger.info(f"{self.input_json.path} FAIL")
+            logger.info(f"{self.input_json.path} FAIL {msgs}")
             self.zip_file.parent().remove()
             raise Exception("FAIL", msgs)
 
@@ -288,13 +291,16 @@ class ZbTask(ToolBase):
             )
         )
 
-    
-    docker_image_name=None
-    def set_docker_image_name(self, image_name="zb:latest"):
-        from common.third_util.docker_util import DockerUtil
+    docker_image_name = None
 
-        if DockerUtil(image_name).check_image_exists():
-            self.docker_image_name = image_name
+    def set_docker_image_name(self, image_name="zb:latest"):
+        try:
+            from common.third_util.docker_util import DockerUtil
+
+            if DockerUtil(image_name).check_image_exists():
+                self.docker_image_name = image_name
+        except Exception as e:
+            pass
         return self
 
     def docker_build(self, image_name="zb:latest"):
@@ -310,11 +316,15 @@ class ZbTask(ToolBase):
         local_result["fail_to_pass"] = fail_to_pass
         local_result["pass_to_pass"] = pass_to_pass
         self.cfg.PASS_TO_PASS.set_value(pass_to_pass)
-        if fail_to_pass and not fail_to_fail and not pass_to_fail:
+        if fail_to_fail:
+            self.finish(False, f"fail_to_fail")
+        elif pass_to_fail:
+            self.finish(False, f"path_to_fail")
+        elif not fail_to_pass:
+            self.finish(False, f"fail_to_pass")
+        else:
             self.cfg.FAIL_TO_PASS.set_value(fail_to_pass)
             self.finish(True, "")
-        else:
-            self.finish(False, f"gg")
 
     def docker_verify(self, **kw):
         """
@@ -397,27 +407,23 @@ class ZbTask(ToolBase):
     def run0(self):
         self.rest_repo()
         pre_result = self.py_test("pre")
-        pre_failes = [k for k, v in pre_result.items() if v != PASSED]
-        if pre_failes:
-            self.finish(False, f"pre_failed:{pre_failes}")
+        # pre_failes = [k for k, v in pre_result.items() if v != PASSED]
+        # if pre_failes:
+        #     self.finish(False, f"pre_failed:{pre_failes}")
 
     def run1(self):
         self.rest_repo()
         self.apply_patch(self.test_patch)
-        self.run_py_test()
-
-    def run_py_test(self):
         test_info = self.py_test("test")
-        test_failes = [k for k, v in test_info.items() if v != PASSED]
-        if not test_failes:
-            self.finish(False, f"not test fail")
+        # test_failes = [k for k, v in test_info.items() if v != PASSED]
+        # if not test_failes:
+        #     self.finish(False, f"not test fail")
 
     def run2(self, **kw):
         self.rest_repo()
         self.apply_patch(self.test_patch)
         self.apply_patch(self.code_patch)
         self.py_test("code")
-        self.print_result()
 
     def execute(self):
         if self.docker_image_name:
@@ -452,9 +458,10 @@ class ZbTask(ToolBase):
         if self.local_cfg.need_setup_env.get_value():
             self.setup_env()
             self.local_cfg.need_setup_env.set_value(False)
-        self.setup_env()
+        self.run0()
         self.run1()
         self.run2()
+        self.print_result()
 
     def setup_env(self, **kw):
         OsUtil("sh").run(self.setup_env_sh.path)

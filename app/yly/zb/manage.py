@@ -1,12 +1,14 @@
 from common.util.export import ToolBase, logger, File, os, LOGER_PREFIX
 from common.tool.export import OsUtil
 from .util import INPUTS_DIR, TASK_DIR, get_info_by_name
-from .auto import WT
+
 from .main import ZbTask
 
 
 class ZbMangae(ToolBase):
     def web_run(self):
+        from .auto import WT
+
         c = WT.load()
         c.play(c.get_job_info)
 

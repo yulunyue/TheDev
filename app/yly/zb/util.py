@@ -51,8 +51,6 @@ class Cg(ConfigBase):
 
 class TaskCfg(ConfigBase):
     test_main = StrModel()
-    test_patch = StrModel()
-    code_patch = StrModel()
     error_msg = StrModel()
     skip = BoolModel()
     setup_env = ListModel()

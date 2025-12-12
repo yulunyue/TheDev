@@ -1,11 +1,39 @@
 {
-    "error_msg": "gg",
+    "error_msg": "fail_to_pass",
     "after_setup_env": {},
     "need_setup_env": false,
     "result": {
         "fail_to_fail": [],
         "pass_to_fail": [],
-        "fail_to_pass": []
+        "fail_to_pass": [],
+        "test": {
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
+            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
+            "tests/console/test_Printer.py::test_to_console": "passed",
+            "tests/console/test_Printer.py::test_to_log": "passed",
+            "tests/console/test_Printer.py::test_very_long_line": "passed"
+        },
+        "code": {
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
+            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
+            "tests/console/test_Printer.py::test_to_console": "passed",
+            "tests/console/test_Printer.py::test_to_log": "passed",
+            "tests/console/test_Printer.py::test_very_long_line": "passed"
+        },
+        "pass_to_pass": [
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]",
+            "tests/console/test_Printer.py::test_call[False-a line of output-]",
+            "tests/console/test_Printer.py::test_to_console",
+            "tests/console/test_Printer.py::test_to_log",
+            "tests/console/test_Printer.py::test_very_long_line"
+        ],
+        "pre": {
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
+            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
+            "tests/console/test_Printer.py::test_to_console": "passed",
+            "tests/console/test_Printer.py::test_to_log": "passed",
+            "tests/console/test_Printer.py::test_very_long_line": "passed"
+        }
     },
     "setup_env": [],
     "skip": false,

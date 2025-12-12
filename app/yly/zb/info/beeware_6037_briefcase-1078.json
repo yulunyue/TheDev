@@ -8,12 +8,43 @@
         "fail_to_pass": [
             "tests/commands/dev/test_call.py::test_no_args_one_app",
             "tests/commands/dev/test_call.py::test_run_test",
-            "tests/commands/dev/test_call.py::test_run_test_uninstalled",
-            "tests/commands/dev/test_call.py::test_run_uninstalled",
-            "tests/commands/dev/test_call.py::test_update_requirements",
             "tests/commands/dev/test_call.py::test_update_uninstalled",
-            "tests/commands/dev/test_call.py::test_with_arg_one_app",
-            "tests/commands/dev/test_call.py::test_with_arg_two_apps"
+            "tests/commands/dev/test_call.py::test_run_uninstalled",
+            "tests/commands/dev/test_call.py::test_with_arg_two_apps",
+            "tests/commands/dev/test_call.py::test_run_test_uninstalled",
+            "tests/commands/dev/test_call.py::test_update_requirements",
+            "tests/commands/dev/test_call.py::test_with_arg_one_app"
+        ],
+        "test": {
+            "tests/commands/dev/test_call.py::test_no_args_one_app": "failed",
+            "tests/commands/dev/test_call.py::test_no_args_two_apps": "passed",
+            "tests/commands/dev/test_call.py::test_with_arg_one_app": "failed",
+            "tests/commands/dev/test_call.py::test_with_arg_two_apps": "failed",
+            "tests/commands/dev/test_call.py::test_bad_app_reference": "passed",
+            "tests/commands/dev/test_call.py::test_update_requirements": "failed",
+            "tests/commands/dev/test_call.py::test_run_uninstalled": "failed",
+            "tests/commands/dev/test_call.py::test_update_uninstalled": "failed",
+            "tests/commands/dev/test_call.py::test_no_run": "passed",
+            "tests/commands/dev/test_call.py::test_run_test": "failed",
+            "tests/commands/dev/test_call.py::test_run_test_uninstalled": "failed"
+        },
+        "code": {
+            "tests/commands/dev/test_call.py::test_no_args_one_app": "passed",
+            "tests/commands/dev/test_call.py::test_no_args_two_apps": "passed",
+            "tests/commands/dev/test_call.py::test_with_arg_one_app": "passed",
+            "tests/commands/dev/test_call.py::test_with_arg_two_apps": "passed",
+            "tests/commands/dev/test_call.py::test_bad_app_reference": "passed",
+            "tests/commands/dev/test_call.py::test_update_requirements": "passed",
+            "tests/commands/dev/test_call.py::test_run_uninstalled": "passed",
+            "tests/commands/dev/test_call.py::test_update_uninstalled": "passed",
+            "tests/commands/dev/test_call.py::test_no_run": "passed",
+            "tests/commands/dev/test_call.py::test_run_test": "passed",
+            "tests/commands/dev/test_call.py::test_run_test_uninstalled": "passed"
+        },
+        "pass_to_pass": [
+            "tests/commands/dev/test_call.py::test_bad_app_reference",
+            "tests/commands/dev/test_call.py::test_no_run",
+            "tests/commands/dev/test_call.py::test_no_args_two_apps"
         ]
     },
     "setup_env": [],

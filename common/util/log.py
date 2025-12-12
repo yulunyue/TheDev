@@ -66,8 +66,9 @@ class Logger(logging.Logger):
             f()
         except Exception as e:
             import traceback
-            s=[str(e)]+traceback.format_tb(e.__traceback__)
-            self.debug("\n".join(s))
+
+            s = [f"\nERROR_MSG:{e}\n"] + traceback.format_tb(e.__traceback__)
+            self.debug("".join(s))
 
     def add_file_hander(self, fmt, mode):
         self.add_hander(

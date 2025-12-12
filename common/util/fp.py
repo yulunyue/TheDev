@@ -226,11 +226,11 @@ class File:
                 f.write(c.path, arcname=arc_name)
         return self
 
-    def unzip(self, cover=True, output_dir=None):
+    def unzip(self, output_dir=None):
         if output_dir is None:
             output_dir = self.path.replace(".zip", "")
         dst = File(output_dir)
-        if not cover and dst.exists():
+        if dst.exists():
             return dst
         with zipfile.ZipFile(self.path) as zf:
             for member in zf.namelist():

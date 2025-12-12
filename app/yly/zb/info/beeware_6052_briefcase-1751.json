@@ -1,45 +1,31 @@
 {
-    "error_msg": "gg",
+    "error_msg": "fail_to_pass",
     "after_setup_env": {},
     "need_setup_env": false,
     "result": {
-        "fail_to_fail": [
-            "tests/commands/new/test_build_context.py::test_question_sequence_none",
-            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear",
-            "tests/commands/new/test_build_context.py::test_question_sequence_pygame",
-            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6",
-            "tests/commands/new/test_build_context.py::test_question_sequence_toga",
-            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input"
-        ],
+        "fail_to_fail": [],
         "pass_to_fail": [],
-        "fail_to_pass": [
-            "tests/commands/create/test_generate_app_template.py::test_cached_template",
-            "tests/commands/create/test_generate_app_template.py::test_cached_template_offline",
-            "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.1-v37.42.1]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.2.dev0+gad61a29.d20220919-v37.42.2]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.3.dev73+gad61a29.d20220919-v37.42.3]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.4a1-v37.42.4]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.5b2-v37.42.5]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.6rc3-v37.42.6]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.7.post1-v37.42.7]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template_dev[37.42.7.dev0+gad61a29.d20220919-v37.42.7]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template_dev[37.42.7.dev73+gad61a29.d20220919-v37.42.7]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template_dev_explicit_branch[37.42.7.dev0+gad61a29.d20220919]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template_dev_explicit_branch[37.42.7.dev73+gad61a29.d20220919]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template_dev_explicit_invalid_branch[37.42.7.dev0+gad61a29.d20220919]",
-            "tests/commands/create/test_generate_app_template.py::test_default_template_dev_explicit_invalid_branch[37.42.7.dev73+gad61a29.d20220919]",
-            "tests/commands/create/test_generate_app_template.py::test_explicit_branch",
-            "tests/commands/create/test_generate_app_template.py::test_explicit_local_template",
-            "tests/commands/create/test_generate_app_template.py::test_explicit_local_template_and_branch",
-            "tests/commands/create/test_generate_app_template.py::test_explicit_repo_template",
-            "tests/commands/create/test_generate_app_template.py::test_explicit_repo_template_and_branch",
-            "tests/commands/create/test_generate_app_template.py::test_invalid_repo_template",
-            "tests/commands/create/test_generate_app_template.py::test_missing_branch_template",
-            "tests/commands/create/test_generate_app_template.py::test_offline_repo_template",
-            "tests/commands/create/test_generate_app_template.py::test_platform_exists",
-            "tests/commands/create/test_generate_app_template.py::test_x_permissions",
-            "tests/commands/create/test_install_app_resources.py::test_splash_target",
-            "tests/commands/create/test_install_app_resources.py::test_splash_variant_target"
+        "fail_to_pass": [],
+        "test": {
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
+            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
+            "tests/console/test_Printer.py::test_to_console": "passed",
+            "tests/console/test_Printer.py::test_to_log": "passed",
+            "tests/console/test_Printer.py::test_very_long_line": "passed"
+        },
+        "code": {
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
+            "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",
+            "tests/console/test_Printer.py::test_to_console": "passed",
+            "tests/console/test_Printer.py::test_to_log": "passed",
+            "tests/console/test_Printer.py::test_very_long_line": "passed"
+        },
+        "pass_to_pass": [
+            "tests/console/test_Printer.py::test_to_log",
+            "tests/console/test_Printer.py::test_very_long_line",
+            "tests/console/test_Printer.py::test_call[False-a line of output-]",
+            "tests/console/test_Printer.py::test_to_console",
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]"
         ]
     },
     "setup_env": [],

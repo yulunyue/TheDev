@@ -23,4 +23,4 @@ ln -s /TheDev/data/repo/beeware/briefcase briefcase
 mklink 
 
 
-python -m app.yly.zb.main briefcase/beeware_6038_briefcase-1188 py_test_repair path=tests/console/test_Log.py
+python -m app.yly.zb.main 6040 patch_repair path=tests/platforms/macOS/app/test_signing.py
