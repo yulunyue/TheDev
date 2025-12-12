@@ -115,7 +115,9 @@ class File:
 
     def get_config(self):
         if self._config is None:
-            self._config = self.read_file()
+            self._config=dict()
+            if self.exists():
+                self._config.update(self.read_file())
         return self._config
 
     def get(self, *keys, default_value=None):
