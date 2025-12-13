@@ -140,13 +140,21 @@ class SeleniumUtil:
 
     def load(self, dev_port=9222):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
-        chrome_exe = File(GC.chrome_bin_path.get_value())
-        if not chrome_exe.exists():
-            Api().download(
-                "https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chrome-win64.zip"
-            ).zip(chrome_exe.path)
-        os_util = OsUtil(chrome_exe.child("chrome.exe").path)
+
         if dev_port:
+            chrome_exe = File(GC.chrome_bin_path.get_value())
+            chrome_driver = File(GC.chrome_driver_path.get_value())
+            if not chrome_exe.exists():
+                Api().download(GC.chrome_bin_uri.get_value()).unzip(chrome_exe.path)
+            if not chrome_driver.exists():
+                Api().download(GC.chrome_driver_uri.get_value()).unzip(
+                    chrome_driver.path
+                )
+            if not chrome_exe.exists() or not chrome_driver.exists():
+                raise Exception(
+                    f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
+                )
+            os_util = OsUtil(chrome_exe.child("chrome.exe").path)
             info = os_util.check_port(dev_port)
             if not info:
                 os_util.run(

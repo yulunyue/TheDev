@@ -3,7 +3,7 @@ import json
 
 
 class BaseModel:
-    def __init__(self, key=None, default_value=None, data_source=None) -> None:
+    def __init__(self, default_value=None, key=None, data_source=None) -> None:
         self.default_value = default_value
         from common.tool.base_class.baseconfig import ConfigBase
 
@@ -71,18 +71,18 @@ class BaseModel:
 
 
 class StrModel(BaseModel):
-    def __init__(self, key=None, default_value="", data_source=None):
-        super().__init__(key, default_value, data_source)
+    def __init__(self, default_value="", key=None, data_source=None):
+        super().__init__(default_value=default_value, key=key, data_source=data_source)
 
 
 class BoolModel(BaseModel):
-    def __init__(self, key=None, default_value=False, data_source=None):
-        super().__init__(key, default_value, data_source)
+    def __init__(self, default_value=False, data_source=None, key=None):
+        super().__init__(default_value=default_value, data_source=data_source, key=key)
 
 
 class NumberModel(BaseModel):
-    def __init__(self, key=None, default_value=0, data_source=None):
-        super().__init__(key, default_value, data_source)
+    def __init__(self, default_value=0, key=None, data_source=None):
+        super().__init__(default_value=default_value, key=key, data_source=data_source)
 
 
 def number(v):
@@ -94,9 +94,9 @@ def number(v):
 class ListModel(BaseModel):
     value: list
 
-    def __init__(self, key=None, default_value=None, data_source=None):
+    def __init__(self, default_value=None, data_source=None, key=None):
         default_value = default_value or []
-        super().__init__(key, default_value, data_source)
+        super().__init__(default_value=default_value, key=key, data_source=data_source)
 
     def get_value(self) -> list:
         return super().get_value()
@@ -105,8 +105,10 @@ class ListModel(BaseModel):
 class DictModel(BaseModel):
     value: dict
 
-    def __init__(self, key=None, default_value=None, data_source=None):
-        super().__init__(key, default_value or dict(), data_source)
+    def __init__(self, default_value=None, data_source=None, key=None):
+        super().__init__(
+            default_value=default_value or dict(), data_source=data_source, key=key
+        )
 
     def get_value(self) -> dict:
         return super().get_value()
@@ -121,7 +123,7 @@ DISABLE = "disable"
 
 class EnableModel(BaseModel):
     def __init__(self, value=DISABLE) -> None:
-        super().__init__(value)
+        super().__init__(default_value=value)
 
     def get_value(self):
         return super().get_value().lower() in {ENABLE, "true"}
