@@ -32,7 +32,9 @@ REPO_BASE = GC.repo_path.get_value()
 
 
 def get_info_by_name(file_name: str):
-    name, pr = file_name.split("-")
+    heads = file_name.split("-")
+    pr = heads.pop()
+    name = "-".join(heads)
     owner, task_id, repo = name.split("_")
     return owner, task_id, repo, pr
 
@@ -60,4 +62,4 @@ class TaskCfg(ConfigBase):
     setup_env = ListModel()
     result = DictModel()
     after_setup_env = DictModel()
-    need_setup_env = BoolModel(True)
+    need_setup_env = BoolModel(False)

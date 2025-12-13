@@ -35,11 +35,11 @@ PY_TEST_MAIN_CODE = """
 class Colors:
     """用于在终端中彩色打印的辅助类。"""
 
-    GREEN = "\033[92m"
-    RED = "\033[91m"
-    YELLOW = "\033[93m"
-    BLUE = "\033[94m"
-    ENDC = "\033[0m"
+    GREEN = "GREEN"
+    RED = "RED"
+    YELLOW = "YELLOW"
+    BLUE = "BLUE"
+    ENDC = "ENDC"
 
 
 # 初始化结果字典
@@ -162,32 +162,40 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 def get_result():
     result = dict()
     result_file = f"{REPO_DIR}/{RESULT_JSON_FILE}"
+    ct = dict()
     with open(result_file, "r") as f:
         data = json.loads(f.read())
         for item in data["tests"]:
             if item["nodeid"]:
                 result[item["nodeid"]] = item["outcome"]
-    os.system(f"rm -rf {result_file}")
-    return result
+                ct[item["outcome"]] = ct.get(item["outcome"], 0) + 1
+    # os.system(f"rm -rf {result_file}")
+    return result, ct
 
 
 def run_py_test():
     py_path = f"{REPO_DIR}/py_test_main.py"
     with open(py_path, "w", encoding="utf-8") as f:
         f.write(PY_TEST_MAIN_CODE)
-
+    result_file = f"{REPO_DIR}/{RESULT_JSON_FILE}"
+    if os.path.exists(result_file):
+        os.remove(result_file)
     statu_code, msg, msg1 = run_command(
         [sys.executable, "py_test_main.py"], cwd=REPO_DIR
     )
-    os.system(f"rm -rf {py_path}")
-    return statu_code, msg, msg1
+    # os.system(f"rm -rf {py_path}")
+    result, ct = dict(), dict()
+    if os.path.exists(result_file):
+        result, ct = get_result()
+    return statu_code, msg, msg1, ct, result
 
 
 def run_all_tests_and_get_results():
     """使用 poetry run pytest 运行所有测试并从 JUnit XML 报告中解析结果。"""
     # TODO
-    run_py_test()
-    return get_result()
+    statu_code, msg, msg1, ct, result = run_py_test()
+    print(f"\n{statu_code}\n{msg}\n{msg1}\n{ct}\n{result}")
+    return result
 
 
 def write_results_and_exit(success=True):

@@ -1,8 +1,9 @@
 from browser_use import Agent
 import asyncio
 import os
+from common.tool.export import GC
 
-os.environ.setdefault("BROWSER_USE_API_KEY", "")
+os.environ.setdefault("BROWSER_USE_API_KEY", GC.BROWSER_USE_API_KEY.get_value())
 
 
 async def main():

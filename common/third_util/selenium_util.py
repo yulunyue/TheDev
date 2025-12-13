@@ -38,7 +38,7 @@ class SeleniumUtil:
 
         return self.driver.execute_script(js_code, element)
 
-    def e_format(self, element: WebElement, text_max_size=100):
+    def e_format_node(self, element: WebElement, text_max_size=20):
         ret = []
         element_id = element.get_attribute("id")
         tag_name = element.tag_name
@@ -46,6 +46,8 @@ class SeleniumUtil:
         class_attr = element.get_attribute("class") or ""
         name_attr = element.get_attribute("name") or ""
         url = element.get_attribute("url") or ""
+        title = element.get_attribute("title") or ""
+        disabled = element.get_attribute("disabled")
         # 获取位置和大小
         location_str = ""
         try:
@@ -62,7 +64,9 @@ class SeleniumUtil:
                 text = text[:text_max_size] + "..." + text[-text_max_size:]
         except:
             text = ""
-        ret.append(f"\n 标签: <{tag_name}>; ID: '{element_id}'")
+        ret.append(
+            f"\n 标签: <{tag_name}>; ID: '{element_id}'; title: '{title}'; disabled: '{disabled}'"
+        )
         ret.append(f"   XPATH:{self.get_xpath_from_chrome_devtools(element)} ")
         if class_attr:
             ret.append(f"   类: {class_attr};")
@@ -76,6 +80,14 @@ class SeleniumUtil:
             ret.append(f"   文本: {text}")
 
         return "\n".join(ret)
+
+    def e_format(self, element: WebElement, text_max_size=20):
+        if isinstance(element, list):
+            rets = []
+            for e in element:
+                rets.append(self.e_format_node(e, text_max_size))
+            return "\n".join(rets)
+        return self.e_format_node(element, text_max_size)
 
     def print_info(self):
         for e in self.find_elements_by_xpath("//*[text()!='']"):
@@ -96,8 +108,12 @@ class SeleniumUtil:
     def get_element_by_id(self, key):
         return self.wait.until(EC.presence_of_element_located((By.ID, key)))
 
-    def get_element_by_xpath(self, key):
+    def get_element_by_xpath(self, key) -> WebElement:
         return self.wait.until(EC.presence_of_element_located((By.XPATH, key)))
+
+    def get_elements_by_xpath(self, key) -> List[WebElement]:
+        self.wait.until(EC.presence_of_element_located((By.XPATH, key)))
+        return self.find_elements_by_xpath(key)
 
     def get_clickable_by_xpath(self, key):
         return self.wait.until(EC.element_to_be_clickable((By.XPATH, key)))
@@ -126,7 +142,11 @@ class SeleniumUtil:
         return ret
 
     def get_children(self, e: WebElement):
-        return e.find_elements(".//*")
+        try:
+            return e.find_elements(".//*")
+        except Exception as e2:
+            logger.debug(f"获取子元素{e2}失败: {self.e_format(e)}")
+            return []
 
     def dfs(self, e: WebElement, call, parents=None):
         if parents is None:
@@ -134,6 +154,9 @@ class SeleniumUtil:
         for v in self.get_children(e):
             call(v, paths=parents + [v])
             self.dfs(v, parents + [v])
+
+    def print(self, e: WebElement):
+        self.dfs(e, call=lambda ele, paths: logger.debug(self.e_format(ele)))
 
     def wait_url_contains(self, key):
         self.wait.until(EC.url_contains(key))
@@ -154,7 +177,7 @@ class SeleniumUtil:
                 raise Exception(
                     f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
                 )
-            os_util = OsUtil(chrome_exe.child("chrome.exe").path)
+            os_util = OsUtil(chrome_exe.child("chrome-win64/chrome.exe").get_abs_path())
             info = os_util.check_port(dev_port)
             if not info:
                 os_util.run(
@@ -163,18 +186,29 @@ class SeleniumUtil:
                 )
                 info1 = os_util.check_port(dev_port)
                 if not info1:
-                    return
+                    return self
             else:
                 logger.info(info)
         if self.driver is None:
             self.options = Options()
             service = Service(
-                "D:/tool/chromedriver-win64_143/chromedriver-win64/chromedriver.exe",
+                chrome_driver.child(
+                    "chromedriver-win64/chromedriver.exe"
+                ).get_abs_path(),
                 service_args=["--verbose", "--log-path=data/log/chromedriver.log"],
             )
             self.options.add_argument("--auto-open-devtools-for-tabs")
             self.options.add_argument("--disable-extensions")  # 禁用扩展
             self.options.add_argument("--no-first-run")  # 跳过首次运行提示
+            # 启用 CDP
+            # self.options.add_experimental_option(
+            #     "excludeSwitches", ["enable-automation"]
+            # )
+            # self.options.add_experimental_option("useAutomationExtension", False)
+            # 设置性能日志
+            # caps = self.options.to_capabilities()
+            # caps["goog:loggingPrefs"] = {"performance": "ALL"}
+
             if dev_port:
                 self.options.debugger_address = f"127.0.0.1:{dev_port}"
             else:
@@ -184,6 +218,64 @@ class SeleniumUtil:
             # self.driver.set_page_load_timeout(10)
 
         return self
+
+    def do_cmd(self, method, *args):
+        try:
+            if method == "go":
+                return self.get(*args)
+            elif method == "path":
+                return self.e_format(self.get_elements_by_xpath(args[0]))
+            elif method == "id":
+                return self.e_format(self.get_element_by_id(args[0]))
+            return "todo"
+        except Exception as e:
+            return str(e)
+
+    def intercept_window_open(self):
+        """拦截 window.open 调用"""
+
+        # 重写 window.open 方法
+        script = """
+        // 保存原始的 window.open
+        window._originalOpen = window.open;
+        
+        // 重写 window.open
+        window.open = function(url, windowName, windowFeatures) {
+            console.log('[Interceptor] window.open called:', url, windowName, windowFeatures);
+            
+            // 触发自定义事件
+            var event = new CustomEvent('windowOpenIntercepted', {
+                detail: {
+                    url: url,
+                    windowName: windowName,
+                    windowFeatures: windowFeatures,
+                    timestamp: Date.now()
+                }
+            });
+            window.dispatchEvent(event);
+            
+            // 返回 null 或模拟的窗口对象
+            return {
+                closed: false,
+                close: function() {
+                    console.log('[Interceptor] Mock window closed');
+                    this.closed = true;
+                },
+                location: {
+                    href: url
+                }
+            };
+        };
+        
+        // 监听拦截事件
+        window.addEventListener('windowOpenIntercepted', function(e) {
+            console.log('Window open intercepted:', e.detail);
+        });
+        
+        console.log('Window.open interception activated');
+        """
+
+        self.driver.execute_script(script)
 
     def get(self, url):
         self.driver.get(url)
@@ -225,6 +317,10 @@ class SeleniumUtil:
             self.driver.switch_to.window(handles[idx])
             return True
         return False
+
+    def close_current_window(self):
+        """关闭当前窗口"""
+        self.driver.close()
 
     def script_scroll(self, ele):
         self.driver.execute_script("arguments[0].scrollIntoView();", ele)

@@ -1,8 +1,11 @@
-import pytest
 import os
+
+os.environ["PYTHONUTF8"] = "1"
+os.environ["PYTHONIOENCODING"] = "utf-8"
 import subprocess
 import sys
 
+import pytest
 
 PY_MAIN_CMD = "%{PY_MAIN_CMD}"
 RESULT_JSON_FILE = "result.json"

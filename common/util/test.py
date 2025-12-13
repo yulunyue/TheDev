@@ -172,16 +172,26 @@ class ToolBase:
 
     def cli(self):
         fi, fo = self.get_temp_file("inp.txt"), self.get_temp_file("out.txt")
-        fi.write_if_not_exists("inp")
-        last_cmd = None
+        fi.write_if_not_exists("")
+        last_cmd = []
+        out_put_msgs = dict()
         while True:
             time.sleep(1)
-            cmd = fi.read_fast_file()
+            cmd = [v for v in fi.read_fast_file().split("\n") if v]
             if cmd == last_cmd:
                 continue
-            self.msgs.clear()
-            self.do_cmd(*cmd.split(" "))
-            fo.write_file("\n".join(self.msgs))
+            flag = False
+            for i, v in enumerate(cmd):
+                if i < len(last_cmd) and v == last_cmd[i]:
+                    continue
+                out_put_msgs[i] = [i, v, self.do_cmd(*v.split(" "))]
+                flag = True
+            if flag:
+                msgs = []
+                sr = sorted(out_put_msgs.values())[: len(cmd)]
+                for i, v, r in sr:
+                    msgs.append(f"i:{i} , cmd:{v}\n----------\n{r}\n-----------")
+                fo.write_file("\n".join(msgs))
             last_cmd = cmd
 
     def do_cmd(self, *cmd):

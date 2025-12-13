@@ -10,28 +10,29 @@ class WebTool(SeleniumUtil):
 
     def get_job_info(self):
         self.get(self.JOB_URL)
-        time.sleep(1)
-        tb = self.get_element_by_id("rc-tabs-1-panel-1")
-        for btn in tb.find_elements(By.XPATH, "//div[1]/div[1]/div[1]/ul[1]/li"):
-            if 1 <= len(btn.text) >= 3:
-                continue
-            logger.info(f"{btn.text}:{len(btn.text)}")
-            btn.click()
-            time.sleep(1)
-            tr_rows = tb.find_elements(By.TAG_NAME, "tr")
-            for e in tr_rows:
-                texts = [v for v in str(e.text).split(" ") if v]
-                task_id, data_batch, statu, data_source, rest_time, method, *args = (
-                    texts
-                )
-                if method != "执行":
-                    continue
-                e.find_element(By.TAG_NAME, "button").click()
-                self.switch_to_window()
-                self.get_element_by_tag("button")
-                for jump_btn in self.find_elements_by_tag("button"):
-                    logger.info(self.e_format(jump_btn))
-                break
+        time.sleep(2)
+        next_btn = self.get_element_by_xpath("//li[@title='下一页']/button")
+        while next_btn.get_attribute("disabled") is None:
+            self.parse_job_table()
+            next_btn.click()
+            time.sleep(2)
+
+    def parse_job_table(self):
+        for tr in self.get_elements_by_xpath("//tbody[@class='ant-table-tbody']/tr"):
+            task_id, data_batch, statu, data_source, rest_time, method, *args = (
+                tr.text.split(" ")
+            )
+            logger.info(
+                f"任务ID:{task_id} 数据批次:{data_batch} 状态:{statu} 数据来源:{data_source} 剩余时间:{rest_time} 方法:{method}"
+            )
+
+            # e.find_element(By.TAG_NAME, "button").click()
+            # self.switch_to_window()
+            # self.get_element_by_tag("button")
+            # for jump_btn in self.find_elements_by_tag("button"):
+            #     logger.info(self.e_format(jump_btn))
+            # self.close_current_window()
+            # time.sleep(4)
 
     def login(self):
         self.get_element_by_id("name").send_keys(USER_CONFIG.user_name.get_value())
@@ -39,6 +40,9 @@ class WebTool(SeleniumUtil):
         self.get_clickable_by_xpath("button", "submit").click()
         self.wait_url_contains("worker-jobs")
         return self
+
+    def run(self):
+        self.get_job_info()
 
 
 class ApiZb(Api):

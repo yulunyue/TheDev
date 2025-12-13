@@ -1,6 +1,6 @@
 from common.tool.export import OsUtil
 import docker
-from common.util.export import logger
+from common.util.export import logger, os
 
 
 class DockerUtil:
@@ -31,14 +31,7 @@ class DockerUtil:
         except Exception as e:
             return False
 
-    def build(self, path):
-        """
-        self.o.set_env(path)
-        安装ssh
-        sudo apt install openssh-server -y
-
-        """
-
+    def build(self, path, base_image_name=None):
         self.o.run(
             "build", path, "--progress=plain", "-D", "-t", self.image_name
         )  # "-f", path
@@ -86,8 +79,9 @@ class DockerUtil:
                 working_dir=working_dir,
             )
             # 流式日志
+
             for chunk in container.logs(stream=True, follow=True):
-                msgs += chunk.decode("utf-8", "replace")
+                msgs += chunk.decode("utf-8", errors="ignore")
             ret = container.wait()
             exit_code = ret.get("StatusCode", 1)
         except docker.errors.ContainerError as e:
@@ -97,4 +91,6 @@ class DockerUtil:
 
         except Exception as e:
             logger.exception(f"   -> ❌ 运行容器时发生未知错误: {e}", stacklevel=True)
-        return exit_code, msgs
+        return exit_code, "\n".join(
+            [v for v in msgs.replace("\r\n", "\n").split("\n") if v]
+        )

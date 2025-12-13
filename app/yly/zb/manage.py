@@ -9,8 +9,7 @@ class ZbMangae(ToolBase):
     def web_run(self):
         from .auto import WT
 
-        c = WT.load()
-        c.play(c.get_job_info)
+        WT.load().run()
 
     def dev(self):
         r = File("../../downloads")

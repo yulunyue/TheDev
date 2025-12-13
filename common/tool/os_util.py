@@ -17,26 +17,30 @@ class OsUtil:
 
     def set_venv(self, name):
         env_path = f"data/env_{os.name}/{name}"
+        local_exec = sys.executable.replace("\\", "/")
+        if env_path in local_exec:
+            return
         if not File(env_path).exists():
             OsUtil("python").run("-m", "venv", env_path)
-
         if os.name == "nt":
-            self.logger.debug(f"{env_path}/Scripts/Activate.ps1")
             self.and_cmds = [
                 f"call {env_path}/Scripts/activate.bat",
                 "&&",
             ]
+            cmd = f"./{env_path}/Scripts/Activate.ps1"
         else:
             self.and_cmds = [f"source {env_path}/bin/activate", "&&"]
             self.logger.debug(f"source {env_path}/bin/activate")
+        logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
         return self
 
     def check_output(self, cmds=None, capture_output=False, env=None):
+        if cmds is None:
+            cmds = self.get_cmd()
         cmd = [v for v in self.and_cmds + cmds.split(" ") if v]
         cmds = " ".join(cmd)
         self.logger.info(f"{self.root_path}->{cmds}")
         param = dict()
-        env = env or dict()
         if not capture_output:
             param.update(
                 dict(
@@ -53,7 +57,7 @@ class OsUtil:
                 text=True,
                 cwd=self.root_path,
                 timeout=60 * 60,
-                env=env,
+                env=env,  # 不能为空字典 [WinError 87] 参数错误。
                 **param,
             )
             statu, stdout, stderror = True, process.stdout, process.stderr
@@ -64,7 +68,7 @@ class OsUtil:
         except Exception as e:
             statu, stdout, stderror = False, "", f"{e}"
         if not statu:
-            self.error([cmds, cmd, stdout, stderror])
+            self.error([cmds, stdout, stderror])
         return statu, stdout, stderror
 
     def error(self, msg):

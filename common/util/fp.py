@@ -41,7 +41,12 @@ class File:
         return File(self.path + "/" + name)
 
     def get_abs_path(self):
-        return os.getcwd().replace("\\", "/") + "/" + self.path
+        cwd = os.getcwd().replace("\\", "/")
+        if self.path.startswith("/"):
+            if os.name == "nt":
+                return cwd[:2] + self.path
+            return self.path
+        return cwd + "/" + self.path
 
     def make_dir_if_not_exist(self, is_dir=False):
         if self.exists():

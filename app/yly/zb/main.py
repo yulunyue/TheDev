@@ -59,18 +59,20 @@ class ZbTask(ToolBase):
             self.input_dir.name
         )
         self.name: str = f"{self.owner}/{self.repo}"
-        self.local_cfg = TaskCfg(self.input_dir.name).set_resource(
-            INFO_DIR.child(f"{self.input_dir.name}.json")
+        self.local_cfg = TaskCfg(self.task_id).set_resource(
+            INFO_DIR.child(f"{self.task_id}.json")
         )
-        self.cfg: Cg = Cg(self.name)
         self.input_json = self.input_dir.child(
             f"{self.owner}__{self.repo}-{self.pr}.json"
         )
+        self.cfg: Cg = Cg(self.name).set_resource(self.input_json)
+        logger.info(self.local_cfg.resource)
+        logger.info(self.cfg.resource)
+
         self.zip_file = INPUTS_DIR.child(
             f"result/{self.task_id}/{self.input_json.name}.zip"
         ).make_dir_if_not_exist()
 
-        self.cfg.set_resource(self.input_json)
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
         self.local_repo = File(
@@ -88,27 +90,16 @@ class ZbTask(ToolBase):
         self.get_update_file_by_batch(self.code_patch)
         return self
 
-    def json_report_parse(self, fp: File):
-        if not fp.exists():
-            return dict()
-        result = dict()
-        data = fp.read_file()
-        for item in data["tests"]:
-            if item["nodeid"]:
-                result[item["nodeid"]] = item["outcome"]
-        fp.remove()
-        return result
-
     def get_update_file_by_batch(self, fp: File):
-        change_test_files = dict()
+        logger.info(f"{fp}")
         for s in fp.read_line():
             if s.startswith("+++ b/"):
                 f = self.local_repo.child(s[6:])
                 if f.path.endswith(".py") and f.name.startswith("test_"):
                     key = f.path.replace(self.local_repo.path + "/", "")
-                    change_test_files[key] = f
-        self.change_py_test_files.update(change_test_files)
-        logger.info(f"{fp} -> {str(list(change_test_files.keys())[:50])}...")
+                    if key not in self.change_py_test_files:
+                        self.change_py_test_files[key] = f
+                        logger.info(f"{f} {f.exists()}")
 
     def rest_repo(self, commid_id=None):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""
@@ -195,18 +186,15 @@ class ZbTask(ToolBase):
         return " ".join(files)
 
     def py_test(self, key) -> dict:
-        report_json_fp = self.local_repo.child("result.json")
-        if report_json_fp.exists():
-            report_json_fp.remove()
         f = Module().load_module_object(
             "run_verification.run_py_test", self.input_dir.path
         )
-        statu_code, msg, msg1 = f()
         result = self.local_cfg.result.get_value()
-        result[key] = self.json_report_parse(report_json_fp)
+        statu_code, msg, msg1, ct, result[key] = f()
         self.logger.debug(
             f"statu_code={statu_code}\nstdout={msg}\nstderr={msg1}\nresult={result[key]}"
         )
+        logger.info(f"{key}:{ct}")
         return result[key]
 
     def make_patch(self, path: str, name):
@@ -305,7 +293,7 @@ class ZbTask(ToolBase):
             pass
         return self
 
-    def docker_build(self, image_name="zb:latest"):
+    def docker_build(self, image_name, base_image_name="zb:latest"):
         from common.third_util.docker_util import DockerUtil
 
         self.init()
@@ -329,9 +317,7 @@ class ZbTask(ToolBase):
             self.finish(True, "")
 
     def docker_verify(self, **kw):
-        """
-        OsUtil("python").run(INPUTS_DIR.child("verify.py").path, self.input_dir.path)
-        """
+
         from common.third_util.docker_util import DockerUtil
 
         result_file = self.input_dir.child("result.json")
@@ -344,6 +330,7 @@ class ZbTask(ToolBase):
                 self.test_patch.get_abs_path(): f"{REPO_BASE}/{self.test_patch.file_name}",
                 self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
                 self.input_dir.get_abs_path(): "/testbed_output",
+                self.local_repo.get_abs_path(): self.local_repo.path,
             },
             REPO_BASE,
             env={"INSTANCE_ID": self.cfg.instance_id.get_value()},
@@ -366,10 +353,13 @@ class ZbTask(ToolBase):
         setup_env_sh = [
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.cfg.base_commit.get_value()}",
-            "conda activate testbed",
+            f"python -m venv .venv",
+            f"source .venv/bin/activate",
             "python -m pip install --upgrade pip",
         ]
-        setup_env_sh.append("python -m pip install pytest pytest-json-report toml")
+        setup_env_sh.append(
+            "python -m pip install pytest pytest-json-report toml debugpy"
+        )
         pyproject_toml = self.local_repo.child("pyproject.toml")
         setup_cfg = self.local_repo.child("setup.cfg")
         setup_py = self.local_repo.child("setup.py")
@@ -401,10 +391,15 @@ class ZbTask(ToolBase):
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
+        if self.docker_image_name is None:
+            self.make_env()
         self.logger.debug(self.cfg.pr_url.get_value())
         self.logger.debug(self.cfg.issue_url.get_value())
         self.logger.debug(self.local_repo.path)
         self.logger.debug(f"python {self.main_py_file.path}")
+
+    def make_env(self):
+        OsUtil("sh").set_venv(self.repo)
 
     def run0(self):
         self.rest_repo()
@@ -416,7 +411,7 @@ class ZbTask(ToolBase):
     def run1(self):
         self.rest_repo()
         self.apply_patch(self.test_patch)
-        test_info = self.py_test("test")
+        self.py_test("test")
         # test_failes = [k for k, v in test_info.items() if v != PASSED]
         # if not test_failes:
         #     self.finish(False, f"not test fail")
@@ -441,11 +436,10 @@ class ZbTask(ToolBase):
             return
         self.init()
         skip = self.local_cfg.skip.get_value()
-        if skip and not error_msg:
+        if skip:
             if isinstance(skip, str):
                 self.finish(True, "", skip_msg=skip)
             return
-
         logger.run_capture_error(self.execute)
 
     def verify_with_no_docker(self):
