@@ -10,8 +10,15 @@ from .bp.compile import BpCompile, BP
 
 
 class GloablConfg(ConfigBase):
+    chrome_driver_path = StrModel("/thedev/data/chrome_driver")
+    chrome_driver_uri = StrModel(
+        "https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chromedriver-win64.zip"
+    )
+    chrome_bin_uri = StrModel(
+        "https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chrome-win64.zip"
+    )
     chrome_bin_path = StrModel(
-        "data/chrome_bin"
+        "/thedev/data/chrome_bin"
     )  # https://googlechromelabs.github.io/chrome-for-testing/
     git_proxy_prefix = StrModel("")  # https://ghproxy.link/
 

@@ -32,8 +32,6 @@ class OsUtil:
         return self
 
     def check_output(self, cmds=None, capture_output=False, env=None):
-        if cmds is None:
-            cmds = self.get_cmd()
         cmd = [v for v in self.and_cmds + cmds.split(" ") if v]
         cmds = " ".join(cmd)
         self.logger.info(f"{self.root_path}->{cmds}")

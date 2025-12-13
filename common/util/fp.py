@@ -217,6 +217,10 @@ class File:
         self.WITHE_FILE_HANDER[self.path] = open(self.path, "w", encoding="utf-8")
         return self.WITHE_FILE_HANDER[self.path]
 
+    def get_bin_writer(self) -> io.TextIOWrapper:
+        self.make_dir_if_not_exist()
+        return open(self.path, "wb")
+
     def zip(self, dst=None):
         if dst is None:
             dst = self.path + ".zip"

@@ -119,15 +119,24 @@ class Api:
         return f"{end_point}{path}"
 
     def get(self, url, data=None, timeout=None, headers=None):
-        return self.http("GET", url, data=data, headers=headers, timeout=timeout)
+        return self.http(
+            "GET",
+            url,
+            data=data,
+            headers=headers,
+            timeout=timeout,
+        )
 
-    def download(self, url: str, dst=None, data=None):
+    def download(self, url: str, dst=None, data=None, timeout=3600):
         if dst is None:
-            dst = f"data/download/{url.split('/').pop()}"
+            dst = f"/Thedev/data/download/{url.split('/').pop()}"
         f = File(dst)
         if f.exists():
             return f
-        return f.write_file(self.get(url, data, timeout=60))
+        self.http(
+            "GET", url, data, timeout=timeout, stream=True, writer=f.get_bin_writer()
+        )
+        return f
 
     def post(self, url, data=None, headers=None):
         return self.http("POST", url, data=data, headers=headers)
@@ -154,7 +163,17 @@ class Api:
     def get_timeout(self):
         return API_CONFIG.get(self.name).timeout.get_value()
 
-    def http(self, method, path, data=None, headers=None, param=None):
+    def http(
+        self,
+        method,
+        path,
+        data=None,
+        headers=None,
+        param=None,
+        timeout=None,
+        stream=False,
+        writer=None,
+    ):
         if headers is None:
             headers = self.get_headers()
         headers.update(
@@ -167,11 +186,14 @@ class Api:
         if mock_res:
             return mock_res
         proxies = self.get_proxy()
-        timeout = self.get_timeout()
+        timeout = timeout or self.get_timeout()
         logger.info(f"DO HTTP [{method}] {uri} {proxies} {timeout}")
         params = dict()
         if method == "GET":
-            params.update(dict(params=data))
+            if data:
+                params.update(dict(params=data))
+            if stream:
+                params.update(dict(stream=True))
         else:
             if param is not None:
                 params.update(dict(params=param))
@@ -188,6 +210,17 @@ class Api:
             proxies=proxies,
             **params,
         )
+        if stream:
+            res.raise_for_status()
+            from common.third_util.tqdm_util import tqdm
+
+            total = int(res.headers.get("content-length", 0))
+            t = tqdm(total=total, unit="iB", unit_scale=True)
+            for data in res.iter_content(chunk_size=8192):
+                writer.write(data)
+                t.update(len(data))
+            t.close()
+            return
         if res.status_code <= 300:
             content_type = res.headers.get(Api.CONTENT_TYPE)
             ret = res.content

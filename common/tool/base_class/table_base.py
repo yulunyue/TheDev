@@ -59,11 +59,13 @@ class TableBase(Generic[T]):
         r: ConfigBase = self.get(id)
         return r.update(**kw)
 
-    def get(self, key) -> T:
+    def get(self, key, name2="default") -> T:
         if key in self.instance_map:
             return self.instance_map[key]
         if key in self.config:
             config = self.config[key]
+        elif name2 is not None and name2 in self.config:
+            config = self.config[name2]
         else:
             self.config[key] = config = self._concrete_type.get_default_conifg()
         self.instance_map[key] = self._concrete_type(key)
@@ -75,6 +77,8 @@ class TableBase(Generic[T]):
         return self
 
     def update_param_value(self, row: ConfigBase, ins: BaseModel, vlaue):
+        if row.key not in self.config:
+            self.config[row.key] = dict()
         self.config[row.key][ins.key] = vlaue
 
     def get_param_value(self, row: ConfigBase, ins: BaseModel):
