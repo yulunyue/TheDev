@@ -15,8 +15,7 @@ class OsUtil:
             f"os/{self.fun_name.split('/').pop()}"
         )  # 用TheDev 主要是方便writer 重定向
 
-    def set_venv(self, name):
-        env_path = f"data/env_{os.name}/{name}"
+    def set_venv(self, env_path):
         local_exec = sys.executable.replace("\\", "/")
         if env_path in local_exec:
             return
@@ -27,12 +26,11 @@ class OsUtil:
                 f"call {env_path}/Scripts/activate.bat",
                 "&&",
             ]
-            cmd = f"./{env_path}/Scripts/Activate.ps1"
+            cmd = f"{env_path}/Scripts/Activate.ps1"
         else:
             self.and_cmds = [f"source {env_path}/bin/activate", "&&"]
             self.logger.debug(f"source {env_path}/bin/activate")
         logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
-        return self
 
     def check_output(self, cmds=None, capture_output=False, env=None):
         if cmds is None:

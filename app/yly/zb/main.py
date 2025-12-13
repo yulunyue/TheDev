@@ -18,16 +18,11 @@ from .util import (
     INFO_DIR,
     REPO_BASE,
     Cg,
-    TaskCfg,
+    task_cfg,
     get_info_by_name,
-    PASSED,
-    PASS_TO_PASS,
-    FAIL_TO_PASS,
-    PASS_TO_FAIL,
-    SUCCESS,
-    FAILURE,
-    FAILED,
-    SKIPPED,
+    TASK_DIR,
+    CS,
+    TARGETS,
 )
 
 PIP_INSTALL_WITH_NO_DEPENDDS = {}
@@ -40,37 +35,36 @@ class ZbTask(ToolBase):
     def logger(self):
         return get_log(f"zb/{self.repo}/{self.task_id}_{self.pr}")
 
-    def prepare(self, path):
-        if isinstance(path, str):
-            self.input_dir = File(path)
-            if not self.input_dir.exists():
-                self.input_dir = INPUTS_DIR.child(f"task/{path}")
-            if not self.input_dir.exists():
-                self.input_dir = INPUTS_DIR.list_dir(
-                    depth=3, filter=lambda v: path in v.name and v.type == "zip"
-                )[0]
-            if not self.input_dir.exists():
-                raise Exception(self.input_dir.path, "not exist")
-        else:
-            self.input_dir = path
-        if self.input_dir.type == "zip":
-            self.input_dir = self.input_dir.unzip()
-        self.owner, self.task_id, self.repo, self.pr = get_info_by_name(
-            self.input_dir.name
+    def prepare(self, task_id):
+        self.local_cfg = task_cfg(task_id)
+        self.task_id = task_id
+        if not self.local_cfg.resource.exists():
+            raise Exception(f"{self.local_cfg.resource} not exist")
+        self.input_dir = TASK_DIR.child(task_id)
+        if not self.local_cfg.name.get_value() or not self.input_dir.exists():
+            from .auto import WT, Api
+
+            down_load_uri, upload_uri = WT.load().get_task_info(
+                self.local_cfg.submit_url.get_value(),
+                self.local_cfg.upload_uri.get_value(),
+            )
+            f = Api().download(down_load_uri)
+            f.unzip(self.input_dir)
+            self.local_cfg.down_load_uri.set_value(f)
+            self.local_cfg.name.set_value(f.name.replace(".zip", ""))
+            self.local_cfg.upload_uri.set_value(upload_uri)
+            self.local_cfg.save()
+        if not self.input_dir.exists():
+            raise Exception(self.input_dir.path, "not exist")
+        self.cfg: Cg = Cg(self.task_id).set_resource(
+            self.input_dir.child(self.local_cfg.name.get_value() + ".json")
         )
-        self.name: str = f"{self.owner}/{self.repo}"
-        self.local_cfg = 
-        self.input_json = self.input_dir.child(
-            f"{self.owner}__{self.repo}-{self.pr}.json"
-        )
-        self.cfg: Cg = Cg(self.name).set_resource(self.input_json)
+        _, _, self.repo, self.pr = get_info_by_name(self.local_cfg.name.get_value())
         logger.info(self.local_cfg.resource)
         logger.info(self.cfg.resource)
-
-        self.zip_file = INPUTS_DIR.child(
-            f"result/{self.task_id}/{self.input_json.name}.zip"
-        ).make_dir_if_not_exist()
-
+        self.zip_file = self.input_dir.child(self.local_cfg.name.get_value() + ".json")
+        self.local_cfg.pr_url.set_value(self.cfg.pr_url.get_value())
+        self.local_cfg.issue_url.set_value(self.cfg.issue_url.get_value())
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
         self.main_py_file = self.input_dir.child("run_verification.py")
         self.local_repo = File(
@@ -89,7 +83,8 @@ class ZbTask(ToolBase):
         return self
 
     def get_update_file_by_batch(self, fp: File):
-        logger.info(f"{fp}")
+
+        files = []
         for s in fp.read_line():
             if s.startswith("+++ b/"):
                 f = self.local_repo.child(s[6:])
@@ -97,7 +92,8 @@ class ZbTask(ToolBase):
                     key = f.path.replace(self.local_repo.path + "/", "")
                     if key not in self.change_py_test_files:
                         self.change_py_test_files[key] = f
-                        logger.info(f"{f} {f.exists()}")
+                        files.append(key)
+        logger.info(f"{fp} - {' '.join(files)[:100]}")
 
     def rest_repo(self, commid_id=None):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""
@@ -236,13 +232,13 @@ class ZbTask(ToolBase):
         self.local_cfg.error_msg.set_value(msgs)
         self.exit()
         if skip_msg:
-            self.zip_file.parent().child("skip.txt").write_file(skip_msg)
+            self.input_dir.child("skip.txt").write_file(skip_msg)
         if statu:
-            logger.info(f"{self.input_json.path} SUCCESS {skip_msg}")
-            self.input_dir.zip(self.zip_file.path)
+            logger.info(f"{self.task_id} SUCCESS {skip_msg}")
+            self.input_dir.zip(self.zip_file.path, TARGETS)
         else:
-            logger.info(f"{self.input_json.path} FAIL {msgs}")
-            self.zip_file.parent().remove()
+            logger.info(f"{self.task_id} FAIL {msgs}")
+            self.zip_file.remove()
             raise Exception("FAIL", msgs)
 
     def print_result(self):
@@ -397,7 +393,7 @@ class ZbTask(ToolBase):
         self.logger.debug(f"python {self.main_py_file.path}")
 
     def make_env(self):
-        OsUtil("sh").set_venv(self.repo)
+        OsUtil("sh").set_venv(f"/.venv/{self.repo}/{os.name}_py37")
 
     def run0(self):
         self.rest_repo()

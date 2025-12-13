@@ -1,7 +1,7 @@
 from common.third_util.selenium_util import SeleniumUtil, By
 from common.util.export import time, logger
 from common.service.export import Api, API_CONFIG
-from .util import task_cfg
+from .util import task_cfg, TaskCfg, get_info_by_name
 
 USER_CONFIG = API_CONFIG.get("Zb")
 
@@ -20,6 +20,23 @@ class WebTool(SeleniumUtil):
             next_btn.click()
             time.sleep(1)
             self.get_job_info()
+
+    def get_task_info(self, uri, upload_uri):
+        self.get(uri)
+        btn_upload = None
+        ret = None
+        for btn in self.get_elements_by_xpath("//button"):
+            if btn.text == "点击下载":
+                ret = btn.get_attribute("url")
+            elif btn.text == "点击上传":
+                btn_upload = btn
+        if not upload_uri:
+            btn_upload.click()
+            self.switch_to_window()
+            upload_uri = self.current_url
+            self.close_current_window()
+            self.switch_to_window(0)
+        return ret, upload_uri
 
     def parse_job_table(self):
         for tr in self.get_elements_by_xpath("//tbody[@class='ant-table-tbody']/tr"):

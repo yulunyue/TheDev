@@ -94,9 +94,11 @@ class File:
     def read_line(self):
         return self.read_data().decode("utf-8").replace("\r", "").split("\n")
 
-    def copy_to(self, dst: "File"):
+    def copy_to(self, dst: "File", over_write=False):
         if isinstance(dst, str):
             dst = File(dst)
+        if dst.exists() and not over_write:
+            return dst
         if self.is_file():
             dst.write_file(self.read_data())
         return dst
@@ -226,24 +228,30 @@ class File:
         self.make_dir_if_not_exist()
         return open(self.path, "wb")
 
-    def zip(self, dst=None):
+    def zip(self, dst=None, targets=None):
         if dst is None:
             dst = self.path + ".zip"
         with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as f:
-            for c in self.list_tree_file():
-                arc_name = os.path.relpath(c.path, self.path)
-                f.write(c.path, arcname=arc_name)
+            if targets is None:
+                targets = [[c.path, self.path] for c in self.list_tree_file()]
+            for c in targets:
+                if isinstance(c, list):
+                    arc_name = os.path.relpath(c[0], c[1])
+                else:
+                    arc_name = c
+                f.write(c, arcname=arc_name)
         return self
 
-    def unzip(self, output_dir=None):
-        if output_dir is None:
-            output_dir = self.path.replace(".zip", "")
-        dst = File(output_dir)
+    def unzip(self, dst=None):
+        if dst is None:
+            dst = self.path.replace(".zip", "")
+        if isinstance(dst, str):
+            dst = File(dst)
         if dst.exists():
             return dst
         with zipfile.ZipFile(self.path) as zf:
             for member in zf.namelist():
-                zf.extract(member, path=output_dir)
+                zf.extract(member, path=dst.path)
         return dst
 
     def replace(self, info: dict):

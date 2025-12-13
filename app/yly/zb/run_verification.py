@@ -7,16 +7,28 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 sys.stdout.reconfigure(encoding="utf-8")
+
+
 # --- 配置 ---
 # 请在这里设置你的代码仓库的绝对路径
-PASSED = "passed"
-SUCCESS = "success"
-FAILURE = "failure"
-FAILED = "failed"
-SKIPPED = "skipped"
-PASS_TO_PASS = "PASS_TO_PASS"
-PASS_TO_FAIL = "PASS_TO_FAIL"
-FAIL_TO_PASS = "FAIL_TO_PASS"
+class CS:
+    PASSED = "passed"
+    SUCCESS = "success"
+    FAILURE = "failure"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+    PASS_TO_PASS = "PASS_TO_PASS"
+    PASS_TO_FAIL = "PASS_TO_FAIL"
+    FAIL_TO_PASS = "FAIL_TO_PASS"
+    RESULT_JSON_FILE = "result.json"
+    RUN_VERIFICATION_PY = "run_verification.py"
+    CODE_PATCH = "code.patch"
+    DOCKERFILE = "Dockerfile"
+    SETUP_ENV_SH = "setup_env.sh"
+    SETUP_REPO_SH = "setup_repo.sh"
+    TEST_PATCH = "test.patch"
+
+
 INSTANCE_ID = "%{INSTANCE_ID}"
 REPO_PATH = "%{REPO_PATH}"
 # 要进行测试的基础 commit 哈希
@@ -26,7 +38,6 @@ CODE_PATCH = "code.patch"
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_DIR = Path(REPO_PATH)
-RESULT_JSON_FILE = "result.json"
 PY_TEST_MAIN_CODE = """
 %{PY_TEST_MAIN_CODE}
 """

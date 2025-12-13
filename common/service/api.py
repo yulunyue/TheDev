@@ -129,7 +129,7 @@ class Api:
 
     def download(self, url: str, dst=None, data=None, timeout=3600):
         if dst is None:
-            dst = f"/Thedev/data/download/{url.split('/').pop()}"
+            dst = f"/Thedev/data/download/{url.split('/').pop().split('?')[0]}"
         f = File(dst)
         if f.exists():
             return f

@@ -7,17 +7,16 @@ from common.tool.export import (
     DictModel,
     BoolModel,
 )
-from .run_verification import (
-    PASSED,
-    PASS_TO_PASS,
-    FAIL_TO_PASS,
-    PASS_TO_FAIL,
-    SUCCESS,
-    FAILURE,
-    SKIPPED,
-    FAILED,
-)
+from .run_verification import CS
 
+TARGETS = [
+    CS.CODE_PATCH,
+    CS.TEST_PATCH,
+    CS.RUN_VERIFICATION_PY,
+    CS.DOCKERFILE,
+    CS.SETUP_ENV_SH,
+    CS.SETUP_REPO_SH,
+]
 INPUTS_DIR = File("app/yly/zb")
 TASK_DIR = INPUTS_DIR.child("task")
 INFO_DIR = INPUTS_DIR.child("info")
@@ -32,11 +31,14 @@ REPO_BASE = GC.repo_path.get_value()
 
 
 def get_info_by_name(file_name: str):
-    heads = file_name.split("-")
-    pr = heads.pop()
-    name = "-".join(heads)
-    owner, task_id, repo = name.split("_")
-    return owner, task_id, repo, pr
+    try:
+        heads = file_name.split("-")
+        pr = heads.pop()
+        name = "-".join(heads)
+        owner, task_id, repo = name.split("_")
+        return owner, task_id, repo, pr
+    except Exception as e:
+        raise Exception(e, file_name)
 
 
 class Cg(ConfigBase):
@@ -64,8 +66,13 @@ class TaskCfg(ConfigBase):
     after_setup_env = DictModel()
     need_setup_env = BoolModel(False)
     submit_url = StrModel()
+    upload_uri = StrModel()
+    pr_url = StrModel()
+    issue_url = StrModel()
     down_load_uri = StrModel()
+    name = StrModel()
 
 
 def task_cfg(task_id):
-    return TaskCfg(task_id).set_resource(INFO_DIR.child(f"{task_id}.json"))
+    f = INFO_DIR.child(f"{task_id}.json")
+    return TaskCfg(task_id).set_resource(f)
