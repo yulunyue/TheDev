@@ -59,9 +59,7 @@ class ZbTask(ToolBase):
             self.input_dir.name
         )
         self.name: str = f"{self.owner}/{self.repo}"
-        self.local_cfg = TaskCfg(self.task_id).set_resource(
-            INFO_DIR.child(f"{self.task_id}.json")
-        )
+        self.local_cfg = 
         self.input_json = self.input_dir.child(
             f"{self.owner}__{self.repo}-{self.pr}.json"
         )

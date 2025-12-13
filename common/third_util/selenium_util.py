@@ -277,7 +277,13 @@ class SeleniumUtil:
 
         self.driver.execute_script(script)
 
+    @property
+    def current_url(self):
+        return self.driver.current_url
+
     def get(self, url):
+        if self.driver.current_url == url:
+            return url
         self.driver.get(url)
         current_url = self.driver.current_url
         for _ in range(7):

@@ -1,6 +1,7 @@
 from common.third_util.selenium_util import SeleniumUtil, By
 from common.util.export import time, logger
 from common.service.export import Api, API_CONFIG
+from .util import task_cfg
 
 USER_CONFIG = API_CONFIG.get("Zb")
 
@@ -10,29 +11,36 @@ class WebTool(SeleniumUtil):
 
     def get_job_info(self):
         self.get(self.JOB_URL)
-        time.sleep(2)
-        next_btn = self.get_element_by_xpath("//li[@title='下一页']/button")
-        while next_btn.get_attribute("disabled") is None:
-            self.parse_job_table()
+        if self.parse_job_table():
+            self.get_job_info()
+        else:
+            next_btn = self.get_element_by_xpath("//li[@title='下一页']/button")
+            if next_btn.get_attribute("disabled") is not None:
+                return
             next_btn.click()
-            time.sleep(2)
+            time.sleep(1)
+            self.get_job_info()
 
     def parse_job_table(self):
         for tr in self.get_elements_by_xpath("//tbody[@class='ant-table-tbody']/tr"):
             task_id, data_batch, statu, data_source, rest_time, method, *args = (
                 tr.text.split(" ")
             )
-            logger.info(
-                f"任务ID:{task_id} 数据批次:{data_batch} 状态:{statu} 数据来源:{data_source} 剩余时间:{rest_time} 方法:{method}"
-            )
-
-            # e.find_element(By.TAG_NAME, "button").click()
-            # self.switch_to_window()
-            # self.get_element_by_tag("button")
-            # for jump_btn in self.find_elements_by_tag("button"):
-            #     logger.info(self.e_format(jump_btn))
-            # self.close_current_window()
-            # time.sleep(4)
+            t = task_cfg(task_id=task_id)
+            if not t.submit_url.get_value():
+                logger.info(
+                    f"任务ID:{task_id} 数据批次:{data_batch} 状态:{statu} 数据来源:{data_source} 剩余时间:{rest_time} 方法:{method}"
+                )
+                tr.find_element(By.TAG_NAME, "button").click()
+                self.switch_to_window()
+                t.submit_url.set_value(self.current_url)
+                self.close_current_window()
+                self.switch_to_window(0)
+                t.save()
+                time.sleep(1)
+                self.get_job_info()
+                return True
+        return False
 
     def login(self):
         self.get_element_by_id("name").send_keys(USER_CONFIG.user_name.get_value())

@@ -1,0 +1,11 @@
+{
+    "after_setup_env": {},
+    "down_load_uri": "",
+    "error_msg": "",
+    "need_setup_env": false,
+    "result": {},
+    "setup_env": [],
+    "skip": false,
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=6624&businessType=WORK",
+    "test_main": ""
+}

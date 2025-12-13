@@ -63,3 +63,9 @@ class TaskCfg(ConfigBase):
     result = DictModel()
     after_setup_env = DictModel()
     need_setup_env = BoolModel(False)
+    submit_url = StrModel()
+    down_load_uri = StrModel()
+
+
+def task_cfg(task_id):
+    return TaskCfg(task_id).set_resource(INFO_DIR.child(f"{task_id}.json"))
