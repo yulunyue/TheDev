@@ -11,10 +11,11 @@ python -m tool.docker_cli build app/yly/zb/CTFd__CTFd-1922/Dockerfile
 python -m app.yly.zb.main briefcase/beeware_6038_briefcase-1188 run1
 python -m app.yly.zb.main briefcase/beeware_6038_briefcase-1188 docker_build
 python -m app.yly.zb.main briefcase/beeware_6034_briefcase-1006 docker_verify
-python -m app.yly.zb.manage main
+python -m app.yly.zb.manage main key=briefcase
 python -m app.yly.zb.manage web_run
+python .\verify.py task/briefcase/beeware_6035_briefcase-1058
 docker rm zb
-docker run -v d:/thebug/TheDev:/TheDev --name zb -it zb:latest
+docker run -v d:/thebug/TheDev:/d:/thebugTheDev --name zb -it zb:latest
 docker exec -it zb /bin/bash
 
 pytest tests/console/test_Log.py::test_save_log_to_file_fail_to_write_file

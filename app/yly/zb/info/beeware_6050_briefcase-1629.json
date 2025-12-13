@@ -27,15 +27,15 @@
         "pass_to_fail": [],
         "fail_to_pass": [
             "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_device_permissions",
-            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_physical_device_macOS",
-            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_multiple_devices"
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_multiple_devices",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_physical_device_macOS"
         ],
         "pass_to_pass": [
-            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_one_emulator",
             "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_model",
-            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_daemon_start",
             "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_adb_error",
-            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_devices"
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_devices",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_daemon_start",
+            "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_one_emulator"
         ],
         "pre": {
             "tests/integrations/android_sdk/AndroidSDK/test_devices.py::test_no_devices": "passed",

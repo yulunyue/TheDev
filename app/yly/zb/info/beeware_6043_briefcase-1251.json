@@ -21,11 +21,11 @@
             "tests/console/test_Printer.py::test_very_long_line": "passed"
         },
         "pass_to_pass": [
-            "tests/console/test_Printer.py::test_to_console",
-            "tests/console/test_Printer.py::test_very_long_line",
-            "tests/console/test_Printer.py::test_to_log",
             "tests/console/test_Printer.py::test_call[False-a line of output-]",
-            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]"
+            "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]",
+            "tests/console/test_Printer.py::test_to_console",
+            "tests/console/test_Printer.py::test_to_log",
+            "tests/console/test_Printer.py::test_very_long_line"
         ],
         "pre": {
             "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",

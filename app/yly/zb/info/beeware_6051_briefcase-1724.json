@@ -4,12 +4,12 @@
     "need_setup_env": false,
     "result": {
         "fail_to_fail": [
+            "tests/commands/new/test_build_context.py::test_question_sequence_none",
             "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear",
             "tests/commands/new/test_build_context.py::test_question_sequence_pygame",
             "tests/commands/new/test_build_context.py::test_question_sequence_pyside6",
-            "tests/commands/new/test_build_context.py::test_question_sequence_none",
-            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input",
-            "tests/commands/new/test_build_context.py::test_question_sequence_toga"
+            "tests/commands/new/test_build_context.py::test_question_sequence_toga",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input"
         ],
         "pass_to_fail": [],
         "fail_to_pass": [],
@@ -40,11 +40,11 @@
             "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context": "passed"
         },
         "pass_to_pass": [
+            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap",
             "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override",
-            "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override",
-            "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap"
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides"
         ],
         "pre": {
             "tests/commands/new/test_build_context.py::test_question_sequence_toga": "failed",

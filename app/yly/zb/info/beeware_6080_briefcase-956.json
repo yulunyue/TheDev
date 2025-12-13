@@ -54,22 +54,22 @@
         "fail_to_fail": [],
         "pass_to_fail": [],
         "fail_to_pass": [
-            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip]",
-            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=\"something.zip\"; filename*=utf-8''%e2%82%ac%20rates]",
-            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None]",
             "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip; ignored=okay]",
-            "tests/integrations/download/test_Download__file.py::test_content_connection_error",
-            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-]",
             "tests/integrations/download/test_Download__file.py::test_iter_content_connection_error",
+            "tests/integrations/download/test_Download__file.py::test_content_connection_error",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-ATTACHment; filename=    \"something.zip\"]",
             "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-garbage]",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None]",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-]",
             "tests/integrations/download/test_Download__file.py::test_new_download_chunked",
-            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-ATTACHment; filename=    \"something.zip\"]"
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip]",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=\"something.zip\"; filename*=utf-8''%e2%82%ac%20rates]"
         ],
         "pass_to_pass": [
-            "tests/integrations/download/test_Download__file.py::test_bad_resource",
             "tests/integrations/download/test_Download__file.py::test_already_downloaded",
+            "tests/integrations/download/test_Download__file.py::test_missing_resource",
             "tests/integrations/download/test_Download__file.py::test_get_connection_error",
-            "tests/integrations/download/test_Download__file.py::test_missing_resource"
+            "tests/integrations/download/test_Download__file.py::test_bad_resource"
         ]
     },
     "setup_env": [],

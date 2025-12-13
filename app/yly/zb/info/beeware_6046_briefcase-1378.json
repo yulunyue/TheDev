@@ -24,8 +24,8 @@
         ],
         "pass_to_pass": [
             "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]",
-            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]",
             "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]",
             "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command"
         ],
         "pre": {
