@@ -26,6 +26,8 @@ from .util import (
     PASS_TO_FAIL,
     SUCCESS,
     FAILURE,
+    FAILED,
+    SKIPPED,
 )
 
 PIP_INSTALL_WITH_NO_DEPENDDS = {}
@@ -98,19 +100,20 @@ class ZbTask(ToolBase):
         return result
 
     def get_update_file_by_batch(self, fp: File):
-
+        change_test_files = dict()
         for s in fp.read_line():
             if s.startswith("+++ b/"):
                 f = self.local_repo.child(s[6:])
                 if f.path.endswith(".py") and f.name.startswith("test_"):
                     key = f.path.replace(self.local_repo.path + "/", "")
-                    self.change_py_test_files[key] = f
+                    change_test_files[key] = f
+        self.change_py_test_files.update(change_test_files)
+        logger.info(f"{fp} -> {str(list(change_test_files.keys())[:50])}...")
 
     def rest_repo(self, commid_id=None):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""
         if commid_id is None:
             commid_id = self.cfg.base_commit.get_value()
-        self.logger.debug(f"git reset {commid_id}")
         success, stdout, stderr = self.git_cmd.run("reset", "--hard", commid_id)
         if not success:
             self.finish(success, f"git reset fail")
@@ -186,7 +189,6 @@ class ZbTask(ToolBase):
 
     def get_py_test_cmds(self):
         files = list(self.change_py_test_files.keys())
-        logger.info(f"get change_file_form patch {files}")
         model_py_test = self.local_cfg.test_main.get_value()
         if model_py_test:
             return model_py_test
@@ -272,7 +274,7 @@ class ZbTask(ToolBase):
             elif old_statu == new_statu:
                 if new_statu == PASSED:
                     pass_to_pass.append(k)
-                else:
+                elif new_statu == FAILED:
                     fail_to_fail.append(k)
         self.update_result(fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass)
 
@@ -311,10 +313,10 @@ class ZbTask(ToolBase):
 
     def update_result(self, fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass):
         local_result = self.local_cfg.result.get_value()
-        local_result["fail_to_fail"] = fail_to_fail
-        local_result["pass_to_fail"] = pass_to_fail
-        local_result["fail_to_pass"] = fail_to_pass
-        local_result["pass_to_pass"] = pass_to_pass
+        local_result["fail_to_fail"] = sorted(fail_to_fail)
+        local_result["pass_to_fail"] = sorted(pass_to_fail)
+        local_result["fail_to_pass"] = sorted(fail_to_pass)
+        local_result["pass_to_pass"] = sorted(pass_to_pass)
         self.cfg.PASS_TO_PASS.set_value(pass_to_pass)
         if fail_to_fail:
             self.finish(False, f"fail_to_fail")

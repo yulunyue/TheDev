@@ -9,6 +9,14 @@ import xml.etree.ElementTree as ET
 sys.stdout.reconfigure(encoding="utf-8")
 # --- 配置 ---
 # 请在这里设置你的代码仓库的绝对路径
+PASSED = "passed"
+SUCCESS = "success"
+FAILURE = "failure"
+FAILED = "failed"
+SKIPPED = "skipped"
+PASS_TO_PASS = "PASS_TO_PASS"
+PASS_TO_FAIL = "PASS_TO_FAIL"
+FAIL_TO_PASS = "FAIL_TO_PASS"
 INSTANCE_ID = "%{INSTANCE_ID}"
 REPO_PATH = "%{REPO_PATH}"
 # 要进行测试的基础 commit 哈希

@@ -7,10 +7,17 @@ from common.tool.export import (
     DictModel,
     BoolModel,
 )
+from .run_verification import (
+    PASSED,
+    PASS_TO_PASS,
+    FAIL_TO_PASS,
+    PASS_TO_FAIL,
+    SUCCESS,
+    FAILURE,
+    SKIPPED,
+    FAILED,
+)
 
-PASS_TO_PASS = "PASS_TO_PASS"
-PASS_TO_FAIL = "PASS_TO_FAIL"
-FAIL_TO_PASS = "FAIL_TO_PASS"
 INPUTS_DIR = File("app/yly/zb")
 TASK_DIR = INPUTS_DIR.child("task")
 INFO_DIR = INPUTS_DIR.child("info")
@@ -22,9 +29,6 @@ class GConfig(ConfigBase):
 
 GC = GConfig("zb").set_resource("zb")
 REPO_BASE = GC.repo_path.get_value()
-PASSED = "passed"
-SUCCESS = "success"
-FAILURE = "failure"
 
 
 def get_info_by_name(file_name: str):
