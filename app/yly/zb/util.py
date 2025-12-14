@@ -74,6 +74,14 @@ class TaskCfg(ConfigBase):
     name = StrModel()
     py_name = StrModel("py3")
 
+    @property
+    def id(self):
+        return self.key + "_" + self.name.get_value()
+
+    @property
+    def zip_file(self):
+        return TASK_DIR.child(self.key).child(self.name.get_value() + ".zip")
+
 
 def task_cfg(task_id):
     f = INFO_DIR.child(f"{task_id}.json")

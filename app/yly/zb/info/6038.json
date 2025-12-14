@@ -14,7 +14,7 @@
             "tests/console/test_Log.py::test_save_log_to_file_with_multiple_exceptions": "passed",
             "tests/console/test_Log.py::test_save_log_to_file_extra": "passed",
             "tests/console/test_Log.py::test_save_log_to_file_extra_interrupted": "passed",
-            "tests/console/test_Log.py::test_save_log_to_file_fail_to_write_file": "passed",
+            "tests/console/test_Log.py::test_save_log_to_file_fail_to_write_file": "failed",
             "tests/console/test_Log.py::test_log_with_context": "passed",
             "tests/console/test_Log.py::test_log_error_with_context_": "passed",
             "tests/integrations/windows_sdk/test_WindowsSDK__verify.py::test_short_circuit": "passed",
