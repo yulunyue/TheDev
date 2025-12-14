@@ -49,11 +49,10 @@ class WebTool(SeleniumUtil):
             inp.send_keys(str(skip))
             self.get_element_by_xpath("//div[@class='ant-select-selector']").click()
             self.get_element_by_xpath("//div[@title='无效数据']").click()
-        self.get_element_by_xpath("//button[@form='task-form'][1]").click()
+        self.get_element_by_xpath("//button[@form='task-form'][2]").click()
         self.get_element_by_xpath(
             "//div[@class='ant-modal-confirm-btns']//button[1]"
         ).click()
-        # self.get(self.JOB_URL)
 
     def upload(self, f: File):
         self.get("http://39.99.159.226")
@@ -68,6 +67,7 @@ class WebTool(SeleniumUtil):
                 tr.text.split(" ")
             )
             t = task_cfg(task_id=task_id)
+
             self.to_do_task.append(t)
             if not t.submit_url.get_value():
                 logger.info(
@@ -97,8 +97,9 @@ class WebTool(SeleniumUtil):
         self.reload()
         self.get_job_info()
         for t in self.to_do_task:
-            zip_file = TASK_DIR.child(t.key).child(f"{t.name}.zip")
+            zip_file = TASK_DIR.child(t.key).child(f"{t.name.get_value()}.zip")
             if zip_file.exists():
+                logger.info(zip_file)
                 self.upload(zip_file)
                 self.submit(t)
 

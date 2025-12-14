@@ -1,5 +1,6 @@
 from common.util.export import ToolBase
 from common.third_util.docker_util import DockerUtil
+from common.util.export import logger
 
 
 class DockerCli(ToolBase):
@@ -10,7 +11,7 @@ class DockerCli(ToolBase):
         self.u.build(path)
 
     def info(self, **kw):
-        self.u.info()
+        logger.info(self.u.info())
 
 
 if __name__ == "__main__":

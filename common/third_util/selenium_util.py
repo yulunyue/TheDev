@@ -223,7 +223,7 @@ class SeleniumUtil:
             else:
                 self.options.add_argument("--headless")
             self.driver = webdriver.Chrome(options=self.options, service=service)
-            self.wait = WebDriverWait(self.driver, 5)
+            self.wait = WebDriverWait(self.driver, 15)
             # self.driver.set_page_load_timeout(10)
 
         return self
