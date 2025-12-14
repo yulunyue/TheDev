@@ -30,6 +30,7 @@ class CS:
     TEST_PATCH = "test.patch"
 
 
+PY_BIN = "%{PY_BIN}"
 INSTANCE_ID = "%{INSTANCE_ID}"
 REPO_PATH = "%{REPO_PATH}"
 # 要进行测试的基础 commit 哈希
@@ -192,9 +193,7 @@ def run_py_test():
     result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
     if os.path.exists(result_file):
         os.remove(result_file)
-    statu_code, msg, msg1 = run_command(
-        [sys.executable, "py_test_main.py"], cwd=REPO_DIR
-    )
+    statu_code, msg, msg1 = run_command([PY_BIN, "py_test_main.py"], cwd=REPO_DIR)
     # os.system(f"rm -rf {py_path}")
     result, ct = dict(), dict()
     if os.path.exists(result_file):

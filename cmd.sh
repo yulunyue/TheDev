@@ -8,7 +8,7 @@ python -m tool.dfx app.yly.envs.cg.cw.main.Solution dev execute
 python -m tool.docker_cli build app/yly/zb/CTFd__CTFd-1922/Dockerfile
 
 
-python -m app.yly.zb.main 6652 main
+python -m app.yly.zb.main 6638 init1
 python -m app.yly.zb.manage main key=briefcase
 python -m app.yly.zb.manage web_run
 python .\verify.py task/briefcase/beeware_6035_briefcase-1058
@@ -21,8 +21,9 @@ rm -rf briefcase
 ln -s /TheDev/data/repo/beeware/briefcase briefcase
 mklink 
 
+git clone https://ghfast.top/https://github.com/beeware/briefcase.git /testbed/beeware/briefcase
 
 python -m app.yly.zb.main 6040 patch_repair path=tests/platforms/macOS/app/test_signing.py
-
+bash /mnt/f/TheDev/app/yly/zb/task/6038/setup_env.sh
 
 H:/thedev/data/chrome_bin/chrome-win64/chrome.exe --remote-debugging-port=9222 --user-data-dir="H:/code/TheDev/data/chrome"
