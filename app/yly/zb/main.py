@@ -41,6 +41,7 @@ class ZbTask(ToolBase):
         if not self.local_cfg.resource.exists():
             raise Exception(f"{self.local_cfg.resource} not exist")
         self.input_dir = TASK_DIR.child(task_id)
+
         if not self.local_cfg.name.get_value() or not self.input_dir.exists():
             from .auto import WT, Api
 
@@ -275,6 +276,7 @@ class ZbTask(ToolBase):
                 BASE_COMMIT=self.cfg.base_commit.get_value(),
                 INSTANCE_ID=self.cfg.instance_id.get_value(),
                 content_category=self.cfg.content_category.get_value(),
+                PY_BIN=self.venv_dir + "/bin/python",
                 PY_TEST_MAIN_CODE=StrUtil().format(
                     INPUTS_DIR.child("py_test_main.py").read_file(),
                     PY_MAIN_CMD=self.get_py_test_cmds(),
@@ -393,8 +395,6 @@ class ZbTask(ToolBase):
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
-        if self.docker_image_name is None:
-            self.make_env()
         self.logger.debug(self.cfg.pr_url.get_value())
         self.logger.debug(self.cfg.issue_url.get_value())
         self.logger.debug(self.local_repo.path)
@@ -403,9 +403,6 @@ class ZbTask(ToolBase):
     @property
     def venv_dir(self):
         return f"/.venv/{self.repo}/{os.name}_{self.local_cfg.py_name.get_value()}"
-
-    def make_env(self):
-        OsUtil("sh").set_venv(self.venv_dir)
 
     def run0(self):
         self.rest_repo()
