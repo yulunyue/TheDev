@@ -22,7 +22,7 @@ ln -s /TheDev/data/repo/beeware/briefcase briefcase
 mklink 
 
 
-python -m app.yly.zb.main 6040 patch_repair path=tests/platforms/macOS/app/test_signing.py
+python -m app.yly.zb.main 6038 patch_repair path=tests/platforms/macOS/app/test_signing.py
 
 
 H:/thedev/data/chrome_bin/chrome-win64/chrome.exe --remote-debugging-port=9222 --user-data-dir="H:/code/TheDev/data/chrome"
