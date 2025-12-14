@@ -1,7 +1,7 @@
 from common.third_util.selenium_util import SeleniumUtil, By
-from common.util.export import time, logger
+from common.util.export import time, logger, File, List
 from common.service.export import Api, API_CONFIG
-from .util import task_cfg, TaskCfg, get_info_by_name
+from .util import task_cfg, TaskCfg, get_info_by_name, TASK_DIR
 
 USER_CONFIG = API_CONFIG.get("Zb")
 
@@ -21,22 +21,46 @@ class WebTool(SeleniumUtil):
             time.sleep(1)
             self.get_job_info()
 
-    def get_task_info(self, uri, upload_uri):
-        self.get(uri)
-        btn_upload = None
-        ret = None
+    def do_task(self, t: TaskCfg, input_dir):
+        self.get(t.submit_url.get_value())
+        self.reload()
         for btn in self.get_elements_by_xpath("//button"):
-            if btn.text == "点击下载":
-                ret = btn.get_attribute("url")
-            elif btn.text == "点击上传":
-                btn_upload = btn
-        if not upload_uri:
-            btn_upload.click()
-            self.switch_to_window()
-            upload_uri = self.current_url
-            self.close_current_window()
-            self.switch_to_window(0)
-        return ret, upload_uri
+            if (
+                btn.text == "点击下载"
+                and not t.name.get_value()
+                or not t.down_load_uri.get_value()
+            ):
+                down_load_uri = btn.get_attribute("url")
+
+                f = Api().download(down_load_uri)
+                f.unzip(input_dir)
+                t.name.set_value(f.name.replace(".zip", ""))
+                t.down_load_uri.set_value(down_load_uri)
+        t.save()
+
+    def submit(self, t: TaskCfg):
+        self.get(t.submit_url.get_value())
+        self.reload()
+        skip = t.skip.get_value()
+        if skip:
+            self.get_element_by_xpath("//input[@value='invalid']").click()
+            inp = self.get_element_by_xpath('//input[@class="ct-ant-input"]')
+            inp.clear()
+            inp.send_keys(str(skip))
+            self.get_element_by_xpath("//div[@class='ant-select-selector']").click()
+            self.get_element_by_xpath("//div[@title='无效数据']").click()
+        self.get_element_by_xpath("//button[@form='task-form'][1]").click()
+        self.get_element_by_xpath(
+            "//div[@class='ant-modal-confirm-btns']//button[1]"
+        ).click()
+        # self.get(self.JOB_URL)
+
+    def upload(self, f: File):
+        self.get("http://39.99.159.226")
+        self.reload()
+        self.get_element_by_xpath("//input[@type='file']").send_keys(f.get_abs_path())
+        self.get_element_by_xpath(f"//p[contains(text(),'{f.file_name}')]")
+        return True
 
     def parse_job_table(self):
         for tr in self.get_elements_by_xpath("//tbody[@class='ant-table-tbody']/tr"):
@@ -44,6 +68,7 @@ class WebTool(SeleniumUtil):
                 tr.text.split(" ")
             )
             t = task_cfg(task_id=task_id)
+            self.to_do_task.append(t)
             if not t.submit_url.get_value():
                 logger.info(
                     f"任务ID:{task_id} 数据批次:{data_batch} 状态:{statu} 数据来源:{data_source} 剩余时间:{rest_time} 方法:{method}"
@@ -67,7 +92,15 @@ class WebTool(SeleniumUtil):
         return self
 
     def run(self):
+        self.to_do_task: List[TaskCfg] = []
+        self.get(self.JOB_URL)
+        self.reload()
         self.get_job_info()
+        for t in self.to_do_task:
+            zip_file = TASK_DIR.child(t.key).child(f"{t.name}.zip")
+            if zip_file.exists():
+                self.upload(zip_file)
+                self.submit(t)
 
 
 class ApiZb(Api):

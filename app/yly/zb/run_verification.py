@@ -20,6 +20,7 @@ class CS:
     PASS_TO_PASS = "PASS_TO_PASS"
     PASS_TO_FAIL = "PASS_TO_FAIL"
     FAIL_TO_PASS = "FAIL_TO_PASS"
+    FAIL_TO_FAIL = "FAIL_TO_FAIL"
     RESULT_JSON_FILE = "result.json"
     RUN_VERIFICATION_PY = "run_verification.py"
     CODE_PATCH = "code.patch"
@@ -172,7 +173,7 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
 
 def get_result():
     result = dict()
-    result_file = f"{REPO_DIR}/{RESULT_JSON_FILE}"
+    result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
     ct = dict()
     with open(result_file, "r") as f:
         data = json.loads(f.read())
@@ -188,7 +189,7 @@ def run_py_test():
     py_path = f"{REPO_DIR}/py_test_main.py"
     with open(py_path, "w", encoding="utf-8") as f:
         f.write(PY_TEST_MAIN_CODE)
-    result_file = f"{REPO_DIR}/{RESULT_JSON_FILE}"
+    result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
     if os.path.exists(result_file):
         os.remove(result_file)
     statu_code, msg, msg1 = run_command(

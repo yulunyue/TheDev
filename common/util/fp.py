@@ -233,13 +233,13 @@ class File:
             dst = self.path + ".zip"
         with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as f:
             if targets is None:
-                targets = [[c.path, self.path] for c in self.list_tree_file()]
+                targets = self.list_tree_file()
             for c in targets:
-                if isinstance(c, list):
-                    arc_name = os.path.relpath(c[0], c[1])
+                if isinstance(c, File):
+                    local_path, c.path, arc_name = os.path.relpath(c.path, self.path)
                 else:
-                    arc_name = c
-                f.write(c, arcname=arc_name)
+                    local_path, arc_name = self.path + "/" + c, c
+                f.write(local_path, arcname=arc_name)
         return self
 
     def unzip(self, dst=None):

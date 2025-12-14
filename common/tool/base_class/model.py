@@ -81,7 +81,7 @@ class BoolModel(BaseModel):
 
 
 class NumberModel(BaseModel):
-    def __init__(self, default_value=0, key=None, data_source=None):
+    def __init__(self, default_value=None, key=None, data_source=None):
         super().__init__(default_value=default_value, key=key, data_source=data_source)
 
 

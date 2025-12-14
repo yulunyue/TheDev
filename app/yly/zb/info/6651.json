@@ -1,11 +1,16 @@
 {
     "after_setup_env": {},
-    "down_load_uri": "",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/dib-lab__khmer/dib-lab__khmer-900.zip?Expires=1766564357&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=kQzopr2x%2Fybtye3kH9Ndl9d3wA4%3D",
     "error_msg": "",
     "need_setup_env": false,
     "result": {},
     "setup_env": [],
     "skip": false,
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=6651&businessType=WORK",
-    "test_main": ""
+    "test_main": "",
+    "name": "dib-lab__khmer-900",
+    "issue_url": "",
+    "pr_change_files": null,
+    "pr_url": "",
+    "py_name": "py3"
 }

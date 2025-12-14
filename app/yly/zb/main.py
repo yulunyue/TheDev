@@ -44,25 +44,19 @@ class ZbTask(ToolBase):
         if not self.local_cfg.name.get_value() or not self.input_dir.exists():
             from .auto import WT, Api
 
-            down_load_uri, upload_uri = WT.load().get_task_info(
-                self.local_cfg.submit_url.get_value(),
-                self.local_cfg.upload_uri.get_value(),
-            )
-            f = Api().download(down_load_uri)
-            f.unzip(self.input_dir)
-            self.local_cfg.down_load_uri.set_value(f)
-            self.local_cfg.name.set_value(f.name.replace(".zip", ""))
-            self.local_cfg.upload_uri.set_value(upload_uri)
-            self.local_cfg.save()
+            WT.load().do_task(self.local_cfg, self.input_dir)
+
         if not self.input_dir.exists():
             raise Exception(self.input_dir.path, "not exist")
         self.cfg: Cg = Cg(self.task_id).set_resource(
             self.input_dir.child(self.local_cfg.name.get_value() + ".json")
         )
-        _, _, self.repo, self.pr = get_info_by_name(self.local_cfg.name.get_value())
+        self.owner, _, self.repo, self.pr = get_info_by_name(
+            self.local_cfg.name.get_value()
+        )
         logger.info(self.local_cfg.resource)
         logger.info(self.cfg.resource)
-        self.zip_file = self.input_dir.child(self.local_cfg.name.get_value() + ".json")
+        self.zip_file = self.input_dir.child(self.local_cfg.name.get_value() + ".zip")
         self.local_cfg.pr_url.set_value(self.cfg.pr_url.get_value())
         self.local_cfg.issue_url.set_value(self.cfg.issue_url.get_value())
         self.repo_uri = self.cfg.pr_url.get_value().split("/pull")[0] + ".git"
@@ -70,9 +64,22 @@ class ZbTask(ToolBase):
         self.local_repo = File(
             f"{REPO_BASE}/{self.cfg.repo.get_value()}"
         ).make_dir_if_not_exist()
-        self.git_cmd = GitUtil()
+        self.git_cmd = GitUtil().set_repo(self.repo).set_owner(self.owner)
         if not self.local_repo.exists():
             self.git_cmd.clone(self.repo_uri, self.local_repo.path)
+        # if self.local_cfg.pr_change_files.get_value() is None:
+        #     pr_info = self.git_cmd.get_pr_info(self.pr)
+        #     pr_change_files = [
+        #         f.to_json() for f in pr_info.files if f.filename.endswith(".python")
+        #     ]
+        #     self.local_cfg.pr_change_files.set_value(len(pr_change_files))
+        # else:
+        #     pr_change_files = self.local_cfg.pr_change_files.get_value()
+        # if not self.local_cfg.skip.get_value() and len(pr_change_files) >= 30:
+        #     self.local_cfg.skip.set_value(
+        #         f"PR修改文件数超过{len(pr_change_files)},所以是无效数据"
+        #     )
+
         self.setup_env_sh = self.input_dir.child("setup_env.sh")
         self.test_patch = self.input_dir.child("test.patch")
         self.code_patch = self.input_dir.child("code.patch")
@@ -230,16 +237,16 @@ class ZbTask(ToolBase):
 
     def finish(self, statu, msgs, skip_msg=""):
         self.local_cfg.error_msg.set_value(msgs)
-        self.exit()
+        self.save()
+        skip_file = self.input_dir.child("skip.txt").remove()
         if skip_msg:
-            self.input_dir.child("skip.txt").write_file(skip_msg)
+            skip_file.write_file(skip_msg)
         if statu:
-            logger.info(f"{self.task_id} SUCCESS {skip_msg}")
+            logger.info(f"{self.task_id} TASK_SUCCESS {skip_msg}")
             self.input_dir.zip(self.zip_file.path, TARGETS)
         else:
-            logger.info(f"{self.task_id} FAIL {msgs}")
+            logger.info(f"{self.task_id} TASK_FAIL {msgs}")
             self.zip_file.remove()
-            raise Exception("FAIL", msgs)
 
     def print_result(self):
         result = self.local_cfg.result.get_value()
@@ -249,14 +256,14 @@ class ZbTask(ToolBase):
         for k in set(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
-                if new_statu == PASSED:
+                if new_statu == CS.PASSED:
                     fail_to_pass.append(k)
-                elif old_statu == PASSED:
+                elif old_statu == CS.PASSED:
                     pass_to_fail.append(k)
             elif old_statu == new_statu:
-                if new_statu == PASSED:
+                if new_statu == CS.PASSED:
                     pass_to_pass.append(k)
-                elif new_statu == FAILED:
+                elif new_statu == CS.FAILED:
                     fail_to_fail.append(k)
         self.update_result(fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass)
 
@@ -283,9 +290,10 @@ class ZbTask(ToolBase):
 
             if DockerUtil(image_name).check_image_exists():
                 self.docker_image_name = image_name
+            return True
         except Exception as e:
             pass
-        return self
+        return False
 
     def docker_build(self, image_name, base_image_name="zb:latest"):
         from common.third_util.docker_util import DockerUtil
@@ -335,10 +343,10 @@ class ZbTask(ToolBase):
                 "tests_status"
             ]
             self.update_result(
-                result_json["FAIL_TO_FAIL"]["failure"],
-                result_json["PASS_TO_FAIL"]["failure"],
-                result_json["FAIL_TO_PASS"]["success"],
-                result_json[PASS_TO_PASS][SUCCESS],
+                result_json[CS.FAIL_TO_FAIL][CS.FAILURE],
+                result_json[CS.PASS_TO_FAIL][CS.FAILURE],
+                result_json[CS.FAIL_TO_PASS][CS.SUCCESS],
+                result_json[CS.PASS_TO_PASS][CS.SUCCESS],
             )
         else:
             self.finish(False, "UnKnow")
@@ -347,8 +355,8 @@ class ZbTask(ToolBase):
         setup_env_sh = [
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.cfg.base_commit.get_value()}",
-            f"python -m venv .venv",
-            f"source .venv/bin/activate",
+            f"python -m venv {self.venv_dir}",
+            f"source {self.venv_dir}/bin/activate",
             "python -m pip install --upgrade pip",
         ]
         setup_env_sh.append(
@@ -392,8 +400,12 @@ class ZbTask(ToolBase):
         self.logger.debug(self.local_repo.path)
         self.logger.debug(f"python {self.main_py_file.path}")
 
+    @property
+    def venv_dir(self):
+        return f"/.venv/{self.repo}/{os.name}_{self.local_cfg.py_name.get_value()}"
+
     def make_env(self):
-        OsUtil("sh").set_venv(f"/.venv/{self.repo}/{os.name}_py37")
+        OsUtil("sh").set_venv(self.venv_dir)
 
     def run0(self):
         self.rest_repo()
@@ -416,25 +428,31 @@ class ZbTask(ToolBase):
         self.apply_patch(self.code_patch)
         self.py_test("code")
 
-    def execute(self):
+    def main(self, **kw):
+        error_msg = self.local_cfg.error_msg.get_value()
+        skip = self.local_cfg.skip.get_value()
+        if self.zip_file.exists() and not error_msg:
+            logger.info(f"skip for {self.zip_file} exist and skip msg is {skip}")
+            return
+        self.init()
+        if skip:
+            if isinstance(skip, str):
+                self.finish(True, "", skip_msg=skip)
+            else:
+                logger.info(f"skip for {skip}")
+            return
         if not self.get_py_test_cmds():
             self.finish(False, "NOT FIND CASES")
-        if self.docker_image_name:
+        elif self.docker_image_name:
             self.docker_verify()
         else:
             self.verify_with_no_docker()
 
-    def main(self, **kw):
-        error_msg = self.local_cfg.error_msg.get_value()
-        if self.zip_file.exists() and not error_msg:
-            return
-        self.init()
-        skip = self.local_cfg.skip.get_value()
-        if skip:
-            if isinstance(skip, str):
-                self.finish(True, "", skip_msg=skip)
-            return
-        logger.run_capture_error(self.execute)
+    def submit(self):
+        from .auto import WT
+
+        WT.upload(self.zip_file)
+        WT.submit(self.local_cfg)
 
     def verify_with_no_docker(self):
         """

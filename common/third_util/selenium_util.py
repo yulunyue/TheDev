@@ -39,7 +39,7 @@ class SeleniumUtil:
         return self.driver.execute_script(js_code, element)
 
     def e_format_node(self, element: WebElement, text_max_size=20):
-        ret = []
+        ret = [""]
         element_id = element.get_attribute("id")
         tag_name = element.tag_name
         # 获取其他有用的属性
@@ -65,7 +65,15 @@ class SeleniumUtil:
         except:
             text = ""
         ret.append(
-            f"\n 标签: <{tag_name}>; ID: '{element_id}'; title: '{title}'; disabled: '{disabled}'"
+            "; ".join(
+                [
+                    f"标签: <{tag_name}>",
+                    f"ID: '{element_id}'",
+                    f"title: '{title}'",
+                    f"disabled: '{disabled}'",
+                    f"type: '{element.get_attribute("type")}'",
+                ]
+            )
         )
         ret.append(f"   XPATH:{self.get_xpath_from_chrome_devtools(element)} ")
         if class_attr:
@@ -180,15 +188,16 @@ class SeleniumUtil:
             os_util = OsUtil(chrome_exe.child("chrome-win64/chrome.exe").get_abs_path())
             info = os_util.check_port(dev_port)
             if not info:
-                os_util.run(
-                    f"--remote-debugging-port={dev_port}",
-                    f'--user-data-dir="{user_data_dir.get_abs_path()}"',
+                raise Exception(
+                    " ".join(
+                        [
+                            os_util.fun_name,
+                            f"--remote-debugging-port={dev_port}",
+                            f'--user-data-dir="{user_data_dir.get_abs_path()}"',
+                        ]
+                    )
                 )
-                info1 = os_util.check_port(dev_port)
-                if not info1:
-                    return self
-            else:
-                logger.info(info)
+
         if self.driver is None:
             self.options = Options()
             service = Service(
@@ -218,18 +227,6 @@ class SeleniumUtil:
             # self.driver.set_page_load_timeout(10)
 
         return self
-
-    def do_cmd(self, method, *args):
-        try:
-            if method == "go":
-                return self.get(*args)
-            elif method == "path":
-                return self.e_format(self.get_elements_by_xpath(args[0]))
-            elif method == "id":
-                return self.e_format(self.get_element_by_id(args[0]))
-            return "todo"
-        except Exception as e:
-            return str(e)
 
     def intercept_window_open(self):
         """拦截 window.open 调用"""
@@ -282,6 +279,7 @@ class SeleniumUtil:
         return self.driver.current_url
 
     def get(self, url):
+        self.load()
         if self.driver.current_url == url:
             return url
         self.driver.get(url)
@@ -321,7 +319,7 @@ class SeleniumUtil:
             idx = len(handles) - 1
         if 0 <= idx <= len(handles):
             self.driver.switch_to.window(handles[idx])
-            return True
+            return handles[idx]
         return False
 
     def close_current_window(self):
@@ -333,3 +331,33 @@ class SeleniumUtil:
 
     def script_click(self, ele):
         self.driver.execute_script("arguments[0].click();", ele)
+
+    def reload(self):
+        self.driver.refresh()
+        return self.current_url
+
+    def do_cmd(self, method, *args):
+        try:
+            if method == "go":
+                return self.get(*args)
+            elif method == "path":
+                return self.e_format(self.get_elements_by_xpath(args[0]))
+            elif method == "click":
+                return self.get_element_by_xpath(args[0]).click()
+            elif method == "open":
+                self.get_element_by_xpath(args[0]).click()
+                self.wait_for_window()
+                self.switch_to_window()
+                return self.current_url
+            elif method == "reload":
+                return self.reload()
+            elif method == "sendkeys":
+                r = self.get_element_by_xpath(args[0])
+                r.clear()
+                return r.send_keys(args[1])
+            elif method == "id":
+                return self.e_format(self.get_element_by_id(args[0]))
+
+            return "todo"
+        except Exception as e:
+            return str(e)

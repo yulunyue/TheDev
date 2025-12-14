@@ -1,31 +1,26 @@
 from common.util.export import ToolBase, logger, File, os, LOGER_PREFIX
 from common.tool.export import OsUtil
-from .util import INPUTS_DIR, TASK_DIR, get_info_by_name
+from .util import INPUTS_DIR, TASK_DIR, get_info_by_name, INFO_DIR
 
 from .main import ZbTask
 
 
 class ZbMangae(ToolBase):
-    def web_run(self):
+    def submit(self):
         from .auto import WT
 
         WT.load().run()
 
-    def dev(self):
-        r = File("../../downloads")
-        for f in r.list_dir():
-            if not f.path.endswith(".zip"):
-                continue
+    def main(self, key="", docker_name=None):
 
-    def main(self, key=""):
-        def ft(f: File):
-            return key in f.name and f.path.endswith(".zip")
-
-        fps = TASK_DIR.list_dir(-1, filter=ft)
+        fps = INFO_DIR.list_dir()
         for f in fps:
             t = ZbTask()
-            t.prepare(f)
-            t.set_docker_image_name("zb:latest")
+            t.prepare(f.name)
+            if key and key not in t.local_cfg.name.get_value():
+                continue
+            # if docker_name is None:
+            #     pass
             t.main()
             t.exit()
             # owner, task_id, repo, pr = get_info_by_name(f.name)

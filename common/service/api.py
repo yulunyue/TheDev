@@ -5,6 +5,7 @@ from common.util.export import (
     get_cache,
     hash_any,
     ThreadManage,
+    json_dumps,
 )
 import urllib3
 
@@ -83,11 +84,11 @@ def request_mock():
 
 class Api:
     CONTENT_TYPE = "content-type"
-    APPLICATION_JSON = "application/json;charset=UTF-8"
+    APPLICATION_JSON = "application/json"
 
-    def __init__(self):
+    def __init__(self, log_enable=False):
         self._name = self.__class__.__name__
-
+        self.log_enable = log_enable
         self.cache = None
 
     @property
@@ -187,7 +188,7 @@ class Api:
             return mock_res
         proxies = self.get_proxy()
         timeout = timeout or self.get_timeout()
-        logger.info(f"DO HTTP [{method}] {uri} {proxies} {timeout}")
+
         params = dict()
         if method == "GET":
             if data:
@@ -224,12 +225,17 @@ class Api:
         if res.status_code <= 300:
             content_type = res.headers.get(Api.CONTENT_TYPE)
             ret = res.content
-            if content_type in Api.APPLICATION_JSON:
+            if Api.APPLICATION_JSON in content_type:
                 ret = res.json()
+                if self.log_enable:
+                    logger.debug(
+                        f"DO HTTP [{method}] {uri} {proxies} {timeout} length={len(ret)}\n {json_dumps(ret)[:100]} "
+                    )
             else:
-                logger.info(content_type)
+                logger.debug(content_type)
             if self.cache:
                 self.cache.set(key, ret)
+
             return ret
         return self.hander_error(method, uri, res, data or param, cookies)
 

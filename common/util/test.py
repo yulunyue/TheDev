@@ -177,7 +177,11 @@ class ToolBase:
         out_put_msgs = dict()
         while True:
             time.sleep(1)
-            cmd = [v for v in fi.read_fast_file().split("\n") if v]
+            cmd = [
+                v
+                for v in fi.read_fast_file().split("\n")
+                if v and not v.startswith("#")
+            ]
             if cmd == last_cmd:
                 continue
             flag = False

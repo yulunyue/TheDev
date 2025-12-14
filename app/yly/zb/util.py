@@ -2,6 +2,7 @@ from common.util.export import logger, File, time
 from common.tool.export import (
     ConfigBase,
     TableBase,
+    NumberModel,
     StrModel,
     ListModel,
     DictModel,
@@ -66,11 +67,12 @@ class TaskCfg(ConfigBase):
     after_setup_env = DictModel()
     need_setup_env = BoolModel(False)
     submit_url = StrModel()
-    upload_uri = StrModel()
     pr_url = StrModel()
+    pr_change_files = NumberModel()
     issue_url = StrModel()
     down_load_uri = StrModel()
     name = StrModel()
+    py_name = StrModel("py3")
 
 
 def task_cfg(task_id):
