@@ -16,6 +16,8 @@ def json_dump(oj):
 
 class File:
     def __init__(self, path: str) -> None:
+        if not isinstance(path, str):
+            raise Exception(path)
         self.path = path
         self.dirs = path.split("/")
         self.file_name = self.dirs.pop()
@@ -38,6 +40,8 @@ class File:
         return os.path.getmtime(self.path)
 
     def child(self, name):
+        if not isinstance(name, str):
+            raise Exception(name)
         return File(self.path + "/" + name)
 
     def get_abs_path(self):
@@ -274,7 +278,7 @@ class File:
         return File(self.path.replace(src, dst))
 
     def __repr__(self):
-        return f"{self.path}"
+        return f"[File: {self.path} ; EXIST:{self.exists()}]"
 
 
 class Cache:

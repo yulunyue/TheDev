@@ -1,7 +1,7 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2388.zip?Expires=1766564081&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=iWr6tCzjxAu3834rkdX0MsYh8ek%3D",
-    "error_msg": "fail_to_pass",
+    "error_msg": "UnKnow",
     "need_setup_env": false,
     "result": {
         "pre": {},
@@ -15,10 +15,11 @@
     "setup_env": [],
     "skip": false,
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=6070&businessType=WORK",
-    "test_main": "",
+    "test_main": "tests/commands/dev/test_call.py tests/commands/new/test_build_app_context.py tests/commands/new/test_build_gui_context.py tests/commands/new/test_create_bootstrap.py tests/integrations/base/test_ToolCache.py tests/integrations/docker/test_DockerAppContext__dockerize_args.py tests/integrations/docker/test_DockerAppContext__verify.py tests/integrations/docker/test_Docker__dockerize_args.py tests/integrations/file/test_File__sorted_depth_first_groups.py tests/integrations/subprocess/test_ensure_console_is_safe.py tests/integrations/subprocess/test_get_process_id_by_command.py tests/platforms/windows/app/test_package.py",
     "name": "beeware__briefcase-2388",
     "issue_url": "https://github.com/beeware/briefcase/issues/2382",
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/2388",
-    "py_name": "py3"
+    "py_name": "py3",
+    "docker_image_name": "briefcase:latest"
 }

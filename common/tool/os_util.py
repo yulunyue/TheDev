@@ -25,7 +25,7 @@ class OsUtil:
             cmd = f"{env_path}/Scripts/Activate.ps1"
         else:
             cmd = f"source {env_path}/bin/activate"
-        # logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
+        logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
 
     def check_output(self, cmds=None, capture_output=False, env=None):
         if cmds is None:

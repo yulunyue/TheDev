@@ -8,7 +8,7 @@ import sys
 import pytest
 
 PY_MAIN_CMD = "%{PY_MAIN_CMD}"
-RESULT_JSON_FILE = "result.json"
+PY_TEST_RESULT_JSON_FILE = "%{PY_TEST_RESULT_JSON_FILE}"
 sys.path.insert(0, "src")
 
 
@@ -107,7 +107,7 @@ def run_py_test():
     mock_py()
     py_test_args = [f"{v}" for v in PY_MAIN_CMD.split(" ")] + [
         "--json-report",
-        f"--json-report-file={RESULT_JSON_FILE}",
+        f"--json-report-file={PY_TEST_RESULT_JSON_FILE}",
     ]
     pytest.main(py_test_args)
 

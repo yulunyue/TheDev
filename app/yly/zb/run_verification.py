@@ -20,14 +20,17 @@ class CS:
     PASS_TO_PASS = "PASS_TO_PASS"
     PASS_TO_FAIL = "PASS_TO_FAIL"
     FAIL_TO_PASS = "FAIL_TO_PASS"
+    NO_FAIL_TO_PASS = "NO_FAIL_TO_PASS"
     FAIL_TO_FAIL = "FAIL_TO_FAIL"
-    RESULT_JSON_FILE = "result.json"
+    RESULT_JSON_FILE = "python_test_result.json"
     RUN_VERIFICATION_PY = "run_verification.py"
     CODE_PATCH = "code.patch"
     DOCKERFILE = "Dockerfile"
     SETUP_ENV_SH = "setup_env.sh"
     SETUP_REPO_SH = "setup_repo.sh"
     TEST_PATCH = "test.patch"
+    ZB_TASK_FAIL = "ZB_TASK_FAIL"
+    NOT_FIND_CASES = "NOT_FIND_CASES"
 
 
 PY_BIN = "%{PY_BIN}"
@@ -172,13 +175,16 @@ def parse_junit_xml_report(report_path: Path) -> dict | None:
     return test_results
 
 
-def get_result():
+def get_result(result_file):
     result = dict()
-    result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
     ct = dict()
+    # print(f"FILE_EXIST_{result_file}:{os.path.exists(result_file)}")
+    if not os.path.exists(result_file):
+        return result, ct
+
     with open(result_file, "r") as f:
         data = json.loads(f.read())
-        for item in data["tests"]:
+        for item in data.get("tests", []):
             if item["nodeid"]:
                 result[item["nodeid"]] = item["outcome"]
                 ct[item["outcome"]] = ct.get(item["outcome"], 0) + 1
@@ -186,25 +192,21 @@ def get_result():
     return result, ct
 
 
-def run_py_test():
+def run_py_test(name):
     py_path = f"{REPO_DIR}/py_test_main.py"
     with open(py_path, "w", encoding="utf-8") as f:
         f.write(PY_TEST_MAIN_CODE)
     result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
-    if os.path.exists(result_file):
-        os.remove(result_file)
     statu_code, msg, msg1 = run_command([PY_BIN, "py_test_main.py"], cwd=REPO_DIR)
-    # os.system(f"rm -rf {py_path}")
-    result, ct = dict(), dict()
-    if os.path.exists(result_file):
-        result, ct = get_result()
+    os.system(f"cp {result_file} {name}.json")
+    result, ct = get_result(result_file)
     return statu_code, msg, msg1, ct, result
 
 
-def run_all_tests_and_get_results():
+def run_all_tests_and_get_results(name):
     """使用 poetry run pytest 运行所有测试并从 JUnit XML 报告中解析结果。"""
     # TODO
-    statu_code, msg, msg1, ct, result = run_py_test()
+    statu_code, msg, msg1, ct, result = run_py_test(name)
     print(f"\n{statu_code}\n{msg}\n{msg1}\n{ct}\n{result}")
     return result
 
@@ -243,7 +245,7 @@ def main():
         write_results_and_exit(False)
 
     print_header("STEP 1: PRE-PATCH - Running tests with only test patch")
-    pre_patch_results = run_all_tests_and_get_results()
+    pre_patch_results = run_all_tests_and_get_results("test")
     if pre_patch_results is None:
         write_results_and_exit(False)
 
@@ -257,7 +259,7 @@ def main():
     results[INSTANCE_ID]["patch_successfully_applied"] = True
 
     print_header("STEP 2: POST-PATCH - Running tests with both patches")
-    post_patch_results = run_all_tests_and_get_results()
+    post_patch_results = run_all_tests_and_get_results("code")
     if post_patch_results is None:
         write_results_and_exit(False)
 

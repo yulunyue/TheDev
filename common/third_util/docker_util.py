@@ -10,7 +10,7 @@ class DockerUtil:
 
     def __init__(self, image_name="base"):
         self.image_name = image_name
-        self.remote_ip = "tcp://192.168.1.6:2375"
+        self.remote_ip = None  # "tcp://192.168.1.6:2375"
 
     @property
     def o(self):
@@ -35,11 +35,19 @@ class DockerUtil:
         except Exception as e:
             return False
 
-    def build(self, path, base_image_name=None):
+    def build(self, path, from_image_name):
+        if not self.check_image_exists():
+            self.tag(from_image_name, self.image_name)
+        if self.image_name.split(":").pop().startswith("v"):
+            self.re_build(path)
+
+    def re_build(self, path):
         self.o.run(
             "build", path, "--progress=plain", "-D", "-t", self.image_name
         )  # "-f", path
-        # self.client.images.build(path=path, tag=tag)
+
+    def tag(self, from_name, to_image_name):
+        self.o.run(f"tag", from_name, to_image_name)
 
     def pull(self, name):
         self.o.run("pull", name)

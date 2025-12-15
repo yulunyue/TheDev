@@ -1,7 +1,7 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2292.zip?Expires=1766564055&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=z4sGYEGOkzTVZaTytdY0H6AtADA%3D",
-    "error_msg": "fail_to_pass",
+    "error_msg": "UnKnow",
     "need_setup_env": false,
     "result": {
         "pre": {},
@@ -15,10 +15,11 @@
     "setup_env": [],
     "skip": false,
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=6062&businessType=WORK",
-    "test_main": "",
+    "test_main": "tests/commands/convert/test_input_author.py tests/commands/convert/test_input_license.py tests/commands/create/test_install_app_requirements.py tests/console/Console/test_wait_bar.py tests/integrations/android_sdk/ADB/test_pid_exists.py tests/integrations/android_sdk/AndroidSDK/test__create_emulator.py tests/integrations/docker/test_DockerAppContext__verify.py tests/integrations/file/test_File__download.py tests/integrations/java/test_JDK__verify.py tests/integrations/subprocess/test_Subprocess__check_output.py tests/platforms/linux/system/test_build.py tests/platforms/linux/system/test_mixin__verify_python.py tests/platforms/linux/system/test_package__deb.py tests/platforms/linux/system/test_package__pkg.py tests/platforms/linux/system/test_package__rpm.py tests/platforms/linux/system/test_run.py tests/platforms/macOS/app/package/test_package_pkg.py tests/platforms/macOS/app/test_signing.py tests/platforms/macOS/test_XcodeBuildFilter.py tests/platforms/web/static/test_build.py tests/platforms/windows/app/test_build.py tests/platforms/windows/visualstudio/test_package.py",
     "name": "beeware__briefcase-2292",
     "issue_url": "https://github.com/beeware/briefcase/issues/2064",
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/2292",
-    "py_name": "py3"
+    "py_name": "py3",
+    "docker_image_name": "briefcase:latest"
 }

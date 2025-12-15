@@ -21,22 +21,12 @@ class WebTool(SeleniumUtil):
             time.sleep(1)
             self.get_job_info()
 
-    def do_task(self, t: TaskCfg, input_dir):
-        self.get(t.submit_url.get_value())
+    def get_download_url(self, uri):
+        self.get(uri)
         self.reload()
         for btn in self.get_elements_by_xpath("//button"):
-            if (
-                btn.text == "点击下载"
-                and not t.name.get_value()
-                or not t.down_load_uri.get_value()
-            ):
-                down_load_uri = btn.get_attribute("url")
-
-                f = Api().download(down_load_uri)
-                f.unzip(input_dir)
-                t.name.set_value(f.name.replace(".zip", ""))
-                t.down_load_uri.set_value(down_load_uri)
-        t.save()
+            if btn.text == "点击下载":
+                return btn.get_attribute("url")
 
     def submit(self, t: TaskCfg):
         self.get(t.submit_url.get_value())

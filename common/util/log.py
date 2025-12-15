@@ -61,14 +61,17 @@ class Logger(logging.Logger):
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
-    def run_capture_error(self, f):
+    def run_capture_error(self, f, *args, captures="", **kw):
         try:
-            f()
+            f(*args, **kw)
         except Exception as e:
             import traceback
 
-            s = [f"\nERROR_MSG:{e}\n"] + traceback.format_tb(e.__traceback__)
-            self.debug("".join(s))
+            if captures and str(e).startswith(captures):
+                s = [f"\nERROR_MSG:{e}\n"] + traceback.format_tb(e.__traceback__)
+                self.debug("".join(s))
+            else:
+                raise Exception(e)
 
     def add_file_hander(self, fmt, mode):
         self.add_hander(

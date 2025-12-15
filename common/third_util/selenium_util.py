@@ -68,10 +68,10 @@ class SeleniumUtil:
             "; ".join(
                 [
                     f"标签: <{tag_name}>",
-                    f"ID: '{element_id}'",
-                    f"title: '{title}'",
-                    f"disabled: '{disabled}'",
-                    f"type: '{element.get_attribute("type")}'",
+                    f"ID: [{element_id}]",
+                    f"title: [{title}]",
+                    f"disabled: [{disabled}]",
+                    f"type: [{element.get_attribute('type')}]",
                 ]
             )
         )
@@ -279,6 +279,7 @@ class SeleniumUtil:
         return self.driver.current_url
 
     def get(self, url):
+
         self.load()
         if self.driver.current_url == url:
             return url
