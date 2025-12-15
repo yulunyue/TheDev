@@ -197,8 +197,8 @@ def run_py_test(name):
     with open(py_path, "w", encoding="utf-8") as f:
         f.write(PY_TEST_MAIN_CODE)
     result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
-    statu_code, msg, msg1 = run_command([PY_BIN, "py_test_main.py"], cwd=REPO_DIR)
     os.system(f"cp {result_file} {name}.json")
+    statu_code, msg, msg1 = run_command([PY_BIN, "py_test_main.py"], cwd=REPO_DIR)
     result, ct = get_result(result_file)
     return statu_code, msg, msg1, ct, result
 
@@ -207,7 +207,11 @@ def run_all_tests_and_get_results(name):
     """使用 poetry run pytest 运行所有测试并从 JUnit XML 报告中解析结果。"""
     # TODO
     statu_code, msg, msg1, ct, result = run_py_test(name)
-    print(f"\n{statu_code}\n{msg}\n{msg1}\n{ct}\n{result}")
+    with open(f"{name}.log", "w", encoding="utf-8") as f:
+        f.write(f"stdout=>{msg}\nstderr=>{msg1}\n")
+    print(
+        f"\nstatu_code=>{statu_code}\nmsg=>{msg}\nmsg1=>{msg1}\nct=>{ct}\nresult=>{result}"
+    )
     return result
 
 

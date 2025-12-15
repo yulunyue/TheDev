@@ -21,7 +21,7 @@ TARGETS = [
 INPUTS_DIR = File("app/yly/zb")
 TASK_DIR = INPUTS_DIR.child("task")
 INFO_DIR = INPUTS_DIR.child("info")
-
+REPO_DIR = INPUTS_DIR.child("repo")
 DEFAULT_REPO = "briefcase"
 
 

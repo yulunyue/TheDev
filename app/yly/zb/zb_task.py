@@ -25,6 +25,7 @@ from .util import (
     CS,
     TARGETS,
     get_result,
+    REPO_DIR,
 )
 
 
@@ -227,7 +228,13 @@ class ZbTask:
         self.dock_util.build(self.input_dir.get_abs_path(), f"{self.repo}:latest")
 
     def docker_verify(self, **kw):
-        result_files = ["results.json", "test.json", "code.json"]
+        result_files = [
+            "results.json",
+            "test.json",
+            "code.json",
+            "test.log",
+            "code.log",
+        ]
         for f in result_files:
             self.input_dir.child(f).remove()
 
@@ -252,20 +259,7 @@ class ZbTask:
             env={"INSTANCE_ID": self.cfg.instance_id.get_value()},
         )
         self.logger.debug(msg)
-
-        if not status:
-            self.print_result()
-            # result_json = result_file.read_file()[self.cfg.instance_id.get_value()][
-            #     "tests_status"
-            # ]
-            # self.update_result(
-            #     result_json[CS.FAIL_TO_FAIL][CS.FAILURE],
-            #     result_json[CS.PASS_TO_FAIL][CS.FAILURE],
-            #     result_json[CS.FAIL_TO_PASS][CS.SUCCESS],
-            #     result_json[CS.PASS_TO_PASS][CS.SUCCESS],
-            # )
-        else:
-            self.finish(False, "UnKnow")
+        self.print_result()
 
     def make_setup_env_sh(self):
         setup_env_sh = [
@@ -274,15 +268,14 @@ class ZbTask:
             f"python -m venv {self.venv_dir}",
             f"{self.py_bin} -m pip install --upgrade pip",
         ]
-        setup_env_sh.append(
+        local_env = REPO_DIR.child(f"{self.repo}/default/setup_env.sh")
+        local_env.write_if_not_exists(
             f"{self.py_bin} -m pip install pytest pytest-json-report toml debugpy"
         )
         pyproject_toml = self.local_repo.child("pyproject.toml")
         setup_cfg = self.local_repo.child("setup.cfg")
         setup_py = self.local_repo.child("setup.py")
         if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
-            # setup_env_sh.extend(self.pip_install_pyproject_toml(pyproject_toml))
-            # setup_env_sh.extend(self.pip_install_setup_cfg(setup_cfg))
             setup_env_sh.append(f"{self.py_bin} -m pip install .")
         pkgs: List[str] = self.local_cfg.setup_env.get_value()
         for pkg in pkgs:
