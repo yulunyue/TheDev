@@ -1,0 +1,50 @@
+diff --git a/changes/987.misc.rst b/changes/987.misc.rst
+new file mode 100644
+index 000000000..3f05ebdfa
+--- /dev/null
++++ b/changes/987.misc.rst
+@@ -0,0 +1,1 @@
++The Python debug malloc has been disabled when running on Windows.
+diff --git a/tests/commands/dev/test_get_environment.py b/tests/commands/dev/test_get_environment.py
+index cfaeb31dd..2a43f64f1 100644
+--- a/tests/commands/dev/test_get_environment.py
++++ b/tests/commands/dev/test_get_environment.py
+@@ -48,7 +48,7 @@ def test_pythonpath_with_one_source(dev_command, first_app):
+     """Test get environment with one source."""
+     env = dev_command.get_environment(first_app, test_mode=False)
+     assert env[PYTHONPATH] == f"{Path.cwd() / 'src'}"
+-    assert PYTHONMALLOC in env
++    assert PYTHONMALLOC not in env
+ 
+ 
+ @pytest.mark.skipif(sys.platform == "win32", reason="Relevant only for non-windows")
+diff --git a/src/briefcase/commands/dev.py b/src/briefcase/commands/dev.py
+index cfaeb31dd..2a43f64f1 100644
+--- a/src/briefcase/commands/dev.py
++++ b/src/briefcase/commands/dev.py
+@@ -136,12 +136,20 @@ def run_dev_app(
+     def get_environment(self, app, test_mode: bool):
+         # Create a shell environment where PYTHONPATH points to the source
+         # directories described by the app config.
+-        return {
++        env = {
+             "PYTHONPATH": os.pathsep.join(
+                 os.fsdecode(Path.cwd() / path) for path in app.PYTHONPATH(test_mode)
+             )
+         }
+ 
++        # On Windows, we need to disable the debug allocator because it
++        # conflicts with Python.net. See
++        # https://github.com/pythonnet/pythonnet/issues/1977 for details.
++        if self.platform == "windows":
++            env["PYTHONMALLOC"] = "default"
++
++        return env
++
+     def __call__(
+         self,
+         appname: Optional[str] = None,
+
+
+
+

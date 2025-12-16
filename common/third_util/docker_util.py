@@ -38,7 +38,6 @@ class DockerUtil:
     def build(self, path, from_image_name):
         if not self.check_image_exists():
             self.tag(from_image_name, self.image_name)
-        if self.image_name.split(":").pop().startswith("v"):
             self.re_build(path)
 
     def re_build(self, path):

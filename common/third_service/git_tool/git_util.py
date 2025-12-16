@@ -54,5 +54,15 @@ class GitUtil(OsUtil):
         self.run("apply", path)
         return self
 
+    def commit(self):
+        self.run("add .")
+        self.run("commit", "-m", "xx")
+
+    def diff(self):
+        pass
+
+    def check(self):
+        self.run("checkout")
+
     def run(self, *args, capture_output=False, env=None):
         return super().run(*args, capture_output=capture_output, env=env)

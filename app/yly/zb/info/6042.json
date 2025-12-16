@@ -1,17 +1,39 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1237.zip?Expires=1766564018&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=5YgqkqhI7hz5C1MGvyCQn%2FCDaWc%3D",
-    "error_msg": "",
+    "error_msg": "success",
     "need_setup_env": false,
     "result": {
-        "fail_to_fail": [],
-        "pass_to_fail": [],
-        "fail_to_pass": [
+        "test": {
+            "tests/platforms/linux/system/test_package__rpm.py::test_verify_no_docker": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_verify_rpmbuild_missing": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_verify_docker": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package": "failed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_re_package": "failed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_no_long_description": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_extra_requirements": "failed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_failure": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_no_changelog": "passed"
+        },
+        "code": {
+            "tests/platforms/linux/system/test_package__rpm.py::test_verify_no_docker": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_verify_rpmbuild_missing": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_verify_docker": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_re_package": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_no_long_description": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_extra_requirements": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_failure": "passed",
+            "tests/platforms/linux/system/test_package__rpm.py::test_no_changelog": "passed"
+        },
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [
             "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package",
             "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_extra_requirements",
             "tests/platforms/linux/system/test_package__rpm.py::test_rpm_re_package"
         ],
-        "pass_to_pass": [
+        "PASS_TO_PASS": [
             "tests/platforms/linux/system/test_package__rpm.py::test_no_changelog",
             "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_failure",
             "tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_no_long_description",
@@ -23,7 +45,9 @@
     "setup_env": [],
     "skip": false,
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=6042&businessType=WORK",
-    "test_main": "tests/platforms/linux/system/test_package__rpm.py",
+    "test_main": [
+        "tests/platforms/linux/system/test_package__rpm.py"
+    ],
     "name": "beeware__briefcase-1237",
     "issue_url": "https://github.com/beeware/briefcase/issues/1236",
     "pr_change_files": null,

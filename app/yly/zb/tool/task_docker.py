@@ -1,0 +1,50 @@
+from .task_base import ZbTask, REPO_BASE
+
+
+class DockerTask(ZbTask):
+    _dock_util = None
+
+    @property
+    def dock_util(self):
+        if self._dock_util is None:
+            from common.third_util.docker_util import DockerUtil
+
+            self._dock_util = DockerUtil(self.local_cfg.docker_image_name.get_value())
+        return self._dock_util
+
+    def docker_build(self):
+        self.dock_util.build(self.input_dir.get_abs_path(), f"{self.repo}:latest")
+
+    def play(self):
+        result_files = [
+            "results.json",
+            "test.json",
+            "code.json",
+            "test.log",
+            "code.log",
+        ]
+        for f in result_files:
+            self.input_dir.child(f).remove()
+        self.docker_build()
+        self.local_cfg.py_test_result_json.remove()
+        status, msg = self.dock_util.run(
+            ";".join(
+                [
+                    "/bin/bash -i -c 'cd /testbed && python run_verification.py",
+                ]
+                + [f"cp -f {f} /testbed_output/{f}" for f in result_files]
+            )
+            + "'",
+            {
+                self.code_patch.f.get_abs_path(): f"{REPO_BASE}/{self.code_patch.f.file_name}",
+                self.test_patch.f.get_abs_path(): f"{REPO_BASE}/{self.test_patch.f.file_name}",
+                self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
+                # self.local_cfg.py_test_result_json.get_abs_path(): f"/testbed_output/{CS.RESULT_JSON_FILE}",
+                self.input_dir.get_abs_path(): f"/testbed_output",
+                self.local_repo.get_abs_path(): self.local_repo.path,
+            },
+            REPO_BASE,
+            env={"INSTANCE_ID": self.cfg.instance_id.get_value()},
+        )
+        self.logger.debug(msg)
+        self.print_result()
