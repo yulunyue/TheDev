@@ -1,15 +1,10 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1331.zip?Expires=1766564025&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=7I2q%2FOCYOudtuKGFxpLVYKvlYZ4%3D",
-    "error_msg": "FAIL_TO_FAIL",
+    "error_msg": "",
     "need_setup_env": false,
     "result": {
-        "fail_to_fail": [
-            "tests/platforms/linux/appimage/test_create.py::test_default_options",
-            "tests/platforms/linux/appimage/test_create.py::test_options",
-            "tests/platforms/linux/system/test_create.py::test_default_options",
-            "tests/platforms/linux/system/test_create.py::test_options"
-        ],
+        "fail_to_fail": [],
         "pass_to_fail": [],
         "fail_to_pass": [
             "tests/integrations/docker/test_DockerAppContext__verify.py::test_docker_image_build_fail",
@@ -62,8 +57,10 @@
             "tests/integrations/docker/test_Docker__verify.py::test_docker_install_url[Windows]",
             "tests/integrations/docker/test_Docker__verify.py::test_short_circuit",
             "tests/integrations/docker/test_Docker__verify.py::test_unsupported_os",
+            "tests/platforms/linux/appimage/test_create.py::test_default_options",
             "tests/platforms/linux/appimage/test_create.py::test_finalize_docker",
             "tests/platforms/linux/appimage/test_create.py::test_finalize_nodocker",
+            "tests/platforms/linux/appimage/test_create.py::test_options",
             "tests/platforms/linux/appimage/test_create.py::test_output_format_no_docker",
             "tests/platforms/linux/appimage/test_create.py::test_output_format_template_context_bad_tag",
             "tests/platforms/linux/appimage/test_create.py::test_unsupported_host_os_with_docker[WeirdOS]",
@@ -80,6 +77,8 @@
             "tests/platforms/linux/appimage/test_mixin.py::test_docker_image_tag_uppercase_name",
             "tests/platforms/linux/appimage/test_mixin.py::test_project_path",
             "tests/platforms/linux/appimage/test_mixin.py::test_verify_linux_no_docker",
+            "tests/platforms/linux/system/test_create.py::test_default_options",
+            "tests/platforms/linux/system/test_create.py::test_options",
             "tests/platforms/linux/system/test_create.py::test_output_format_template_context_no_docker",
             "tests/platforms/linux/system/test_create.py::test_supported_host_os_docker",
             "tests/platforms/linux/system/test_create.py::test_supported_host_os_without_docker",

@@ -277,15 +277,7 @@ class ZbTask:
         setup_py = self.local_repo.child("setup.py")
         if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
             setup_env_sh.append(f"{self.py_bin} -m pip install .")
-        pkgs: List[str] = self.local_cfg.setup_env.get_value()
-        for pkg in pkgs:
-            if pkg.endswith(".txt"):
-                setup_env_sh.extend(
-                    self.pip_install_requirements(self.local_repo.child(pkg))
-                )
-            else:
-                setup_env_sh.append(pkg)
-
+        setup_env_sh.extend(local_env.read_line())
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
         self.logger.debug(f"sh {self.setup_env_sh.path}")
 

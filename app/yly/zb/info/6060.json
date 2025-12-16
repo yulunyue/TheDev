@@ -1,16 +1,40 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2271.zip?Expires=1766564048&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=KVeZslPL%2FdykWWVaCL%2BN84PF4EY%3D",
-    "error_msg": "UnKnow",
+    "error_msg": "",
     "need_setup_env": false,
     "result": {
-        "pre": {},
-        "test": {},
-        "code": {},
         "fail_to_fail": [],
         "pass_to_fail": [],
-        "fail_to_pass": [],
-        "pass_to_pass": []
+        "fail_to_pass": [
+            "tests/commands/base/test_get_git_config_value.py::test_all_config_files_are_read",
+            "tests/commands/base/test_get_git_config_value.py::test_config_values_are_parsed",
+            "tests/commands/convert/test_input_author.py::test_default_author_from_git_config",
+            "tests/commands/convert/test_input_email.py::test_default_email_from_git_config",
+            "tests/commands/new/test_build_app_context.py::test_author_and_email_use_git_config_as_fallback",
+            "tests/commands/new/test_build_app_context.py::test_git_config_is_mentioned_as_source"
+        ],
+        "pass_to_pass": [
+            "tests/commands/convert/test_input_author.py::test_multiple_pep621_authors",
+            "tests/commands/convert/test_input_author.py::test_multiple_pep621_authors_select_other",
+            "tests/commands/convert/test_input_author.py::test_no_pep621_author[False]",
+            "tests/commands/convert/test_input_author.py::test_no_pep621_author[True]",
+            "tests/commands/convert/test_input_author.py::test_override",
+            "tests/commands/convert/test_input_author.py::test_prompted_author_with_pyproject",
+            "tests/commands/convert/test_input_author.py::test_prompted_author_with_pyproject_joined_author",
+            "tests/commands/convert/test_input_author.py::test_prompted_author_with_pyproject_other",
+            "tests/commands/convert/test_input_author.py::test_prompted_author_without_pyproject",
+            "tests/commands/convert/test_input_author.py::test_single_pep621_author",
+            "tests/commands/convert/test_input_email.py::test_no_pep621_author",
+            "tests/commands/convert/test_input_email.py::test_override",
+            "tests/commands/convert/test_input_email.py::test_pep621_author",
+            "tests/commands/convert/test_input_email.py::test_pep621_wrong_author",
+            "tests/commands/convert/test_input_email.py::test_prompted_email",
+            "tests/commands/new/test_build_app_context.py::test_question_sequence",
+            "tests/commands/new/test_build_app_context.py::test_question_sequence_with_bad_license_override",
+            "tests/commands/new/test_build_app_context.py::test_question_sequence_with_no_user_input",
+            "tests/commands/new/test_build_app_context.py::test_question_sequence_with_overrides"
+        ]
     },
     "setup_env": [],
     "skip": false,

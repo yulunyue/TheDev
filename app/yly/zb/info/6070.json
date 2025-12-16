@@ -1,12 +1,9 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2388.zip?Expires=1766564081&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=iWr6tCzjxAu3834rkdX0MsYh8ek%3D",
-    "error_msg": "UnKnow",
+    "error_msg": "NO_FAIL_TO_PASS",
     "need_setup_env": false,
     "result": {
-        "pre": {},
-        "test": {},
-        "code": {},
         "fail_to_fail": [],
         "pass_to_fail": [],
         "fail_to_pass": [],

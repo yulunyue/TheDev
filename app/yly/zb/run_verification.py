@@ -197,8 +197,8 @@ def run_py_test(name):
     with open(py_path, "w", encoding="utf-8") as f:
         f.write(PY_TEST_MAIN_CODE)
     result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
-    os.system(f"cp {result_file} {name}.json")
     statu_code, msg, msg1 = run_command([PY_BIN, "py_test_main.py"], cwd=REPO_DIR)
+    os.system(f"cp {result_file} {name}.json")
     result, ct = get_result(result_file)
     return statu_code, msg, msg1, ct, result
 
