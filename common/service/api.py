@@ -132,8 +132,8 @@ class Api:
         if dst is None:
             dst = f"/Thedev/data/download/{url.split('/').pop().split('?')[0]}"
         f = File(dst)
-        if f.exists():
-            return f
+        # if f.exists():
+        #     return f
         self.http(
             "GET", url, data, timeout=timeout, stream=True, writer=f.get_bin_writer()
         )

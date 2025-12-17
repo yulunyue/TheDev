@@ -22,6 +22,7 @@ class GloablConfg(ConfigBase):
     )  # https://googlechromelabs.github.io/chrome-for-testing/
     git_proxy_prefix = StrModel("")  # https://ghproxy.link/
     BROWSER_USE_API_KEY = StrModel()
+    zb_docker_env = StrModel()
 
 
 GC = GloablConfg("GC").set_resource("gloabl_setting")

@@ -105,6 +105,10 @@ class File:
             return dst
         if self.is_file():
             dst.write_file(self.read_data())
+        elif self.is_dir():
+            shutil.copy(self.path, dst.path)
+        else:
+            raise Exception(self)
         return dst
 
     def read_file(self, encoding="utf-8"):

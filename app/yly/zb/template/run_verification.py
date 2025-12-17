@@ -140,8 +140,9 @@ def apply_patch(patch_path):
 def get_result(result_file):
     result = dict()
     ct = dict()
-    # print(f"FILE_EXIST_{result_file}:{os.path.exists(result_file)}")
+    #
     if not os.path.exists(result_file):
+        print(f"{__file__} FILE_NOT_EXIST {result_file}")
         return result, ct
 
     with open(result_file, "r") as f:

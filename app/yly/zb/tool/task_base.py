@@ -256,13 +256,10 @@ class ZbTask:
     def venv_dir(self):
         return f"/.venv/{self.repo}/posix_{self.local_cfg.py_name.get_value()}"
 
-    def run(self, tp: str):
+    def run(self):
         error_msg, skip_msg = self.local_cfg.skip()
         if skip_msg:
             self.finish(True, error_msg)
-            return
-        if self.zip_file.exists() and "ignore" in tp:
-            logger.info(f"skip for {self.zip_file}  msg is { error_msg}")
             return
         self.init()
         if not self.local_cfg.test_main.get_value():

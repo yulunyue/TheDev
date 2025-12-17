@@ -1,4 +1,4 @@
-from .task_base import ZbTask, File, OsUtil, Module, logger
+from .task_base import ZbTask, File, OsUtil, Module, logger, CS
 from common.third_service.git_tool.git_util import GitUtil, Patch
 
 
@@ -9,17 +9,19 @@ class SelfTask(ZbTask):
             "run_verification.run_py_test", self.input_dir.path
         )
         statu_code, msg, msg1, ct, result = f(key)
-        self.logger.debug(
-            f"statu_code={statu_code}\nstdout={msg}\nstderr={msg1}\nresult={result}"
+        self.input_dir.child(f"{key}.log").write_file(msg)
+        self.logger.debug(f"statu_code={statu_code}\nresult={result}")
+        self.local_repo.child(CS.RESULT_JSON_FILE).copy_to(
+            self.input_dir.child(f"{key}.json"), over_write=True
         )
-        logger.info(f"{key}:{ct}")
 
     def play(self):
         if not File(self.venv_dir).exists():
             OsUtil("python").set_venv(self.venv_dir)
             OsUtil("bash").run(self.setup_env_sh.get_abs_path())
         self.run1()
-        self.run2()
+        self.apply_patch(self.code_patch)
+        self.py_test("code")
         self.print_result()
 
     def run0(self):
@@ -32,5 +34,7 @@ class SelfTask(ZbTask):
         self.py_test("test")
 
     def run2(self, **kw):
-
+        self.rest_repo()
+        self.apply_patch(self.test_patch)
+        self.apply_patch(self.code_patch)
         self.py_test("code")

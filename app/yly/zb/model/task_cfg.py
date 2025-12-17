@@ -94,19 +94,16 @@ def task_cfg(job, task_id):
     return r
 
 
-def query_task(job, key=""):
+def query_one(job, key):
+    return task_cfg(job, key).load()
+
+
+def query_task(job, key):
     fss = INFO_DIR.child(job).list_dir()
     ret: List[TaskCfg] = []
     for f in fss:
-        c = task_cfg(job, f.name).load()
-        if key and key not in c.id:
+        c = query_one(job, f.name)
+        if key != "all" and key not in c.id:
             continue
         ret.append(c)
     return ret
-
-
-def query_one(job, key):
-    ret = query_task(job, key)
-    if len(ret) == 1:
-        return ret[0]
-    raise Exception(key, [d.name for d in ret])

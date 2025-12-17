@@ -7,7 +7,7 @@ from common.util.export import (
     List,
     defaultdict,
 )
-from common.tool.export import OsUtil
+from common.tool.export import OsUtil, GC
 from .model.export import (
     INPUTS_DIR,
     TASK_DIR,
@@ -79,7 +79,7 @@ class ZbMangae(ToolBase):
 
     def view(self):
         ret = defaultdict(list)
-        tasks2 = query_task(self.key)
+        tasks2 = query_task(self.repo, self.key)
         for t in tasks2:
             key = "NEEDMAKE: " if not t.zip_file.exists() else "NO_NEED: "
             key += t.error_msg.get_value()
@@ -102,11 +102,11 @@ class ZbMangae(ToolBase):
         self.logger.debug("\n".join(msgs))
         self.logger.info(len(tasks2))
 
-    def test(self, tp="docker_ignore"):
-        for f in query_task(self.key):
-            t = DockerTask() if "docker" in tp else SelfTask()
+    def test(self):
+        for f in query_task(self.repo, self.key):
+            t = DockerTask() if "docker" in GC.zb_docker_env.get_value() else SelfTask()
             t.build(f)
-            logger.run_capture_error(t.run, tp, captures=CS.ZB_TASK_FAIL)
+            logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
     def rebuild(self):
