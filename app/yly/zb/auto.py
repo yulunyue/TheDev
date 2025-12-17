@@ -9,10 +9,14 @@ USER_CONFIG = API_CONFIG.get("Zb")
 class WebTool(SeleniumUtil):
     projectId = "30c9f72d-c822-4534-9dab-691656d4209f"
     fm = "Ii92My93b3JrZXItam9icy90YXNrcy9pbi1wcm9ncmVzcz9wYWdlSW5kZXg9MSZqb2JOYW1lPSZwYWdlU2l6ZT0xMCI%3D"
-    main_uri = "https://ui.appen.com.cn/v3/worker-job/"
+    main_uri = "https://ui.appen.com.cn/v3/worker-job"
 
-    def __init__(self, job_id):
-        self.job_id = job_id
+    def __init__(self, repo):
+        self.repo = repo
+        self.job_id = {
+            "lbry-sdk": "144a7a09-bbc2-4527-ad1f-8dc27b83e323",
+            "briefcase": "21e77e76-372e-49c4-b6f0-edcc35fe0663",
+        }[repo]
 
     @property
     def JOB_URL(self):
@@ -74,7 +78,7 @@ class WebTool(SeleniumUtil):
             task_id, data_batch, statu, data_source, rest_time, method, *args = (
                 tr.text.split(" ")
             )
-            t = task_cfg(task_id)
+            t = task_cfg(self.repo, task_id)
 
             self.to_do_task.append(t)
             if not t.submit_url.get_value():
@@ -126,5 +130,3 @@ class ApiZb(Api):
 
 
 API = ApiZb().load()
-
-WT = WebTool()

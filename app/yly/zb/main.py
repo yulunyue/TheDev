@@ -29,20 +29,22 @@ from .tool.task_base import ZbTask
 
 
 class ZbMangae(ToolBase):
-    def prepare(self, key):
+    def prepare(self, repo, key):
         self.key = key
+        self.repo = repo
 
     @property
     def docker(self):
-        return DockerTask().build(query_one(self.key)).load()
+        return DockerTask().build(query_one(self.repo, self.key)).load()
 
     def submit(self):
-        from .auto import WT
+        from .auto import WebTool
 
+        w = WebTool(self.repo)
         if self.key == "rest":
-            WT.run()
+            w.run()
         else:
-            WT.submit(query_one(self.key))
+            w.submit(query_one(self.key))
 
     def patch_reset(self):
         query_task(key)[0].cg.clone_patch()

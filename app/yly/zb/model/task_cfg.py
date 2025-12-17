@@ -88,8 +88,8 @@ class TaskCfg(ConfigBase):
         return self
 
 
-def task_cfg(task_id):
-    f = INFO_DIR.child(f"{task_id}.json")
+def task_cfg(job, task_id):
+    f = INFO_DIR.child(job).child(f"{task_id}.json")
     r = TaskCfg(task_id).set_resource(f)
     return r
 
@@ -98,7 +98,7 @@ def query_task(job, key=""):
     fss = INFO_DIR.child(job).list_dir()
     ret: List[TaskCfg] = []
     for f in fss:
-        c = task_cfg(f.name).load()
+        c = task_cfg(job, f.name).load()
         if key and key not in c.id:
             continue
         ret.append(c)
