@@ -32,13 +32,17 @@ class ZbMangae(ToolBase):
     def prepare(self, key):
         self.key = key
 
+    @property
+    def docker(self):
+        return DockerTask().build(query_one(self.key)).load()
+
     def submit(self):
         from .auto import WT
 
-        if not key:
+        if self.key == "rest":
             WT.run()
         else:
-            WT.submit(query_task(key)[0])
+            WT.submit(query_one(self.key))
 
     def patch_reset(self):
         query_task(key)[0].cg.clone_patch()
@@ -64,6 +68,12 @@ class ZbMangae(ToolBase):
             if t.zip_file.exists():
                 logger.info(f"remove {t.zip_file}")
                 t.zip_file.remove()
+
+    def zip(self):
+        for t in query_task(self.key):
+            t.zip_file.remove()
+            t.zip()
+            logger.info(t.zip_file)
 
     def view(self):
         ret = defaultdict(list)
@@ -98,8 +108,7 @@ class ZbMangae(ToolBase):
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
     def rebuild(self):
-        z = DockerTask().build(query_one(self.key))
-        z.init()
+        z = self.docker
         z.dock_util.re_build(z.input_dir.get_abs_path())
 
     def apply_code(self):
@@ -115,6 +124,9 @@ class ZbMangae(ToolBase):
 
     def debug(self):
         self.apply_code()
+
+    def dev(self):
+        pass
 
 
 if __name__ == "__main__":

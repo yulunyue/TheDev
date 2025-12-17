@@ -10,6 +10,7 @@ from .util import (
     INFO_DIR,
     REPO_DIR,
     Cg,
+    TARGETS,
 )
 from common.util.export import List
 
@@ -38,18 +39,11 @@ class TaskCfg(ConfigBase):
     def load(self):
         down_load_uri = self.down_load_uri.get_value()
         if not down_load_uri:
-            from ..auto import WT, Api
-
-            raise Exception(
-                down_load_uri, bool(not down_load_uri), self.name.get_value(), self.key
-            )
-            uri = WT.get_download_url(self.submit_url.get_value())
-            self.down_load_uri.set_value(uri)
-            self.save()
+            raise Exception("xx")
         if not self.name.get_value():
             from common.service.api import Api
 
-            f = Api().download(self.down_load_uri.get_value())
+            f = Api().download(down_load_uri)
             self.name.set_value(f.name)
             self.save()
 
@@ -59,12 +53,12 @@ class TaskCfg(ConfigBase):
         if not self.docker_image_name.get_value():
             self.docker_image_name.set_value(f"{self.repo}:latest")
         self.input_dir = TASK_DIR.child(self.repo).child(self.key)
-        self.input_dir.child("skip.txt").write_if_not_exists("")
         if not self.input_dir.exists():
             from common.service.api import Api
 
             f = Api().download(self.down_load_uri.get_value())
             f.unzip(self.input_dir)
+        return self
 
     @property
     def cg_file(self):
@@ -78,11 +72,6 @@ class TaskCfg(ConfigBase):
     def py_test_result_json(self):
         return self.input_dir.child(CS.RESULT_JSON_FILE)
 
-    def set_resource(self, resource):
-        super().set_resource(resource)
-        self.load()
-        return self
-
     def skip(self):
         error_msg = self.error_msg.get_value()
         skip_msg = ""
@@ -92,6 +81,12 @@ class TaskCfg(ConfigBase):
             skip_msg = error_msg
         return error_msg, skip_msg
 
+    def zip(self):
+        self.input_dir.zip(
+            self.zip_file.path, TARGETS + [self.name.get_value() + ".json"]
+        )
+        return self
+
 
 def task_cfg(task_id):
     f = INFO_DIR.child(f"{task_id}.json")
@@ -99,25 +94,19 @@ def task_cfg(task_id):
     return r
 
 
-def query_task(key=""):
-    fss = INFO_DIR.list_dir()
+def query_task(job, key=""):
+    fss = INFO_DIR.child(job).list_dir()
     ret: List[TaskCfg] = []
     for f in fss:
-        c = task_cfg(f.name)
+        c = task_cfg(f.name).load()
         if key and key not in c.id:
             continue
         ret.append(c)
     return ret
 
 
-def query_one(key):
-    ret = query_task(key)
+def query_one(job, key):
+    ret = query_task(job, key)
     if len(ret) == 1:
         return ret[0]
     raise Exception(key, [d.name for d in ret])
-
-
-def load_one(key):
-    r = query_one(key)
-    r.init()
-    return r

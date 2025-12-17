@@ -23,7 +23,6 @@ from ..model.export import (
     get_info_by_name,
     TASK_DIR,
     CS,
-    TARGETS,
     get_result,
     REPO_DIR,
 )
@@ -117,7 +116,7 @@ class ZbTask:
         self.local_cfg.error_msg.set_value(msgs)
         if statu:
             logger.info(f"ZB_TASK_SUCCESS {self.task_id} {self.zip_file} {msgs}")
-            self.input_dir.zip(self.zip_file.path, TARGETS)
+            self.local_cfg.zip()
             self.save()
         else:
             msg = f"{CS.ZB_TASK_FAIL} {self.task_id} {self.zip_file} {msgs}"
@@ -248,6 +247,10 @@ class ZbTask:
         self.logger.debug(self.cfg.issue_url.get_value())
         self.logger.debug(self.local_repo.path)
         self.logger.debug(f"{self.py_bin} {self.main_py_file.path}")
+
+    def load(self):
+        self.init()
+        return self
 
     @property
     def venv_dir(self):

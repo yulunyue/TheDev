@@ -10,7 +10,7 @@ class DockerUtil:
 
     def __init__(self, image_name="base"):
         self.image_name = image_name
-        self.remote_ip = None  # "tcp://192.168.1.6:2375"
+        self.remote_ip = "tcp://192.168.1.4:2375"
 
     @property
     def o(self):
@@ -41,18 +41,41 @@ class DockerUtil:
             self.re_build(path)
 
     def re_build(self, path):
-        self.o.run(
-            "build", path, "--progress=plain", "-D", "-t", self.image_name
-        )  # "-f", path
+        if self.remote_ip is None:
+            self.o.run(
+                "build", path, "--progress=plain", "-D", "-t", self.image_name
+            )  # "-f", path
+        else:
+            image, build_logs = self.client.images.build(
+                path=path, tag=self.image_name, rm=True
+            )
+            # 逐行打印构建日志
+            for chunk in build_logs:
+                if "stream" in chunk:
+                    # 去除换行符后打印，避免空行过多
+                    line = chunk["stream"].strip()
+                    if line:
+                        print(line)
+
+            print(f"\n✅ 构建完成！镜像ID: {image.short_id}")
 
     def tag(self, from_name, to_image_name):
-        self.o.run(f"tag", from_name, to_image_name)
+        if self.remote_ip:
+            self.client.images
+        return self.o.run(f"tag", from_name, to_image_name)
 
     def pull(self, name):
         self.o.run("pull", name)
 
     def info(self):
         return self.client.info()
+
+    @property
+    def image(self):
+        return self.client.images.get(self.image_name)
+
+    def list(self):
+        return self.client.images.list()
 
     def get_volumes(self, env):
         if env is None:

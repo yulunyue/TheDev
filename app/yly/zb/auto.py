@@ -7,7 +7,16 @@ USER_CONFIG = API_CONFIG.get("Zb")
 
 
 class WebTool(SeleniumUtil):
-    JOB_URL = "https://ui.appen.com.cn/v3/worker-job/21e77e76-372e-49c4-b6f0-edcc35fe0663?businessType=WORK&from=Ii92My93b3JrZXItam9icy90YXNrcy9pbi1wcm9ncmVzcz9wYWdlSW5kZXg9MSZqb2JOYW1lPSZwYWdlU2l6ZT0xMCI%3D&projectId=30c9f72d-c822-4534-9dab-691656d4209f"
+    projectId = "30c9f72d-c822-4534-9dab-691656d4209f"
+    fm = "Ii92My93b3JrZXItam9icy90YXNrcy9pbi1wcm9ncmVzcz9wYWdlSW5kZXg9MSZqb2JOYW1lPSZwYWdlU2l6ZT0xMCI%3D"
+    main_uri = "https://ui.appen.com.cn/v3/worker-job/"
+
+    def __init__(self, job_id):
+        self.job_id = job_id
+
+    @property
+    def JOB_URL(self):
+        return f"{self.main_uri}/{self.job_id}?businessType=WORK&from={self.fm}&projectId={self.projectId}"
 
     def get_job_info(self):
         self.get(self.JOB_URL)
@@ -23,26 +32,29 @@ class WebTool(SeleniumUtil):
 
     def get_download_url(self, uri):
         self.get(uri)
-        self.reload()
         for btn in self.get_elements_by_xpath("//button"):
             if btn.text == "点击下载":
                 return btn.get_attribute("url")
+        raise Exception(uri)
 
     def submit(self, t: TaskCfg):
+        logger.info(t.zip_file)
         if not t.zip_file.exists():
-            logger.info(t.zip_file)
             return
-        self.upload(t)
+        _, skip_msg = t.skip()
+        self.upload(t.zip_file)
         self.get(t.submit_url.get_value())
         self.reload()
-        _, skip_msg = t.skip()
-        if skip_msg:
+        if skip_msg != CS.SUCCESS:
             self.get_element_by_xpath("//input[@value='invalid']").click()
             inp = self.get_element_by_xpath('//input[@class="ct-ant-input"]')
             inp.clear()
             inp.send_keys(str(skip_msg))
             self.get_element_by_xpath("//div[@class='ant-select-selector']").click()
+            time.sleep(1)
             self.get_element_by_xpath("//div[@title='无效数据']").click()
+        else:
+            self.get_element_by_xpath("//input[@value='valid']").click()
         self.get_element_by_xpath("//button[@form='task-form'][2]").click()
         self.get_element_by_xpath(
             "//div[@class='ant-modal-confirm-btns']//button[1]"
@@ -57,10 +69,12 @@ class WebTool(SeleniumUtil):
 
     def parse_job_table(self):
         for tr in self.get_elements_by_xpath("//tbody[@class='ant-table-tbody']/tr"):
+            if not tr.text:
+                continue
             task_id, data_batch, statu, data_source, rest_time, method, *args = (
                 tr.text.split(" ")
             )
-            t = task_cfg(task_id=task_id)
+            t = task_cfg(task_id)
 
             self.to_do_task.append(t)
             if not t.submit_url.get_value():
@@ -70,9 +84,10 @@ class WebTool(SeleniumUtil):
                 tr.find_element(By.TAG_NAME, "button").click()
                 self.switch_to_window()
                 t.submit_url.set_value(self.current_url)
+                t.down_load_uri.set_value(self.get_download_url(self.current_url))
+                t.save()
                 self.close_current_window()
                 self.switch_to_window(0)
-                t.save()
                 time.sleep(1)
                 self.get_job_info()
                 return True
@@ -91,9 +106,7 @@ class WebTool(SeleniumUtil):
         self.reload()
         self.get_job_info()
         for t in self.to_do_task:
-            zip_file = TASK_DIR.child(t.key).child(f"{t.name.get_value()}.zip")
-            logger.info(zip_file)
-            self.upload(zip_file)
+            self.submit(t.load())
 
 
 class ApiZb(Api):

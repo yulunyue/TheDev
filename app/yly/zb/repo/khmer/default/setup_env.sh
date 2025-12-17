@@ -1,1 +1,0 @@
-/.venv/khmer/posix_py3/bin/python -m pip install pytest pytest-json-report toml debugpy
