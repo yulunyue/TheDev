@@ -18,7 +18,6 @@ class SelfTask(ZbTask):
     def play(self):
         if not File(self.venv_dir).exists():
             OsUtil("python").set_venv(self.venv_dir)
-            OsUtil("bash").run(self.setup_env_sh.get_abs_path())
         self.run1()
         self.apply_patch(self.code_patch)
         self.py_test("code")
