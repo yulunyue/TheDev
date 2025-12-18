@@ -70,14 +70,14 @@ class ZbMangae(ToolBase):
 
     def zip(self):
         for t in query_task(self.repo, self.key):
-            if t.zip_file.exists():
+            if t.error_msg.get_value() != CS.SUCCESS:
                 continue
-            task = ZbTask().build(t)
-            task.init()
+            if not result[CS.FAIL_TO_PASS]:
+                raise Exception(f"No FAIL_TO_PASS {t.id}")
+            task = ZbTask().build(t).load()
             result = t.result.get_value()
-            if not t.skip()[1]:
-                task.cfg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
-                task.cfg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
+            task.cfg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
+            task.cfg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
             task.cfg.save()
             t.zip_file.remove()
             t.zip()
