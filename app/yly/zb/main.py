@@ -41,7 +41,7 @@ class ZbMangae(ToolBase):
         from .auto import WebTool
 
         w = WebTool(self.repo)
-        if self.key == "rest":
+        if self.key == "all":
             w.run()
         else:
             w.submit(query_one(self.key))
