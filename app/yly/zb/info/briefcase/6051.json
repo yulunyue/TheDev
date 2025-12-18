@@ -7,7 +7,7 @@
     "need_setup_env": false,
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/1724",
-    "py_name": "py3",
+    "py_name": "",
     "result": {
         "test": {
             "tests/commands/new/test_build_context.py::test_question_sequence_toga": "failed",
