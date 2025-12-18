@@ -42,18 +42,17 @@ class WebTool(SeleniumUtil):
         raise Exception(uri)
 
     def submit(self, t: TaskCfg):
-        if not t.zip_file.exists():
+        if not t.zip_file.exists() or t.error_msg.get_value() != CS.SUCCESS:
             return
         logger.info(t.zip_file)
-        _, skip_msg = t.skip()
         self.upload(t.zip_file)
         self.get(t.submit_url.get_value())
         self.reload()
-        if skip_msg != CS.SUCCESS:
+        if 0:
             self.get_element_by_xpath("//input[@value='invalid']").click()
             inp = self.get_element_by_xpath('//input[@class="ct-ant-input"]')
             inp.clear()
-            inp.send_keys(str(skip_msg))
+            inp.send_keys(str(t.error_msg.get_value()))
             self.get_element_by_xpath("//div[@class='ant-select-selector']").click()
             time.sleep(1)
             self.get_element_by_xpath("//div[@title='无效数据']").click()
