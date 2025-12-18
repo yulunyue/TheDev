@@ -172,7 +172,6 @@ class ZbTask:
         repo_py_test_main.write_if_not_exists(
             INPUTS_DIR.child("template/py_test_main.py").read_file()
         )
-        print(repo_py_test_main)
         self.main_py_file.write_file(
             StrUtil().format(
                 INPUTS_DIR.child("template/run_verification.py").read_file(),
@@ -197,9 +196,7 @@ class ZbTask:
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.cfg.base_commit.get_value()}",
             coda_cmd,
-            "conda init",
-            "conda activate testbed",
-            f"python -m venv {self.venv_dir}",
+            "conda run -n activate testbed python -m venv {self.venv_dir}",
             f"{self.py_bin} -m pip install --upgrade pip",
         ]
         local_env = REPO_DIR.child(f"{self.repo}/default/setup_env.sh")

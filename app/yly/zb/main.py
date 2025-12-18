@@ -33,10 +33,18 @@ class ZbMangae(ToolBase):
         self.key = key
         self.repo = repo
 
+    def task(self,f):
+        return f.build(query_one(self.repo, self.key)).load()
+
     @property
     def docker(self):
-        return DockerTask().build(query_one(self.repo, self.key)).load()
-
+        return self.task(DockerTask())
+    @property
+    def local(self):
+        return self.task(SelfTask())
+    @property
+    def zb(self):
+        return self.task(ZbTask())
     def submit(self):
         from .auto import WebTool
 
@@ -64,9 +72,11 @@ class ZbMangae(ToolBase):
 
     def clear(self):
         for t in query_task(self.repo, self.key):
+            t.error_msg.set_value(CS.FAILED)
             if t.zip_file.exists():
                 logger.info(f"remove {t.zip_file}")
                 t.zip_file.remove()
+            t.save()
 
     def zip(self):
         for t in query_task(self.repo, self.key):
@@ -130,6 +140,10 @@ class ZbMangae(ToolBase):
         c.init()
         c.apply_test()
 
+    def pip(self):
+        c = SelfTask().build(query_one(self.repo, self.key))
+        c.init()
+        c.pip()
     def debug(self):
         self.apply_code()
 

@@ -8,16 +8,19 @@ class SelfTask(ZbTask):
         f = Module().load_module_object(
             "run_verification.run_py_test", self.input_dir.path
         )
+        # result=self.local_cfg.result.get_value()
         statu_code, msg, msg1, ct, result = f(key)
         self.input_dir.child(f"{key}.log").write_file(msg)
         self.logger.debug(f"statu_code={statu_code}\nmsg1={msg1}\nresult={result}")
         self.local_repo.child(CS.RESULT_JSON_FILE).copy_to(
             self.input_dir.child(f"{key}.json"), over_write=True
         )
+    def pip(self):
+        File(self.venv_dir).remove()    
+        OsUtil("bash").run(self.setup_env_sh.get_abs_path())
 
     def play(self):
-        if not File(self.venv_dir).exists():
-            OsUtil("python").set_venv(self.venv_dir)
+
         self.run1()
         self.apply_patch(self.code_patch)
         self.py_test("code")
