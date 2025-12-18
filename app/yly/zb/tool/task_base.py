@@ -168,6 +168,10 @@ class ZbTask:
 
     def make_main_py(self):
         py_main_cmd = " ".join(self.local_cfg.test_main.get_value())
+        repo_py_test_main = REPO_DIR.child(self.repo).child("py_test_main.py")
+        repo_py_test_main.write_if_not_exists(
+            INPUTS_DIR.child("template/py_test_main.py").read_file()
+        )
         self.main_py_file.write_file(
             StrUtil().format(
                 INPUTS_DIR.child("template/run_verification.py").read_file(),
@@ -177,7 +181,7 @@ class ZbTask:
                 content_category=self.cfg.content_category.get_value(),
                 PY_BIN=self.py_bin,
                 PY_TEST_MAIN_CODE=StrUtil().format(
-                    INPUTS_DIR.child("template/py_test_main.py").read_file(),
+                    repo_py_test_main.read_file(),
                     PY_MAIN_CMD=py_main_cmd,
                     PY_TEST_RESULT_JSON_FILE=CS.RESULT_JSON_FILE,
                 ),
@@ -192,20 +196,18 @@ class ZbTask:
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.cfg.base_commit.get_value()}",
             coda_cmd,
-            "conda init",
-            "conda activate testbed",
-            f"python -m venv {self.venv_dir}",
+            "conda run -n activate testbed python -m venv {self.venv_dir}",
             f"{self.py_bin} -m pip install --upgrade pip",
         ]
         local_env = REPO_DIR.child(f"{self.repo}/default/setup_env.sh")
         local_env.write_if_not_exists(
-            f"pip install pytest pytest-json-report toml debugpy"
+            f"pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
         )
         pyproject_toml = self.local_repo.child("pyproject.toml")
         setup_cfg = self.local_repo.child("setup.cfg")
         setup_py = self.local_repo.child("setup.py")
         if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
-            setup_env_sh.append(f"{self.py_bin} -m pip install .")
+            setup_env_sh.append(f"{self.py_bin} -m pip install -e .")
         for d in local_env.read_line():
             if d.startswith("pip"):
                 setup_env_sh.append(f"{self.py_bin} -m {d}")

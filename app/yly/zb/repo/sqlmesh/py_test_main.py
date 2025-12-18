@@ -1,5 +1,11 @@
 import os
 
+with open("sqlmesh/_version.py",'w',encoding='utf-8') as f:
+    f.write(r'''
+__version__ = "0.0.0"
+    ''')
+
+
 os.environ["PYTHONUTF8"] = "1"
 os.environ["PYTHONIOENCODING"] = "utf-8"
 import subprocess

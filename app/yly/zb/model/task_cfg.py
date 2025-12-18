@@ -38,7 +38,7 @@ class TaskCfg(ConfigBase):
         return self.input_dir.child(self.name.get_value() + ".zip")
 
     @property
-    def repo_cg(self):
+    def repo_cg(self)->RepoCg:
         return RepoCg.new(self.repo, REPO_DIR.child(f"{self.repo}/default_config.json"))
 
     def get_python_version(self):
@@ -46,7 +46,7 @@ class TaskCfg(ConfigBase):
             return self.py_name.get_value()
         if self.repo_cg.py_name.get_value():
             return self.repo_cg.py_name.get_value()
-        return "py3"
+        return "3.9"
 
     def load(self):
         down_load_uri = self.down_load_uri.get_value()
