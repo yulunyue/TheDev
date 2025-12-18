@@ -117,20 +117,13 @@ class ZbMangae(ToolBase):
         z.dock_util.re_build(z.input_dir.get_abs_path())
 
     def code(self):
-        c = ZbTask().build(query_one(self.repo, self.key))
-        c.init()
-        c.apply_code()
-        c.save()
+        self.zb.apply_code().save()
 
     def test(self):
-        c = ZbTask().build(query_one(self.repo, self.key))
-        c.init()
-        c.apply_test()
+        self.zb.apply_test()
 
     def pip(self):
-        c = SelfTask().build(query_one(self.repo, self.key))
-        c.init()
-        c.pip()
+        self.local.pip()
 
     def debug(self):
         self.apply_code()

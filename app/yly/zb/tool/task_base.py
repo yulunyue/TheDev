@@ -78,6 +78,7 @@ class ZbTask:
     def apply_code(self):
         self.apply_test()
         self.apply_patch(self.code_patch)
+        return self
 
     def apply_test(self):
         self.rest_repo()
@@ -190,16 +191,15 @@ class ZbTask:
         )
 
     def make_setup_env_sh(self):
-        coda_cmd = "conda create -n testbed -y"
-        if self.local_cfg.get_python_version() != "py3":
-            coda_cmd += f" python={self.local_cfg.get_python_version()}"
-        local_env = REPO_DIR.child(f"{self.repo}/setup_env.sh")
+        py_version, self.env_name = self.local_cfg.get_python_version().split("_")
+        coda_cmd = f"conda create -n testbed -y python={py_version}"
+        local_env = REPO_DIR.child(f"{self.repo}/{self.env_name}/setup_env.sh")
         if not local_env.exists():
             local_envs = [
                 f"cd {self.local_repo.path}",
                 f"git reset --hard {self.cfg.base_commit.get_value()}",
                 coda_cmd,
-                "conda run -n activate testbed python -m venv {self.venv_dir}",
+                f"conda run -n testbed python -m venv {self.venv_dir}",
                 f"{self.py_bin} -m pip install --upgrade pip",
             ]
 
