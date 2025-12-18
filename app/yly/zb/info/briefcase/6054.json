@@ -7,7 +7,7 @@
     "need_setup_env": false,
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/1835",
-    "py_name": "py3",
+    "py_name": "",
     "result": {
         "test": {
             "tests/platforms/macOS/app/test_signing.py::test_explicit_identity_checksum": "passed",

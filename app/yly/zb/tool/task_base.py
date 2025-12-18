@@ -8,6 +8,7 @@ from common.util.export import (
     Module,
     get_log,
     sys,
+    json_dumps,
 )
 from common.tool.export import (
     OsUtil,
@@ -77,6 +78,7 @@ class ZbTask:
     def apply_code(self):
         self.apply_test()
         self.apply_patch(self.code_patch)
+        return self
 
     def apply_test(self):
         self.rest_repo()
@@ -189,25 +191,31 @@ class ZbTask:
         )
 
     def make_setup_env_sh(self):
-        coda_cmd = "conda create -n testbed -y"
-        if self.local_cfg.get_python_version() != "py3":
-            coda_cmd += f" python={self.local_cfg.get_python_version()}"
-        setup_env_sh = [
-            f"cd {self.local_repo.path}",
-            f"git reset --hard {self.cfg.base_commit.get_value()}",
-            coda_cmd,
-            "conda run -n activate testbed python -m venv {self.venv_dir}",
-            f"{self.py_bin} -m pip install --upgrade pip",
-        ]
-        local_env = REPO_DIR.child(f"{self.repo}/default/setup_env.sh")
-        local_env.write_if_not_exists(
-            f"pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
-        )
-        pyproject_toml = self.local_repo.child("pyproject.toml")
-        setup_cfg = self.local_repo.child("setup.cfg")
-        setup_py = self.local_repo.child("setup.py")
-        if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
-            setup_env_sh.append(f"{self.py_bin} -m pip install -e .")
+        py_version, self.env_name = self.local_cfg.get_python_version().split("_")
+        coda_cmd = f"conda create -n testbed -y python={py_version}"
+        local_env = REPO_DIR.child(f"{self.repo}/{self.env_name}/setup_env.sh")
+        if not local_env.exists():
+            local_envs = [
+                f"cd {self.local_repo.path}",
+                f"git reset --hard {self.cfg.base_commit.get_value()}",
+                coda_cmd,
+                f"conda run -n testbed python -m venv {self.venv_dir}",
+                f"{self.py_bin} -m pip install --upgrade pip",
+            ]
+
+            pyproject_toml = self.local_repo.child("pyproject.toml")
+            setup_cfg = self.local_repo.child("setup.cfg")
+            setup_py = self.local_repo.child("setup.py")
+            if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
+                local_envs.append(f"{self.py_bin} -m pip install -e .")
+            local_envs.append(
+                "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
+            )
+            if pyproject_toml.exists():
+                dev_py = pyproject_toml.get("project", "optional-dependencies", "dev")
+                local_envs.extend([f'pip install "{s}"' for s in dev_py])
+            local_env.write_file("\n".join(local_envs))
+        setup_env_sh = []
         for d in local_env.read_line():
             if d.startswith("pip"):
                 setup_env_sh.append(f"{self.py_bin} -m {d}")

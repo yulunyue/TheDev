@@ -6,7 +6,7 @@
     "issue_url": "https://github.com/beeware/briefcase/issues/1004",
     "name": "beeware__briefcase-1006",
     "pr_url": "https://github.com/beeware/briefcase/pull/1006",
-    "py_name": "py3",
+    "py_name": "",
     "result": {
         "test": {
             "tests/platforms/web/static/test_build.py::test_build_app": "failed",

@@ -7,7 +7,7 @@
     "error_msg": "success",
     "issue_url": "https://github.com/beeware/briefcase/issues/1051",
     "pr_url": "https://github.com/beeware/briefcase/pull/1058",
-    "py_name": "py3",
+    "py_name": "",
     "result": {
         "test": {
             "tests/platforms/linux/appimage/test_create.py::test_support_package_url": "passed",

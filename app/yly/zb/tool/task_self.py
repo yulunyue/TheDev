@@ -12,11 +12,14 @@ class SelfTask(ZbTask):
         statu_code, msg, msg1, ct, result = f(key)
         self.input_dir.child(f"{key}.log").write_file(msg)
         self.logger.debug(f"statu_code={statu_code}\nmsg1={msg1}\nresult={result}")
-        self.local_repo.child(CS.RESULT_JSON_FILE).copy_to(
-            self.input_dir.child(f"{key}.json"), over_write=True
-        )
+        result_json_file = self.local_repo.child(CS.RESULT_JSON_FILE)
+        if result_json_file.exists():
+            result_json_file.copy_to(
+                self.input_dir.child(f"{key}.json"), over_write=True
+            )
+
     def pip(self):
-        File(self.venv_dir).remove()    
+        File(self.venv_dir).remove()
         OsUtil("bash").run(self.setup_env_sh.get_abs_path())
 
     def play(self):

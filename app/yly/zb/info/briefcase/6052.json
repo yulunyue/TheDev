@@ -7,7 +7,7 @@
     "need_setup_env": false,
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/1751",
-    "py_name": "py3",
+    "py_name": "",
     "result": {
         "test": {
             "tests/commands/create/test_generate_app_template.py::test_default_template[37.42.1-v37.42.1]": "failed",
