@@ -63,16 +63,22 @@ class ZbMangae(ToolBase):
         logger.info(f"---\n{g.diff()}\n---")
 
     def clear(self):
-        for t in query_task(self.key):
-            if t.error_msg.get_value() == CS.SUCCESS:
-                t.error_msg.set_value(CS.FAILED)
-                t.save()
+        for t in query_task(self.repo, self.key):
             if t.zip_file.exists():
                 logger.info(f"remove {t.zip_file}")
                 t.zip_file.remove()
 
     def zip(self):
-        for t in query_task(self.key):
+        for t in query_task(self.repo, self.key):
+            if t.zip_file.exists():
+                continue
+            task = ZbTask().build(t)
+            task.init()
+            result = t.result.get_value()
+            if not t.skip()[1]:
+                task.cfg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
+                task.cfg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
+            task.cfg.save()
             t.zip_file.remove()
             t.zip()
             logger.info(t.zip_file)
