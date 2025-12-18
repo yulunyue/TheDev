@@ -102,7 +102,7 @@ class ZbMangae(ToolBase):
         self.logger.debug("\n".join(msgs))
         self.logger.info(len(tasks2))
 
-    def test(self):
+    def main(self):
         for f in query_task(self.repo, self.key):
             t = DockerTask() if "docker" in GC.zb_docker_env.get_value() else SelfTask()
             t.build(f)
@@ -113,14 +113,14 @@ class ZbMangae(ToolBase):
         z = self.docker
         z.dock_util.re_build(z.input_dir.get_abs_path())
 
-    def apply_code(self):
-        c = ZbTask().build(query_one(self.key))
+    def code(self):
+        c = ZbTask().build(query_one(self.repo, self.key))
         c.init()
         c.apply_code()
         c.save()
 
-    def apply_test(self):
-        c = ZbTask().build(query_one(self.key))
+    def test(self):
+        c = ZbTask().build(query_one(self.repo, self.key))
         c.init()
         c.apply_test()
 

@@ -173,3 +173,5 @@ common/third_util/jwt_util.py
 #*.zip
 app/yly/zb/task/
 app/yly/zb/result
+Miniconda3-latest-Linux-x86_64.sh
+conda

@@ -6,6 +6,9 @@ import subprocess
 import sys
 
 import pytest
+import socket
+
+socket.setdefaulttimeout(1)
 
 PY_MAIN_CMD = "%{PY_MAIN_CMD}"
 PY_TEST_RESULT_JSON_FILE = "%{PY_TEST_RESULT_JSON_FILE}"

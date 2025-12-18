@@ -9,6 +9,7 @@ from common.tool.base_class.model import BaseModel, StrModel
 
 class ConfigBase:
     _params_cls_map: Dict[str, BaseModel] = None
+    _ins = dict()
 
     def __init__(self, key: str):
         self.key = key
@@ -18,6 +19,13 @@ class ConfigBase:
             setattr(self, k, c)
             self.params[k] = c
         self.init()
+
+    @classmethod
+    def new(cls, key, f=None):
+        if key not in cls._ins:
+            cls._ins[key] = cls(key).set_resource(f)
+            cls._ins[key].save()
+        return cls._ins[key]
 
     def init(self):
         pass

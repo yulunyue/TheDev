@@ -12,6 +12,7 @@ from .util import (
     Cg,
     TARGETS,
 )
+from .repo_cg import RepoCg
 from common.util.export import List
 
 
@@ -25,7 +26,7 @@ class TaskCfg(ConfigBase):
     issue_url = StrModel()
     down_load_uri = StrModel()
     name = StrModel()
-    py_name = StrModel("py3")
+    py_name = StrModel()
     docker_image_name = StrModel()
 
     @property
@@ -35,6 +36,17 @@ class TaskCfg(ConfigBase):
     @property
     def zip_file(self):
         return self.input_dir.child(self.name.get_value() + ".zip")
+
+    @property
+    def repo_cg(self):
+        return RepoCg.new(self.repo, REPO_DIR.child(f"{self.repo}/default_config.json"))
+
+    def get_python_version(self):
+        if self.py_name.get_value():
+            return self.py_name.get_value()
+        if self.repo_cg.py_name.get_value():
+            return self.repo_cg.py_name.get_value()
+        return "py3"
 
     def load(self):
         down_load_uri = self.down_load_uri.get_value()
@@ -52,6 +64,8 @@ class TaskCfg(ConfigBase):
         )
         if not self.docker_image_name.get_value():
             self.docker_image_name.set_value(f"{self.repo}:latest")
+        if self.py_name.get_value() == "py3":
+            self.py_name.set_value("")
         self.input_dir = TASK_DIR.child(self.repo).child(self.key)
         if not self.input_dir.exists():
             from common.service.api import Api

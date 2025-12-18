@@ -186,8 +186,8 @@ class ZbTask:
 
     def make_setup_env_sh(self):
         coda_cmd = "conda create -n testbed -y"
-        if self.local_cfg.py_name.get_value() != "py3":
-            coda_cmd += f" python={self.local_cfg.py_name.get_value()}"
+        if self.local_cfg.get_python_version() != "py3":
+            coda_cmd += f" python={self.local_cfg.get_python_version()}"
         setup_env_sh = [
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.cfg.base_commit.get_value()}",
@@ -199,7 +199,7 @@ class ZbTask:
         ]
         local_env = REPO_DIR.child(f"{self.repo}/default/setup_env.sh")
         local_env.write_if_not_exists(
-            f"{self.py_bin} -m pip install pytest pytest-json-report toml debugpy"
+            f"pip install pytest pytest-json-report toml debugpy"
         )
         pyproject_toml = self.local_repo.child("pyproject.toml")
         setup_cfg = self.local_repo.child("setup.cfg")
@@ -254,7 +254,7 @@ class ZbTask:
 
     @property
     def venv_dir(self):
-        return f"/.venv/{self.repo}/posix_{self.local_cfg.py_name.get_value()}"
+        return f"/.venv/{self.repo}/posix_{self.local_cfg.get_python_version()}"
 
     def run(self):
         error_msg, skip_msg = self.local_cfg.skip()
