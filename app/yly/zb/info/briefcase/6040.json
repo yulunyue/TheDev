@@ -68,6 +68,6 @@
     "issue_url": "https://github.com/beeware/briefcase/issues/1201",
     "pr_url": "https://github.com/beeware/briefcase/pull/1216",
     "pr_change_files": null,
-    "py_name": "py3",
+    "py_name": "",
     "docker_image_name": "briefcase:latest"
 }

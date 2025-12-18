@@ -33,18 +33,21 @@ class ZbMangae(ToolBase):
         self.key = key
         self.repo = repo
 
-    def task(self,f):
+    def task(self, f):
         return f.build(query_one(self.repo, self.key)).load()
 
     @property
     def docker(self):
         return self.task(DockerTask())
+
     @property
     def local(self):
         return self.task(SelfTask())
+
     @property
     def zb(self):
         return self.task(ZbTask())
+
     def submit(self):
         from .auto import WebTool
 
@@ -53,22 +56,6 @@ class ZbMangae(ToolBase):
             w.run()
         else:
             w.submit(query_one(self.key))
-
-    def patch_reset(self):
-        query_task(key)[0].cg.clone_patch()
-
-    def patch_view(self):
-        cg = query_task(key)[0].cg
-        g = cg.get_git_util()
-        g.reset(cg.base_commit.get_value())
-        g.clear()
-        g.apply(cg.test_patch_file.get_abs_path())
-        g.apply(cg.code_patch_file.get_abs_path())
-        g.commit()
-        g.check()
-        input("wait code")
-        g.commit()
-        logger.info(f"---\n{g.diff()}\n---")
 
     def clear(self):
         for t in query_task(self.repo, self.key):
@@ -144,6 +131,7 @@ class ZbMangae(ToolBase):
         c = SelfTask().build(query_one(self.repo, self.key))
         c.init()
         c.pip()
+
     def debug(self):
         self.apply_code()
 
