@@ -42,9 +42,9 @@ class WebTool(SeleniumUtil):
         raise Exception(uri)
 
     def submit(self, t: TaskCfg):
-        logger.info(t.zip_file)
         if not t.zip_file.exists():
             return
+        logger.info(t.zip_file)
         _, skip_msg = t.skip()
         self.upload(t.zip_file)
         self.get(t.submit_url.get_value())

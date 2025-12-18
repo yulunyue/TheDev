@@ -142,7 +142,7 @@ def get_result(result_file):
     ct = dict()
     #
     if not os.path.exists(result_file):
-        print(f"{__file__} FILE_NOT_EXIST {result_file}")
+        # print(f"{__file__} FILE_NOT_EXIST {result_file}")
         return result, ct
 
     with open(result_file, "r") as f:
