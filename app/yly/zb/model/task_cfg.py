@@ -114,7 +114,7 @@ class TaskCfg(ConfigBase):
         change_files: Dict[str, str] = dict()
         for p in [self.test_patch, self.code_patch]:
             self.get_update_file_by_batch(p, change_files)
-        if len(change_files) >= 15:
+        if len(change_files) >= 20:
             self.set_error_msg(f"SKIP: CHANGE_FILES>={len(change_files)}")
             return
         files = [k for k, v in change_files.items() if v == "test"]
