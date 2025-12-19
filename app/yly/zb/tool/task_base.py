@@ -164,7 +164,7 @@ class ZbTask:
         if not local_env.exists():
             local_envs = [
                 f"cd {self.local_repo.path}",
-                f"git reset --hard {self.cfg.base_commit.get_value()}",
+                f"git reset --hard {self.local_cfg.cg.base_commit.get_value()}",
                 coda_cmd,
                 f"conda run -n testbed python -m venv {self.venv_dir}",
                 f"pip install --upgrade pip",
