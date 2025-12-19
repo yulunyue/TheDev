@@ -57,6 +57,7 @@ class ZbMangae(ToolBase):
 
     def clear(self):
         for t in query_task(self.repo, self.key):
+            t.set_error_msg("")
             t.input_dir.child("code.json").remove()
             t.input_dir.child("test.json").remove()
             t.zip_file.remove()
