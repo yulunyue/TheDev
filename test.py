@@ -7,13 +7,9 @@ from common.util.export import (
     random,
     md5,
     base64_encode,
+    make_md_file,
+    List,
 )
-
-
-def make_file(md5_value, name, msg=""):
-    f = File(f"doc/life/{md5_value}/{name}")
-    f.write_if_not_exists(msg)
-    return f.path, "\n".join(f.read_line()[-5:])
 
 
 class TestMain:
@@ -32,18 +28,17 @@ class TestMain:
                 logger.exception(e)
 
     def random(self, name="todo"):
-        cmds = []
+        cmds: List[str] = []
         for line in File(f"{name}.md").read_line():
             if line.startswith("#") or not line:
                 continue
             cmds.append(line)
-        cmd: str = cmds[random.randint(0, len(cmds) - 1)]
-        file_path = cmd.split(" ")[2].replace(".", "/") + ".py"
-        md5_value = md5(cmd)
-        infos = ["", cmd, file_path]
-        path, info = make_file(md5_value, "日志.md")
-        infos.append(f"{path} -> {info}")
-        logger.info("\n".join(infos))
+        key = (
+            random.sample(cmds, 1)[0].split("-m ").pop().split(" ")[0].replace(".", "/")
+        )
+        logger.info(f"{key}.py")
+        path, info = make_md_file("/".join(key.split(".")[:-2]))
+        logger.info(f"{path} -> {info}")
 
     def main(self):
         getattr(self, sys.argv[1])(*sys.argv[2:])

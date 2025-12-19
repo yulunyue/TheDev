@@ -139,6 +139,16 @@ class Case:
         return ret
 
 
+def make_md_file(key=None, name="日志", msg=""):
+    if key is None:
+        file_dir = sys.argv[1]
+    else:
+        file_dir = key
+    f = File(f"{file_dir}/{name}.md")
+    f.write_if_not_exists(msg)
+    return f.path, "\n".join(f.read_line()[-5:])
+
+
 class ToolBase:
     @property
     def logger(self):

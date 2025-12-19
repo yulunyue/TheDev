@@ -33,24 +33,18 @@ class ZbMangae(ToolBase):
         self.key = key
         self.repo = repo
 
-    def task(self, f):
-    def task(self, f):
+    def task(self, f: ZbTask):
         return f.build(query_one(self.repo, self.key)).load()
 
-    @property
     def docker(self):
-        return self.task(DockerTask())
+        r: DockerTask = self.task(DockerTask())
+        return r.set_env(r.local_cfg.docker_image_name, GC.zb_docker_env.get_value())
 
-
-    @property
     def local(self):
         return self.task(SelfTask())
 
-
-    @property
     def zb(self):
         return self.task(ZbTask())
-
 
     def submit(self):
         from .auto import WebTool
@@ -64,6 +58,8 @@ class ZbMangae(ToolBase):
     def clear(self):
         for t in query_task(self.repo, self.key):
             t.error_msg.set_value(CS.FAILED)
+            t.input_dir.child("code.json").remove()
+            t.input_dir.child("test.json").remove()
             if t.zip_file.exists():
                 logger.info(f"remove {t.zip_file}")
                 t.zip_file.remove()
@@ -111,20 +107,24 @@ class ZbMangae(ToolBase):
 
     def main(self):
         for f in query_task(self.repo, self.key):
-            t = DockerTask() if "docker" in GC.zb_docker_env.get_value() else SelfTask()
+            t = (
+                DockerTask().set_env(f.docker_image_name, GC.zb_docker_env.get_value())
+                if GC.zb_docker_env.get_value()
+                else SelfTask()
+            )
             t.build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
     def rebuild(self):
-        z = self.docker
-        z.dock_util.re_build(z.input_dir.get_abs_path())
+        t = self.docker()
+        t.dock_util.re_build(t.input_dir.get_abs_path())
 
     def code(self):
-        self.zb.apply_code().save()
+        self.zb().apply_code().save()
 
     def test(self):
-        self.zb.apply_test()
+        self.zb().apply_test().save()
 
     def pip(self):
         self.local.pip()

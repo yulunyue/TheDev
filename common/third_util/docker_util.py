@@ -8,9 +8,10 @@ class DockerUtil:
     _o: OsUtil = None
     _client: docker.DockerClient = None
 
-    def __init__(self, image_name="base"):
+    def __init__(self, image_name="base", remote_ip="from_env"):
+
         self.image_name = image_name
-        self.remote_ip = "tcp://192.168.1.4:2375"
+        self.remote_ip = remote_ip  # "tcp://192.168.1.4:2375"
 
     @property
     def o(self):
@@ -21,10 +22,11 @@ class DockerUtil:
     @property
     def client(self):
         if self._client is None:
-            if self.remote_ip:
-                self._client = docker.DockerClient(base_url=self.remote_ip, timeout=10)
-            else:
+            if self.remote_ip == "from_env":
                 self._client = docker.from_env()
+            else:
+                self._client = docker.DockerClient(base_url=self.remote_ip, timeout=10)
+
             self._client.ping()
         return self._client
 
@@ -41,7 +43,7 @@ class DockerUtil:
             self.re_build(path)
 
     def re_build(self, path):
-        if self.remote_ip is None:
+        if self.remote_ip == "from_env":
             self.o.run(
                 "build", path, "--progress=plain", "-D", "-t", self.image_name
             )  # "-f", path

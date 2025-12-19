@@ -33,12 +33,17 @@ import os
 
 
 class ZbTask:
+    local_cfg: TaskCfg = None
+
     @property
     def logger(self):
         return get_log(f"zb/{self.repo}/{self.task_id}_{self.pr.number}")
 
     def build(self, local_cfg):
+        if self.local_cfg:
+            raise Exception("init twitch")
         self.local_cfg: TaskCfg = local_cfg
+
         if not self.local_cfg.resource.exists():
             raise Exception(f"{self.local_cfg.resource} not exist")
         self.name, self.task_id = self.local_cfg.name.get_value(), self.local_cfg.key
@@ -83,6 +88,7 @@ class ZbTask:
     def apply_test(self):
         self.rest_repo()
         self.apply_patch(self.test_patch)
+        return self
 
     def get_update_file_by_batch(self, fp: Patch):
         files = []
@@ -114,11 +120,11 @@ class ZbTask:
         self.init()
 
     def finish(self, statu, msgs):
-
         self.local_cfg.error_msg.set_value(msgs)
         if statu:
-            logger.info(f"ZB_TASK_SUCCESS {self.task_id} {self.zip_file} {msgs}")
+            raise Exception("xx")
             self.local_cfg.zip()
+            logger.info(f"ZB_TASK_SUCCESS {self.task_id} {self.zip_file} {msgs}")
             self.save()
         else:
             msg = f"{CS.ZB_TASK_FAIL} {self.task_id} {self.zip_file} {msgs}"
@@ -191,7 +197,8 @@ class ZbTask:
         )
 
     def make_setup_env_sh(self):
-        py_version, self.env_name = self.local_cfg.get_python_version().split("_")
+        self.env_name = self.local_cfg.get_python_version()
+        py_version, _ = self.env_name.split("_")
         coda_cmd = f"conda create -n testbed -y python={py_version}"
         local_env = REPO_DIR.child(f"{self.repo}/{self.env_name}/setup_env.sh")
         if not local_env.exists():
@@ -200,14 +207,14 @@ class ZbTask:
                 f"git reset --hard {self.cfg.base_commit.get_value()}",
                 coda_cmd,
                 f"conda run -n testbed python -m venv {self.venv_dir}",
-                f"{self.py_bin} -m pip install --upgrade pip",
+                f"pip install --upgrade pip",
             ]
 
             pyproject_toml = self.local_repo.child("pyproject.toml")
             setup_cfg = self.local_repo.child("setup.cfg")
             setup_py = self.local_repo.child("setup.py")
             if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
-                local_envs.append(f"{self.py_bin} -m pip install -e .")
+                local_envs.append(f"pip install -e .")
             local_envs.append(
                 "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
             )

@@ -19,7 +19,7 @@ from .tool import (
     base64_encode,
     url_to_json,
 )
-from .test import TestBase, logger, ToolBase, Case
+from .test import TestBase, logger, ToolBase, Case, make_md_file
 from .fp import File, get_cache
 from .module import Module, run_catch_error
 from .thread_poll import ThreadManage, ThreadExec

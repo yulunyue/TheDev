@@ -27,7 +27,11 @@ class TaskCfg(ConfigBase):
     down_load_uri = StrModel()
     name = StrModel()
     py_name = StrModel()
-    docker_image_name = StrModel()
+
+    @property
+    def docker_image_name(self):
+        py_version = self.get_python_version()
+        return f"{self.repo}:{py_version}"
 
     @property
     def id(self):
@@ -62,8 +66,6 @@ class TaskCfg(ConfigBase):
         self.owner, self.task_id, self.repo, self.pr = get_info_by_name(
             self.name.get_value()
         )
-        if not self.docker_image_name.get_value():
-            self.docker_image_name.set_value(f"{self.repo}:latest")
         if self.py_name.get_value() == "py3":
             self.py_name.set_value("")
         self.input_dir = TASK_DIR.child(self.repo).child(self.key)

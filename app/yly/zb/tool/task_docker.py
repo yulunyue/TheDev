@@ -2,15 +2,15 @@ from .task_base import ZbTask, REPO_BASE
 
 
 class DockerTask(ZbTask):
-    _dock_util = None
+    def set_env(self, docker_image_name, remote_ip):
 
-    @property
-    def dock_util(self):
-        if self._dock_util is None:
-            from common.third_util.docker_util import DockerUtil
+        from common.third_util.docker_util import DockerUtil
 
-            self._dock_util = DockerUtil(self.local_cfg.docker_image_name.get_value())
-        return self._dock_util
+        self.dock_util = DockerUtil(
+            docker_image_name,
+            remote_ip=remote_ip,
+        )
+        return self
 
     def docker_build(self):
         self.dock_util.build(self.input_dir.get_abs_path(), f"{self.repo}:latest")
