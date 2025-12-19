@@ -57,6 +57,10 @@ def call_func_auto(func, *args, **kw):
     return func(*args[: len(info.args)])
 
 
+def get_file_path_by_cls(cls):
+    return inspect.getsourcefile(cls)
+
+
 def get_function_info(v):
     argspec = inspect.getfullargspec(v)
     has_self = False

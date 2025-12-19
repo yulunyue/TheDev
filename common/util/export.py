@@ -8,7 +8,7 @@ from .log import (
     logger,
     LOGER_PREFIX,
 )
-from .module import Module, get_function_info
+from .module import Module, get_function_info, get_file_path_by_cls
 from .tool import (
     uid,
     re_search,

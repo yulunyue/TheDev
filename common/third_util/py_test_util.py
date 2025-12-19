@@ -1,7 +1,7 @@
 import pytest
 from common.util.export import logger
 import urllib3
-from coverage import Coverage
+
 
 urllib3.disable_warnings()
 
@@ -12,7 +12,7 @@ class PyTestUtil:
             # "--show-capture": "log",
             "--log-file": "data/log/pytest.log",
         }
-        self.flags = ["--json-report --json-report-file=result.json"]
+        self.flags = []  # ["--json-report --json-report-file=result.json"]
 
     def debug(self):
         """--full-trace"""
@@ -38,6 +38,7 @@ class PyTestUtil:
         pytest.main(flags)
 
     def coverage(self):
+        from coverage import Coverage
 
         cov = Coverage()
         cov.start()

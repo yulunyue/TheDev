@@ -53,7 +53,7 @@ class ZbMangae(ToolBase):
         if self.key == "all":
             w.run()
         else:
-            w.submit(query_one(self.key))
+            w.submit(query_one(self.repo, self.key))
 
     def clear(self):
         for t in query_task(self.repo, self.key):
@@ -68,13 +68,13 @@ class ZbMangae(ToolBase):
         for t in query_task(self.repo, self.key):
             if t.error_msg.get_value() != CS.SUCCESS:
                 continue
+            ZbTask().build(t).load()
             result = t.result.get_value()
             if not result[CS.FAIL_TO_PASS]:
                 raise Exception(f"No FAIL_TO_PASS {t.id}")
-            task = ZbTask().build(t).load()
-            task.cfg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
-            task.cfg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
-            task.cfg.save()
+            t.cg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
+            t.cg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
+            t.cg.save()
             t.zip_file.remove()
             t.zip()
             logger.info(t.zip_file)
@@ -85,10 +85,7 @@ class ZbMangae(ToolBase):
         for t in tasks2:
             key = "NEEDMAKE: " if not t.zip_file.exists() else "NO_NEED: "
             key += t.error_msg.get_value()
-            if not t.cg.FAIL_TO_PASS:
-                key += f":{CS.NO_FAIL_TO_PASS}"
-            _, test_ct = get_result(t.input_dir.child("test.json").path)
-            _, code_ct = get_result(t.input_dir.child("code.json").path)
+            test_ct, code_ct = t.get_result("test"), t.get_result("code")
             info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
             ret[key].append(info)
 

@@ -129,7 +129,6 @@ class TaskCfg(ConfigBase):
         fp: Patch,
         change_files,
     ):
-        files = []
         for f in fp.get_change_files():
             if not f.local.file_name.endswith(".py"):
                 continue
@@ -138,6 +137,12 @@ class TaskCfg(ConfigBase):
                 change_files[key] = "test"
             else:
                 change_files[key] = "code"
+
+    def get_result(self, key):
+        ret = dict()
+        for k, v in self.result.get_value()[key].items():
+            ret[v] = ret.get(v, 0) + 1
+        return ret
 
 
 def task_cfg(job, task_id):

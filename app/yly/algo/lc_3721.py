@@ -25,9 +25,17 @@ class T(SegTreeNode):
 
 class Solution(MockCf):
     """
+    https://leetcode.cn/problems/longest-balanced-subarray-ii/description/
     给定一个数组，求最长连续子数组的长度，
-    该子数组奇数数量等于偶数数量
-    重复元素只计一次
+    子数组奇数元素数量需要等于偶数数量且重复元素只计一次
+    方案一
+        使用线段树，记录每个区间的最大值（最多能有多少个偶数）以及最小值（最多能有多少个奇数）
+        遍历数组，记录当前的奇偶数差值cur_sum，当前元素的上次出现位置last[x]
+        如果当前元素m是个新元素
+            那么之后的区间[i,j](i>=m and j<=n)都可以通过包含该元素最大值+1，或者最小值-1。
+        否则如果当前元素不是个新元素
+            则
+    方案二 分块思想
     """
 
     def longestBalanced(self, nums: List[int]) -> int:

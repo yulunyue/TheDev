@@ -1,12 +1,12 @@
-python -m app.yly.main lc_3753.py test
-python -m app.yly.main lc_3757.py test
-python -m app.yly.main lc_3762.py test
+python -m app.yly.algo.lc_3753 test
+python -m app.yly.algo.lc_3757 test
+python -m app.yly.algo.lc_3762 test
 python -m app.yly.envs.cg.cf4.main dev
 python -m app.yly.envs.game.c5.main dev
 python -m app.yly.envs.game.cube.main dev
-python -m app.yly.main lc_3721.py test
-python -m app.yly.main lg_p2123.py test
-python -m app.yly.main loj_p2885.py test
+python -m app.yly.algo.lc_3721 test
+python -m app.yly.algo.lg_p2123 test
+python -m app.yly.algo.loj_p2885 test
 python -m app.yly.envs.ml.ciff_walk.main dev
 python -m app.yly.envs.cg.cw.main dev
 python -m app.yly.envs.ml.pendulum.main dev

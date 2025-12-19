@@ -1,4 +1,5 @@
 from common.util.export import TcpServer, TcpClient, ToolBase
+from common.third_util.py_test_util import PyTestUtil
 
 
 class Io(ToolBase):
@@ -12,8 +13,8 @@ class Io(ToolBase):
         u.connect()
         u.write(dict(a=1))
 
-    def dev(self):
-        pass
+    def test(self):
+        PyTestUtil().set_aim("tests/test_io.py").set_root(".").main()
 
 
 if __name__ == "__main__":

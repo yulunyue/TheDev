@@ -1,9 +1,20 @@
-from common.util.export import get_log
+from common.util.export import get_log, List
 from .base import Io, socket
 from .client import Client
 
 
+class SocketMsg:
+    def __init__(self, sender, recv, msg):
+        self.sender = sender
+        self.recv = recv
+        self.msg = msg
+
+
 class Server(Io):
+    def __init__(self):
+        super().__init__()
+        self.msgs: List[SocketMsg] = []
+
     def new_connection(self, addr, t: "Client"):
         self.childs[addr] = t
         t.server = self
@@ -11,7 +22,8 @@ class Server(Io):
         self.logger.debug(f"new connecttion {t}")
 
     def receive_msg(self, client: "Io", msg):
-        self.logger.debug(f"{self} receive from {client} msg_len={len(msg)}")
+        self.msgs.append(SocketMsg(client, self, msg))
+        # self.logger.debug(f"{self} receive from {client} msg_len={len(msg)}")
 
     def run(self):
         self.create_socket()
