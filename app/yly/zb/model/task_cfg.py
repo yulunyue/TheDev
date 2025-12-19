@@ -11,16 +11,17 @@ from .util import (
     REPO_DIR,
     Cg,
     TARGETS,
+    REPO_BASE,
 )
 from .repo_cg import RepoCg
-from common.util.export import List
+from common.util.export import List, Dict, File, logger
+from common.third_service.git_tool.git_util import GitUtil, Patch
 
 
 class TaskCfg(ConfigBase):
     test_main = ListModel()
     error_msg = StrModel()
     result = DictModel()
-    check_result = DictModel()
     submit_url = StrModel()
     pr_url = StrModel()
     issue_url = StrModel()
@@ -74,6 +75,14 @@ class TaskCfg(ConfigBase):
 
             f = Api().download(self.down_load_uri.get_value())
             f.unzip(self.input_dir)
+        self.cg = Cg(self.task_id).set_resource(self.cg_file)
+        self.pr_url.set_value(self.cg.pr_url.get_value())
+        self.issue_url.set_value(self.cg.issue_url.get_value())
+        self.git_cmd = self.cg.get_git_util()
+        self.pr_util = self.git_cmd.get_pr(self.pr)
+        self.test_patch = self.pr_util.get_patch(self.input_dir.child("test.patch"))
+        self.code_patch = self.pr_util.get_patch(self.input_dir.child("code.patch"))
+        self.local_repo = File(f"{REPO_BASE}/{self.owner}/{self.repo}")
         return self
 
     @property
@@ -81,21 +90,8 @@ class TaskCfg(ConfigBase):
         return self.input_dir.child(self.name.get_value() + ".json")
 
     @property
-    def cg(self):
-        return Cg(self.task_id).set_resource(self.cg_file)
-
-    @property
     def py_test_result_json(self):
         return self.input_dir.child(CS.RESULT_JSON_FILE)
-
-    def skip(self):
-        error_msg = self.error_msg.get_value()
-        skip_msg = ""
-        if error_msg in {CS.SUCCESS, CS.NOT_FIND_CASES}:
-            skip_msg = error_msg
-        elif error_msg.startswith("SKIP"):
-            skip_msg = error_msg
-        return error_msg, skip_msg
 
     def zip(self):
         self.input_dir.zip(
@@ -103,8 +99,45 @@ class TaskCfg(ConfigBase):
         )
         return self
 
+    def set_error_msg(self, msg: str):
+        self.error_msg.set_value(msg)
+        if msg == CS.SUCCESS:
+            self.zip()
+        else:
+            self.zip_file.remove()
+        logger.info(msg)
+        self.save()
+        return self
+
     def check(self):
-        check_result = 0
+        test_main_values = self.test_main.get_value()
+        change_files: Dict[str, str] = dict()
+        for p in [self.test_patch, self.code_patch]:
+            self.get_update_file_by_batch(p, change_files)
+        if len(change_files) >= 15:
+            self.set_error_msg(f"SKIP: CHANGE_FILES>={len(change_files)}")
+            return
+        files = [k for k, v in change_files.items() if v == "test"]
+        if isinstance(test_main_values, str) or not test_main_values:
+            self.test_main.set_value(files)
+        if not self.test_main.get_value():
+            self.set_error_msg(f"SKIP: NO_TEST")
+            return
+
+    def get_update_file_by_batch(
+        self,
+        fp: Patch,
+        change_files,
+    ):
+        files = []
+        for f in fp.get_change_files():
+            if not f.local.file_name.endswith(".py"):
+                continue
+            key = f.filename
+            if f.local.file_name.startswith("test_"):
+                change_files[key] = "test"
+            else:
+                change_files[key] = "code"
 
 
 def task_cfg(job, task_id):

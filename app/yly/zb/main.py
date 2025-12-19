@@ -57,17 +57,11 @@ class ZbMangae(ToolBase):
 
     def clear(self):
         for t in query_task(self.repo, self.key):
-            t.error_msg.set_value(CS.FAILED)
             t.input_dir.child("code.json").remove()
             t.input_dir.child("test.json").remove()
-            if t.zip_file.exists():
-                logger.info(f"remove {t.zip_file}")
-                t.zip_file.remove()
+            t.zip_file.remove()
+            t.check()
             t.save()
-
-    def check(self):
-        for t in query_task(self.repo, self.key):
-            pass
 
     def zip(self):
         for t in query_task(self.repo, self.key):
@@ -111,6 +105,9 @@ class ZbMangae(ToolBase):
 
     def main(self):
         for f in query_task(self.repo, self.key):
+            err_msg = f.error_msg.get_value()
+            if err_msg == CS.SUCCESS or err_msg.startswith("SKIP:"):
+                continue
             t = (
                 DockerTask().set_env(f.docker_image_name, GC.zb_docker_env.get_value())
                 if GC.zb_docker_env.get_value()
@@ -129,6 +126,14 @@ class ZbMangae(ToolBase):
 
     def test(self):
         self.zb().apply_test().save()
+
+    def verify(self):
+        t = query_one(self.repo, self.key)
+        OsUtil("python").run(
+            "app/yly/zb/verification1217.py",
+            t.input_dir.get_abs_path(),
+            t.docker_image_name,
+        )
 
     def pip(self):
         self.local.pip()

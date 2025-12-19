@@ -3,9 +3,11 @@ import json
 import re
 import docker
 from pathlib import Path
+import sys
+import io
 
-TASKS_DIR = Path(r"疑难杂症\fsspec__filesystem_spec-1141")
-IMAGE_NAME_TEMPLATE = "swebench/sweb.eval.x_86_64.{repo_owner}_1776_{repo_name}-{pr_id}"
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+TASKS_DIR, IMAGE_NAME_TEMPLATE = Path(sys.argv[1]), sys.argv[2]
 
 
 class DockerImageManager:
@@ -24,8 +26,8 @@ class DockerImageManager:
             # 1. 先从【最右边】切一刀，以 '-' 分隔。
             # rsplit('-', 1) 表示从右往左切，只切 1 次。
             # 这样无论 Repo 名字里有多少个 '-'，我们都能精准拿到最后的 PR ID
-            repo_part, pr_id = instance_id.rsplit('-', 1)
-            
+            repo_part, pr_id = instance_id.rsplit("-", 1)
+
             # 验证切出来的 PR ID 是不是纯数字
             if not pr_id.isdigit():
                 raise ValueError("PR ID 不是数字")
@@ -33,7 +35,7 @@ class DockerImageManager:
             # 2. 再从【最左边】切一刀，以 '__' 分隔。
             # split('__', 1) 表示从左往右切，只切 1 次。
             # 这样无论 Repo 名字里有没有 '__'，我们都认为第一个 '__' 之前的是 Owner
-            owner, repo_name = repo_part.split('__', 1)
+            owner, repo_name = repo_part.split("__", 1)
 
             return {
                 "repo_owner": owner,
@@ -282,11 +284,11 @@ class DockerImageManager:
 
             # 2. 检查 instance_id 并验证文件名
             instance_id = data.get("instance_id")
-            
+
             # 如果 JSON 中没有 instance_id，或者文件名不等于 "{instance_id}.json"，则跳过
             if not instance_id:
                 continue
-            
+
             expected_filename = f"{instance_id}.json"
             if json_file.name != expected_filename:
                 continue

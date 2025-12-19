@@ -17,6 +17,7 @@ class CS:
     FAILURE = "failure"
     FAILED = "failed"
     SKIPPED = "skipped"
+    CHECKED = "checked"
     PASS_TO_PASS = "PASS_TO_PASS"
     PASS_TO_FAIL = "PASS_TO_FAIL"
     FAIL_TO_PASS = "FAIL_TO_PASS"

@@ -36,15 +36,15 @@ class DockerTask(ZbTask):
             )
             + "'",
             {
-                self.code_patch.f.get_abs_path(): f"{REPO_BASE}/{self.code_patch.f.file_name}",
-                self.test_patch.f.get_abs_path(): f"{REPO_BASE}/{self.test_patch.f.file_name}",
+                self.local_cfg.code_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.code_patch.f.file_name}",
+                self.local_cfg.test_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.test_patch.f.file_name}",
                 self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
                 # self.local_cfg.py_test_result_json.get_abs_path(): f"/testbed_output/{CS.RESULT_JSON_FILE}",
                 self.input_dir.get_abs_path(): f"/testbed_output",
                 self.local_repo.get_abs_path(): self.local_repo.path,
             },
             REPO_BASE,
-            env={"INSTANCE_ID": self.cfg.instance_id.get_value()},
+            env={"INSTANCE_ID": self.local_cfg.cg.instance_id.get_value()},
         )
         self.logger.debug(msg)
         self.print_result()
