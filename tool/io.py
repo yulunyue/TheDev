@@ -12,6 +12,9 @@ class Io(ToolBase):
         u.connect()
         u.write(dict(a=1))
 
+    def dev(self):
+        pass
+
 
 if __name__ == "__main__":
     Io().run()

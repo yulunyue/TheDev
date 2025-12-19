@@ -20,7 +20,7 @@ class TaskCfg(ConfigBase):
     test_main = ListModel()
     error_msg = StrModel()
     result = DictModel()
-    after_setup_env = DictModel()
+    check_result = DictModel()
     submit_url = StrModel()
     pr_url = StrModel()
     issue_url = StrModel()
@@ -102,6 +102,9 @@ class TaskCfg(ConfigBase):
             self.zip_file.path, TARGETS + [self.name.get_value() + ".json"]
         )
         return self
+
+    def check(self):
+        check_result = 0
 
 
 def task_cfg(job, task_id):

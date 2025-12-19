@@ -93,13 +93,12 @@ class ZbTask:
     def get_update_file_by_batch(self, fp: Patch):
         files = []
         for f in fp.get_change_files():
-            if f.local.file_name.endswith(".py") and f.local.file_name.startswith(
-                "test_"
-            ):
+            if f.local.file_name.endswith(".py"):
                 key = f.filename
-                if key not in self.change_py_test_files:
-                    self.change_py_test_files[key] = f
-                    files.append(f.local.path)
+                if f.local.file_name.startswith("test_"):
+                    if key not in self.change_py_test_files:
+                        self.change_py_test_files[key] = f
+                        files.append(f.local.path)
         logger.info(f"{fp.f} - {' '.join(files)[:100]}")
 
     def make_setup_repo_sh(self):
@@ -122,7 +121,6 @@ class ZbTask:
     def finish(self, statu, msgs):
         self.local_cfg.error_msg.set_value(msgs)
         if statu:
-            raise Exception("xx")
             self.local_cfg.zip()
             logger.info(f"ZB_TASK_SUCCESS {self.task_id} {self.zip_file} {msgs}")
             self.save()

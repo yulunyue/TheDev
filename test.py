@@ -33,11 +33,13 @@ class TestMain:
             if line.startswith("#") or not line:
                 continue
             cmds.append(line)
-        key = (
-            random.sample(cmds, 1)[0].split("-m ").pop().split(" ")[0].replace(".", "/")
-        )
+        cmd = random.sample(cmds, 1)[0]
+        key = cmd.split("-m ").pop().split(" ")[0].replace(".", "/")
+        logger.info(cmd)
+        if not File(f"{key}.py").exists():
+            raise Exception(key)
         logger.info(f"{key}.py")
-        path, info = make_md_file("/".join(key.split(".")[:-2]))
+        path, info = make_md_file(key)
         logger.info(f"{path} -> {info}")
 
     def main(self):

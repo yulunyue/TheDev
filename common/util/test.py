@@ -139,23 +139,37 @@ class Case:
         return ret
 
 
-def make_md_file(key=None, name="日志", msg=""):
+def make_md_file(key=None, msg=""):
     if key is None:
-        file_dir = sys.argv[1]
+        file_dir = (
+            sys.argv[0]
+            .replace(os.getcwd() + "\\", "")
+            .replace(".py", ".md")
+            .replace("\\", "/")
+        )
     else:
-        file_dir = key
-    f = File(f"{file_dir}/{name}.md")
+        file_dir = key + ".md"
+    f = File(file_dir)
     f.write_if_not_exists(msg)
     return f.path, "\n".join(f.read_line()[-5:])
 
 
 class ToolBase:
+    name = None
+
     @property
     def logger(self):
-        return get_log(f"tool/{self.__class__.__name__}.log")
+        return get_log(f"tool/{self.get_name()}.log")
+
+    @property
+    def dev_log(self):
+        return get_dev_log(f"tool/{self.get_name()}_dev.log")
 
     def prepare(self, *args):
         pass
+
+    def get_name(self):
+        return self.name or self.__class__.__name__
 
     def exit(self):
         pass
@@ -178,6 +192,9 @@ class ToolBase:
             return
 
         f(**self.kw)
+        md_file = make_md_file()[0]
+        self.logger.info(md_file)
+        self.logger.info(md_file.replace(".md", ".py"))
         self.exit()
 
     def cli(self):

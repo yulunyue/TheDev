@@ -145,7 +145,7 @@ def mock_py():
     mock_fun(mock_markupsafe)
     mock_fun(mock_flask)
     mock_fun(mock_platform)
-    mock_fun(mock_log)
+    # mock_fun(mock_log)
     # mock_fun(mock_cffi)
     # mock_fun(mock_importlib)
 

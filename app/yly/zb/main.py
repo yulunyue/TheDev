@@ -65,6 +65,10 @@ class ZbMangae(ToolBase):
                 t.zip_file.remove()
             t.save()
 
+    def check(self):
+        for t in query_task(self.repo, self.key):
+            pass
+
     def zip(self):
         for t in query_task(self.repo, self.key):
             if t.error_msg.get_value() != CS.SUCCESS:
