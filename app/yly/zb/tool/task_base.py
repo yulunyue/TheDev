@@ -127,8 +127,6 @@ class ZbTask:
             self.local_cfg.set_error_msg(CS.NO_FAIL_TO_PASS)
         else:
             self.local_cfg.set_error_msg(CS.SUCCESS)
-            return
-        raise Exception("RESULT_FAIL")
 
     @property
     def py_bin(self):

@@ -1,7 +1,7 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1475.zip?Expires=1766564036&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=bpyRt3X20yGS2AM7gdRIuDV7mbo%3D",
-    "error_msg": "",
+    "error_msg": "success",
     "need_setup_env": false,
     "result": {
         "test": {},
@@ -96,7 +96,7 @@
             "tests/platforms/macOS/test_AppPackagesMergeMixin__lipo_dylib.py::test_lipo_dylib_merge_error[False]": "passed",
             "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge[True]": "passed",
             "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge[False]": "passed",
-            "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge_problem": "failed",
+            "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge_problem": "passed",
             "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge_no_dylib": "passed",
             "tests/platforms/macOS/test_sha256_file_digest.py::test_sha256_file_digest": "passed"
         },
@@ -194,6 +194,7 @@
             "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge[False]",
             "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge[True]",
             "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge_no_dylib",
+            "tests/platforms/macOS/test_AppPackagesMergeMixin__merge_app_packages.py::test_merge_problem",
             "tests/platforms/macOS/test_sha256_file_digest.py::test_sha256_file_digest"
         ],
         "PASS_TO_PASS": []

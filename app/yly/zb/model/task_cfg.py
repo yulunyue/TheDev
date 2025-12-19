@@ -155,6 +155,8 @@ def query_task(job, key):
     ret: List[TaskCfg] = []
     for f in fss:
         c = query_one(job, f.name)
+        if c.repo != job:
+            continue
         if key != "all" and key not in c.id:
             continue
         ret.append(c)
