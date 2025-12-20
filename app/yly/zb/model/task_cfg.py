@@ -31,8 +31,7 @@ class TaskCfg(ConfigBase):
 
     @property
     def docker_image_name(self):
-        py_version = self.get_python_version()
-        return f"{self.repo}:{py_version}"
+        return f"{self.repo}:{self.py_env}"
 
     @property
     def id(self):
@@ -41,17 +40,6 @@ class TaskCfg(ConfigBase):
     @property
     def zip_file(self):
         return self.input_dir.child(self.name.get_value() + ".zip")
-
-    @property
-    def repo_cg(self) -> RepoCg:
-        return RepoCg.new(self.repo, REPO_DIR.child(f"{self.repo}/default_config.json"))
-
-    def get_python_version(self):
-        if self.py_name.get_value():
-            return self.py_name.get_value()
-        if self.repo_cg.py_name.get_value():
-            return self.repo_cg.py_name.get_value()
-        return "3.9_default"
 
     def load(self):
         down_load_uri = self.down_load_uri.get_value()
@@ -67,15 +55,26 @@ class TaskCfg(ConfigBase):
         self.owner, self.task_id, self.repo, self.pr = get_info_by_name(
             self.name.get_value()
         )
-        if self.py_name.get_value() == "py3":
-            self.py_name.set_value("")
         self.input_dir = TASK_DIR.child(self.repo).child(self.key)
+        self.cg = Cg(self.task_id).set_resource(self.cg_file)
+        self.py_env = self.py_name.get_value()
+        if self.py_env == "py3" or not self.py_env:
+            self.py_env = CS.PY_DEFAULT
+        self.py_version = self.py_env.split("_")[0]
+        repo_cfg_dir = REPO_DIR.child(f"{self.repo}/{self.py_env}")
+        self.repo_cfg: RepoCg = RepoCg.new(
+            self.repo,
+            repo_cfg_dir.child("config.json"),
+        )
+        self.env_py_test_main_py = repo_cfg_dir.child(CS.PY_TEST_MAIN_PY)
+        if not self.repo_cfg.base_commit.get_value():
+            self.repo_cfg.base_commit.set_value(self.cg.base_commit.get_value())
+            self.repo_cfg.save()
         if not self.input_dir.exists():
             from common.service.api import Api
 
             f = Api().download(self.down_load_uri.get_value())
             f.unzip(self.input_dir)
-        self.cg = Cg(self.task_id).set_resource(self.cg_file)
         self.pr_url.set_value(self.cg.pr_url.get_value())
         self.repo_uri = self.pr_url.get_value().split("/pull")[0] + ".git"
         self.issue_url.set_value(self.cg.issue_url.get_value())

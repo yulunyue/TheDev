@@ -215,7 +215,7 @@ class Module:
                     u.out_deg -= 1
                     if u.out_deg == 0:
                         q.append(u)
-        File(dst).write_file("\n".join(lines))
+        logger.info(File(dst).write_file("\n".join(lines)))
 
     def compile_one(self, src, path=None):
         if path is None:
@@ -225,6 +225,7 @@ class Module:
             src,
             path,
             mock_map={
+                "common/third_service/oj.py": mock_py,
                 "common/third_util/export.py": mock_py,
                 "common/util/export.py": mock_py,
                 "common/service/export.py": mock_py,

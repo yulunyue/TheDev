@@ -1,6 +1,6 @@
 from common.tool.export import OsUtil
 import docker
-from common.util.export import logger, os
+from common.util.export import logger, os, get_dev_log
 
 
 class DockerUtil:
@@ -16,7 +16,13 @@ class DockerUtil:
     @property
     def o(self):
         if self._o is None:
-            self._o = OsUtil("docker").set_time_out(60 * 60 * 4)
+            self._o = (
+                OsUtil("docker")
+                .set_time_out(60 * 60 * 4)
+                .set_logger(
+                    get_dev_log(f"os/docker_{self.image_name.replace(':','_')}")
+                )
+            )
         return self._o
 
     @property
@@ -37,7 +43,9 @@ class DockerUtil:
         except Exception as e:
             return False
 
-    def build(self, path):
+    def build(self, path, from_image_name):
+        if not self.check_image_exists() and from_image_name != self.image_name:
+            self.tag(from_image_name, self.image_name)
         self.re_build(path)
 
     def re_build(self, path):

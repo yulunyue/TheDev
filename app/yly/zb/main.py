@@ -55,6 +55,10 @@ class ZbMangae(ToolBase):
         else:
             w.submit(query_one(self.repo, self.key))
 
+    def docker_build(self):
+        t = self.docker()
+        t.docker_build()
+
     def clear(self):
         """
         Docstring for clear

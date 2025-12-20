@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-4586.zip?Expires=1766900772&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=FFxFZGZErlONEDEb5EnfhOyLkQs%3D",
-    "error_msg": "failed",
+    "error_msg": "NO_FAIL_TO_PASS",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/4574",
     "name": "TobikoData__sqlmesh-4586",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4586",
@@ -16,22 +16,8 @@
             "tests/dbt/test_manifest.py::test_source_meta_external_location": "failed",
             "tests/dbt/test_manifest.py::test_top_level_dbt_adapter_macros": "failed"
         },
-        "code": {
-            "tests/dbt/test_manifest.py::test_manifest_helper": "failed",
-            "tests/dbt/test_manifest.py::test_tests_referencing_disabled_models": "failed",
-            "tests/dbt/test_manifest.py::test_call_cache": "failed",
-            "tests/dbt/test_manifest.py::test_variable_override": "failed",
-            "tests/dbt/test_manifest.py::test_source_meta_external_location": "failed",
-            "tests/dbt/test_manifest.py::test_top_level_dbt_adapter_macros": "failed"
-        },
-        "FAIL_TO_FAIL": [
-            "tests/dbt/test_manifest.py::test_call_cache",
-            "tests/dbt/test_manifest.py::test_manifest_helper",
-            "tests/dbt/test_manifest.py::test_source_meta_external_location",
-            "tests/dbt/test_manifest.py::test_tests_referencing_disabled_models",
-            "tests/dbt/test_manifest.py::test_top_level_dbt_adapter_macros",
-            "tests/dbt/test_manifest.py::test_variable_override"
-        ],
+        "code": {},
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [],
         "PASS_TO_PASS": []

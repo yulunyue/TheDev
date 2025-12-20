@@ -32,6 +32,8 @@ class CS:
     TEST_PATCH = "test.patch"
     ZB_TASK_FAIL = "ZB_TASK_FAIL"
     NOT_FIND_CASES = "NOT_FIND_CASES"
+    PY_TEST_MAIN_PY = "py_test_main.py"
+    PY_DEFAULT = "3.9_default"
 
 
 PY_BIN = "%{PY_BIN}"

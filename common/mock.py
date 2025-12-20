@@ -69,16 +69,16 @@ class MockCf:
             self._o = open("output.txt", "w")
         self._o.write(f"{s}\n")
 
-    def execute(self):
+    def exec(self):
         return ""
 
     def run(self):
         if os.path.exists("common/third_service/oj.py"):
             from common.third_service.oj import oj_run
 
-            oj_run(self, sys.argv)
+            oj_run(self, *sys.argv[1:])
         else:
-            self.execute()
+            self.exec()
 
 
 MockCg = MockCf

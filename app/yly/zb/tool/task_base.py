@@ -10,9 +10,7 @@ from common.util.export import (
     sys,
     json_dumps,
 )
-from common.tool.export import (
-    OsUtil,
-)
+from common.tool.export import OsUtil, GC
 from common.third_service.git_tool.git_util import GitUtil, Patch
 from ..model.export import (
     INPUTS_DIR,
@@ -122,10 +120,12 @@ class ZbTask:
 
     def make_main_py(self):
         py_main_cmd = " ".join(self.local_cfg.test_main.get_value())
-        repo_py_test_main = REPO_DIR.child(self.repo).child("py_test_main.py")
-        repo_py_test_main.write_if_not_exists(
-            INPUTS_DIR.child("template/py_test_main.py").read_file()
-        )
+        if self.local_cfg.env_py_test_main_py.exists():
+            repo_py_test_main = self.local_cfg.env_py_test_main_py.read_file()
+        else:
+            repo_py_test_main = INPUTS_DIR.child(
+                f"template/{CS.PY_TEST_MAIN_PY}"
+            ).read_file()
         self.main_py_file.write_file(
             StrUtil().format(
                 INPUTS_DIR.child("template/run_verification.py").read_file(),
@@ -135,7 +135,7 @@ class ZbTask:
                 content_category=self.local_cfg.cg.content_category.get_value(),
                 PY_BIN=self.py_bin,
                 PY_TEST_MAIN_CODE=StrUtil().format(
-                    repo_py_test_main.read_file(),
+                    repo_py_test_main,
                     PY_MAIN_CMD=py_main_cmd,
                     PY_TEST_RESULT_JSON_FILE=CS.RESULT_JSON_FILE,
                 ),
@@ -143,9 +143,7 @@ class ZbTask:
         )
 
     def make_setup_repo_sh(self):
-        self.env_name = self.local_cfg.get_python_version()
-        py_version, _ = self.env_name.split("_")
-        coda_cmd = f"conda create -n testbed -y python={py_version}"
+        coda_cmd = f"conda create -n testbed -y python={self.local_cfg.py_version}"
         self.input_dir.child("setup_repo.sh").write_file(
             "\n".join(
                 [
@@ -159,12 +157,17 @@ class ZbTask:
         )
 
     def make_setup_env_sh(self):
-        self.env_name = self.local_cfg.get_python_version()
-        local_env_file = REPO_DIR.child(f"{self.repo}/{self.env_name}/setup_env.sh")
+        local_env_file = REPO_DIR.child(
+            f"{self.repo}/{self.local_cfg.py_env}/setup_env.sh"
+        )
         local_env_sh: List[str] = [
             f"cd {self.local_repo.path}",
-            f"git reset --hard {self.local_cfg.cg.base_commit.get_value()}",
+            f"git reset --hard {self.local_cfg.repo_cfg.base_commit.get_value()}",
             f"conda run -n testbed python -m venv {self.venv_dir}",
+            f"pip config set global.index-url {GC.pip_global_index_url.get_value()}",
+            f"pip config set global.trusted-host {GC.pip_trusted_host.get_value()}",
+            "pip config get global.index-url",
+            "pip config get global.trusted-host",
             f"pip install --upgrade pip",
         ]
         pyproject_toml = self.local_repo.child("pyproject.toml")
@@ -177,7 +180,8 @@ class ZbTask:
         )
         if pyproject_toml.exists():
             dev_py = pyproject_toml.get("project", "optional-dependencies", "dev")
-            local_env_sh.extend([f'pip install "{s}"' for s in dev_py])
+            if dev_py:
+                local_env_sh.extend([f'pip install "{s}"' for s in dev_py])
         if local_env_file.exists():
             local_env_sh.extend(local_env_file.read_line())
         setup_env_sh = []
@@ -188,13 +192,6 @@ class ZbTask:
                 setup_env_sh.append(d)
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
         self.logger.debug(f"sh {self.setup_env_sh.path}")
-
-    def pip_install_pyproject_toml(self, f: File):
-        data = f.get("project", "dependencies")
-        ret = []
-        if data:
-            ret.extend([self.pkg_repair(v) for v in data])
-        return ret
 
     def rest_repo(self, commid_id=None):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""
@@ -229,7 +226,7 @@ class ZbTask:
 
     @property
     def venv_dir(self):
-        return f"/.venv/{self.repo}/posix_{self.local_cfg.get_python_version()}"
+        return f"/.venv/{self.repo}/posix_{self.local_cfg.py_env}"
 
     def run(self):
         self.init()

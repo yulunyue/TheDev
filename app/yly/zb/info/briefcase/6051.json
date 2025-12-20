@@ -1,7 +1,7 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1724.zip?Expires=1766568692&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=OTBn2F3mR9s%2FuxU4dpmmIgIosOY%3D",
-    "error_msg": "failed",
+    "error_msg": "FAIL_TO_FAIL",
     "issue_url": "https://github.com/beeware/briefcase/issues/1663",
     "name": "beeware__briefcase-1724",
     "need_setup_env": false,
@@ -14,7 +14,7 @@
             "tests/commands/new/test_build_context.py::test_question_sequence_pyside6": "failed",
             "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear": "failed",
             "tests/commands/new/test_build_context.py::test_question_sequence_pygame": "failed",
-            "tests/commands/new/test_build_context.py::test_question_sequence_none": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_none": "failed",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides": "passed",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override": "passed",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override": "passed",
@@ -23,31 +23,31 @@
             "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context": "passed"
         },
         "code": {
-            "tests/commands/new/test_build_context.py::test_question_sequence_toga": "passed",
-            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6": "passed",
-            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear": "passed",
-            "tests/commands/new/test_build_context.py::test_question_sequence_pygame": "passed",
-            "tests/commands/new/test_build_context.py::test_question_sequence_none": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_toga": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pyside6": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_pygame": "failed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_none": "failed",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides": "passed",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override": "passed",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override": "passed",
-            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input": "passed",
+            "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input": "failed",
             "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap": "passed",
             "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context": "passed"
         },
-        "FAIL_TO_FAIL": [],
-        "PASS_TO_FAIL": [],
-        "FAIL_TO_PASS": [
+        "FAIL_TO_FAIL": [
+            "tests/commands/new/test_build_context.py::test_question_sequence_none",
             "tests/commands/new/test_build_context.py::test_question_sequence_pursuedpybear",
             "tests/commands/new/test_build_context.py::test_question_sequence_pygame",
             "tests/commands/new/test_build_context.py::test_question_sequence_pyside6",
             "tests/commands/new/test_build_context.py::test_question_sequence_toga",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_no_user_input"
         ],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [],
         "PASS_TO_PASS": [
             "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap",
             "tests/commands/new/test_build_context.py::test_question_sequence_custom_bootstrap_without_additional_context",
-            "tests/commands/new/test_build_context.py::test_question_sequence_none",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_bootstrap_override",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_bad_license_override",
             "tests/commands/new/test_build_context.py::test_question_sequence_with_overrides"

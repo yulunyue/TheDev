@@ -1,4 +1,4 @@
-from .task_base import ZbTask, REPO_BASE
+from .task_base import ZbTask, REPO_BASE, CS
 
 
 class DockerTask(ZbTask):
@@ -13,7 +13,9 @@ class DockerTask(ZbTask):
         return self
 
     def docker_build(self):
-        self.dock_util.build(self.input_dir.get_abs_path(), f"{self.repo}:latest")
+        self.dock_util.build(
+            self.input_dir.get_abs_path(), f"{self.repo}:{CS.PY_DEFAULT}"
+        )
 
     def play(self):
         result_files = [
@@ -25,7 +27,6 @@ class DockerTask(ZbTask):
         ]
         for f in result_files:
             self.input_dir.child(f).remove()
-        self.docker_build()
         self.local_cfg.py_test_result_json.remove()
         status, msg = self.dock_util.run(
             ";".join(

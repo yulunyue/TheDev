@@ -4,7 +4,7 @@
     "name": "beeware__briefcase-1058",
     "docker_image_name": "briefcase:latest",
     "after_setup_env": {},
-    "error_msg": "failed",
+    "error_msg": "success",
     "issue_url": "https://github.com/beeware/briefcase/issues/1051",
     "pr_url": "https://github.com/beeware/briefcase/pull/1058",
     "py_name": "",
