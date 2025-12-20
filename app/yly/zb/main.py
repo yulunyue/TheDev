@@ -56,13 +56,26 @@ class ZbMangae(ToolBase):
             w.submit(query_one(self.repo, self.key))
 
     def clear(self):
+        """
+        Docstring for clear
+
+        :param self: Description
+        需要明确clear的意义和目的
+        """
         for t in query_task(self.repo, self.key):
             # t.set_error_msg("")
-            t.input_dir.child("code.json").remove()
-            t.input_dir.child("test.json").remove()
-            t.zip_file.remove()
+            # t.input_dir.child("code.json").remove()
+            # t.input_dir.child("test.json").remove()
+            # t.zip_file.remove()
+            # t.check()
+            # t.save()
+            pass
+
+    def check(self):
+        for t in query_task(self.repo, self.key):
             t.check()
             t.save()
+        self.view()
 
     def zip(self):
         for t in query_task(self.repo, self.key):
@@ -98,7 +111,9 @@ class ZbMangae(ToolBase):
             for t in sorted(tasks, key=tmp):
                 msgs.append(str(t))
             msgs.append("--------------")
-        self.logger.debug("\n".join(msgs))
+        task_view_flie = File("log/zb_task_view.log")
+        self.logger.info(task_view_flie)
+        task_view_flie.write_file("\n".join(msgs))
         self.logger.info(len(tasks2))
 
     def main(self):

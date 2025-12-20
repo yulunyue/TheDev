@@ -1,7 +1,7 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-862.zip?Expires=1766564096&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=VX5xtZ2g2ENxIsNOlLYUSvTh4kc%3D",
-    "error_msg": "SKIP: CHANGE_FILES>=24",
+    "error_msg": "SKIP: CHANGE_FILES=24>=20",
     "need_setup_env": false,
     "result": {
         "test": {},

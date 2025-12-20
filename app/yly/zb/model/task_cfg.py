@@ -77,11 +77,13 @@ class TaskCfg(ConfigBase):
             f.unzip(self.input_dir)
         self.cg = Cg(self.task_id).set_resource(self.cg_file)
         self.pr_url.set_value(self.cg.pr_url.get_value())
+        self.repo_uri = self.pr_url.get_value().split("/pull")[0] + ".git"
         self.issue_url.set_value(self.cg.issue_url.get_value())
         self.git_cmd = self.cg.get_git_util()
         self.pr_util = self.git_cmd.get_pr(self.pr)
         self.test_patch = self.pr_util.get_patch(self.input_dir.child("test.patch"))
         self.code_patch = self.pr_util.get_patch(self.input_dir.child("code.patch"))
+
         self.local_repo = File(f"{REPO_BASE}/{self.owner}/{self.repo}")
         return self
 
@@ -105,17 +107,20 @@ class TaskCfg(ConfigBase):
             self.zip()
         else:
             self.zip_file.remove()
-        logger.info(msg)
+        logger.info(f"{self.name.get_value()} {msg}")
         self.save()
         return self
 
     def check(self):
         test_main_values = self.test_main.get_value()
         change_files: Dict[str, str] = dict()
+        max_change_files = 20
         for p in [self.test_patch, self.code_patch]:
             self.get_update_file_by_batch(p, change_files)
-        if len(change_files) >= 20:
-            self.set_error_msg(f"SKIP: CHANGE_FILES>={len(change_files)}")
+        if len(change_files) >= max_change_files:
+            self.set_error_msg(
+                f"SKIP: CHANGE_FILES={len(change_files)}>={max_change_files}"
+            )
             return
         files = [k for k, v in change_files.items() if v == "test"]
         if isinstance(test_main_values, str) or not test_main_values:
@@ -140,6 +145,9 @@ class TaskCfg(ConfigBase):
 
     def get_result(self, key):
         ret = dict()
+        results = self.result.get_value()
+        if key not in results:
+            return dict(no=-1)
         for k, v in self.result.get_value()[key].items():
             ret[v] = ret.get(v, 0) + 1
         return ret
@@ -160,8 +168,8 @@ def query_task(job, key):
     ret: List[TaskCfg] = []
     for f in fss:
         c = query_one(job, f.name)
-        if c.repo != job:
-            continue
+        # if c.repo != job:
+        #     continue
         if key != "all" and key not in c.id:
             continue
         ret.append(c)

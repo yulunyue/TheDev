@@ -37,10 +37,8 @@ class DockerUtil:
         except Exception as e:
             return False
 
-    def build(self, path, from_image_name):
-        if not self.check_image_exists():
-            self.tag(from_image_name, self.image_name)
-            self.re_build(path)
+    def build(self, path):
+        self.re_build(path)
 
     def re_build(self, path):
         if self.remote_ip == "from_env":

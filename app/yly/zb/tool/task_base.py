@@ -62,29 +62,17 @@ class ZbTask:
         return self
 
     def apply_patch(self, f: Patch):
-        self.git_cmd.apply(f.f.get_abs_path())
+        self.local_cfg.git_cmd.apply(f.f.get_abs_path())
 
     def apply_code(self):
         self.apply_test()
-        self.apply_patch(self.code_patch)
+        self.apply_patch(self.local_cfg.code_patch)
         return self
 
     def apply_test(self):
         self.rest_repo()
-        self.apply_patch(self.test_patch)
+        self.apply_patch(self.local_cfg.test_patch)
         return self
-
-    def make_setup_repo_sh(self):
-        self.input_dir.child("setup_repo.sh").write_file(
-            "\n".join(
-                [
-                    "set -e",
-                    f"mkdir -p {self.local_repo.parent().path}",
-                    f"git config --global http.sslVerify false",
-                    f"git clone {self.local_cfg.repo} {self.local_repo.path}",
-                ]
-            )
-        )
 
     def re_init(self):
         self.input_dir.remove()
@@ -154,34 +142,46 @@ class ZbTask:
             )
         )
 
-    def make_setup_env_sh(self):
+    def make_setup_repo_sh(self):
         self.env_name = self.local_cfg.get_python_version()
         py_version, _ = self.env_name.split("_")
         coda_cmd = f"conda create -n testbed -y python={py_version}"
-        local_env = REPO_DIR.child(f"{self.repo}/{self.env_name}/setup_env.sh")
-        if not local_env.exists():
-            local_envs = [
-                f"cd {self.local_repo.path}",
-                f"git reset --hard {self.local_cfg.cg.base_commit.get_value()}",
-                coda_cmd,
-                f"conda run -n testbed python -m venv {self.venv_dir}",
-                f"pip install --upgrade pip",
-            ]
-
-            pyproject_toml = self.local_repo.child("pyproject.toml")
-            setup_cfg = self.local_repo.child("setup.cfg")
-            setup_py = self.local_repo.child("setup.py")
-            if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
-                local_envs.append(f"pip install -e .")
-            local_envs.append(
-                "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
+        self.input_dir.child("setup_repo.sh").write_file(
+            "\n".join(
+                [
+                    "set -e",
+                    f"mkdir -p {self.local_repo.parent().path}",
+                    f"git config --global http.sslVerify false",
+                    f"git clone {self.local_cfg.repo_uri} {self.local_repo.path}",
+                    coda_cmd,
+                ]
             )
-            if pyproject_toml.exists():
-                dev_py = pyproject_toml.get("project", "optional-dependencies", "dev")
-                local_envs.extend([f'pip install "{s}"' for s in dev_py])
-            local_env.write_file("\n".join(local_envs))
+        )
+
+    def make_setup_env_sh(self):
+        self.env_name = self.local_cfg.get_python_version()
+        local_env_file = REPO_DIR.child(f"{self.repo}/{self.env_name}/setup_env.sh")
+        local_env_sh: List[str] = [
+            f"cd {self.local_repo.path}",
+            f"git reset --hard {self.local_cfg.cg.base_commit.get_value()}",
+            f"conda run -n testbed python -m venv {self.venv_dir}",
+            f"pip install --upgrade pip",
+        ]
+        pyproject_toml = self.local_repo.child("pyproject.toml")
+        setup_cfg = self.local_repo.child("setup.cfg")
+        setup_py = self.local_repo.child("setup.py")
+        if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
+            local_env_sh.append(f"pip install -e .")
+        local_env_sh.append(
+            "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
+        )
+        if pyproject_toml.exists():
+            dev_py = pyproject_toml.get("project", "optional-dependencies", "dev")
+            local_env_sh.extend([f'pip install "{s}"' for s in dev_py])
+        if local_env_file.exists():
+            local_env_sh.extend(local_env_file.read_line())
         setup_env_sh = []
-        for d in local_env.read_line():
+        for d in local_env_sh:
             if d.startswith("pip"):
                 setup_env_sh.append(f"{self.py_bin} -m {d}")
             else:
@@ -239,5 +239,5 @@ class ZbTask:
         pass
 
     def save(self):
-        self.cfg.save()
+        self.local_cfg.cg.save()
         self.local_cfg.save()
