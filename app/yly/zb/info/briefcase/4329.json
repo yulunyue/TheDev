@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-3873.zip?Expires=1766900726&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=JZMRKrFaPvZ4%2FJ7ENplTdWNrCyU%3D",
-    "error_msg": "",
+    "error_msg": "failed",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/3869",
     "name": "TobikoData__sqlmesh-3873",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/3873",

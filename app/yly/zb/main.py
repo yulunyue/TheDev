@@ -63,13 +63,9 @@ class ZbMangae(ToolBase):
         需要明确clear的意义和目的
         """
         for t in query_task(self.repo, self.key):
-            # t.set_error_msg("")
-            # t.input_dir.child("code.json").remove()
-            # t.input_dir.child("test.json").remove()
-            # t.zip_file.remove()
-            # t.check()
-            # t.save()
-            pass
+            t.set_error_msg(CS.FAILED)
+            t.check()
+            t.save()
 
     def check(self):
         for t in query_task(self.repo, self.key):

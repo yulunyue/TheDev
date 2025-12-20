@@ -16,7 +16,7 @@ class DockerUtil:
     @property
     def o(self):
         if self._o is None:
-            self._o = OsUtil("docker")
+            self._o = OsUtil("docker").set_time_out(60 * 60 * 4)
         return self._o
 
     @property

@@ -6,6 +6,8 @@ import re
 
 
 class OsUtil:
+    time_out = 3600
+
     def __init__(self, fun_name, error_exit_flag=True):
         self.fun_name = fun_name
         self.error_exit_flag = error_exit_flag
@@ -14,6 +16,10 @@ class OsUtil:
         self.logger: TheDevLoger = get_dev_log(
             f"os/{self.fun_name.split('/').pop()}"
         )  # 用TheDev 主要是方便writer 重定向
+
+    def set_time_out(self, timeout):
+        self.timeout = timeout
+        return self
 
     def set_venv(self, env_path):
         local_exec = sys.executable.replace("\\", "/")
@@ -49,7 +55,7 @@ class OsUtil:
                 capture_output=capture_output,
                 text=True,
                 cwd=self.root_path,
-                timeout=60 * 60,
+                timeout=self.time_out,
                 env=env,  # 不能为空字典 [WinError 87] 参数错误。
                 **param,
             )
