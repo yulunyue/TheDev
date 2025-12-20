@@ -102,11 +102,7 @@ class TaskCfg(ConfigBase):
 
     def set_error_msg(self, msg: str):
         self.error_msg.set_value(msg)
-        if msg == CS.SUCCESS:
-            self.zip()
-        else:
-            self.zip_file.remove()
-        logger.info(f"{self.name.get_value()} {msg}")
+        logger.info(f"{self.name.get_value()}->{msg}")
         self.save()
         return self
 

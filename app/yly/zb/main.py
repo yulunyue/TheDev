@@ -96,9 +96,20 @@ class ZbMangae(ToolBase):
         ret = defaultdict(list)
         tasks2 = query_task(self.repo, self.key)
         for t in tasks2:
-            key = "NEEDMAKE: " if not t.zip_file.exists() else "NO_NEED: "
-            key += t.error_msg.get_value()
+            key = t.error_msg.get_value()
+            result = t.result.get_value()
+            fail_to_pass = (
+                "HAS_FAIL_TO_PASS"
+                if len(result.get(CS.FAIL_TO_PASS, [])) != 0
+                else "NO_FAIL_TO_PASS"
+            )
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
+            if code_ct.get("error"):
+                key = f"{fail_to_pass}_NEED_CHECK_WITH_CODE_ERROR"
+                t.set_error_msg(key)
+            elif code_ct.get("failed"):
+                key = f"{fail_to_pass}_NEED_CHECK_WITH_CODE_FAILED"
+                t.set_error_msg(key)
             info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
             ret[key].append(info)
 
