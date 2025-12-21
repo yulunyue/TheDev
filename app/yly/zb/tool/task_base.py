@@ -116,7 +116,7 @@ class ZbTask:
 
     @property
     def py_bin(self):
-        return "python"
+        return "conda run -n testbed python"
         return self.venv_dir + "/bin/python"
 
     def make_main_py(self):
@@ -134,7 +134,7 @@ class ZbTask:
                 BASE_COMMIT=self.local_cfg.cg.base_commit.get_value(),
                 INSTANCE_ID=self.local_cfg.cg.instance_id.get_value(),
                 content_category=self.local_cfg.cg.content_category.get_value(),
-                PY_BIN=self.py_bin,
+                PY_BIN="python",
                 PY_TEST_MAIN_CODE=StrUtil().format(
                     repo_py_test_main,
                     PY_MAIN_CMD=py_main_cmd,
@@ -164,8 +164,12 @@ class ZbTask:
         local_env_sh: List[str] = [
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.local_cfg.repo_cfg.base_commit.get_value()}",
-            # f"conda run -n testbed python -m venv {self.venv_dir}",
-            "conda activate testbed",
+            # f"conda run -n testbed python -m venv {self.venv_dir}"
+            # "conda env list",
+            # "conda deactivate",
+            # "conda activate testbed",
+            f"{self.py_bin} --version",
+            f"{self.py_bin} -c 'import sys;print(sys.executable)'",
             f"pip config set global.index-url {GC.pip_global_index_url.get_value()}",
             f"pip config set global.trusted-host {GC.pip_trusted_host.get_value()}",
             "pip config get global.index-url",
