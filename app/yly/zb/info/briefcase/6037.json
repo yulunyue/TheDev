@@ -511,8 +511,7 @@
         "tests/platforms/web/static/test_run.py",
         "tests/platforms/windows/app/test_run.py",
         "tests/platforms/windows/visualstudio/test_run.py",
-        "tests/test_cmdline.py::test_dev_command",
-        "tests/test_cmdline.py::test_run_command"
+        "tests/test_cmdline.py"
     ],
     "upload_uri": "http://39.99.159.226/",
     "issue_url": "https://github.com/beeware/briefcase/issues/1077",

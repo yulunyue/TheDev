@@ -116,6 +116,7 @@ class ZbTask:
 
     @property
     def py_bin(self):
+        return "python"
         return self.venv_dir + "/bin/python"
 
     def make_main_py(self):
@@ -163,7 +164,8 @@ class ZbTask:
         local_env_sh: List[str] = [
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.local_cfg.repo_cfg.base_commit.get_value()}",
-            f"conda run -n testbed python -m venv {self.venv_dir}",
+            # f"conda run -n testbed python -m venv {self.venv_dir}",
+            "conda activate testbed",
             f"pip config set global.index-url {GC.pip_global_index_url.get_value()}",
             f"pip config set global.trusted-host {GC.pip_trusted_host.get_value()}",
             "pip config get global.index-url",

@@ -234,9 +234,9 @@
         "tests/integrations/docker/test_Docker__cache_image.py",
         "tests/integrations/docker/test_Docker__check_output.py",
         "tests/integrations/docker/test_Docker__verify.py",
-        "tests/platforms/linux/appimage/test_create.py::test_output_format_template_context tests/platforms/linux/appimage/test_create.py::test_output_format_no_docker",
+        "tests/platforms/linux/appimage/test_create.py",
         "tests/platforms/linux/appimage/test_mixin.py",
-        "tests/platforms/linux/system/test_create.py::test_output_format_template_context tests/platforms/linux/system/test_create.py::test_output_format_template_context_no_docker",
+        "tests/platforms/linux/system/test_create.py",
         "tests/platforms/linux/system/test_mixin__finalize_app_config.py",
         "tests/platforms/linux/system/test_mixin__verify.py"
     ],

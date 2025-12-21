@@ -103,6 +103,9 @@ class ZbMangae(ToolBase):
                 if len(result.get(CS.FAIL_TO_PASS, [])) != 0
                 else "NO_FAIL_TO_PASS"
             )
+            for v in t.test_main.get_value():
+                if "::" in v:
+                    logger.info(t.resource)
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             if code_ct.get("error"):
                 key = f"{fail_to_pass}_NEED_CHECK_WITH_CODE_ERROR"
