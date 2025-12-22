@@ -95,6 +95,7 @@ class TaskCfg(ConfigBase):
         return self.input_dir.child(CS.RESULT_JSON_FILE)
 
     def zip(self):
+        self.zip_file.remove()
         self.input_dir.zip(
             self.zip_file.path, TARGETS + [self.name.get_value() + ".json"]
         )
