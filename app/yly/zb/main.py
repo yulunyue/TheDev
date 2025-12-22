@@ -69,7 +69,6 @@ class ZbMangae(ToolBase):
         for t in query_task(self.repo, self.key):
             t.set_error_msg(CS.FAILED)
             t.check()
-            t.save()
 
     def check(self):
         for t in query_task(self.repo, self.key):

@@ -8,14 +8,7 @@
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4586",
     "py_name": "",
     "result": {
-        "test": {
-            "tests/dbt/test_manifest.py::test_manifest_helper": "failed",
-            "tests/dbt/test_manifest.py::test_tests_referencing_disabled_models": "failed",
-            "tests/dbt/test_manifest.py::test_call_cache": "failed",
-            "tests/dbt/test_manifest.py::test_variable_override": "failed",
-            "tests/dbt/test_manifest.py::test_source_meta_external_location": "failed",
-            "tests/dbt/test_manifest.py::test_top_level_dbt_adapter_macros": "failed"
-        },
+        "test": {},
         "code": {},
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
