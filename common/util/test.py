@@ -44,7 +44,7 @@ class TestBase:
     TEST_EMABLE = True
     f = None
 
-    def prepare(self, args=None):
+    def setup_class(self):
         pass
 
     def run(self, args=None):
