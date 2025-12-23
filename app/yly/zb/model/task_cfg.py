@@ -46,7 +46,7 @@ class TaskCfg(ConfigBase):
         if not down_load_uri:
             raise Exception("xx")
         if not self.name.get_value():
-            from common.service.api import Api
+            from common.third_util.api import Api
 
             f = Api().download(down_load_uri)
             self.name.set_value(f.name)
@@ -71,7 +71,7 @@ class TaskCfg(ConfigBase):
             self.repo_cfg.base_commit.set_value(self.cg.base_commit.get_value())
             self.repo_cfg.save()
         if not self.input_dir.exists():
-            from common.service.api import Api
+            from common.third_util.api import Api
 
             f = Api().download(self.down_load_uri.get_value())
             f.unzip(self.input_dir)

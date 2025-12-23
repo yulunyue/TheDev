@@ -1,5 +1,5 @@
 from kaggle.cli import main
-from common.service.api import Api
+from common.third_util.api import Api
 from common.util.log import std_mock
 
 

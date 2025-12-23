@@ -65,6 +65,7 @@ class ZbTask:
     def apply_code(self):
         self.apply_test()
         self.apply_patch(self.local_cfg.code_patch)
+
         return self
 
     def apply_test(self):
@@ -119,7 +120,7 @@ class ZbTask:
         return "conda run -n testbed python"
         return self.venv_dir + "/bin/python"
 
-    def make_main_py(self):
+    def get_py_test_main_code(self):
         py_main_cmd = " ".join(self.local_cfg.test_main.get_value())
         if self.local_cfg.env_py_test_main_py.exists():
             repo_py_test_main = self.local_cfg.env_py_test_main_py.read_file()
@@ -127,6 +128,14 @@ class ZbTask:
             repo_py_test_main = INPUTS_DIR.child(
                 f"template/{CS.PY_TEST_MAIN_PY}"
             ).read_file()
+        return StrUtil().format(
+            repo_py_test_main,
+            PY_MAIN_CMD=py_main_cmd,
+            PY_TEST_RESULT_JSON_FILE=CS.RESULT_JSON_FILE,
+        )
+
+    def make_main_py(self):
+
         self.main_py_file.write_file(
             StrUtil().format(
                 INPUTS_DIR.child("template/run_verification.py").read_file(),
@@ -135,11 +144,7 @@ class ZbTask:
                 INSTANCE_ID=self.local_cfg.cg.instance_id.get_value(),
                 content_category=self.local_cfg.cg.content_category.get_value(),
                 PY_BIN="python",
-                PY_TEST_MAIN_CODE=StrUtil().format(
-                    repo_py_test_main,
-                    PY_MAIN_CMD=py_main_cmd,
-                    PY_TEST_RESULT_JSON_FILE=CS.RESULT_JSON_FILE,
-                ),
+                PY_TEST_MAIN_CODE=self.get_py_test_main_code(),
             )
         )
 
@@ -198,6 +203,28 @@ class ZbTask:
                 setup_env_sh.append(d)
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
         self.logger.debug(f"sh {self.setup_env_sh.path}")
+
+    def make_launch_json(self):
+        info = {
+            "version": "0.2.0",
+            "configurations": [
+                {
+                    "name": "remote_debug_docker",
+                    "type": "debugpy",
+                    "request": "attach",
+                    "connect": {"host": "localhost", "port": 5678},
+                    "pathMappings": [
+                        {
+                            "localRoot": self.local_repo.get_abs_path(),
+                            "remoteRoot": self.local_repo.path,
+                        }
+                    ],
+                    "justMyCode": False,
+                }
+            ],
+        }
+        self.local_repo.child(".vscode/launch.json").write_file(info)
+        return self
 
     def rest_repo(self, commid_id=None):
         """重置仓库到指定的 commit，并强制清理所有未跟踪的文件。"""

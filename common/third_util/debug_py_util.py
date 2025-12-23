@@ -2,8 +2,9 @@ import debugpy
 
 
 class DebugPyUtil:
-    def run(self):
+    def run(self, port=5678):
+        debugpy.listen(("0.0.0.0", port))
         while True:
-            debugpy.listen(("0.0.0.0", 5678))
             print("等待调试器附加...")
             debugpy.wait_for_client()
+            debugpy.breakpoint()

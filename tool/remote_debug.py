@@ -1,13 +1,12 @@
-from common.util.export import ToolBase, Module, logger
+from common.util.export import ToolBase
+from common.third_util.debug_py_util import DebugPyUtil
 
 
-class CgTool(ToolBase):
-    def pk(self, path):
-        Module().compile_one(path)
+class DebugTool(ToolBase):
 
-    def cg(self):
-        CodingGame(Cgl9.name).pk(Module.RUN_TMP_PATH, Cgl9.game_id, Cgl9.agentsIds)
+    def debug(self):
+        DebugPyUtil().run()
 
 
 if __name__ == "__main__":
-    pass
+    DebugTool().run()

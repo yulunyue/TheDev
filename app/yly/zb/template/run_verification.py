@@ -158,10 +158,14 @@ def get_result(result_file):
     return result, ct
 
 
-def run_py_test(name):
+def make_py_test_main():
     py_path = f"{REPO_DIR}/py_test_main.py"
     with open(py_path, "w", encoding="utf-8") as f:
         f.write(PY_TEST_MAIN_CODE)
+
+
+def run_py_test(name):
+    make_py_test_main()
     result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
     statu_code, msg, msg1 = run_command([PY_BIN, "py_test_main.py"], cwd=REPO_DIR)
     os.system(f"cp {result_file} {name}.json")

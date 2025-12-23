@@ -6,6 +6,7 @@ from common.util.export import (
     LOGER_PREFIX,
     List,
     defaultdict,
+    Module,
 )
 from common.tool.export import OsUtil, GC
 from .model.export import (
@@ -36,9 +37,15 @@ class ZbMangae(ToolBase):
     def task(self, f: ZbTask):
         return f.build(query_one(self.repo, self.key)).load()
 
+    _docker: DockerTask = None
+
     def docker(self):
-        r: DockerTask = self.task(DockerTask())
-        return r.set_env(r.local_cfg.docker_image_name, GC.zb_docker_env.get_value())
+        if self._docker is None:
+            self._docker: DockerTask = self.task(DockerTask())
+            self._docker.set_env(
+                self._docker.local_cfg.docker_image_name, GC.zb_docker_env.get_value()
+            )
+        return self._docker
 
     def local(self):
         return self.task(SelfTask())
@@ -151,7 +158,7 @@ class ZbMangae(ToolBase):
         self.docker().apply_code().save()
 
     def test(self):
-        self.zb().apply_test().save()
+        self.docker().apply_test().save()
 
     def verify(self):
         t = query_one(self.repo, self.key)
@@ -162,17 +169,20 @@ class ZbMangae(ToolBase):
         )
 
     def pip(self):
-        self.local.pip()
-
         c = SelfTask().build(query_one(self.repo, self.key))
         c.init()
         c.pip()
 
     def debug(self):
-        self.apply_code()
-
-    def dev(self):
-        pass
+        self.code()
+        t = self.docker().make_launch_json()
+        t.local_repo.child(CS.PY_TEST_MAIN_PY).write_file(t.get_py_test_main_code())
+        logger.info(
+            f"docker run -p 5678:5678 -v {t.local_repo.get_abs_path()}:{t.local_repo.path} -it {self.docker().docker_image_name}"
+        )
+        logger.info(
+            f"cd {t.local_repo.get_abs_path()} && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client {CS.PY_TEST_MAIN_PY}"
+        )
 
 
 if __name__ == "__main__":

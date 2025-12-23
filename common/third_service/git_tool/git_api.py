@@ -1,4 +1,4 @@
-from common.service.api import Api
+from common.third_util.api import Api
 from .pr_info import PrInfo
 
 

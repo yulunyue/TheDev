@@ -1,5 +1,5 @@
 from common.util.export import File, get_log, uid, Module, get_function_info
-from common.service.node import Node
+from .node import Node
 from typing import List
 import json
 import os

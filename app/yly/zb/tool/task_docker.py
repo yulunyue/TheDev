@@ -3,19 +3,14 @@ from .task_base import ZbTask, REPO_BASE, CS, logger
 
 class DockerTask(ZbTask):
     def set_env(self, docker_image_name, remote_ip):
-
         from common.third_util.docker_util import DockerUtil
 
+        self.docker_image_name = docker_image_name
         self.dock_util = DockerUtil(
             docker_image_name,
             remote_ip=remote_ip,
         )
-        logger.info(
-            f"docker run -v d:/thebug/TheDev:/TheDev -v d:/testbed:/testbed -p 5678:5678 -e DEBUG=true -it {docker_image_name}"
-        )
-        logger.info(
-            f"python /TheDev/app/yly/zb/debug.py /testbed/{self.local_cfg.repo}"
-        )
+
         return self
 
     def docker_build(self):
@@ -23,8 +18,11 @@ class DockerTask(ZbTask):
             self.input_dir.get_abs_path(), f"{self.repo}:{CS.PY_DEFAULT}"
         )
 
+    def get_volumn_v(self):
+        return " ".join([f"-v {k}:{v}" for k, v in self.get_volumn().items()])
+
     def get_volumn(self):
-        return {
+        ret = {
             self.local_cfg.code_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.code_patch.f.file_name}",
             self.local_cfg.test_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.test_patch.f.file_name}",
             self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
@@ -32,6 +30,7 @@ class DockerTask(ZbTask):
             self.input_dir.get_abs_path(): f"/testbed_output",
             self.local_repo.get_abs_path(): self.local_repo.path,
         }
+        return ret
 
     def play(self):
         result_files = [

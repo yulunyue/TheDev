@@ -1,4 +1,4 @@
-from common.service.api import Api
+from common.third_util.api import Api
 
 
 class LeetCode(Api):
@@ -7,6 +7,13 @@ class LeetCode(Api):
 
     def get_endpoint(self):
         return "https://leetcode.cn"
-    
-    def submit(self, name="total-characters-in-string-after-transformations-i",code="import sys"):
-        return self.post(f"/problems/{name}/submit",dict(lang="python3",question_id="3629",code=code))
+
+    def submit(
+        self,
+        name="total-characters-in-string-after-transformations-i",
+        code="import sys",
+    ):
+        return self.post(
+            f"/problems/{name}/submit",
+            dict(lang="python3", question_id="3629", code=code),
+        )
