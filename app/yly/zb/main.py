@@ -116,7 +116,7 @@ class ZbMangae(ToolBase):
             ret[key].append(info)
 
         def tmp(v):
-            return sum(v["code_ct"].values()) - sum(v["test_ct"].values())
+            return sum(v["code_ct"].values()) + sum(v["test_ct"].values())
 
         msgs = []
         for k, tasks in ret.items():
@@ -148,7 +148,7 @@ class ZbMangae(ToolBase):
         t.dock_util.re_build(t.input_dir.get_abs_path())
 
     def code(self):
-        self.zb().apply_code().save()
+        self.docker().apply_code().save()
 
     def test(self):
         self.zb().apply_test().save()

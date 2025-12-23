@@ -1,4 +1,4 @@
-from .task_base import ZbTask, REPO_BASE, CS
+from .task_base import ZbTask, REPO_BASE, CS, logger
 
 
 class DockerTask(ZbTask):
@@ -10,12 +10,28 @@ class DockerTask(ZbTask):
             docker_image_name,
             remote_ip=remote_ip,
         )
+        logger.info(
+            f"docker run -v d:/thebug/TheDev:/TheDev -v d:/testbed:/testbed -p 5678:5678 -e DEBUG=true -it {docker_image_name}"
+        )
+        logger.info(
+            f"python /TheDev/app/yly/zb/debug.py /testbed/{self.local_cfg.repo}"
+        )
         return self
 
     def docker_build(self):
         self.dock_util.build(
             self.input_dir.get_abs_path(), f"{self.repo}:{CS.PY_DEFAULT}"
         )
+
+    def get_volumn(self):
+        return {
+            self.local_cfg.code_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.code_patch.f.file_name}",
+            self.local_cfg.test_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.test_patch.f.file_name}",
+            self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
+            # self.local_cfg.py_test_result_json.get_abs_path(): f"/testbed_output/{CS.RESULT_JSON_FILE}",
+            self.input_dir.get_abs_path(): f"/testbed_output",
+            self.local_repo.get_abs_path(): self.local_repo.path,
+        }
 
     def play(self):
         result_files = [
@@ -36,14 +52,7 @@ class DockerTask(ZbTask):
                 + [f"cp -f {f} /testbed_output/{f}" for f in result_files]
             )
             + "'",
-            {
-                self.local_cfg.code_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.code_patch.f.file_name}",
-                self.local_cfg.test_patch.f.get_abs_path(): f"{REPO_BASE}/{self.local_cfg.test_patch.f.file_name}",
-                self.main_py_file.get_abs_path(): f"{REPO_BASE}/{self.main_py_file.file_name}",
-                # self.local_cfg.py_test_result_json.get_abs_path(): f"/testbed_output/{CS.RESULT_JSON_FILE}",
-                self.input_dir.get_abs_path(): f"/testbed_output",
-                self.local_repo.get_abs_path(): self.local_repo.path,
-            },
+            self.get_volumn(),
             REPO_BASE,
             env={"INSTANCE_ID": self.local_cfg.cg.instance_id.get_value()},
         )
