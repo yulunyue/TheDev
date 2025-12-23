@@ -48,7 +48,7 @@ class TestBase:
         pass
 
     def run(self, args=None):
-        self.prepare()
+        self.setup_class()
         if args is None:
             args = sys.argv[1:]
         self.argvs, self.kw = url_to_json(args)

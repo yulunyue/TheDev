@@ -1,5 +1,5 @@
 import subprocess
-from common.util.export import File, TheDevLoger, get_dev_log, logger
+from common.util.export import File, TheDevLoger, get_dev_log, logger, Thread
 import os
 import sys
 import re
@@ -48,18 +48,18 @@ class OsUtil:
                 )
             )
         try:
-            process = subprocess.run(
+            self.process = subprocess.Popen(
                 cmd,
-                check=True,
+                # check=True,
                 shell=False,
-                capture_output=capture_output,
+                # capture_output=capture_output,
                 text=True,
                 cwd=self.root_path,
-                timeout=self.time_out,
+                # timeout=self.time_out,
                 env=env,  # 不能为空字典 [WinError 87] 参数错误。
                 **param,
             )
-            statu, stdout, stderror = True, process.stdout, process.stderr
+            statu, stdout, stderror = True, self.process.stdout, self.process.stderr
         except subprocess.CalledProcessError as e:
             statu, stdout, stderror = False, e.stdout, e.stderr
         except FileNotFoundError:
@@ -90,6 +90,13 @@ class OsUtil:
     def run(self, *args, capture_output=False, env=None):
         self.args = " ".join(args)
         return self.check_output(capture_output=capture_output, env=env)
+
+    def start(self, *args, **kw):
+        Thread(target=self.run, args=args, kwargs=kw).start()
+        return self
+
+    def stop(self):
+        self.process.kill()
 
     def system(self, *args):
         self.args = " ".join(args)
