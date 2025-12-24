@@ -32,13 +32,13 @@ class CS:
     TEST_PATCH = "test.patch"
     ZB_TASK_FAIL = "ZB_TASK_FAIL"
     NOT_FIND_CASES = "NOT_FIND_CASES"
-    PY_TEST_MAIN_PY = "py_test_main.py"
     PY_DEFAULT = "3.9_default"
 
 
 PY_BIN = "%{PY_BIN}"
 INSTANCE_ID = "%{INSTANCE_ID}"
 REPO_PATH = "%{REPO_PATH}"
+PY_MAIN_CMD = "%{PY_MAIN_CMD}%"
 # 要进行测试的基础 commit 哈希
 BASE_COMMIT = "%{BASE_COMMIT}"
 # 实例ID，用于结果文件的顶级键
@@ -46,9 +46,6 @@ CODE_PATCH = "code.patch"
 # --- 路径配置 (自动计算) ---
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_DIR = Path(REPO_PATH)
-PY_TEST_MAIN_CODE = """
-%{PY_TEST_MAIN_CODE}
-"""
 
 
 class Colors:
@@ -158,16 +155,12 @@ def get_result(result_file):
     return result, ct
 
 
-def make_py_test_main():
-    py_path = f"{REPO_DIR}/py_test_main.py"
-    with open(py_path, "w", encoding="utf-8") as f:
-        f.write(PY_TEST_MAIN_CODE)
-
-
 def run_py_test(name):
-    make_py_test_main()
     result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
-    statu_code, msg, msg1 = run_command([PY_BIN, "py_test_main.py"], cwd=REPO_DIR)
+    py_test_args = ["pytest", "--json-report", f"--json-report-file={result_file}"]
+    statu_code, msg, msg1 = run_command(
+        py_test_args + PY_MAIN_CMD.split(" "), cwd=REPO_DIR
+    )
     os.system(f"cp {result_file} {name}.json")
     result, ct = get_result(result_file)
     return statu_code, msg, msg1, ct, result
@@ -200,17 +193,7 @@ def write_results_and_exit(success=True):
     sys.exit(0 if success else 1)
 
 
-def main():
-    global results
-
-    # (可选) 在开始前，可以运行一次 poetry install 确保环境是最新的
-    print_header("Ensuring Poetry environment is up to date")
-    # success, _, stderr = run_command(["poetry", "install"], cwd=REPO_DIR)
-    # if not success:
-    #     print(f"{Colors.RED}❌ ERROR: 'poetry install' failed.{Colors.ENDC}\n{stderr}")
-    #     write_results_and_exit(False)
-
-    # --- 补丁前运行 ---
+def do_test():
     if not reset_repo(BASE_COMMIT):
         write_results_and_exit(False)
     if not apply_patch(SCRIPT_DIR / "test.patch"):
@@ -220,8 +203,10 @@ def main():
     pre_patch_results = run_all_tests_and_get_results("test")
     if pre_patch_results is None:
         write_results_and_exit(False)
+    return pre_patch_results
 
-    # --- 补丁后运行 ---
+
+def do_code():
     if not reset_repo(BASE_COMMIT):
         write_results_and_exit(False)
     if not apply_patch(SCRIPT_DIR / "test.patch"):
@@ -234,7 +219,23 @@ def main():
     post_patch_results = run_all_tests_and_get_results("code")
     if post_patch_results is None:
         write_results_and_exit(False)
+    return post_patch_results
 
+
+def main():
+    global results
+
+    # (可选) 在开始前，可以运行一次 poetry install 确保环境是最新的
+    print_header("Ensuring Poetry environment is up to date")
+    # success, _, stderr = run_command(["poetry", "install"], cwd=REPO_DIR)
+    # if not success:
+    #     print(f"{Colors.RED}❌ ERROR: 'poetry install' failed.{Colors.ENDC}\n{stderr}")
+    #     write_results_and_exit(False)
+
+    # --- 补丁前运行 ---
+    pre_patch_results = do_test()
+    # --- 补丁后运行 ---
+    post_patch_results = do_code()
     # --- 结果分类 ---
     print_header("STEP 3: CATEGORIZING RESULTS")
     all_tests_run = set(pre_patch_results.keys()) | set(post_patch_results.keys())
@@ -291,5 +292,9 @@ if __name__ == "__main__":
         print(f"{Colors.YELLOW}请修改脚本顶部的 `REPO_PATH` 变量。{Colors.ENDC}")
         print(f"{Colors.YELLOW}当前配置路径: '{REPO_PATH}'{Colors.ENDC}")
         sys.exit(1)
-
-    main()
+    if sys.argv[-1] == "test":
+        do_test()
+    elif sys.argv[-1] == "code":
+        do_code()
+    else:
+        main()

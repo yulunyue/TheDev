@@ -122,17 +122,7 @@ class ZbTask:
 
     def get_py_test_main_code(self):
         py_main_cmd = " ".join(self.local_cfg.test_main.get_value())
-        if self.local_cfg.env_py_test_main_py.exists():
-            repo_py_test_main = self.local_cfg.env_py_test_main_py.read_file()
-        else:
-            repo_py_test_main = INPUTS_DIR.child(
-                f"template/{CS.PY_TEST_MAIN_PY}"
-            ).read_file()
-        return StrUtil().format(
-            repo_py_test_main,
-            PY_MAIN_CMD=py_main_cmd,
-            PY_TEST_RESULT_JSON_FILE=CS.RESULT_JSON_FILE,
-        )
+        return py_main_cmd
 
     def make_main_py(self):
 
@@ -144,7 +134,7 @@ class ZbTask:
                 INSTANCE_ID=self.local_cfg.cg.instance_id.get_value(),
                 content_category=self.local_cfg.cg.content_category.get_value(),
                 PY_BIN="python",
-                PY_TEST_MAIN_CODE=self.get_py_test_main_code(),
+                PY_MAIN_CMD=self.get_py_test_main_code(),
             )
         )
 

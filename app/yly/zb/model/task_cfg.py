@@ -66,7 +66,6 @@ class TaskCfg(ConfigBase):
             self.repo,
             repo_cfg_dir.child("config.json"),
         )
-        self.env_py_test_main_py = repo_cfg_dir.child(CS.PY_TEST_MAIN_PY)
         if not self.repo_cfg.base_commit.get_value():
             self.repo_cfg.base_commit.set_value(self.cg.base_commit.get_value())
             self.repo_cfg.save()

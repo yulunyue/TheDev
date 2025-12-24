@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "briefcase:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1006.zip?Expires=1766806569&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=%2B99yEP2yKjAABD2%2BKBaY97I0o8E%3D",
-    "error_msg": "success",
+    "error_msg": "failed",
     "issue_url": "https://github.com/beeware/briefcase/issues/1004",
     "name": "beeware__briefcase-1006",
     "pr_url": "https://github.com/beeware/briefcase/pull/1006",
