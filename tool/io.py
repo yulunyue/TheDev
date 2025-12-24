@@ -1,5 +1,6 @@
 from common.util.export import TcpServer, TcpClient, ToolBase
 from common.third_util.py_test_util import PyTestUtil
+from common.third_util.obs_util import ObsUtil
 
 
 class Io(ToolBase):
@@ -15,6 +16,12 @@ class Io(ToolBase):
 
     def test(self):
         PyTestUtil().set_aim("tests/test_io.py").set_root(".").main()
+
+    def obs_list_buckets(self, env):
+        ObsUtil(env).list_buckets()
+
+    def obs_upload(self, env, path):
+        ObsUtil(env).upload(path)
 
 
 if __name__ == "__main__":

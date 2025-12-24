@@ -33,7 +33,7 @@ class CaseFun:
 
     def run(self, *args, **kw):
         self.start_time = time.time()
-        self.error_logger = get_dev_log(f"data/test/error/{self.name}_{self.fun_name}")
+        # self.error_logger = get_dev_log(f"data/test/error/{self.name}_{self.fun_name}")
         self.msg = ""
         self.f(*args, **kw)
         self.end_time = time.time()
@@ -188,6 +188,7 @@ class ToolBase:
                     if not v[0] == "_" and callable(getattr(self, v, None))
                 ]
             )
+            logger.info
             self.exit()
             return
 

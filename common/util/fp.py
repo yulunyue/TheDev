@@ -27,6 +27,17 @@ class File:
         self.m_time = 0
         self.data = b""
 
+    FILES: Dict[str, "File"] = dict()
+
+    @classmethod
+    def new(cls, path):
+        if path not in File.FILES:
+            File.FILES[path] = File(path)
+            from .log import logger
+
+            logger.info(File.FILES[path])
+        return File.FILES[path]
+
     def get_param_value(self, p, param):
         return self.get(param.key, default_value=param.default_value)
 
@@ -244,11 +255,11 @@ class File:
                 targets = self.list_tree_file()
             for c in targets:
                 if isinstance(c, File):
-                    local_path, c.path, arc_name = os.path.relpath(c.path, self.path)
+                    local_path, arc_name = c.path, os.path.relpath(c.path, self.path)
                 else:
                     local_path, arc_name = self.path + "/" + c, c
                 f.write(local_path, arcname=arc_name)
-        return self
+        return File.new(dst)
 
     def unzip(self, dst=None):
         if dst is None:

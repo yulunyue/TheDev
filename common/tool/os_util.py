@@ -1,5 +1,5 @@
 import subprocess
-from common.util.export import File, TheDevLoger, get_dev_log, logger, Thread
+from common.util.export import File, TheDevLoger, get_dev_log, logger, Thread, List
 import os
 import sys
 import re
@@ -8,8 +8,8 @@ import re
 class OsUtil:
     time_out = 3600
 
-    def __init__(self, fun_name, error_exit_flag=True):
-        self.fun_name = fun_name
+    def __init__(self, fun_name: str, error_exit_flag=True):
+        self.fun_name = fun_name.replace("\\", "/")
         self.error_exit_flag = error_exit_flag
         self.root_path = "./"
         self.and_cmds = []
@@ -33,10 +33,7 @@ class OsUtil:
             cmd = f"source {env_path}/bin/activate"
         logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
 
-    def check_output(self, cmds=None, capture_output=False, env=None):
-        if cmds is None:
-            cmds = self.get_cmd()
-        cmd = [v for v in self.and_cmds + cmds.split(" ") if v]
+    def check_output(self, cmd: List[str], capture_output=False, env=None):
         cmds = " ".join(cmd)
         self.logger.info(f"{self.root_path}->{cmds}")
         param = dict()
@@ -84,12 +81,16 @@ class OsUtil:
         self.root_path: str = root
         return self
 
-    def get_cmd(self):
-        return f"{self.fun_name} {self.args}"
+    def get_cmd(self, args, kw: dict):
+        ret: List[str] = [self.fun_name] + list(args)
+        for k, v in kw.items():
+            ret.extend([k, v])
+        return ret
 
-    def run(self, *args, capture_output=False, env=None):
-        self.args = " ".join(args)
-        return self.check_output(capture_output=capture_output, env=env)
+    def run(self, *args, capture_output=False, env=None, **kw):
+        return self.check_output(
+            self.get_cmd(args, kw), capture_output=capture_output, env=env
+        )
 
     def start(self, *args, **kw):
         Thread(target=self.run, args=args, kwargs=kw).start()

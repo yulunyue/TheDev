@@ -37,7 +37,7 @@ import heapq
 from .singleton_base import SingletonBase
 import random
 from copy import deepcopy
-from itertools import permutations, accumulate, pairwise
+from itertools import permutations, accumulate
 from .str_util import StrUtil
 from .list_util import ListUtil
 import os
