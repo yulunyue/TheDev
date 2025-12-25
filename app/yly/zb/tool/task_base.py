@@ -104,8 +104,6 @@ class ZbTask:
         local_result[CS.PASS_TO_FAIL] = sorted(pass_to_fail)
         local_result[CS.FAIL_TO_PASS] = sorted(fail_to_pass)
         local_result[CS.PASS_TO_PASS] = sorted(pass_to_pass)
-        self.local_cfg.cg.PASS_TO_PASS.set_value(pass_to_pass)
-        self.local_cfg.cg.FAIL_TO_PASS.set_value(fail_to_pass)
         if fail_to_fail:
             self.local_cfg.set_error_msg(CS.FAIL_TO_FAIL)
         elif pass_to_fail:
@@ -153,24 +151,22 @@ class ZbTask:
         )
 
     def make_setup_env_sh(self):
-        local_env_file = REPO_DIR.child(
-            f"{self.repo}/{self.local_cfg.py_env}/setup_env.sh"
-        )
+        # local_env_file = REPO_DIR.child(
+        #     f"{self.repo}/{self.local_cfg.py_env}/setup_env.sh"
+        # )
         local_env_sh: List[str] = [
             f"cd {self.local_repo.path}",
-            f"git reset --hard {self.local_cfg.repo_cfg.base_commit.get_value()}",
-            # f"conda run -n testbed python -m venv {self.venv_dir}"
-            # "conda env list",
-            # "conda deactivate",
-            # "conda activate testbed",
+            f"git reset --hard {self.local_cfg.cg.base_commit.get_value()}",
             f"{self.py_bin} --version",
-            f"{self.py_bin} -c 'import sys;print(sys.executable)'",
-            f"pip config set global.index-url {GC.pip_global_index_url.get_value()}",
-            f"pip config set global.trusted-host {GC.pip_trusted_host.get_value()}",
-            "pip config get global.index-url",
-            "pip config get global.trusted-host",
-            f"pip install --upgrade pip",
         ]
+        if GC.pip_global_index_url.get_value():
+            local_env_sh.extend(
+                [
+                    f"pip config set global.index-url {GC.pip_global_index_url.get_value()}",
+                    f"pip config set global.trusted-host {GC.pip_trusted_host.get_value()}",
+                ]
+            )
+
         pyproject_toml = self.local_repo.child("pyproject.toml")
         setup_cfg = self.local_repo.child("setup.cfg")
         setup_py = self.local_repo.child("setup.py")
@@ -179,12 +175,12 @@ class ZbTask:
         local_env_sh.append(
             "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
         )
-        if pyproject_toml.exists():
-            dev_py = pyproject_toml.get("project", "optional-dependencies", "dev")
-            if dev_py:
-                local_env_sh.extend([f'pip install "{s}"' for s in dev_py])
-        if local_env_file.exists():
-            local_env_sh.extend(local_env_file.read_line())
+        # if pyproject_toml.exists():
+        #     dev_py = pyproject_toml.get("project", "optional-dependencies", "dev")
+        #     if dev_py:
+        #         local_env_sh.extend([f'pip install "{s}"' for s in dev_py])
+        # if local_env_file.exists():
+        #     local_env_sh.extend(local_env_file.read_line())
         setup_env_sh = []
         for d in local_env_sh:
             if d.startswith("pip"):

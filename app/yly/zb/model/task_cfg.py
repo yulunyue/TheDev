@@ -31,7 +31,7 @@ class TaskCfg(ConfigBase):
 
     @property
     def docker_image_name(self):
-        return f"{self.repo}:{self.py_env}"
+        return f"{self.repo}:{self.py_version}_default"
 
     @property
     def id(self):
@@ -57,18 +57,13 @@ class TaskCfg(ConfigBase):
         )
         self.input_dir = TASK_DIR.child(self.repo).child(self.key)
         self.cg = Cg(self.task_id).set_resource(self.cg_file)
-        self.py_env = self.py_name.get_value()
-        if self.py_env == "py3" or not self.py_env:
-            self.py_env = CS.PY_DEFAULT
-        self.py_version = self.py_env.split("_")[0]
-        repo_cfg_dir = REPO_DIR.child(f"{self.repo}/{self.py_env}")
-        self.repo_cfg: RepoCg = RepoCg.new(
-            self.repo,
-            repo_cfg_dir.child("config.json"),
-        )
-        if not self.repo_cfg.base_commit.get_value():
-            self.repo_cfg.base_commit.set_value(self.cg.base_commit.get_value())
-            self.repo_cfg.save()
+        # self.repo_cfg: RepoCg = RepoCg.new(
+        #     self.repo, REPO_DIR.child(f"{self.repo}/config.json")
+        # )
+        self.py_version = self.py_name.get_value()
+        if self.py_version == "py3" or not self.py_version:
+            self.py_version = CS.PY_DEFAULT
+
         if not self.input_dir.exists():
             from common.third_util.api import Api
 
@@ -81,7 +76,6 @@ class TaskCfg(ConfigBase):
         self.pr_util = self.git_cmd.get_pr(self.pr)
         self.test_patch = self.pr_util.get_patch(self.input_dir.child("test.patch"))
         self.code_patch = self.pr_util.get_patch(self.input_dir.child("code.patch"))
-
         self.local_repo = File(f"{REPO_BASE}/{self.owner}/{self.repo}")
         return self
 
@@ -116,13 +110,13 @@ class TaskCfg(ConfigBase):
             self.set_error_msg(
                 f"SKIP: CHANGE_FILES={len(change_files)}>={max_change_files}"
             )
-            return
-        files = [k for k, v in change_files.items() if v == "test"]
-        if isinstance(test_main_values, str) or not test_main_values:
-            self.test_main.set_value(files)
-        if not self.test_main.get_value():
-            self.set_error_msg(f"SKIP: NO_TEST")
-            return
+        else:
+            files = [k for k, v in change_files.items() if v == "test"]
+            if isinstance(test_main_values, str) or not test_main_values:
+                self.test_main.set_value(files)
+            if not self.test_main.get_value():
+                self.set_error_msg(f"SKIP: NO_TEST")
+        return self
 
     def get_update_file_by_batch(
         self,
@@ -155,7 +149,7 @@ def task_cfg(job, task_id):
 
 
 def query_one(job, key):
-    return task_cfg(job, key).load()
+    return task_cfg(job, key).load().check()
 
 
 def query_task(job, key):

@@ -32,13 +32,13 @@ class CS:
     TEST_PATCH = "test.patch"
     ZB_TASK_FAIL = "ZB_TASK_FAIL"
     NOT_FIND_CASES = "NOT_FIND_CASES"
-    PY_DEFAULT = "3.9_default"
+    PY_DEFAULT = "3.9"
 
 
 PY_BIN = "%{PY_BIN}"
 INSTANCE_ID = "%{INSTANCE_ID}"
 REPO_PATH = "%{REPO_PATH}"
-PY_MAIN_CMD = "%{PY_MAIN_CMD}%"
+PY_MAIN_CMD = "%{PY_MAIN_CMD}"
 # 要进行测试的基础 commit 哈希
 BASE_COMMIT = "%{BASE_COMMIT}"
 # 实例ID，用于结果文件的顶级键

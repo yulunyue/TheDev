@@ -1,4 +1,5 @@
 from .task_base import ZbTask, REPO_BASE, CS, logger
+import time
 
 
 class DockerTask(ZbTask):
@@ -14,9 +15,7 @@ class DockerTask(ZbTask):
         return self
 
     def docker_build(self):
-        self.dock_util.build(
-            self.input_dir.get_abs_path(), f"{self.repo}:{CS.PY_DEFAULT}"
-        )
+        self.dock_util.build(self.input_dir.get_abs_path())
 
     def get_volumn_v(self):
         return " ".join([f"-v {k}:{v}" for k, v in self.get_volumn().items()])
@@ -42,6 +41,7 @@ class DockerTask(ZbTask):
         ]
         for f in result_files:
             self.input_dir.child(f).remove()
+        self.docker_build()
         self.local_cfg.py_test_result_json.remove()
         status, msg = self.dock_util.run(
             ";".join(

@@ -57,6 +57,7 @@ class OsUtil:
                 **param,
             )
             statu, stdout, stderror = True, self.process.stdout, self.process.stderr
+            self.process.wait(self.time_out)
         except subprocess.CalledProcessError as e:
             statu, stdout, stderror = False, e.stdout, e.stderr
         except FileNotFoundError:

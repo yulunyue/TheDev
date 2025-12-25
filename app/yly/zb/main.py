@@ -62,9 +62,11 @@ class ZbMangae(ToolBase):
         else:
             w.submit(query_one(self.repo, self.key))
 
-    def docker_build(self):
-        t = self.docker()
-        t.docker_build()
+    def build(self):
+        for f in query_task(self.repo, self.key):
+            DockerTask().set_env(
+                f.docker_image_name, GC.zb_docker_env.get_value()
+            ).build(f).docker_build()
 
     def clear(self):
         """
@@ -82,21 +84,6 @@ class ZbMangae(ToolBase):
             t.check()
             t.save()
         self.view()
-
-    def zip(self):
-        for t in query_task(self.repo, self.key):
-            if t.error_msg.get_value() != CS.SUCCESS:
-                continue
-            ZbTask().build(t).load()
-            result = t.result.get_value()
-            if not result[CS.FAIL_TO_PASS]:
-                raise Exception(f"No FAIL_TO_PASS {t.id}")
-            t.cg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
-            t.cg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
-            t.cg.save()
-            t.zip_file.remove()
-            t.zip()
-            logger.info(t.zip_file)
 
     def view(self):
         ret = defaultdict(list)
@@ -150,10 +137,6 @@ class ZbMangae(ToolBase):
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
-    def rebuild(self):
-        t = self.docker()
-        t.dock_util.re_build(t.input_dir.get_abs_path())
-
     def code(self):
         self.docker().apply_code().save()
 
@@ -176,12 +159,11 @@ class ZbMangae(ToolBase):
     def debug(self):
         self.code()
         t = self.docker().make_launch_json()
-        t.local_repo.child(CS.PY_TEST_MAIN_PY).write_file(t.get_py_test_main_code())
         logger.info(
             f"docker run -p 5678:5678 -v {t.local_repo.get_abs_path()}:{t.local_repo.path} -it {self.docker().docker_image_name}"
         )
         logger.info(
-            f"cd {t.local_repo.get_abs_path()} && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client {CS.PY_TEST_MAIN_PY}"
+            f"cd {t.local_repo.get_abs_path()} && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client {CS.RUN_VERIFICATION_PY}"
         )
 
 
