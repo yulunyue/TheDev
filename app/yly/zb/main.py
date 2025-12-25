@@ -92,14 +92,13 @@ class ZbMangae(ToolBase):
         for t in tasks2:
             key = t.error_msg.get_value().split("=")[0]
             result = t.result.get_value()
+            if not result.get(CS.PASS_TO_PASS):
+                
             fail_to_pass = (
                 "HAS_FAIL_TO_PASS"
                 if len(result.get(CS.FAIL_TO_PASS, [])) != 0
                 else "NO_FAIL_TO_PASS"
             )
-            for v in t.test_main.get_value():
-                if "::" in v:
-                    logger.info(t.resource)
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             if not t.error_msg.get_value().startswith("SKIP:"):
                 if code_ct.get("error"):

@@ -1093,7 +1093,5 @@
     "name": "beeware__briefcase-2333",
     "issue_url": "https://github.com/beeware/briefcase/issues/2326",
     "pr_change_files": null,
-    "pr_url": "https://github.com/beeware/briefcase/pull/2333",
-    "py_name": "3.9",
-    "docker_image_name": "briefcase:v2333_2"
+    "pr_url": "https://github.com/beeware/briefcase/pull/2333"
 }
