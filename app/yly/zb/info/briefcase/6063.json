@@ -1,11 +1,17 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2294.zip?Expires=1766564058&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=MMvsr5hAhdc9uNJO9GVl%2FxVf8I4%3D",
-    "error_msg": "failed",
+    "error_msg": "NO_FAIL_TO_PASS",
     "need_setup_env": false,
     "result": {
-        "test": {},
-        "code": {},
+        "test": {
+            "tests/platforms/macOS/app/package/test_ditto.py::test_ditto": "skipped",
+            "tests/platforms/macOS/app/package/test_ditto.py::test_ditto_failure": "skipped"
+        },
+        "code": {
+            "tests/platforms/macOS/app/package/test_ditto.py::test_ditto": "skipped",
+            "tests/platforms/macOS/app/package/test_ditto.py::test_ditto_failure": "skipped"
+        },
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [],

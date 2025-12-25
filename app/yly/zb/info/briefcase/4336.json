@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-4008.zip?Expires=1766900742&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=DW%2FPyf3FelJ3N2NhlVKu%2BECoayk%3D",
-    "error_msg": "failed",
+    "error_msg": "success",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/4005",
     "name": "TobikoData__sqlmesh-4008",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4008",
@@ -24,7 +24,7 @@
             "tests/core/engine_adapter/test_redshift.py::test_table_exists_table_only": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_create_view": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_alter_table_drop_column_cascade": "passed",
-            "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_varchar": "failed",
+            "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_varchar": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_decimal": "failed",
             "tests/core/engine_adapter/test_redshift.py::test_merge": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_merge_when_matched_error": "passed",
@@ -109,7 +109,7 @@
             "tests/core/engine_adapter/test_redshift.py::test_table_exists_table_only": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_create_view": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_alter_table_drop_column_cascade": "passed",
-            "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_varchar": "failed",
+            "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_varchar": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_decimal": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_merge": "passed",
             "tests/core/engine_adapter/test_redshift.py::test_merge_when_matched_error": "passed",
@@ -178,9 +178,7 @@
             "tests/core/test_schema_diff.py::test_schema_diff_calculate_duckdb": "passed",
             "tests/core/test_schema_diff.py::test_schema_diff_alter_op_column": "passed"
         },
-        "FAIL_TO_FAIL": [
-            "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_varchar"
-        ],
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
             "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_decimal",
@@ -189,6 +187,7 @@
         ],
         "PASS_TO_PASS": [
             "tests/core/engine_adapter/test_redshift.py::test_alter_table_drop_column_cascade",
+            "tests/core/engine_adapter/test_redshift.py::test_alter_table_precision_increase_varchar",
             "tests/core/engine_adapter/test_redshift.py::test_columns",
             "tests/core/engine_adapter/test_redshift.py::test_create_table_from_query_exists_and_if_not_exists",
             "tests/core/engine_adapter/test_redshift.py::test_create_table_from_query_exists_no_if_not_exists",

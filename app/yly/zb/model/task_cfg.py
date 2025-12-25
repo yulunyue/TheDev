@@ -44,22 +44,18 @@ class TaskCfg(ConfigBase):
     def load(self):
         down_load_uri = self.down_load_uri.get_value()
         if not down_load_uri:
-            raise Exception("xx")
+            pass
         if not self.name.get_value():
             from common.third_util.api import Api
 
             f = Api().download(down_load_uri)
             self.name.set_value(f.name)
             self.save()
-
-        self.owner, self.task_id, self.repo, self.pr = get_info_by_name(
-            self.name.get_value()
-        )
+        self.task_id = self.key
+        self.owner, _, self.repo, self.pr = get_info_by_name(self.name.get_value())
         self.input_dir = TASK_DIR.child(self.repo).child(self.key)
         self.cg = Cg(self.task_id).set_resource(self.cg_file)
-        # self.repo_cfg: RepoCg = RepoCg.new(
-        #     self.repo, REPO_DIR.child(f"{self.repo}/config.json")
-        # )
+        self.local_repo_mock_dir = REPO_DIR.child(self.repo)
         self.py_version = self.py_name.get_value()
         if self.py_version == "py3" or not self.py_version:
             self.py_version = CS.PY_DEFAULT
@@ -95,9 +91,10 @@ class TaskCfg(ConfigBase):
         return self
 
     def set_error_msg(self, msg: str):
-        self.error_msg.set_value(msg)
-        logger.info(f"{self.name.get_value()}->{msg}")
-        self.save()
+        if msg != self.error_msg.get_value():
+            self.error_msg.set_value(msg)
+            logger.info(f"{self.name.get_value()}->{msg}")
+            self.save()
         return self
 
     def check(self):

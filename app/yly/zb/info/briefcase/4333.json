@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-3901.zip?Expires=1766900735&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=%2FGuAoOwr42l0Wju0t3%2FuzXzS9iI%3D",
-    "error_msg": "failed",
+    "error_msg": "success",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/3853",
     "name": "TobikoData__sqlmesh-3901",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/3901",
@@ -19,8 +19,8 @@
             "tests/core/test_plan.py::test_forward_only_model_on_destructive_change": "passed",
             "tests/core/test_plan.py::test_forward_only_model_on_destructive_change_no_column_types": "passed",
             "tests/core/test_plan.py::test_missing_intervals_lookback": "passed",
-            "tests/core/test_plan.py::test_restate_models": "error",
-            "tests/core/test_plan.py::test_restate_models_with_existing_missing_intervals": "failed",
+            "tests/core/test_plan.py::test_restate_models": "failed",
+            "tests/core/test_plan.py::test_restate_models_with_existing_missing_intervals": "passed",
             "tests/core/test_plan.py::test_restate_symbolic_model": "failed",
             "tests/core/test_plan.py::test_restate_seed_model": "passed",
             "tests/core/test_plan.py::test_restate_missing_model": "passed",
@@ -53,7 +53,7 @@
             "tests/core/test_plan.py::test_add_restatements[\\n        a -> c -> d\\n        b -> c -> e -> g\\n        b -> f -> g\\n        c depends on self\\n        restate e\\n        ]": "passed",
             "tests/core/test_plan.py::test_dev_plan_depends_past": "passed",
             "tests/core/test_plan.py::test_dev_plan_depends_past_non_deployable": "passed",
-            "tests/core/test_plan.py::test_restatement_intervals_after_updating_start": "error",
+            "tests/core/test_plan.py::test_restatement_intervals_after_updating_start": "passed",
             "tests/core/test_plan.py::test_models_selected_for_backfill": "passed",
             "tests/core/test_plan.py::test_categorized_uncategorized": "passed",
             "tests/core/test_plan.py::test_environment_previous_finalized_snapshots": "passed",
@@ -76,8 +76,8 @@
             "tests/core/test_plan.py::test_forward_only_model_on_destructive_change": "passed",
             "tests/core/test_plan.py::test_forward_only_model_on_destructive_change_no_column_types": "passed",
             "tests/core/test_plan.py::test_missing_intervals_lookback": "passed",
-            "tests/core/test_plan.py::test_restate_models": "error",
-            "tests/core/test_plan.py::test_restate_models_with_existing_missing_intervals": "failed",
+            "tests/core/test_plan.py::test_restate_models": "passed",
+            "tests/core/test_plan.py::test_restate_models_with_existing_missing_intervals": "passed",
             "tests/core/test_plan.py::test_restate_symbolic_model": "passed",
             "tests/core/test_plan.py::test_restate_seed_model": "passed",
             "tests/core/test_plan.py::test_restate_missing_model": "passed",
@@ -110,7 +110,7 @@
             "tests/core/test_plan.py::test_add_restatements[\\n        a -> c -> d\\n        b -> c -> e -> g\\n        b -> f -> g\\n        c depends on self\\n        restate e\\n        ]": "passed",
             "tests/core/test_plan.py::test_dev_plan_depends_past": "passed",
             "tests/core/test_plan.py::test_dev_plan_depends_past_non_deployable": "passed",
-            "tests/core/test_plan.py::test_restatement_intervals_after_updating_start": "error",
+            "tests/core/test_plan.py::test_restatement_intervals_after_updating_start": "passed",
             "tests/core/test_plan.py::test_models_selected_for_backfill": "passed",
             "tests/core/test_plan.py::test_categorized_uncategorized": "passed",
             "tests/core/test_plan.py::test_environment_previous_finalized_snapshots": "passed",
@@ -122,11 +122,10 @@
             "tests/core/test_plan.py::test_restate_daily_to_monthly": "passed",
             "tests/core/test_plan.py::test_plan_environment_statements_diff": "passed"
         },
-        "FAIL_TO_FAIL": [
-            "tests/core/test_plan.py::test_restate_models_with_existing_missing_intervals"
-        ],
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
+            "tests/core/test_plan.py::test_restate_models",
             "tests/core/test_plan.py::test_restate_symbolic_model"
         ],
         "PASS_TO_PASS": [
@@ -176,8 +175,10 @@
             "tests/core/test_plan.py::test_plan_start_when_preview_enabled",
             "tests/core/test_plan.py::test_restate_daily_to_monthly",
             "tests/core/test_plan.py::test_restate_missing_model",
+            "tests/core/test_plan.py::test_restate_models_with_existing_missing_intervals",
             "tests/core/test_plan.py::test_restate_production_model_in_dev",
             "tests/core/test_plan.py::test_restate_seed_model",
+            "tests/core/test_plan.py::test_restatement_intervals_after_updating_start",
             "tests/core/test_plan.py::test_revert_to_previous_value",
             "tests/core/test_plan.py::test_start_inference",
             "tests/core/test_plan.py::test_unaligned_start_model_with_forward_only_preview"

@@ -123,10 +123,18 @@ class ZbTask:
         return py_main_cmd
 
     def make_main_py(self):
-
+        RUN_BEFORE_PY_TEST = ""
+        files = [
+            self.local_cfg.local_repo_mock_dir,
+            INPUTS_DIR.child(f"template"),
+        ]
+        for f in files:
+            if f.child(CS.RUN_VERIFICATION_PY).exists():
+                RUN_BEFORE_PY_TEST = f.child(CS.RUN_VERIFICATION_PY).read_file()
+                break
         self.main_py_file.write_file(
             StrUtil().format(
-                INPUTS_DIR.child("template/run_verification.py").read_file(),
+                RUN_BEFORE_PY_TEST,
                 REPO_PATH=self.local_repo.path,
                 BASE_COMMIT=self.local_cfg.cg.base_commit.get_value(),
                 INSTANCE_ID=self.local_cfg.cg.instance_id.get_value(),
@@ -172,6 +180,13 @@ class ZbTask:
         setup_py = self.local_repo.child("setup.py")
         if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
             local_env_sh.append(f"pip install -e .")
+        extern_files = [
+            self.local_cfg.local_repo_mock_dir,
+            self.local_cfg.local_repo_mock_dir.child(self.local_cfg.task_id),
+        ]
+        for d in extern_files:
+            if d.child("setup_env.sh").exists():
+                local_env_sh.extend(d.child("setup_env.sh").read_line())
         local_env_sh.append(
             "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
         )

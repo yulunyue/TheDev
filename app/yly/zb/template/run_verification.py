@@ -38,7 +38,8 @@ class CS:
 PY_BIN = "%{PY_BIN}"
 INSTANCE_ID = "%{INSTANCE_ID}"
 REPO_PATH = "%{REPO_PATH}"
-PY_MAIN_CMD = "%{PY_MAIN_CMD}"
+PY_MAIN_CMD = os.environ.get("ZB_PY_MAIN_CMD", "%{PY_MAIN_CMD}")
+RUN_TYPE = os.environ.get("ZB_PY_TEST_TYPE", "")
 # 要进行测试的基础 commit 哈希
 BASE_COMMIT = "%{BASE_COMMIT}"
 # 实例ID，用于结果文件的顶级键
@@ -155,12 +156,24 @@ def get_result(result_file):
     return result, ct
 
 
+def run_before_py_test():
+    pass
+
+
 def run_py_test(name):
+    run_before_py_test()
     result_file = f"{REPO_DIR}/{CS.RESULT_JSON_FILE}"
     py_test_args = ["pytest", "--json-report", f"--json-report-file={result_file}"]
-    statu_code, msg, msg1 = run_command(
-        py_test_args + PY_MAIN_CMD.split(" "), cwd=REPO_DIR
-    )
+    if RUN_TYPE:
+        statu_code, msg, msg1 = 0, "", ""
+        import pytest
+
+        os.chdir(REPO_DIR)
+        pytest.main(PY_MAIN_CMD.split(" "))
+    else:
+        statu_code, msg, msg1 = run_command(
+            py_test_args + PY_MAIN_CMD.split(" "), cwd=REPO_DIR
+        )
     os.system(f"cp {result_file} {name}.json")
     result, ct = get_result(result_file)
     return statu_code, msg, msg1, ct, result
@@ -194,11 +207,8 @@ def write_results_and_exit(success=True):
 
 
 def do_test():
-    if not reset_repo(BASE_COMMIT):
-        write_results_and_exit(False)
     if not apply_patch(SCRIPT_DIR / "test.patch"):
         write_results_and_exit(False)
-
     print_header("STEP 1: PRE-PATCH - Running tests with only test patch")
     pre_patch_results = run_all_tests_and_get_results("test")
     if pre_patch_results is None:
@@ -207,8 +217,6 @@ def do_test():
 
 
 def do_code():
-    if not reset_repo(BASE_COMMIT):
-        write_results_and_exit(False)
     if not apply_patch(SCRIPT_DIR / "test.patch"):
         write_results_and_exit(False)
     elif not apply_patch(SCRIPT_DIR / CODE_PATCH):
@@ -233,8 +241,12 @@ def main():
     #     write_results_and_exit(False)
 
     # --- 补丁前运行 ---
+    if not reset_repo(BASE_COMMIT):
+        write_results_and_exit(False)
     pre_patch_results = do_test()
     # --- 补丁后运行 ---
+    if not reset_repo(BASE_COMMIT):
+        write_results_and_exit(False)
     post_patch_results = do_code()
     # --- 结果分类 ---
     print_header("STEP 3: CATEGORIZING RESULTS")
@@ -292,9 +304,7 @@ if __name__ == "__main__":
         print(f"{Colors.YELLOW}请修改脚本顶部的 `REPO_PATH` 变量。{Colors.ENDC}")
         print(f"{Colors.YELLOW}当前配置路径: '{REPO_PATH}'{Colors.ENDC}")
         sys.exit(1)
-    if sys.argv[-1] == "test":
-        do_test()
-    elif sys.argv[-1] == "code":
-        do_code()
+    if RUN_TYPE:
+        run_all_tests_and_get_results(RUN_TYPE)
     else:
         main()

@@ -32,6 +32,7 @@ class SegTreeNode:
     def set_range(self, l, r):
         self.l = l
         self.r = r
+        self.size = r - l + 1
         self.m = (l + r) // 2
         return self
 
@@ -61,9 +62,12 @@ class SegTreeNode:
         rv = self.right.query(l, r)
         return self.merge(lv, rv)
 
+    def init(self, nums):
+        pass
+
     def build(self, *args):
         if self.l == self.r:
-            self.do(*args)
+            self.init(*args)
             return self
         self.left.build(*args)
         self.right.build(*args)

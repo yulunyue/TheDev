@@ -78,5 +78,5 @@ class ApiCall:
         childs = []
         for k in self.fun_map:
             c = get_function_info(self.fun_map[k])
-            childs.append(c.set_key(k).set_title(k))
+            childs.append(c.to_json())
         return dict(childs=childs)

@@ -62,7 +62,6 @@ class Node:
         title="",
         value=None,
         data=None,
-        option=None,
         childs=None,
     ):
         ret = Node(
@@ -72,7 +71,6 @@ class Node:
             title=title,
             value=value,
             data=data,
-            option=option,
             childs=childs,
         )
         self.childs.append(ret)

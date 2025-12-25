@@ -66,7 +66,8 @@ class ZbMangae(ToolBase):
         for f in query_task(self.repo, self.key):
             DockerTask().set_env(
                 f.docker_image_name, GC.zb_docker_env.get_value()
-            ).build(f).docker_build()
+            ).build(f).load().docker_build()
+            logger.info(f"docker run -it {self.docker().docker_image_name}")
 
     def clear(self):
         """
@@ -89,7 +90,7 @@ class ZbMangae(ToolBase):
         ret = defaultdict(list)
         tasks2 = query_task(self.repo, self.key)
         for t in tasks2:
-            key = t.error_msg.get_value()
+            key = t.error_msg.get_value().split("=")[0]
             result = t.result.get_value()
             fail_to_pass = (
                 "HAS_FAIL_TO_PASS"
@@ -100,12 +101,13 @@ class ZbMangae(ToolBase):
                 if "::" in v:
                     logger.info(t.resource)
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
-            if code_ct.get("error"):
-                key = f"{fail_to_pass}_NEED_CHECK_WITH_CODE_ERROR"
-                t.set_error_msg(key)
-            elif code_ct.get("failed"):
-                key = f"{fail_to_pass}_NEED_CHECK_WITH_CODE_FAILED"
-                t.set_error_msg(key)
+            if not t.error_msg.get_value().startswith("SKIP:"):
+                if code_ct.get("error"):
+                    key = f"{fail_to_pass}_NEED_CHECK_WITH_CODE_ERROR"
+                    t.set_error_msg(key)
+                elif code_ct.get("failed"):
+                    key = f"{fail_to_pass}_NEED_CHECK_WITH_CODE_FAILED"
+                    t.set_error_msg(key)
             info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
             ret[key].append(info)
 
@@ -137,9 +139,6 @@ class ZbMangae(ToolBase):
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
-    def code(self):
-        self.docker().apply_code().save()
-
     def test(self):
         self.docker().apply_test().save()
 
@@ -157,13 +156,20 @@ class ZbMangae(ToolBase):
         c.pip()
 
     def debug(self):
-        self.code()
+        self.docker().docker_build()
         t = self.docker().make_launch_json()
-        logger.info(
-            f"docker run -p 5678:5678 -v {t.local_repo.get_abs_path()}:{t.local_repo.path} -it {self.docker().docker_image_name}"
+        t.apply_code()
+        vv = self.docker().get_volumn_v(
+            {
+                t.local_repo.get_abs_path(): t.local_repo.path,
+            }
         )
         logger.info(
-            f"cd {t.local_repo.get_abs_path()} && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client {CS.RUN_VERIFICATION_PY}"
+            f"docker run -p 5678:5678 {vv} -it {self.docker().docker_image_name}"
+        )
+        logger.info(t.get_py_test_main_code())
+        logger.info(
+            f"export ZB_PY_TEST_TYPE=code && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client {CS.RUN_VERIFICATION_PY}"
         )
 
 

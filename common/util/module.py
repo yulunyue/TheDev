@@ -23,6 +23,9 @@ class FunInfo:
         self.has_self = has_self
         return self
 
+    def to_json(self):
+        return dict(key=self.name, title=self.name)
+
 
 def check_func_arg_kw(v):
     has_args = False
@@ -91,8 +94,14 @@ def get_function_info(v):
             continue
         ag.append(a)
         kw[a] = a_help(a, None, True)
-    for i in range(len(kgs)):
-        kw[kgs[i]] = a_help(kgs[i], df[i], False)
+    try:
+        for i in range(len(kgs)):
+            if i < len(df):
+                kw[kgs[i]] = a_help(kgs[i], df[i], False)
+            else:
+                kw[kgs[i]] = a_help(kgs[i], None, False)
+    except Exception as e:
+        raise Exception(kw, kgs, df, e)
     p_or_k_ct, p_ct, k_ct, has_args, has_kw = check_func_arg_kw(v)
     return FunInfo().load(v.__name__, v.__doc__, ag, kw, has_args, has_kw, has_self)
 
