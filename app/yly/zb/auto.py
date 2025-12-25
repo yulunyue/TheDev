@@ -2,6 +2,7 @@ from common.third_util.selenium_util import SeleniumUtil, By
 from common.util.export import time, logger, File, List
 from common.service.export import Api, API_CONFIG
 from .model.export import task_cfg, TaskCfg, get_info_by_name, TASK_DIR, CS
+from .tool.task_base import ZbTask
 
 USER_CONFIG = API_CONFIG.get("Zb")
 
@@ -42,14 +43,19 @@ class WebTool(SeleniumUtil):
         raise Exception(uri)
 
     def submit(self, t: TaskCfg):
-        if t.error_msg.get_value() != CS.SUCCESS:
+        if t.error_msg.get_value() in {CS.SKIP_CHANGE_FILES_MAX}:
+            can_skip = True
+        elif t.error_msg.get_value() == CS.SUCCESS:
+            can_skip = False
+        else:
+            logger.info(f"todo {t.zip_file}")
             return
-        t.zip()
-        logger.info(t.zip_file)
+        ZbTask().build(t).load().local_cfg.zip()
+        logger.info(f"upload {t.zip_file}")
         self.upload(t.zip_file)
         self.get(t.submit_url.get_value())
         self.reload()
-        if 0:
+        if can_skip:
             self.get_element_by_xpath("//input[@value='invalid']").click()
             inp = self.get_element_by_xpath('//input[@class="ct-ant-input"]')
             inp.clear()

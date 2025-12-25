@@ -64,5 +64,5 @@ class GitUtil(OsUtil):
     def check(self):
         self.run("checkout")
 
-    def run(self, *args, capture_output=False, env=None):
-        return super().run(*args, capture_output=capture_output, env=env)
+    def run(self, *args, env=None):
+        return super().run(*args, env=env)

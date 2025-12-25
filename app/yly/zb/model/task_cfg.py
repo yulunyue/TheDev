@@ -29,6 +29,9 @@ class TaskCfg(ConfigBase):
     name = StrModel()
     py_name = StrModel()
 
+    def can_skip(self):
+        return self.error_msg.get_value().startswith("SKIP:")
+
     @property
     def docker_image_name(self):
         return f"{self.repo}:{self.py_version}_default"
@@ -92,8 +95,8 @@ class TaskCfg(ConfigBase):
 
     def set_error_msg(self, msg: str):
         if msg != self.error_msg.get_value():
+            logger.info(f"{self.name.get_value()}->{self.error_msg.get_value()}=>{msg}")
             self.error_msg.set_value(msg)
-            logger.info(f"{self.name.get_value()}->{msg}")
             self.save()
         return self
 
@@ -104,9 +107,7 @@ class TaskCfg(ConfigBase):
         for p in [self.test_patch, self.code_patch]:
             self.get_update_file_by_batch(p, change_files)
         if len(change_files) >= max_change_files:
-            self.set_error_msg(
-                f"SKIP: CHANGE_FILES={len(change_files)}>={max_change_files}"
-            )
+            self.set_error_msg(CS.SKIP_CHANGE_FILES_MAX)
         else:
             files = [k for k, v in change_files.items() if v == "test"]
             if isinstance(test_main_values, str) or not test_main_values:

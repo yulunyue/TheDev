@@ -33,17 +33,16 @@ class OsUtil:
             cmd = f"source {env_path}/bin/activate"
         logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
 
-    def check_output(self, cmd: List[str], capture_output=False, env=None):
+    def check_output(self, cmd: List[str], env=None):
         cmds = " ".join(cmd)
         self.logger.info(f"{self.root_path}->{cmds}")
         param = dict()
-        if not capture_output:
-            param.update(
-                dict(
-                    stderr=self.logger.get_writer(),
-                    stdout=self.logger.get_writer(),
-                )
+        param.update(
+            dict(
+                stderr=self.logger.get_writer(),
+                stdout=self.logger.get_writer(),
             )
+        )
         try:
             self.process = subprocess.Popen(
                 cmd,
@@ -56,7 +55,8 @@ class OsUtil:
                 env=env,  # 不能为空字典 [WinError 87] 参数错误。
                 **param,
             )
-            statu, stdout, stderror = True, self.process.stdout, self.process.stderr
+            data = self.logger.fp.read_file()
+            statu, stdout, stderror = True, data, data
             self.process.wait(self.time_out)
         except subprocess.CalledProcessError as e:
             statu, stdout, stderror = False, e.stdout, e.stderr
@@ -88,10 +88,8 @@ class OsUtil:
             ret.extend([k, v])
         return ret
 
-    def run(self, *args, capture_output=False, env=None, **kw):
-        return self.check_output(
-            self.get_cmd(args, kw), capture_output=capture_output, env=env
-        )
+    def run(self, *args, env=None, **kw):
+        return self.check_output(self.get_cmd(args, kw), env=env)
 
     def start(self, *args, **kw):
         Thread(target=self.run, args=args, kwargs=kw).start()
@@ -109,7 +107,7 @@ class OsUtil:
             self.error(cmd)
 
     def check_port_with_netstat(self, port):
-        statu, result, stderror = self.check_output("netstat -ano", capture_output=True)
+        statu, result, stderror = self.check_output("netstat -ano")
 
         # 查找端口
         pattern = rf":{port}\s+"

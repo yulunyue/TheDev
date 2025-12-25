@@ -186,9 +186,10 @@ class SeleniumUtil:
                     f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
                 )
             os_util = OsUtil(chrome_exe.child("chrome-win64/chrome.exe").get_abs_path())
-            info = os_util.check_port(dev_port)
+            # info = os_util.check_port(dev_port)
+            info = True
             if not info:
-                raise Exception(
+                logger.info(
                     " ".join(
                         [
                             os_util.fun_name,
