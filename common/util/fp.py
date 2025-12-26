@@ -89,7 +89,7 @@ class File:
             if not isinstance(data, str):
                 data = str(data)
             with open(
-                self.path, "w", newline="", encoding=encoding
+                self.path, "w", newline="\n", encoding=encoding
             ) as f:  # newline="" 可以写LF 而不是CRLF \n 而不是 \r\n
                 f.write(data)
         return self
@@ -103,7 +103,7 @@ class File:
         return self.path.endswith(".json")
 
     def read_data(self):
-        with open(self.path, "rb") as f:
+        with open(self.path, "rb", newline="\n") as f:
             return f.read()
 
     def read_line(self):
