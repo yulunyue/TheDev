@@ -62,13 +62,23 @@ class ZbTask:
     def apply_patch(self, f: Patch):
         self.local_cfg.git_cmd.apply(f.f.get_abs_path())
 
-    def apply_code(self):
-        self.apply_test()
-        self.apply_patch(self.local_cfg.code_patch)
+    has_apply_code = False
 
+    def apply_code(self):
+        if self.has_apply_code:
+            raise Exception("apply code only one")
+        self.has_apply_code = True
+        self.rest_repo()
+        self.apply_patch(self.local_cfg.test_patch)
+        self.apply_patch(self.local_cfg.code_patch)
         return self
 
+    has_apply_test = False
+
     def apply_test(self):
+        if self.has_apply_test:
+            raise Exception("apply test only one")
+        self.has_apply_test = True
         self.rest_repo()
         self.apply_patch(self.local_cfg.test_patch)
         return self
@@ -78,13 +88,25 @@ class ZbTask:
         File(self.input_dir.path + ".zip").unzip()
         self.init()
 
+    def get_result_by_log(self, log_file: File):
+        for d in log_file.read_line():
+            d = d.strip()
+            if d.startswith("httpx.ConnectError: [Errno -3] Temporary failure in"):
+                return CS.NOT_FIND_CASES
+
     def print_result(self):
         local_result: dict = self.local_cfg.result.get_value()
         local_result.clear()
-        old, old_ct = get_result(self.input_dir.child("test.json").path)
-        logger.info(f"test:{old_ct}")
-        new, new_ct = get_result(self.input_dir.child("code.json").path)
-        logger.info(f"code:{new_ct}")
+        old, old_ct, local_result["old_detail"] = get_result(
+            self.input_dir.child("test.json").path
+        )
+        test_log = self.input_dir.child("test.log")
+        code_log = self.input_dir.child("code.log")
+        logger.info(f"test:{old_ct}, {test_log}")
+        new, new_ct, local_result["new_detail"] = get_result(
+            self.input_dir.child("code.json").path
+        )
+        logger.info(f"code:{new_ct}, {code_log}")
         local_result["test"], local_result["code"] = old, new
         fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass = [], [], [], []
 
@@ -104,14 +126,29 @@ class ZbTask:
         local_result[CS.PASS_TO_FAIL] = sorted(pass_to_fail)
         local_result[CS.FAIL_TO_PASS] = sorted(fail_to_pass)
         local_result[CS.PASS_TO_PASS] = sorted(pass_to_pass)
+        t = self.local_cfg
         if fail_to_fail:
-            self.local_cfg.set_error_msg(CS.FAIL_TO_FAIL)
+            # error_msg = self.get_result_by_log(code_log)
+            # if error_msg:
+            #     self.local_cfg.set_error_msg(CS.SKIPPED, CS.NET_WORK_ERROR)
+            # else:
+            self.local_cfg.set_error_msg(CS.FAILED, CS.FAIL_TO_FAIL)
         elif pass_to_fail:
-            self.local_cfg.set_error_msg(CS.PASS_TO_FAIL)
+            self.local_cfg.set_error_msg(CS.FAILED, CS.PASS_TO_FAIL)
+        elif old_ct == new_ct and old_ct:
+            self.local_cfg.set_error_msg(
+                CS.SKIPPED, f"{CS.TEST_RESULT_NO_CHANGE}={old_ct} --> {new_ct}"
+            )
         elif not fail_to_pass:
-            self.local_cfg.set_error_msg(CS.NO_FAIL_TO_PASS)
+            self.local_cfg.set_error_msg(CS.FAILED, CS.NO_FAIL_TO_PASS)
+        elif not pass_to_pass:
+            t.set_error_msg(CS.FAILED, f"NO_PASS_TO_PASS")
+        elif new_ct.get("error"):
+            t.set_error_msg(CS.FAILED, f"CODE_WITH_ERROR")
+        elif new_ct.get("failed"):
+            t.set_error_msg(CS.FAILED, f"CODE_WITH_FAILED")
         else:
-            self.local_cfg.set_error_msg(CS.SUCCESS)
+            self.local_cfg.set_error_msg(CS.SUCCESS, "")
 
     @property
     def py_bin(self):
@@ -163,6 +200,7 @@ class ZbTask:
         #     f"{self.repo}/{self.local_cfg.py_env}/setup_env.sh"
         # )
         local_env_sh: List[str] = [
+            "set -e",
             f"cd {self.local_repo.path}",
             f"git reset --hard {self.local_cfg.cg.base_commit.get_value()}",
             f"{self.py_bin} --version",
@@ -248,7 +286,6 @@ class ZbTask:
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
-        self.make_patch()
         self.logger.debug(self.local_cfg.pr_url.get_value())
         self.logger.debug(self.local_cfg.issue_url.get_value())
         self.logger.debug(self.local_repo.path)

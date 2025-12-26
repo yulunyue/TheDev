@@ -1,21 +1,26 @@
 from .task_base import ZbTask, REPO_BASE, CS, logger
 import time
+from common.util.export import get_dev_log
 
 
 class DockerTask(ZbTask):
-    def set_env(self, docker_image_name, remote_ip):
+    def set_env(self, docker_image_name, remote_ip, log_flie):
         from common.third_util.docker_util import DockerUtil
 
         self.docker_image_name = docker_image_name
         self.dock_util = DockerUtil(
             docker_image_name,
+            log_file=log_flie,
             remote_ip=remote_ip,
         )
 
         return self
 
     def docker_build(self):
-        self.dock_util.build(self.input_dir.get_abs_path())
+        if not self.dock_util.build(self.input_dir.get_abs_path()):
+            self.local_cfg.set_error_msg(CS.FAILED, CS.DOCKER_BUILD_FAILED)
+            return False
+        return True
 
     def get_volumn_v(self, kw=None):
         return " ".join([f"-v {k}:{v}" for k, v in self.get_volumn(kw).items()])
@@ -44,7 +49,9 @@ class DockerTask(ZbTask):
         for f in result_files:
             self.input_dir.child(f).remove()
         self.apply_code()
-        self.docker_build()
+        if not self.docker_build():
+            return
+
         self.local_cfg.py_test_result_json.remove()
         status, msg = self.dock_util.run(
             ";".join(

@@ -17,6 +17,8 @@ from .repo_cg import RepoCg
 from common.util.export import List, Dict, File, logger
 from common.third_service.git_tool.git_util import GitUtil, Patch
 
+SKIP_INFO = {}
+
 
 class TaskCfg(ConfigBase):
     test_main = ListModel()
@@ -29,8 +31,18 @@ class TaskCfg(ConfigBase):
     name = StrModel()
     py_name = StrModel()
 
-    def can_skip(self):
-        return self.error_msg.get_value().startswith("SKIP:")
+    def can_submit(self):
+        err_msg = self.error_msg.get_value()
+        if err_msg.startswith(CS.SUCCESS):
+            return True
+        if err_msg.startswith(CS.SKIPPED):
+            info = err_msg.split(f"{CS.SKIPPED}:").pop().split("=")[0]
+            if info not in CS.SKIP_MAP:
+                raise Exception(
+                    self.name.get_value(), err_msg, list(CS.SKIP_MAP.keys())
+                )
+            return True
+        return False
 
     @property
     def docker_image_name(self):
@@ -87,13 +99,19 @@ class TaskCfg(ConfigBase):
         return self.input_dir.child(CS.RESULT_JSON_FILE)
 
     def zip(self):
+        result = self.result.get_value()
+        self.cg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
+        self.cg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
         self.zip_file.remove()
         self.input_dir.zip(
             self.zip_file.path, TARGETS + [self.name.get_value() + ".json"]
         )
         return self
 
-    def set_error_msg(self, msg: str):
+    def set_error_msg(self, state, msg: str):
+        if state not in {CS.SUCCESS, CS.SKIPPED, CS.FAILED}:
+            raise Exception(msg)
+        msg = f"{state}:{msg}"
         if msg != self.error_msg.get_value():
             logger.info(f"{self.name.get_value()}->{self.error_msg.get_value()}=>{msg}")
             self.error_msg.set_value(msg)
@@ -106,14 +124,19 @@ class TaskCfg(ConfigBase):
         max_change_files = 20
         for p in [self.test_patch, self.code_patch]:
             self.get_update_file_by_batch(p, change_files)
-        if len(change_files) >= max_change_files:
-            self.set_error_msg(CS.SKIP_CHANGE_FILES_MAX)
+        if change_files.get("has_bin"):
+            self.set_error_msg(CS.SKIPPED, CS.HAS_HEX_FILES)
+        elif len(change_files) >= max_change_files:
+            self.set_error_msg(
+                CS.SKIPPED,
+                f"{CS.CHANGE_FILES_TOO_MAX}={len(change_files)}>={max_change_files}",
+            )
         else:
             files = [k for k, v in change_files.items() if v == "test"]
             if isinstance(test_main_values, str) or not test_main_values:
                 self.test_main.set_value(files)
             if not self.test_main.get_value():
-                self.set_error_msg(f"SKIP: NO_TEST")
+                self.set_error_msg(CS.SKIPPED, CS.NOT_FIND_CASES)
         return self
 
     def get_update_file_by_batch(
@@ -122,6 +145,8 @@ class TaskCfg(ConfigBase):
         change_files,
     ):
         for f in fp.get_change_files():
+            if f.local.file_name.endswith(".png"):
+                change_files["has_bin"] = True
             if not f.local.file_name.endswith(".py"):
                 continue
             key = f.filename
@@ -147,17 +172,21 @@ def task_cfg(job, task_id):
 
 
 def query_one(job, key):
-    return task_cfg(job, key).load().check()
+    return task_cfg(job, key).load()
 
 
-def query_task(job, key):
+JOB_MAP = {"sqlmesh": "briefcase"}
+
+
+def query_task(job2, key):
+    job = JOB_MAP.get(job2, job2)
     fss = INFO_DIR.child(job).list_dir()
     ret: List[TaskCfg] = []
     for f in fss:
         c = query_one(job, f.name)
-        # if c.repo != job:
-        #     continue
-        if key != "all" and key not in c.id:
+        if c.repo != job2:
+            continue
+        if key not in {"all", "one"} and key not in c.id:
             continue
         ret.append(c)
     return ret

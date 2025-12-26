@@ -35,7 +35,10 @@ DEBUG_FMT = "%(message)s"
 
 
 def name_to_path(name):
-    path = LOG_DIR + "/" + name
+    if "/" not in name:
+        path = LOG_DIR + "/" + name
+    else:
+        path = name
     if not path.endswith(".log"):
         path += ".log"
     return path

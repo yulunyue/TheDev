@@ -77,14 +77,7 @@ class ZbMangae(ToolBase):
         需要明确clear的意义和目的
         """
         for t in query_task(self.repo, self.key):
-            t.set_error_msg(CS.FAILED)
-            t.check()
-
-    def check(self):
-        for t in query_task(self.repo, self.key):
-            t.check()
-            t.save()
-        self.view()
+            t.set_error_msg(CS.FAILED, "unknow")
 
     def view(self):
         ret = defaultdict(list)
@@ -92,19 +85,6 @@ class ZbMangae(ToolBase):
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]
-            result = t.result.get_value()
-            if t.can_skip():
-                pass
-            elif not result.get(CS.FAIL_TO_PASS):
-                t.set_error_msg(f"SKIP: NO_{CS.FAIL_TO_PASS}")
-            elif not result.get(CS.PASS_TO_PASS):
-                t.set_error_msg(f"SKIP: NO_{CS.PASS_TO_PASS}")
-            else:
-                if code_ct.get("error"):
-                    t.set_error_msg(f"SKIP: CODE_WITH_ERROR")
-                elif code_ct.get("failed"):
-                    t.set_error_msg(f"SKIP: CODE_WITH_FAILED")
-            t.save()
             info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
             ret[key].append(info)
 
@@ -112,28 +92,40 @@ class ZbMangae(ToolBase):
             return sum(v["code_ct"].values()) + sum(v["test_ct"].values())
 
         msgs = []
+        task_num = 0
         for k, tasks in ret.items():
             msgs.append(f"\n----{k} {len(tasks)}----")
             for t in sorted(tasks, key=tmp):
                 msgs.append(str(t))
             msgs.append("--------------")
-        task_view_flie = File("log/zb_task_view.log")
+            task_num += len(tasks)
+        task_view_flie = File("log/zb_task_view.log").write_file("\n".join(msgs))
         self.logger.info(task_view_flie)
-        task_view_flie.write_file("\n".join(msgs))
-        self.logger.info(len(tasks2))
+        self.logger.info(task_num)
 
     def main(self):
         for f in query_task(self.repo, self.key):
-            err_msg = f.error_msg.get_value()
-            if err_msg == CS.SUCCESS or err_msg.startswith("SKIP:"):
+            f.check()
+            if f.can_submit():
+                continue
+            if self.key in {
+                "one",
+                "all",
+            } and f.error_msg.get_value().startswith(CS.FAILED):
                 continue
             t = (
-                DockerTask().set_env(f.docker_image_name, GC.zb_docker_env.get_value())
+                DockerTask().set_env(
+                    f.docker_image_name,
+                    GC.zb_docker_env.get_value(),
+                    f.input_dir.child("docker.log").path,
+                )
                 if GC.zb_docker_env.get_value()
                 else SelfTask()
             )
             t.build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
+            if self.key == "one":
+                break
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
     def test(self):

@@ -8,8 +8,10 @@ class DockerUtil:
     _o: OsUtil = None
     _client: docker.DockerClient = None
 
-    def __init__(self, image_name="base", remote_ip="from_env"):
-
+    def __init__(self, image_name, log_file=None, remote_ip="from_env"):
+        if log_file is None:
+            raise Exception(log_file)
+        self.log_file = log_file
         self.image_name = image_name
         self.remote_ip = remote_ip  # "tcp://192.168.1.4:2375"
 
@@ -17,11 +19,9 @@ class DockerUtil:
     def o(self):
         if self._o is None:
             self._o = (
-                OsUtil("docker")
+                OsUtil("docker", error_exit_flag=False)
                 .set_time_out(60 * 60 * 4)
-                .set_logger(
-                    get_dev_log(f"os/docker_{self.image_name.replace(':','_')}")
-                )
+                .set_logger(self.log_file)
             )
         return self._o
 
@@ -44,11 +44,15 @@ class DockerUtil:
             return False
 
     def build(self, path):
-        self.re_build(path)
+        return self.re_build(path)
 
     def re_build(self, path):
+        statu = False
+        args = None
         if self.remote_ip == "from_env":
-            self.o.run("build", path, "-t", self.image_name)  # "-f", path
+            statu, *args = self.o.run(
+                "build", path, "-t", self.image_name
+            )  # "-f", path
         else:
             image, build_logs = self.client.images.build(
                 path=path, tag=self.image_name, rm=True
@@ -62,6 +66,7 @@ class DockerUtil:
                         print(line)
 
             print(f"\n✅ 构建完成！镜像ID: {image.short_id}")
+        return statu
 
     def tag(self, from_name, to_image_name):
         if self.remote_ip:

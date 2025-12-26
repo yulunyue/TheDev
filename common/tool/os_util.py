@@ -13,9 +13,16 @@ class OsUtil:
         self.error_exit_flag = error_exit_flag
         self.root_path = "./"
         self.and_cmds = []
-        self.logger: TheDevLoger = get_dev_log(
-            f"os/{self.fun_name.split('/').pop()}"
-        )  # 用TheDev 主要是方便writer 重定向
+
+    _logger: TheDevLoger = None
+
+    @property
+    def logger(self):
+        if self._logger is None:
+            self._logger: TheDevLoger = get_dev_log(
+                f"os/{self.fun_name.split('/').pop()}"
+            )  # 用TheDev 主要是方便writer 重定向
+        return self._logger
 
     def set_time_out(self, timeout):
         self.timeout = timeout
@@ -55,9 +62,10 @@ class OsUtil:
                 env=env,  # 不能为空字典 [WinError 87] 参数错误。
                 **param,
             )
-            data = self.logger.fp.read_file()
-            statu, stdout, stderror = True, data, data
+
             self.process.wait(self.time_out)
+            data = self.logger.fp.read_file()
+            statu, stdout, stderror = self.process.returncode == 0, data, data
         except subprocess.CalledProcessError as e:
             statu, stdout, stderror = False, e.stdout, e.stderr
         except FileNotFoundError:
@@ -65,17 +73,19 @@ class OsUtil:
         except Exception as e:
             statu, stdout, stderror = False, "", f"{e}"
         if not statu:
-            self.error([cmds, stdout, stderror])
+            self.error(cmds, stdout + stderror)
         return statu, stdout, stderror
 
-    def error(self, msg):
+    def error(self, cmd, msg):
         if self.error_exit_flag:
-            raise Exception(msg)
+            raise Exception(cmd, msg)
         else:
-            logger.error(msg)
+            logger.info(msg[:20] + "..." + msg[-20:] + cmd)
 
     def set_logger(self, logger):
-        self.logger: TheDevLoger = logger
+        if isinstance(logger, str):
+            logger = get_dev_log(logger)
+        self._logger: TheDevLoger = logger
         return self
 
     def set_env(self, root):

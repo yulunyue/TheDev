@@ -1,9 +1,11 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1251.zip?Expires=1766564022&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=b%2Fm%2B0qXS4Viqoxs3atAad09%2BLgg%3D",
-    "error_msg": "SKIP: NO_FAIL_TO_PASS",
+    "error_msg": "skipped:TEST_RESULT_NO_CHANGE={'passed': 5} => {'passed': 5}",
     "need_setup_env": false,
     "result": {
+        "old_detail": {},
+        "new_detail": {},
         "test": {
             "tests/console/test_Printer.py::test_call[True-a line of output-a line of output\\n]": "passed",
             "tests/console/test_Printer.py::test_call[False-a line of output-]": "passed",

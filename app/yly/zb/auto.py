@@ -43,19 +43,17 @@ class WebTool(SeleniumUtil):
         raise Exception(uri)
 
     def submit(self, t: TaskCfg):
-        if t.error_msg.get_value() in {CS.SKIP_CHANGE_FILES_MAX}:
-            can_skip = True
-        elif t.error_msg.get_value() == CS.SUCCESS:
-            can_skip = False
-        else:
-            logger.info(f"todo {t.zip_file}")
+        can_submit = t.can_submit()
+        if not can_submit:
+            logger.info(f"can_submit {t.zip_file}")
             return
         ZbTask().build(t).load().local_cfg.zip()
         logger.info(f"upload {t.zip_file}")
         self.upload(t.zip_file)
         self.get(t.submit_url.get_value())
         self.reload()
-        if can_skip:
+        err_msg = t.error_msg.get_value()
+        if err_msg != CS.SUCCESS:
             self.get_element_by_xpath("//input[@value='invalid']").click()
             inp = self.get_element_by_xpath('//input[@class="ct-ant-input"]')
             inp.clear()

@@ -18,10 +18,12 @@ class CS:
     FAILED = "failed"
     SKIPPED = "skipped"
     CHECKED = "checked"
+    CRASH = "crash"
     PASS_TO_PASS = "PASS_TO_PASS"
     PASS_TO_FAIL = "PASS_TO_FAIL"
     FAIL_TO_PASS = "FAIL_TO_PASS"
     NO_FAIL_TO_PASS = "NO_FAIL_TO_PASS"
+    NO_PASS_TO_PASS = "NO_PASS_TO_PASS"
     FAIL_TO_FAIL = "FAIL_TO_FAIL"
     RESULT_JSON_FILE = "python_test_result.json"
     RUN_VERIFICATION_PY = "run_verification.py"
@@ -32,8 +34,22 @@ class CS:
     TEST_PATCH = "test.patch"
     ZB_TASK_FAIL = "ZB_TASK_FAIL"
     NOT_FIND_CASES = "NOT_FIND_CASES"
+    NET_WORK_ERROR = "NET_WORK_ERROR"
     PY_DEFAULT = "3.9"
-    SKIP_CHANGE_FILES_MAX = "SKIP: CHANGE_FILES_MAX"
+    TEST_DEPENDS_CODE = "TEST_DEPENDS_CODE"
+    CHANGE_FILES_TOO_MAX = "CHANGE_FILES_TOO_MAX"
+    HAS_HEX_FILES = "HAS_HEX_FILES"
+    TEST_RESULT_NO_CHANGE = "TEST_RESULT_NO_CHANGE"
+    PIP_INSTALL_EROOR = "PIP_INSTALL_EROOR"
+    DOCKER_BUILD_FAILED = "DOCKER_BUILD_FAILED"
+    SKIP_MAP = {
+        TEST_DEPENDS_CODE: TEST_DEPENDS_CODE,
+        HAS_HEX_FILES: HAS_HEX_FILES,
+        CHANGE_FILES_TOO_MAX: CHANGE_FILES_TOO_MAX,
+        TEST_RESULT_NO_CHANGE: TEST_RESULT_NO_CHANGE,
+        NOT_FIND_CASES: NOT_FIND_CASES,
+        NET_WORK_ERROR: NET_WORK_ERROR,
+    }
 
 
 PY_BIN = "%{PY_BIN}"
@@ -142,10 +158,10 @@ def apply_patch(patch_path):
 def get_result(result_file):
     result = dict()
     ct = dict()
-    #
+    crash = dict()
     if not os.path.exists(result_file):
         # print(f"{__file__} FILE_NOT_EXIST {result_file}")
-        return result, ct
+        return result, ct, dict()
 
     with open(result_file, "r") as f:
         data = json.loads(f.read())
@@ -153,8 +169,17 @@ def get_result(result_file):
             if item["nodeid"]:
                 result[item["nodeid"]] = item["outcome"]
                 ct[item["outcome"]] = ct.get(item["outcome"], 0) + 1
+                crash_msg = ""
+                if CS.CRASH in data.get("setup", dict()):
+                    crash_msg += data["setup"][CS.CRASH]["message"]
+                elif CS.CRASH in data.get("call", dict()):
+                    crash_msg += data["setup"][CS.CRASH]["message"]
+                if crash_msg:
+                    if len(crash_msg) > 100:
+                        crash_msg = crash_msg[:50] + "...." + crash_msg[-50:]
+                    crash[crash_msg] = item["nodeid"]
     # os.system(f"rm -rf {result_file}")
-    return result, ct
+    return result, ct, crash
 
 
 def run_before_py_test():
@@ -176,7 +201,7 @@ def run_py_test(name):
             py_test_args + PY_MAIN_CMD.split(" "), cwd=REPO_DIR
         )
     os.system(f"cp {result_file} {name}.json")
-    result, ct = get_result(result_file)
+    result, ct, *args = get_result(result_file)
     return statu_code, msg, msg1, ct, result
 
 

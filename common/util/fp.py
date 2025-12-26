@@ -103,11 +103,11 @@ class File:
         return self.path.endswith(".json")
 
     def read_data(self):
-        with open(self.path, "rb", newline="\n") as f:
+        with open(self.path, "rb") as f:
             return f.read()
 
     def read_line(self):
-        return self.read_data().decode("utf-8").replace("\r", "").split("\n")
+        return self.read_data().decode("utf-8").split("\n")
 
     def copy_to(self, dst: "File", over_write=False):
         if isinstance(dst, str):

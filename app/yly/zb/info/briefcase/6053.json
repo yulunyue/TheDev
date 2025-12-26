@@ -1,7 +1,7 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1823.zip?Expires=1766568699&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=jmWwyBAKn6Dj5N3dAakfAzD8waM%3D",
-    "error_msg": "SKIP: NO_FAIL_TO_PASS",
+    "error_msg": "failed:DOCKER_BUILD_FAILED",
     "issue_url": "https://github.com/beeware/briefcase/issues/1805",
     "name": "beeware__briefcase-1823",
     "need_setup_env": false,

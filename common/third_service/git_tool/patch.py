@@ -1,4 +1,4 @@
-from common.util.export import File, List
+from common.util.export import File, List, logger
 from .file_change_model import FileChange
 
 
@@ -21,8 +21,8 @@ class Patch:
             return self.file_changes
         self.file_changes = []
         for s in self.f.read_line():
-            if s.startswith("+++ b/"):
-                f = FileChange(s[6:]).set_local(self.pr.local)
+            if s.startswith("diff --git "):
+                f = FileChange(s.split(" ")[-1][2:]).set_local(self.pr.local)
                 self.file_changes.append(f)
         return self.file_changes
 
