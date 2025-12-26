@@ -2,12 +2,14 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-5560.zip?Expires=1766900822&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=gCyfWlguUWdnvpIVweiIr0%2FgfBI%3D",
-    "error_msg": "SKIP: NO_FAIL_TO_PASS",
+    "error_msg": "failed:FAIL_TO_FAIL",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/5555",
     "name": "TobikoData__sqlmesh-5560",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/5560",
     "py_name": "",
     "result": {
+        "old_detail": {},
+        "new_detail": {},
         "test": {
             "tests/core/integration/test_change_scenarios.py::test_auto_categorization": "error",
             "tests/core/integration/test_change_scenarios.py::test_breaking_only_impacts_immediate_children": "failed",

@@ -29,6 +29,14 @@ from .tool.task_self import SelfTask
 from .tool.task_base import ZbTask
 
 
+def dol(f: TaskCfg):
+    return DockerTask().set_env(
+        f.docker_image_name,
+        GC.zb_docker_env.get_value(),
+        f.input_dir.child("docker.log").path,
+    )
+
+
 class ZbMangae(ToolBase):
     def prepare(self, repo, key):
         self.key = key
@@ -41,10 +49,8 @@ class ZbMangae(ToolBase):
 
     def docker(self):
         if self._docker is None:
-            self._docker: DockerTask = self.task(DockerTask())
-            self._docker.set_env(
-                self._docker.local_cfg.docker_image_name, GC.zb_docker_env.get_value()
-            )
+            t = query_one(self.repo, self.key)
+            self._docker: DockerTask = dol(t).build(t).load()
         return self._docker
 
     def local(self):
@@ -64,10 +70,9 @@ class ZbMangae(ToolBase):
 
     def build(self):
         for f in query_task(self.repo, self.key):
-            DockerTask().set_env(
-                f.docker_image_name, GC.zb_docker_env.get_value()
-            ).build(f).load().docker_build()
-            logger.info(f"docker run -it {self.docker().docker_image_name}")
+            d = dol(f).build(f).load()
+            d.docker_build()
+            logger.info(f"docker run -it {d.docker_image_name}")
 
     def clear(self):
         """
@@ -113,15 +118,7 @@ class ZbMangae(ToolBase):
                 "all",
             } and f.error_msg.get_value().startswith(CS.FAILED):
                 continue
-            t = (
-                DockerTask().set_env(
-                    f.docker_image_name,
-                    GC.zb_docker_env.get_value(),
-                    f.input_dir.child("docker.log").path,
-                )
-                if GC.zb_docker_env.get_value()
-                else SelfTask()
-            )
+            t = dol(f) if GC.zb_docker_env.get_value() else SelfTask()
             t.build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
             if self.key == "one":

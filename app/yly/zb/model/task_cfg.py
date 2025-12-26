@@ -165,17 +165,17 @@ class TaskCfg(ConfigBase):
         return ret
 
 
+JOB_MAP = {"sqlmesh": "briefcase"}
+
+
 def task_cfg(job, task_id):
-    f = INFO_DIR.child(job).child(f"{task_id}.json")
+    f = INFO_DIR.child(JOB_MAP.get(job, job)).child(f"{task_id}.json")
     r = TaskCfg(task_id).set_resource(f)
     return r
 
 
 def query_one(job, key):
     return task_cfg(job, key).load()
-
-
-JOB_MAP = {"sqlmesh": "briefcase"}
 
 
 def query_task(job2, key):
