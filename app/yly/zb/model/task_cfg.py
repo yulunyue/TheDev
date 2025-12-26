@@ -39,7 +39,10 @@ class TaskCfg(ConfigBase):
             info = err_msg.split(f"{CS.SKIPPED}:").pop().split("=")[0]
             if info not in CS.SKIP_MAP:
                 raise Exception(
-                    self.name.get_value(), err_msg, list(CS.SKIP_MAP.keys())
+                    self.task_id,
+                    self.name.get_value(),
+                    err_msg,
+                    list(CS.SKIP_MAP.keys()),
                 )
             return True
         return False

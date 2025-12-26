@@ -88,12 +88,6 @@ class ZbTask:
         File(self.input_dir.path + ".zip").unzip()
         self.init()
 
-    def get_result_by_log(self, log_file: File):
-        for d in log_file.read_line():
-            d = d.strip()
-            if d.startswith("httpx.ConnectError: [Errno -3] Temporary failure in"):
-                return CS.NOT_FIND_CASES
-
     def print_result(self):
         local_result: dict = self.local_cfg.result.get_value()
         local_result.clear()
@@ -128,10 +122,6 @@ class ZbTask:
         local_result[CS.PASS_TO_PASS] = sorted(pass_to_pass)
         t = self.local_cfg
         if fail_to_fail:
-            # error_msg = self.get_result_by_log(code_log)
-            # if error_msg:
-            #     self.local_cfg.set_error_msg(CS.SKIPPED, CS.NET_WORK_ERROR)
-            # else:
             self.local_cfg.set_error_msg(CS.FAILED, CS.FAIL_TO_FAIL)
         elif pass_to_fail:
             self.local_cfg.set_error_msg(CS.FAILED, CS.PASS_TO_FAIL)
@@ -142,7 +132,7 @@ class ZbTask:
         elif not fail_to_pass:
             self.local_cfg.set_error_msg(CS.FAILED, CS.NO_FAIL_TO_PASS)
         elif not pass_to_pass:
-            t.set_error_msg(CS.FAILED, f"NO_PASS_TO_PASS")
+            t.set_error_msg(CS.FAILED, CS.NO_PASS_TO_PASS)
         elif new_ct.get("error"):
             t.set_error_msg(CS.FAILED, f"CODE_WITH_ERROR")
         elif new_ct.get("failed"):

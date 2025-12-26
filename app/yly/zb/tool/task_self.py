@@ -23,9 +23,9 @@ class SelfTask(ZbTask):
         OsUtil("bash").run(self.setup_env_sh.get_abs_path())
 
     def play(self):
-
-        self.run1()
-        self.apply_patch(self.code_patch)
+        self.apply_test()
+        self.py_test("test")
+        self.apply_code()
         self.py_test("code")
         self.print_result()
 
@@ -34,12 +34,9 @@ class SelfTask(ZbTask):
         self.py_test("pre")
 
     def run1(self):
-        self.rest_repo()
-        self.apply_patch(self.test_patch)
+        self.apply_test()
         self.py_test("test")
 
     def run2(self, **kw):
-        self.rest_repo()
-        self.apply_patch(self.test_patch)
-        self.apply_patch(self.code_patch)
+        self.apply_code()
         self.py_test("code")
