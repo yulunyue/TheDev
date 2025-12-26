@@ -23,6 +23,7 @@ SKIP_INFO = {}
 class TaskCfg(ConfigBase):
     test_main = ListModel()
     error_msg = StrModel()
+    depends_models = DictModel()
     result = DictModel()
     submit_url = StrModel()
     pr_url = StrModel()

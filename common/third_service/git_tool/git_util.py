@@ -19,7 +19,10 @@ class GitUtil(OsUtil):
         return self.run("reset", "--hard", commid_id)
 
     def clear(self):
-        return self.run("clean", "-fdx")
+        """
+        fdx 全清理  fd清理跟踪的
+        """
+        return self.run("clean", "-fd")
 
     def set_repo(self, repo):
         self.repo: File = repo

@@ -53,7 +53,7 @@ class WebTool(SeleniumUtil):
         self.get(t.submit_url.get_value())
         self.reload()
         err_msg = t.error_msg.get_value()
-        if err_msg != CS.SUCCESS:
+        if not err_msg.startswith(CS.SUCCESS):
             self.get_element_by_xpath("//input[@value='invalid']").click()
             inp = self.get_element_by_xpath('//input[@class="ct-ant-input"]')
             inp.clear()

@@ -4,7 +4,9 @@
     "error_msg": "failed:NO_PASS_TO_PASS",
     "need_setup_env": false,
     "result": {
-        "old_detail": {},
+        "old_detail": {
+            "AttributeError: 'File' object has no attribute 'ssl_context'": " tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None] tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/something.zip-] tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip] tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip; ignored=okay] tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/something.zip-garbage] tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-ATTACHment; filename=    \"something.zip\"] tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=\"something.zip\"; filename*=utf-8''%e2%82%ac%20rates] tests/integrations/file/test_File__download.py::test_new_download_chunked tests/integrations/file/test_File__download.py::test_already_downloaded tests/integrations/file/test_File__download.py::test_missing_resource tests/integrations/file/test_File__download.py::test_bad_resource tests/integrations/file/test_File__download.py::test_iter_bytes_connection_error tests/integrations/file/test_File__download.py::test_connection_error tests/integrations/file/test_File__download.py::test_redirect_connection_error tests/integrations/file/test_File__ssl_context.py::test_ssl_context"
+        },
         "new_detail": {},
         "test": {
             "tests/integrations/file/test_File__download.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None]": "failed",

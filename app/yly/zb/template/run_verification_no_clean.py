@@ -110,12 +110,6 @@ def reset_repo(commit_hash):
         )
         return False
     return True
-    success, _, stderr = run_command(["git", "clean", "-fdx"], cwd=REPO_DIR)
-    if not success:
-        print(f"{Colors.RED}❌ ERROR: 'git clean -fdx' failed.{Colors.ENDC}\n{stderr}")
-        return False
-    print(f"{Colors.GREEN}✅ Repo has been forcefully reset and cleaned.{Colors.ENDC}")
-    return True
 
 
 def apply_patch(patch_path):

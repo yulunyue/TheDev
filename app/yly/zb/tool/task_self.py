@@ -9,7 +9,7 @@ class SelfTask(ZbTask):
             "run_verification.run_py_test", self.input_dir.path
         )
         # result=self.local_cfg.result.get_value()
-        statu_code, msg, msg1, ct, result = f(key)
+        statu_code, msg, msg1, ct, result, *args = f(key)
         self.input_dir.child(f"{key}.log").write_file(msg)
         self.logger.debug(f"statu_code={statu_code}\nmsg1={msg1}\nresult={result}")
         result_json_file = self.local_repo.child(CS.RESULT_JSON_FILE)
@@ -17,6 +17,7 @@ class SelfTask(ZbTask):
             result_json_file.copy_to(
                 self.input_dir.child(f"{key}.json"), over_write=True
             )
+        File(f"{key}.json").remove()
 
     def pip(self):
         File(self.venv_dir).remove()

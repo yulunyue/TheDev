@@ -29,6 +29,8 @@ from ..model.export import (
 
 import os
 
+PIP_MAP = REPO_DIR.child("pip.json").read_file()
+
 
 class ZbTask:
     local_cfg: TaskCfg = None
@@ -139,6 +141,7 @@ class ZbTask:
             t.set_error_msg(CS.FAILED, f"CODE_WITH_FAILED")
         else:
             self.local_cfg.set_error_msg(CS.SUCCESS, "")
+        self.save()
 
     @property
     def py_bin(self):
@@ -208,6 +211,12 @@ class ZbTask:
         setup_py = self.local_repo.child("setup.py")
         if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
             local_env_sh.append(f"pip install -e .")
+
+        for k, v in self.local_cfg.depends_models.get_value().items():
+            if not v:
+                v = PIP_MAP[k]
+            for name in v:
+                local_env_sh.append(f"pip install {name}")
         extern_files = [
             self.local_cfg.local_repo_mock_dir,
             self.local_cfg.local_repo_mock_dir.child(self.local_cfg.task_id),
@@ -218,12 +227,6 @@ class ZbTask:
         local_env_sh.append(
             "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
         )
-        # if pyproject_toml.exists():
-        #     dev_py = pyproject_toml.get("project", "optional-dependencies", "dev")
-        #     if dev_py:
-        #         local_env_sh.extend([f'pip install "{s}"' for s in dev_py])
-        # if local_env_file.exists():
-        #     local_env_sh.extend(local_env_file.read_line())
         setup_env_sh = []
         for d in local_env_sh:
             if d.startswith("pip"):

@@ -128,9 +128,9 @@ def reset_repo(commit_hash):
             f"{Colors.RED}❌ ERROR: 'git reset --hard' failed.{Colors.ENDC}\n{stderr}"
         )
         return False
-    success, _, stderr = run_command(["git", "clean", "-fdx"], cwd=REPO_DIR)
+    success, _, stderr = run_command(["git", "clean", "-fd"], cwd=REPO_DIR)
     if not success:
-        print(f"{Colors.RED}❌ ERROR: 'git clean -fdx' failed.{Colors.ENDC}\n{stderr}")
+        print(f"{Colors.RED}❌ ERROR: 'git clean -fd' failed.{Colors.ENDC}\n{stderr}")
         return False
     print(f"{Colors.GREEN}✅ Repo has been forcefully reset and cleaned.{Colors.ENDC}")
     return True
@@ -171,14 +171,14 @@ def get_result(result_file):
                 result[item["nodeid"]] = item["outcome"]
                 ct[item["outcome"]] = ct.get(item["outcome"], 0) + 1
                 crash_msg = ""
-                if CS.CRASH in data.get("setup", dict()):
-                    crash_msg += data["setup"][CS.CRASH]["message"]
-                elif CS.CRASH in data.get("call", dict()):
-                    crash_msg += data["setup"][CS.CRASH]["message"]
+                if CS.CRASH in item.get("setup", dict()):
+                    crash_msg += item["setup"][CS.CRASH]["message"]
+                elif CS.CRASH in item.get("call", dict()):
+                    crash_msg += item["call"][CS.CRASH]["message"]
                 if crash_msg:
                     if len(crash_msg) > 100:
                         crash_msg = crash_msg[:50] + "...." + crash_msg[-50:]
-                    crash[crash_msg] = item["nodeid"]
+                    crash[crash_msg] = crash.get(crash_msg, "") + " " + item["nodeid"]
     # os.system(f"rm -rf {result_file}")
     return result, ct, crash
 
@@ -198,18 +198,19 @@ def run_py_test(name):
         os.chdir(REPO_DIR)
         pytest.main(PY_MAIN_CMD.split(" "))
     else:
-        statu_code, msg, msg1 = run_command(
-            py_test_args + PY_MAIN_CMD.split(" "), cwd=REPO_DIR
-        )
+        args = py_test_args + PY_MAIN_CMD.split(" ")
+        print(args)
+        statu_code, msg, msg1 = run_command(args, cwd=REPO_DIR)
+
     os.system(f"cp {result_file} {name}.json")
-    result, ct, *args = get_result(result_file)
-    return statu_code, msg, msg1, ct, result
+    result, ct, crash = get_result(result_file)
+    return statu_code, msg, msg1, ct, result, crash
 
 
 def run_all_tests_and_get_results(name):
     """使用 poetry run pytest 运行所有测试并从 JUnit XML 报告中解析结果。"""
     # TODO
-    statu_code, msg, msg1, ct, result = run_py_test(name)
+    statu_code, msg, msg1, ct, result, args = run_py_test(name)
     with open(f"{name}.log", "w", encoding="utf-8") as f:
         f.write(f"stdout=>{msg}\nstderr=>{msg1}\nct=>{ct}\nresult=>{result}")
     print(f"\nstatu_code=>{statu_code}\n")
