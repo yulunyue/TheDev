@@ -7,6 +7,7 @@ from common.util.export import (
     List,
     defaultdict,
     Module,
+    get_dev_log,
 )
 from common.tool.export import OsUtil, GC
 from .model.export import (
@@ -41,15 +42,9 @@ class ZbMangae(ToolBase):
     def prepare(self, key):
         self.key = key
 
-    def task(self, f: ZbTask):
-        return f.build(query_one(self.repo, self.key)).load()
-
-    def docker(self, name):
-        t = query_one(self.repo, self.key)
-        return dol(t, name).build(t).load()
-
-    def local(self):
-        return self.task(SelfTask())
+    def docker(self, name, env_name):
+        t = query_one(name)
+        return dol(t, env_name).build(t).load()
 
     def zb(self):
         return self.task(ZbTask())
@@ -64,7 +59,7 @@ class ZbMangae(ToolBase):
             w.submit(query_one(self.repo, self.key))
 
     def build(self):
-        for f in query_task(self.repo, self.key):
+        for f in query_task(self.key):
             d = dol(f, f.docker_image_name).build(f).load()
             d.docker_build()
             logger.info(f"docker run -it {d.docker_image_name}")
@@ -76,7 +71,7 @@ class ZbMangae(ToolBase):
         :param self: Description
         需要明确clear的意义和目的
         """
-        for t in query_task(self.repo, self.key):
+        for t in query_task(self.key):
             t.set_error_msg(CS.FAILED, "unknow")
 
     def view(self):
@@ -85,24 +80,31 @@ class ZbMangae(ToolBase):
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]
+            if (
+                t.local_packge_extern.get_value()
+                or t.depends_models.get_value()
+                and not t.can_submit()
+            ):
+                s2 = (
+                    f"{t.local_packge_extern.get_value()}{t.depends_models.get_value()}"
+                )
+                logger.map(t2=t.resource, s2=s2)
             info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
             ret[key].append(info)
 
-        msgs = []
         task_num = 0
+        l = get_dev_log("data/log/zb_task_view.log")
         for k, tasks in ret.items():
-            msgs.append(f"\n----{k} {len(tasks)}----")
+            l.info(f"\n----{k} {len(tasks)}----")
             for t in tasks:
-                msgs.append(str(t))
-            msgs.append("--------------")
+                l.info(str(t))
+            l.info("--------------")
             task_num += len(tasks)
-        task_view_flie = File("log/zb_task_view.log").write_file("\n".join(msgs))
-        self.logger.info(task_view_flie)
         self.logger.info(task_num)
 
-    def main(self):
+    def run_all(self):
         tasks = []
-        for f in query_task(self.repo, "all"):
+        for f in query_task(self.key):
             f.check()
             if f.can_submit():
                 continue
@@ -113,6 +115,9 @@ class ZbMangae(ToolBase):
             t.build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
+
+    def run_one(self):
+        self.docker(self.key).run()
 
     def test(self):
         self.docker().apply_test().save()

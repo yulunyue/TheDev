@@ -29,7 +29,6 @@ class TaskCfg(ConfigBase):
     issue_url = StrModel()
     down_load_uri = StrModel()
     name = StrModel()
-    py_name = StrModel()
     local_packge_extern = StrModel()
 
     def get_local_packge_extern(self):
@@ -58,12 +57,8 @@ class TaskCfg(ConfigBase):
         return False
 
     @property
-    def docker_image_name(self):
-        return f"{self.repo}:{self.py_version}_default"
-
-    @property
     def id(self):
-        return self.key + "_" + self.name.get_value()
+        return f"{self.task_id}_{self.name.get_value()}"
 
     @property
     def zip_file(self):
@@ -71,27 +66,29 @@ class TaskCfg(ConfigBase):
 
     def load(self):
         down_load_uri = self.down_load_uri.get_value()
-        if not down_load_uri:
-            pass
+        submit_uri = self.submit_url.get_value()
+        if not down_load_uri or not submit_uri:
+            raise Exception(self.resource)
+        self.task_id = submit_uri.split("recordId=").pop().split("&")[0]
         if not self.name.get_value():
             from common.third_util.api import Api
 
             f = Api().download(down_load_uri)
             self.name.set_value(f.name)
             self.save()
-        self.task_id = self.key
+        info = self.resource.path.replace(REPO_DIR.path + "/", "").split("/")
+        self.env_name = info[1]
+        self.py_version = self.env_name.split("_")[0]
         self.owner, _, self.repo, self.pr = get_info_by_name(self.name.get_value())
-        self.input_dir = TASK_DIR.child(self.repo).child(self.key)
+        self.docker_image_name = f"{self.repo}:{self.env_name}"
+        self.input_dir = TASK_DIR.child(self.repo).child(self.task_id)
         self.cg = Cg(self.task_id).set_resource(self.cg_file)
         self.local_repo_mock_dir = REPO_DIR.child(self.repo)
         self.global_confg: RepoCg = RepoCg.new(
             self.repo, self.local_repo_mock_dir.child("config.json")
         )
-        self.py_version = self.py_name.get_value()
-        if self.py_version == "py3" or not self.py_version:
-            self.py_version = CS.PY_DEFAULT
-
         if not self.input_dir.exists():
+            raise Exception(self.input_dir)
             from common.third_util.api import Api
 
             f = Api().download(self.down_load_uri.get_value())
@@ -185,7 +182,7 @@ def task_cfg(f: File):
     name = f
     if isinstance(f, File):
         name = f.path
-    r = TaskCfg(name).set_resource(f)
+    r = TaskCfg(name).set_resource(f).load()
     return r
 
 
@@ -198,10 +195,10 @@ def query_one(key):
 
 def query_task(key: str):
     def ft(f: File):
-        if key == "all" or key in f.path:
+        if "/pr/" in f.path and (key == "all" or key in f.path):
             return True
 
-    fss = REPO_DIR.list_dir(depth=3, filter=ft)
+    fss = REPO_DIR.list_dir(depth=5, filter=ft)
     ret: List[TaskCfg] = []
     for f in fss:
         c = task_cfg(f)
