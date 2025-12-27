@@ -976,5 +976,7 @@
     "test_main": [
         "tests/core/test_context.py",
         "tests/core/test_model.py"
-    ]
+    ],
+    "local_packge_extern": ".[dev,bigquery]",
+    "depends_models": {}
 }

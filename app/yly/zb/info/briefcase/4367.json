@@ -1191,5 +1191,7 @@
     "test_main": [
         "tests/core/test_model.py",
         "tests/core/test_snapshot.py"
-    ]
+    ],
+    "local_packge_extern": ".[dev,bigquery]",
+    "depends_models": {}
 }
