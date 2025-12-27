@@ -61,5 +61,5 @@
         "tests/core/integration/test_plan_options.py"
     ],
     "depends_models": {},
-    "local_packge_extern": ".[dev,bigquery]"
+    "local_packge_extern": ".[bigquery]"
 }

@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-5560.zip?Expires=1766900822&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=gCyfWlguUWdnvpIVweiIr0%2FgfBI%3D",
-    "error_msg": "failed:FAIL_TO_FAIL",
+    "error_msg": "failed:TODO",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/5555",
     "name": "TobikoData__sqlmesh-5560",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/5560",
@@ -164,6 +164,6 @@
     "test_main": [
         "tests/core/integration/test_change_scenarios.py"
     ],
-    "local_packge_extern": ".[dev,bigquery]",
+    "local_packge_extern": ".[bigquery]",
     "depends_models": {}
 }

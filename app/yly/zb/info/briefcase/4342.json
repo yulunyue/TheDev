@@ -8,8 +8,15 @@
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4258",
     "py_name": "",
     "result": {
-        "old_detail": {},
-        "new_detail": {},
+        "old_detail": {
+            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_context.py::test_project_config_person_config_overrides",
+            "ModuleNotFoundError: No module named 'agate'": " tests/core/test_context.py::test_plan_enable_preview_default",
+            "AssertionError: assert None is False\n +  where Non....re.context.Context object at 0x7ccb140c9a60>.audit": " tests/core/test_context.py::test_audit"
+        },
+        "new_detail": {
+            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_context.py::test_project_config_person_config_overrides",
+            "ModuleNotFoundError: No module named 'agate'": " tests/core/test_context.py::test_plan_enable_preview_default"
+        },
         "test": {
             "tests/core/test_context.py::test_global_config": "passed",
             "tests/core/test_context.py::test_named_config": "passed",
@@ -192,5 +199,9 @@
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=4342&businessType=WORK",
     "test_main": [
         "tests/core/test_context.py"
-    ]
+    ],
+    "depends_models": {
+        "agate": "agate==1.7.1 snowflake-connector-python[pandas,secure-local-storage]"
+    },
+    "local_packge_extern": ""
 }

@@ -93,14 +93,11 @@ class ZbMangae(ToolBase):
             info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
             ret[key].append(info)
 
-        def tmp(v):
-            return sum(v["code_ct"].values()) + sum(v["test_ct"].values())
-
         msgs = []
         task_num = 0
         for k, tasks in ret.items():
             msgs.append(f"\n----{k} {len(tasks)}----")
-            for t in sorted(tasks, key=tmp):
+            for t in tasks:
                 msgs.append(str(t))
             msgs.append("--------------")
             task_num += len(tasks)
@@ -109,15 +106,17 @@ class ZbMangae(ToolBase):
         self.logger.info(task_num)
 
     def main(self):
+        tasks = []
         for f in query_task(self.repo, self.key):
             f.check()
             if f.can_submit():
                 continue
+            f.set_error_msg(CS.FAILED, "TODO")
+            tasks.append(f)
+        for f in tasks:
             t = dol(f) if GC.zb_docker_env.get_value() else SelfTask()
             t.build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
-            if self.key == "one":
-                break
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
     def test(self):

@@ -8,8 +8,15 @@
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4341",
     "py_name": "",
     "result": {
-        "old_detail": {},
-        "new_detail": {},
+        "old_detail": {
+            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_context.py::test_project_config_person_config_overrides",
+            "ModuleNotFoundError: No module named 'agate'": " tests/core/test_context.py::test_plan_enable_preview_default tests/core/test_integration.py::test_dbt_select_star_is_directly_modified tests/core/test_integration.py::test_model_attr tests/core/test_integration.py::test_dbt_requirements tests/core/test_integration.py::test_dbt_dialect_with_normalization_strategy tests/core/test_integration.py::test_model_add[sushi_dbt_context] tests/core/test_integration.py::test_model_add[sushi_test_dbt_context] tests/core/test_integration.py::test_multi_dbt tests/core/test_integration.py::test_multi_hybrid",
+            "Failed: DID NOT RAISE <class 'sqlmesh.utils.errors.PlanError'>": " tests/core/test_integration.py::test_audits_running_on_metadata_changes"
+        },
+        "new_detail": {
+            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_context.py::test_project_config_person_config_overrides",
+            "ModuleNotFoundError: No module named 'agate'": " tests/core/test_context.py::test_plan_enable_preview_default tests/core/test_integration.py::test_dbt_select_star_is_directly_modified tests/core/test_integration.py::test_model_attr tests/core/test_integration.py::test_dbt_requirements tests/core/test_integration.py::test_dbt_dialect_with_normalization_strategy tests/core/test_integration.py::test_model_add[sushi_dbt_context] tests/core/test_integration.py::test_model_add[sushi_test_dbt_context] tests/core/test_integration.py::test_multi_dbt tests/core/test_integration.py::test_multi_hybrid"
+        },
         "test": {
             "tests/core/test_context.py::test_global_config": "passed",
             "tests/core/test_context.py::test_named_config": "passed",
@@ -553,5 +560,9 @@
     "test_main": [
         "tests/core/test_context.py",
         "tests/core/test_integration.py"
-    ]
+    ],
+    "depends_models": {
+        "agate": "agate==1.7.1"
+    },
+    "local_packge_extern": ""
 }

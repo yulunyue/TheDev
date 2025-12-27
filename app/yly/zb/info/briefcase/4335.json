@@ -8,8 +8,15 @@
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/3991",
     "py_name": "",
     "result": {
-        "old_detail": {},
-        "new_detail": {},
+        "old_detail": {
+            "assert 'SELECT * FRO...NULL AND TRUE' == 'SELECT *....+++++                                  +++++++++++": " tests/core/test_audit.py::test_audit_query_normalization",
+            "ModuleNotFoundError: No module named 'google'": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by",
+            "AssertionError: assert 'SELECT COUNT...RUE) AS aud....                                       +++++++++++": " tests/core/test_snapshot_evaluator.py::test_audit_wap",
+            "assert 'SELECT COUNT...> 1) AS audit' == 'SELECT C....                                       +++++++++++": " tests/core/test_snapshot_evaluator.py::test_audit_with_datetime_macros"
+        },
+        "new_detail": {
+            "ModuleNotFoundError: No module named 'google'": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by"
+        },
         "test": {
             "tests/core/test_audit.py::test_load": "passed",
             "tests/core/test_audit.py::test_load_standalone": "passed",
@@ -449,5 +456,7 @@
     "test_main": [
         "tests/core/test_audit.py",
         "tests/core/test_snapshot_evaluator.py"
-    ]
+    ],
+    "depends_models": {},
+    "local_packge_extern": ".[bigquery]"
 }

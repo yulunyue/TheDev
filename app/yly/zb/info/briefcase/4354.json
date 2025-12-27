@@ -8,8 +8,12 @@
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4814",
     "py_name": "",
     "result": {
-        "old_detail": {},
-        "new_detail": {},
+        "old_detail": {
+            "ImportError while importing test module '/testbed/....E   ModuleNotFoundError: No module named 'pyspark'": " tests/core/engine_adapter/test_spark.py"
+        },
+        "new_detail": {
+            "ImportError while importing test module '/testbed/....E   ModuleNotFoundError: No module named 'pyspark'": " tests/core/engine_adapter/test_spark.py"
+        },
         "test": {},
         "code": {},
         "FAIL_TO_FAIL": [],
@@ -26,5 +30,7 @@
         "tests/core/test_integration.py",
         "tests/core/test_model.py",
         "tests/core/test_snapshot_evaluator.py"
-    ]
+    ],
+    "depends_models": {},
+    "local_packge_extern": ""
 }

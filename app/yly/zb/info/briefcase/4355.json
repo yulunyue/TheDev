@@ -22,5 +22,7 @@
         "tests/core/test_model.py",
         "tests/core/test_snapshot_evaluator.py",
         "tests/dbt/test_config.py"
-    ]
+    ],
+    "depends_models": {},
+    "local_packge_extern": ""
 }

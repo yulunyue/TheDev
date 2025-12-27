@@ -48,10 +48,8 @@ class DockerTask(ZbTask):
         ]
         for f in result_files:
             self.input_dir.child(f).remove()
-        self.apply_code()
         if not self.docker_build():
             return
-
         self.local_cfg.py_test_result_json.remove()
         status, msg = self.dock_util.run(
             ";".join(

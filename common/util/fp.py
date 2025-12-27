@@ -177,7 +177,9 @@ class File:
             return True
         return os.path.exists(self.path)
 
-    def list_dir(self, depth=1, with_dir=False, filter=None) -> List["File"]:
+    def list_dir(
+        self, depth=1, with_dir=False, filter=None, sort_func=None
+    ) -> List["File"]:
         if depth == 0:
             return []
         ret = []
@@ -194,6 +196,8 @@ class File:
                 ret.extend(f.list_dir(depth - 1, with_dir=with_dir, filter=filter))
             else:
                 append(f)
+        if sort_func:
+            ret = sorted(ret, key=sort_func)
         return ret
 
     def list_tree_file(self):
