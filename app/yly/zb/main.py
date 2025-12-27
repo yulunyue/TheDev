@@ -169,7 +169,7 @@ class ZbMangae(ToolBase):
             owner, task_id, repo, pr = get_info_by_name(f.read_file()["name"])
             f.move_to(REPO_DIR.child(f"{repo}/3.9_default/{pr}.json"))
             i += 1
-            if i >= 20:
+            if i >= 40:
                 break
 
 
