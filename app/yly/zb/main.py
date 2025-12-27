@@ -14,6 +14,7 @@ from .model.export import (
     TASK_DIR,
     get_info_by_name,
     INFO_DIR,
+    REPO_DIR,
     TaskCfg,
     task_cfg,
     query_task,
@@ -163,9 +164,13 @@ class ZbMangae(ToolBase):
                 f.save()
 
     def dev(self):
-        for f in INFO_DIR.list_dir():
+        i = 0
+        for f in INFO_DIR.child("briefcase").list_dir():
             owner, task_id, repo, pr = get_info_by_name(f.read_file()["name"])
-            f.copy_to()
+            f.move_to(REPO_DIR.child(f"{repo}/3.9_default/{pr}.json"))
+            i += 1
+            if i >= 20:
+                break
 
 
 if __name__ == "__main__":

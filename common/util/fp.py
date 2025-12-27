@@ -122,6 +122,10 @@ class File:
             raise Exception(self)
         return dst
 
+    def move_to(self, dst):
+        self.copy_to(dst)
+        self.remove()
+
     def read_file(self, encoding="utf-8"):
         data = self.read_data()
         if self.is_json_file():
