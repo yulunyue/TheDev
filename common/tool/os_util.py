@@ -20,7 +20,7 @@ class OsUtil:
     def logger(self):
         if self._logger is None:
             self._logger: TheDevLoger = get_dev_log(
-                f"os/{self.fun_name.split('/').pop()}"
+                f"data/log/os/{self.fun_name.split('/').pop()}"
             )  # 用TheDev 主要是方便writer 重定向
         return self._logger
 

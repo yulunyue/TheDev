@@ -30,11 +30,13 @@ from .tool.task_self import SelfTask
 from .tool.task_base import ZbTask
 
 
-def dol(f: TaskCfg, docker_image_name) -> DockerTask:
+def dol(f: TaskCfg, docker_name=None) -> DockerTask:
+    if docker_name is not None:
+        f.docker_image_name = docker_name
     return DockerTask().set_env(
-        docker_image_name,
+        f.docker_image_name,
         GC.zb_docker_env.get_value(),
-        f.input_dir.child(f"docker_{docker_image_name}.log").path,
+        f.input_dir.child(f"docker_{f.docker_image_name}.log").path,
     )
 
 
@@ -42,12 +44,10 @@ class ZbMangae(ToolBase):
     def prepare(self, key):
         self.key = key
 
-    def docker(self, name, env_name):
+    def docker(self, name, docker_name=None) -> DockerTask:
         t = query_one(name)
-        return dol(t, env_name).build(t).load()
 
-    def zb(self):
-        return self.task(ZbTask())
+        return dol(t, docker_name).build(t).load()
 
     def submit(self):
         from .auto import WebTool
@@ -80,30 +80,24 @@ class ZbMangae(ToolBase):
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]
-            if (
-                t.local_packge_extern.get_value()
-                or t.depends_models.get_value()
-                and not t.can_submit()
-            ):
-                s2 = (
-                    f"{t.local_packge_extern.get_value()}{t.depends_models.get_value()}"
-                )
-                logger.map(t2=t.resource, s2=s2)
-            info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
+            info = dict(
+                id=t.id, test_ct=test_ct, code_ct=code_ct, pr=[t.repo, int(t.pr)]
+            )
             ret[key].append(info)
 
         task_num = 0
         l = get_dev_log("data/log/zb_task_view.log")
         for k, tasks in ret.items():
             l.info(f"\n----{k} {len(tasks)}----")
-            for t in tasks:
+            for t in sorted(tasks, key=lambda v: v["pr"]):
+                t.pop("pr")
                 l.info(str(t))
             l.info("--------------")
             task_num += len(tasks)
         self.logger.info(task_num)
 
     def run_all(self):
-        tasks = []
+        tasks: List[TaskCfg] = []
         for f in query_task(self.key):
             f.check()
             if f.can_submit():
@@ -116,14 +110,17 @@ class ZbMangae(ToolBase):
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
-    def run_one(self):
-        self.docker(self.key).run()
+    def dev(self):
+        self.docker(self.key, "3.9_dev").run()
+
+    def dev1(self):
+        self.docker(self.key, "3.9_dev1").run()
 
     def test(self):
-        self.docker().apply_test().save()
+        ZbTask().build(query_one(self.key)).load().apply_test().save()
 
     def code(self):
-        self.docker().apply_code().save()
+        ZbTask().build(query_one(self.key)).apply_code().save()
 
     def verify(self):
         t = query_one(self.repo, self.key)
@@ -156,7 +153,7 @@ class ZbMangae(ToolBase):
         )
 
     def search_log(self, search_key='pip install "sqlmesh[bigquery]"'):
-        for f in query_task(self.repo, self.key):
+        for f in query_task(self.key):
             test_log = f.input_dir.child("test.log")
             if not test_log.exists():
                 continue
@@ -165,11 +162,6 @@ class ZbMangae(ToolBase):
                 logger.info(f.resource)
                 f.local_packge_extern.set_value(".[dev,bigquery]")
                 f.save()
-
-    def dev(self):
-        i = 0
-        for f in query_task(self.repo, self.key):
-            pass
 
 
 if __name__ == "__main__":

@@ -188,9 +188,6 @@ class ZbTask:
         )
 
     def make_setup_env_sh(self):
-        # local_env_file = REPO_DIR.child(
-        #     f"{self.repo}/{self.local_cfg.py_env}/setup_env.sh"
-        # )
         local_env_sh: List[str] = [
             "set -e",
             f"cd {self.local_repo.path}",
@@ -205,30 +202,8 @@ class ZbTask:
                 ]
             )
 
-        pyproject_toml = self.local_repo.child("pyproject.toml")
-        setup_cfg = self.local_repo.child("setup.cfg")
-        setup_py = self.local_repo.child("setup.py")
-        if pyproject_toml.exists():
-            local_env_sh.append(
-                f"pip install -e {self.local_cfg.get_local_packge_extern()}"
-            )
-        elif setup_cfg.exists() or setup_py.exists():
-            local_env_sh.append(f"pip install -e .")
-
-        for k, v in self.local_cfg.depends_models.get_value().items():
-            if not v:
-                v = PIP_MAP[k]
-            if not isinstance(v, list):
-                v = [v]
-            for u in v:
-                local_env_sh.append(f"pip install {u}")
-        extern_files = [
-            self.local_cfg.local_repo_mock_dir,
-            self.local_cfg.local_repo_mock_dir.child(self.local_cfg.task_id),
-        ]
-        for d in extern_files:
-            if d.child("setup_env.sh").exists():
-                local_env_sh.extend(d.child("setup_env.sh").read_line())
+        f = self.local_cfg.env_dir.child("setup_env.sh")
+        local_env_sh.extend(f.read_line())
         local_env_sh.append(
             "pip install pytest pytest-json-report toml debugpy pytest_mock pytest-xdist"
         )
@@ -280,7 +255,6 @@ class ZbTask:
             self.local_cfg.code_patch.f.write_file(code_patch.read_file())
 
     def init(self):
-        self.rest_repo()
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()

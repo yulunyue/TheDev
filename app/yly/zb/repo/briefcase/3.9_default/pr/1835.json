@@ -20,5 +20,7 @@
     "test_main": [
         "tests/platforms/macOS/app/test_signing.py"
     ],
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

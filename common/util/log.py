@@ -34,7 +34,8 @@ DEFAULT_FMT = "".join(
 DEBUG_FMT = "%(message)s"
 
 
-def name_to_path(name):
+def name_to_path(name: str):
+    name = name.replace(":", "_")
     if "/" not in name:
         path = LOG_DIR + "/" + name
     else:

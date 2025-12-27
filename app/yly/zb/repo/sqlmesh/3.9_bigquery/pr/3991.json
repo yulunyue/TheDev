@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-3991.zip?Expires=1766900740&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=vgxHlCybLFT32a7dIm3uMqRffBw%3D",
-    "error_msg": "failed:FAIL_TO_FAIL",
+    "error_msg": "success:",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/3990",
     "name": "TobikoData__sqlmesh-3991",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/3991",
@@ -10,13 +10,10 @@
     "result": {
         "old_detail": {
             "assert 'SELECT * FRO...NULL AND TRUE' == 'SELECT *....+++++                                  +++++++++++": " tests/core/test_audit.py::test_audit_query_normalization",
-            "ModuleNotFoundError: No module named 'google'": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by",
             "AssertionError: assert 'SELECT COUNT...RUE) AS aud....                                       +++++++++++": " tests/core/test_snapshot_evaluator.py::test_audit_wap",
             "assert 'SELECT COUNT...> 1) AS audit' == 'SELECT C....                                       +++++++++++": " tests/core/test_snapshot_evaluator.py::test_audit_with_datetime_macros"
         },
-        "new_detail": {
-            "ModuleNotFoundError: No module named 'google'": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by"
-        },
+        "new_detail": {},
         "test": {
             "tests/core/test_audit.py::test_load": "passed",
             "tests/core/test_audit.py::test_load_standalone": "passed",
@@ -66,7 +63,7 @@
             "tests/core/test_snapshot_evaluator.py::test_cleanup_external_model": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[True]": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[False]": "passed",
-            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by": "failed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_execution_time_macro": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_incremental_unmanaged_with_intervals[False]": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_incremental_unmanaged_with_intervals[True]": "passed",
@@ -209,7 +206,7 @@
             "tests/core/test_snapshot_evaluator.py::test_cleanup_external_model": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[True]": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[False]": "passed",
-            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by": "failed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_execution_time_macro": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_incremental_unmanaged_with_intervals[False]": "passed",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_incremental_unmanaged_with_intervals[True]": "passed",
@@ -303,9 +300,7 @@
             "tests/core/test_snapshot_evaluator.py::test_multiple_engine_cleanup": "passed",
             "tests/core/test_snapshot_evaluator.py::test_multi_engine_python_model_with_macros": "passed"
         },
-        "FAIL_TO_FAIL": [
-            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by"
-        ],
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
             "tests/core/test_audit.py::test_audit_query_normalization",
@@ -421,6 +416,7 @@
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[False]",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[True]",
             "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_execution_time_macro",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by",
             "tests/core/test_snapshot_evaluator.py::test_forward_only_snapshot_for_added_model",
             "tests/core/test_snapshot_evaluator.py::test_insert_into_scd_type_2_by_column[intervals0-False]",
             "tests/core/test_snapshot_evaluator.py::test_insert_into_scd_type_2_by_column[intervals1-True]",

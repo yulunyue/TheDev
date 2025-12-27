@@ -58,7 +58,7 @@ class TaskCfg(ConfigBase):
 
     @property
     def id(self):
-        return f"{self.task_id}_{self.name.get_value()}"
+        return f"{self.name.get_value()}_{self.task_id}"
 
     @property
     def zip_file(self):
@@ -84,6 +84,7 @@ class TaskCfg(ConfigBase):
         self.input_dir = TASK_DIR.child(self.repo).child(self.task_id)
         self.cg = Cg(self.task_id).set_resource(self.cg_file)
         self.local_repo_mock_dir = REPO_DIR.child(self.repo)
+        self.env_dir = self.local_repo_mock_dir.child(self.env_name)
         self.global_confg: RepoCg = RepoCg.new(
             self.repo, self.local_repo_mock_dir.child("config.json")
         )

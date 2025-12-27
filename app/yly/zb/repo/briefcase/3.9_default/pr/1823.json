@@ -20,5 +20,7 @@
     "test_main": [
         ""
     ],
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }
