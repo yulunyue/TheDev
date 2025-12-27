@@ -155,6 +155,6 @@
     "test_main": [
         "tests/core/test_config.py"
     ],
-    "local_packge_extern": ".[dev,bigquery]",
+    "local_packge_extern": ".[bigquery]",
     "depends_models": {}
 }
