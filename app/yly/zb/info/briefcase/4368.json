@@ -2,14 +2,19 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-5337.zip?Expires=1766900816&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=PtUxrp5uNrcURLP2FZYzKjyMp8A%3D",
-    "error_msg": "failed:TODO",
+    "error_msg": "failed:FAIL_TO_FAIL",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/5331",
     "name": "TobikoData__sqlmesh-5337",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/5337",
     "py_name": "",
     "result": {
-        "old_detail": {},
-        "new_detail": {},
+        "old_detail": {
+            "AssertionError: assert 2 == 1\n +  where 2 = <Mock ....259056'> = <Mock id='133224487217184'>.create_view": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[False]",
+            "sqlmesh.core.snapshot.evaluator.SnapshotCreationFa....test_model\": 796338317>\n  No module named 'google'": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by"
+        },
+        "new_detail": {
+            "sqlmesh.core.snapshot.evaluator.SnapshotCreationFa....test_model\": 796338317>\n  No module named 'google'": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by"
+        },
         "test": {
             "tests/core/test_snapshot_evaluator.py::test_evaluate": "passed",
             "tests/core/test_snapshot_evaluator.py::test_runtime_stages": "passed",
@@ -344,8 +349,6 @@
     "test_main": [
         "tests/core/test_snapshot_evaluator.py"
     ],
-    "depends_models": {
-        "google": "google-cloud-bigquery"
-    },
+    "depends_models": {},
     "local_packge_extern": ""
 }

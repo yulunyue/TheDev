@@ -162,6 +162,11 @@ class ZbMangae(ToolBase):
                 f.local_packge_extern.set_value(".[dev,bigquery]")
                 f.save()
 
+    def dev(self):
+        for f in INFO_DIR.list_dir():
+            owner, task_id, repo, pr = get_info_by_name(f.read_file()["name"])
+            f.copy_to()
+
 
 if __name__ == "__main__":
     ZbMangae().run()
