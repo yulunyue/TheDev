@@ -7,7 +7,6 @@ from .util import (
     get_info_by_name,
     TASK_DIR,
     CS,
-    INFO_DIR,
     REPO_DIR,
     Cg,
     TARGETS,
@@ -182,28 +181,29 @@ class TaskCfg(ConfigBase):
         return ret
 
 
-JOB_MAP = {"sqlmesh": "briefcase"}
-
-
-def task_cfg(job, task_id):
-    f = INFO_DIR.child(JOB_MAP.get(job, job)).child(f"{task_id}.json")
-    r = TaskCfg(task_id).set_resource(f)
+def task_cfg(f: File):
+    name = f
+    if isinstance(f, File):
+        name = f.path
+    r = TaskCfg(name).set_resource(f)
     return r
 
 
-def query_one(job, key):
-    return task_cfg(job, key).load()
+def query_one(key):
+    ret = query_task(key)
+    if len(ret) == 1:
+        return ret[0]
+    raise Exception(ret)
 
 
-def query_task(job2, key):
-    job = JOB_MAP.get(job2, job2)
-    fss = INFO_DIR.child(job).list_dir()
+def query_task(key: str):
+    def ft(f: File):
+        if key == "all" or key in f.path:
+            return True
+
+    fss = REPO_DIR.list_dir(depth=3, filter=ft)
     ret: List[TaskCfg] = []
     for f in fss:
-        c = query_one(job, f.name)
-        if c.repo != job2:
-            continue
-        if key not in {"all", "one"} and key not in c.id:
-            continue
+        c = task_cfg(f)
         ret.append(c)
     return ret

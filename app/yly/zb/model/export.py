@@ -7,7 +7,6 @@ from .task_cfg import (
     query_one,
 )
 from .util import (
-    INFO_DIR,
     get_result,
     CS,
     Cg,

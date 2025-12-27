@@ -38,9 +38,8 @@ def dol(f: TaskCfg, docker_image_name) -> DockerTask:
 
 
 class ZbMangae(ToolBase):
-    def prepare(self, repo, key):
+    def prepare(self, key):
         self.key = key
-        self.repo = repo
 
     def task(self, f: ZbTask):
         return f.build(query_one(self.repo, self.key)).load()
@@ -82,7 +81,7 @@ class ZbMangae(ToolBase):
 
     def view(self):
         ret = defaultdict(list)
-        tasks2 = query_task(self.repo, self.key)
+        tasks2 = query_task(self.key)
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]

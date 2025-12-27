@@ -14,7 +14,6 @@ from common.tool.export import OsUtil, GC
 from common.third_service.git_tool.git_util import GitUtil, Patch
 from ..model.export import (
     INPUTS_DIR,
-    INFO_DIR,
     REPO_BASE,
     Cg,
     task_cfg,
