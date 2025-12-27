@@ -1,6 +1,6 @@
 {
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-5115.zip?Expires=1766900805&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=F%2FeJE0J62i0pwUXPGKlQxv3zETI%3D",
-    "error_msg": "failed:TODO",
+    "error_msg": "failed:CODE_WITH_ERROR",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/1874",
     "name": "TobikoData__sqlmesh-5115",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/5115",

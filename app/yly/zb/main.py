@@ -29,11 +29,11 @@ from .tool.task_self import SelfTask
 from .tool.task_base import ZbTask
 
 
-def dol(f: TaskCfg):
+def dol(f: TaskCfg, docker_image_name) -> DockerTask:
     return DockerTask().set_env(
-        f.docker_image_name,
+        docker_image_name,
         GC.zb_docker_env.get_value(),
-        f.input_dir.child("docker.log").path,
+        f.input_dir.child(f"docker_{docker_image_name}.log").path,
     )
 
 
@@ -45,13 +45,9 @@ class ZbMangae(ToolBase):
     def task(self, f: ZbTask):
         return f.build(query_one(self.repo, self.key)).load()
 
-    _docker: DockerTask = None
-
-    def docker(self):
-        if self._docker is None:
-            t = query_one(self.repo, self.key)
-            self._docker: DockerTask = dol(t).build(t).load()
-        return self._docker
+    def docker(self, name):
+        t = query_one(self.repo, self.key)
+        return dol(t, name).build(t).load()
 
     def local(self):
         return self.task(SelfTask())
@@ -70,7 +66,7 @@ class ZbMangae(ToolBase):
 
     def build(self):
         for f in query_task(self.repo, self.key):
-            d = dol(f).build(f).load()
+            d = dol(f, f.docker_image_name).build(f).load()
             d.docker_build()
             logger.info(f"docker run -it {d.docker_image_name}")
 
@@ -107,7 +103,7 @@ class ZbMangae(ToolBase):
 
     def main(self):
         tasks = []
-        for f in query_task(self.repo, self.key):
+        for f in query_task(self.repo, "all"):
             f.check()
             if f.can_submit():
                 continue
