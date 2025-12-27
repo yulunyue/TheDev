@@ -7,7 +7,22 @@
     "name": "TobikoData__sqlmesh-5559",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/5559",
     "py_name": "",
-    "result": {},
+    "result": {
+        "old_detail": {},
+        "new_detail": {},
+        "test": {},
+        "code": {},
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": []
+    },
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=4370&businessType=WORK",
-    "test_main": []
+    "test_main": [],
+    "depends_models": {
+        "pytest-asyncio": [
+            "pytest-asyncio pytest-rerunfailures"
+        ]
+    },
+    "local_packge_extern": ""
 }

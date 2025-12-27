@@ -2,13 +2,15 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-3687.zip?Expires=1766900715&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=r3Me29quvoXr1uW6ry9%2Fn4dW3rU%3D",
-    "error_msg": "failed:FAIL_TO_FAIL",
+    "error_msg": "success:",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/3640",
     "name": "TobikoData__sqlmesh-3687",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/3687",
     "py_name": "",
     "result": {
-        "old_detail": {},
+        "old_detail": {
+            "AttributeError: 'Attribute' object has no attribute 'id'": " tests/utils/test_metaprogramming.py::test_serialize_env"
+        },
         "new_detail": {},
         "test": {
             "tests/core/engine_adapter/test_trino.py::test_set_current_catalog": "passed",
@@ -26,7 +28,7 @@
             "tests/core/engine_adapter/test_trino.py::test_delta_timestamps": "passed",
             "tests/core/engine_adapter/test_trino.py::test_table_format": "passed",
             "tests/core/engine_adapter/test_trino.py::test_table_location": "passed",
-            "tests/core/engine_adapter/test_trino.py::test_schema_location_mapping": "failed",
+            "tests/core/engine_adapter/test_trino.py::test_schema_location_mapping": "passed",
             "tests/core/engine_adapter/test_trino.py::test_create_schema_sets_location": "passed",
             "tests/utils/test_metaprogramming.py::test_print_exception": "passed",
             "tests/utils/test_metaprogramming.py::test_context_manager": "passed",
@@ -51,7 +53,7 @@
             "tests/core/engine_adapter/test_trino.py::test_delta_timestamps": "passed",
             "tests/core/engine_adapter/test_trino.py::test_table_format": "passed",
             "tests/core/engine_adapter/test_trino.py::test_table_location": "passed",
-            "tests/core/engine_adapter/test_trino.py::test_schema_location_mapping": "failed",
+            "tests/core/engine_adapter/test_trino.py::test_schema_location_mapping": "passed",
             "tests/core/engine_adapter/test_trino.py::test_create_schema_sets_location": "passed",
             "tests/utils/test_metaprogramming.py::test_print_exception": "passed",
             "tests/utils/test_metaprogramming.py::test_context_manager": "passed",
@@ -60,9 +62,7 @@
             "tests/utils/test_metaprogramming.py::test_serialize_env_error": "passed",
             "tests/utils/test_metaprogramming.py::test_serialize_env": "passed"
         },
-        "FAIL_TO_FAIL": [
-            "tests/core/engine_adapter/test_trino.py::test_schema_location_mapping"
-        ],
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
             "tests/utils/test_metaprogramming.py::test_serialize_env"
@@ -81,6 +81,7 @@
             "tests/core/engine_adapter/test_trino.py::test_partitioned_by_iceberg",
             "tests/core/engine_adapter/test_trino.py::test_partitioned_by_iceberg_transforms",
             "tests/core/engine_adapter/test_trino.py::test_partitioned_by_with_multiple_catalogs_same_server",
+            "tests/core/engine_adapter/test_trino.py::test_schema_location_mapping",
             "tests/core/engine_adapter/test_trino.py::test_set_current_catalog",
             "tests/core/engine_adapter/test_trino.py::test_table_format",
             "tests/core/engine_adapter/test_trino.py::test_table_location",
@@ -95,5 +96,9 @@
     "test_main": [
         "tests/core/engine_adapter/test_trino.py",
         "tests/utils/test_metaprogramming.py"
-    ]
+    ],
+    "depends_models": {
+        "trino": "trino"
+    },
+    "local_packge_extern": ""
 }

@@ -164,21 +164,34 @@ def get_result(result_file):
         # print(f"{__file__} FILE_NOT_EXIST {result_file}")
         return result, ct, dict()
 
+    def add_crash(crash_msg, node_id):
+        if not crash_msg:
+            return
+        if len(crash_msg) > 100:
+            crash_msg = crash_msg[:50] + "...." + crash_msg[-50:]
+        crash[crash_msg] = crash.get(crash_msg, "") + " " + node_id
+
     with open(result_file, "r") as f:
         data = json.loads(f.read())
         for item in data.get("tests", []):
-            if item["nodeid"]:
-                result[item["nodeid"]] = item["outcome"]
-                ct[item["outcome"]] = ct.get(item["outcome"], 0) + 1
-                crash_msg = ""
-                if CS.CRASH in item.get("setup", dict()):
-                    crash_msg += item["setup"][CS.CRASH]["message"]
-                elif CS.CRASH in item.get("call", dict()):
-                    crash_msg += item["call"][CS.CRASH]["message"]
-                if crash_msg:
-                    if len(crash_msg) > 100:
-                        crash_msg = crash_msg[:50] + "...." + crash_msg[-50:]
-                    crash[crash_msg] = crash.get(crash_msg, "") + " " + item["nodeid"]
+            if not item["nodeid"]:
+                continue
+            result[item["nodeid"]] = item["outcome"]
+            ct[item["outcome"]] = ct.get(item["outcome"], 0) + 1
+            crash_msg = ""
+            if CS.CRASH in item.get("setup", dict()):
+                crash_msg += item["setup"][CS.CRASH]["message"]
+            elif CS.CRASH in item.get("call", dict()):
+                crash_msg += item["call"][CS.CRASH]["message"]
+            add_crash(crash_msg, item["nodeid"])
+
+        for item in data.get("collectors", []):
+            if not item["nodeid"]:
+                continue
+            crash_msg = ""
+            if "longrepr" in item:
+                crash_msg += item["longrepr"]
+            add_crash(crash_msg, item["nodeid"])
     # os.system(f"rm -rf {result_file}")
     return result, ct, crash
 

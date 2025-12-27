@@ -210,13 +210,17 @@ class ZbTask:
         setup_cfg = self.local_repo.child("setup.cfg")
         setup_py = self.local_repo.child("setup.py")
         if pyproject_toml.exists() or setup_cfg.exists() or setup_py.exists():
-            local_env_sh.append(f"pip install -e .")
+            local_env_sh.append(
+                f"pip install -e {self.local_cfg.get_local_packge_extern()}"
+            )
 
         for k, v in self.local_cfg.depends_models.get_value().items():
             if not v:
                 v = PIP_MAP[k]
-            for name in v:
-                local_env_sh.append(f"pip install {name}")
+            if not isinstance(v, list):
+                v = [v]
+            for u in v:
+                local_env_sh.append(f"pip install {u}")
         extern_files = [
             self.local_cfg.local_repo_mock_dir,
             self.local_cfg.local_repo_mock_dir.child(self.local_cfg.task_id),

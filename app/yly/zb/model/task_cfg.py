@@ -31,6 +31,16 @@ class TaskCfg(ConfigBase):
     down_load_uri = StrModel()
     name = StrModel()
     py_name = StrModel()
+    local_packge_extern = StrModel()
+
+    def get_local_packge_extern(self):
+        value = self.local_packge_extern.get_value()
+        if value:
+            return value
+        value = self.global_confg.local_packge_extern.get_value()
+        if not value:
+            value = "."
+        return value
 
     def can_submit(self):
         err_msg = self.error_msg.get_value()
@@ -75,6 +85,9 @@ class TaskCfg(ConfigBase):
         self.input_dir = TASK_DIR.child(self.repo).child(self.key)
         self.cg = Cg(self.task_id).set_resource(self.cg_file)
         self.local_repo_mock_dir = REPO_DIR.child(self.repo)
+        self.global_confg: RepoCg = RepoCg.new(
+            self.repo, self.local_repo_mock_dir.child("config.json")
+        )
         self.py_version = self.py_name.get_value()
         if self.py_version == "py3" or not self.py_version:
             self.py_version = CS.PY_DEFAULT

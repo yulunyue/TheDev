@@ -113,11 +113,6 @@ class ZbMangae(ToolBase):
             f.check()
             if f.can_submit():
                 continue
-            if self.key in {
-                "one",
-                "all",
-            } and f.error_msg.get_value().startswith(CS.FAILED):
-                continue
             t = dol(f) if GC.zb_docker_env.get_value() else SelfTask()
             t.build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
@@ -127,6 +122,9 @@ class ZbMangae(ToolBase):
 
     def test(self):
         self.docker().apply_test().save()
+
+    def code(self):
+        self.docker().apply_code().save()
 
     def verify(self):
         t = query_one(self.repo, self.key)
@@ -157,6 +155,17 @@ class ZbMangae(ToolBase):
         logger.info(
             f"export ZB_PY_TEST_TYPE=code && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client {CS.RUN_VERIFICATION_PY}"
         )
+
+    def search_log(self, search_key='pip install "sqlmesh[bigquery]"'):
+        for f in query_task(self.repo, self.key):
+            test_log = f.input_dir.child("test.log")
+            if not test_log.exists():
+                continue
+            datas = test_log.read_file()
+            if search_key in datas:
+                logger.info(f.resource)
+                f.local_packge_extern.set_value(".[dev,bigquery]")
+                f.save()
 
 
 if __name__ == "__main__":

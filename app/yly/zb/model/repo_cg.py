@@ -2,4 +2,4 @@ from .util import ConfigBase, StrModel, ListModel, DictModel, NumberModel
 
 
 class RepoCg(ConfigBase):
-    py_name = StrModel()
+    local_packge_extern = StrModel()
