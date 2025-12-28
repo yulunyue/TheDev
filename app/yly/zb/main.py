@@ -92,9 +92,11 @@ class ZbMangae(ToolBase):
             ct[state] += len(tasks)
         self.logger.info(dict(ct))
 
-    def run_all(self):
+    def run_all(self, state=""):
         tasks: List[TaskCfg] = []
-        for f in query_task(self.key):
+        tasks2 = query_task(self.key, state=state)
+        raise Exception(len(tasks2))
+        for f in tasks2:
             f.check()
             if f.can_submit():
                 continue

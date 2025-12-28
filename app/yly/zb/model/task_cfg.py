@@ -88,7 +88,6 @@ class TaskCfg(ConfigBase):
             self.repo, self.local_repo_mock_dir.child("config.json")
         )
         if not self.input_dir.exists():
-            raise Exception(self.input_dir)
             from common.third_util.api import Api
 
             f = Api().download(self.down_load_uri.get_value())
@@ -216,13 +215,14 @@ def get_map():
     return TaskCfg.TASK_CFGS_MAP
 
 
-def query_task(key: str):
+def query_task(key: str, state=None):
     ret: List[TaskCfg] = []
     tasks: List[TaskCfg] = sorted(get_map().values(), key=lambda x: [x.repo, x.pr])
     for v in tasks:
         # logger.info([v.id, key in v.id or key == "all"])
         if key in v.id or key == "all":
-            ret.append(v)
+            if not state or state == v.error_msg.get_value():
+                ret.append(v)
     return ret
 
 
