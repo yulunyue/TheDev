@@ -126,7 +126,7 @@ class TaskCfg(ConfigBase):
         return self
 
     def set_uri(self, current_url, download_url: str, task_id):
-        name = download_url.split("/").pop().split("?")[0]
+        name = download_url.split("/").pop().split("?")[0].split(".zip")[0]
         self.task_id = task_id
         self.owner, _, self.repo, self.pr = get_info_by_name(name)
         self.set_resource(REPO_DIR.child(f"{self.repo}/3.9_default/pr/{self.pr}.json"))
