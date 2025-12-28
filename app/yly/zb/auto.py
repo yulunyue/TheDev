@@ -14,8 +14,8 @@ class WebTool(SeleniumUtil):
 
     def __init__(self, job_id):
         self.job_id = {
-            "zb3": "144a7a09-bbc2-4527-ad1f-8dc27b83e323",
-            "zb4": "21e77e76-372e-49c4-b6f0-edcc35fe0663",
+            "zb4": "144a7a09-bbc2-4527-ad1f-8dc27b83e323",
+            "zb3": "21e77e76-372e-49c4-b6f0-edcc35fe0663",
         }[job_id]
 
     @property

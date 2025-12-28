@@ -217,7 +217,7 @@ def run_py_test(name):
         pytest.main(PY_MAIN_CMD.split(" "))
     else:
         args = py_test_args + PY_MAIN_CMD.split(" ")
-        print(args)
+        print(" ".join(args))
         statu_code, msg, msg1 = run_command(args, cwd=REPO_DIR)
 
     os.system(f"cp {result_file} {name}.json")

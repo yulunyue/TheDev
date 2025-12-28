@@ -169,7 +169,7 @@ class SeleniumUtil:
     def wait_url_contains(self, key):
         self.wait.until(EC.url_contains(key))
 
-    def load(self, dev_port=9255):
+    def load(self, dev_port=9256):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
 
         if dev_port:

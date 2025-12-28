@@ -101,10 +101,12 @@ class ZbMangae(ToolBase):
             f.set_error_msg(CS.FAILED, "TODO")
             tasks.append(f)
         for f in tasks:
-            t = dol(f) if GC.zb_docker_env.get_value() else SelfTask()
-            t.build(f)
+            t = dol(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
+
+    def win(self):
+        SelfTask().build(query_one(self.key)).run()
 
     def dev(self):
         self.docker(self.key, "3.9_dev").run()
@@ -158,6 +160,10 @@ class ZbMangae(ToolBase):
                 logger.info(f.resource)
                 f.local_packge_extern.set_value(".[dev,bigquery]")
                 f.save()
+
+    def files(self):
+        for d in REPO_DIR.list_dir(-1):
+            pass
 
 
 if __name__ == "__main__":

@@ -138,6 +138,8 @@ class ZbTask:
             t.set_error_msg(CS.FAILED, f"CODE_WITH_ERROR")
         elif new_ct.get("failed"):
             t.set_error_msg(CS.FAILED, f"CODE_WITH_FAILED")
+        elif self.__class__.__name__ != "DockerTask":
+            t.set_error_msg(CS.FAILED, f"WINDOWS_ERROR")
         else:
             self.local_cfg.set_error_msg(CS.SUCCESS, "")
         self.save()

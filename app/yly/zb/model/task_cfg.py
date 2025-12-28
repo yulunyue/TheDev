@@ -192,6 +192,9 @@ class TaskCfg(ConfigBase):
             ret[v] = ret.get(v, 0) + 1
         return ret
 
+    def __repr__(self):
+        return self.id
+
 
 def task_cfg(f: File):
     if isinstance(f, File):
@@ -217,6 +220,7 @@ def query_task(key: str):
     ret: List[TaskCfg] = []
     tasks: List[TaskCfg] = sorted(get_map().values(), key=lambda x: [x.repo, x.pr])
     for v in tasks:
+        # logger.info([v.id, key in v.id or key == "all"])
         if key in v.id or key == "all":
             ret.append(v)
     return ret
