@@ -34,7 +34,8 @@ DEFAULT_FMT = "".join(
 DEBUG_FMT = "%(message)s"
 
 
-def name_to_path(name):
+def name_to_path(name: str):
+    name = name.replace(":", "_")
     if "/" not in name:
         path = LOG_DIR + "/" + name
     else:
@@ -61,7 +62,7 @@ class Logger(logging.Logger):
         self.path = name_to_path(name)
 
         self.fp = File(self.path).make_dir_if_not_exist()
-        self.add_file_hander(fmt, mode)
+        # self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def run_capture_error(self, f, *args, captures="", **kw):
@@ -93,7 +94,7 @@ class Logger(logging.Logger):
         return "\n".join([str(v) for v in ret])
 
     def map(self, indent=" ", **kw):
-        self.debug(dict_to_str(kw, indent=indent), stacklevel=2)
+        self.info(dict_to_str(kw, indent=indent), stacklevel=2)
 
     def debug(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
@@ -133,8 +134,15 @@ class Logger(logging.Logger):
 
 class TheDevLoger:
     def __init__(self, name, *args, **kw):
-        self.fp = File(name_to_path(name)).write_file("")
-        logger.info(self.fp.path, stacklevel=3)
+        self.name = name
+        self._fp = None
+
+    @property
+    def fp(self):
+        if self._fp is None:
+            self._fp = File(name_to_path(self.name)).write_file("")
+            logger.info(self.fp.path, stacklevel=3)
+        return self._fp
 
     def get_writer(self):
         return self.fp.get_writer()
@@ -168,7 +176,6 @@ def get_log(name="", fmt=None, mode="w") -> Logger:
     if name not in LOG_MAP:
         l = Logger(name, fmt, mode=mode)
         LOG_MAP[name] = l
-        l.info(l.path, stacklevel=2)
     return LOG_MAP[name]
 
 

@@ -2,14 +2,23 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-4600.zip?Expires=1766900774&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=AZUhuzPjhByCF9miQHRJpvdDnpE%3D",
-    "error_msg": "failed:DOCKER_BUILD_FAILED",
+    "error_msg": "failed:FAIL_TO_FAIL",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/4590",
     "name": "TobikoData__sqlmesh-4600",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4600",
     "py_name": "",
     "result": {
-        "old_detail": {},
-        "new_detail": {},
+        "old_detail": {
+            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_connection_config.py::test_snowflake tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None] tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_passphrase_path-snowflake_key_passphrase_pem-snowflake_key_passphrase_b64-snowflake_key_passphrase_bytes-insecure] tests/core/test_connection_config.py::test_validator",
+            "sqlmesh.utils.errors.ConfigError: Failed to import....Verify your config.yaml and environment variables.": " tests/core/test_connection_config.py::test_trino tests/core/test_connection_config.py::test_postgres tests/core/test_connection_config.py::test_clickhouse tests/core/test_connection_config.py::test_athena tests/core/test_connection_config.py::test_athena_catalog tests/core/test_connection_config.py::test_databricks",
+            "AssertionError: Regex pattern did not match.\n Rege....erify your config.yaml and environment variables.'": " tests/core/test_connection_config.py::test_trino_schema_location_mapping tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup tests/core/test_connection_config.py::test_athena_s3_locations_valid",
+            "pydantic_core._pydantic_core.ValidationError: 2 va....https://errors.pydantic.dev/2.12/v/extra_forbidden": " tests/core/test_connection_config.py::test_duckdb_attach_ducklake_catalog"
+        },
+        "new_detail": {
+            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_connection_config.py::test_snowflake tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None] tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_passphrase_path-snowflake_key_passphrase_pem-snowflake_key_passphrase_b64-snowflake_key_passphrase_bytes-insecure] tests/core/test_connection_config.py::test_validator",
+            "sqlmesh.utils.errors.ConfigError: Failed to import....Verify your config.yaml and environment variables.": " tests/core/test_connection_config.py::test_trino tests/core/test_connection_config.py::test_postgres tests/core/test_connection_config.py::test_clickhouse tests/core/test_connection_config.py::test_athena tests/core/test_connection_config.py::test_athena_catalog tests/core/test_connection_config.py::test_databricks",
+            "AssertionError: Regex pattern did not match.\n Rege....erify your config.yaml and environment variables.'": " tests/core/test_connection_config.py::test_trino_schema_location_mapping tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup tests/core/test_connection_config.py::test_athena_s3_locations_valid"
+        },
         "test": {
             "tests/core/test_connection_config.py::test_snowflake": "failed",
             "tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None]": "failed",
@@ -37,7 +46,7 @@
             "tests/core/test_connection_config.py::test_duckdb_multithreaded_connection_factory": "passed",
             "tests/core/test_connection_config.py::test_motherduck_token_mask": "passed",
             "tests/core/test_connection_config.py::test_bigquery": "passed",
-            "tests/core/test_connection_config.py::test_bigquery_config_json_string": "failed",
+            "tests/core/test_connection_config.py::test_bigquery_config_json_string": "passed",
             "tests/core/test_connection_config.py::test_postgres": "failed",
             "tests/core/test_connection_config.py::test_gcp_postgres": "passed",
             "tests/core/test_connection_config.py::test_mysql": "passed",
@@ -76,7 +85,7 @@
             "tests/core/test_connection_config.py::test_duckdb_multithreaded_connection_factory": "passed",
             "tests/core/test_connection_config.py::test_motherduck_token_mask": "passed",
             "tests/core/test_connection_config.py::test_bigquery": "passed",
-            "tests/core/test_connection_config.py::test_bigquery_config_json_string": "failed",
+            "tests/core/test_connection_config.py::test_bigquery_config_json_string": "passed",
             "tests/core/test_connection_config.py::test_postgres": "failed",
             "tests/core/test_connection_config.py::test_gcp_postgres": "passed",
             "tests/core/test_connection_config.py::test_mysql": "passed",
@@ -93,7 +102,6 @@
             "tests/core/test_connection_config.py::test_athena_catalog",
             "tests/core/test_connection_config.py::test_athena_s3_locations_valid",
             "tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup",
-            "tests/core/test_connection_config.py::test_bigquery_config_json_string",
             "tests/core/test_connection_config.py::test_clickhouse",
             "tests/core/test_connection_config.py::test_databricks",
             "tests/core/test_connection_config.py::test_postgres",
@@ -110,6 +118,7 @@
         ],
         "PASS_TO_PASS": [
             "tests/core/test_connection_config.py::test_bigquery",
+            "tests/core/test_connection_config.py::test_bigquery_config_json_string",
             "tests/core/test_connection_config.py::test_duckdb",
             "tests/core/test_connection_config.py::test_duckdb_attach_catalog",
             "tests/core/test_connection_config.py::test_duckdb_attach_options",

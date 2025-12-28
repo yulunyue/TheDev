@@ -24,5 +24,7 @@
         "tests/commands/new/test_build_context.py",
         "tests/config/test_AppConfig.py"
     ],
-    "docker_image_name": "briefcase:v1724"
+    "docker_image_name": "briefcase:v1724",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

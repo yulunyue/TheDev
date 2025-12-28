@@ -9,7 +9,7 @@
     "py_name": "",
     "result": {
         "old_detail": {
-            "AssertionError: assert 2 == 1\n +  where 2 = <Mock ....259056'> = <Mock id='133224487217184'>.create_view": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[False]",
+            "AssertionError: assert 2 == 1\n +  where 2 = <Mock ....096192'> = <Mock id='128855852176624'>.create_view": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[False]",
             "sqlmesh.core.snapshot.evaluator.SnapshotCreationFa....test_model\": 796338317>\n  No module named 'google'": " tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_partitioned_by_cluster_by"
         },
         "new_detail": {

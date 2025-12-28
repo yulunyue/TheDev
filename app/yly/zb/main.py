@@ -7,6 +7,7 @@ from common.util.export import (
     List,
     defaultdict,
     Module,
+    get_dev_log,
 )
 from common.tool.export import OsUtil, GC
 from .model.export import (
@@ -29,11 +30,13 @@ from .tool.task_self import SelfTask
 from .tool.task_base import ZbTask
 
 
-def dol(f: TaskCfg, docker_image_name) -> DockerTask:
+def dol(f: TaskCfg, docker_name=None) -> DockerTask:
+    if docker_name is not None:
+        f.docker_image_name = docker_name
     return DockerTask().set_env(
-        docker_image_name,
+        f.docker_image_name,
         GC.zb_docker_env.get_value(),
-        f.input_dir.child(f"docker_{docker_image_name}.log").path,
+        f.input_dir.child(f"docker_{f.docker_image_name}.log").path,
     )
 
 
@@ -41,18 +44,10 @@ class ZbMangae(ToolBase):
     def prepare(self, key):
         self.key = key
 
-    def task(self, f: ZbTask):
-        return f.build(query_one(self.repo, self.key)).load()
+    def docker(self, name, docker_name=None) -> DockerTask:
+        t = query_one(name)
 
-    def docker(self, name):
-        t = query_one(self.repo, self.key)
-        return dol(t, name).build(t).load()
-
-    def local(self):
-        return self.task(SelfTask())
-
-    def zb(self):
-        return self.task(ZbTask())
+        return dol(t, docker_name).build(t).load()
 
     def submit(self):
         from .auto import WebTool
@@ -64,7 +59,7 @@ class ZbMangae(ToolBase):
             w.submit(query_one(self.repo, self.key))
 
     def build(self):
-        for f in query_task(self.repo, self.key):
+        for f in query_task(self.key):
             d = dol(f, f.docker_image_name).build(f).load()
             d.docker_build()
             logger.info(f"docker run -it {d.docker_image_name}")
@@ -76,7 +71,7 @@ class ZbMangae(ToolBase):
         :param self: Description
         需要明确clear的意义和目的
         """
-        for t in query_task(self.repo, self.key):
+        for t in query_task(self.key):
             t.set_error_msg(CS.FAILED, "unknow")
 
     def view(self):
@@ -85,24 +80,25 @@ class ZbMangae(ToolBase):
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]
-            info = dict(id=t.id, test_ct=test_ct, code_ct=code_ct)
+            info = dict(
+                id=t.id, test_ct=test_ct, code_ct=code_ct, pr=[t.repo, int(t.pr)]
+            )
             ret[key].append(info)
 
-        msgs = []
         task_num = 0
+        l = get_dev_log("data/log/zb_task_view.log")
         for k, tasks in ret.items():
-            msgs.append(f"\n----{k} {len(tasks)}----")
-            for t in tasks:
-                msgs.append(str(t))
-            msgs.append("--------------")
+            l.info(f"\n----{k} {len(tasks)}----")
+            for t in sorted(tasks, key=lambda v: v["pr"]):
+                t.pop("pr")
+                l.info(str(t))
+            l.info("--------------")
             task_num += len(tasks)
-        task_view_flie = File("log/zb_task_view.log").write_file("\n".join(msgs))
-        self.logger.info(task_view_flie)
         self.logger.info(task_num)
 
-    def main(self):
-        tasks = []
-        for f in query_task(self.repo, "all"):
+    def run_all(self):
+        tasks: List[TaskCfg] = []
+        for f in query_task(self.key):
             f.check()
             if f.can_submit():
                 continue
@@ -114,11 +110,17 @@ class ZbMangae(ToolBase):
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
+    def dev(self):
+        self.docker(self.key, "3.9_dev").run()
+
+    def dev1(self):
+        self.docker(self.key, "3.9_dev1").run()
+
     def test(self):
-        self.docker().apply_test().save()
+        ZbTask().build(query_one(self.key)).load().apply_test().save()
 
     def code(self):
-        self.docker().apply_code().save()
+        ZbTask().build(query_one(self.key)).apply_code().save()
 
     def verify(self):
         t = query_one(self.repo, self.key)
@@ -151,7 +153,7 @@ class ZbMangae(ToolBase):
         )
 
     def search_log(self, search_key='pip install "sqlmesh[bigquery]"'):
-        for f in query_task(self.repo, self.key):
+        for f in query_task(self.key):
             test_log = f.input_dir.child("test.log")
             if not test_log.exists():
                 continue
@@ -160,11 +162,6 @@ class ZbMangae(ToolBase):
                 logger.info(f.resource)
                 f.local_packge_extern.set_value(".[dev,bigquery]")
                 f.save()
-
-    def dev(self):
-        i = 0
-        for f in query_task(self.repo, self.key):
-            pass
 
 
 if __name__ == "__main__":

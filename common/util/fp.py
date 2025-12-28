@@ -35,7 +35,7 @@ class File:
             File.FILES[path] = File(path)
             from .log import logger
 
-            logger.info(File.FILES[path])
+            # logger.info(File.FILES[path])
         return File.FILES[path]
 
     def get_param_value(self, p, param):
@@ -158,7 +158,8 @@ class File:
         if self._config is None:
             self._config = dict()
             if self.exists():
-                self._config.update(self.read_file())
+                data = self.read_file()
+                self._config.update(data)
         return self._config
 
     def get(self, *keys, default_value=None):
