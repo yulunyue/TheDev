@@ -2,19 +2,16 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-4552.zip?Expires=1766900769&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=xRu9lUNbGuY%2Fer11X5r5fkD74Ak%3D",
-    "error_msg": "failed:FAIL_TO_FAIL",
+    "error_msg": "failed:WINDOWS_ERROR",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/4550",
     "name": "TobikoData__sqlmesh-4552",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4552",
     "py_name": "",
     "result": {
         "old_detail": {
-            "AssertionError: Regex pattern did not match.\n Rege....ent variables.'\n Input: 'Missing connection type.'": " tests/core/test_config.py::test_load_config_from_env_fails",
-            "sqlmesh.utils.errors.ConfigError: Failed to import....der, or rerun the command with the '--debug' flag.": " tests/core/test_config.py::test_multi_gateway_config tests/core/test_config.py::test_multi_gateway_single_threaded_config tests/core/test_config.py::test_trino_schema_location_mapping_syntax tests/core/test_config.py::test_environment_statements_config"
+            "AssertionError: Regex pattern did not match.\n  Exp....les.'\n  Actual message: 'Missing connection type.'": " tests/core/test_config.py::test_load_config_from_env_fails"
         },
-        "new_detail": {
-            "sqlmesh.utils.errors.ConfigError: Failed to import....Verify your config.yaml and environment variables.": " tests/core/test_config.py::test_multi_gateway_config tests/core/test_config.py::test_multi_gateway_single_threaded_config tests/core/test_config.py::test_trino_schema_location_mapping_syntax tests/core/test_config.py::test_environment_statements_config"
-        },
+        "new_detail": {},
         "test": {
             "tests/core/test_config.py::test_update_with_gateways": "passed",
             "tests/core/test_config.py::test_update_with_users": "passed",
@@ -49,13 +46,13 @@
             "tests/core/test_config.py::test_load_duckdb_attach_config": "passed",
             "tests/core/test_config.py::test_load_model_defaults_audits": "passed",
             "tests/core/test_config.py::test_scheduler_config": "passed",
-            "tests/core/test_config.py::test_multi_gateway_config": "failed",
-            "tests/core/test_config.py::test_multi_gateway_single_threaded_config": "failed",
-            "tests/core/test_config.py::test_trino_schema_location_mapping_syntax": "failed",
+            "tests/core/test_config.py::test_multi_gateway_config": "passed",
+            "tests/core/test_config.py::test_multi_gateway_single_threaded_config": "passed",
+            "tests/core/test_config.py::test_trino_schema_location_mapping_syntax": "passed",
             "tests/core/test_config.py::test_gcp_postgres_ip_and_scopes": "passed",
             "tests/core/test_config.py::test_gateway_model_defaults": "passed",
             "tests/core/test_config.py::test_redshift_merge_flag": "passed",
-            "tests/core/test_config.py::test_environment_statements_config": "failed",
+            "tests/core/test_config.py::test_environment_statements_config": "passed",
             "tests/core/test_config.py::test_pydantic_import_error": "passed",
             "tests/core/test_config.py::test_config_subclassing": "passed",
             "tests/core/test_config.py::test_config_complex_types_supplied_as_json_strings_from_env": "passed"
@@ -94,23 +91,18 @@
             "tests/core/test_config.py::test_load_duckdb_attach_config": "passed",
             "tests/core/test_config.py::test_load_model_defaults_audits": "passed",
             "tests/core/test_config.py::test_scheduler_config": "passed",
-            "tests/core/test_config.py::test_multi_gateway_config": "failed",
-            "tests/core/test_config.py::test_multi_gateway_single_threaded_config": "failed",
-            "tests/core/test_config.py::test_trino_schema_location_mapping_syntax": "failed",
+            "tests/core/test_config.py::test_multi_gateway_config": "passed",
+            "tests/core/test_config.py::test_multi_gateway_single_threaded_config": "passed",
+            "tests/core/test_config.py::test_trino_schema_location_mapping_syntax": "passed",
             "tests/core/test_config.py::test_gcp_postgres_ip_and_scopes": "passed",
             "tests/core/test_config.py::test_gateway_model_defaults": "passed",
             "tests/core/test_config.py::test_redshift_merge_flag": "passed",
-            "tests/core/test_config.py::test_environment_statements_config": "failed",
+            "tests/core/test_config.py::test_environment_statements_config": "passed",
             "tests/core/test_config.py::test_pydantic_import_error": "passed",
             "tests/core/test_config.py::test_config_subclassing": "passed",
             "tests/core/test_config.py::test_config_complex_types_supplied_as_json_strings_from_env": "passed"
         },
-        "FAIL_TO_FAIL": [
-            "tests/core/test_config.py::test_environment_statements_config",
-            "tests/core/test_config.py::test_multi_gateway_config",
-            "tests/core/test_config.py::test_multi_gateway_single_threaded_config",
-            "tests/core/test_config.py::test_trino_schema_location_mapping_syntax"
-        ],
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
             "tests/core/test_config.py::test_load_config_from_env_fails"
@@ -124,6 +116,7 @@
             "tests/core/test_config.py::test_environment_catalog_mapping['^dev$': dev_catalog\\n    '[': other_catalog-expected2-duckdb-`\\\\[` is not a valid regular expression.]",
             "tests/core/test_config.py::test_environment_catalog_mapping['^dev$': dev_catalog\\n    '^other$': other_catalog-expected0-duckdb-]",
             "tests/core/test_config.py::test_environment_catalog_mapping['^prod$': prod_catalog-expected3-snowflake-]",
+            "tests/core/test_config.py::test_environment_statements_config",
             "tests/core/test_config.py::test_gateway_model_defaults",
             "tests/core/test_config.py::test_gcp_postgres_ip_and_scopes",
             "tests/core/test_config.py::test_load_alternative_config_type",
@@ -144,10 +137,13 @@
             "tests/core/test_config.py::test_load_py_config_env_var_gateway_override",
             "tests/core/test_config.py::test_load_python_config_with_personal_config",
             "tests/core/test_config.py::test_load_yaml_config_env_var_gateway_override",
+            "tests/core/test_config.py::test_multi_gateway_config",
+            "tests/core/test_config.py::test_multi_gateway_single_threaded_config",
             "tests/core/test_config.py::test_physical_schema_mapping_mutually_exclusive_with_physical_schema_override",
             "tests/core/test_config.py::test_pydantic_import_error",
             "tests/core/test_config.py::test_redshift_merge_flag",
             "tests/core/test_config.py::test_scheduler_config",
+            "tests/core/test_config.py::test_trino_schema_location_mapping_syntax",
             "tests/core/test_config.py::test_update_with_gateways",
             "tests/core/test_config.py::test_update_with_ignore_patterns",
             "tests/core/test_config.py::test_update_with_model_defaults",

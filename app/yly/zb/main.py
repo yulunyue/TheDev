@@ -95,7 +95,6 @@ class ZbMangae(ToolBase):
     def run_all(self, state=""):
         tasks: List[TaskCfg] = []
         tasks2 = query_task(self.key, state=state)
-        raise Exception(len(tasks2))
         for f in tasks2:
             f.check()
             if f.can_submit():

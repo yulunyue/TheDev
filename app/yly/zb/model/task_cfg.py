@@ -57,7 +57,7 @@ class TaskCfg(ConfigBase):
 
     @property
     def id(self):
-        return f"{self.name.get_value()}_{self.task_id}"
+        return f"{self.env_name}/{self.name.get_value()}_{self.task_id}"
 
     @property
     def zip_file(self):
