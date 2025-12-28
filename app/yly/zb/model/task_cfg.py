@@ -16,8 +16,6 @@ from .repo_cg import RepoCg
 from common.util.export import List, Dict, File, logger
 from common.third_service.git_tool.git_util import GitUtil, Patch
 
-SKIP_INFO = {}
-
 
 class TaskCfg(ConfigBase):
     test_main = ListModel()
@@ -31,6 +29,7 @@ class TaskCfg(ConfigBase):
     name = StrModel()
     py_name = StrModel()
     local_packge_extern = StrModel()
+    TASK_CFGS_MAP: Dict[str, "TaskCfg"] = None
 
     def get_local_packge_extern(self):
         value = self.local_packge_extern.get_value()
@@ -197,13 +196,15 @@ def query_one(key):
 
 
 def query_task(key: str):
-    def ft(f: File):
-        if key == "all" or key in f.path:
-            return True
-
-    fss = REPO_DIR.list_dir(depth=3, filter=ft)
+    if not TaskCfg.TASK_CFGS_MAP:
+        TaskCfg.TASK_CFGS_MAP = dict()
+        fss = REPO_DIR.list_dir(depth=3)
+        for f in fss:
+            if "/pr/" in f.path:
+                t = task_cfg(f)
+                TaskCfg.TASK_CFGS_MAP[t.id] = t
     ret: List[TaskCfg] = []
-    for f in fss:
-        c = task_cfg(f)
-        ret.append(c)
+    for k, v in TaskCfg.TASK_CFGS_MAP.items():
+        if key in k:
+            ret.append(v)
     return ret
