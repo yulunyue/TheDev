@@ -113,13 +113,28 @@ class TaskCfg(ConfigBase):
 
     def zip(self):
         result = self.result.get_value()
-        self.cg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
-        self.cg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
+        if self.error_msg.get_value().startswith(CS.SUCCESS):
+            if not result[CS.PASS_TO_PASS] or not result[CS.FAIL_TO_PASS]:
+                raise Exception(self.id, result)
+            self.cg.PASS_TO_PASS.set_value(result[CS.PASS_TO_PASS])
+            self.cg.FAIL_TO_PASS.set_value(result[CS.FAIL_TO_PASS])
+        self.cg.save()
         self.zip_file.remove()
         self.input_dir.zip(
             self.zip_file.path, TARGETS + [self.name.get_value() + ".json"]
         )
         return self
+
+    def set_uri(self, current_url, download_url: str, task_id):
+        name = download_url.split("/").pop().split("?")[0]
+        self.task_id = task_id
+        self.owner, _, self.repo, self.pr = get_info_by_name(name)
+        self.set_resource(REPO_DIR.child(f"{self.repo}/3.9_default/pr/{self.pr}.json"))
+        self.name.set_value(name)
+        self.submit_url.set_value(current_url)
+        self.down_load_uri.set_value(download_url)
+        self.set_error_msg(CS.FAILED, "TODO")
+        self.save()
 
     def set_error_msg(self, state, msg: str):
         if state not in {CS.SUCCESS, CS.SKIPPED, CS.FAILED}:
@@ -179,30 +194,43 @@ class TaskCfg(ConfigBase):
 
 
 def task_cfg(f: File):
-    name = f
     if isinstance(f, File):
-        name = f.path
-    r = TaskCfg(name).set_resource(f).load()
-    return r
+        return TaskCfg(f.path).set_resource(f).load()
+    return query_one(f)
 
 
-def query_one(key):
-    ret = query_task(key)
-    if len(ret) == 1:
-        return ret[0]
-    raise Exception(ret)
+def get_map():
+    if not TaskCfg.TASK_CFGS_MAP:
+        d: Dict[str, TaskCfg] = dict()
+        fss = REPO_DIR.list_dir(depth=5)
+        for f in fss:
+            if "/pr/" in f.path and f.path.endswith(".json"):
+                t = task_cfg(f)
+                if t.id in d:
+                    raise Exception(t.id)
+                d[t.task_id] = t
+        TaskCfg.TASK_CFGS_MAP = d
+    return TaskCfg.TASK_CFGS_MAP
 
 
 def query_task(key: str):
-    if not TaskCfg.TASK_CFGS_MAP:
-        TaskCfg.TASK_CFGS_MAP = dict()
-        fss = REPO_DIR.list_dir(depth=3)
-        for f in fss:
-            if "/pr/" in f.path:
-                t = task_cfg(f)
-                TaskCfg.TASK_CFGS_MAP[t.id] = t
     ret: List[TaskCfg] = []
-    for k, v in TaskCfg.TASK_CFGS_MAP.items():
-        if key in k:
+    tasks: List[TaskCfg] = sorted(get_map().values(), key=lambda x: [x.repo, x.pr])
+    for v in tasks:
+        if key in v.id or key == "all":
             ret.append(v)
     return ret
+
+
+def query_one(key):
+    res = query_task(key)
+    if len(res) == 1:
+        return res[0]
+    raise Exception(key, res)
+
+
+def new_one(key):
+    m = get_map()
+    if key not in m:
+        m[key] = TaskCfg(key)
+    return m[key]

@@ -8,6 +8,7 @@ from common.util.export import (
     defaultdict,
     Module,
     get_dev_log,
+    Dict,
 )
 from common.tool.export import OsUtil, GC
 from .model.export import (
@@ -52,11 +53,8 @@ class ZbMangae(ToolBase):
     def submit(self):
         from .auto import WebTool
 
-        w = WebTool(self.repo)
-        if self.key == "all":
-            w.run()
-        else:
-            w.submit(query_one(self.repo, self.key))
+        w = WebTool(self.key)
+        w.run()
 
     def build(self):
         for f in query_task(self.key):
@@ -75,26 +73,24 @@ class ZbMangae(ToolBase):
             t.set_error_msg(CS.FAILED, "unknow")
 
     def view(self):
-        ret = defaultdict(list)
+        ret: Dict[str, List[TaskCfg]] = defaultdict(list)
+        ct = defaultdict(int)
         tasks2 = query_task(self.key)
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]
-            info = dict(
-                id=t.id, test_ct=test_ct, code_ct=code_ct, pr=[t.repo, int(t.pr)]
-            )
-            ret[key].append(info)
+            state, msg = key.split(":")
+            ret[state, msg].append(t)
 
-        task_num = 0
-        l = get_dev_log("data/log/zb_task_view.log")
-        for k, tasks in ret.items():
-            l.info(f"\n----{k} {len(tasks)}----")
-            for t in sorted(tasks, key=lambda v: v["pr"]):
-                t.pop("pr")
-                l.info(str(t))
+        for (state, msg), tasks in ret.items():
+            l = get_dev_log(f"data/log/zb/{state}.log")
+            l.info(f"\n----{msg} {len(tasks)}----")
+            for t in tasks:
+                test_ct, code_ct = t.get_result("test"), t.get_result("code")
+                l.info(f"id={t.id}; test_ct={test_ct} code_ct={code_ct}")
             l.info("--------------")
-            task_num += len(tasks)
-        self.logger.info(task_num)
+            ct[state] += len(tasks)
+        self.logger.info(dict(ct))
 
     def run_all(self):
         tasks: List[TaskCfg] = []

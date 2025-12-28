@@ -115,16 +115,3 @@ class OsUtil:
         ret = os.system(cmd)
         if ret:
             self.error(cmd)
-
-    def check_port_with_netstat(self, port):
-        statu, result, stderror = self.check_output("netstat -ano")
-
-        # 查找端口
-        pattern = rf":{port}\s+"
-        for line in result.split("\n"):
-            if re.search(pattern, line):
-                return line.strip()
-        return ""
-
-    def check_port(self, port):
-        return self.check_port_with_netstat(port)

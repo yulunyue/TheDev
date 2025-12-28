@@ -5,6 +5,7 @@ from .task_cfg import (
     query_task,
     get_info_by_name,
     query_one,
+    new_one,
 )
 from .util import (
     get_result,

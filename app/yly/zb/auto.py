@@ -1,7 +1,7 @@
-from common.third_util.selenium_util import SeleniumUtil, By
+from common.third_util.selenium_util import SeleniumUtil, By, WebElement
 from common.util.export import time, logger, File, List
 from common.service.export import Api, API_CONFIG
-from .model.export import task_cfg, TaskCfg, get_info_by_name, TASK_DIR, CS
+from .model.export import new_one, TaskCfg, get_info_by_name, TASK_DIR, CS
 from .tool.task_base import ZbTask
 
 USER_CONFIG = API_CONFIG.get("Zb")
@@ -12,12 +12,11 @@ class WebTool(SeleniumUtil):
     fm = "Ii92My93b3JrZXItam9icy90YXNrcy9pbi1wcm9ncmVzcz9wYWdlSW5kZXg9MSZqb2JOYW1lPSZwYWdlU2l6ZT0xMCI%3D"
     main_uri = "https://ui.appen.com.cn/v3/worker-job"
 
-    def __init__(self, repo):
-        self.repo = repo
+    def __init__(self, job_id):
         self.job_id = {
-            "lbry-sdk": "144a7a09-bbc2-4527-ad1f-8dc27b83e323",
-            "briefcase": "21e77e76-372e-49c4-b6f0-edcc35fe0663",
-        }[repo]
+            "zb3": "144a7a09-bbc2-4527-ad1f-8dc27b83e323",
+            "zb4": "21e77e76-372e-49c4-b6f0-edcc35fe0663",
+        }[job_id]
 
     @property
     def JOB_URL(self):
@@ -45,7 +44,7 @@ class WebTool(SeleniumUtil):
     def submit(self, t: TaskCfg):
         can_submit = t.can_submit()
         if not can_submit:
-            logger.info(f"can_submit {t.zip_file}")
+            logger.info(f"not can submit {t.zip_file}")
             return
         ZbTask().build(t).load().local_cfg.zip()
         logger.info(f"upload {t.zip_file}")
@@ -75,15 +74,31 @@ class WebTool(SeleniumUtil):
         self.get_element_by_xpath(f"//p[contains(text(),'{f.file_name}')]")
         return True
 
-    def parse_job_table(self):
+    def get_tables(self) -> List[WebElement]:
+        tbs = []
         for tr in self.get_elements_by_xpath("//tbody[@class='ant-table-tbody']/tr"):
             if not tr.text:
                 continue
+            tx = tr.text.split(" ")
+            if len(tx) < 4:
+                continue
+            tbs.append(tr)
+        return tbs
+
+    def get_all_tables(self):
+        for _ in range(10):
+            tables = self.get_tables()
+            if tables:
+                return tables
+            time.sleep(1)
+        raise Exception("gg")
+
+    def parse_job_table(self):
+        for tr in self.get_all_tables():
             task_id, data_batch, statu, data_source, rest_time, method, *args = (
                 tr.text.split(" ")
             )
-            t = task_cfg(self.repo, task_id)
-
+            t = new_one(task_id)
             self.to_do_task.append(t)
             if not t.submit_url.get_value():
                 logger.info(
@@ -91,9 +106,9 @@ class WebTool(SeleniumUtil):
                 )
                 tr.find_element(By.TAG_NAME, "button").click()
                 self.switch_to_window()
-                t.submit_url.set_value(self.current_url)
-                t.down_load_uri.set_value(self.get_download_url(self.current_url))
-                t.save()
+                t.set_uri(
+                    self.current_url, self.get_download_url(self.current_url), task_id
+                )
                 self.close_current_window()
                 self.switch_to_window(0)
                 time.sleep(1)

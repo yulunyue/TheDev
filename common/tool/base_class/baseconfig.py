@@ -58,7 +58,11 @@ class ConfigBase:
     def update_param_value(self, param, value):
         return self.resource.update_param_value(self, param, value)
 
+    resource: File = None
+
     def get_param_value(self, param):
+        if self.resource is None:
+            return param.default_value
         return self.resource.get_param_value(self, param)
 
     def update(self, **kw):

@@ -149,7 +149,9 @@ class TheDevLoger:
 
     def write(self, msg):
         w = self.fp.get_writer()
-        w.write(f"{msg}\n")
+        if isinstance(msg, str):
+            msg = msg.encode("utf-8")
+        w.write(msg + b"\n")
         w.flush()
 
     def info(self, msg):

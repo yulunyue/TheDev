@@ -150,7 +150,7 @@ class File:
                 import toml
 
                 return toml.load(self.path)
-        return data.decode(encoding)
+        return data.decode(encoding, errors="replace")
 
     _config = None
 
@@ -249,7 +249,7 @@ class File:
         if self.path in self.WITHE_FILE_HANDER:
             return self.WITHE_FILE_HANDER[self.path]
         self.make_dir_if_not_exist()
-        self.WITHE_FILE_HANDER[self.path] = open(self.path, "w", encoding="utf-8")
+        self.WITHE_FILE_HANDER[self.path] = open(self.path, "wb")
         return self.WITHE_FILE_HANDER[self.path]
 
     def get_bin_writer(self) -> io.TextIOWrapper:

@@ -1,5 +1,5 @@
 from selenium import webdriver
-from common.tool.export import OsUtil, GC
+from common.tool.export import OsUtil, GC, System
 from common.service.export import Api
 from selenium.webdriver.chrome.options import Options
 from common.util.export import File, logger, time, List
@@ -169,7 +169,7 @@ class SeleniumUtil:
     def wait_url_contains(self, key):
         self.wait.until(EC.url_contains(key))
 
-    def load(self, dev_port=9223):
+    def load(self, dev_port=9255):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
 
         if dev_port:
@@ -186,10 +186,9 @@ class SeleniumUtil:
                     f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
                 )
             os_util = OsUtil(chrome_exe.child("chrome-win64/chrome.exe").get_abs_path())
-            # info = os_util.check_port(dev_port)
-            info = True
+            info = System.check_port(dev_port)
             if not info:
-                logger.info(
+                raise Exception(
                     " ".join(
                         [
                             os_util.fun_name,
