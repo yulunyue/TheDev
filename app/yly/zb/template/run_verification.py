@@ -12,6 +12,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 # --- 配置 ---
 # 请在这里设置你的代码仓库的绝对路径
 class CS:
+    ERROR = "error"
     PASSED = "passed"
     SUCCESS = "success"
     FAILURE = "failure"
