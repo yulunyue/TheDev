@@ -1,4 +1,4 @@
-pip install -e .
+pip install -e .[bigquery]
 pip install agate==1.7.1
 pip install snowflake-connector-python[pandas,secure-local-storage]
 pip install dbt-core

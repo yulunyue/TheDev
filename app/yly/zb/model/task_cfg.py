@@ -102,10 +102,12 @@ class TaskCfg(ConfigBase):
         self.local_repo = File(f"{REPO_BASE}/{self.owner}/{self.repo}")
         return self
 
-    def set_env(self, env):
-        if env == self.env_name:
+    def set_env(self, env: str):
+        if env == self.env_name or env is None:
             return self
-
+        py_ver = float(env.split("_")[0])
+        if py_ver < 2.7 or py_ver > 3.99:
+            raise Exception(py_ver, "py_version")
         env_dir = REPO_DIR.child(self.repo).child(env)
         env_names = [
             f.file_name
@@ -242,7 +244,7 @@ def query_task(key: str, state=None):
     for v in tasks:
         # logger.info([v.id, key in v.id or key == "all"])
         if key in v.id or key == "all":
-            if not state or state == v.error_msg.get_value():
+            if not state or state in v.error_msg.get_value():
                 ret.append(v)
     return ret
 

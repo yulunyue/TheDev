@@ -1,0 +1,28 @@
+{
+    "name": "TobikoData__sqlmesh-34",
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27174&businessType=WORK",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-34.zip?Expires=1767778284&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=GBk38hfQXbzfIObCm0fK25guNv8%3D",
+    "error_msg": "failed:TODO",
+    "depends_models": {},
+    "issue_url": "https://github.com/TobikoData/sqlmesh/issues/20",
+    "local_packge_extern": "",
+    "pr_url": "https://github.com/TobikoData/sqlmesh/pull/34",
+    "result": {
+        "old_detail": {
+            "ImportError while importing test module '/testbed/....E   ModuleNotFoundError: No module named 'airflow'": " tests/schedulers/airflow/operators/test_targets.py"
+        },
+        "new_detail": {
+            "ImportError while importing test module '/testbed/....E   ModuleNotFoundError: No module named 'airflow'": " tests/schedulers/airflow/operators/test_targets.py"
+        },
+        "test": {},
+        "code": {},
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": []
+    },
+    "test_main": [
+        "tests/core/test_model.py",
+        "tests/schedulers/airflow/operators/test_targets.py"
+    ]
+}

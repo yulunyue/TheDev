@@ -93,15 +93,15 @@ class ZbMangae(ToolBase):
             ct[state] += len(tasks)
         self.logger.info(dict(ct))
 
-    def run_all(self, state=""):
+    def exec(self, state=""):
         tasks: List[TaskCfg] = []
         tasks2 = query_task(self.key, state=state)
         for f in tasks2:
             f.check()
-            if f.can_submit():
-                continue
-            f.set_error_msg(CS.FAILED, "TODO")
-            tasks.append(f)
+            s, b, *args = f.error_msg.get_value().split(":")
+            if s == CS.FAILED:
+                f.set_error_msg(CS.FAILED, "TODO")
+                tasks.append(f)
         for f in tasks:
             t = dol(f).build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
@@ -156,8 +156,13 @@ class ZbMangae(ToolBase):
             f"python -m debugpy --listen 0.0.0.0:5678 --wait-for-client py_test_main.py"
         )
 
-    def search_log(self):
-        search_key = """E   ModuleNotFoundError: No module named 'agate'"""
+    def log(self, name=None):
+        search_key = """
+E   ModuleNotFoundError: No module named 'fastapi'
+
+""".replace(
+            "\n", ""
+        )
         for f in query_task(self.key):
             test_log = f.input_dir.child("test.log")
             # test_log = f.input_dir.child("docker_sqlmesh_3.9_default.log")
@@ -165,8 +170,8 @@ class ZbMangae(ToolBase):
                 continue
             datas = test_log.read_file()
             if search_key in datas:
+                f.set_env(name)
                 logger.info(f.resource)
-                f.set_env("3.9_agate1")
 
     def files(self):
         for d in REPO_DIR.list_dir(-1):
