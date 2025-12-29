@@ -1,0 +1,75 @@
+{
+    "name": "TobikoData__sqlmesh-736",
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27196&businessType=WORK",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-736.zip?Expires=1767778338&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=8q9RPwLlfUhdz3N%2FMrC62HJHVkc%3D",
+    "error_msg": "success:",
+    "depends_models": {},
+    "issue_url": "https://github.com/TobikoData/sqlmesh/issues/728",
+    "local_packge_extern": "",
+    "pr_url": "https://github.com/TobikoData/sqlmesh/pull/736",
+    "result": {
+        "old_detail": {
+            "pydantic.error_wrappers.ValidationError: 1 validat....xtra fields not permitted (type=value_error.extra)": " tests/core/test_snapshot.py::test_lookback",
+            "AssertionError: assert SnapshotFinge...data_hash='....inge...data_hash='0')\n  \n  Use -v to get more diff": " tests/core/test_snapshot.py::test_fingerprint tests/core/test_snapshot.py::test_fingerprint_seed_model tests/core/test_snapshot.py::test_fingerprint_jinja_macros"
+        },
+        "new_detail": {},
+        "test": {
+            "tests/core/test_snapshot.py::test_json": "passed",
+            "tests/core/test_snapshot.py::test_add_interval": "passed",
+            "tests/core/test_snapshot.py::test_add_interval_dev": "passed",
+            "tests/core/test_snapshot.py::test_missing_intervals": "passed",
+            "tests/core/test_snapshot.py::test_lookback": "failed",
+            "tests/core/test_snapshot.py::test_seed_intervals": "passed",
+            "tests/core/test_snapshot.py::test_remove_intervals": "passed",
+            "tests/core/test_snapshot.py::test_fingerprint": "failed",
+            "tests/core/test_snapshot.py::test_fingerprint_seed_model": "failed",
+            "tests/core/test_snapshot.py::test_fingerprint_jinja_macros": "failed",
+            "tests/core/test_snapshot.py::test_fingerprint_builtin_audits": "passed",
+            "tests/core/test_snapshot.py::test_stamp": "passed",
+            "tests/core/test_snapshot.py::test_table_name": "passed",
+            "tests/core/test_snapshot.py::test_categorize_change_sql": "passed",
+            "tests/core/test_snapshot.py::test_categorize_change_seed": "passed"
+        },
+        "code": {
+            "tests/core/test_snapshot.py::test_json": "passed",
+            "tests/core/test_snapshot.py::test_add_interval": "passed",
+            "tests/core/test_snapshot.py::test_add_interval_dev": "passed",
+            "tests/core/test_snapshot.py::test_missing_intervals": "passed",
+            "tests/core/test_snapshot.py::test_lookback": "passed",
+            "tests/core/test_snapshot.py::test_seed_intervals": "passed",
+            "tests/core/test_snapshot.py::test_remove_intervals": "passed",
+            "tests/core/test_snapshot.py::test_fingerprint": "passed",
+            "tests/core/test_snapshot.py::test_fingerprint_seed_model": "passed",
+            "tests/core/test_snapshot.py::test_fingerprint_jinja_macros": "passed",
+            "tests/core/test_snapshot.py::test_fingerprint_builtin_audits": "passed",
+            "tests/core/test_snapshot.py::test_stamp": "passed",
+            "tests/core/test_snapshot.py::test_table_name": "passed",
+            "tests/core/test_snapshot.py::test_categorize_change_sql": "passed",
+            "tests/core/test_snapshot.py::test_categorize_change_seed": "passed"
+        },
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [
+            "tests/core/test_snapshot.py::test_fingerprint",
+            "tests/core/test_snapshot.py::test_fingerprint_jinja_macros",
+            "tests/core/test_snapshot.py::test_fingerprint_seed_model",
+            "tests/core/test_snapshot.py::test_lookback"
+        ],
+        "PASS_TO_PASS": [
+            "tests/core/test_snapshot.py::test_add_interval",
+            "tests/core/test_snapshot.py::test_add_interval_dev",
+            "tests/core/test_snapshot.py::test_categorize_change_seed",
+            "tests/core/test_snapshot.py::test_categorize_change_sql",
+            "tests/core/test_snapshot.py::test_fingerprint_builtin_audits",
+            "tests/core/test_snapshot.py::test_json",
+            "tests/core/test_snapshot.py::test_missing_intervals",
+            "tests/core/test_snapshot.py::test_remove_intervals",
+            "tests/core/test_snapshot.py::test_seed_intervals",
+            "tests/core/test_snapshot.py::test_stamp",
+            "tests/core/test_snapshot.py::test_table_name"
+        ]
+    },
+    "test_main": [
+        "tests/core/test_snapshot.py"
+    ]
+}

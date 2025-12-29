@@ -1,0 +1,75 @@
+{
+    "name": "TobikoData__sqlmesh-824",
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27197&businessType=WORK",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-824.zip?Expires=1767778340&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=MlzUcesgPc5NWkv8d5Dkq%2BC43RM%3D",
+    "error_msg": "skipped:TEST_RESULT_NO_CHANGE={'error': 22} --> {'error': 22}",
+    "depends_models": {},
+    "issue_url": "https://github.com/TobikoData/sqlmesh/issues/684",
+    "local_packge_extern": "",
+    "pr_url": "https://github.com/TobikoData/sqlmesh/pull/824",
+    "result": {
+        "old_detail": {
+            "_duckdb.CatalogException: Catalog Error: Table wit....                                                 ^": " tests/core/test_state_sync.py::test_push_snapshots tests/core/test_state_sync.py::test_duplicates tests/core/test_state_sync.py::test_delete_snapshots tests/core/test_state_sync.py::test_get_snapshots_with_same_version tests/core/test_state_sync.py::test_snapshots_exists tests/core/test_state_sync.py::test_add_interval tests/core/test_state_sync.py::test_remove_interval tests/core/test_state_sync.py::test_promote_snapshots tests/core/test_state_sync.py::test_promote_snapshots_parent_plan_id_mismatch tests/core/test_state_sync.py::test_promote_snapshots_no_gaps tests/core/test_state_sync.py::test_finalize tests/core/test_state_sync.py::test_start_date_gap tests/core/test_state_sync.py::test_delete_expired_environments tests/core/test_state_sync.py::test_unpause_snapshots tests/core/test_state_sync.py::test_unpause_snapshots_remove_intervals tests/core/test_state_sync.py::test_get_version tests/core/test_state_sync.py::test_migrate tests/core/test_state_sync.py::test_rollback tests/core/test_state_sync.py::test_migrate_rows tests/core/test_state_sync.py::test_backup_state tests/core/test_state_sync.py::test_restore_snapshots_table",
+            "sqlmesh.utils.errors.PlanError: Cannot generate pl.... due to failing test(s). Fix test(s) and run again": " tests/core/test_state_sync.py::test_missing_intervals"
+        },
+        "new_detail": {
+            "_duckdb.CatalogException: Catalog Error: Table wit....                                                 ^": " tests/core/test_state_sync.py::test_push_snapshots tests/core/test_state_sync.py::test_duplicates tests/core/test_state_sync.py::test_delete_snapshots tests/core/test_state_sync.py::test_get_snapshots_with_same_version tests/core/test_state_sync.py::test_snapshots_exists tests/core/test_state_sync.py::test_add_interval tests/core/test_state_sync.py::test_remove_interval tests/core/test_state_sync.py::test_promote_snapshots tests/core/test_state_sync.py::test_promote_snapshots_parent_plan_id_mismatch tests/core/test_state_sync.py::test_promote_snapshots_no_gaps tests/core/test_state_sync.py::test_finalize tests/core/test_state_sync.py::test_start_date_gap tests/core/test_state_sync.py::test_delete_expired_environments tests/core/test_state_sync.py::test_unpause_snapshots tests/core/test_state_sync.py::test_unpause_snapshots_remove_intervals tests/core/test_state_sync.py::test_get_version tests/core/test_state_sync.py::test_migrate tests/core/test_state_sync.py::test_rollback tests/core/test_state_sync.py::test_migrate_rows tests/core/test_state_sync.py::test_backup_state tests/core/test_state_sync.py::test_restore_snapshots_table",
+            "sqlmesh.utils.errors.PlanError: Cannot generate pl.... due to failing test(s). Fix test(s) and run again": " tests/core/test_state_sync.py::test_missing_intervals"
+        },
+        "test": {
+            "tests/core/test_state_sync.py::test_push_snapshots": "error",
+            "tests/core/test_state_sync.py::test_duplicates": "error",
+            "tests/core/test_state_sync.py::test_delete_snapshots": "error",
+            "tests/core/test_state_sync.py::test_get_snapshots_with_same_version": "error",
+            "tests/core/test_state_sync.py::test_snapshots_exists": "error",
+            "tests/core/test_state_sync.py::test_add_interval": "error",
+            "tests/core/test_state_sync.py::test_remove_interval": "error",
+            "tests/core/test_state_sync.py::test_promote_snapshots": "error",
+            "tests/core/test_state_sync.py::test_promote_snapshots_parent_plan_id_mismatch": "error",
+            "tests/core/test_state_sync.py::test_promote_snapshots_no_gaps": "error",
+            "tests/core/test_state_sync.py::test_finalize": "error",
+            "tests/core/test_state_sync.py::test_start_date_gap": "error",
+            "tests/core/test_state_sync.py::test_delete_expired_environments": "error",
+            "tests/core/test_state_sync.py::test_missing_intervals": "error",
+            "tests/core/test_state_sync.py::test_unpause_snapshots": "error",
+            "tests/core/test_state_sync.py::test_unpause_snapshots_remove_intervals": "error",
+            "tests/core/test_state_sync.py::test_get_version": "error",
+            "tests/core/test_state_sync.py::test_migrate": "error",
+            "tests/core/test_state_sync.py::test_rollback": "error",
+            "tests/core/test_state_sync.py::test_migrate_rows": "error",
+            "tests/core/test_state_sync.py::test_backup_state": "error",
+            "tests/core/test_state_sync.py::test_restore_snapshots_table": "error"
+        },
+        "code": {
+            "tests/core/test_state_sync.py::test_push_snapshots": "error",
+            "tests/core/test_state_sync.py::test_duplicates": "error",
+            "tests/core/test_state_sync.py::test_delete_snapshots": "error",
+            "tests/core/test_state_sync.py::test_get_snapshots_with_same_version": "error",
+            "tests/core/test_state_sync.py::test_snapshots_exists": "error",
+            "tests/core/test_state_sync.py::test_add_interval": "error",
+            "tests/core/test_state_sync.py::test_remove_interval": "error",
+            "tests/core/test_state_sync.py::test_promote_snapshots": "error",
+            "tests/core/test_state_sync.py::test_promote_snapshots_parent_plan_id_mismatch": "error",
+            "tests/core/test_state_sync.py::test_promote_snapshots_no_gaps": "error",
+            "tests/core/test_state_sync.py::test_finalize": "error",
+            "tests/core/test_state_sync.py::test_start_date_gap": "error",
+            "tests/core/test_state_sync.py::test_delete_expired_environments": "error",
+            "tests/core/test_state_sync.py::test_missing_intervals": "error",
+            "tests/core/test_state_sync.py::test_unpause_snapshots": "error",
+            "tests/core/test_state_sync.py::test_unpause_snapshots_remove_intervals": "error",
+            "tests/core/test_state_sync.py::test_get_version": "error",
+            "tests/core/test_state_sync.py::test_migrate": "error",
+            "tests/core/test_state_sync.py::test_rollback": "error",
+            "tests/core/test_state_sync.py::test_migrate_rows": "error",
+            "tests/core/test_state_sync.py::test_backup_state": "error",
+            "tests/core/test_state_sync.py::test_restore_snapshots_table": "error"
+        },
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": []
+    },
+    "test_main": [
+        "tests/core/test_state_sync.py"
+    ]
+}

@@ -238,6 +238,12 @@ class ZbTask:
             ],
         }
         self.local_repo.child(".vscode/launch.json").write_file(info)
+        self.local_repo.child("py_test_main.py").write_file(
+            StrUtil().format(
+                INPUTS_DIR.child("template/py_test_main.py").read_file(),
+                PY_MAIN_CMD=self.get_py_test_main_code(),
+            )
+        )
         return self
 
     def rest_repo(self, commid_id=None):

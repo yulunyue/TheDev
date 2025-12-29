@@ -125,6 +125,7 @@ class File:
     def move_to(self, dst):
         self.copy_to(dst)
         self.remove()
+        return dst
 
     def read_file(self, encoding="utf-8"):
         data = self.read_data()

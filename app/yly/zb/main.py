@@ -45,9 +45,10 @@ class ZbMangae(ToolBase):
     def prepare(self, key):
         self.key = key
 
-    def docker(self, name, docker_name=None) -> DockerTask:
+    def docker(self, name=None, docker_name=None) -> DockerTask:
+        if name is None:
+            name = self.key
         t = query_one(name)
-
         return dol(t, docker_name).build(t).load()
 
     def submit(self):
@@ -57,10 +58,10 @@ class ZbMangae(ToolBase):
         w.run()
 
     def build(self):
-        for f in query_task(self.key):
-            d = dol(f, f.docker_image_name).build(f).load()
-            d.docker_build()
-            logger.info(f"docker run -it {d.docker_image_name}")
+        d = self.docker()
+        d.apply_test()
+        d.docker_build()
+        logger.info(f"docker run -it {d.docker_image_name}")
 
     def clear(self):
         """
@@ -106,14 +107,12 @@ class ZbMangae(ToolBase):
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
+    def dev(self, env=None):
+        t = query_one(self.key).set_env(env)
+        dol(t).build(t).run()
+
     def win(self):
         SelfTask().build(query_one(self.key)).run()
-
-    def dev(self):
-        self.docker(self.key, "3.9_dev").run()
-
-    def dev1(self):
-        self.docker(self.key, "3.9_dev1").run()
 
     def test(self):
         ZbTask().build(query_one(self.key)).load().apply_test().save()
@@ -134,10 +133,16 @@ class ZbMangae(ToolBase):
         c.init()
         c.pip()
 
-    def debug(self):
-        self.docker().docker_build()
-        t = self.docker().make_launch_json()
-        t.apply_code()
+    def debug(self, name):
+        t = self.docker(docker_name="dev")
+        t.docker_build()
+        t.make_launch_json()
+        if name == "test":
+            t.apply_test()
+        elif name == "code":
+            t.apply_code()
+        else:
+            raise Exception(name)
         vv = self.docker().get_volumn_v(
             {
                 t.local_repo.get_abs_path(): t.local_repo.path,
@@ -148,19 +153,20 @@ class ZbMangae(ToolBase):
         )
         logger.info(t.get_py_test_main_code())
         logger.info(
-            f"export ZB_PY_TEST_TYPE=code && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client {CS.RUN_VERIFICATION_PY}"
+            f"python -m debugpy --listen 0.0.0.0:5678 --wait-for-client py_test_main.py"
         )
 
-    def search_log(self, search_key='pip install "sqlmesh[bigquery]"'):
+    def search_log(self):
+        search_key = """E   ModuleNotFoundError: No module named 'agate'"""
         for f in query_task(self.key):
             test_log = f.input_dir.child("test.log")
+            # test_log = f.input_dir.child("docker_sqlmesh_3.9_default.log")
             if not test_log.exists():
                 continue
             datas = test_log.read_file()
             if search_key in datas:
                 logger.info(f.resource)
-                f.local_packge_extern.set_value(".[dev,bigquery]")
-                f.save()
+                f.set_env("3.9_agate1")
 
     def files(self):
         for d in REPO_DIR.list_dir(-1):

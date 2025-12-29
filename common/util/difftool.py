@@ -85,7 +85,7 @@ class Diff:
                     self.delete(k, src[key])
                 else:
                     self.diff_any(src[key], dst[key], k)
-        elif isinstance(src, (str, int, bool, float)) and isinstance(
+        elif isinstance(src, (str, int, bool, float)) or isinstance(
             dst, (str, int, bool, float)
         ):
             self.diff(keys, src, dst)

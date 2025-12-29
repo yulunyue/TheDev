@@ -102,6 +102,29 @@ class TaskCfg(ConfigBase):
         self.local_repo = File(f"{REPO_BASE}/{self.owner}/{self.repo}")
         return self
 
+    def set_env(self, env):
+        if env == self.env_name:
+            return self
+
+        env_dir = REPO_DIR.child(self.repo).child(env)
+        env_names = [
+            f.file_name
+            for f in REPO_DIR.child(self.repo).list_dir(with_dir=True)
+            if f.is_dir()
+        ]
+        logger.info(f"{self.env_name}->{env}")
+        pr = env_dir.child("pr")
+        if not pr.exists():
+            input(f"make sure new env {env} not in {env_names}")
+            pr.make_dir_if_not_exist(True)
+            REPO_DIR.child(self.repo).child(self.env_name).child(
+                CS.SETUP_ENV_SH
+            ).copy_to(env_dir.child(CS.SETUP_ENV_SH))
+        dst = pr.child(self.resource.file_name)
+        self.resource.move_to(dst)
+        self.set_resource(dst).load()
+        return self
+
     @property
     def cg_file(self):
         return self.input_dir.child(self.name.get_value() + ".json")
