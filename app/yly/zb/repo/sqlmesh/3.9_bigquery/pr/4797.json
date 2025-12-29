@@ -11,7 +11,7 @@
         "old_detail": {
             "AssertionError: Regex pattern did not match.\n Rege....erify your config.yaml and environment variables.'": " tests/core/test_context.py::test_project_config_person_config_overrides",
             "ModuleNotFoundError: No module named 'agate'": " tests/core/test_context.py::test_plan_enable_preview_default tests/core/test_model.py::test_variables_migrated_dbt_package_macro",
-            "assert 1 == 2\n +  where 1 = <function _check_ready_intervals at 0x7395f4140790>.call_count": " tests/core/test_context.py::test_check_intervals",
+            "assert 1 == 2\n +  where 1 = <function _check_ready_intervals at 0x7645ff35cdc0>.call_count": " tests/core/test_context.py::test_check_intervals",
             "TypeError: model() got an unexpected keyword argument 'signal_definitions'": " tests/core/test_model.py::test_load_python_model_with_signals"
         },
         "new_detail": {

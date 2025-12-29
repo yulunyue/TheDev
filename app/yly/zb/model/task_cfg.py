@@ -196,9 +196,7 @@ class TaskCfg(ConfigBase):
 
 
 def task_cfg(f: File):
-    if isinstance(f, File):
-        return TaskCfg(f.path).set_resource(f).load()
-    return query_one(f)
+    raise Exception("todo")
 
 
 def get_map():
@@ -207,9 +205,9 @@ def get_map():
         fss = REPO_DIR.list_dir(depth=5)
         for f in fss:
             if "/pr/" in f.path and f.path.endswith(".json"):
-                t = task_cfg(f)
-                if t.id in d:
-                    raise Exception(t.id)
+                t = TaskCfg(f.path).set_resource(f).load()
+                if t.task_id in d:
+                    raise Exception(t.id, d[t.task_id].id)
                 d[t.task_id] = t
         TaskCfg.TASK_CFGS_MAP = d
     return TaskCfg.TASK_CFGS_MAP

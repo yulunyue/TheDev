@@ -11,7 +11,7 @@
         "old_detail": {
             "AssertionError: Regex pattern did not match.\n Rege....erify your config.yaml and environment variables.'": " tests/core/test_context.py::test_project_config_person_config_overrides",
             "sqlmesh.utils.errors.ConfigError: Failed to load config file: No module named 'agate'": " tests/core/test_context.py::test_plan_enable_preview_default",
-            "assert 'SELECT COUNT(*) FROM (SELECT \"timestamp_id....g.LogCaptureFixture object at 0x7a18e08e7520>.text": " tests/core/test_context.py::test_plan_audit_intervals",
+            "assert 'SELECT COUNT(*) FROM (SELECT \"timestamp_id....g.LogCaptureFixture object at 0x7d1df484c4c0>.text": " tests/core/test_context.py::test_plan_audit_intervals",
             "ModuleNotFoundError: No module named 'agate'": " tests/core/test_model.py::test_variables_migrated_dbt_package_macro",
             "assert 'SELECT\\n  \\'...1\" AS \"value\"' == 'SELECT\\n....AS \"value\"\n  ?                         +++++++++++": " tests/core/test_model.py::test_each_macro_with_paren_expression_arg"
         },

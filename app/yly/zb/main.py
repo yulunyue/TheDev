@@ -102,7 +102,7 @@ class ZbMangae(ToolBase):
             f.set_error_msg(CS.FAILED, "TODO")
             tasks.append(f)
         for f in tasks:
-            t = dol(f)
+            t = dol(f).build(f)
             logger.run_capture_error(t.run, captures=CS.ZB_TASK_FAIL)
         # owner, task_id, repo, pr = get_info_by_name(f.name)
 
