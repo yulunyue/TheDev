@@ -41,19 +41,9 @@ class TaskCfg(ConfigBase):
 
     def can_submit(self):
         err_msg = self.error_msg.get_value()
-        if err_msg.startswith(CS.SUCCESS):
-            return True
-        if err_msg.startswith(CS.SKIPPED):
-            info = err_msg.split(f"{CS.SKIPPED}:").pop().split("=")[0]
-            if info not in CS.SKIP_MAP:
-                raise Exception(
-                    self.task_id,
-                    self.name.get_value(),
-                    err_msg,
-                    list(CS.SKIP_MAP.keys()),
-                )
-            return True
-        return False
+        if err_msg.startswith(CS.FAILED):
+            return False
+        return True
 
     @property
     def id(self):
