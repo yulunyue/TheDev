@@ -1,9 +1,13 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-988.zip?Expires=1766564122&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=jm%2Bc2T5yP23ZEMbEr9USIbeOxPY%3D",
-    "error_msg": "success:",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "old_detail": {
+            "AssertionError: assert 'PYTHONMALLOC' in {'PYTHONPATH': '/testbed/beeware/briefcase/src'}": " tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source"
+        },
+        "new_detail": {},
         "test": {
             "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_in_windows": "skipped",
             "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode_in_windows": "skipped",
@@ -44,5 +48,7 @@
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/988",
     "py_name": "",
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

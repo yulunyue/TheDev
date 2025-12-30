@@ -9,10 +9,10 @@
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/193",
     "result": {
         "old_detail": {
-            "tests/schedulers/airflow/test_integration.py:14: i....C')\nE   TypeError: 'module' object is not callable": " tests/schedulers/airflow/test_integration.py"
+            "ImportError while importing test module '/testbed/..../lib/python3.9/site-packages/pendulum/__init__.py)": " tests/schedulers/airflow/test_integration.py"
         },
         "new_detail": {
-            "tests/schedulers/airflow/test_integration.py:14: i....C')\nE   TypeError: 'module' object is not callable": " tests/schedulers/airflow/test_integration.py"
+            "ImportError while importing test module '/testbed/..../lib/python3.9/site-packages/pendulum/__init__.py)": " tests/schedulers/airflow/test_integration.py"
         },
         "test": {},
         "code": {},

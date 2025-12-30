@@ -1,9 +1,15 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-956.zip?Expires=1766564112&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=5W4syLC90erJxp9aqKr%2BdB7DNv4%3D",
-    "error_msg": "success:",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "old_detail": {
+            "IndexError: list index out of range": " tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip; ignored=okay] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-garbage] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-ATTACHment; filename=    \"something.zip\"] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=\"something.zip\"; filename*=utf-8''%e2%82%ac%20rates] tests/integrations/download/test_Download__file.py::test_new_download_chunked",
+            "AssertionError: assert not True\n +  where True = e....base.ToolCache object at 0x7194e3de9370>.base_path": " tests/integrations/download/test_Download__file.py::test_iter_content_connection_error",
+            "AssertionError: assert not True\n +  where True = e....base.ToolCache object at 0x7194e4718cd0>.base_path": " tests/integrations/download/test_Download__file.py::test_content_connection_error"
+        },
+        "new_detail": {},
         "test": {
             "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None]": "failed",
             "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-]": "failed",
@@ -66,5 +72,7 @@
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/956",
     "py_name": "",
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

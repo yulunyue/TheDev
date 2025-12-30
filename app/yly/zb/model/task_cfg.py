@@ -161,7 +161,7 @@ class TaskCfg(ConfigBase):
         self.save()
 
     def set_error_msg(self, state, msg: str):
-        if state not in {CS.SUCCESS, CS.SKIPPED, CS.FAILED}:
+        if state not in {CS.SUCCESS, CS.SKIPPED, CS.FAILED, CS.ERROR}:
             raise Exception(msg)
         msg = f"{state}:{msg}"
         if msg != self.error_msg.get_value():
@@ -240,7 +240,9 @@ def get_map():
 
 def query_task(key: str, state=None):
     ret: List[TaskCfg] = []
-    tasks: List[TaskCfg] = sorted(get_map().values(), key=lambda x: [x.repo, x.pr])
+    tasks: List[TaskCfg] = sorted(
+        get_map().values(), key=lambda x: [x.repo, x.env_name, x.pr]
+    )
     for v in tasks:
         # logger.info([v.id, key in v.id or key == "all"])
         if key in v.id or key == "all":

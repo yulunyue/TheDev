@@ -1,9 +1,16 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2239.zip?Expires=1766564044&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=3JNCqjrBjsr35KHzlDckSQi2plQ%3D",
-    "error_msg": "success:",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "old_detail": {
+            "AssertionError: assert [call(['/opt/...esimulator'....tput truncated (2 lines hidden), use '-vv' to show": " tests/platforms/iOS/xcode/test_create.py::test_extra_pip_args[False-Python.xcframework/ios-arm64/platform-config/arm64-iphoneos-Python.xcframework/ios-arm64_x86_64-simulator/platform-config/wonky-iphonesimulator] tests/platforms/iOS/xcode/test_create.py::test_min_os_version tests/platforms/iOS/xcode/test_update.py::test_extra_pip_args[False-Python.xcframework/ios-arm64/platform-config/arm64-iphoneos-Python.xcframework/ios-arm64_x86_64-simulator/platform-config/wonky-iphonesimulator]",
+            "AssertionError: assert [call(['/opt/...ator.wonky'....tput truncated (2 lines hidden), use '-vv' to show": " tests/platforms/iOS/xcode/test_create.py::test_extra_pip_args[True-platform-site/iphoneos.arm64-platform-site/iphonesimulator.wonky] tests/platforms/iOS/xcode/test_update.py::test_extra_pip_args[True-platform-site/iphoneos.arm64-platform-site/iphonesimulator.wonky]",
+            "Failed: DID NOT RAISE <class 'briefcase.exceptions.BriefcaseCommandError'>": " tests/platforms/iOS/xcode/test_create.py::test_incompatible_min_os_version tests/platforms/macOS/app/test_create.py::test_invalid_min_os_version",
+            "AssertionError: assert [call(['/opt/...ding='UTF-8....tput truncated (2 lines hidden), use '-vv' to show": " tests/platforms/macOS/app/test_create.py::test_install_app_packages[arm64-x86_64_0] tests/platforms/macOS/app/test_create.py::test_install_app_packages[arm64-x86_64_1] tests/platforms/macOS/app/test_create.py::test_min_os_version tests/platforms/macOS/app/test_create.py::test_install_app_packages_no_binary[arm64-x86_64_0] tests/platforms/macOS/app/test_create.py::test_install_app_packages_no_binary[arm64-x86_64_1] tests/platforms/macOS/app/test_create.py::test_install_app_packages_failure tests/platforms/macOS/app/test_create.py::test_install_app_packages_non_universal[arm64-x86_64_0] tests/platforms/macOS/app/test_create.py::test_install_app_packages_non_universal[arm64-x86_64_1]"
+        },
+        "new_detail": {},
         "test": {
             "tests/platforms/iOS/xcode/test_create.py::test_unsupported_host_os[Linux]": "passed",
             "tests/platforms/iOS/xcode/test_create.py::test_unsupported_host_os[Windows]": "passed",
@@ -173,5 +180,7 @@
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/2239",
     "py_name": "",
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

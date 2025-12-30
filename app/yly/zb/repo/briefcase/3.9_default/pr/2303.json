@@ -1,9 +1,14 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2303.zip?Expires=1766564064&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=Kk6ZadgLM9q4ejyHay6pm5BJ3vM%3D",
-    "error_msg": "success:",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "old_detail": {
+            "AssertionError: Regex pattern did not match.\n Rege.... pip was unable to connect\\nto the PyPI server.\\n'": " tests/platforms/iOS/xcode/test_create.py::test_install_app_requirements_error_adds_install_hint_missing_iphoneos_wheel tests/platforms/iOS/xcode/test_create.py::test_install_app_requirements_error_adds_install_hint_missing_iphonesimulator_wheel tests/platforms/macOS/app/test_create.py::test_install_app_requirements_error_adds_install_hint_missing_x86_64_wheel",
+            "AssertionError: Regex pattern did not match.\n Rege....configuration section of your pyproject.toml.\\n\\n'": " tests/platforms/macOS/app/test_create.py::test_install_app_requirements_error_adds_install_hint_missing_arm64_wheel"
+        },
+        "new_detail": {},
         "test": {
             "tests/platforms/iOS/xcode/test_create.py::test_unsupported_host_os[Linux]": "passed",
             "tests/platforms/iOS/xcode/test_create.py::test_unsupported_host_os[Windows]": "passed",
@@ -178,5 +183,7 @@
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/2303",
     "py_name": "",
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

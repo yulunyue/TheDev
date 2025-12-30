@@ -8,14 +8,8 @@
     "local_packge_extern": "",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/2616",
     "result": {
-        "old_detail": {
-            "tests/schedulers/airflow/operators/test_targets.py....C')\nE   TypeError: 'module' object is not callable": " tests/schedulers/airflow/operators/test_targets.py",
-            "tests/schedulers/airflow/test_dag_generator.py:5: ....C')\nE   TypeError: 'module' object is not callable": " tests/schedulers/airflow/test_dag_generator.py"
-        },
-        "new_detail": {
-            "tests/schedulers/airflow/operators/test_targets.py....C')\nE   TypeError: 'module' object is not callable": " tests/schedulers/airflow/operators/test_targets.py",
-            "tests/schedulers/airflow/test_dag_generator.py:5: ....C')\nE   TypeError: 'module' object is not callable": " tests/schedulers/airflow/test_dag_generator.py"
-        },
+        "old_detail": {},
+        "new_detail": {},
         "test": {},
         "code": {},
         "FAIL_TO_FAIL": [],

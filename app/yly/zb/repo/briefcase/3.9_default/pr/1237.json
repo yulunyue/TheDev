@@ -1,9 +1,13 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1237.zip?Expires=1766564018&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=5YgqkqhI7hz5C1MGvyCQn%2FCDaWc%3D",
-    "error_msg": "success:",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "old_detail": {
+            "assert '%global __br...App Changelog' == '%global ....put truncated (46 lines hidden), use '-vv' to show": " tests/platforms/linux/system/test_package__rpm.py::test_rpm_package tests/platforms/linux/system/test_package__rpm.py::test_rpm_re_package tests/platforms/linux/system/test_package__rpm.py::test_rpm_package_extra_requirements"
+        },
+        "new_detail": {},
         "test": {
             "tests/platforms/linux/system/test_package__rpm.py::test_verify_no_docker": "passed",
             "tests/platforms/linux/system/test_package__rpm.py::test_verify_rpmbuild_missing": "passed",
@@ -51,5 +55,7 @@
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/1237",
     "py_name": "",
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

@@ -1,10 +1,18 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-892.zip?Expires=1766564103&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=zqa8SMaqA7yO9wb5tfBAnIUopJ4%3D",
-    "error_msg": "success:",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
-        "old_detail": {},
+        "old_detail": {
+            "AssertionError: expected call not found.\nExpected:....=1.2.3', 'third>=3.2.1']\n  Use -v to get more diff": " tests/commands/create/test_install_app_dependencies.py::test_app_packages_valid_requires tests/commands/create/test_install_app_dependencies.py::test_app_packages_valid_requires_no_support_package",
+            "AssertionError: expected call not found.\nExpected:....ages', 'does-not-exist']\n  Use -v to get more diff": " tests/commands/create/test_install_app_dependencies.py::test_app_packages_invalid_requires",
+            "AssertionError: expected call not found.\nExpected:....rst', 'second', 'third']\n  Use -v to get more diff": " tests/commands/create/test_install_app_dependencies.py::test_app_packages_offline tests/commands/create/test_install_app_dependencies.py::test_app_packages_install_dependencies tests/commands/create/test_install_app_dependencies.py::test_app_packages_replace_existing_dependencies",
+            "AssertionError: expected call not found.\nExpected:....ge_two', 'packagethree']\n  Use -v to get more diff": " tests/commands/dev/test_install_dev_dependencies.py::test_install_dependencies_no_error tests/commands/dev/test_install_dev_dependencies.py::test_install_dependencies_error",
+            "AssertionError: expected call not found.\nExpected:....in__\", alter_sys=True)']\n  Use -v to get more diff": " tests/commands/dev/test_run_dev_app.py::test_subprocess_running_successfully tests/commands/dev/test_run_dev_app.py::test_subprocess_throws_error",
+            "AssertionError: expected call not found.\nExpected:....tput truncated (2 lines hidden), use '-vv' to show": " tests/platforms/iOS/xcode/test_create.py::test_extra_pip_args tests/platforms/iOS/xcode/test_update.py::test_extra_pip_args tests/platforms/linux/appimage/test_create.py::test_install_app_dependencies_in_docker",
+            "AssertionError: expected call not found.\nExpected:....foo==1.2.3', 'bar>=4.5']\n  Use -v to get more diff": " tests/platforms/linux/appimage/test_create.py::test_install_app_dependencies_no_docker"
+        },
         "new_detail": {},
         "test": {
             "tests/commands/create/test_install_app_dependencies.py::test_bad_path_index": "passed",
@@ -160,5 +168,7 @@
     "pr_change_files": null,
     "pr_url": "https://github.com/beeware/briefcase/pull/892",
     "py_name": "",
-    "docker_image_name": "briefcase:latest"
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
 }

@@ -2,22 +2,27 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-5560.zip?Expires=1766900822&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=gCyfWlguUWdnvpIVweiIr0%2FgfBI%3D",
-    "error_msg": "success:",
+    "error_msg": "failed:FAIL_TO_FAIL",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/5555",
     "name": "TobikoData__sqlmesh-5560",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/5560",
     "py_name": "",
     "result": {
         "old_detail": {
+            "sqlmesh.utils.errors.ConfigError: Failed to load config file: No module named 'agate'": " tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]",
+            "ModuleNotFoundError: No module named 'agate'": " tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]",
             "assert 7 == 1": " tests/core/integration/test_change_scenarios.py::test_creating_stage_for_first_batch_only"
         },
-        "new_detail": {},
+        "new_detail": {
+            "sqlmesh.utils.errors.ConfigError: Failed to load config file: No module named 'agate'": " tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]",
+            "ModuleNotFoundError: No module named 'agate'": " tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]"
+        },
         "test": {
             "tests/core/integration/test_change_scenarios.py::test_auto_categorization": "passed",
             "tests/core/integration/test_change_scenarios.py::test_breaking_only_impacts_immediate_children": "passed",
             "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_context]": "passed",
-            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]": "passed",
-            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]": "passed",
+            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]": "failed",
+            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]": "failed",
             "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_no_default_catalog]": "passed",
             "tests/core/integration/test_change_scenarios.py::test_model_removed": "passed",
             "tests/core/integration/test_change_scenarios.py::test_non_breaking_change": "passed",
@@ -70,8 +75,8 @@
             "tests/core/integration/test_change_scenarios.py::test_auto_categorization": "passed",
             "tests/core/integration/test_change_scenarios.py::test_breaking_only_impacts_immediate_children": "passed",
             "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_context]": "passed",
-            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]": "passed",
-            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]": "passed",
+            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]": "failed",
+            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]": "failed",
             "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_no_default_catalog]": "passed",
             "tests/core/integration/test_change_scenarios.py::test_model_removed": "passed",
             "tests/core/integration/test_change_scenarios.py::test_non_breaking_change": "passed",
@@ -120,7 +125,10 @@
             "tests/core/integration/test_change_scenarios.py::test_annotated_self_referential_model": "passed",
             "tests/core/integration/test_change_scenarios.py::test_creating_stage_for_first_batch_only": "passed"
         },
-        "FAIL_TO_FAIL": [],
+        "FAIL_TO_FAIL": [
+            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]",
+            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]"
+        ],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
             "tests/core/integration/test_change_scenarios.py::test_creating_stage_for_first_batch_only"
@@ -140,9 +148,7 @@
             "tests/core/integration/test_change_scenarios.py::test_logical_change",
             "tests/core/integration/test_change_scenarios.py::test_max_interval_end_per_model_not_applied_when_end_is_provided",
             "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_context]",
-            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_dbt_context]",
             "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_no_default_catalog]",
-            "tests/core/integration/test_change_scenarios.py::test_model_add[sushi_test_dbt_context]",
             "tests/core/integration/test_change_scenarios.py::test_model_kind_change[FULL-INCREMENTAL_BY_TIME_RANGE]",
             "tests/core/integration/test_change_scenarios.py::test_model_kind_change[INCREMENTAL_BY_TIME_RANGE-FULL]",
             "tests/core/integration/test_change_scenarios.py::test_model_removed",
