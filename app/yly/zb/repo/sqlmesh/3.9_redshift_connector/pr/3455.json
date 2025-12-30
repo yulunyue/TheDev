@@ -10,14 +10,14 @@
     "result": {
         "old_detail": {
             "AssertionError: assert {'concurrent_...ons': [], .....\n  {'pretty_sql': False}\n  Use -v to get more diff": " tests/core/test_config.py::test_connection_config_serialization",
-            "ModuleNotFoundError: No module named 'redshift_connector'": " tests/core/test_config.py::test_multi_gateway_config",
+            "ModuleNotFoundError: No module named 'pyathena'": " tests/core/test_config.py::test_multi_gateway_config",
             "AssertionError: Traceback (most recent call last):....     act\n0 2023-01-01 10:05:03 2023-01-01 12:05:03": " tests/core/test_test.py::test_freeze_time",
             "ModuleNotFoundError: No module named 'pyspark'": " tests/core/test_test.py::test_pyspark_python_model",
             "AssertionError: Calls not found.\nExpected: [call('.... != 'SELECT\\n  1 AS \"a\"'\n  Use -v to get more diff": " tests/core/test_test.py::test_pretty_query",
             "AssertionError: assert ['Models: 17'...on succeede....n  connector_config: {}'\n  Use -v to get more diff": " tests/integrations/jupyter/test_magics.py::test_info"
         },
         "new_detail": {
-            "ModuleNotFoundError: No module named 'redshift_connector'": " tests/core/test_config.py::test_multi_gateway_config",
+            "ModuleNotFoundError: No module named 'pyathena'": " tests/core/test_config.py::test_multi_gateway_config",
             "AssertionError: Traceback (most recent call last):....     act\n0 2023-01-01 10:05:03 2023-01-01 12:05:03": " tests/core/test_test.py::test_freeze_time",
             "ModuleNotFoundError: No module named 'pyspark'": " tests/core/test_test.py::test_pyspark_python_model"
         },

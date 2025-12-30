@@ -10,22 +10,20 @@
     "result": {
         "old_detail": {
             "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_connection_config.py::test_snowflake tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None] tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_passphrase_path-snowflake_key_passphrase_pem-snowflake_key_passphrase_b64-snowflake_key_passphrase_bytes-insecure] tests/core/test_connection_config.py::test_validator",
-            "sqlmesh.utils.errors.ConfigError: Failed to import....Verify your config.yaml and environment variables.": " tests/core/test_connection_config.py::test_trino tests/core/test_connection_config.py::test_postgres tests/core/test_connection_config.py::test_clickhouse tests/core/test_connection_config.py::test_athena tests/core/test_connection_config.py::test_athena_catalog tests/core/test_connection_config.py::test_databricks",
-            "AssertionError: Regex pattern did not match.\n Rege....erify your config.yaml and environment variables.'": " tests/core/test_connection_config.py::test_trino_schema_location_mapping tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup tests/core/test_connection_config.py::test_athena_s3_locations_valid",
-            "pydantic_core._pydantic_core.ValidationError: 2 va....https://errors.pydantic.dev/2.12/v/extra_forbidden": " tests/core/test_connection_config.py::test_duckdb_attach_ducklake_catalog"
+            "pydantic_core._pydantic_core.ValidationError: 2 va....https://errors.pydantic.dev/2.12/v/extra_forbidden": " tests/core/test_connection_config.py::test_duckdb_attach_ducklake_catalog",
+            "sqlmesh.utils.errors.ConfigError: Failed to import....Verify your config.yaml and environment variables.": " tests/core/test_connection_config.py::test_clickhouse tests/core/test_connection_config.py::test_databricks"
         },
         "new_detail": {
             "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_connection_config.py::test_snowflake tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None] tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_passphrase_path-snowflake_key_passphrase_pem-snowflake_key_passphrase_b64-snowflake_key_passphrase_bytes-insecure] tests/core/test_connection_config.py::test_validator",
-            "sqlmesh.utils.errors.ConfigError: Failed to import....Verify your config.yaml and environment variables.": " tests/core/test_connection_config.py::test_trino tests/core/test_connection_config.py::test_postgres tests/core/test_connection_config.py::test_clickhouse tests/core/test_connection_config.py::test_athena tests/core/test_connection_config.py::test_athena_catalog tests/core/test_connection_config.py::test_databricks",
-            "AssertionError: Regex pattern did not match.\n Rege....erify your config.yaml and environment variables.'": " tests/core/test_connection_config.py::test_trino_schema_location_mapping tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup tests/core/test_connection_config.py::test_athena_s3_locations_valid"
+            "sqlmesh.utils.errors.ConfigError: Failed to import....Verify your config.yaml and environment variables.": " tests/core/test_connection_config.py::test_clickhouse tests/core/test_connection_config.py::test_databricks"
         },
         "test": {
             "tests/core/test_connection_config.py::test_snowflake": "failed",
             "tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None]": "failed",
             "tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_passphrase_path-snowflake_key_passphrase_pem-snowflake_key_passphrase_b64-snowflake_key_passphrase_bytes-insecure]": "failed",
             "tests/core/test_connection_config.py::test_validator": "failed",
-            "tests/core/test_connection_config.py::test_trino": "failed",
-            "tests/core/test_connection_config.py::test_trino_schema_location_mapping": "failed",
+            "tests/core/test_connection_config.py::test_trino": "passed",
+            "tests/core/test_connection_config.py::test_trino_schema_location_mapping": "passed",
             "tests/core/test_connection_config.py::test_duckdb": "passed",
             "tests/core/test_connection_config.py::test_duckdb_shared[kwargs10-kwargs20-True]": "passed",
             "tests/core/test_connection_config.py::test_duckdb_shared[kwargs11-kwargs21-False]": "passed",
@@ -47,14 +45,14 @@
             "tests/core/test_connection_config.py::test_motherduck_token_mask": "passed",
             "tests/core/test_connection_config.py::test_bigquery": "passed",
             "tests/core/test_connection_config.py::test_bigquery_config_json_string": "passed",
-            "tests/core/test_connection_config.py::test_postgres": "failed",
+            "tests/core/test_connection_config.py::test_postgres": "passed",
             "tests/core/test_connection_config.py::test_gcp_postgres": "passed",
             "tests/core/test_connection_config.py::test_mysql": "passed",
             "tests/core/test_connection_config.py::test_clickhouse": "failed",
-            "tests/core/test_connection_config.py::test_athena": "failed",
-            "tests/core/test_connection_config.py::test_athena_catalog": "failed",
-            "tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup": "failed",
-            "tests/core/test_connection_config.py::test_athena_s3_locations_valid": "failed",
+            "tests/core/test_connection_config.py::test_athena": "passed",
+            "tests/core/test_connection_config.py::test_athena_catalog": "passed",
+            "tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup": "passed",
+            "tests/core/test_connection_config.py::test_athena_s3_locations_valid": "passed",
             "tests/core/test_connection_config.py::test_databricks": "failed",
             "tests/core/test_connection_config.py::test_engine_import_validator": "passed"
         },
@@ -63,8 +61,8 @@
             "tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None]": "failed",
             "tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_passphrase_path-snowflake_key_passphrase_pem-snowflake_key_passphrase_b64-snowflake_key_passphrase_bytes-insecure]": "failed",
             "tests/core/test_connection_config.py::test_validator": "failed",
-            "tests/core/test_connection_config.py::test_trino": "failed",
-            "tests/core/test_connection_config.py::test_trino_schema_location_mapping": "failed",
+            "tests/core/test_connection_config.py::test_trino": "passed",
+            "tests/core/test_connection_config.py::test_trino_schema_location_mapping": "passed",
             "tests/core/test_connection_config.py::test_duckdb": "passed",
             "tests/core/test_connection_config.py::test_duckdb_shared[kwargs10-kwargs20-True]": "passed",
             "tests/core/test_connection_config.py::test_duckdb_shared[kwargs11-kwargs21-False]": "passed",
@@ -86,30 +84,23 @@
             "tests/core/test_connection_config.py::test_motherduck_token_mask": "passed",
             "tests/core/test_connection_config.py::test_bigquery": "passed",
             "tests/core/test_connection_config.py::test_bigquery_config_json_string": "passed",
-            "tests/core/test_connection_config.py::test_postgres": "failed",
+            "tests/core/test_connection_config.py::test_postgres": "passed",
             "tests/core/test_connection_config.py::test_gcp_postgres": "passed",
             "tests/core/test_connection_config.py::test_mysql": "passed",
             "tests/core/test_connection_config.py::test_clickhouse": "failed",
-            "tests/core/test_connection_config.py::test_athena": "failed",
-            "tests/core/test_connection_config.py::test_athena_catalog": "failed",
-            "tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup": "failed",
-            "tests/core/test_connection_config.py::test_athena_s3_locations_valid": "failed",
+            "tests/core/test_connection_config.py::test_athena": "passed",
+            "tests/core/test_connection_config.py::test_athena_catalog": "passed",
+            "tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup": "passed",
+            "tests/core/test_connection_config.py::test_athena_s3_locations_valid": "passed",
             "tests/core/test_connection_config.py::test_databricks": "failed",
             "tests/core/test_connection_config.py::test_engine_import_validator": "passed"
         },
         "FAIL_TO_FAIL": [
-            "tests/core/test_connection_config.py::test_athena",
-            "tests/core/test_connection_config.py::test_athena_catalog",
-            "tests/core/test_connection_config.py::test_athena_s3_locations_valid",
-            "tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup",
             "tests/core/test_connection_config.py::test_clickhouse",
             "tests/core/test_connection_config.py::test_databricks",
-            "tests/core/test_connection_config.py::test_postgres",
             "tests/core/test_connection_config.py::test_snowflake",
             "tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_no_passphrase_path-snowflake_key_no_passphrase_pem-snowflake_key_no_passphrase_b64-snowflake_key_no_passphrase_bytes-None]",
             "tests/core/test_connection_config.py::test_snowflake_private_key_pass[snowflake_key_passphrase_path-snowflake_key_passphrase_pem-snowflake_key_passphrase_b64-snowflake_key_passphrase_bytes-insecure]",
-            "tests/core/test_connection_config.py::test_trino",
-            "tests/core/test_connection_config.py::test_trino_schema_location_mapping",
             "tests/core/test_connection_config.py::test_validator"
         ],
         "PASS_TO_FAIL": [],
@@ -117,6 +108,10 @@
             "tests/core/test_connection_config.py::test_duckdb_attach_ducklake_catalog"
         ],
         "PASS_TO_PASS": [
+            "tests/core/test_connection_config.py::test_athena",
+            "tests/core/test_connection_config.py::test_athena_catalog",
+            "tests/core/test_connection_config.py::test_athena_s3_locations_valid",
+            "tests/core/test_connection_config.py::test_athena_s3_staging_dir_or_workgroup",
             "tests/core/test_connection_config.py::test_bigquery",
             "tests/core/test_connection_config.py::test_bigquery_config_json_string",
             "tests/core/test_connection_config.py::test_duckdb",
@@ -139,7 +134,10 @@
             "tests/core/test_connection_config.py::test_motherduck_attach_catalog",
             "tests/core/test_connection_config.py::test_motherduck_attach_options",
             "tests/core/test_connection_config.py::test_motherduck_token_mask",
-            "tests/core/test_connection_config.py::test_mysql"
+            "tests/core/test_connection_config.py::test_mysql",
+            "tests/core/test_connection_config.py::test_postgres",
+            "tests/core/test_connection_config.py::test_trino",
+            "tests/core/test_connection_config.py::test_trino_schema_location_mapping"
         ]
     },
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=4350&businessType=WORK",

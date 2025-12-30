@@ -70,8 +70,9 @@ class ZbMangae(ToolBase):
         :param self: Description
         需要明确clear的意义和目的
         """
-        for t in query_task(self.key):
-            t.set_error_msg(CS.FAILED, "unknow")
+        for t in query_task(self.key, state=CS.DOCKER_BUILD_FAILED):
+            # print(t.cg_file)
+            t.set_error_msg(CS.ERROR, CS.DOCKER_BUILD_FAILED)
 
     def check(self):
         for t in query_task(self.key, state=CS.SUCCESS):
@@ -89,12 +90,18 @@ class ZbMangae(ToolBase):
             state, msg = key[:start_idx], key[start_idx + 1 :]
             ret[state, msg].append(t)
 
+        def u(name, ct):
+            ret = []
+            for k, v in ct.items():
+                ret.append(f"{name}_{k}={v}")
+            return " ".join(ret)
+
         for (state, msg), tasks in ret.items():
             l = get_dev_log(f"data/log/zb/{state}.log")
             l.info(f"\n----{msg} {len(tasks)}----")
             for t in tasks:
                 test_ct, code_ct = t.get_result("test"), t.get_result("code")
-                l.info(f"id={t.id}; test_ct={test_ct} code_ct={code_ct}")
+                l.info(f"id={t.id}; {u('test',test_ct)} {u('code',code_ct)}")
             l.info("--------------")
             ct[state] += len(tasks)
         self.logger.info(dict(ct))
@@ -106,7 +113,7 @@ class ZbMangae(ToolBase):
             f.check()
             s, b, *args = f.error_msg.get_value().split(":")
             if s == CS.FAILED:
-                f.set_error_msg(CS.FAILED, "TODO")
+                f.set_error_msg(CS.FAILED, "WAIT")
                 tasks.append(f)
         for f in tasks:
             t = dol(f).build(f)
@@ -150,7 +157,7 @@ class ZbMangae(ToolBase):
         t.make_launch_json()
         logger.info(t.get_py_test_main_code())
         t.docker_build()
-        vv = get_volumn_v(
+        vv = t.get_volumn_v(
             {
                 t.local_repo.get_abs_path(): t.local_repo.path,
             }
@@ -165,14 +172,13 @@ class ZbMangae(ToolBase):
 
     def log(self, name=None):
         search_key = """
-E   ImportError: cannot import name 'BaseRelation' from 'dbt.adapters.base' (unknown location)
-
+E       ModuleNotFoundError: No module named 'redshift_connector'
 
 """.replace(
             "\n", ""
         )
         for f in query_task(self.key):
-            test_log = f.input_dir.child("test.log")
+            test_log = f.input_dir.child("code.log")
             # test_log = f.input_dir.child("docker_sqlmesh_3.9_default.log")
             if not test_log.exists():
                 continue
@@ -180,10 +186,7 @@ E   ImportError: cannot import name 'BaseRelation' from 'dbt.adapters.base' (unk
             idx = datas.find(search_key)
             if idx != -1:
                 f.set_env(name)
-                # f.set_error_msg(
-                #     CS.ERROR,
-                #     f"pd.testing.assert_frame_equal AssertionError: Data differs {datas[idx:idx+100]}",
-                # )
+                # f.set_error_msg(CS.FAILED, search_key)
                 logger.info(
                     f"{f.resource}->{f.error_msg.get_value()} log->{datas[idx:idx+100]}"
                 )

@@ -7,12 +7,13 @@
     "py_name": "",
     "result": {
         "old_detail": {
-            "ModuleNotFoundError: No module named 'google.cloud'": " tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_alter_expressions_includes_clustering[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_mutating_clustered_by_forward_only[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_information_schema_view_external_model[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_compare_nested_values_in_table_diff[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_bq_schema[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_column_types[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_table_diff_table_name_matches_column_name[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_materialized_view_evaluation[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_correlation_id_in_job_labels[[query]bigquery]",
-            "sqlglot.errors.SchemaError: Failed to update model schemas\n\nNo module named 'dbt.adapters.bigquery'": " tests/dbt/test_adapter.py::test_adapter_relation tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation tests/dbt/test_adapter.py::test_normalization tests/dbt/test_adapter.py::test_adapter_dispatch tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb] tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery] tests/dbt/test_adapter.py::test_feature_flag_scd_type_2 tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
+            "FileNotFoundError: [Errno 2] No such file or directory: 'None'": " tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_alter_expressions_includes_clustering[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_mutating_clustered_by_forward_only[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_information_schema_view_external_model[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_compare_nested_values_in_table_diff[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_bq_schema[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_column_types[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_table_diff_table_name_matches_column_name[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_materialized_view_evaluation[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_correlation_id_in_job_labels[[query]bigquery]",
+            "AssertionError: assert '[]' == '[<BigQueryCo..., N....ryColumn created_at (TIMESTAMP, NULLABLE)>]\n  + []": " tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation",
+            "ModuleNotFoundError: No module named 'dbt.adapters.snowflake'": " tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
         },
         "new_detail": {
-            "ModuleNotFoundError: No module named 'google.cloud'": " tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_alter_expressions_includes_clustering[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_mutating_clustered_by_forward_only[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_information_schema_view_external_model[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_compare_nested_values_in_table_diff[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_bq_schema[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_column_types[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_table_diff_table_name_matches_column_name[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_materialized_view_evaluation[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_correlation_id_in_job_labels[[query]bigquery]",
-            "sqlglot.errors.SchemaError: Failed to update model schemas\n\nNo module named 'dbt.adapters.bigquery'": " tests/dbt/test_adapter.py::test_adapter_relation tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation tests/dbt/test_adapter.py::test_normalization tests/dbt/test_adapter.py::test_adapter_dispatch tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb] tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery] tests/dbt/test_adapter.py::test_feature_flag_scd_type_2 tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
+            "FileNotFoundError: [Errno 2] No such file or directory: 'None'": " tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_alter_expressions_includes_clustering[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_mutating_clustered_by_forward_only[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_information_schema_view_external_model[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_compare_nested_values_in_table_diff[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_bq_schema[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_column_types[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_table_diff_table_name_matches_column_name[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_materialized_view_evaluation[[query]bigquery] tests/core/engine_adapter/integration/test_integration_bigquery.py::test_correlation_id_in_job_labels[[query]bigquery]",
+            "ModuleNotFoundError: No module named 'dbt.adapters.snowflake'": " tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
         },
         "test": {
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_alter_expressions_includes_clustering[[query]bigquery]": "error",
@@ -24,15 +25,15 @@
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_table_diff_table_name_matches_column_name[[query]bigquery]": "error",
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_materialized_view_evaluation[[query]bigquery]": "error",
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_correlation_id_in_job_labels[[query]bigquery]": "error",
-            "tests/dbt/test_adapter.py::test_adapter_relation": "error",
-            "tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation": "error",
-            "tests/dbt/test_adapter.py::test_normalization": "error",
-            "tests/dbt/test_adapter.py::test_adapter_dispatch": "error",
-            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb]": "error",
-            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]": "error",
-            "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2": "failed",
+            "tests/dbt/test_adapter.py::test_adapter_relation": "passed",
+            "tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation": "failed",
+            "tests/dbt/test_adapter.py::test_normalization": "passed",
+            "tests/dbt/test_adapter.py::test_adapter_dispatch": "passed",
+            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb]": "passed",
+            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]": "passed",
+            "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2": "passed",
             "tests/dbt/test_adapter.py::test_quote_as_configured": "passed",
-            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "error"
+            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "failed"
         },
         "code": {
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_get_alter_expressions_includes_clustering[[query]bigquery]": "error",
@@ -44,22 +45,30 @@
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_table_diff_table_name_matches_column_name[[query]bigquery]": "error",
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_materialized_view_evaluation[[query]bigquery]": "error",
             "tests/core/engine_adapter/integration/test_integration_bigquery.py::test_correlation_id_in_job_labels[[query]bigquery]": "error",
-            "tests/dbt/test_adapter.py::test_adapter_relation": "error",
-            "tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation": "error",
-            "tests/dbt/test_adapter.py::test_normalization": "error",
-            "tests/dbt/test_adapter.py::test_adapter_dispatch": "error",
-            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb]": "error",
-            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]": "error",
-            "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2": "failed",
+            "tests/dbt/test_adapter.py::test_adapter_relation": "passed",
+            "tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation": "passed",
+            "tests/dbt/test_adapter.py::test_normalization": "passed",
+            "tests/dbt/test_adapter.py::test_adapter_dispatch": "passed",
+            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb]": "passed",
+            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]": "passed",
+            "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2": "passed",
             "tests/dbt/test_adapter.py::test_quote_as_configured": "passed",
-            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "error"
+            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "failed"
         },
         "FAIL_TO_FAIL": [
-            "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2"
+            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
         ],
         "PASS_TO_FAIL": [],
-        "FAIL_TO_PASS": [],
+        "FAIL_TO_PASS": [
+            "tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation"
+        ],
         "PASS_TO_PASS": [
+            "tests/dbt/test_adapter.py::test_adapter_dispatch",
+            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]",
+            "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb]",
+            "tests/dbt/test_adapter.py::test_adapter_relation",
+            "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2",
+            "tests/dbt/test_adapter.py::test_normalization",
             "tests/dbt/test_adapter.py::test_quote_as_configured"
         ]
     },
