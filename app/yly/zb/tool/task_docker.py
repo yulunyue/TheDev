@@ -3,6 +3,10 @@ import time
 from common.util.export import get_dev_log
 
 
+def get_volumn_v(kw):
+    return " ".join([f"-v {k}:{v}" for k, v in kw.items()])
+
+
 class DockerTask(ZbTask):
     def set_env(self, docker_image_name, remote_ip, log_flie):
         from common.third_util.docker_util import DockerUtil
@@ -23,7 +27,7 @@ class DockerTask(ZbTask):
         return True
 
     def get_volumn_v(self, kw=None):
-        return " ".join([f"-v {k}:{v}" for k, v in self.get_volumn(kw).items()])
+        return get_volumn_v(self.get_volumn(kw))
 
     def get_volumn(self, kw=None):
         ret = {

@@ -26,7 +26,7 @@ from .model.export import (
     query_one,
 )
 
-from .tool.task_docker import DockerTask
+from .tool.task_docker import DockerTask, get_volumn_v
 from .tool.task_self import SelfTask
 from .tool.task_base import ZbTask
 
@@ -73,6 +73,11 @@ class ZbMangae(ToolBase):
         for t in query_task(self.key):
             t.set_error_msg(CS.FAILED, "unknow")
 
+    def check(self):
+        for t in query_task(self.key, state=CS.SUCCESS):
+            t.set_error_msg(CS.SUCCESS, "CHECKING")
+            dol(t, "check").build(t).run()
+
     def view(self):
         ret: Dict[str, List[TaskCfg]] = defaultdict(list)
         ct = defaultdict(int)
@@ -80,7 +85,8 @@ class ZbMangae(ToolBase):
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]
-            state, msg = key.split(":")
+            start_idx = key.index(":")
+            state, msg = key[:start_idx], key[start_idx + 1 :]
             ret[state, msg].append(t)
 
         for (state, msg), tasks in ret.items():
@@ -134,16 +140,17 @@ class ZbMangae(ToolBase):
         c.pip()
 
     def debug(self, name):
-        t = self.docker(docker_name="dev")
-        t.docker_build()
-        t.make_launch_json()
+        t = self.docker(docker_name="debug")
         if name == "test":
             t.apply_test()
         elif name == "code":
             t.apply_code()
         else:
             raise Exception(name)
-        vv = self.docker().get_volumn_v(
+        t.make_launch_json()
+        logger.info(t.get_py_test_main_code())
+        t.docker_build()
+        vv = get_volumn_v(
             {
                 t.local_repo.get_abs_path(): t.local_repo.path,
             }
@@ -151,14 +158,15 @@ class ZbMangae(ToolBase):
         logger.info(
             f"docker run -p 5678:5678 {vv} -it {self.docker().docker_image_name}"
         )
-        logger.info(t.get_py_test_main_code())
+
         logger.info(
             f"python -m debugpy --listen 0.0.0.0:5678 --wait-for-client py_test_main.py"
         )
 
     def log(self, name=None):
         search_key = """
-E   ModuleNotFoundError: No module named 'fastapi'
+E   ImportError: cannot import name 'BaseRelation' from 'dbt.adapters.base' (unknown location)
+
 
 """.replace(
             "\n", ""
@@ -169,9 +177,16 @@ E   ModuleNotFoundError: No module named 'fastapi'
             if not test_log.exists():
                 continue
             datas = test_log.read_file()
-            if search_key in datas:
+            idx = datas.find(search_key)
+            if idx != -1:
                 f.set_env(name)
-                logger.info(f.resource)
+                # f.set_error_msg(
+                #     CS.ERROR,
+                #     f"pd.testing.assert_frame_equal AssertionError: Data differs {datas[idx:idx+100]}",
+                # )
+                logger.info(
+                    f"{f.resource}->{f.error_msg.get_value()} log->{datas[idx:idx+100]}"
+                )
 
     def files(self):
         for d in REPO_DIR.list_dir(-1):
