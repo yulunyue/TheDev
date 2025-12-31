@@ -172,7 +172,8 @@ class ZbMangae(ToolBase):
 
     def log(self, name=None):
         search_key = """
-E       ModuleNotFoundError: No module named 'redshift_connector'
+E             'Flags' object has no attribute 'state_modified_compare_more_unrendered_values'
+
 
 """.replace(
             "\n", ""

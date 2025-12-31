@@ -107,7 +107,7 @@ class TaskCfg(ConfigBase):
             return self
         py_ver = float(env.split("_")[0])
         if py_ver < 2.7 or py_ver > 3.99:
-            raise Exception(py_ver, "py_version")
+            env = "3.9_" + env
         env_dir = REPO_DIR.child(self.repo).child(env)
         env_names = [
             f.file_name
@@ -117,11 +117,12 @@ class TaskCfg(ConfigBase):
         logger.info(f"{self.env_name}->{env}")
         pr = env_dir.child("pr")
         if not pr.exists():
-            input(f"make sure new env {env} not in {env_names}")
+            input(f"are you sure new env not {env_names}")
             pr.make_dir_if_not_exist(True)
-            REPO_DIR.child(self.repo).child(self.env_name).child(
-                CS.SETUP_ENV_SH
-            ).copy_to(env_dir.child(CS.SETUP_ENV_SH))
+            d = REPO_DIR.child(self.repo, self.env_name, CS.SETUP_ENV_SH).copy_to(
+                env_dir.child(CS.SETUP_ENV_SH)
+            )
+            input(f"do {d}")
         dst = pr.child(self.resource.file_name)
         self.resource.move_to(dst)
         self.set_resource(dst).load()

@@ -50,10 +50,9 @@ class File:
     def get_m_time(self):
         return os.path.getmtime(self.path)
 
-    def child(self, name):
-        if not isinstance(name, str):
-            raise Exception(name)
-        return File(self.path + "/" + name)
+    def child(self, *args):
+        args = [self.path] + list(args)
+        return File("/".join(args))
 
     def get_abs_path(self):
         cwd = os.getcwd().replace("\\", "/")

@@ -2,7 +2,7 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-5144.zip?Expires=1766900807&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=vpODMp5qfM5%2BHcSP2xgBap4dWd8%3D",
-    "error_msg": "failed:FAIL_TO_FAIL",
+    "error_msg": "success:success",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/1987",
     "name": "TobikoData__sqlmesh-5144",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/5144",
@@ -10,12 +10,9 @@
     "result": {
         "old_detail": {
             "AssertionError: assert 'None' == 'table'\n  \n  - table\n  + None": " tests/dbt/test_adapter.py::test_adapter_relation",
-            "AssertionError: Calls not found.\nExpected: [call(T....is='test', quoted=True))\n  Use -v to get more diff": " tests/dbt/test_adapter.py::test_normalization",
-            "ModuleNotFoundError: No module named 'dbt.adapters.snowflake'": " tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
+            "AssertionError: Calls not found.\nExpected: [call(T....is='test', quoted=True))\n  Use -v to get more diff": " tests/dbt/test_adapter.py::test_normalization"
         },
-        "new_detail": {
-            "ModuleNotFoundError: No module named 'dbt.adapters.snowflake'": " tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
-        },
+        "new_detail": {},
         "test": {
             "tests/dbt/test_adapter.py::test_adapter_relation": "failed",
             "tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation": "passed",
@@ -25,7 +22,7 @@
             "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]": "passed",
             "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2": "passed",
             "tests/dbt/test_adapter.py::test_quote_as_configured": "passed",
-            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "failed"
+            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "passed"
         },
         "code": {
             "tests/dbt/test_adapter.py::test_adapter_relation": "passed",
@@ -36,11 +33,9 @@
             "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]": "passed",
             "tests/dbt/test_adapter.py::test_feature_flag_scd_type_2": "passed",
             "tests/dbt/test_adapter.py::test_quote_as_configured": "passed",
-            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "failed"
+            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization": "passed"
         },
-        "FAIL_TO_FAIL": [
-            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization"
-        ],
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
             "tests/dbt/test_adapter.py::test_adapter_relation",
@@ -48,6 +43,7 @@
         ],
         "PASS_TO_PASS": [
             "tests/dbt/test_adapter.py::test_adapter_dispatch",
+            "tests/dbt/test_adapter.py::test_adapter_get_relation_normalization",
             "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[bigquery]",
             "tests/dbt/test_adapter.py::test_adapter_map_snapshot_tables[duckdb]",
             "tests/dbt/test_adapter.py::test_bigquery_get_columns_in_relation",
