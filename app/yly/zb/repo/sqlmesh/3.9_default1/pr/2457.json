@@ -2,19 +2,16 @@
     "name": "TobikoData__sqlmesh-2457",
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27131&businessType=WORK",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-2457.zip?Expires=1767778180&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=TTRrL9C8akN0oek0Xg1n4zaZlfs%3D",
-    "error_msg": "failed:WAIT",
+    "error_msg": "success:success",
     "depends_models": {},
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/2443",
     "local_packge_extern": "",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/2457",
     "result": {
         "old_detail": {
-            "assert '\"project-id\".dataset.table' == '`project-i.... ^\n  + \"project-id\".dataset.table\n  ? ^          ^": " tests/core/test_context.py::test_generate_table_name_in_dialect",
-            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_context.py::test_project_config_person_config_overrides"
+            "assert '\"project-id\".dataset.table' == '`project-i.... ^\n  + \"project-id\".dataset.table\n  ? ^          ^": " tests/core/test_context.py::test_generate_table_name_in_dialect"
         },
-        "new_detail": {
-            "ModuleNotFoundError: No module named 'snowflake'": " tests/core/test_context.py::test_project_config_person_config_overrides"
-        },
+        "new_detail": {},
         "test": {
             "tests/core/test_context.py::test_global_config": "passed",
             "tests/core/test_context.py::test_named_config": "passed",
@@ -32,7 +29,7 @@
             "tests/core/test_context.py::test_clear_caches": "passed",
             "tests/core/test_context.py::test_ignore_files": "passed",
             "tests/core/test_context.py::test_plan_apply": "passed",
-            "tests/core/test_context.py::test_project_config_person_config_overrides": "failed",
+            "tests/core/test_context.py::test_project_config_person_config_overrides": "passed",
             "tests/core/test_context.py::test_physical_schema_override": "passed",
             "tests/core/test_context.py::test_janitor": "passed",
             "tests/core/test_context.py::test_plan_default_end": "passed",
@@ -58,7 +55,7 @@
             "tests/core/test_context.py::test_clear_caches": "passed",
             "tests/core/test_context.py::test_ignore_files": "passed",
             "tests/core/test_context.py::test_plan_apply": "passed",
-            "tests/core/test_context.py::test_project_config_person_config_overrides": "failed",
+            "tests/core/test_context.py::test_project_config_person_config_overrides": "passed",
             "tests/core/test_context.py::test_physical_schema_override": "passed",
             "tests/core/test_context.py::test_janitor": "passed",
             "tests/core/test_context.py::test_plan_default_end": "passed",
@@ -67,9 +64,7 @@
             "tests/core/test_context.py::test_unrestorable_snapshot": "passed",
             "tests/core/test_context.py::test_default_catalog_connections": "passed"
         },
-        "FAIL_TO_FAIL": [
-            "tests/core/test_context.py::test_project_config_person_config_overrides"
-        ],
+        "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
             "tests/core/test_context.py::test_generate_table_name_in_dialect"
@@ -93,6 +88,7 @@
             "tests/core/test_context.py::test_plan_apply",
             "tests/core/test_context.py::test_plan_default_end",
             "tests/core/test_context.py::test_plan_start_ahead_of_end",
+            "tests/core/test_context.py::test_project_config_person_config_overrides",
             "tests/core/test_context.py::test_render_seed_model",
             "tests/core/test_context.py::test_render_sql_model",
             "tests/core/test_context.py::test_schema_error_no_default",

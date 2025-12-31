@@ -151,6 +151,8 @@ class TheDevLoger:
         w = self.fp.get_writer()
         if isinstance(msg, str):
             msg = msg.encode("utf-8")
+        elif not isinstance(msg, bytes):
+            msg = str(msg).encode("utf-8")
         w.write(msg + b"\n")
         w.flush()
 

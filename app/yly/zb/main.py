@@ -70,9 +70,9 @@ class ZbMangae(ToolBase):
         :param self: Description
         需要明确clear的意义和目的
         """
-        for t in query_task(self.key, state=CS.DOCKER_BUILD_FAILED):
+        for t in query_task(self.key):
             # print(t.cg_file)
-            t.set_error_msg(CS.ERROR, CS.DOCKER_BUILD_FAILED)
+            t.set_error_msg(CS.FAILED, CS.DOCKER_BUILD_FAILED)
 
     def check(self):
         for t in query_task(self.key, state=CS.SUCCESS):
@@ -113,7 +113,7 @@ class ZbMangae(ToolBase):
             f.check()
             s, b, *args = f.error_msg.get_value().split(":")
             if s == CS.FAILED:
-                f.set_error_msg(CS.FAILED, "WAIT")
+                f.set_error_msg(CS.RUN, "WAIT")
                 tasks.append(f)
         for f in tasks:
             t = dol(f).build(f)
@@ -172,13 +172,14 @@ class ZbMangae(ToolBase):
 
     def log(self, name=None):
         search_key = """
-E             'Flags' object has no attribute 'state_modified_compare_more_unrendered_values'
-
+E       ModuleNotFoundError: No module named 'snowflake'
 
 """.replace(
             "\n", ""
         )
         for f in query_task(self.key):
+            if f.error_msg.get_value().startswith(CS.RUN):
+                continue
             test_log = f.input_dir.child("code.log")
             # test_log = f.input_dir.child("docker_sqlmesh_3.9_default.log")
             if not test_log.exists():

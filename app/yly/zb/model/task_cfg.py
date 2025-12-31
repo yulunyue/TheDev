@@ -41,7 +41,7 @@ class TaskCfg(ConfigBase):
 
     def can_submit(self):
         err_msg = self.error_msg.get_value()
-        if err_msg.startswith(CS.FAILED):
+        if err_msg.startswith(CS.FAILED) or err_msg.startswith(CS.RUN):
             return False
         return True
 
@@ -152,7 +152,7 @@ class TaskCfg(ConfigBase):
         self.save()
 
     def set_error_msg(self, state, msg: str):
-        if state not in {CS.SUCCESS, CS.SKIPPED, CS.FAILED, CS.ERROR}:
+        if state not in {CS.SUCCESS, CS.SKIPPED, CS.FAILED, CS.ERROR, CS.RUN}:
             raise Exception(msg)
         msg = f"{state}:{msg}"
         if msg != self.error_msg.get_value():

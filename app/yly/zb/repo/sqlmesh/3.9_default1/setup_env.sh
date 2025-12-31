@@ -5,4 +5,5 @@ pip install fastapi==0.110.2
 pip install freezegun
 pip install PyGithub
 pip install watchfiles>=0.19.0
+pip install snowflake-connector-python
 echo '__version__ = "0.0.0"' > sqlmesh/_version.py

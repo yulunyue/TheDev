@@ -281,7 +281,7 @@ class ZbTask:
 
     def run(self):
         self.init()
-        self.local_cfg.set_error_msg(CS.FAILED, "DOING")
+        self.local_cfg.set_error_msg(CS.RUN, "DOING")
         self.play()
 
     def play(self):

@@ -26,8 +26,8 @@ class SegTreeNode:
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
 
-    def merge(self, lvalue, rvalue):
-        return lvalue + rvalue
+    def merge(self, lv, rv):
+        return lv + rv
 
     def set_range(self, l, r):
         self.l = l
