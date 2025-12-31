@@ -11,11 +11,16 @@ import sys
 import json
 import os
 
-from common.util.export import File, get_log, uid, Module, get_function_info, File
-
-from common.third_util.api import Api
-from common.service.apicall import ApiCall
-from common.service.node import Node
+from common.util.export import (
+    File,
+    get_log,
+    uid,
+    Module,
+    get_function_info,
+    File,
+    ApiCall,
+    Node,
+)
 
 
 logger = get_log("http")
@@ -135,10 +140,6 @@ def run(gs: list, port=8888):
 
 def stop():
     IOLoop.instance().stop()
-
-
-def http_test(path):
-    return Api().post(path)
 
 
 if __name__ == "__main__":

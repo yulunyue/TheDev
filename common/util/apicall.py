@@ -76,7 +76,6 @@ class ApiCall:
 
     def to_json(self):
         childs = []
-        for k in self.fun_map:
-            c = get_function_info(self.fun_map[k])
-            childs.append(c.to_json())
+        for k in sorted(self.fun_map.keys()):
+            childs.append(dict(key=k))
         return dict(childs=childs)
