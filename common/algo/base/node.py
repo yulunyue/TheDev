@@ -46,11 +46,11 @@ class Edge:
 
 class TreeNode:
     """
-                  A
-             /    |   \
-          B       C     D
-        / | \    / \   / \
-       E  F  G  H   I  J  K
+               A                #
+          /    |   \            #
+       B       C     D          #
+     / | \    / \   / \         #
+    E  F  G  H   I  J  K        #
     """
 
     def __init__(self, val=0, left=None, right=None):

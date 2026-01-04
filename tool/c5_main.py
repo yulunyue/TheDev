@@ -1,15 +1,14 @@
 from common.util.export import ToolBase, logger, log, time, File
 from common.algo.export import ALgoManage, random_seed, Algo
-from .state import State, C
-from .case import CASE
+from app.yly.envs.game.c5.state import State, C
+from app.yly.envs.game.c5.case import CASE
 
 
 class C5Tool(ToolBase):
-    def prepare(self, *args, **kw):
-        self.s = State.new()
-        # self.s = State.new(295292022567525683857)  # 一个普通的中局
+    def prepare(self):
+        self.s = State.new(C.state)
         self.al = ALgoManage().set_state(self.s)
-        return super().prepare(*args, **kw)
+        return self
 
     def do_cmd(self, method, *args):
         try:
@@ -23,10 +22,18 @@ class C5Tool(ToolBase):
             self.info(self.s.show())
 
     def view1(self):
-        log.debug(self.s.show())
-        for a in self.s.get_sort_actions():
+        s = State.new(1100585500678)
+        log.debug(s.show())
+        for a in s.get_sort_actions():
             log.debug(a.show())
             log.debug(a.get_dst().show())
+
+    def view2(self):
+        s = State.new(1100585500678)
+        log.debug(s.show())
+        d = self.al.ab(5).search(s)
+        log.debug(d.show())
+        log.debug(d.dst.show())
 
     def view3(self):
         a = State.new(0x40200000000000000).get_action(25)
@@ -49,7 +56,7 @@ class C5Tool(ToolBase):
             idx += 1
 
     def actor(self):
-        self.al.actor([self.al.ab(5), self.al.ab(5)])
+        self.al.actor([self.al.rd(), self.al.ab(5)])
 
     def mc(self):
         s = State.new(CASE.get_case_6_61())

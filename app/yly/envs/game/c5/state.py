@@ -31,8 +31,7 @@ class C5ACtion(Action):
 
 
 class State(AbState):
-    @classmethod
-    def new(cls, state=None, player_id=None, depth=None) -> "State":
+    def __init__(self, state=None, player_id=0, depth=None):
         if state is None:
             state = C.state
         if depth is None:
@@ -41,7 +40,7 @@ class State(AbState):
                 C.pos_status[C.STATE_SECONED]
             )
             player_id = depth % 2
-        return super().new(state, player_id=player_id, depth=depth)
+        super().__init__(state, player_id=player_id, depth=depth)
 
     def get_action(self, pos):
         C.set_mask(self.state)

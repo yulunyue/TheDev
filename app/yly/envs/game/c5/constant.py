@@ -2,7 +2,7 @@ from common.algo.base.bin_util import encode_data, decode_data, set_mask
 from common.util.export import List, Dict, defaultdict, logger
 
 
-class Constant:
+class ConstantC5:
     STATE_NULL = 0
     STATE_FIRST = 1
     STATE_SECONED = 2
@@ -43,7 +43,7 @@ class Constant:
         return self
 
     def init_size(self):
-        self.size = self.width * (self.height - 1)
+        self.size = self.width * self.height
 
     def init_mask(self):
         self.row_bit = self.BIT_SIZE * self.width
@@ -51,7 +51,7 @@ class Constant:
         self.mask_cloumn = (1 << self.height_bit) - 1
         self.mask_row = (1 << self.row_bit) - 1
         self.mask_bit = (1 << self.BIT_SIZE) - 1
-        self.grid = [Constant.STATE_NULL] * self.size
+        self.grid = [self.STATE_NULL] * self.size
         self.pos_status: Dict[int, set] = {
             self.STATE_NULL: set(range(self.size)),
             self.STATE_FIRST: set(),
@@ -194,4 +194,4 @@ class Constant:
         return [" ".join(row) for row in ret]
 
 
-C = Constant()
+C = ConstantC5()

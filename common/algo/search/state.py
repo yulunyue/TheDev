@@ -124,7 +124,7 @@ class State:
         return self
 
     @classmethod
-    def new(cls, state=None, **kw):
+    def new(cls, state, **kw):
         if cls.STATE_STORE is None:
             cls.STATE_STORE = dict()
         if state not in cls.STATE_STORE:

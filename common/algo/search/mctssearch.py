@@ -127,9 +127,6 @@ class MctsSearch(Algo):
 
 class MctsSearchDev(MctsSearch):
 
-    def update(self, s: MctsState, score):
-        super().update(s, score)
-
     def search(self, state):
         action: Action = super().search(state)
         return action
