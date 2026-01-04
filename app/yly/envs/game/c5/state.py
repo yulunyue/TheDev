@@ -1,8 +1,9 @@
 from common.algo.export import AbState, Action
 from common.util.export import List
-from .constant import C
+from .constant import C, ConstantShow
 
 C.load()
+CS = ConstantShow().load()
 
 
 class C5ACtion(Action):
@@ -35,7 +36,7 @@ class State(AbState):
         if state is None:
             state = C.state
         if depth is None:
-            C.set_mask(state)
+            CS.set_state(state)
             depth = len(C.pos_status[C.STATE_FIRST]) + len(
                 C.pos_status[C.STATE_SECONED]
             )
@@ -43,7 +44,7 @@ class State(AbState):
         super().__init__(state, player_id=player_id, depth=depth)
 
     def get_action(self, pos):
-        C.set_mask(self.state)
+        C.set_state(self.state)
         obs, state = C.get_next_state(pos, self.player_id + 1)
         dst = State.new(state, player_id=1 - self.player_id, depth=self.depth + 1)
         a = C5ACtion(self, pos, dst, obs=obs)
@@ -52,6 +53,7 @@ class State(AbState):
     def make_actions(self):
         actions = []
         actions_op_win = []
+        C.set_state(self.state)  # 在深度搜索需要确保
         can_moves = list(C.pos_status[C.STATE_NULL])
         for pos in can_moves:
             a = self.get_action(pos)
@@ -72,7 +74,7 @@ class State(AbState):
         return actions_op_win if actions_op_win else actions
 
     def to_str(self):
-        return C.to_str(self.state)
+        return CS.to_str(self.state)
 
     def show_titles(self):
-        return f"depath:{self.depth}; player:{self.player_id}{C.s(self.player_id+1)}"
+        return f"depth:{self.depth}; player:{self.player_id}{C.s(self.player_id+1)}"

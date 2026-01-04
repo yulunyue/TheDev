@@ -125,12 +125,12 @@ class ConstantC5:
             self.state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id
         )
 
-    def set_mask(self, state):
+    def set_state(self, state):
         if self.state == state:
             return
         self.change_mask(state)
 
-    set_state = set_mask
+    # set_state = set_mask
 
     def change_mask(self, state):
         state1, state2 = self.state, state
@@ -184,8 +184,10 @@ class ConstantC5:
     def s(self, v):
         return ["-", "O", "X"][v]
 
+
+class ConstantShow(ConstantC5):
     def to_str(self, state):
-        self.set_mask(state)
+        self.set_state(state)  # 状态类，需要多个
         ret = [[f"{i}"] + [" "] * self.width for i in range(self.size // self.width)]
         for i, v in enumerate(self.grid):
             y, x = self.get_yx(i)

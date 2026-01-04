@@ -1,5 +1,14 @@
 import random
-from common.util.export import logger, json_dumps, defaultdict, math, List, Dict, Tuple
+from common.util.export import (
+    logger,
+    File,
+    json_dumps,
+    defaultdict,
+    math,
+    List,
+    Dict,
+    Tuple,
+)
 
 
 inf = float("inf")
@@ -124,11 +133,11 @@ class State:
         return self
 
     @classmethod
-    def new(cls, state, **kw):
+    def new(cls, state, depth=None, **kw):
         if cls.STATE_STORE is None:
             cls.STATE_STORE = dict()
         if state not in cls.STATE_STORE:
-            cls.STATE_STORE[state] = cls(state, **kw)
+            cls.STATE_STORE[state] = cls(state, depth=depth, **kw)
         return cls.STATE_STORE[state]
 
     def get_done(self):
@@ -292,10 +301,13 @@ class State:
             datas.append(str(info))
         return datas
 
-    def show(self, info=None):
+    def show(self, info=None, fp=None):
         body = self.show_body(info)
         head = f"-----{self.title}-----"
-        return "\n".join([head] + body + ["-" * len(head)])
+        ret = "\n".join([head] + body + ["-" * len(head)])
+        if fp:
+            File(f"data/log/{fp}.log").write_file(ret)
+        return ret
 
     @property
     def title(self):
