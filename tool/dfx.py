@@ -3,16 +3,12 @@ from common.util.export import ToolBase, Module
 
 
 class Dfx(ToolBase):
-    def prepare(self, module_name, fun_name):
-        self.module_name = module_name
-        self.fun_name = fun_name
-
-    def execute(self):
+    def execute(self, module_name, fun_name):
         def util():
-            ins: ToolBase = Module().load_module_object(self.module_name)()
+            ins: ToolBase = Module().load_module_object(module_name)()
             if hasattr(ins, "prepare"):
                 ins.prepare()
-            return getattr(ins, self.fun_name)()
+            return getattr(ins, fun_name)()
 
         CProfileUtil().run(util)
 

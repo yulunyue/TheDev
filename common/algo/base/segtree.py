@@ -21,7 +21,7 @@ class SegTreeNode:
         self._right: SegTreeNode = None
 
     def do(self, v):
-        self.value = v
+        raise Exception(v)
 
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
@@ -62,12 +62,12 @@ class SegTreeNode:
         rv = self.right.query(l, r)
         return self.merge(lv, rv)
 
-    def init(self, nums):
-        pass
+    def load(self, nums):
+        raise Exception()
 
     def build(self, *args):
         if self.l == self.r:
-            self.init(*args)
+            self.load(*args)
             return self
         self.left.build(*args)
         self.right.build(*args)

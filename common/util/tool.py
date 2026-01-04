@@ -30,14 +30,8 @@ def ii(s: str):
         try:
             ans.append(int(v))
         except Exception as e:
-            break
+            pass
     return ans
-
-
-def os_system(s: str):
-    ret = os.system(s)
-    if ret != 0:
-        raise Exception(s)
 
 
 def hash_any(c):
@@ -56,20 +50,6 @@ def hash_any(c):
 def md5(c: str):
     h = hashlib.md5(c.encode())
     return h.hexdigest()
-
-
-def dp(c: dict, k="", mp=None):
-    if mp is None:
-        mp = defaultdict(set)
-    if isinstance(c, list):
-        for i, v in enumerate(c):
-            dp(v, i)
-    elif isinstance(c, dict):
-        for k, v in c.items():
-            dp(v, k)
-    else:
-        mp[k].add(c)
-    return mp
 
 
 def str_mid(s: str, size, fill="-"):

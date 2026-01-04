@@ -17,18 +17,21 @@ class TestApi(TestBase):
                 dict(key="/app/api/test"),
             ],
         )
+
+    def test_api1(self):
         self.expect(
             self.api.get_api_call_info("/app/api/get_api_call_info"),
             {
                 "key": "get_api_call_info",
-                "data": {
-                    "key": {
+                "childs": [
+                    {
                         "default_value": None,
                         "is_pos": True,
                         "title": "key",
+                        "key": "key",
                         "type": "str",
                     }
-                },
+                ],
                 "title": "get_api_call_info",
             },
         )
@@ -40,33 +43,37 @@ class TestApi(TestBase):
             {
                 "key": "test",
                 "title": "test",
-                "data": {
-                    "a": {
+                "childs": [
+                    {
                         "title": "a",
                         "default_value": None,
                         "type": None,
                         "is_pos": True,
+                        "key": "a",
                     },
-                    "b": {
+                    {
                         "title": "b",
                         "default_value": "1",
                         "type": "enum",
                         "is_pos": False,
                         "childs": ["a", "b"],
+                        "key": "b",
                     },
-                    "c": {
+                    {
                         "title": "c",
                         "default_value": None,
                         "type": "search",
                         "is_pos": False,
-                        "url": "/app/api/query_api",
+                        "url": "/app/api/query_all_apis",
+                        "key": "c",
                     },
-                    "d": {
+                    {
                         "title": "d",
                         "default_value": None,
                         "type": None,
                         "is_pos": False,
+                        "key": "d",
                     },
-                },
+                ],
             },
         )

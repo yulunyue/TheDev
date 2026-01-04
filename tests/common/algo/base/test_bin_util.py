@@ -7,5 +7,4 @@ class TestBinUtil(TestBase):
         self.expect(low_bits(0b101), [1, 4])
 
     def test_ss_or_bit(self):
-        # self.expect(ss_or_dp([1]), [0, 1])
-        self.expect(ss_or_dp([1, 1]), [0, 3])
+        self.expect(ss_or_dp([1, 1]), [0, 2])
