@@ -17,14 +17,19 @@ class FunInfo:
         self.name = name
         self.doc = doc
         self.args = args
-        self.kw = kw
+        self.kw: dict = kw
         self.has_args = has_args
         self.has_kw = has_kw
         self.has_self = has_self
         return self
 
     def to_json(self):
-        return dict(key=self.name, title=self.name)
+        childs = []  # 前端需要这样的childs 数组
+        for key in sorted(self.kw.keys()):
+            v: dict = self.kw[key]
+            v.update(key=key)
+            childs.append(v)
+        return dict(key=self.name, title=self.name, childs=childs)
 
 
 def check_func_arg_kw(v):
@@ -77,7 +82,7 @@ def get_function_info(v):
 
     def a_help(key, default_value, is_pos):
         cls = argspec.annotations.get(key, None)
-        ret = dict(key=key, default_value=default_value, type=None, is_pos=is_pos)
+        ret = dict(title=key, default_value=default_value, type=None, is_pos=is_pos)
 
         if hasattr(cls, "type_info"):
             ret.update(cls.type_info)

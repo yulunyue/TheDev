@@ -23,8 +23,9 @@ export class Search extends Div {
     }
     init_event(): void {
         this.input.on_click(() => this.emit_search())
+        // this.input.on_input(() => this.emit_search())
         this.input.on_input(() => this.listui.filter(this.input.get_value()))
-        this.listui.on_change((src:any,dst:any)=>this.set_value(dst))
+        this.listui.on_change((src: any, dst: any) => this.set_value(dst))
     }
     set_title(s: string) {
         this.input.set_placeholder(s)
@@ -32,13 +33,13 @@ export class Search extends Div {
     }
     set_value(value: Node): this {
         super.set_value(value)
-        this.input.set_value(value.title)
+        this.input.set_value(value.get_title())
         this.dialog.hide()
         return this
     }
     emit_search() {
         web_dom.post(this.option.url, {
-            value: this.input.get_value()
+            key: this.input.get_value()
         }, (node: Node) => {
             this.listui.set_option(node)
             this.show_search_dialog()
