@@ -1,10 +1,8 @@
 from common.third_util.selenium_util import SeleniumUtil, By, WebElement
 from common.util.export import time, logger, File, List
-from common.service.export import Api, API_CONFIG
+
 from .model.export import new_one, TaskCfg, get_info_by_name, TASK_DIR, CS
 from .tool.task_base import ZbTask
-
-USER_CONFIG = API_CONFIG.get("Zb")
 
 
 class WebTool(SeleniumUtil):
@@ -129,4 +127,5 @@ class WebTool(SeleniumUtil):
         self.reload()
         self.get_job_info()
         for t in self.to_do_task:
-            self.submit(t.load())
+            if t.repo == "sqlmesh":
+                self.submit(t.load())

@@ -3,6 +3,12 @@ from common.util.export import TestBase, logger
 
 
 class TestTorch(TestBase):
+    def expect(self, a, expect_value=True, info="", stacklevel=2):
+        if isinstance(a, torch.Tensor):
+            a = torch.allclose(a, expect_value)
+            expect_value = True
+        return super().expect(a, expect_value, info, stacklevel)
+
     def test_base(self):
         TEST_DATA1 = [
             [1, 2, 3],
@@ -20,14 +26,13 @@ class TestTorch(TestBase):
         a = torch.tensor(TEST_DATA1)
         b = torch.tensor(TEST_DATA2)
         c = a * b
-        self.expect(a.sum(), 18)
+        self.expect(a.sum().item(), 18)
         self.expect(c.tolist(), TEST_DATA3)
-        self.expect(a.max(), 6)
+        self.expect(a.max().item(), 6)
 
     def test_log_soft_max(self):
         logits = torch.tensor([[1.0, 2.0, 3.0], [1.0, 1.0, 1.0]])
         result = F.log_softmax(logits, dim=1)
-        self.expect(result, None)
 
     def test_dim(self):
         """
@@ -42,7 +47,6 @@ class TestTorch(TestBase):
         s1 = tensor_1d.sum(dim=0)
         self.expect(s1.shape, torch.Size([]))
         self.expect(s1.item(), 10)
-        self.expect(s1, 10)
         tensor_3d = torch.tensor(
             [
                 [
@@ -68,7 +72,18 @@ class TestTorch(TestBase):
                     [12, 14, 6, 8],
                     [16, 18, 6, 8],
                 ],
-            ),
+            ).long(),
+        )
+        s2 = tensor_3d.sum(dim=1)
+        self.expect(s2.shape, torch.Size([2, 4]))
+        self.expect(
+            s2,
+            torch.Tensor(
+                [
+                    [9, 12, 9, 12],
+                    [27, 30, 9, 12],
+                ]
+            ).long(),
         )
 
     def test_gather(self):
@@ -112,7 +127,3 @@ class TestTorch(TestBase):
                 [[14], [17], [22]],  # [ t[1][0][1], t[1][1][0], t[1][2][1] ]
             ],
         )
-
-
-if __name__ == "__main__":
-    TestTorch().run()

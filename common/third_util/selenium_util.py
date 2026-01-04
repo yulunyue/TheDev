@@ -1,6 +1,5 @@
 from selenium import webdriver
 from common.tool.export import OsUtil, GC, System
-from common.service.export import Api
 from selenium.webdriver.chrome.options import Options
 from common.util.export import File, logger, time, List
 from selenium.webdriver.chrome.service import Service
@@ -169,12 +168,14 @@ class SeleniumUtil:
     def wait_url_contains(self, key):
         self.wait.until(EC.url_contains(key))
 
-    def load(self, dev_port=9256):
+    def load(self, dev_port=9257):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
 
         if dev_port:
             chrome_exe = File(GC.chrome_bin_path.get_value())
             chrome_driver = File(GC.chrome_driver_path.get_value())
+            from common.third_util.api import Api
+
             if not chrome_exe.exists():
                 Api().download(GC.chrome_bin_uri.get_value()).unzip(chrome_exe.path)
             if not chrome_driver.exists():
