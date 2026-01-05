@@ -2,56 +2,20 @@
     "after_setup_env": {},
     "docker_image_name": "sqlmesh:latest",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-4347.zip?Expires=1766900761&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=%2F1DCs2yhyogSwai4SGwt7nl%2BQBA%3D",
-    "error_msg": "success:success",
+    "error_msg": "failed:NO_FAIL_TO_PASS",
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/4320",
     "name": "TobikoData__sqlmesh-4347",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4347",
     "py_name": "",
     "result": {
-        "old_detail": {
-            "AttributeError: 'RowDiff' object has no attribute 'empty'": " tests/core/test_table_diff.py::test_data_diff_empty_tables"
-        },
+        "old_detail": {},
         "new_detail": {},
-        "test": {
-            "tests/core/test_table_diff.py::test_data_diff": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_decimals": "passed",
-            "tests/core/test_table_diff.py::test_grain_check": "passed",
-            "tests/core/test_table_diff.py::test_generated_sql": "passed",
-            "tests/core/test_table_diff.py::test_tables_and_grain_inferred_from_model": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_array_dict": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_nullable_booleans": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_multiple_models": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_forward_only": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_empty_tables": "failed"
-        },
-        "code": {
-            "tests/core/test_table_diff.py::test_data_diff": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_decimals": "passed",
-            "tests/core/test_table_diff.py::test_grain_check": "passed",
-            "tests/core/test_table_diff.py::test_generated_sql": "passed",
-            "tests/core/test_table_diff.py::test_tables_and_grain_inferred_from_model": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_array_dict": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_nullable_booleans": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_multiple_models": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_forward_only": "passed",
-            "tests/core/test_table_diff.py::test_data_diff_empty_tables": "passed"
-        },
+        "test": {},
+        "code": {},
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
-        "FAIL_TO_PASS": [
-            "tests/core/test_table_diff.py::test_data_diff_empty_tables"
-        ],
-        "PASS_TO_PASS": [
-            "tests/core/test_table_diff.py::test_data_diff",
-            "tests/core/test_table_diff.py::test_data_diff_array_dict",
-            "tests/core/test_table_diff.py::test_data_diff_decimals",
-            "tests/core/test_table_diff.py::test_data_diff_forward_only",
-            "tests/core/test_table_diff.py::test_data_diff_multiple_models",
-            "tests/core/test_table_diff.py::test_data_diff_nullable_booleans",
-            "tests/core/test_table_diff.py::test_generated_sql",
-            "tests/core/test_table_diff.py::test_grain_check",
-            "tests/core/test_table_diff.py::test_tables_and_grain_inferred_from_model"
-        ]
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": []
     },
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=4344&businessType=WORK",
     "test_main": [

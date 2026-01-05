@@ -1,43 +1,17 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-988.zip?Expires=1766564122&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=jm%2Bc2T5yP23ZEMbEr9USIbeOxPY%3D",
-    "error_msg": "success:success",
+    "error_msg": "failed:NO_FAIL_TO_PASS",
     "need_setup_env": false,
     "result": {
-        "old_detail": {
-            "AssertionError: assert 'PYTHONMALLOC' in {'PYTHONPATH': '/testbed/beeware/briefcase/src'}": " tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source"
-        },
+        "old_detail": {},
         "new_detail": {},
-        "test": {
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source": "failed",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode": "passed",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_linux": "passed",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_linux": "passed"
-        },
-        "code": {
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_windows": "skipped",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source": "passed",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode": "passed",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_linux": "passed",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_linux": "passed"
-        },
+        "test": {},
+        "code": {},
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
-        "FAIL_TO_PASS": [
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source"
-        ],
-        "PASS_TO_PASS": [
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_one_source_test_mode",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_and_tests_in_linux",
-            "tests/commands/dev/test_get_environment.py::test_pythonpath_with_two_sources_in_linux"
-        ]
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": []
     },
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=6083&businessType=WORK",
     "test_main": [

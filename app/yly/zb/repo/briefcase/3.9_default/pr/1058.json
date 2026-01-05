@@ -4,55 +4,19 @@
     "name": "beeware__briefcase-1058",
     "docker_image_name": "briefcase:latest",
     "after_setup_env": {},
-    "error_msg": "success:success",
+    "error_msg": "failed:NO_FAIL_TO_PASS",
     "issue_url": "https://github.com/beeware/briefcase/issues/1051",
     "pr_url": "https://github.com/beeware/briefcase/pull/1058",
     "py_name": "",
     "result": {
-        "old_detail": {
-            "AttributeError: 'LinuxAppImageCreateCommand' object has no attribute 'local_requirements_path'": " tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_in_docker tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_no_docker tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_locals tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local",
-            "Failed: DID NOT RAISE <class 'briefcase.exceptions.BriefcaseCommandError'>": " tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_missing_local_build tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local_file"
-        },
+        "old_detail": {},
         "new_detail": {},
-        "test": {
-            "tests/platforms/linux/appimage/test_create.py::test_support_package_url": "passed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_in_docker": "failed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_no_docker": "failed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_locals": "error",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local": "error",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_missing_local_build": "failed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local_file": "failed",
-            "tests/platforms/linux/appimage/test_open.py::test_open_docker": "passed",
-            "tests/platforms/linux/appimage/test_open.py::test_open_no_docker_linux": "passed",
-            "tests/platforms/linux/appimage/test_open.py::test_open_no_docker_macOS": "skipped"
-        },
-        "code": {
-            "tests/platforms/linux/appimage/test_create.py::test_support_package_url": "passed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_in_docker": "passed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_no_docker": "passed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_locals": "passed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local": "passed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_missing_local_build": "passed",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local_file": "passed",
-            "tests/platforms/linux/appimage/test_open.py::test_open_docker": "passed",
-            "tests/platforms/linux/appimage/test_open.py::test_open_no_docker_linux": "passed",
-            "tests/platforms/linux/appimage/test_open.py::test_open_no_docker_macOS": "skipped"
-        },
+        "test": {},
+        "code": {},
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
-        "FAIL_TO_PASS": [
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_in_docker",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_no_docker",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_bad_local_file",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_locals",
-            "tests/platforms/linux/appimage/test_create.py::test_install_app_requirements_with_missing_local_build"
-        ],
-        "PASS_TO_PASS": [
-            "tests/platforms/linux/appimage/test_create.py::test_support_package_url",
-            "tests/platforms/linux/appimage/test_open.py::test_open_docker",
-            "tests/platforms/linux/appimage/test_open.py::test_open_no_docker_linux"
-        ]
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": []
     },
     "test_main": [
         "tests/platforms/linux/appimage/test_create.py",

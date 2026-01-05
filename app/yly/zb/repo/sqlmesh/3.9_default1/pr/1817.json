@@ -2,51 +2,20 @@
     "name": "TobikoData__sqlmesh-1817",
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27113&businessType=WORK",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-1817.zip?Expires=1767778136&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=PI7uu2QKGHNvO1PFeD%2F3VqYn82U%3D",
-    "error_msg": "success:success",
+    "error_msg": "failed:NO_FAIL_TO_PASS",
     "depends_models": {},
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/1816",
     "local_packge_extern": "",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/1817",
     "result": {
-        "old_detail": {
-            "AssertionError: assert 'MODEL (\\n  n...NT)::INT AS....put truncated (27 lines hidden), use '-vv' to show": " tests/core/test_dialect.py::test_format_model_expressions",
-            "assert \"MODEL (\\n  n...),\\n  @'@foo'\" == \"MODEL (\\....uhonateuhaoenthuaoentuhaeotnhaoem'),\n      @'@foo'": " tests/core/test_dialect.py::test_format_body_macros"
-        },
+        "old_detail": {},
         "new_detail": {},
-        "test": {
-            "tests/core/test_dialect.py::test_format_model_expressions": "failed",
-            "tests/core/test_dialect.py::test_macro_format": "passed",
-            "tests/core/test_dialect.py::test_format_body_macros": "failed",
-            "tests/core/test_dialect.py::test_text_diff": "passed",
-            "tests/core/test_dialect.py::test_parse": "passed",
-            "tests/core/test_dialect.py::test_parse_jinja_with_semicolons": "passed",
-            "tests/core/test_dialect.py::test_seed": "passed",
-            "tests/core/test_dialect.py::test_select_from_values_for_batch_range_json": "passed"
-        },
-        "code": {
-            "tests/core/test_dialect.py::test_format_model_expressions": "passed",
-            "tests/core/test_dialect.py::test_macro_format": "passed",
-            "tests/core/test_dialect.py::test_format_body_macros": "passed",
-            "tests/core/test_dialect.py::test_text_diff": "passed",
-            "tests/core/test_dialect.py::test_parse": "passed",
-            "tests/core/test_dialect.py::test_parse_jinja_with_semicolons": "passed",
-            "tests/core/test_dialect.py::test_seed": "passed",
-            "tests/core/test_dialect.py::test_select_from_values_for_batch_range_json": "passed"
-        },
+        "test": {},
+        "code": {},
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
-        "FAIL_TO_PASS": [
-            "tests/core/test_dialect.py::test_format_body_macros",
-            "tests/core/test_dialect.py::test_format_model_expressions"
-        ],
-        "PASS_TO_PASS": [
-            "tests/core/test_dialect.py::test_macro_format",
-            "tests/core/test_dialect.py::test_parse",
-            "tests/core/test_dialect.py::test_parse_jinja_with_semicolons",
-            "tests/core/test_dialect.py::test_seed",
-            "tests/core/test_dialect.py::test_select_from_values_for_batch_range_json",
-            "tests/core/test_dialect.py::test_text_diff"
-        ]
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": []
     },
     "test_main": [
         "tests/core/test_dialect.py"
