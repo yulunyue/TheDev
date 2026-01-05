@@ -108,7 +108,7 @@ class ZbTask:
         for k in set(list(old.keys()) + list(new.keys())):
             old_statu, new_statu = old.get(k), new.get(k)
             if old_statu != new_statu:
-                if new_statu == CS.PASSED:
+                if new_statu == CS.PASSED and old_statu == CS.FAILED:
                     fail_to_pass.append(k)
                 elif old_statu == CS.PASSED:
                     pass_to_fail.append(k)
