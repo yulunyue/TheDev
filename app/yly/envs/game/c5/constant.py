@@ -1,5 +1,5 @@
 from common.algo.base.bin_util import encode_data, decode_data, set_mask
-from common.util.export import List, Dict, defaultdict, logger
+from common.util.export import List, Dict, defaultdict, logger, log
 
 
 class ConstantC5:
@@ -125,6 +125,13 @@ class ConstantC5:
             )
             self.line_ct[self.mask_state[old_state]] -= 1
             self.line_ct[self.mask_state[self.line_state[lid]]] += 1
+            if (
+                abs(self.mask_state[old_state]) == 6
+                or abs(self.mask_state[self.line_state[lid]]) == 6
+            ):
+                log.debug(
+                    f"pos={self.line_pos[lid]};o:{self.mask_state[old_state]};n:{self.mask_state[self.line_state[lid]]}"
+                )
 
         self.grid[idx] = player_id
 
