@@ -13,6 +13,7 @@ class ConstantC5:
     def init_mask_state(self):
         self.max_state = (1 << (2 * self.in_row)) - 1
         self.mask_state = [0] * self.max_state
+        self.line_ct = {i: 0 for i in range(-self.in_row - 1, self.in_row + 2)}
         for mk in range(self.max_state):
             mask = mk
             ct = [0, 0, 0, 0]
@@ -64,6 +65,7 @@ class ConstantC5:
         self.lines = [[] for _ in range(self.size)]
         self.line_pos = []
         self.line_state = []
+
         for i in range(self.size):
             l1, l2 = self.get_l(i)
             for dy, dx in self.DR:
@@ -96,28 +98,34 @@ class ConstantC5:
                 obs[old_statu] = obs.get(old_statu, 0) - 1
             if new_statu:
                 obs[new_statu] = obs.get(new_statu, 0) + 1
-            # if old_state or new_statu:
-            #     logger.map(
-            #         idx=idx,
-            #         pos=pos,
-            #         player_id=player_id,
-            #         lid=self.line_pos[lid],
-            #         old_state=bin(old_state),
-            #         old_statu=old_statu,
-            #         new_state=bin(new_state),
-            #         new_statu=new_statu,
-            #         indent="\n",
-            #     )
         return obs
+
+    def game_over(self):
+        from .state import State
+
+        depth = self.state.bit_count()
+        player_id = depth % 2
+        for s in self.line_state:
+            if player_id == 0 and s == C.in_row - 1:
+                return State.FIRST_WIN, player_id, depth
+            if player_id == 1 and s == -C.in_row + 1:
+                return State.SECONEND_WIN, player_id, depth
+        if depth == self.size:
+            return State.NO_WIN, player_id, depth
+        return False, player_id, depth
 
     def change_chess_statu(self, idx, player_id):
         self.pos_status[player_id].add(idx)
         self.pos_status[self.grid[idx]].remove(idx)
         # logger.map(idx=idx, cid=self.grid[idx], newid=player_id)
         for lid, pos in self.lines[idx]:
+            old_state = self.line_state[lid]
             self.line_state[lid] = set_mask(
                 self.line_state[lid], pos * self.CHESS_SIZE, self.CHESS_SIZE, player_id
             )
+            self.line_ct[self.mask_state[old_state]] -= 1
+            self.line_ct[self.mask_state[self.line_state[lid]]] += 1
+
         self.grid[idx] = player_id
 
     def get_next_state(self, idx, player_id):
@@ -125,9 +133,10 @@ class ConstantC5:
             self.state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id
         )
 
-    def set_state(self, state):
+    def set_state(self, state: int):
         if self.state == state:
             return
+
         self.change_mask(state)
 
     # set_state = set_mask
@@ -193,7 +202,14 @@ class ConstantShow(ConstantC5):
             y, x = self.get_yx(i)
             ret[y][x + 1] = self.s(v)
         ret.append([" "] + [str(v) for v in range(self.width)])
+        ret.append([str(self.line_ct)])
         return [" ".join(row) for row in ret]
 
 
 C = ConstantC5()
+CS = ConstantShow()
+
+
+def load(w, h, in_row):
+    C.load(w, h, in_row)
+    CS.load(w, h, in_row)

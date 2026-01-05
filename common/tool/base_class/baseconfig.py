@@ -21,6 +21,20 @@ class ConfigBase:
         self.init()
 
     @classmethod
+    def get_headers(cls):
+        return cls._params_cls_map.keys()
+
+    @classmethod
+    def get_row_datas(cls):
+        ret = []
+        for v in cls._ins.values():
+            ret.append([])
+            for k in cls.get_headers():
+                u = getattr(v, k)
+                ret[-1].append(str(u))
+        return ret
+
+    @classmethod
     def new(cls, key, f=None):
         if key not in cls._ins:
             cls._ins[key] = cls(key).set_resource(f)
@@ -56,13 +70,18 @@ class ConfigBase:
         return ret
 
     def update_param_value(self, param, value):
-        return self.resource.update_param_value(self, param, value)
+        # logger.info([self.key, param.key, param, id(self), value])
+        if self.resource:
+            return self.resource.update_param_value(self, param, value)
+        param.value = value
 
     resource: File = None
 
     def get_param_value(self, param):
         if self.resource is None:
-            return param.default_value
+            if param.value is None:
+                param.value = param.default_value
+            return param.value
         return self.resource.get_param_value(self, param)
 
     def update(self, **kw):
@@ -88,6 +107,8 @@ class ConfigBase:
         return {v.key: v.get_value() for v in self.params.values()}
 
     def save(self):
+        if self.resource is None:
+            return self
         cg = dict()
         if self.resource.exists():
             cg = self.resource.get_config()

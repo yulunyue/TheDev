@@ -222,7 +222,7 @@ def run_all_tests_and_get_results(name):
     with open(f"{name}.log", "w", encoding="utf-8") as f:
         f.write(f"stdout=>{msg}\nstderr=>{msg1}\nct=>{ct}\nresult=>{result}")
     print(f"\nstatu_code=>{statu_code}\n")
-    return result
+    return result, ct
 
 
 def write_results_and_exit(success=True):
@@ -242,12 +242,16 @@ def write_results_and_exit(success=True):
     sys.exit(0 if success else 1)
 
 
+def do_pre():
+    return run_all_tests_and_get_results("pre")
+
+
 def do_test():
     if not apply_patch(SCRIPT_DIR / "test.patch"):
         write_results_and_exit(False)
     print_header("STEP 1: PRE-PATCH - Running tests with only test patch")
-    pre_patch_results = run_all_tests_and_get_results("test")
-    if pre_patch_results is None:
+    pre_patch_results, _ = run_all_tests_and_get_results("test")
+    if not pre_patch_results:
         write_results_and_exit(False)
     return pre_patch_results
 
@@ -260,8 +264,8 @@ def do_code():
     results[INSTANCE_ID]["patch_successfully_applied"] = True
 
     print_header("STEP 2: POST-PATCH - Running tests with both patches")
-    post_patch_results = run_all_tests_and_get_results("code")
-    if post_patch_results is None:
+    post_patch_results, _ = run_all_tests_and_get_results("code")
+    if not post_patch_results:
         write_results_and_exit(False)
     return post_patch_results
 
@@ -278,6 +282,9 @@ def main():
 
     # --- 补丁前运行 ---
     if not reset_repo(BASE_COMMIT):
+        write_results_and_exit(False)
+    pre_result, pre_ct = do_pre()
+    if pre_ct.get(CS.FAILED) or pre_ct.get(CS.ERROR):
         write_results_and_exit(False)
     pre_patch_results = do_test()
     # --- 补丁后运行 ---

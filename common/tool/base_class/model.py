@@ -3,6 +3,8 @@ import json
 
 
 class BaseModel:
+    value = None
+
     def __init__(self, default_value=None, key=None, data_source=None) -> None:
         self.default_value = default_value
         from common.tool.base_class.baseconfig import ConfigBase
@@ -67,7 +69,7 @@ class BaseModel:
         return self.__add__(value)
 
     def __repr__(self) -> str:
-        return f"key:{self.key}"
+        return f"{self.get_value()}"
 
 
 class StrModel(BaseModel):

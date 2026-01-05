@@ -2,10 +2,12 @@ from common.util.export import ToolBase, logger, log, time, File
 from common.algo.export import ALgoManage, random_seed, Algo
 from app.yly.envs.game.c5.state import State, C
 from app.yly.envs.game.c5.case import CASE
+from app.yly.envs.game.c5.constant import load
 
 
 class C5Tool(ToolBase):
     def prepare(self):
+        load(8, 8, 5)
         self.s = State.new(C.state)
         self.al = ALgoManage().set_state(self.s)
         return self
@@ -37,8 +39,18 @@ class C5Tool(ToolBase):
 
     def view3(self):
         a = State.new(0x40200000000000000).get_action(25)
-        self.logger.debug(a.show())
-        self.logger.debug(a.get_dst().show())
+
+    def view4(self):
+        from app.yly.envs.game.c5.gm_player import GmuMo
+
+        s: State = State.new(2658648674848703515420644777517918216)
+        # a = s.get_action(1 * C.width + 3)
+        # s = a.get_dst()
+
+        logger.debug(s.show())
+        # al = GmuMo().load(C)
+        # c = al.search(s, last_a=a)
+        # logger.debug(c)
 
     def view_state(self):
         logger.debug(State.new(0x4000).show())
@@ -56,7 +68,21 @@ class C5Tool(ToolBase):
             idx += 1
 
     def actor(self):
-        self.al.actor([self.al.rd(), self.al.ab(5)])
+        from app.yly.envs.game.c5.gm_player import GmuMo
+
+        logger.info(
+            self.al.actor(
+                [
+                    GmuMo().load(C),
+                    self.al.rd(),
+                ]
+            )[-1]
+        )
+
+    def fight(self):
+        from app.yly.envs.game.c5.gm_player import GmuMo
+
+        self.al.set_players([GmuMo(), self.al.rd()]).fight()
 
     def mc(self):
         s = State.new(CASE.get_case_6_61())
@@ -78,7 +104,7 @@ class C5Tool(ToolBase):
         self.mc()
 
     def debug(self):
-        self.dev()
+        self.view4()
 
 
 if __name__ == "__main__":

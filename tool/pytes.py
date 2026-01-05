@@ -1,9 +1,9 @@
 from common.third_util.py_test_util import PyTestUtil
-from common.util.export import ToolBase, logger
+from common.util.export import ToolBase, logger, base64_encode
 from common.tool.export import PyUtil
 
 
-class PyTestMain(ToolBase):
+class PyTes(ToolBase):
     def coverage(self):
         PyTestUtil().set_aim("tests").coverage()
 
@@ -11,6 +11,9 @@ class PyTestMain(ToolBase):
         d = PyUtil().pip_download(pkg)
         logger.info(d)
 
+    def b64_encode(self, code="print('hello world')"):
+        logger.info(base64_encode(code))
+
 
 if __name__ == "__main__":
-    PyTestMain().run()
+    PyTes().run()

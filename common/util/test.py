@@ -147,6 +147,7 @@ def make_md_file(key=None, msg=""):
             .replace(".py", ".md")
             .replace("\\", "/")
         )
+        file_dir = f"doc/{file_dir}"
     else:
         file_dir = key + ".md"
     f = File(file_dir)
@@ -157,13 +158,13 @@ def make_md_file(key=None, msg=""):
 class ToolBase:
     name = None
 
-    @property
-    def logger(self):
-        return get_log(f"tool/{self.get_name()}.log")
+    # @property
+    # def logger(self):
+    #     return get_log(f"tool/{self.get_name()}.log")
 
-    @property
-    def dev_log(self):
-        return get_dev_log(f"tool/{self.get_name()}_dev.log")
+    # @property
+    # def dev_log(self):
+    #     return get_dev_log(f"tool/{self.get_name()}_dev.log")
 
     def prepare(self, *args):
         pass
@@ -194,8 +195,7 @@ class ToolBase:
 
         f(**self.kw)
         md_file = make_md_file()[0]
-        self.logger.info(md_file)
-        self.logger.info(md_file.replace(".md", ".py"))
+        logger.info(md_file)
         self.exit()
 
     def cli(self):

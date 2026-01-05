@@ -302,7 +302,7 @@ class File:
         return File(self.path.replace(src, dst))
 
     def __repr__(self):
-        return f"[File: {self.path} ; EXIST:{self.exists()}]"
+        return f"[File: {self.get_abs_path()} ; EXIST:{self.exists()}]"
 
 
 class Cache:

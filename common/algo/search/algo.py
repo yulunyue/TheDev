@@ -50,10 +50,12 @@ class Algo:
 
     use_time = 0
 
-    def search(self, state: "State", *args, **kw):
+    def search(self, state: "State", *args, last_a=None, **kw):
+        if state.game_over():
+            return state.get_best_action()
         self.reset()
         start_time = time.time()
-        ret = self.search_main(state.reset(), algo=self, *args, **kw)
+        ret = self.search_main(state.reset(), *args, last_a=last_a, **kw)
         self.use_time = time.time() - start_time
         return ret
 
@@ -65,7 +67,7 @@ class Algo:
             [f"---name:{self.get_name()} use_time:{self.use_time}---"] + self.info()
         )
 
-    def search_main(self, state: "State", algo=None) -> Action:
+    def search_main(self, state: "State") -> Action:
         pass
 
     def take_action(self, state: "State") -> Action:
@@ -123,6 +125,9 @@ class Algo:
             self.update_action(a, idx=len(self.actions) - 1)
             self.steps += 1
         return r
+
+    def __repr__(self):
+        return self.get_name()
 
 
 class RandomAlgo(Algo):

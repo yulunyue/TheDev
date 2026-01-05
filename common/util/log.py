@@ -62,7 +62,7 @@ class Logger(logging.Logger):
         self.path = name_to_path(name)
 
         self.fp = File(self.path).make_dir_if_not_exist()
-        # self.add_file_hander(fmt, mode)
+        self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
 
     def run_capture_error(self, f, *args, captures="", **kw):
@@ -141,7 +141,7 @@ class TheDevLoger:
     def fp(self):
         if self._fp is None:
             self._fp = File(name_to_path(self.name)).write_file("")
-            logger.info(self.fp.path, stacklevel=3)
+            logger.info(self.fp, stacklevel=4)
         return self._fp
 
     def get_writer(self):
@@ -179,6 +179,7 @@ def get_dev_log(name) -> TheDevLoger:
 def get_log(name="", fmt=None, mode="w") -> Logger:
     if name not in LOG_MAP:
         l = Logger(name, fmt, mode=mode)
+        l.info(l.path, stacklevel=2)
         LOG_MAP[name] = l
     return LOG_MAP[name]
 
