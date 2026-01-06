@@ -21,4 +21,4 @@ class TestConstant(TestBase):
         self.c.set_pos_player_id(0, 1)
         self.expect(self.c.get_line_ct(), {1: 3})
         self.c.set_pos_player_id(1, 2)
-        self.expect(self.c.get_line_ct(), {-1: 3})
+        self.expect(self.c.get_line_ct(), {-1: 3, 1: 2})

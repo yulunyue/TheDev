@@ -26,10 +26,10 @@ class ConstantC5:
                 self.mask_state[mk] = -ct[2]
             if ct[2] == 0 and ct[1]:
                 self.mask_state[mk] = ct[1]
-            if ct[1] == 1 and ct[2] == self.in_row - 1:
-                self.mask_state[mk] = self.op_win_state
-            if ct[2] == 1 and ct[1] == self.in_row - 1:
-                self.mask_state[mk] = -self.op_win_state
+            # if ct[1] == 1 and ct[2] == self.in_row - 1:
+            #     self.mask_state[mk] = self.op_win_state
+            # if ct[2] == 1 and ct[1] == self.in_row - 1:
+            #     self.mask_state[mk] = -self.op_win_state
         self.score = dict()
 
     def load(self, width=6, height=6, in_row=4):
@@ -135,7 +135,7 @@ class ConstantC5:
             # if abs(s2) == self.in_row + 1:
             #     log.debug(f"NEW pos={ps} o:{s2} n:{self.line_ct[s2]}")
         self.grid[idx] = player_id
-        log.debug("\n".join(self.to_str()))
+        # log.debug("\n".join(self.to_str()))
 
     def get_next_state(self, idx, player_id):
         return self.get_move_obs(idx, player_id), set_mask(
