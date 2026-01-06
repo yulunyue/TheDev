@@ -9,14 +9,14 @@ class Solution(MockCf):
             g[f].append(t)
             g[t].append(f)
         self.ans=0
-        sm=[[0]*20 for _ in range(n)]
+        sm=[defaultdict(lambda :[0,0]) for _ in range(n)]
         def dfs(v,p,d=0):
             for u in g[v]:
                 if u==p:continue
                 dfs(u,v,d+1)
                 for i,c in enumerate(sm[u]):
                     sm[v][i]+=c
-            sm[v][group[v]]+=d
+            sm[v][group[v]][1]+=d
         dfs(0,-1)
         ans=[0]*20
         def dfs(v,p,d=0):
