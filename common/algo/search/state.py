@@ -133,11 +133,11 @@ class State:
         return self
 
     @classmethod
-    def new(cls, state, depth=None, **kw):
+    def new(cls, state):
         if cls.STATE_STORE is None:
             cls.STATE_STORE = dict()
         if state not in cls.STATE_STORE:
-            cls.STATE_STORE[state] = cls(state, depth=depth, **kw)
+            cls.STATE_STORE[state] = cls(state)
         return cls.STATE_STORE[state]
 
     def get_done(self):
@@ -313,9 +313,6 @@ class State:
     def title(self):
         return str(self.state)
 
-    def get_win_player(self, *args, **kw):
-        return self.done
-
     def get_sort_actions(self, **kw):
         if self.actions is None:
             self.actions = self.make_actions()
@@ -346,6 +343,9 @@ class State:
             for a in s.get_sort_actions():
                 ret[s.title].append([a.title, a.get_dst().title])
         Draw().draw_graph(ret).save(f"data/state/{self.name}.svg")
+
+    def get_win_player(self, *args, **kw):
+        return self.done - 1
 
 
 class AbState(State):

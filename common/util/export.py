@@ -34,7 +34,6 @@ import bisect
 import math
 import traceback
 import heapq
-from .singleton_base import SingletonBase
 import random
 from copy import deepcopy
 from itertools import permutations, accumulate

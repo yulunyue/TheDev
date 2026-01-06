@@ -23,6 +23,7 @@ class logger:
     info = get_log
     map = get_log
     debug = get_log
+    log_tree = get_log
 
 
 TheDevLoger = logger

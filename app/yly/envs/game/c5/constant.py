@@ -83,37 +83,6 @@ class ConstantC5:
                     self.lines[j].append([line_id, k])
                 self.line_state.append(0)
 
-    def get_move_obs(self, idx, player_id):
-        obs = dict()
-        for lid, pos in self.lines[idx]:
-            old_state = self.line_state[lid]
-            new_state = set_mask(
-                old_state, pos * self.CHESS_SIZE, self.CHESS_SIZE, player_id
-            )
-            old_statu, new_statu = (
-                self.mask_state[old_state],
-                self.mask_state[new_state],
-            )
-            if old_statu:
-                obs[old_statu] = obs.get(old_statu, 0) - 1
-            if new_statu:
-                obs[new_statu] = obs.get(new_statu, 0) + 1
-        return obs
-
-    def game_over(self):
-        from .state import State
-
-        depth = self.state.bit_count()
-        player_id = depth % 2
-        for s in self.line_state:
-            if player_id == 0 and s == C.in_row - 1:
-                return State.FIRST_WIN, player_id, depth
-            if player_id == 1 and s == -C.in_row + 1:
-                return State.SECONEND_WIN, player_id, depth
-        if depth == self.size:
-            return State.NO_WIN, player_id, depth
-        return False, player_id, depth
-
     def get_line_ct(self):
         return {k: v for k, v in self.line_ct.items() if v > 0}
 
@@ -137,16 +106,19 @@ class ConstantC5:
         self.grid[idx] = player_id
         # log.debug("\n".join(self.to_str()))
 
-    def get_next_state(self, idx, player_id):
-        return self.get_move_obs(idx, player_id), set_mask(
-            self.state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id
-        )
+    def get_next_state(self, state, idx, player_id):
+        return set_mask(state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id + 1)
 
     def set_state(self, state: int):
         if self.state == state:
             return self
         self.change_mask(state)
         return self
+
+    def get_win_pos(self, state):
+        for i, s in enumerate(self.line_state):
+            if self.mask_state[s] == state:
+                return [d[0] for d in self.line_pos[i] if self.grid[d[0]] == 0][0]
 
     # set_state = set_mask
 

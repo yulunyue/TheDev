@@ -2,10 +2,11 @@ import logging
 import logging.handlers
 import os
 from .fp import File
-from .tool import SYS_ARGS, SYS_KW
+from .tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX
 import sys
 import traceback
-from common.util.tool import json_dumps, THE_DEV_LOGER_PREFIX
+from .str_util import StrUtil
+from typing import List
 
 
 def LOGER_PREFIX(name):
@@ -165,6 +166,9 @@ class TheDevLoger:
     def exception(self, msg):
         self.write(msg)
         self.write("\n".join(traceback.format_stack()))
+
+    def log_tree(self, g: List[List[int]], f, head=0):
+        self.write(StrUtil().format_g_tree(g, f, head=head))
 
     def map(self, indent=" ", **kw):
         self.info(dict_to_str(kw, indent=indent))
