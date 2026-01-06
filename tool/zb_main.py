@@ -76,8 +76,8 @@ class ZbMangae(ToolBase):
             t.set_error_msg(CS.FAILED, CS.DOCKER_BUILD_FAILED)
 
     def check(self):
-        for t in query_task(self.key, state=CS.SUCCESS):
-            ZbTask().build(t).print_result()
+        for t in query_task(self.key, state=CS.FAILED):
+            DockerTask().build(t).print_result()
             # t.set_error_msg(CS.SUCCESS, "CHECKING")
             # dol(t, "check").build(t).run()
 
