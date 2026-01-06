@@ -1,6 +1,6 @@
 from common.algo.export import AbState, Action
 from common.util.export import List
-from .constant import C, ConstantShow, CS
+from .constant import C, CS
 
 
 class C5ACtion(Action):
@@ -74,7 +74,7 @@ class State(AbState):
         return actions_op_win if actions_op_win else actions
 
     def to_str(self):
-        return CS.to_str(self.state)
+        return CS.set_state(self.state).to_str()
 
     def show_titles(self):
         return f"depth:{self.depth}; player:{self.player_id}{C.s(self.player_id+1)}; done:{self.done}"

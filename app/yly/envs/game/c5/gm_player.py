@@ -4,13 +4,13 @@ from AlphaZero_Gomoku.policy_value_net_pytorch import PolicyValueNet
 from AlphaZero_Gomoku.policy_value_net_numpy import PolicyValueNetNumpy
 from AlphaZero_Gomoku.game import Game, Board
 from .constant import C, set_mask, ConstantC5
-from .state import State, ConstantShow, C5ACtion
+from .state import State, C5ACtion
 from common.third_util.np_util import np
 from common.util.log import logger
 import pickle
 
 
-class C2(ConstantShow):
+class C2(ConstantC5):
     def set_state(self, state):
         super().set_state(state)
         self.b = Board(width=self.width, height=self.height, n_in_row=self.in_row)

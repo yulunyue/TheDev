@@ -99,7 +99,7 @@ class TestBase:
         if self.f:
             self.f.expect(a, expect_value, info, lambda a, dst: Diff(a).is_same(dst))
         else:
-            assert a == expect_value
+            assert a == expect_value, info
 
     def get_temp_path(self, name):
         return f"data/test/{self.__class__.__name__}/{name}"

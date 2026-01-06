@@ -114,6 +114,9 @@ class ConstantC5:
             return State.NO_WIN, player_id, depth
         return False, player_id, depth
 
+    def get_line_ct(self):
+        return {k: v for k, v in self.line_ct.items() if v > 0}
+
     def change_chess_statu(self, idx, player_id):
         self.pos_status[player_id].add(idx)
         self.pos_status[self.grid[idx]].remove(idx)
@@ -123,17 +126,16 @@ class ConstantC5:
             self.line_state[lid] = set_mask(
                 self.line_state[lid], pos * self.CHESS_SIZE, self.CHESS_SIZE, player_id
             )
-            self.line_ct[self.mask_state[old_state]] -= 1
-            self.line_ct[self.mask_state[self.line_state[lid]]] += 1
-            if (
-                abs(self.mask_state[old_state]) == 6
-                or abs(self.mask_state[self.line_state[lid]]) == 6
-            ):
-                log.debug(
-                    f"pos={self.line_pos[lid]};o:{self.mask_state[old_state]};n:{self.mask_state[self.line_state[lid]]}"
-                )
-
+            s1, s2 = self.mask_state[old_state], self.mask_state[self.line_state[lid]]
+            self.line_ct[s1] -= 1
+            self.line_ct[s2] += 1
+            # ps = [[[v[0] // self.width, v[0] % self.width] for v in self.line_pos[lid]]]
+            # if abs(s1) == self.in_row + 1:
+            #     log.debug(f"LOS pos={ps} o:{s1} n:{self.line_ct[s1]}")
+            # if abs(s2) == self.in_row + 1:
+            #     log.debug(f"NEW pos={ps} o:{s2} n:{self.line_ct[s2]}")
         self.grid[idx] = player_id
+        log.debug("\n".join(self.to_str()))
 
     def get_next_state(self, idx, player_id):
         return self.get_move_obs(idx, player_id), set_mask(
@@ -142,9 +144,9 @@ class ConstantC5:
 
     def set_state(self, state: int):
         if self.state == state:
-            return
-
+            return self
         self.change_mask(state)
+        return self
 
     # set_state = set_mask
 
@@ -200,21 +202,18 @@ class ConstantC5:
     def s(self, v):
         return ["-", "O", "X"][v]
 
-
-class ConstantShow(ConstantC5):
-    def to_str(self, state):
-        self.set_state(state)  # 状态类，需要多个
+    def to_str(self):
         ret = [[f"{i}"] + [" "] * self.width for i in range(self.size // self.width)]
         for i, v in enumerate(self.grid):
             y, x = self.get_yx(i)
             ret[y][x + 1] = self.s(v)
         ret.append([" "] + [str(v) for v in range(self.width)])
-        ret.append([str(self.line_ct)])
+        ret.append([str(self.get_line_ct())])
         return [" ".join(row) for row in ret]
 
 
 C = ConstantC5()
-CS = ConstantShow()
+CS = ConstantC5()
 
 
 def load(w, h, in_row):
