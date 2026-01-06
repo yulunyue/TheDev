@@ -68,6 +68,7 @@ class WebTool(SeleniumUtil):
     def upload(self, f: File):
         self.get("http://39.99.159.226")
         self.reload()
+        self.get_element_by_xpath("//label[@data-baseweb='radio'][2]").click()
         self.get_element_by_xpath("//input[@type='file']").send_keys(f.get_abs_path())
         self.get_element_by_xpath(f"//p[contains(text(),'{f.file_name}')]")
         return True
@@ -127,5 +128,4 @@ class WebTool(SeleniumUtil):
         self.reload()
         self.get_job_info()
         for t in self.to_do_task:
-            if t.repo == "sqlmesh":
-                self.submit(t.load())
+            self.submit(t.load())

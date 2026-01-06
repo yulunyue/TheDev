@@ -52,7 +52,7 @@ class ZbMangae(ToolBase):
         return dol(t, docker_name).build(t).load()
 
     def submit(self):
-        from ..app.yly.zb.auto import WebTool
+        from app.yly.zb.auto import WebTool
 
         w = WebTool(self.key)
         w.run()
