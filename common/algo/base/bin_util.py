@@ -79,3 +79,21 @@ def ss_or_dp(nums):  # 返回的是 2**x
             f[v] += f[v ^ u]
             v += 1
     return f
+def low_high_dp(low,high):
+    if isinstance(low,int):
+        low=[int(v) for v in str(low)]
+    if isinstance(high,int):
+        high=[int(v) for v in str(high)]
+    low=[0]*(len(high)-len(low))+low
+    @functools.lru_cache(None)
+    def dfs(i,low_limit,high_limit):
+        if i>=len(high):
+            return 1
+        l=low[i] if low_limit else 0
+        h=high[i] if high_limit else 9
+        a=0
+        for v in range(l,h+1):
+            a+=dfs(i+1,low_limit and v==l,high_limit and v==h)
+        return a
+    return dfs(0,True,True)
+
