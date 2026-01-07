@@ -31,7 +31,7 @@ class GmuMo(Algo):
 
         if not use_pickle:
             p = PolicyValueNet(c.width, c.height, model_file=model_path)
-            self.p = MCTSPlayer(p)
+            self.p = MCTSPlayer(p.policy_value_fn, n_playout=n_playout)
         else:
             policy_param = pickle.load(open(model_path, "rb"), encoding="bytes")
             best_policy = PolicyValueNetNumpy(c.width, c.height, policy_param)

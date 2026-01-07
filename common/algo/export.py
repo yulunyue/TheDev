@@ -4,15 +4,15 @@ from common.algo.search.algo import Algo, random_seed, np, RandomAlgo
 from common.algo.search.mctssearch import MctsSearch, MctsState
 from common.util.export import logger
 from common.algo.search.alphabate_search import AlphaBateSearch, AbDev
-try:
-    from common.algo.learn.sarse.sarse import Td0
-    from common.algo.learn.sarse.qlearning import Qlearning
-    from common.algo.learn.sarse.mcts import MctsEasy
-    from common.algo.learn.dqn import Dqn, DoubleDqn
-except Exception as e:
-    logger.error(e)
+
 from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE
-from common.algo.base.math_util import sin, cos, calc_angle
+from common.algo.base.math_util import (
+    sin,
+    cos,
+    calc_angle,
+    sigmoid_1_to_1,
+    sigmoid_stable,
+)
 from common.algo.base.comb import Comb
 from common.algo.base.str_util import (
     manacher_get_odd_p,

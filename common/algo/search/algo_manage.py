@@ -69,13 +69,9 @@ class FIGHT_TYPE:
 
 class ALgoManage:
     record_dir = "data/algo"
-    file_path = None
 
     def ad(self, n=10):
         return AbDev(f"ad{n}").load(n)
-
-    def ad1(self):
-        return self.ad(1)
 
     def dqn(self):
         pass
@@ -103,6 +99,8 @@ class ALgoManage:
 
     def get_player(self, v):
         if isinstance(v, str):
+            if v.startswith("ad"):
+                return self.ad(int(v[2:]))
             return getattr(self, v)()
         return v
 
@@ -125,16 +123,18 @@ class ALgoManage:
         return self
 
     def fight(self, turn=1):
+        idx = 0
         for _ in range(turn):
             for i, p in enumerate(self.players):
-                self.pk(p)
+                self.pk(p, idx)
+                idx += 1
         ret = PtTable().load_form_model(AlgoInfo).show()
         logger.debug(ret)
         return ret
 
-    def pk(self, players1: List[Algo]):
+    def pk(self, players1: List[Algo], idx=0):
         self.current_player = players1
-        p2, turn_idx, s, _ = self.actor(players1)
+        p2, turn_idx, s = self.actor(players1, idx)
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
         for i, p in enumerate(players1):
             key = p.get_name()
@@ -148,9 +148,9 @@ class ALgoManage:
             else:
                 AlgoInfo.new(key).update_result("LOSE")
                 s += f"[{key}][LOSE]"
-        logger.debug(f"{s} turn:{turn_idx} file_path:{self.file_path}")
+        logger.debug(f"{s} turn:{turn_idx}")
 
-    def actor(self, players: List[Algo], max_turn=1000):
+    def actor(self, players: List[Algo], idx=0, max_turn=1000):
         """
         返还赢的玩家ID
         """
@@ -160,7 +160,7 @@ class ALgoManage:
         s.reset_env()
         for i, p in enumerate(players):
             players[i] = self.get_player(p).reset()
-        self.log(s.show())
+        self.log(s.show(), f"actor/{idx}")
         last_a = None
         while self.turn_idx < max_turn:
             if s.game_over():
@@ -174,7 +174,7 @@ class ALgoManage:
             last_a = a
             if a is None:
                 return self.actor_return(s)
-            self.record(p, a)
+            self.record(p, a, f"actor/{idx}")
             s = s.do_action(a)
 
         return self.actor_return(s)
@@ -185,25 +185,22 @@ class ALgoManage:
             p = self.current_players[idx]
         else:
             p = None
-        return (
-            p,
-            self.turn_idx,
-            s,
-            f"\n---turn:{self.turn_idx}---\n{s.show()}\nwin:{p}\n",
-        )
+        info = f"\n---turn:{self.turn_idx}---\n{s.show()}\nwin:{p}\n"
+        logger.debug(info)
+        return p, self.turn_idx, s
 
     def set_record_dir(self, path: str):
         self.record_dir = path
         return self
 
-    def record(self, p: Algo, a: Action):
+    def record(self, p: Algo, a: Action, name):
         msgs = [
             f"turn: {self.turn_idx}; {p.get_name()} do {a.show()}",
             f"{a.get_dst().show()}",
         ]
-        self.log("\n".join(msgs))
+        self.log("\n".join(msgs), name)
 
-    def log(self, msgs: str, name="pk"):
+    def log(self, msgs: str, name):
         file_name = "_pk_".join([v.get_name() for v in self.current_players])
         get_dev_log(f"{self.record_dir}/{name}/{file_name}.log").info(msgs)
 

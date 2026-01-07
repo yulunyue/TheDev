@@ -7,6 +7,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 class StealthBrowser(QMainWindow):
     def __init__(self):
+        self.app = QApplication(sys.argv)
         super().__init__()
 
         # 无边框窗口
@@ -310,7 +311,6 @@ class StealthBrowser(QMainWindow):
             self.controls_visible = True
 
     def exec(self):
-        app = QApplication(sys.argv)
-        app.setStyle("Fusion")
+        self.app.setStyle("Fusion")
         self.show()
-        sys.exit(app.exec_())
+        sys.exit(self.app.exec_())

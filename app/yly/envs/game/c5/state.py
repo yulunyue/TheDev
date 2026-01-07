@@ -1,4 +1,4 @@
-from common.algo.export import AbState, Action
+from common.algo.export import AbState, Action, sigmoid_1_to_1
 from common.util.export import List
 from .constant import C, CS
 
@@ -11,6 +11,12 @@ class C5ACtion(Action):
         self.reward = 0
         if self.dst.game_over():
             self.reward = 1
+        else:
+            reward = 0
+            c = 1 if self.src.player_id == 0 else -1
+            for i in range(2, C.in_row):
+                reward += (i - 1) * 10 * (self.dst.obs[i * c] - self.dst.obs[-i * c])
+            self.reward = sigmoid_1_to_1(reward)
 
     def show(self):
         y, x = self.action // C.width, self.action % C.width
