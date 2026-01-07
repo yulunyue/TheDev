@@ -31,7 +31,9 @@ class ConfigBase:
             ret.append([])
             for k in cls.get_headers():
                 u = getattr(v, k)
-                ret[-1].append(str(u))
+                if hasattr(u, "get_value"):
+                    u = u.get_value()
+                ret[-1].append(u)
         return ret
 
     @classmethod

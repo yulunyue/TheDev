@@ -35,6 +35,11 @@ class AlphaBateSearch(Algo):
     def search_ab(
         self, state: AbState, actions: List[Action], depth=0, alpha=-inf, bate=inf, **kw
     ) -> None:
+        """
+        -> 代表取反一次所以
+        max_depth=1  s0->a0->-
+        max_depth=2  s0->a1-s1->a1->-
+        """
         if depth == self.max_depth or state.game_over():
             return -self.get_depth_reward(actions)
         mvs: List[Action] = state.get_sort_actions(depth=depth)
@@ -122,7 +127,7 @@ class AbDev(AlphaBateSearch):
         self.state_num += 1
         return super().get_depth_reward(actions, *args, **kw)
 
-    def search(self, state: State):
+    def search(self, state: State, **kw):
         self.state_num = 0
         ret = super().search(state)
         return ret

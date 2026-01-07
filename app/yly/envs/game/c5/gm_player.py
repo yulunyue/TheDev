@@ -26,24 +26,18 @@ class C2(ConstantC5):
                 self.b.do_move(ct[1].pop())
 
 
-BEST_MODEL_DIR = "D:/thebug/AlphaZero_Gomoku"
-
-
 class GmuMo(Algo):
-    def load(self, c: ConstantC5):
+    def load(self, c: ConstantC5, model_path, use_pickle, n_playout=40):
 
-        if c.in_row == 4:
-            p = PolicyValueNet(
-                c.width, c.height, model_file=f"{BEST_MODEL_DIR}/best_policy.model"
-            )
+        if not use_pickle:
+            p = PolicyValueNet(c.width, c.height, model_file=model_path)
             self.p = MCTSPlayer(p)
         else:
-            policy_param = pickle.load(
-                open(f"{BEST_MODEL_DIR}/best_policy_8_8_5.model", "rb"),
-                encoding="bytes",
-            )
+            policy_param = pickle.load(open(model_path, "rb"), encoding="bytes")
             best_policy = PolicyValueNetNumpy(c.width, c.height, policy_param)
-            self.p = MCTSPlayer(best_policy.policy_value_fn, c_puct=5, n_playout=400)
+            self.p = MCTSPlayer(
+                best_policy.policy_value_fn, c_puct=5, n_playout=n_playout
+            )
         self.c = C2().load(c.width, c.height, c.in_row)
         return super().load()
 

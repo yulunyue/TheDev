@@ -18,6 +18,8 @@ from .tool import (
     md5,
     base64_encode,
     url_to_json,
+    SYS_ARGS,
+    SYS_KW,
 )
 from .test import TestBase, logger, ToolBase, Case, make_md_file
 from .fp import File, get_cache

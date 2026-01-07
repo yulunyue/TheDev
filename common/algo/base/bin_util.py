@@ -1,5 +1,5 @@
 from typing import List
-from common.util.export import logger, defaultdict
+from common.util.export import logger, defaultdict, functools
 
 
 def p2(num=10**6, mod=None, extern=1):
@@ -79,21 +79,27 @@ def ss_or_dp(nums):  # 返回的是 2**x
             f[v] += f[v ^ u]
             v += 1
     return f
-def low_high_dp(low,high):
-    if isinstance(low,int):
-        low=[int(v) for v in str(low)]
-    if isinstance(high,int):
-        high=[int(v) for v in str(high)]
-    low=[0]*(len(high)-len(low))+low
-    @functools.lru_cache(None)
-    def dfs(i,low_limit,high_limit):
-        if i>=len(high):
-            return 1
-        l=low[i] if low_limit else 0
-        h=high[i] if high_limit else 9
-        a=0
-        for v in range(l,h+1):
-            a+=dfs(i+1,low_limit and v==l,high_limit and v==h)
-        return a
-    return dfs(0,True,True)
 
+
+def low_high_dp(low, high, *args, calc_args=None, ret_fun=None):
+    if isinstance(low, int):
+        low = [int(v) for v in str(low)]
+    if isinstance(high, int):
+        high = [int(v) for v in str(high)]
+    low = [0] * (len(high) - len(low)) + low
+
+    @functools.lru_cache(None)
+    def dfs(i, low_limit, high_limit, *args):
+        if i >= len(high):
+            return 1 if ret_fun is None else ret_fun(*args, i=i)
+        l = low[i] if low_limit else 0
+        h = high[i] if high_limit else 9
+        a = 0
+        for v in range(l, h + 1):
+            argsi = args
+            if calc_args:
+                argsi = calc_args(v, *args, i=i)
+            a += dfs(i + 1, low_limit and v == l, high_limit and v == h, *argsi)
+        return a
+
+    return dfs(0, True, True, *args)

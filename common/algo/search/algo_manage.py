@@ -47,19 +47,19 @@ class AlgoInfo(ConfigBase):
         self.SCORE += score
         self.ALL_VISTE_NUM += state_num
         self.ALL_TIME += tm
-        if state_num > self.MAX_VISTE_NUM:
-            self.MAX_VISTE_NUM = state_num
-        if tm > self.MAX_TIME:
-            self.MAX_TIME = tm
+        if state_num > self.MAX_VISTE_NUM.get_value():
+            self.MAX_VISTE_NUM.set_value(state_num)
+        if tm > self.MAX_TIME.get_value():
+            self.MAX_TIME.set_value(tm)
 
     def update_result(self, tp):
         self.all_count += 1
         f: NumberModel = getattr(self, tp)
         f.set_value(f.get_value() + 1)
 
-    @classmethod
-    def sort(cls, v: "AlgoInfo"):
-        return [v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE, -v.LOSE]
+    # @classmethod
+    # def sort(cls, v: "AlgoInfo"):
+    #     return [v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE, -v.LOSE]
 
 
 class FIGHT_TYPE:
@@ -74,11 +74,8 @@ class ALgoManage:
     def ad(self, n=10):
         return AbDev(f"ad{n}").load(n)
 
-    def am(self, n=10):
-        return AbDev(f"am{n}").load(n, search_type=AbDev.AB_MUCH)
-
-    def ab(self, n=10):
-        return AbDev(f"ab{n}").load(n, search_type=AbDev.AB_TYPE)
+    def ad1(self):
+        return self.ad(1)
 
     def dqn(self):
         pass
@@ -104,9 +101,16 @@ class ALgoManage:
     def rd(self):
         return RandomAlgo().load()
 
+    def get_player(self, v):
+        if isinstance(v, str):
+            return getattr(self, v)()
+        return v
+
     def set_players(self, players1: List[Algo]):
         self.players: List[List[Algo]] = []
         n = len(players1)
+        for i, v in enumerate(players1):
+            players1[i] = self.get_player(v)
         for i in range(n):
             for j in range(n):
                 p1, p2 = players1[i], players1[j]
@@ -120,54 +124,13 @@ class ALgoManage:
         self.state: State = state
         return self
 
-    def fight(self):
-        for i, p in enumerate(self.players):
-            self.pk(p)
+    def fight(self, turn=1):
+        for _ in range(turn):
+            for i, p in enumerate(self.players):
+                self.pk(p)
         ret = PtTable().load_form_model(AlgoInfo).show()
         logger.debug(ret)
         return ret
-
-    def fight_with_control(self, cmd):
-        init_state = s = self.get_state(0, self.state).reset_env()
-        history: List[Action] = []
-        while True:
-            os.system("cls")
-            self.view(
-                [s.show()]
-                + [
-                    f"{p.get_name()} do {getattr(p.search(s),'action',None)}"
-                    for p in self.current_player
-                ]
-                + [",".join([str(a.action) for a in history])]
-            )
-            cmd, *args = input("CMD: ").split(" ")
-            if cmd == "r":
-                if not args:
-                    argsv = 1
-                else:
-                    argsv = int(args[0])
-                history = history[: max(len(history) - argsv, 0)]
-                if history:
-                    s = history[-1].get_dst()
-                else:
-                    s = init_state
-            elif cmd == "a":
-                a = s.get_action(args[0])
-                history.append(a)
-                s = a.get_dst()
-            elif cmd == "p":
-                if not args:
-                    argsv = 1
-                else:
-                    argsv = int(args[0])
-                for _ in range(argsv):
-                    if s.get_done() is not None:
-                        break
-                    a = self.current_player[len(history) % 2].search(s)
-                    history.append(a)
-                    s = a.get_dst()
-            else:
-                break
 
     def pk(self, players1: List[Algo]):
         self.current_player = players1
@@ -195,8 +158,8 @@ class ALgoManage:
         self.turn_idx = 0
         s = self.state
         s.reset_env()
-        for p in players:
-            p.reset()
+        for i, p in enumerate(players):
+            players[i] = self.get_player(p).reset()
         self.log(s.show())
         last_a = None
         while self.turn_idx < max_turn:
@@ -204,9 +167,10 @@ class ALgoManage:
                 break
             p = players[self.turn_idx % len(players)]
             self.turn_idx += 1
-            # b = time.time()
+
             p.state_num = 0
             a = p.search(s, last_a=last_a)
+            AlgoInfo.new(p.get_name()).update(p.use_time, p.state_num, 0)
             last_a = a
             if a is None:
                 return self.actor_return(s)

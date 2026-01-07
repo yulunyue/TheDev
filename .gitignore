@@ -176,3 +176,4 @@ app/yly/zb/result
 Miniconda3-latest-Linux-x86_64.sh
 conda
 hwcloud_soar_script_sdk
+pytest.ini

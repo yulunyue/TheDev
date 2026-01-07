@@ -52,7 +52,7 @@ class Action:
         return self
 
     def get_reward(self, **kwargs):
-        return self.reward  # 值越大越好
+        return self.reward  # 值越大越好,返回当前行为的优势
 
     def get_src_reward(self, actions: List["Action"], **kw):
         return self.get_reward()

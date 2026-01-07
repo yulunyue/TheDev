@@ -1,5 +1,6 @@
 from common.third_util.c_profile import CProfileUtil
-from common.util.export import ToolBase, Module
+from common.util.export import ToolBase, logger, base64_encode, Module
+from common.tool.export import PyUtil
 
 
 class Dfx(ToolBase):
@@ -11,6 +12,13 @@ class Dfx(ToolBase):
             return getattr(ins, fun_name)()
 
         CProfileUtil().run(util)
+
+    def pip_download(self, pkg):
+        d = PyUtil().pip_download(pkg)
+        logger.info(d)
+
+    def b64_encode(self, code="print('hello world')"):
+        logger.info(base64_encode(code))
 
 
 if __name__ == "__main__":

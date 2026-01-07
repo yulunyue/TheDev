@@ -9,6 +9,7 @@ class BaseModel:
         self.default_value = default_value
         from common.tool.base_class.baseconfig import ConfigBase
 
+        self.value = default_value
         self.data_source: ConfigBase = data_source
         self.ops = []
         self.title = key
@@ -69,7 +70,7 @@ class BaseModel:
         return self.__add__(value)
 
     def __repr__(self) -> str:
-        return f"{self.get_value()}"
+        return f"{self.key}:{self.get_value()}"
 
 
 class StrModel(BaseModel):

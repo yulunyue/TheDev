@@ -1,11 +1,12 @@
 from prettytable import PrettyTable
 from typing import Dict, List
 from common.tool.export import ConfigBase
+from common.util.log import logger
 
 
 class PtTable:
     def __init__(self):
-        self.pr = PrettyTable()
+        self.pr = PrettyTable(float_format=".3")
 
     def load_form_model(self, c: ConfigBase):
         self.pr.field_names = c.get_headers()

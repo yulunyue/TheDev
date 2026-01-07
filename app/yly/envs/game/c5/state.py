@@ -8,16 +8,12 @@ class C5ACtion(Action):
 
     def __init__(self, src, action, dst: "State"):
         super().__init__(src, action, dst)
-        if dst.done == State.FIRST_WIN:
+        self.reward = 0
+        if self.dst.game_over():
             self.reward = 1
-        elif dst.done == State.SECONEND_WIN:
-            self.reward = -1
-        else:
-            self.reward = 0
 
     def show(self):
         y, x = self.action // C.width, self.action % C.width
-        obs = dict()
         return f"src:{self.src.state}, action:{y},{x},{C.s(self.src.player_id+1)},r:{self.get_reward()} dst:{self.dst.state}"
 
 

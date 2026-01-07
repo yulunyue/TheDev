@@ -1,5 +1,5 @@
 import pytest
-from common.util.export import logger
+from common.util.export import logger, File
 import urllib3
 
 
@@ -12,7 +12,7 @@ class PyTestUtil:
             # "--show-capture": "log",
             "--log-file": "data/log/pytest.log",
         }
-        self.flags = []  # ["--json-report --json-report-file=result.json"]
+        self.flags = ["-l", "-v"]  # ["--json-report --json-report-file=result.json"]
 
     def debug(self):
         """--full-trace"""
@@ -23,8 +23,8 @@ class PyTestUtil:
         self.flag_map["--rootdir"] = path
         return self
 
-    def set_aim(self, *args):
-        self.flags.extend(args)
+    def set_aim(self, *files):
+        self.flags.extend([d.path if isinstance(d, File) else d for d in files])
         return self
 
     def main(self):
