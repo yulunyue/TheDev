@@ -4,14 +4,14 @@ from AlphaZero_Gomoku.policy_value_net_pytorch import PolicyValueNet
 from AlphaZero_Gomoku.policy_value_net_numpy import PolicyValueNetNumpy
 from AlphaZero_Gomoku.game import Game, Board
 from AlphaZero_Gomoku.train import TrainPipeline
-from .constant import C, set_mask, ConstantC5
+from .board import C, set_mask, BoardC5
 from .state import State, C5ACtion
 from common.third_util.np_util import np
 from common.util.log import logger
 import pickle
 
 
-class C2(ConstantC5):
+class C2(BoardC5):
     def set_state(self, state):
         super().set_state(state)
         self.b = Board(width=self.width, height=self.height, n_in_row=self.in_row)
@@ -27,8 +27,8 @@ class C2(ConstantC5):
 
 
 class GmuMo(Algo):
-    def load(self, c: ConstantC5, model_path, use_pickle, n_playout=40):
-
+    def load(self, c: BoardC5, model_path, use_pickle, n_playout=40):
+        self.model_path = model_path
         if not use_pickle:
             p = PolicyValueNet(c.width, c.height, model_file=model_path)
             self.p = MCTSPlayer(p.policy_value_fn, n_playout=n_playout)
@@ -48,5 +48,10 @@ class GmuMo(Algo):
         a = self.p.get_action(self.c.b).item()
         return s.get_action(a)
 
-    def train_self(self):
-        TrainPipeline("data/game/c5/best_policy.model", game_batch_num=1).run()
+    def train(self, s):
+        TrainPipeline(
+            self.model_path,
+            game_batch_num=1,
+            batch_size=32,
+            check_freq=1,
+        ).run()

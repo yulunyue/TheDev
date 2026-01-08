@@ -1,6 +1,6 @@
 from common.util.export import TestBase
 from app.yly.envs.game.c5.state import State
-from app.yly.envs.game.c5.constant import load, C
+from app.yly.envs.game.c5.board import load, C
 
 
 class TestState885(TestBase):

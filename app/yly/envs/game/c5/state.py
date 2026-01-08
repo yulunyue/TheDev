@@ -1,6 +1,6 @@
 from common.algo.export import AbState, Action, sigmoid_1_to_1
 from common.util.export import List
-from .constant import C, CS
+from .board import C, CS
 
 
 class C5ACtion(Action):

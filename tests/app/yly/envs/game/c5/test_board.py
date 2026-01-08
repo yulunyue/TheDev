@@ -1,10 +1,10 @@
-from app.yly.envs.game.c5.constant import ConstantC5
+from app.yly.envs.game.c5.board import BoardC5
 from common.util.export import TestBase
 
 
 class TestConstant(TestBase):
     def setup_class(self):
-        self.c = ConstantC5().load()
+        self.c = BoardC5().load()
         return super().setup_class(self)
 
     def test_base(self):

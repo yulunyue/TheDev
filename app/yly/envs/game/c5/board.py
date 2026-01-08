@@ -2,7 +2,7 @@ from common.algo.base.bin_util import encode_data, decode_data, set_mask
 from common.util.export import List, Dict, defaultdict, logger, log
 
 
-class ConstantC5:
+class BoardC5:
     STATE_NULL = 0
     STATE_FIRST = 1
     STATE_SECONED = 2
@@ -39,9 +39,13 @@ class ConstantC5:
         self.op_win_state = self.in_row + 1  #
         self.init_size()
         self.init_mask()
+
+        return self
+
+    def init_line_state(self):
+
         self.init_mask_state()
         self.init_lines()
-        return self
 
     def init_size(self):
         self.size = self.width * self.height
@@ -184,8 +188,8 @@ class ConstantC5:
         return [" ".join(row) for row in ret]
 
 
-C = ConstantC5()
-CS = ConstantC5()
+C = BoardC5()
+CS = BoardC5()
 
 
 def load(w, h, in_row):

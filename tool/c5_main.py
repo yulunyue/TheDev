@@ -1,7 +1,7 @@
 from common.util.export import ToolBase, logger, log, time, File
 from common.algo.export import ALgoManage, random_seed, Algo
 from app.yly.envs.game.c5.state import State, C
-from app.yly.envs.game.c5.constant import load
+from app.yly.envs.game.c5.board import load
 
 
 class Al(ALgoManage):
@@ -57,11 +57,14 @@ class C5Tool(ToolBase):
     def fight(self, names="", turn=1):
         self.al.set_players(names.split(",")).fight(int(turn))
 
+    def train(self, name):
+        self.al.get_player(name).train(self.s)
+
     def dev(self):
         pass
 
     def debug(self):
-        self.train_mumo()
+        self.train("gomo664_1500")
 
 
 if __name__ == "__main__":
