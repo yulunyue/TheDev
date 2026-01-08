@@ -13,6 +13,7 @@ class TestIo(TestBase):
 
     def test_base(self):
         u = TcpClient().set_addr(dst_ip=IP_LOCAL, dst_port=PORT)
+        time.sleep(1)
         u.connect()
         send_data = b"hello world"
         u.write(send_data)
