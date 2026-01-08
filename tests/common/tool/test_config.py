@@ -12,7 +12,7 @@ from common.tool.export import (
 
 class TableConfigTest(TableConfig):
     a = StrModel()
-    b = NumberModel()
+    b = NumberModel(1)
 
 
 def fun_call(self, a, b, d=1, f=2, **kw):
