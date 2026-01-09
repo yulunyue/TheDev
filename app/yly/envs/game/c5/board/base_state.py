@@ -3,26 +3,26 @@ from .base import BoardC5, set_mask
 
 class BoardC5State(BoardC5):
     def init_mask_state(self):
-        self.max_state = (1 << (2 * self.in_row)) - 1
+        self.max_state = (1 << (2 * (self.in_row * 2 - 1))) - 1
         self.mask_state = [0] * self.max_state
-        self.line_ct = {i: 0 for i in range(-self.in_row - 1, self.in_row + 2)}
+        self.line_ct = {}
         for mk in range(self.max_state):
-            mask = mk
-            ct = [0, 0, 0, 0]
-            for _ in range(self.in_row):
-                ct[mask & 3] += 1
-                mask = mask >> 2
-            if ct[3]:
+            if mk & (mk - 1):  # 有11
                 continue
-            if ct[1] == 0 and ct[2]:
-                self.mask_state[mk] = -ct[2]
-            if ct[2] == 0 and ct[1]:
-                self.mask_state[mk] = ct[1]
-            # if ct[1] == 1 and ct[2] == self.in_row - 1:
-            #     self.mask_state[mk] = self.op_win_state
-            # if ct[2] == 1 and ct[1] == self.in_row - 1:
-            #     self.mask_state[mk] = -self.op_win_state
-        self.score = dict()
+            t1 = mk & 3
+            ct = 1
+            mask = mk >> 2
+            alive = t1 == 0
+            while mask:
+                t2 = mask & 3
+                if t1 != t2:
+                    if t1 != 0:
+                        if t2 == 0:
+                            pass
+                    ct = 0
+                t1 = t2
+                ct += 1
+                mask = mask >> 2
 
     def in_row2(self):
         return self.in_row
@@ -36,12 +36,12 @@ class BoardC5State(BoardC5):
             l1, l2 = self.get_l(i)
             for dy, dx in self.DR:
                 poss = []
-                for k in range(in_row2):
+                for k in range(-in_row2 + 1, in_row2):
                     idx = self.get_dis(l1, l2, dy, dx, k)
                     if idx is None:
                         continue
                     poss.append([idx, k])
-                if len(poss) != in_row2:
+                if len(poss) < in_row2:
                     continue
                 line_id = len(self.line_state)
                 self.line_pos.append(poss)
