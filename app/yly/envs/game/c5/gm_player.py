@@ -4,7 +4,7 @@ from AlphaZero_Gomoku.policy_value_net_pytorch import PolicyValueNet
 from AlphaZero_Gomoku.policy_value_net_numpy import PolicyValueNetNumpy
 from AlphaZero_Gomoku.game import Game, Board
 from AlphaZero_Gomoku.train import TrainPipeline
-from .board import C, set_mask, BoardC5
+from .board.base import C, set_mask, BoardC5
 from .state import State, C5ACtion
 from common.third_util.np_util import np
 from common.util.log import logger

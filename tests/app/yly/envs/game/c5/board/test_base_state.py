@@ -1,10 +1,10 @@
-from app.yly.envs.game.c5.board import BoardC5
+from app.yly.envs.game.c5.board.base_state import BoardC5State
 from common.util.export import TestBase
 
 
-class TestConstant(TestBase):
+class TestBaseState(TestBase):
     def setup_class(self):
-        self.c = BoardC5().load()
+        self.c = BoardC5State().load()
         return super().setup_class(self)
 
     def test_base(self):

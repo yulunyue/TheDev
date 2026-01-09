@@ -1,7 +1,6 @@
 from common.util.export import ToolBase, logger, log, time, File
 from common.algo.export import ALgoManage, random_seed, Algo
-from app.yly.envs.game.c5.state import State, C
-from app.yly.envs.game.c5.board import load
+from app.yly.envs.game.c5.state import State
 
 
 class Al(ALgoManage):
@@ -10,7 +9,7 @@ class Al(ALgoManage):
 
         return (
             GmuMo()
-            .load(C, "data/tool/C5Tool/best_policy_8_8_5.model", True)
+            .load("data/tool/C5Tool/best_policy_8_8_5.model", True)
             .set_name("gomo885")
         )
 
@@ -35,8 +34,8 @@ class Al(ALgoManage):
 
 class C5Tool(ToolBase):
     def prepare(self, env: str):
-        load(*[int(v) for v in env.split("_")])
-        self.s = State.new(C.state)
+        State.set_board(*[int(v) for v in env.split("_")])
+        self.s = State.new(State.C.state)
         self.al = Al().set_state(self.s)
         return self
 

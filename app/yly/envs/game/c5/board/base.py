@@ -10,42 +10,13 @@ class BoardC5:
     CHESS_SIZE = 2
     DR = [[0, 1], [1, 0], [1, 1], [1, -1]]
 
-    def init_mask_state(self):
-        self.max_state = (1 << (2 * self.in_row)) - 1
-        self.mask_state = [0] * self.max_state
-        self.line_ct = {i: 0 for i in range(-self.in_row - 1, self.in_row + 2)}
-        for mk in range(self.max_state):
-            mask = mk
-            ct = [0, 0, 0, 0]
-            for _ in range(self.in_row):
-                ct[mask & 3] += 1
-                mask = mask >> 2
-            if ct[3]:
-                continue
-            if ct[1] == 0 and ct[2]:
-                self.mask_state[mk] = -ct[2]
-            if ct[2] == 0 and ct[1]:
-                self.mask_state[mk] = ct[1]
-            # if ct[1] == 1 and ct[2] == self.in_row - 1:
-            #     self.mask_state[mk] = self.op_win_state
-            # if ct[2] == 1 and ct[1] == self.in_row - 1:
-            #     self.mask_state[mk] = -self.op_win_state
-        self.score = dict()
-
     def load(self, width=6, height=6, in_row=4):
         self.width = width
         self.height = height
         self.in_row = in_row
-        self.op_win_state = self.in_row + 1  #
         self.init_size()
         self.init_mask()
-
         return self
-
-    def init_line_state(self):
-
-        self.init_mask_state()
-        self.init_lines()
 
     def init_size(self):
         self.size = self.width * self.height
@@ -57,58 +28,20 @@ class BoardC5:
         self.mask_row = (1 << self.row_bit) - 1
         self.mask_bit = (1 << self.BIT_SIZE) - 1
         self.grid = [self.STATE_NULL] * self.size
-        self.pos_status: Dict[int, set] = {
-            self.STATE_NULL: set(range(self.size)),
-            self.STATE_FIRST: set(),
-            self.STATE_SECONED: set(),
-        }
+        self.can_use = set(range(self.size))
         self.state = 0
         return self
 
-    def init_lines(self):
-        self.lines = [[] for _ in range(self.size)]
-        self.line_pos = []
-        self.line_state = []
-
-        for i in range(self.size):
-            l1, l2 = self.get_l(i)
-            for dy, dx in self.DR:
-                poss = []
-                for k in range(self.in_row):
-                    idx = self.get_dis(l1, l2, dy, dx, k)
-                    if idx is None:
-                        continue
-                    poss.append([idx, k])
-                if len(poss) != self.in_row:
-                    continue
-                line_id = len(self.line_state)
-                self.line_pos.append(poss)
-                for j, k in poss:
-                    self.lines[j].append([line_id, k])
-                self.line_state.append(0)
-
-    def get_line_ct(self):
-        return {k: v for k, v in self.line_ct.items() if v > 0}
-
     def change_chess_statu(self, idx, player_id):
-        self.pos_status[player_id].add(idx)
-        self.pos_status[self.grid[idx]].remove(idx)
-        # logger.map(idx=idx, cid=self.grid[idx], newid=player_id)
-        for lid, pos in self.lines[idx]:
-            old_state = self.line_state[lid]
-            self.line_state[lid] = set_mask(
-                self.line_state[lid], pos * self.CHESS_SIZE, self.CHESS_SIZE, player_id
-            )
-            s1, s2 = self.mask_state[old_state], self.mask_state[self.line_state[lid]]
-            self.line_ct[s1] -= 1
-            self.line_ct[s2] += 1
-            # ps = [[[v[0] // self.width, v[0] % self.width] for v in self.line_pos[lid]]]
-            # if abs(s1) == self.in_row + 1:
-            #     log.debug(f"LOS pos={ps} o:{s1} n:{self.line_ct[s1]}")
-            # if abs(s2) == self.in_row + 1:
-            #     log.debug(f"NEW pos={ps} o:{s2} n:{self.line_ct[s2]}")
+        if player_id == 0:
+            self.can_use.remove(player_id)
+        else:
+            self.can_use.add(player_id)
         self.grid[idx] = player_id
-        # log.debug("\n".join(self.to_str()))
+
+    def put_chess(self, idx, player_id):
+
+        self.change_chess_statu(idx, player_id)
 
     def get_next_state(self, state, idx, player_id):
         return set_mask(state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id + 1)
@@ -118,13 +51,6 @@ class BoardC5:
             return self
         self.change_mask(state)
         return self
-
-    def get_win_pos(self, state):
-        for i, s in enumerate(self.line_state):
-            if self.mask_state[s] == state:
-                return [d[0] for d in self.line_pos[i] if self.grid[d[0]] == 0][0]
-
-    # set_state = set_mask
 
     def change_mask(self, state):
         state1, state2 = self.state, state
@@ -166,6 +92,9 @@ class BoardC5:
             self.change_chess_statu(idx, player_id)
             # logger.map(idx=idx, player_id=player_id)
 
+    def get_line_point(self, idx, dr):
+        pass
+
     def get_l(self, i):
         return i // self.get_loop2(), i % self.get_loop2()
 
@@ -186,12 +115,3 @@ class BoardC5:
         ret.append([" "] + [str(v) for v in range(self.width)])
         ret.append([str(self.get_line_ct())])
         return [" ".join(row) for row in ret]
-
-
-C = BoardC5()
-CS = BoardC5()
-
-
-def load(w, h, in_row):
-    C.load(w, h, in_row)
-    CS.load(w, h, in_row)

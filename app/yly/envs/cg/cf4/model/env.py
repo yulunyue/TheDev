@@ -1,5 +1,5 @@
 from .constant import C, List
-from app.yly.envs.game.c5.board import Constant, set_mask
+from app.yly.envs.game.c5.board.base import Constant, set_mask
 from common.util.export import logger
 
 
