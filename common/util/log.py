@@ -46,7 +46,7 @@ def name_to_path(name: str):
     return path
 
 
-def dict_to_str(kw: dict, indent=" "):
+def dict_to_str(indent=" ", **kw):
     if isinstance(indent, int):
         return json_dumps(kw, indent=indent)
     ret = [""]
@@ -95,7 +95,7 @@ class Logger(logging.Logger):
         return "\n".join([str(v) for v in ret])
 
     def map(self, indent=" ", **kw):
-        self.info(dict_to_str(kw, indent=indent), stacklevel=2)
+        self.info(dict_to_str(indent=indent, **kw), stacklevel=2)
 
     def debug(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None

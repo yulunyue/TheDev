@@ -63,6 +63,20 @@ def get_sub_bits(i) -> List[int]:
     return ret
 
 
+def get_sub_bit2(i):
+    """
+    子集分成小，大两份，不包括自己
+    """
+    mx = (i - 1) & i
+    mn = i ^ mx
+    ret = []
+    while mn < mx:
+        ret.append([mn, mx])
+        mx = (mx - 1) & i
+        mn = i ^ mx
+    return ret
+
+
 def ss_or_dp(nums):  # 返回的是 2**x
     xor_all = 0
     for v in nums:

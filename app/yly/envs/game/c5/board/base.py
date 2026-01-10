@@ -34,14 +34,39 @@ class BoardC5:
 
     def change_chess_statu(self, idx, player_id):
         if player_id == 0:
-            self.can_use.remove(player_id)
+            self.can_use.add(idx)
         else:
-            self.can_use.add(player_id)
+            self.can_use.remove(idx)
         self.grid[idx] = player_id
 
     def put_chess(self, idx, player_id):
-
+        ct = defaultdict(int)
+        for i in range(4):
+            lv, l0, lop = self.get_dirction_ct(idx, i, player_id, -1, self.in_row)
+            rv, r0, rop = self.get_dirction_ct(idx, i, player_id, 1, self.in_row - lv)
+            if lv + rv + l0 + r0 + 1 >= self.in_row:
+                ct[lv + rv + 1, lop | rop] += 1
         self.change_chess_statu(idx, player_id)
+        return ct
+
+    def get_dirction_ct(self, idx, i, player_id, chen, size):
+        c0 = cv = ct = 0
+        has_op = 0
+        while ct < size:
+            nx = self.get_next_pos(idx, i, (ct + 1) * chen)
+            if nx is None or has_op:
+                has_op = 1
+                break
+            if self.grid[nx] == 3 - player_id:
+                has_op = 1
+            if ct == size - 1:
+                break
+            if self.grid[nx] == player_id:
+                cv += 1
+            if self.grid[nx] == self.STATE_NULL:
+                c0 += 1
+            ct += 1
+        return cv, c0, has_op
 
     def get_next_state(self, state, idx, player_id):
         return set_mask(state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id + 1)
@@ -76,6 +101,10 @@ class BoardC5:
         if not self.is_valide_pos(l3, l4):
             return None
         return self.get_idx(l3, l4)
+
+    def get_next_pos(self, idx, i, k):
+        y, x = self.get_yx(idx)
+        return self.get_dis(y, x, self.DR[i][0], self.DR[i][1], k)
 
     def is_valide_pos(self, l3, l4):
         return 0 <= l3 < self.get_loop1() and 0 <= l4 < self.get_loop2()
