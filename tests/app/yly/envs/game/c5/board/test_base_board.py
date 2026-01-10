@@ -23,3 +23,7 @@ class TestBaseBoard(TestBase):
 
         ct = TestBaseBoard.c.put_chess(4, 1)
         self.expect(ct, {(1, 1): 2, (2, 1): 1})
+        TestBaseBoard.c.change_chess_statu(4, 0)
+
+        ct = TestBaseBoard.c.put_chess(5, 1)
+        self.expect(ct, {(1, 1): 3})
