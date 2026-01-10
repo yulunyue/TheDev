@@ -62,7 +62,7 @@ class State(AbState):
 
     def to_str(self):
 
-        return .set_state(self.state).to_str()
+        return C.set_state(self.state).to_str()
 
     def show_titles(self):
         return f"depth:{self.depth}; player:{self.player_id+1}{self.C.s(self.player_id+1)}; done:{self.done}"

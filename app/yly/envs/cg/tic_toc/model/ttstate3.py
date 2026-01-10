@@ -1,39 +1,41 @@
-from ..shape.cell9 import Cell9, C
-from ..constant import TcEnum
-from common.algo.search.state import State, Action,MctsState
+from common.algo.search.state import State, Action
 from common.util.export import Dict, List
+from .ttaction import TtAction
+from ..constant import C
 
 
+class TtState3(State):
+    def load(self):
+        self.depth = self.state.bit_count()
+        self.player_id = self.depth % 2
+        if self.depth == C.ALL_SIZE3:
+            self.done = State.NO_WIN
+        for ln in C.lines[self.player_id]:
+            if (ln & self.state).bit_count() == 3:
+                self.done = self.player_id + 1
+                break
+        return self
 
-CELL = Cell9(0)
+    @classmethod
+    def new(cls, state) -> "TtState3":
+        return super().new(state).load()
 
-
-class TtState3(MctsState):
-    def __init__(self, state):
-        CELL.set_state(state)
-        depth = CELL.ct_num[1] + CELL.ct_num[2]
-        self.set_done(CELL.get_done()).set_reward(CELL.get_reward())
-        super().__init__(state, depth%2, depth)
- 
-
-    def make_actions(self, depth=1, **kw):
-        actions = dict()
-        CELL.set_state(self.state)
-        cells = list(CELL.cell_map[C.PLAYER_NULL].values())
-        for a in cells:
-            s2 = self.state | C.STATE_KEYS[a.key][self.player_id]
-            ac = Action(self, a.key, TtState3.new(s2))
-            actions[a.key] = ac
+    def make_actions(self, **kw):
+        actions = []
+        for i in range(C.ALL_SIZE3):
+            s2 = self.state & C.STATE_KEYS[i]
+            if s2:
+                continue
+            s2 = self.state | ((self.player_id + 1) << (i * 2))
+            s = TtState3.new(s2)
+            ac = Action(self, i, s)
+            actions.append(ac)
         return actions
 
     def to_str(self):
-        CELL.set_state(self.state)
         ret = [["."] * 3 for _ in range(3)]
-        for c in CELL.cells:
-            y, x = c.key // 3, c.key % 3
-            ret[y][x] = C.VIEW_STR[c.value]
-        return "\n".join(["".join(row) for row in ret])
-
-
-
-
+        for i in range(C.ALL_SIZE3):
+            y, x = i // 3, i % 3
+            s = (self.state >> (i * 2)) & 3
+            ret[y][x] = C.VIEW_STR[s]
+        return ["".join(row) for row in ret]

@@ -1,6 +1,5 @@
 from common.algo.search.state import State
 
-from app.yly.envs.cg.tic_toc.shape.cell81 import E, Cell9
 from app.yly.envs.cg.tic_toc.constant import C
 from app.yly.envs.cg.tic_toc.model.ttaction import TtAction
 from typing import List, Dict

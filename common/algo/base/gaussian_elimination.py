@@ -2,7 +2,7 @@ from common.util.export import List, logger
 
 
 class GaussElimination:
-    def __init__(self, a, b):
+    def __init__(self, a: List[int], b):
         self.a = a
         self.n = len(a)
         self.b = b

@@ -40,7 +40,7 @@ class PyTestUtil:
     def coverage(self):
         from coverage import Coverage
 
-        cov = Coverage()
+        cov = Coverage(source_dirs=["common", "app"])
         cov.start()
         self.main()
         cov.stop()

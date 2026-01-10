@@ -288,7 +288,7 @@ class State:
         return self.data[k]
 
     def show_titles(self):
-        return f"depth:{self.depth}"
+        return f"depth:{self.depth} done:{self.done}"
 
     def show_body(self, info):
         datas = [self.show_titles()] + self.to_str()
