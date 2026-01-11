@@ -12,6 +12,9 @@ class Tt3Tool(ToolBase):
     def actor(self, names: str):
         self.al.actor(names.split(","))
 
+    def fight(self, names: str, turn=1) -> None:
+        self.al.set_players(names.split(",")).fight(int(turn))
+
 
 if __name__ == "__main__":
     Tt3Tool().run()

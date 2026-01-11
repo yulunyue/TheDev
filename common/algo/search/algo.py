@@ -133,3 +133,8 @@ class Algo:
 class RandomAlgo(Algo):
     def search_main(self, s: State, **kw):
         return s.get_random_action()
+
+
+class BestAlgo(Algo):
+    def search_main(self, state: State):
+        return state.get_best_action()

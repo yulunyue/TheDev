@@ -78,14 +78,8 @@ class MctsSearch(Algo):
             actions = tail.get_sort_actions()
             random_id = random.randint(0, len(actions) - 1)
             action_history.append(actions[random_id])
-
             max_round -= 1
-            if max_round <= 0:
-                raise Exception(
-                    f"simulate max  src:{tail.show()} action:{actions[random_id].show()} dst:{actions[random_id].get_dst().show()}"
-                )
             tail = actions[random_id].get_dst()
-
         return action_history
 
     def backpropagate(self, node: MctsState, score):
@@ -107,10 +101,9 @@ class MctsSearch(Algo):
             cur_time = time.time()
             if self.ep >= self.num_episodes or cur_time - self.start_time >= self.max_t:
                 break
-        self.update_max_action(self.root)
-        return init_state.best_action
+        return self.get_max_ct_action(self.root)
 
-    def update_max_action(self, node: MctsState):
+    def get_max_ct_action(self, node: MctsState):
         """
         UCT公式用于搜索过程中的节点选择，目的是平衡探索与利用
         访问次数用于最终决策中的移动选择，目的是选择最可靠、最经过验证的移动
@@ -122,13 +115,13 @@ class MctsSearch(Algo):
             if a.n_visits > best_visits:
                 best_visits = a.n_visits
                 best_state = a
-        node.state.set_best_action(best_state.p_action)
+        return best_state.p_action
 
 
 class MctsSearchDev(MctsSearch):
 
-    def search(self, state):
-        action: Action = super().search(state)
+    def search(self, state, **kw):
+        action: Action = super().search(state, **kw)
         return action
 
     def info(self):
