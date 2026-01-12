@@ -18,7 +18,7 @@ class PyTest(ToolBase):
             )
             if not taget:
                 raise Exception(SYS_ARGS[0])
-        PyTestUtil().set_aim(*taget).main()
+        PyTestUtil().set_aim(*taget).coverage()
 
 
 if __name__ == "__main__":

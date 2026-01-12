@@ -5,7 +5,7 @@ from common.algo.search.mctssearch import MctsSearch, MctsState
 from common.util.export import logger
 from common.algo.search.alphabate_search import AlphaBateSearch, AbDev
 
-from common.algo.search.algo_manage import ALgoManage, FIGHT_TYPE
+from common.algo.search.algo_manage import ALgoManage
 from common.algo.base.math_util import (
     sin,
     cos,

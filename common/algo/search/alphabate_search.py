@@ -8,7 +8,7 @@ class AlphaBateSearch(Algo):
     AB_TYPE = "alphabate"
     AB_MUCH = "abmuch"
 
-    def load(self, max_depth, search_type="", **kw):
+    def load(self, max_depth, search_type="abmuch", **kw):
         self.max_depth = max_depth
         self.search_type = search_type
         return super().load(**kw)

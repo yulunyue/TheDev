@@ -47,5 +47,5 @@ class Qlearning(Algo):
             ret.append(f"{k} = {v}")
         return super().show() + "\n" + "\n".join(ret)
 
-    def search_main(self, state):
+    def search_main(self, state, **kw):
         return self.get_max_q_action(state)

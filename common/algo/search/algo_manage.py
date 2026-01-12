@@ -1,4 +1,4 @@
-from common.algo.search.algo import Algo, RandomAlgo
+from common.algo.search.algo import Algo, RandomAlgo, BestAlgo
 from common.algo.search.state import State, Action
 from common.algo.search.alphabate_search import AbDev
 from common.algo.search.mctssearch import MctsSearchDev
@@ -62,16 +62,14 @@ class AlgoInfo(ConfigBase):
     #     return [v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE, -v.LOSE]
 
 
-class FIGHT_TYPE:
-    SIGNAL = "SIGNAL"
-    DTURN = "DTURN"
-
-
 class ALgoManage:
     record_dir = "data/algo"
 
+    def best(self):
+        return BestAlgo("best").load()
+
     def ad(self, n=10):
-        return AbDev(f"ad{n}").load(n)
+        return AbDev(f"ad{n}").load(n, search_type=AbDev.AB_MUCH)
 
     def dqn(self):
         pass
@@ -81,12 +79,6 @@ class ALgoManage:
 
     def mcs(self, n):
         return [self.mc(i * 10) for i in range(3, n)]
-
-    def abs(self, n):
-        return [self.ab(i + 1) for i in range(5)]
-
-    def ams(self, v=5):
-        return [self.am(i + 1) for i in range(v)]
 
     def ad5(self):
         return [self.ad(i + 1) for i in range(5)]
@@ -101,6 +93,8 @@ class ALgoManage:
         if isinstance(v, str):
             if v.startswith("ad"):
                 return self.ad(int(v[2:]))
+            if v.startswith("mc"):
+                return self.mc(int(v[2:]))
             return getattr(self, v)()
         return v
 
