@@ -229,52 +229,6 @@ class SeleniumUtil:
 
         return self
 
-    def intercept_window_open(self):
-        """拦截 window.open 调用"""
-
-        # 重写 window.open 方法
-        script = """
-        // 保存原始的 window.open
-        window._originalOpen = window.open;
-        
-        // 重写 window.open
-        window.open = function(url, windowName, windowFeatures) {
-            console.log('[Interceptor] window.open called:', url, windowName, windowFeatures);
-            
-            // 触发自定义事件
-            var event = new CustomEvent('windowOpenIntercepted', {
-                detail: {
-                    url: url,
-                    windowName: windowName,
-                    windowFeatures: windowFeatures,
-                    timestamp: Date.now()
-                }
-            });
-            window.dispatchEvent(event);
-            
-            // 返回 null 或模拟的窗口对象
-            return {
-                closed: false,
-                close: function() {
-                    console.log('[Interceptor] Mock window closed');
-                    this.closed = true;
-                },
-                location: {
-                    href: url
-                }
-            };
-        };
-        
-        // 监听拦截事件
-        window.addEventListener('windowOpenIntercepted', function(e) {
-            console.log('Window open intercepted:', e.detail);
-        });
-        
-        console.log('Window.open interception activated');
-        """
-
-        self.driver.execute_script(script)
-
     @property
     def current_url(self):
         return self.driver.current_url
