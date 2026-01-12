@@ -33,6 +33,10 @@ class BoardC5:
         return self
 
     def change_chess_statu(self, idx, player_id):
+
+        log.map(idx=idx, player_id=player_id)
+        if self.grid[idx] == player_id:
+            raise Exception("xxx")
         if player_id == 0:
             self.can_use.add(idx)
         else:
@@ -41,7 +45,7 @@ class BoardC5:
 
     def put_chess(self, idx, player_id):
         ct = defaultdict(int)
-        for i in range(4):
+        for i in range(len(self.DR)):
             lv, l0 = self.get_dirction_ct(idx, i, player_id, -1, self.in_row)
             rv, r0 = self.get_dirction_ct(idx, i, player_id, 1, self.in_row - lv - l0)
             if lv + rv + l0 + r0 + 1 >= self.in_row:
@@ -142,5 +146,4 @@ class BoardC5:
             y, x = self.get_yx(i)
             ret[y][x + 1] = self.s(v)
         ret.append([" "] + [str(v) for v in range(self.width)])
-        ret.append([str(self.get_line_ct())])
         return [" ".join(row) for row in ret]

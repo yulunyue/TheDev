@@ -171,7 +171,7 @@ class TheDevLoger:
         self.write(StrUtil().format_g_tree(g, f, head=head))
 
     def map(self, indent=" ", **kw):
-        self.info(dict_to_str(kw, indent=indent))
+        self.info(dict_to_str(**kw, indent=indent))
 
 
 def get_dev_log(name) -> TheDevLoger:

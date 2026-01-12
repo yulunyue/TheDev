@@ -3,6 +3,10 @@
 # board_move 设计
 相对于board_state
 
+# 3*3*3 井字棋环境
+python -m tool.c5_main 3_3_3 actor names=rd,rd
+python -m tool.c5_main 3_3_3 fight names=rd,ad10,mc100 turn=4
+
 # 6*4*4 的简单环境
 ## 对比rd ad1 ad2 ad3 四种状态
 python -m tool.c5_main 6_6_4 fight names=rd,ad1,ad2,ad3 turn=4

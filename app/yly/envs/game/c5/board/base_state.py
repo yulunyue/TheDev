@@ -9,20 +9,6 @@ class BoardC5State(BoardC5):
         for mk in range(self.max_state):
             if mk & (mk - 1):  # 有11
                 continue
-            t1 = mk & 3
-            ct = 1
-            mask = mk >> 2
-            alive = t1 == 0
-            while mask:
-                t2 = mask & 3
-                if t1 != t2:
-                    if t1 != 0:
-                        if t2 == 0:
-                            pass
-                    ct = 0
-                t1 = t2
-                ct += 1
-                mask = mask >> 2
 
     def in_row2(self):
         return self.in_row

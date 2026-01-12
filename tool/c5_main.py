@@ -1,11 +1,11 @@
 from common.util.export import ToolBase, logger, log, time, File
 from common.algo.export import ALgoManage, random_seed, Algo
-from app.yly.envs.game.c5.state import State
+from app.yly.envs.game.c5.model.static_state import StateStatic
 
 
 class Al(ALgoManage):
     def gomo885(self):
-        from app.yly.envs.game.c5.gm_player import GmuMo
+        from app.yly.envs.game.c5.player.gm_player import GmuMo
 
         return (
             GmuMo()
@@ -14,7 +14,7 @@ class Al(ALgoManage):
         )
 
     def gomo664_1500(self):
-        from app.yly.envs.game.c5.gm_player import GmuMo
+        from app.yly.envs.game.c5.player.gm_player import GmuMo
 
         return (
             GmuMo()
@@ -23,7 +23,7 @@ class Al(ALgoManage):
         )
 
     def gomo664(self):
-        from app.yly.envs.game.c5.gm_player import GmuMo
+        from app.yly.envs.game.c5.player.gm_player import GmuMo
 
         return (
             GmuMo()
@@ -34,8 +34,8 @@ class Al(ALgoManage):
 
 class C5Tool(ToolBase):
     def prepare(self, env: str):
-        State.set_board(*[int(v) for v in env.split("_")])
-        self.s = State.new(State.C.state)
+        StateStatic.set_board(*[int(v) for v in env.split("_")])
+        self.s = StateStatic.new(StateStatic.board.state)
         self.al = Al().set_state(self.s)
         return self
 

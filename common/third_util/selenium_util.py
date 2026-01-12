@@ -224,7 +224,7 @@ class SeleniumUtil:
             else:
                 self.options.add_argument("--headless")
             self.driver = webdriver.Chrome(options=self.options, service=service)
-            self.wait = WebDriverWait(self.driver, 15)
+            self.wait = WebDriverWait(self.driver, 4)
             # self.driver.set_page_load_timeout(10)
 
         return self
@@ -313,7 +313,8 @@ class SeleniumUtil:
                 return r.send_keys(args[1])
             elif method == "id":
                 return self.e_format(self.get_element_by_id(args[0]))
-
+            elif method == "get_cookies":
+                return self.driver.get_cookies()
             return "todo"
         except Exception as e:
             return str(e)

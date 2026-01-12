@@ -159,14 +159,6 @@ def make_md_file(key=None, msg=""):
 class ToolBase:
     name = None
 
-    # @property
-    # def logger(self):
-    #     return get_log(f"tool/{self.get_name()}.log")
-
-    # @property
-    # def dev_log(self):
-    #     return get_dev_log(f"tool/{self.get_name()}_dev.log")
-
     def prepare(self, *args):
         pass
 
