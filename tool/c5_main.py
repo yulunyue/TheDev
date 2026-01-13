@@ -1,5 +1,5 @@
 from common.util.export import ToolBase, logger, log, time, File
-from common.algo.export import ALgoManage, random_seed, Algo, Qlearning2
+from common.algo.export import ALgoManage, random_seed, Algo, Qlearning
 from app.yly.envs.game.c5.model.static_state import StateStatic
 
 
@@ -33,7 +33,7 @@ class Al(ALgoManage):
 
     def ql(self):
         return (
-            Qlearning2()
+            Qlearning()
             .load(train_epoll=1000)
             .set_model("ql_3_3_3.json", new_model=True)
         )
