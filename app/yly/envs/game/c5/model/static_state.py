@@ -4,7 +4,7 @@ from ..board.base_state import BoardC5State, BoardC5
 
 
 class StateStatic(AbState):
-
+    mode="MAN2"
     @classmethod
     def set_board(cls, w, h, s):
         cls.board = BoardC5().load(w, h, s)
@@ -28,16 +28,14 @@ class StateStatic(AbState):
 
         state = self.board.get_next_state(self.state, pos, self.player_id)
         obs = self.board.set_state(self.state).put_chess(pos, self.player_id + 1)
-        self.board.set_state(state)
+        self.board.state = state
         dst: StateStatic = (
             StateStatic.new(state)
             .set_player_id(1 - self.player_id)
             .set_depth(self.depth + 1)
         )
-        if obs.get((self.board.in_row, 0)) or obs.get((self.board.in_row, 1)):
-            dst.done = self.player_id + 1
         dst.can_moves = list(self.board.can_use)
-        a = C5ACtion(self, pos, dst)
+        a = C5ACtion(self, pos, dst, obs)
         return a
 
     def make_actions(self):

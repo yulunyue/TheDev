@@ -34,12 +34,12 @@ class BoardC5:
 
     def change_chess_statu(self, idx, player_id):
 
-        log.map(idx=idx, player_id=player_id)
-        if self.grid[idx] == player_id:
-            raise Exception("xxx")
+        # log.map(idx=idx, player_id=player_id)
+        # if self.grid[idx] == player_id:
+        #     raise Exception("xxx")
         if player_id == 0:
             self.can_use.add(idx)
-        else:
+        elif self.grid[idx] == 0 and player_id:
             self.can_use.remove(idx)
         self.grid[idx] = player_id
 

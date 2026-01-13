@@ -38,6 +38,7 @@ class PyUtil(OsUtil):
             args.append("--only-binary=:all:")
         # else:
         #     args.append("--no-binary=:none:")
-        self.run("-m", "pip", "download", "--no-deps", pkg, *args, **kw)
+
+        self.run("-m", "pip", "download", pkg, *args, **kw)  ##"--no-deps"
         logger.info(f"python3 -m pip install --no-index --find-links=./ {pkg} --user")
         return out_put
