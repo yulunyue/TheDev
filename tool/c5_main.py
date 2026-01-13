@@ -1,5 +1,5 @@
 from common.util.export import ToolBase, logger, log, time, File
-from common.algo.export import ALgoManage, random_seed, Algo
+from common.algo.export import ALgoManage, random_seed, Algo, Qlearning2
 from app.yly.envs.game.c5.model.static_state import StateStatic
 
 
@@ -29,6 +29,13 @@ class Al(ALgoManage):
             GmuMo()
             .load(C, "data/tool/C5Tool/best_policy_6_6_4.model", True)
             .set_name("gomo664")
+        )
+
+    def ql(self):
+        return (
+            Qlearning2()
+            .load(train_epoll=1000)
+            .set_model("ql_3_3_3.json", new_model=True)
         )
 
 

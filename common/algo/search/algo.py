@@ -12,6 +12,7 @@ from common.util.export import (
     random,
     List,
     Dict,
+    log,
 )
 
 
@@ -59,13 +60,16 @@ class Algo:
         self.use_time = time.time() - start_time
         return ret
 
-    def info(self):
-        return []
-
     def show(self):
-        return "\n".join(
-            [f"---name:{self.get_name()} use_time:{self.use_time}---"] + self.info()
-        )
+        return f"---name:{self.get_name()}"
+
+    model_file: File = None
+
+    def set_model(self, model_file, new_model=False):
+        self.model_file = File(f"data/model/{model_file}")
+        if self.model_file.exists() and new_model:
+            self.q = self.model_file.read_file()
+        return self
 
     def search_main(self, state: "State") -> Action:
         pass
@@ -95,13 +99,16 @@ class Algo:
         start_time = time.time()
         from common.third_util.tqdm_util import tqdm
 
-        logger.info("begin trainging")
+        logger.info(f"{self.show()} begin trainging")
         for i in tqdm(range(self.train_epoll)):
             total_reward = self.train_one(i, state)
             self.rewards.append(total_reward)
             if self.train_epoll >= 10 and (i + 1) % (self.train_epoll // 10) == 0:
-                logger.map(Episode=i, TotalReward=sum(self.rewards) / len(self.rewards))
+                log.map(Episode=i, TotalReward=sum(self.rewards) / len(self.rewards))
         self.use_time = time.time() - start_time
+        logger.info(
+            f"{self.get_name()} train_finish {self.use_time} to {self.model_file}"
+        )
 
     def draw_reward(self):
         from common.third_util.draw import Draw
