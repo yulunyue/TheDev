@@ -106,7 +106,7 @@ class SegTreeNode:
     def show(self):
         return f"v:{self.value}"
 
-    def str_view(self):
+    def __repr__(self):
         ret = []
 
         def util(p: SegTreeNode, depth):
