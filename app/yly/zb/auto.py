@@ -44,12 +44,15 @@ class WebTool(SeleniumUtil):
         if not can_submit:
             logger.info(f"not can submit {t.zip_file}")
             return
+        err_msg = t.error_msg.get_value()
+        if not err_msg.startswith(CS.SKIPPED):
+            return
         ZbTask().build(t).load().local_cfg.zip()
         logger.info(f"upload {t.zip_file}")
         self.upload(t.zip_file)
         self.get(t.submit_url.get_value())
         self.reload()
-        err_msg = t.error_msg.get_value()
+
         if not err_msg.startswith(CS.SUCCESS):
             self.get_element_by_xpath("//input[@value='invalid']").click()
             inp = self.get_element_by_xpath('//input[@class="ct-ant-input"]')

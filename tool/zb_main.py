@@ -70,10 +70,27 @@ class ZbMangae(ToolBase):
         :param self: Description
         需要明确clear的意义和目的
         """
-        for t in query_task(self.key):
+        keys = """
+27106
+27113
+27129
+27134
+27135
+27136
+27154
+27160
+27161
+27166
+27170
+27196
+"""
+        for k in keys.split("\n"):
+            # for t in query_task(self.key):
             # print(t.cg_file)
-
-            t.set_error_msg(CS.FAILED, CS.DOCKER_BUILD_FAILED)
+            if not k:
+                continue
+            t = query_one(k)
+            t.set_error_msg(CS.SKIPPED, CS.ISSUE_0)
 
     def check(self):
         for t in query_task(self.key, state=CS.FAILED):
