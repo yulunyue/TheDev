@@ -7,7 +7,7 @@ class T(SegTreeNode):
 
     def do(self, v):
         self.todo += v
-        self.value = self.size if self.todo else 0
+        self.min_cover += v
 
 
 class Solution(MockCf):
@@ -32,12 +32,11 @@ class Solution(MockCf):
             for cy in c[y]:
                 t.update(*cy)
                 self.logger.info(cy)
-            # self.logger.info(t.str_view())
+            self.logger.info(t.str_view())
             if lx:
                 sa.append([sa[-1][0] + lx * (y - ly), y * 1.0, lx])
-
+                self.logger.map(lx=lx, y=y, yc=y - ly)
             lx, ly = t.query(0, mx), y
-            self.logger.map(lx)
 
         mid = sa[-1][0] / 2
         idx = bisect.bisect_left(sa, [mid])
