@@ -4,9 +4,6 @@ from common.algo.base.segtree import SegTreeNode
 
 class T(SegTreeNode):
 
-    # def __init__(self, idx=1):
-    #     super().__init__(idx)
-    #     self.value = [0, 0, 0]
     def load(self, nums: List[int]):
         self.value = [0, nums[self.l + 1] - nums[self.l]]
 
@@ -22,6 +19,29 @@ class T(SegTreeNode):
         if mn == r[0]:
             ln += r[1]
         return [mn, ln]
+
+
+class T(SegTreeNode):
+    def __init__(self, idx=1):
+        super().__init__(idx)
+        self.value = [0, 0, 0]
+
+    def load(self, nums: List[int]):
+        self.value[2] = nums[self.l + 1] - nums[self.l]
+
+    def do(self, v):
+        self.value[0] += v
+        self.up()
+
+    def up(self):
+        if self.l != self.r:
+            self.value[2] = self.left.value[2] + self.right.value[2]
+        if self.value[0] > 0:
+            self.value[1] = self.value[2]
+        elif self.l != self.r:
+            self.value[1] = self.left.value[1] + self.right.value[1]
+        else:
+            self.value[1] = 0
 
 
 class Solution(MockCf):
@@ -49,7 +69,7 @@ class Solution(MockCf):
         sa = [[0]]
         lx = None
         # self.logger.info(s)
-        # self.logger.info(t)
+        self.logger.info(t)
         for y in sorted(c.keys()):
             for cy in c[y]:
                 l, r, v = ct[cy[0]], ct[cy[1]] - 1, cy[2]
@@ -60,7 +80,8 @@ class Solution(MockCf):
                 sa.append([sa[-1][0] + lx * (y - ly), y * 1.0, lx])
             # self.logger.map(lx=lx, y=y)
             xx = t.query(0, len(s) - 1)
-            lx, ly = s[-1] - s[0] - (0 if xx[0] else xx[1]), y
+            # lx, ly = s[-1] - s[0] - (0 if xx[0] else xx[1]), y
+            lx, ly = xx[1], y
 
         mid = sa[-1][0] / 2
         idx = bisect.bisect_left(sa, [mid])
