@@ -3,11 +3,21 @@ from common.algo.base.segtree import SegTreeNode
 
 
 class T(SegTreeNode):
-    value = 0
-
+    def __init__(self,idx=1):
+        self.value=[0,0]
+        super().__init__(idx)
     def do(self, v):
         self.todo += v
-        self.min_cover += v
+        self.value[0] += v
+    def merge(self,l,r):
+        mn=min(l[0],r[0])
+        ln=0
+        if mn==l[0]:
+            ln+=l[1]
+        if mn==r[0]:
+            ln+=l[1]
+        return [mn,ln]
+
 
 
 class Solution(MockCf):
@@ -36,7 +46,7 @@ class Solution(MockCf):
             if lx:
                 sa.append([sa[-1][0] + lx * (y - ly), y * 1.0, lx])
                 self.logger.map(lx=lx, y=y, yc=y - ly)
-            lx, ly = t.query(0, mx), y
+            lx, ly = t.query(0, mx)[1], y
 
         mid = sa[-1][0] / 2
         idx = bisect.bisect_left(sa, [mid])
