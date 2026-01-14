@@ -14,6 +14,7 @@ class Solution(MockCf):
     def get_cases(self):
         return dict(
             case0=dict(squares=[[0, 0, 1], [2, 2, 1]], result=1.00000),
+            case1=dict(squares=[[0, 0, 2], [4, 0, 3]], result=1.3),
         )
 
     def separateSquares(self, squares: List[List[int]]) -> float:
@@ -30,15 +31,17 @@ class Solution(MockCf):
             for cy in c[y]:
                 t.update(*cy)
                 self.logger.info(cy)
-            self.logger.info(t.str_view())
+            # self.logger.info(t.str_view())
             if lx:
                 sa.append([sa[-1][0] + lx * (y - ly), y * 1.0, lx])
+
             lx, ly = t.query(0, mx), y
-            self.logger.info(lx)
-        self.logger.info(sa)
-        mid = sa[-1][0] // 2
+            # self.logger.info(lx)
+
+        mid = sa[-1][0] / 2
         idx = bisect.bisect_left(sa, [mid])
-        return sa[idx][1] + (mid - sa[idx][0]) // sa[idx][2]
+        # self.logger.map(sa=sa, idx=idx, md=mid)
+        return sa[idx][1] + (mid - sa[idx][0]) / sa[idx][2]
 
     execute = separateSquares
 
