@@ -106,11 +106,11 @@ class SegTreeNode:
     def show(self):
         return f"v:{self.value}"
 
-    def __str__(self):
+    def str_view(self):
         ret = []
 
         def util(p: SegTreeNode, depth):
-            ret.append(f"{' '*depth}{p.l}-{p.r}: v={p.show()} todo={p.todo}")
+            ret.append(f"{' '*depth}{p.l}-{p.r}: {p.show()} todo={p.todo}")
             if p.l == p.r:
                 return
             util(p.left, depth + 2)

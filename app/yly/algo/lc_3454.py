@@ -1,26 +1,47 @@
-class Solution:
-    def get_cases(self):
-        return dict(case0=squares = [[0,0,1],[2,2,1]]
+from common.util.export import MockCf, List, defaultdict, bisect
+from common.algo.base.segtree import SegTreeNode
 
-输出： 1.00000=)
+
+class T(SegTreeNode):
+    value = 0
+
+    def do(self, v):
+        self.todo += v
+        self.value = self.size if self.todo else 0
+
+
+class Solution(MockCf):
+    def get_cases(self):
+        return dict(
+            case0=dict(squares=[[0, 0, 1], [2, 2, 1]], result=1.00000),
+        )
+
     def separateSquares(self, squares: List[List[int]]) -> float:
-        c=defaultdict(list)
-        mx=0
-        for x,y,l in squares:
-            c[y].append([x,x+l,1])
-            c[y+l].append([x,x+l,-1])
-            mx=max(mx,x+l)
-        t=T().set_range(0,mx)
-        sa=[]
-        ly=None
+        c = defaultdict(list)
+        mx = 0
+        for x, y, l in squares:
+            c[y].append([x, x + l - 1, 1])
+            c[y + l].append([x, x + l - 1, -1])
+            mx = max(mx, x + l - 1)
+        t = T().set_range(0, mx)
+        sa = [[0]]
+        lx = None
         for y in sorted(c.keys()):
-            t.update(*c[y])
-            if ly is not None:
-                sa.append([sa[-1][0]+lx*(y-ly),y,lx])
-            else:
-                sa.append([0,y])
-            lx,ly=t.query(0,mx),y
-        mid=sa[-1][0]//2
-        idx=bisect.bisect_left(sa,[mid])
-        return sa[idx][1]+(mid-sa[idx][0])//sa[idx+1][2]
-        
+            for cy in c[y]:
+                t.update(*cy)
+                self.logger.info(cy)
+            self.logger.info(t.str_view())
+            if lx:
+                sa.append([sa[-1][0] + lx * (y - ly), y * 1.0, lx])
+            lx, ly = t.query(0, mx), y
+            self.logger.info(lx)
+        self.logger.info(sa)
+        mid = sa[-1][0] // 2
+        idx = bisect.bisect_left(sa, [mid])
+        return sa[idx][1] + (mid - sa[idx][0]) // sa[idx][2]
+
+    execute = separateSquares
+
+
+if __name__ == "__main__":
+    Solution().run()
