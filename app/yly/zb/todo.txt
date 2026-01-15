@@ -44,7 +44,7 @@ beeware__briefcase-2271.zip
 beeware__briefcase-2302.zip
 beeware__briefcase-2336.zip
 beeware__briefcase-2527.zip
-beeware__briefcase-854.zip
+beeware__briefcase-854.zip 关联0Issue
 beeware__briefcase-892.zip
 beeware__briefcase-956.zip
 beeware__briefcase-988.zip
