@@ -4,9 +4,9 @@ from ..board.base_state import BoardC5State, BoardC5
 
 
 class StateStatic(AbState):
-    mode="MAN2"
+
     @classmethod
-    def set_board(cls, w, h, s):
+    def set_board(cls, w, h, s) -> "StateStatic":
         cls.board = BoardC5().load(w, h, s)
         return cls.new(0).set_state(0)
 

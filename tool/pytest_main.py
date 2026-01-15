@@ -13,8 +13,7 @@ class PyTest(ToolBase):
         taget = self.taget
         if SYS_ARGS:
             taget = File(self.taget[0]).list_dir(
-                depth=8,
-                filter=lambda v: "__pycache__" not in v.path and SYS_ARGS[0] in v.path,
+                depth=8, filter=SYS_ARGS[0], ignore="__pycache__"
             )
             if not taget:
                 raise Exception(SYS_ARGS[0])

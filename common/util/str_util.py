@@ -1,27 +1,27 @@
 from typing import List
+import re
 
 
 class StrUtil:
+    MATCH_FLAGS = None
+
     def __init__(self):
         self.prefixs = []
 
-    def str_prefix_match(self, s: str):
-        for p in self.prefixs:
-            if s.startswith(p):
-                return True
+    def set_ignores(self, ignore_matchs: List[str]):
+        self.ignore_matchs = [re.compile(e) for e in ignore_matchs]
+
+    def set_matchs(self, any_matchs: List[str]):
+        self.any_matchs = [re.compile(e) for e in any_matchs]
+        return self
+
+    def match(self):
+        if self.ignore_matchs:
+            return True
         return False
 
     def format_pre0_bin(self, s, n):
         return format(s, f"0{n}b")
-
-    def set_prefix(self, prefixs: List[str]):
-        self.prefixs = prefixs
-        return self
-
-    def match(self):
-        if self.str_prefix_match():
-            return True
-        return False
 
     def format(self, s: str, **kw):
         array = s.split("%{")

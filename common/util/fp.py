@@ -183,7 +183,7 @@ class File:
         return os.path.exists(self.path)
 
     def list_dir(
-        self, depth=1, with_dir=False, filter=None, sort_func=None
+        self, depth=1, with_dir=False, filter=None, sort_func=None, ignore=None
     ) -> List["File"]:
         if depth == 0:
             return []
