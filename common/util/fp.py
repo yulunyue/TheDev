@@ -4,7 +4,6 @@ from typing import List, Dict
 import zipfile
 import shutil
 import io
-from ..tool.str_util import StrUtil
 
 
 def dump_default(v):
@@ -191,6 +190,8 @@ class File:
         ret = []
 
         def check(path: str):
+            from ..tool.str_util import StrUtil
+
             return StrUtil().set_ignores(ignores).set_matchs(mathchs).match(path)
 
         for name in os.listdir(self.path):

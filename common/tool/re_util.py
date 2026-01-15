@@ -1,4 +1,5 @@
 import re
+from common.util.export import log
 
 
 class ReUtil:
@@ -10,6 +11,8 @@ class ReUtil:
 
     def match(self, s):
         ret: re.Match = self.s.match(s)
+        result = None
         if ret is not None:
-            return ret.group()
-        return None
+            result = ret.group()
+        log.map(p=self.s, s=s, result=result)
+        return result

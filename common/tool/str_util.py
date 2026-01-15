@@ -1,5 +1,6 @@
 from typing import List
 import re
+from .re_util import ReUtil
 
 
 class StrUtil:
@@ -10,11 +11,11 @@ class StrUtil:
         self.any_matchs = []
 
     def set_ignores(self, ignore_matchs: List[str]):
-        self.ignore_matchs = [re.compile(e) for e in ignore_matchs or []]
+        self.ignore_matchs = [ReUtil(e) for e in ignore_matchs or []]
         return self
 
     def set_matchs(self, any_matchs: List[str]):
-        self.any_matchs = [re.compile(e) for e in any_matchs or []]
+        self.any_matchs = [ReUtil(e) for e in any_matchs or []]
         return self
 
     def match(self, t: str):
@@ -22,7 +23,7 @@ class StrUtil:
             if s.match(t):
                 return False
         if self.any_matchs:
-            for s in self.ignore_matchs:
+            for s in self.any_matchs:
                 if s.match(t):
                     return True
             return False

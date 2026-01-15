@@ -1,10 +1,15 @@
-from common.util.export import File, get_log, uid, Module, get_function_info
+from common.util.export import (
+    File,
+    get_log,
+    uid,
+    Module,
+    get_function_info,
+    get_dev_log,
+)
 from .node import Node
 from typing import List
 import json
 import os
-
-logger = get_log("http")
 
 
 class ApiCall:
@@ -21,7 +26,8 @@ class ApiCall:
         try:
             ret = self.fun_map[path](**params)
         except Exception as e:
-            logger.exception(e)
+
+            get_log("api").exception(e)
             import traceback
 
             traceback.print_exc()

@@ -5,7 +5,7 @@ from .fp import File
 from .tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX
 import sys
 import traceback
-from ..tool.str_util import StrUtil
+
 from typing import List
 
 
@@ -168,6 +168,8 @@ class TheDevLoger:
         self.write("\n".join(traceback.format_stack()))
 
     def log_tree(self, g: List[List[int]], f, head=0):
+        from ..tool.str_util import StrUtil
+
         self.write(StrUtil().format_g_tree(g, f, head=head))
 
     def map(self, indent=" ", **kw):

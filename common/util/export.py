@@ -24,7 +24,17 @@ from .test import TestBase, logger, ToolBase, Case, make_md_file
 from .fp import File, get_cache
 from .module import Module, run_catch_error
 from .thread_poll import ThreadManage, ThreadExec
-from typing import List, Dict, TypeVar, Generic, get_origin, get_args, Tuple, Optional
+from typing import (
+    List,
+    Dict,
+    TypeVar,
+    Generic,
+    get_origin,
+    get_args,
+    Tuple,
+    Optional,
+    TYPE_CHECKING,
+)
 from collections import defaultdict, deque, Counter
 import functools
 import json
