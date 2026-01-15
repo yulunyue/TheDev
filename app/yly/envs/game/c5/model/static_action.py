@@ -8,13 +8,16 @@ class C5ACtion(Action):
 
     def __init__(self, src, action, dst: "StateStatic", obs: dict):
         super().__init__(src, action, dst)
+        self.set_obs(obs)
+
+    def set_obs(self, obs):
         self.reward = 0
         self.obs: dict = obs
         if self.obs.get((self.src.board.in_row, 0)) or self.obs.get(
             (self.src.board.in_row, 1)
         ):
             self.reward = 1
-            dst.done = self.src.player_id + 1
+            self.dst.done = self.src.player_id + 1
 
     def show(self):
         y, x = self.src.board.get_yx(self.action)

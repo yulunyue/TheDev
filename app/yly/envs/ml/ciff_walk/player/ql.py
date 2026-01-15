@@ -6,6 +6,7 @@ class Ql(Qlearning):
         self, train_epoll=100, e_greed=0.1, learning_rate=0.1, gamma=0.9, n_planning=0
     ):
         self.default_e = e_greed
+        self.set_model("ciff_walk.json", True)
         return super().load(train_epoll, e_greed, learning_rate, gamma, n_planning)
 
     def train_one(self, i, state):

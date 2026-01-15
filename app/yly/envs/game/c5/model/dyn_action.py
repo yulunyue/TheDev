@@ -10,8 +10,17 @@ class DynAction(C5ACtion):
     def get_dst(self):
         from .dyn_state import DynState
 
-        return DynState(
-            state=f"{self.src.state}|{self.action}",
-            player_id=1 - self.src.player_id,
-            depth=1 - self.src.player_id,
+        ret = (
+            DynState(
+                player_id=1 - self.src.player_id,
+            )
+            .set_depth(self.src.depth + 1)
+            .set_acs(f"{self.src.acs}|{self.action}")
         )
+        ret.can_moves = self.src.can_moves.copy()
+        ret.can_moves.remove(self.action)
+        return ret
+
+    @property
+    def key(self):
+        return self.get_dst().acs
