@@ -1,4 +1,4 @@
-from common.algo.export import ALgoManage
+from common.algo.export import ALgoManage, Qlearning
 
 
 class Al(ALgoManage):
@@ -29,9 +29,9 @@ class Al(ALgoManage):
             .set_name("gomo664")
         )
 
-    def ql(self):
+    def ql(self, train_epoll=1000):
         return (
             Qlearning()
-            .load(train_epoll=1000)
+            .load(train_epoll=train_epoll)
             .set_model("ql_3_3_3.json", new_model=True)
         )

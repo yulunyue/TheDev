@@ -10,9 +10,13 @@ class PyTestUtil:
     def __init__(self):
         self.flag_map = {
             # "--show-capture": "log",
-            "--log-file": "data/log/pytest.log",
+            # "--log-file": "data/log/pytest.log",
         }
-        self.flags = ["-l", "-v"]  # ["--json-report --json-report-file=result.json"]
+        self.flags = [
+            "-l",
+            "-v",
+            "-s",
+        ]  # ["--json-report --json-report-file=result.json"]
 
     def debug(self):
         """--full-trace"""

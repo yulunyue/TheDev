@@ -18,6 +18,7 @@ class State:
     NO_WIN = -1
     FIRST_WIN = 1
     SECONEND_WIN = 2
+    MAN2 = "MAN2"
     name = "state"
     parent: "State" = None
     done = False
@@ -26,6 +27,7 @@ class State:
     data = None
     best_action: Action = None
     extra = None
+    mode = MAN2
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -267,9 +269,6 @@ class State:
         for a in args:
             dst = dst.get_action(a).get_dst()
         return dst
-
-    def get_next_by_actions(self):
-        pass
 
 
 AbState = State

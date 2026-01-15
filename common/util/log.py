@@ -219,3 +219,5 @@ def std_mock(with_trace=True):
 
 logger = get_log("test")
 log = get_dev_log("log")
+log1 = get_dev_log("log1")
+log2 = get_dev_log("log2")

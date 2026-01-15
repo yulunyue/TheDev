@@ -60,7 +60,7 @@ class Qlearning(Algo):
             self.calc_score(a) for a in a0.get_dst().get_sort_actions()
         ]
         next_max_q = max(next_action_value)
-        if a0.src.mode=="MAN2":
+        if a0.src.mode == State.MAN2:
             return -next_max_q
         return next_max_q
 

@@ -14,5 +14,5 @@ class ReUtil:
         result = None
         if ret is not None:
             result = ret.group()
-        log.map(p=self.s, s=s, result=result)
+        # log.map(p=self.s, s=s, result=result)
         return result

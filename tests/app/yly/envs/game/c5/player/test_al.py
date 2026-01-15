@@ -3,9 +3,22 @@ from app.yly.envs.game.c5.player.al import Al
 from app.yly.envs.game.c5.model.static_state import StateStatic
 
 
+def get_s_333_1():
+    s = StateStatic.set_board(3, 3, 3)
+    return s.get_next(0, 1, 3)
+
+
 class TestAl(TestBase):
-    def test_al3_3_3(self):
-        s = StateStatic.set_board(3, 3, 3)
-        s = s.get_next(0, 1, 3)
+    def test_al333(self):
+        s = get_s_333_1()
         a = Al().ad(2).search(s)
-        self.expect(a.action, 2, s.show())
+        self.expect(a.action, 6, s.show())
+        a = Al().mc().search(s)
+        self.expect(a.action, 6, s.show())
+
+    def test_al333_ql(self):
+        s = get_s_333_1()
+        ql = Al().ql(train_epoll=1)
+        ql.train(s)
+        # ql.search(s)
+        # self.expect(a.action, 6, s.show())

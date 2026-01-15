@@ -1,7 +1,7 @@
 from common.algo.search.state import State, inf, Action, AbState
 from common.algo.search.algo import Algo
 from typing import List, Dict
-from common.util.export import logger, defaultdict, get_log, deque
+from common.util.export import logger, defaultdict, get_log, deque, log, log1
 
 
 class AlphaBateSearch(Algo):
@@ -124,6 +124,8 @@ class AlphaBateSearch(Algo):
 
 class AbDev(AlphaBateSearch):
     def get_depth_reward(self, actions: List[Action], *args, **kw):
+        # log.info(actions[-1].show())
+        # log.info(actions[-1].get_dst().show())
         self.state_num += 1
         return super().get_depth_reward(actions, *args, **kw)
 
@@ -133,12 +135,13 @@ class AbDev(AlphaBateSearch):
         return ret
 
     def set_state_reward(self, s: State, alpha, bate):
-        # s.header_title = f"alpha={alpha} bate={bate}"
+
         ret = super().set_state_reward(s, alpha, bate)
         # self.logger.debug(s.show())
         return ret
 
     def set_state_best_action(self, s: State, a: Action, depth, reward):
+        # log1.info(f"{a.show()} reward:{reward} \n{s.show()}")
         super().set_state_best_action(s, a, depth, reward)
         # self.logger.debug(s.show_best_actions())
 

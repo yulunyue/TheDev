@@ -5,6 +5,8 @@ from .log import (
     TheDevLoger,
     get_dev_log,
     log,
+    log1,
+    log2,
     logger,
     LOGER_PREFIX,
 )

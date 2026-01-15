@@ -7,3 +7,8 @@ class TestStaticState(TestBase):
         s = StateStatic.set_board(3, 3, 3)
         actions = s.get_sort_actions()
         self.expect(len(actions), s.board.size)
+
+        a = s.get_next(0, 1, 3, 4).get_action(6)
+        s = a.get_dst()
+        self.expect(s.done, s.FIRST_WIN, s.show())
+        self.expect(a.reward, 1)
