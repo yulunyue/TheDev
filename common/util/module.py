@@ -6,7 +6,7 @@ from typing import List, Dict
 from importlib import import_module, invalidate_caches
 
 from common.util.fp import File
-from common.util.str_util import StrUtil
+from common.tool.str_util import StrUtil
 from common.util.log import get_log, logger
 from collections import defaultdict
 import traceback

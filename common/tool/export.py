@@ -10,3 +10,4 @@ from .bp.compile import BpCompile, BP
 from .global_config import GC
 from .py_util import PyUtil
 from .system import System
+from .re_util import ReUtil

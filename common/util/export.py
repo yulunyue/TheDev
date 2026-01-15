@@ -11,7 +11,6 @@ from .log import (
 from .module import Module, get_function_info, get_file_path_by_cls
 from .tool import (
     uid,
-    re_search,
     hash_any,
     json_dumps,
     ii,
@@ -39,7 +38,7 @@ import heapq
 import random
 from copy import deepcopy
 from itertools import permutations, accumulate
-from .str_util import StrUtil
+from ..tool.str_util import StrUtil
 from .list_util import ListUtil
 import os
 from threading import Thread

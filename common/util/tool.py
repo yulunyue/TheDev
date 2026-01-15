@@ -90,10 +90,6 @@ def url_to_json(params):
     return args, kw
 
 
-def re_search(pattern, s):
-    return re.search(pattern=pattern, string=s)
-
-
 def json_dumps(oj, indent=2):
     def util(v):
         if isinstance(v, set):

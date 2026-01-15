@@ -5,7 +5,7 @@ from .fp import File
 from .tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX
 import sys
 import traceback
-from .str_util import StrUtil
+from ..tool.str_util import StrUtil
 from typing import List
 
 

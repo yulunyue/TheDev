@@ -6,4 +6,4 @@ class TestStaticState(TestBase):
     def test_state_3_3_3(self):
         s = StateStatic.set_board(3, 3, 3)
         actions = s.get_sort_actions()
-        self.expect(len(actions), len(s.board.size))
+        self.expect(len(actions), s.board.size)

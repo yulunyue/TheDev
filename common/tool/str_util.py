@@ -6,19 +6,27 @@ class StrUtil:
     MATCH_FLAGS = None
 
     def __init__(self):
-        self.prefixs = []
+        self.ignore_matchs = []
+        self.any_matchs = []
 
     def set_ignores(self, ignore_matchs: List[str]):
-        self.ignore_matchs = [re.compile(e) for e in ignore_matchs]
-
-    def set_matchs(self, any_matchs: List[str]):
-        self.any_matchs = [re.compile(e) for e in any_matchs]
+        self.ignore_matchs = [re.compile(e) for e in ignore_matchs or []]
         return self
 
-    def match(self):
-        if self.ignore_matchs:
-            return True
-        return False
+    def set_matchs(self, any_matchs: List[str]):
+        self.any_matchs = [re.compile(e) for e in any_matchs or []]
+        return self
+
+    def match(self, t: str):
+        for s in self.ignore_matchs:
+            if s.match(t):
+                return False
+        if self.any_matchs:
+            for s in self.ignore_matchs:
+                if s.match(t):
+                    return True
+            return False
+        return True
 
     def format_pre0_bin(self, s, n):
         return format(s, f"0{n}b")

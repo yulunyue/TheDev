@@ -4,6 +4,7 @@ from typing import List, Dict
 import zipfile
 import shutil
 import io
+from ..tool.str_util import StrUtil
 
 
 def dump_default(v):
@@ -183,26 +184,27 @@ class File:
         return os.path.exists(self.path)
 
     def list_dir(
-        self, depth=1, with_dir=False, filter=None, sort_func=None, ignore=None
+        self, depth=1, with_dir=False, mathchs=None, ignores=None
     ) -> List["File"]:
         if depth == 0:
             return []
         ret = []
 
-        def append(f):
-            if not filter or filter(f):
-                ret.append(f)
+        def check(path: str):
+            return StrUtil().set_ignores(ignores).set_matchs(mathchs).match(path)
 
         for name in os.listdir(self.path):
             f = File(self.path + "/" + name)
             if f.is_dir():
                 if with_dir:
-                    append(f)
-                ret.extend(f.list_dir(depth - 1, with_dir=with_dir, filter=filter))
-            else:
-                append(f)
-        if sort_func:
-            ret = sorted(ret, key=sort_func)
+                    ret.append(f)
+                ret.extend(
+                    f.list_dir(
+                        depth - 1, with_dir=with_dir, mathchs=mathchs, ignores=ignores
+                    )
+                )
+            elif check(f.path):
+                ret.append(f)
         return ret
 
     def list_tree_file(self):
