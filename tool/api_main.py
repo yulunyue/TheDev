@@ -1,15 +1,16 @@
 from common.util.export import ToolBase, logger, File
 from common.third_service.git_tool.git_util import GitUtil
+from common.third_util.api import Api
 
 
 class ApiTool(ToolBase):
+    def prepare(self, *args):
+        Api.enable_globel_log()
+        return super().prepare(*args)
+
     def git_query_pr(self):
-        g = GitUtil().set_repo("TobikoData", "sqlmesh")
-        logger.map(
-            t_1358=g.get_pr(1358).get_title(),
-            t_2282=g.get_pr(2282).get_title(),
-            t_2486=g.get_pr(2486).get_title(),
-        )
+        pr = GitUtil().set_repo("beeware", "briefcase").get_pr(2607)
+        logger.info(pr.get_title())
 
 
 if __name__ == "__main__":

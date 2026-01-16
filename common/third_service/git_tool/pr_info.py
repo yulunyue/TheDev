@@ -19,11 +19,14 @@ class PrInfo:
         self.get_config()
         return self.title
 
-    def get_isure(self):
-        try:
-            return int(self.get_title().split("#").pop())
-        except Exception as e:
-            return None
+    link_isure = None
+
+    def get_link_isure(self):
+        if self.link_isure is None:
+            self.link_isure = (
+                GitHubApi().load(self.owner, self.repo).get_pr_link_isure(self.number)
+            )
+        return self.link_isure
 
     def set_repo(self, repo):
         self.repo = repo

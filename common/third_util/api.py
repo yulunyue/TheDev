@@ -85,11 +85,16 @@ def request_mock():
 class Api:
     CONTENT_TYPE = "content-type"
     APPLICATION_JSON = "application/json"
+    LOG_ENABLE_DEFAULT = False
 
     def __init__(self, log_enable=False):
         self._name = self.__class__.__name__
-        self.log_enable = log_enable
+        self.log_enable = log_enable or Api.LOG_ENABLE_DEFAULT
         self.cache = None
+
+    @classmethod
+    def enable_globel_log(cls):
+        cls.LOG_ENABLE_DEFAULT = True
 
     @property
     def name(self):
@@ -229,7 +234,7 @@ class Api:
                 ret = res.json()
                 if self.log_enable:
                     logger.debug(
-                        f"DO HTTP [{method}] {uri} {proxies} {timeout} length={len(ret)}\n {json_dumps(ret)[:100]} "
+                        f"DO HTTP [{method}] {uri} {proxies} {timeout} length={len(ret)}\n {json_dumps(ret)} "
                     )
             else:
                 logger.debug(content_type)
