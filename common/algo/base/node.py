@@ -45,9 +45,9 @@ class Edge:
 
 
 class TreeNode:
-    """
+    r"""
                A                #
-          /    |   \            #
+          /    |  \             #
        B       C     D          #
      / | \    / \   / \         #
     E  F  G  H   I  J  K        #

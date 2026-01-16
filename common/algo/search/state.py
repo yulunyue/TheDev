@@ -19,6 +19,7 @@ class State:
     FIRST_WIN = 1
     SECONEND_WIN = 2
     MAN2 = "MAN2"
+    MAN1 = "MAN1"
     name = "state"
     parent: "State" = None
     done = False
@@ -27,7 +28,7 @@ class State:
     data = None
     best_action: Action = None
     extra = None
-    mode = MAN2
+    mode = MAN1
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
