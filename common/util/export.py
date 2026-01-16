@@ -50,7 +50,6 @@ import heapq
 import random
 from copy import deepcopy
 from itertools import permutations, accumulate
-from ..tool.str_util import StrUtil
 from .list_util import ListUtil
 import os
 from threading import Thread

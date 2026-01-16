@@ -1,4 +1,4 @@
-from common.third_util.selenium_util import SeleniumUtil, By, WebElement
+from common.third_util.selenium_util import SeleniumUtil, By, WebElement, File
 from common.util.export import time, logger, File, List
 
 from .model.export import new_one, TaskCfg, get_info_by_name, TASK_DIR, CS
@@ -9,16 +9,13 @@ class WebTool(SeleniumUtil):
     projectId = "30c9f72d-c822-4534-9dab-691656d4209f"
     fm = "Ii92My93b3JrZXItam9icy90YXNrcy9pbi1wcm9ncmVzcz9wYWdlSW5kZXg9MSZqb2JOYW1lPSZwYWdlU2l6ZT0xMCI%3D"
     main_uri = "https://ui.appen.com.cn/v3/worker-job"
+    job_map = dict(
+        zb4="144a7a09-bbc2-4527-ad1f-8dc27b83e323",
+        zb3="21e77e76-372e-49c4-b6f0-edcc35fe0663",
+    )
 
-    def __init__(self, job_id):
-        self.job_id = {
-            "zb4": "144a7a09-bbc2-4527-ad1f-8dc27b83e323",
-            "zb3": "21e77e76-372e-49c4-b6f0-edcc35fe0663",
-        }[job_id]
-
-    @property
-    def JOB_URL(self):
-        return f"{self.main_uri}/{self.job_id}?businessType=WORK&from={self.fm}&projectId={self.projectId}"
+    def get_job_url(self, key):
+        return f"{self.main_uri}/{self.job_map[key]}?businessType=WORK&from={self.fm}&projectId={self.projectId}"
 
     def get_job_info(self):
         self.get(self.JOB_URL)
@@ -100,12 +97,14 @@ class WebTool(SeleniumUtil):
             task_id, data_batch, statu, data_source, rest_time, method, *args = (
                 tr.text.split(" ")
             )
+            if task_id in self.store_task:
+                continue
+            self.store_task[task_id] = True
             t = new_one(task_id)
-            self.to_do_task.append(t)
+            logger.info(
+                f"任务ID:{task_id} 数据批次:{data_batch} 状态:{statu} 数据来源:{data_source} 剩余时间:{rest_time} 方法:{method}"
+            )
             if not t.submit_url.get_value():
-                logger.info(
-                    f"任务ID:{task_id} 数据批次:{data_batch} 状态:{statu} 数据来源:{data_source} 剩余时间:{rest_time} 方法:{method}"
-                )
                 tr.find_element(By.TAG_NAME, "button").click()
                 self.switch_to_window()
                 t.set_uri(
@@ -125,10 +124,11 @@ class WebTool(SeleniumUtil):
         self.wait_url_contains("worker-jobs")
         return self
 
-    def run(self):
-        self.to_do_task: List[TaskCfg] = []
-        self.get(self.JOB_URL)
-        self.reload()
-        self.get_job_info()
-        for t in self.to_do_task:
-            self.submit(t.load())
+    def get_all_task(self):
+        self.store_task = dict()
+        for key, v in self.job_map.items():
+            self.JOB_URL = self.get_job_url(key)
+            self.get(self.JOB_URL)
+            self.reload()
+            self.get_job_info()
+        return self.store_task

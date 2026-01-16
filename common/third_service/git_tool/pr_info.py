@@ -1,12 +1,26 @@
 from common.util.export import List, File
 from .file_change_model import FileChange
 from .patch import Patch
+from .git_api import GitHubApi
 
 
 class PrInfo:
+    title = None
+
     def set_owner(self, owner):
         self.owner = owner
         return self
+
+    def load(self, title="", **kw):
+        self.title = title
+        return self
+
+    def get_title(self):
+        self.get_config()
+        return self.title
+
+    def get_isure(self):
+        return self.get_title().split("#").pop()
 
     def set_repo(self, repo):
         self.repo = repo
@@ -26,3 +40,16 @@ class PrInfo:
     def get_patch(self, f: File):
 
         return Patch().set_file(f).set_pr(self)
+
+    config = None
+
+    def get_config(self):
+        if self.config is None:
+            self.config = (
+                GitHubApi().load(self.owner, self.repo).get_pr_info(self.number)
+            )
+            self.load(**self.config["files"])
+        return self.config
+
+    def to_json(self):
+        return dict(title=self.title)

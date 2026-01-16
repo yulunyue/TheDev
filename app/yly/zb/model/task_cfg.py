@@ -14,6 +14,7 @@ from .util import (
 )
 from .repo_cg import RepoCg
 from common.util.export import List, Dict, File, logger
+from common.tool.export import StrUtil
 from common.third_service.git_tool.git_util import GitUtil, Patch
 
 
@@ -47,7 +48,7 @@ class TaskCfg(ConfigBase):
 
     @property
     def id(self):
-        return f"{self.env_name}/{self.name.get_value()}_{self.task_id}"
+        return f"{self.env_name}/{self.name.get_value()}_{self.task_id}_{self.error_msg.get_value()[:15]}"
 
     @property
     def zip_file(self):
@@ -161,6 +162,14 @@ class TaskCfg(ConfigBase):
             self.save()
         return self
 
+    def add_error_msg_flag(self, flag):
+        msg = self.error_msg.get_value()
+        if flag not in msg:
+            logger.info(f"{self.name.get_value()}->{msg}+{flag}")
+            self.error_msg.set_value(msg + flag)
+            self.save()
+        return self
+
     def check(self):
         test_main_values = self.test_main.get_value()
         change_files: Dict[str, str] = dict()
@@ -229,16 +238,15 @@ def get_map():
     return TaskCfg.TASK_CFGS_MAP
 
 
-def query_task(key: str, state=None):
+def query_task(key: str = ""):
     ret: List[TaskCfg] = []
     tasks: List[TaskCfg] = sorted(
         get_map().values(), key=lambda x: [x.repo, x.env_name, x.pr]
     )
     for v in tasks:
         # logger.info([v.id, key in v.id or key == "all"])
-        if key in v.id or key == "all":
-            if not state or state in v.error_msg.get_value():
-                ret.append(v)
+        if not key or StrUtil().set_matchs([key]).match(v.id):
+            ret.append(v)
     return ret
 
 

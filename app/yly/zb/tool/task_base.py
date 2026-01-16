@@ -4,13 +4,12 @@ from common.util.export import (
     logger,
     Dict,
     List,
-    StrUtil,
     Module,
     get_log,
     sys,
     json_dumps,
 )
-from common.tool.export import OsUtil, GC
+from common.tool.export import OsUtil, GC, StrUtil
 from common.third_service.git_tool.git_util import GitUtil, Patch
 from ..model.export import (
     INPUTS_DIR,

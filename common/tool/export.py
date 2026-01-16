@@ -11,3 +11,4 @@ from .global_config import GC
 from .py_util import PyUtil
 from .system import System
 from .re_util import ReUtil
+from .str_util import StrUtil

@@ -26,6 +26,7 @@ class GitUtil(OsUtil):
 
     def set_repo(self, repo):
         self.repo: File = repo
+        self.set_local_dir(f"data/repo/{repo}")
         return self
 
     def set_local_dir(self, f):

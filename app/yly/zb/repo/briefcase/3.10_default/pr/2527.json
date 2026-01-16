@@ -1,6 +1,6 @@
 {
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2527.zip?Expires=1766564090&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=cAyX%2BBLYK%2BBhLT3K3OnTm6mDBU4%3D",
-    "error_msg": "success:success",
+    "error_msg": "success:successREJECT",
     "result": {
         "old_detail": {
             "assert {'app_source'...%}\\n]\\n', ...} == {'app_sou....toga-web~=0.5.0\",\\n]\\n'}\n  Use -v to get more diff": " tests/commands/new/test_build_gui_context.py::test_toga_bootstrap",

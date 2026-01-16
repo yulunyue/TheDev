@@ -18,6 +18,7 @@ class CS:
     FAILURE = "failure"
     FAILED = "failed"
     RUN = "run"
+    REJECT = "REJECT"
     SKIPPED = "skipped"
     CHECKED = "checked"
     CRASH = "crash"
