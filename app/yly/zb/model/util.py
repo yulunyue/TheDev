@@ -76,7 +76,6 @@ class Cg(ConfigBase):
         repo = File(f"{REPO_BASE}/{self.repo.get_value()}").make_dir_if_not_exist()
         return (
             GitUtil()
-            .set_repo(self.pr_url.get_value().split("/pull")[0] + ".git")
-            .set_local_dir(repo)
+            .set_repo_url(self.pr_url.get_value().split("/pull")[0] + ".git")
             .clone()
         )

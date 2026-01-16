@@ -117,22 +117,14 @@ class ZbMangae:
             ct[state] += len(tasks)
         logger.info(dict(ct))
 
-    def exec(self, state=""):
-        tasks: List[TaskCfg] = []
-        tasks2 = query_task(self.key, state=state)
+    def exec(self, key):
+        tasks2 = query_task(key)
         for f in tasks2:
-
-            f.check()
-            # s, b, *args = f.error_msg.get_value().split(":")
-            # if s == CS.FAILED:
-            #     f.set_error_msg(CS.RUN, "WAIT")
-            #     tasks.append(f)
+            logger.info(f)
+            if f.check():
+                pass
 
         # owner, task_id, repo, pr = get_info_by_name(f.name)
-
-    def query(self, key):
-        for t in query_task(key):
-            logger.info(t)
 
     def win(self):
         SelfTask().build(query_one(self.key)).run()

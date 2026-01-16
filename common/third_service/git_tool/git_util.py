@@ -6,14 +6,12 @@ from .pr_info import PrInfo
 
 
 class GitUtil(OsUtil):
+    uri = "https://github.com/"
+
     def __init__(self, error_exit_flag=True):
         super().__init__("git", error_exit_flag)
 
     owner = None
-
-    def set_owner(self, owner):
-        self.owner = owner
-        return self
 
     def reset(self, commid_id):
         return self.run("reset", "--hard", commid_id)
@@ -24,9 +22,18 @@ class GitUtil(OsUtil):
         """
         return self.run("clean", "-fd")
 
-    def set_repo(self, repo):
-        self.repo: File = repo
-        self.set_local_dir(f"data/repo/{repo}")
+    def set_repo_url(self, uri):
+        self.repo_uri: str = uri
+        owner, repo = self.repo_uri.split(self.uri).pop().split("/")
+        return self.set_repo(owner, repo.split(".")[0])
+
+    def get_repo_uri(self):
+        return self.repo_uri
+
+    def set_repo(self, owner, repo: str):
+        self.owner = owner
+        self.repo = repo
+        self.set_local_dir(f"data/repo/{self.owner}/{self.repo}")
         return self
 
     def set_local_dir(self, f):
@@ -38,10 +45,11 @@ class GitUtil(OsUtil):
 
     def clone(self):
         if not self.local_dir.exists():
-            self.run(
+            self.local_dir.make_dir_if_not_exist()
+            OsUtil("git").run(
                 "clone",
-                GC.git_proxy_prefix.get_value() + self.repo,
-                self.local_dir.path,
+                GC.git_proxy_prefix.get_value() + self.get_repo_uri(),
+                self.local_dir.parent().path,
             )
         return self
 

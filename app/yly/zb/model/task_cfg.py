@@ -16,6 +16,7 @@ from .repo_cg import RepoCg
 from common.util.export import List, Dict, File, logger
 from common.tool.export import StrUtil
 from common.third_service.git_tool.git_util import GitUtil, Patch
+from common.third_util.api import Api
 
 
 class TaskCfg(ConfigBase):
@@ -29,6 +30,7 @@ class TaskCfg(ConfigBase):
     down_load_uri = StrModel()
     name = StrModel()
     local_packge_extern = StrModel()
+    git_check_result = StrModel()
     TASK_CFGS_MAP: Dict[str, "TaskCfg"] = None
 
     def get_local_packge_extern(self):
@@ -48,7 +50,7 @@ class TaskCfg(ConfigBase):
 
     @property
     def id(self):
-        return f"{self.env_name}/{self.name.get_value()}_{self.task_id}_{self.error_msg.get_value()[:15]}"
+        return f"{self.env_name}/{self.name.get_value()}_{self.task_id}_{self.error_msg.get_value()[:64]}"
 
     @property
     def zip_file(self):
@@ -79,8 +81,6 @@ class TaskCfg(ConfigBase):
             self.repo, self.local_repo_mock_dir.child("config.json")
         )
         if not self.input_dir.exists():
-            from common.third_util.api import Api
-
             f = Api().download(self.down_load_uri.get_value())
             f.unzip(self.input_dir)
         self.pr_url.set_value(self.cg.pr_url.get_value())
@@ -157,7 +157,7 @@ class TaskCfg(ConfigBase):
             raise Exception(msg)
         msg = f"{state}:{msg}"
         if msg != self.error_msg.get_value():
-            logger.info(f"{self.name.get_value()}->{self.error_msg.get_value()}=>{msg}")
+            logger.info(f"{self.resource}->{self.error_msg.get_value()}=>{msg}")
             self.error_msg.set_value(msg)
             self.save()
         return self
@@ -178,18 +178,35 @@ class TaskCfg(ConfigBase):
             self.get_update_file_by_batch(p, change_files)
         if change_files.get("has_bin"):
             self.set_error_msg(CS.SKIPPED, CS.HAS_HEX_FILES)
-        elif len(change_files) >= max_change_files:
+            return False
+        if len(change_files) >= max_change_files:
             self.set_error_msg(
                 CS.SKIPPED,
                 f"{CS.CHANGE_FILES_TOO_MAX}={len(change_files)}>={max_change_files}",
             )
-        else:
-            files = [k for k, v in change_files.items() if v == "test"]
-            if isinstance(test_main_values, str) or not test_main_values:
-                self.test_main.set_value(files)
-            if not self.test_main.get_value():
-                self.set_error_msg(CS.SKIPPED, CS.NOT_FIND_CASES)
-        return self
+            return False
+        files = [k for k, v in change_files.items() if v == "test"]
+        if isinstance(test_main_values, str) or not test_main_values:
+            self.test_main.set_value(files)
+        if not self.test_main.get_value():
+            self.set_error_msg(CS.SKIPPED, CS.NOT_FIND_CASES)
+            return False
+        if self.git_check_result.get_value() != CS.SUCCESS:
+            isure = self.git_cmd.get_pr(self.pr).get_isure()
+            title = self.git_cmd.get_pr(self.pr).get_title()
+            if isure:
+                self.git_check_result.set_value(CS.SUCCESS)
+                self.save()
+            else:
+                self.git_check_result.set_value(f"{CS.ISSUE_0}_{isure}_{title}")
+                self.set_error_msg(CS.SKIPPED, f"{CS.ISSUE_0}_{isure}_{title}")
+                return False
+        err_msg = self.error_msg.get_value()
+        if err_msg == f"{CS.SUCCESS}:{CS.SUCCESS}":
+            return False
+        if err_msg.startswith(CS.RUN) or err_msg.startswith(CS.SKIPPED):
+            return False
+        return True
 
     def get_update_file_by_batch(
         self,

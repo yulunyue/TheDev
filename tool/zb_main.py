@@ -16,9 +16,6 @@ class ZbTool(ToolBase):
     def exec(self, key=""):
         self.z.exec(key)
 
-    def query(self, key):
-        self.z.query(key)
-
 
 if __name__ == "__main__":
     ZbTool().run()

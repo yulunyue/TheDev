@@ -20,7 +20,10 @@ class PrInfo:
         return self.title
 
     def get_isure(self):
-        return self.get_title().split("#").pop()
+        try:
+            return int(self.get_title().split("#").pop())
+        except Exception as e:
+            return None
 
     def set_repo(self, repo):
         self.repo = repo
