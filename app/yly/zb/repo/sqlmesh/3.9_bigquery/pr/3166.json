@@ -2,14 +2,15 @@
     "name": "TobikoData__sqlmesh-3166",
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27164&businessType=WORK",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-3166.zip?Expires=1767778260&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=cPdi%2Fs%2BHn7XFEqsDzfkR2cSBIqY%3D",
-    "error_msg": "success:successREJECT",
+    "error_msg": "success:success",
     "depends_models": {},
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/3164",
     "local_packge_extern": "",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/3166",
     "result": {
+        "pre_detail": {},
         "old_detail": {
-            "AssertionError: assert not True\n +  where True = <....cMock name='_db_call' id='132001854830912'>.called": " tests/core/engine_adapter/test_bigquery.py::test_comments"
+            "AssertionError: assert not True\n +  where True = <....cMock name='_db_call' id='136654095751728'>.called": " tests/core/engine_adapter/test_bigquery.py::test_comments"
         },
         "new_detail": {},
         "test": {
@@ -92,6 +93,47 @@
             "tests/core/engine_adapter/test_bigquery.py::test_view_properties": "passed",
             "tests/core/engine_adapter/test_bigquery.py::test_materialized_view_properties": "passed"
         },
+        "pre": {
+            "tests/core/engine_adapter/test_bigquery.py::test_insert_overwrite_by_time_partition_query": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_insert_overwrite_by_partition_query": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_insert_overwrite_by_partition_query_unknown_column_types": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_insert_overwrite_by_time_partition_pandas": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_replace_query": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_replace_query_pandas": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_date_partition[partition_by_cols0-`ds`]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_date_partition[partition_by_cols1-DATE_TRUNC(`ds`, MONTH)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols0-date-five_minute-`ds`]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols1-date-hour-`ds`]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols2-date-day-`ds`]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols3-date-month-DATE_TRUNC(`ds`, MONTH)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols4-date-year-DATE_TRUNC(`ds`, YEAR)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols5-datetime-hour-DATETIME_TRUNC(`ds`, HOUR)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols6-datetime-day-DATETIME_TRUNC(`ds`, DAY)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols7-datetime-month-DATETIME_TRUNC(`ds`, MONTH)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols8-datetime-year-DATETIME_TRUNC(`ds`, YEAR)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols9-timestamp-hour-TIMESTAMP_TRUNC(`ds`, HOUR)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols10-timestamp-day-TIMESTAMP_TRUNC(`ds`, DAY)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols11-timestamp-month-TIMESTAMP_TRUNC(`ds`, MONTH)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols12-timestamp-year-TIMESTAMP_TRUNC(`ds`, YEAR)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols13-timestamp-hour-TIMESTAMP_TRUNC(`ds`, HOUR)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols14-timestamp-day-TIMESTAMP_TRUNC(`ds`, HOUR)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_time_partition[partition_by_cols15-timestamp-five_minute-TIMESTAMP_TRUNC(`ds`, DAY)]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_ctas_time_partition": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_merge": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_merge_pandas": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_begin_end_session": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_create_table_table_options": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_comments": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_select_partitions_expr": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_drop_schema[kwargs0-DROP SCHEMA IF EXISTS `test_schema`]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_drop_schema[kwargs1-DROP SCHEMA `test_schema`]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_drop_schema[kwargs2-DROP SCHEMA IF EXISTS `test_schema` CASCADE]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_drop_schema[kwargs3-DROP SCHEMA `test_schema` CASCADE]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_drop_schema[kwargs4-DROP SCHEMA IF EXISTS `test_catalog`.`test_schema` CASCADE]": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_view_properties": "passed",
+            "tests/core/engine_adapter/test_bigquery.py::test_materialized_view_properties": "passed"
+        },
+        "PRE_FAILED": "set()",
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
@@ -139,5 +181,6 @@
     },
     "test_main": [
         "tests/core/engine_adapter/test_bigquery.py"
-    ]
+    ],
+    "git_check_result": "success"
 }

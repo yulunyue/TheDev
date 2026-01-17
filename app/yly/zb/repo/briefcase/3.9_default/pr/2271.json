@@ -1,14 +1,15 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2271.zip?Expires=1766564048&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=KVeZslPL%2FdykWWVaCL%2BN84PF4EY%3D",
-    "error_msg": "success:successREJECT",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "pre_detail": {},
         "old_detail": {
             "AttributeError: 'DummyCommand' object has no attribute 'get_git_config_value'": " tests/commands/base/test_get_git_config_value.py::test_all_config_files_are_read tests/commands/base/test_get_git_config_value.py::test_config_values_are_parsed",
             "AssertionError: assert 'Jane Developer' == 'Some Author'\n  \n  - Some Author\n  + Jane Developer": " tests/commands/convert/test_input_author.py::test_default_author_from_git_config tests/commands/new/test_build_app_context.py::test_author_and_email_use_git_config_as_fallback",
             "AssertionError: assert 'some@bundle.some.com' == '.....com'\n  \n  - my@email.com\n  + some@bundle.some.com": " tests/commands/convert/test_input_email.py::test_default_email_from_git_config",
-            "AssertionError: assert call(intro='Based on your g.... = <MagicMock id='135406956519136'>.call_args_list": " tests/commands/new/test_build_app_context.py::test_git_config_is_mentioned_as_source"
+            "AssertionError: assert call(intro='Based on your g.... = <MagicMock id='129761273134768'>.call_args_list": " tests/commands/new/test_build_app_context.py::test_git_config_is_mentioned_as_source"
         },
         "new_detail": {},
         "test": {
@@ -65,6 +66,8 @@
             "tests/commands/new/test_build_app_context.py::test_author_and_email_use_git_config_as_fallback": "passed",
             "tests/commands/new/test_build_app_context.py::test_git_config_is_mentioned_as_source": "passed"
         },
+        "pre": {},
+        "PRE_FAILED": "set()",
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
@@ -111,5 +114,6 @@
     "py_name": "",
     "docker_image_name": "briefcase:latest",
     "depends_models": {},
-    "local_packge_extern": ""
+    "local_packge_extern": "",
+    "git_check_result": "success"
 }

@@ -1,13 +1,14 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-956.zip?Expires=1766564112&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=5W4syLC90erJxp9aqKr%2BdB7DNv4%3D",
-    "error_msg": "success:successREJECT",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "pre_detail": {},
         "old_detail": {
             "IndexError: list index out of range": " tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip; ignored=okay] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-garbage] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-ATTACHment; filename=    \"something.zip\"] tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=\"something.zip\"; filename*=utf-8''%e2%82%ac%20rates] tests/integrations/download/test_Download__file.py::test_new_download_chunked",
-            "AssertionError: assert not True\n +  where True = e....base.ToolCache object at 0x7194e3de9370>.base_path": " tests/integrations/download/test_Download__file.py::test_iter_content_connection_error",
-            "AssertionError: assert not True\n +  where True = e....base.ToolCache object at 0x7194e4718cd0>.base_path": " tests/integrations/download/test_Download__file.py::test_content_connection_error"
+            "AssertionError: assert not True\n +  where True = e....base.ToolCache object at 0x78c5fe3265b0>.base_path": " tests/integrations/download/test_Download__file.py::test_iter_content_connection_error",
+            "AssertionError: assert not True\n +  where True = e....base.ToolCache object at 0x78c5fda77760>.base_path": " tests/integrations/download/test_Download__file.py::test_content_connection_error"
         },
         "new_detail": {},
         "test": {
@@ -42,6 +43,23 @@
             "tests/integrations/download/test_Download__file.py::test_iter_content_connection_error": "passed",
             "tests/integrations/download/test_Download__file.py::test_content_connection_error": "passed"
         },
+        "pre": {
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-None]": "passed",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-]": "passed",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip]": "passed",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=something.zip; ignored=okay]": "passed",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/something.zip-garbage]": "passed",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-ATTACHment; filename=    \"something.zip\"]": "passed",
+            "tests/integrations/download/test_Download__file.py::test_new_download_oneshot[https://example.com/path/to/irrelevant.zip-attachment; filename=\"something.zip\"; filename*=utf-8''%e2%82%ac%20rates]": "passed",
+            "tests/integrations/download/test_Download__file.py::test_new_download_chunked": "passed",
+            "tests/integrations/download/test_Download__file.py::test_already_downloaded": "passed",
+            "tests/integrations/download/test_Download__file.py::test_missing_resource": "passed",
+            "tests/integrations/download/test_Download__file.py::test_bad_resource": "passed",
+            "tests/integrations/download/test_Download__file.py::test_get_connection_error": "passed",
+            "tests/integrations/download/test_Download__file.py::test_iter_content_connection_error": "passed",
+            "tests/integrations/download/test_Download__file.py::test_content_connection_error": "passed"
+        },
+        "PRE_FAILED": "set()",
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
@@ -74,5 +92,6 @@
     "py_name": "",
     "docker_image_name": "briefcase:latest",
     "depends_models": {},
-    "local_packge_extern": ""
+    "local_packge_extern": "",
+    "git_check_result": "success"
 }

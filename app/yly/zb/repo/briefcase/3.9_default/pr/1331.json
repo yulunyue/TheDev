@@ -1,9 +1,10 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1331.zip?Expires=1766564025&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=7I2q%2FOCYOudtuKGFxpLVYKvlYZ4%3D",
-    "error_msg": "success:successREJECT",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "pre_detail": {},
         "old_detail": {
             "Failed: DID NOT RAISE <class 'briefcase.exceptions.BriefcaseCommandError'>": " tests/integrations/docker/test_DockerAppContext__verify.py::test_docker_image_build_fail tests/platforms/linux/system/test_mixin__finalize_app_config.py::test_docker_arch_with_user_mapping",
             "AttributeError: <class 'briefcase.integrations.docker.Docker'> has no attribute '_write_test_path'": " tests/integrations/docker/test_Docker__cache_image.py::test_cache_image tests/integrations/docker/test_Docker__cache_image.py::test_cache_image_already_cached tests/integrations/docker/test_Docker__cache_image.py::test_cache_bad_image tests/integrations/docker/test_Docker__verify.py::test_docker_exists tests/integrations/docker/test_Docker__verify.py::test_docker_failure tests/integrations/docker/test_Docker__verify.py::test_docker_unknown_version tests/integrations/docker/test_Docker__verify.py::test_user_mapping_write_file_exists tests/integrations/docker/test_Docker__verify.py::test_user_mapping_write_test_file_creation_fails tests/integrations/docker/test_Docker__verify.py::test_user_mapping_write_test_file_cleanup_fails tests/integrations/docker/test_Docker__verify.py::test_user_mapping_setting[1000-True] tests/integrations/docker/test_Docker__verify.py::test_user_mapping_setting[0-False]",
@@ -205,6 +206,8 @@
             "tests/platforms/linux/system/test_mixin__verify.py::test_linux_docker": "passed",
             "tests/platforms/linux/system/test_mixin__verify.py::test_non_linux_docker": "passed"
         },
+        "pre": {},
+        "PRE_FAILED": "set()",
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
@@ -310,5 +313,6 @@
     "py_name": "",
     "docker_image_name": "briefcase:latest",
     "depends_models": {},
-    "local_packge_extern": ""
+    "local_packge_extern": "",
+    "git_check_result": "success"
 }

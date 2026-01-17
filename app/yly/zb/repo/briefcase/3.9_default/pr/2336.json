@@ -1,9 +1,10 @@
 {
     "after_setup_env": {},
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-2336.zip?Expires=1766564074&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=sPkf6b5%2BhLWx8O81lXyhHJaN7Ak%3D",
-    "error_msg": "success:successREJECT",
+    "error_msg": "success:success",
     "need_setup_env": false,
     "result": {
+        "pre_detail": {},
         "old_detail": {
             "AssertionError: Expected 'mock' to be called once. Called 0 times.": " tests/platforms/macOS/app/package/test_package.py::test_package_app tests/platforms/macOS/app/test_build.py::test_build_app[True-True-True-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[True-True-True-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[True-True-True-extra_args2] tests/platforms/macOS/app/test_build.py::test_build_app[True-True-False-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[True-True-False-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[True-True-False-extra_args2] tests/platforms/macOS/app/test_build.py::test_build_app[True-False-True-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[True-False-True-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[True-False-True-extra_args2] tests/platforms/macOS/app/test_build.py::test_build_app[True-False-False-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[True-False-False-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[True-False-False-extra_args2] tests/platforms/macOS/app/test_build.py::test_build_app[False-True-True-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[False-True-True-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[False-True-True-extra_args2] tests/platforms/macOS/app/test_build.py::test_build_app[False-True-False-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[False-True-False-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[False-True-False-extra_args2] tests/platforms/macOS/app/test_build.py::test_build_app[False-False-True-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[False-False-True-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[False-False-True-extra_args2] tests/platforms/macOS/app/test_build.py::test_build_app[False-False-False-extra_args0] tests/platforms/macOS/app/test_build.py::test_build_app[False-False-False-extra_args1] tests/platforms/macOS/app/test_build.py::test_build_app[False-False-False-extra_args2] tests/platforms/macOS/app/test_create.py::test_generate_app_template tests/platforms/macOS/xcode/test_build.py::test_build_app[True] tests/platforms/macOS/xcode/test_build.py::test_build_app[False] tests/platforms/macOS/xcode/test_build.py::test_build_app_failed",
             "AttributeError: 'DummyInstallCommand' object has no attribute 'verify_not_on_icloud'": " tests/platforms/macOS/test_macOSMixin__verify_not_on_icloud.py::test_on_icloud tests/platforms/macOS/test_macOSMixin__verify_not_on_icloud.py::test_on_icloud_with_cleanup tests/platforms/macOS/test_macOSMixin__verify_not_on_icloud.py::test_not_on_icloud tests/platforms/macOS/test_macOSMixin__verify_not_on_icloud.py::test_app_doesnt_exist"
@@ -177,6 +178,8 @@
             "tests/platforms/macOS/xcode/test_build.py::test_build_app[False]": "passed",
             "tests/platforms/macOS/xcode/test_build.py::test_build_app_failed": "passed"
         },
+        "pre": {},
+        "PRE_FAILED": "set()",
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
@@ -281,5 +284,6 @@
     "py_name": "",
     "docker_image_name": "briefcase:latest",
     "depends_models": {},
-    "local_packge_extern": ""
+    "local_packge_extern": "",
+    "git_check_result": "success"
 }

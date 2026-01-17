@@ -9,6 +9,7 @@ from common.util.export import (
     Module,
     get_dev_log,
     Dict,
+    ThreadManage,
 )
 from common.tool.export import OsUtil, GC
 from app.yly.zb.model.export import (
@@ -38,17 +39,11 @@ def dol(f: TaskCfg, docker_name=None) -> DockerTask:
     return DockerTask().set_env(
         f.docker_image_name,
         GC.zb_docker_env.get_value(),
-        f.input_dir.child(f"docker_{f.docker_image_name}.log").path,
+        f.input_dir.child(f"docker.log").path,
     )
 
 
 class ZbMangae:
-
-    def docker(self, name=None, docker_name=None) -> DockerTask:
-        if name is None:
-            name = self.key
-        t = query_one(name)
-        return dol(t, docker_name).build(t).load()
 
     def task_update(self, use_local=True):
         f = File("data/zb/task.json")
@@ -63,33 +58,6 @@ class ZbMangae:
             t = query_one(k)
             t.add_error_msg_flag(CS.REJECT)
 
-    def build(self):
-        d = self.docker()
-        d.apply_test()
-        d.docker_build()
-        logger.info(f"docker run -it {d.docker_image_name}")
-
-    def clear(self):
-        """
-        Docstring for clear
-
-        :param self: Description
-        需要明确clear的意义和目的
-        """
-        for k in []:
-            # for t in query_task(self.key):
-            # print(t.cg_file)
-            if not k:
-                continue
-            t = query_one(k)
-            t.set_error_msg(CS.SKIPPED, CS.ISSUE_0)
-
-    def check(self):
-        for t in query_task(self.key, state=CS.FAILED):
-            DockerTask().build(t).print_result()
-            # t.set_error_msg(CS.SUCCESS, "CHECKING")
-            # dol(t, "check").build(t).run()
-
     def view(self):
         ret: Dict[str, List[TaskCfg]] = defaultdict(list)
         ct = defaultdict(int)
@@ -97,7 +65,9 @@ class ZbMangae:
         for t in tasks2:
             test_ct, code_ct = t.get_result("test"), t.get_result("code")
             key = t.error_msg.get_value().split("=")[0]
-            start_idx = key.index(":")
+            start_idx = key.find(":")
+            if start_idx == -1:
+                raise Exception(t, key)
             state, msg = key[:start_idx], key[start_idx + 1 :]
             ret[state, msg].append(t)
 
@@ -117,84 +87,59 @@ class ZbMangae:
             ct[state] += len(tasks)
         logger.info(dict(ct))
 
-    def exec(self, key):
-        tasks2 = query_task(key)
-        for f in tasks2:
-            logger.info(f)
-            if f.check():
-                pass
+    def run_all(self, key):
+        tasks2 = [d for d in query_task(key) if d.check]
+        # for t in tasks2:
+        #     self.run_one(t)
+        ThreadManage(max_workers=1).run(self.run_one, tasks2)
 
-        # owner, task_id, repo, pr = get_info_by_name(f.name)
+    def run_one(self, t):
+        if isinstance(t, str):
+            t = query_one(t)
 
-    def win(self):
-        SelfTask().build(query_one(self.key)).run()
+        d = dol(t).build(t).load()
+        d.run()
 
-    def test(self):
-        ZbTask().build(query_one(self.key)).load().apply_test().save()
+    def show_all(self, key, name):
+        for d in query_task(key):
+            self.show(d, name)
 
-    def code(self):
-        ZbTask().build(query_one(self.key)).apply_code().save()
-
-    def verify(self):
-        t = query_one(self.repo, self.key)
-        OsUtil("python").run(
-            "app/yly/zb/verification1217.py",
-            t.input_dir.get_abs_path(),
-            t.docker_image_name,
-        )
-
-    def pip(self):
-        c = SelfTask().build(query_one(self.repo, self.key))
-        c.init()
-        c.pip()
-
-    def debug(self, name):
-        t = self.docker(docker_name="debug")
+    def show(self, tk, name):
+        t = dol(tk).build(tk).load()
         if name == "test":
             t.apply_test()
         elif name == "code":
             t.apply_code()
         else:
-            raise Exception(name)
+            t.rest_repo()
+        t.print_result()
+        t.save()
         t.make_launch_json()
         logger.info(t.get_py_test_main_code())
-        t.docker_build()
+        # t.docker_build()
         vv = t.get_volumn_v(
             {
                 t.local_repo.get_abs_path(): t.local_repo.path,
             }
         )
-        logger.info(
-            f"docker run -p 5678:5678 {vv} -it {self.docker().docker_image_name}"
-        )
-
+        logger.info(f"docker run -p 5678:5678 {vv} -it {t.docker_image_name}")
         logger.info(
             f"python -m debugpy --listen 0.0.0.0:5678 --wait-for-client py_test_main.py"
         )
 
-    def log(self, name=None):
-        search_key = """
-E       ModuleNotFoundError: No module named 'snowflake'
-
-""".replace(
-            "\n", ""
-        )
-        for f in query_task(self.key):
-            if f.error_msg.get_value().startswith(CS.RUN):
+    def query_log(self, key, search_key, log_name, util=""):
+        for f in query_task(key):
+            if not f.check():
                 continue
-            test_log = f.input_dir.child("code.log")
-            # test_log = f.input_dir.child("docker_sqlmesh_3.9_default.log")
+            test_log = f.input_dir.child(log_name)
             if not test_log.exists():
                 continue
             datas = test_log.read_file()
             idx = datas.find(search_key)
             if idx != -1:
-                f.set_env(name)
-                # f.set_error_msg(CS.FAILED, search_key)
-                logger.info(
-                    f"{f.resource}->{f.error_msg.get_value()} log->{datas[idx:idx+100]}"
-                )
-
-    def files(self):
-        for d in REPO_DIR.list_dir(-1):
-            pass
+                if util == CS.SKIPPED:
+                    f.set_error_msg(CS.SKIPPED)
+                elif util.startswith("env "):
+                    _, env = util.split(" ")
+                    f.set_env(env)
+                logger.info(f"{f}->{datas[idx:idx+100]}")

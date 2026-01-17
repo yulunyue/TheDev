@@ -72,7 +72,7 @@ class TaskCfg(ConfigBase):
         self.env_name = info[1]
         self.py_version = self.env_name.split("_")[0]
         self.owner, _, self.repo, self.pr = get_info_by_name(self.name.get_value())
-        self.docker_image_name = f"{self.repo}:{self.env_name}"
+        self.docker_image_name = f"{self.repo}:{self.pr}"
         self.input_dir = TASK_DIR.child(self.repo).child(self.task_id)
         self.cg = Cg(self.task_id).set_resource(self.cg_file)
         self.local_repo_mock_dir = REPO_DIR.child(self.repo)
@@ -152,13 +152,17 @@ class TaskCfg(ConfigBase):
         self.set_error_msg(CS.FAILED, "TODO")
         self.save()
 
-    def set_error_msg(self, state, msg: str):
+    def set_error_msg(self, state, msg: str = ""):
         if state not in {CS.SUCCESS, CS.SKIPPED, CS.FAILED, CS.ERROR, CS.RUN}:
             raise Exception(msg)
-        msg = f"{state}:{msg}"
-        if msg != self.error_msg.get_value():
-            logger.info(f"{self.resource}->{self.error_msg.get_value()}=>{msg}")
-            self.error_msg.set_value(msg)
+
+        src_state, *args = self.error_msg.get_value().split(":")
+        src_msg = ":".join(args)
+
+        if src_state != state or msg != src_msg:
+            dst_msg = f"{state}:{msg if msg else src_msg}"
+            logger.info(f"{self.resource}->{self.error_msg.get_value()}=>{dst_msg}")
+            self.error_msg.set_value(dst_msg)
             self.save()
         return self
 
@@ -192,14 +196,14 @@ class TaskCfg(ConfigBase):
             self.set_error_msg(CS.SKIPPED, CS.NOT_FIND_CASES)
             return False
         if self.git_check_result.get_value() != CS.SUCCESS:
-            isure = self.git_cmd.get_pr(self.pr).get_isure()
-            title = self.git_cmd.get_pr(self.pr).get_title()
-            if isure:
+            isures = self.git_cmd.get_pr(self.pr).get_link_isures()
+
+            if len(isures) == 1:
                 self.git_check_result.set_value(CS.SUCCESS)
                 self.save()
             else:
-                self.git_check_result.set_value(f"{CS.ISSUE_0}_{isure}_{title}")
-                self.set_error_msg(CS.SKIPPED, f"{CS.ISSUE_0}_{isure}_{title}")
+                self.git_check_result.set_value(f"{CS.ISSUE_0}_{len(isures)}")
+                self.set_error_msg(CS.SKIPPED, f"{CS.ISSUE_0}_{len(isures)}")
                 return False
         err_msg = self.error_msg.get_value()
         if err_msg == f"{CS.SUCCESS}:{CS.SUCCESS}":
@@ -234,7 +238,7 @@ class TaskCfg(ConfigBase):
         return ret
 
     def __repr__(self):
-        return self.id
+        return f"\nid:{self.id}\n f1:{self.resource}\n cg:{self.cg_file}\n"
 
 
 def task_cfg(f: File):
