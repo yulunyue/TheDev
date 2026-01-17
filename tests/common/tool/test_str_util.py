@@ -1,4 +1,5 @@
-from common.util.export import TestBase, StrUtil
+from common.util.export import TestBase
+from common.tool.export import StrUtil
 
 
 class TestStrUtil(TestBase):

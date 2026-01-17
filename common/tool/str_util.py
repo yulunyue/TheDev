@@ -20,11 +20,11 @@ class StrUtil:
 
     def match(self, t: str):
         for s in self.ignore_matchs:
-            if s.match(t):
+            if s.findall(t):
                 return False
         if self.any_matchs:
             for s in self.any_matchs:
-                if s.match(t):
+                if s.findall(t):
                     return True
             return False
         return True

@@ -12,3 +12,23 @@ class TestReUtil(TestBase):
         self.expect(ReUtil("he").match(text), "he")
         self.expect(ReUtil(".*e").match(text), "hele")
         self.expect(ReUtil(r".*?e").match(text), "he")
+
+    def test_find_all(self):
+        text = "helex"
+        self.expect(ReUtil("e").findall(text), ["e", "e"])
+
+    def test_search_lines(self):
+        text = """
+# xx
+```key xx
+python xx
+```
+# xx2
+```key2 xx2
+python xx2
+```
+"""
+        self.expect(
+            ReUtil("```(.*?)\n(.*?)\n```").findall(text),
+            [("key xx", "python xx"), ("key2 xx2", "python xx2")],
+        )

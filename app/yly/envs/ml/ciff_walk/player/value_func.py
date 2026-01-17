@@ -5,20 +5,6 @@ from common.third_util.pt_table import PtTable
 from ..env import CfState
 
 
-
-
-
-
-
-    def log_value(self, diff):
-        logger.debug(
-            f"---log_value----round:{self.cnt}--ep:{self.p_cnt}--diff:{diff}--\n{to_matrix(self.v)}"
-        )
-
-    def log_policy(self, pi):
-        logger.debug(f"---log_policy----round:{self.cnt}-----\n{to_matrix(pi)}")
-
-
 class VFunc(ValueIteration):
     def reset(self):
         self.set_pi(defaultdict(lambda: {i: 1 for i in range(4)}))

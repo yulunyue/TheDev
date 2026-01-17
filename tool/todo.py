@@ -1,12 +1,9 @@
 from common.util.export import File
+from common.tool.export import ToolBase
 
 
-class TodoUtil:
-    def load(self):
-        pass
-
-    def run(self):
-        self.load()
+class TodoUtil(ToolBase):
+    pass
 
 
 if __name__ == "__main__":

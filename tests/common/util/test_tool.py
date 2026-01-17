@@ -1,12 +1,4 @@
-from common.util.export import (
-    TestBase,
-    uid,
-    base64_encode,
-    ii,
-    hash_any,
-    md5,
-    re_search,
-)
+from common.util.export import TestBase, uid, base64_encode, ii, hash_any, md5
 
 
 class TestTool(TestBase):

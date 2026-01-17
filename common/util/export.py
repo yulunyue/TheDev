@@ -21,8 +21,9 @@ from .tool import (
     url_to_json,
     SYS_ARGS,
     SYS_KW,
+    cmd_parse,
 )
-from .test import TestBase, logger, ToolBase, Case, make_md_file
+from .test import TestBase, logger, Case
 from .fp import File, get_cache
 from .module import Module, run_catch_error
 from .thread_poll import ThreadManage, ThreadExec

@@ -5,6 +5,7 @@ from common.util.export import (
     Module,
     get_function_info,
     get_dev_log,
+    logger,
 )
 from .node import Node
 from typing import List
