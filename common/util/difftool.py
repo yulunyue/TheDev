@@ -41,7 +41,7 @@ class Diff:
         return "\n".join(self.compare(dst))
 
     def expect_ndarray(self, a, e, wucha=0.000001):
-        from common.third_util.np_util import np
+        from common.third_util.ml.np_util import np
 
         if getattr(a, "requires_grad", False):
             a = a.detach().numpy()

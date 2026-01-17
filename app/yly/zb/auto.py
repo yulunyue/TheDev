@@ -10,7 +10,7 @@ class WebTool(SeleniumUtil):
     fm = "Ii92My93b3JrZXItam9icy90YXNrcy9pbi1wcm9ncmVzcz9wYWdlSW5kZXg9MSZqb2JOYW1lPSZwYWdlU2l6ZT0xMCI%3D"
     main_uri = "https://ui.appen.com.cn/v3/worker-job"
     job_map = dict(
-        zb4="144a7a09-bbc2-4527-ad1f-8dc27b83e323",
+        # zb4="144a7a09-bbc2-4527-ad1f-8dc27b83e323",
         zb3="21e77e76-372e-49c4-b6f0-edcc35fe0663",
     )
 
@@ -42,8 +42,8 @@ class WebTool(SeleniumUtil):
             logger.info(f"not can submit {t.zip_file}")
             return
         err_msg = t.error_msg.get_value()
-        if not err_msg.startswith(CS.SKIPPED):
-            return
+        # if not err_msg.startswith(CS.SKIPPED):
+        #     return
         ZbTask().build(t).load().local_cfg.zip()
         logger.info(f"upload {t.zip_file}")
         self.upload(t.zip_file)
@@ -99,8 +99,8 @@ class WebTool(SeleniumUtil):
             )
             if task_id in self.store_task:
                 continue
-            self.store_task[task_id] = True
             t = new_one(task_id)
+            self.store_task[task_id] = t
             logger.info(
                 f"任务ID:{task_id} 数据批次:{data_batch} 状态:{statu} 数据来源:{data_source} 剩余时间:{rest_time} 方法:{method}"
             )
@@ -132,3 +132,7 @@ class WebTool(SeleniumUtil):
             self.reload()
             self.get_job_info()
         return self.store_task
+
+    def submit_all(self):
+        for key, v in self.get_all_task().items():
+            self.submit(v)

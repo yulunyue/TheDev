@@ -2,6 +2,7 @@ from .learn.dyn import PolicyIteration, ValueIteration
 from .search.state import State, Action, AbState
 from .search.algo import Algo, random_seed, np, RandomAlgo
 from .search.mctssearch import MctsSearch, MctsState
+from .learn.dqn import Dqn, DoubleDqn
 from common.util.export import logger
 from .search.alphabate_search import AlphaBateSearch, AbDev
 from .learn.sarse.qlearning import Qlearning

@@ -1,4 +1,4 @@
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 from common.algo.search.state import State, inf, Action
 from common.algo.search.param import Params
 from collections import deque
@@ -111,7 +111,7 @@ class Algo:
         )
 
     def draw_reward(self):
-        from common.third_util.draw import Draw
+        from common.third_util.view.draw import Draw
 
         path = f"data/algo/{self.get_name()}.svg"
         Draw().draw_line(self.rewards).save(path)

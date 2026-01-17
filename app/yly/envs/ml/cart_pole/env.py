@@ -1,8 +1,8 @@
 from common.algo.export import Action, State
 from common.util.export import logger, List
 from .constant import C
-from common.third_util.torch_util import torch
-from common.third_util.np_util import np
+from common.third_util.ml.torch_util import torch
+from common.third_util.ml.np_util import np
 
 
 class CartAction(Action):

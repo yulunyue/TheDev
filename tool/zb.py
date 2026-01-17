@@ -1,14 +1,17 @@
-from common.util.export import ToolBase, logger, File
+from common.util.export import logger, File
 from app.yly.zb.manage import ZbMangae, CS, query_one, query_task
+from common.tool.export import ToolBase
 
 
 class ZbTool(ToolBase):
-    def prepare(self, *args):
+    def __init__(self):
         self.z = ZbMangae()
-        return super().prepare(*args)
 
     def view(self):
         self.z.view()
+
+    def submit(self):
+        self.z.submit()
 
     def task_update(self):
         self.z.task_update()

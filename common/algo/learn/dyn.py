@@ -1,6 +1,6 @@
 from common.algo.search.algo import Algo, Action, State
 from common.util.export import logger, defaultdict
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 from typing import List
 
 

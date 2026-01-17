@@ -174,7 +174,7 @@ class SeleniumUtil:
         if dev_port:
             chrome_exe = File(GC.chrome_bin_path.get_value())
             chrome_driver = File(GC.chrome_driver_path.get_value())
-            from common.third_util.api import Api
+            from common.third_util.io.apiapi import Api
 
             if not chrome_exe.exists():
                 Api().download(GC.chrome_bin_uri.get_value()).unzip(chrome_exe.path)
