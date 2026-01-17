@@ -129,7 +129,10 @@ class File:
     def read_file(self, encoding="utf-8"):
         data = self.read_data()
         if self.is_json_file():
-            return json.loads(data.decode(encoding))
+            try:
+                return json.loads(data.decode(encoding))
+            except Exception as e:
+                raise Exception(self, e)
         elif self.file_name.endswith(".cfg") or self.file_name.endswith(".ini"):
             from configparser import ConfigParser
 

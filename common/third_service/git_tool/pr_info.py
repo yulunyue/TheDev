@@ -21,7 +21,7 @@ class PrInfo:
 
     link_isure = None
 
-    def get_link_isure(self):
+    def get_link_isures(self):
         if self.link_isure is None:
             self.link_isure = (
                 GitHubApi().load(self.owner, self.repo).get_pr_link_isure(self.number)

@@ -28,6 +28,7 @@ class CS:
     NO_FAIL_TO_PASS = "NO_FAIL_TO_PASS"
     NO_PASS_TO_PASS = "NO_PASS_TO_PASS"
     FAIL_TO_FAIL = "FAIL_TO_FAIL"
+    PRE_FAILED = "PRE_FAILED"
     RESULT_JSON_FILE = "python_test_result.json"
     RUN_VERIFICATION_PY = "run_verification.py"
     CODE_PATCH = "code.patch"
@@ -285,7 +286,11 @@ def main():
     # --- 补丁前运行 ---
     if not reset_repo(BASE_COMMIT):
         write_results_and_exit(False)
+
     pre_result, pre_ct = do_pre()
+    for k, v in pre_result.items():
+        if v == CS.FAILED or v == CS.ERROR:
+            write_results_and_exit(False)
     if pre_ct.get(CS.FAILED) or pre_ct.get(CS.ERROR):
         write_results_and_exit(False)
     pre_patch_results = do_test()

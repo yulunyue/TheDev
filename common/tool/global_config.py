@@ -18,6 +18,7 @@ class GloablConfg(ConfigBase):
     pip_global_index_url = StrModel()
     pip_trusted_host = StrModel()
     zb_docker_env = StrModel()
+    github_token = StrModel()
 
 
 GC = GloablConfg("GC").set_resource("gloabl_setting")

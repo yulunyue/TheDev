@@ -2,12 +2,13 @@
     "name": "TobikoData__sqlmesh-429",
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27188&businessType=WORK",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-429.zip?Expires=1767778318&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=zUAnDIU59ckJ1qP3j2EzwMBGAGE%3D",
-    "error_msg": "success:successREJECT",
+    "error_msg": "success:success",
     "depends_models": {},
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/399",
     "local_packge_extern": "",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/429",
     "result": {
+        "pre_detail": {},
         "old_detail": {
             "AssertionError: assert {'top_waiters_limit': 10} =....ers:revenue': 'revenue'}\n  Use -v to get more diff": " tests/dbt/test_config.py::test_variables"
         },
@@ -64,6 +65,33 @@
             "tests/dbt/test_config.py::test_redshift_config": "passed",
             "tests/dbt/test_config.py::test_databricks_config": "passed"
         },
+        "pre": {
+            "tests/dbt/test_config.py::test_update[current0-new0-expected0]": "passed",
+            "tests/dbt/test_config.py::test_update[current1-new1-expected1]": "passed",
+            "tests/dbt/test_config.py::test_update[current2-new2-expected2]": "passed",
+            "tests/dbt/test_config.py::test_update[current3-new3-expected3]": "passed",
+            "tests/dbt/test_config.py::test_update[current4-new4-expected4]": "passed",
+            "tests/dbt/test_config.py::test_update[current5-new5-expected5]": "passed",
+            "tests/dbt/test_config.py::test_update[current6-new6-expected6]": "passed",
+            "tests/dbt/test_config.py::test_update[current7-new7-expected7]": "passed",
+            "tests/dbt/test_config.py::test_update[current8-new8-expected8]": "passed",
+            "tests/dbt/test_config.py::test_update[current9-new9-expected9]": "passed",
+            "tests/dbt/test_config.py::test_update[current10-new10-expected10]": "passed",
+            "tests/dbt/test_config.py::test_update[current11-new11-expected11]": "passed",
+            "tests/dbt/test_config.py::test_update[current12-new12-expected12]": "passed",
+            "tests/dbt/test_config.py::test_update[current13-new13-expected13]": "passed",
+            "tests/dbt/test_config.py::test_update[current14-new14-expected14]": "passed",
+            "tests/dbt/test_config.py::test_update[current15-new15-expected15]": "passed",
+            "tests/dbt/test_config.py::test_model_config": "passed",
+            "tests/dbt/test_config.py::test_variables": "passed",
+            "tests/dbt/test_config.py::test_source_config": "passed",
+            "tests/dbt/test_config.py::test_seed_config": "passed",
+            "tests/dbt/test_config.py::test_snowflake_config": "passed",
+            "tests/dbt/test_config.py::test_postgres_config": "passed",
+            "tests/dbt/test_config.py::test_redshift_config": "passed",
+            "tests/dbt/test_config.py::test_databricks_config": "passed"
+        },
+        "PRE_FAILED": "set()",
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
@@ -97,5 +125,6 @@
     },
     "test_main": [
         "tests/dbt/test_config.py"
-    ]
+    ],
+    "git_check_result": "success"
 }

@@ -2,12 +2,13 @@
     "name": "TobikoData__sqlmesh-2282",
     "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27124&businessType=WORK",
     "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-2282.zip?Expires=1767778163&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=ML3ijs4eTQfw48sqFdU6Qvcz0lo%3D",
-    "error_msg": "success:successREJECT",
+    "error_msg": "success:success",
     "depends_models": {},
     "issue_url": "https://github.com/TobikoData/sqlmesh/issues/2276",
     "local_packge_extern": "",
     "pr_url": "https://github.com/TobikoData/sqlmesh/pull/2282",
     "result": {
+        "pre_detail": {},
         "old_detail": {
             "assert 'CREATE INDEX... NULLS FIRST)' == 'CREATE I....est_model */(\"a\" NULLS FIRST)\n  ?           ++++++": " tests/core/test_snapshot_evaluator.py::test_create_post_statements_use_deployable_table"
         },
@@ -88,6 +89,44 @@
             "tests/core/test_snapshot_evaluator.py::test_audit_wap": "passed",
             "tests/core/test_snapshot_evaluator.py::test_create_post_statements_use_deployable_table": "passed"
         },
+        "pre": {
+            "tests/core/test_snapshot_evaluator.py::test_evaluate": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_runtime_stages": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_promote": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_promote_default_catalog": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_promote_forward_only": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_cleanup": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[True]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view[False]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_materialized_view_with_execution_time_macro": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_incremental_unmanaged[False]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_incremental_unmanaged[True]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_tables_exists": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_only_dev_table_exists": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_materialized_view": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_view_with_properties": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_promote_model_info": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_migrate": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_migrate_view[SnapshotChangeCategory.FORWARD_ONLY]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_migrate_view[SnapshotChangeCategory.INDIRECT_NON_BREAKING]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_evaluate_creation_duckdb": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_migrate_duckdb": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_audit_unversioned": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_snapshot_evaluator_yield_pd[pd.DataFrame({\"a\": [1, 2, 3], \"ds\": [\"2023-01-01\", \"2023-01-02\", \"2023-01-03\"]}),\\n        pd.DataFrame({\"a\": [4, 5, 6], \"ds\": [\"2023-01-04\", \"2023-01-05\", \"2023-01-06\"]}),\\n        pd.DataFrame({\"a\": [7, 8, 9], \"ds\": [\"2023-01-07\", \"2023-01-08\", \"2023-01-09\"]})-output_dict0]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_snapshot_evaluator_yield_pd[pd.DataFrame({\"a\": [1, 2, 3], \"ds\": [\"2023-01-01\", \"2023-01-02\", \"2023-01-03\"]})-output_dict1]": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_clone_in_dev": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_forward_only_snapshot_for_added_model": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_scd_type_2_by_time": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_ctas_scd_type_2_by_time": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_insert_into_scd_type_2_by_time": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_scd_type_2_by_column": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_ctas_scd_type_2_by_column": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_insert_into_scd_type_2_by_column": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_create_incremental_by_unique_key_updated_at_exp": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_standalone_audit": "passed",
+            "tests/core/test_snapshot_evaluator.py::test_audit_wap": "passed"
+        },
+        "PRE_FAILED": "set()",
         "FAIL_TO_FAIL": [],
         "PASS_TO_FAIL": [],
         "FAIL_TO_PASS": [
@@ -133,5 +172,6 @@
     },
     "test_main": [
         "tests/core/test_snapshot_evaluator.py"
-    ]
+    ],
+    "git_check_result": "success"
 }

@@ -45,6 +45,8 @@ class DockerTask(ZbTask):
     def play(self):
         result_files = [
             "results.json",
+            "pre.log",
+            "pre.json",
             "test.json",
             "code.json",
             "test.log",
@@ -55,6 +57,9 @@ class DockerTask(ZbTask):
         if not self.docker_build():
             return
         self.local_cfg.py_test_result_json.remove()
+        logger.info(
+            f"\ndocker run -p 5678:5678 {self.get_volumn_v()} -it {self.docker_image_name}\n"
+        )
         status, msg = self.dock_util.run(
             ";".join(
                 [
@@ -67,5 +72,6 @@ class DockerTask(ZbTask):
             REPO_BASE,
             env={"INSTANCE_ID": self.local_cfg.cg.instance_id.get_value()},
         )
+
         self.logger.debug(msg)
         self.print_result()

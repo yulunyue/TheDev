@@ -91,6 +91,11 @@ class ZbTask:
     def print_result(self):
         local_result: dict = self.local_cfg.result.get_value()
         local_result.clear()
+        pre_log = self.input_dir.child("pre.log")
+        pre, pre_ct, local_result["pre_detail"] = get_result(
+            self.input_dir.child("pre.json").path
+        )
+        logger.info(f"pre_ct:{pre_ct}, {pre_log}")
         old, old_ct, local_result["old_detail"] = get_result(
             self.input_dir.child("test.json").path
         )
@@ -101,7 +106,10 @@ class ZbTask:
             self.input_dir.child("code.json").path
         )
         logger.info(f"code:{new_ct}, {code_log}")
-        local_result["test"], local_result["code"] = old, new
+        local_result["test"], local_result["code"], local_result["pre"] = old, new, pre
+        local_result[CS.PRE_FAILED] = {
+            k: v for k, v in pre.items() if v == CS.FAILED or v == CS.ERROR
+        }
         fail_to_fail, pass_to_fail, fail_to_pass, pass_to_pass = [], [], [], []
 
         for k in set(list(old.keys()) + list(new.keys())):
@@ -121,7 +129,9 @@ class ZbTask:
         local_result[CS.FAIL_TO_PASS] = sorted(fail_to_pass)
         local_result[CS.PASS_TO_PASS] = sorted(pass_to_pass)
         t = self.local_cfg
-        if fail_to_fail:
+        if local_result[CS.PRE_FAILED] or not pre:
+            self.local_cfg.set_error_msg(CS.FAILED, CS.PRE_FAILED)
+        elif fail_to_fail:
             self.local_cfg.set_error_msg(CS.FAILED, CS.FAIL_TO_FAIL)
         elif pass_to_fail:
             self.local_cfg.set_error_msg(CS.FAILED, CS.PASS_TO_FAIL)
@@ -215,7 +225,6 @@ class ZbTask:
             else:
                 setup_env_sh.append(d)
         self.setup_env_sh.write_file("\n".join(setup_env_sh))
-        self.logger.debug(f"sh {self.setup_env_sh.path}")
 
     def make_launch_json(self):
         info = {
@@ -265,10 +274,6 @@ class ZbTask:
         self.make_setup_repo_sh()
         self.make_setup_env_sh()
         self.make_main_py()
-        self.logger.debug(self.local_cfg.pr_url.get_value())
-        self.logger.debug(self.local_cfg.issue_url.get_value())
-        self.logger.debug(self.local_repo.path)
-        self.logger.debug(f"{self.py_bin} {self.main_py_file.path}")
 
     def load(self):
         self.init()
@@ -280,7 +285,8 @@ class ZbTask:
 
     def run(self):
         self.init()
-        self.local_cfg.set_error_msg(CS.RUN, "DOING")
+        # logger.info("# TODO RUN")
+        self.local_cfg.set_error_msg(CS.RUN)
         self.play()
 
     def play(self):

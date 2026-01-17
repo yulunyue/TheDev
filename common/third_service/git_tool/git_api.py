@@ -1,4 +1,5 @@
 from common.third_util.api import Api
+from common.tool.export import GC
 
 
 class GitHubApi(Api):
@@ -23,5 +24,35 @@ class GitHubApi(Api):
     def get_pr_files(self, pull_number):
         return self.get_pr(pull_number, "/files?per_page=100")
 
+    def graphql(self, query):
+        headers = {"Authorization": f"Bearer {GC.github_token.get_value()}"}
+        data = self.post("graphql", dict(query=query), headers=headers)
+        return data
+
     def get_pr_link_isure(self, pull_numer):
-        return self.get_pr(pull_numer, "/linked_issues")
+        query = """
+        query {
+        repository(owner: "%s", name: "%s") {
+            pullRequest(number: %s) {
+            closingIssuesReferences(first: 10) {
+                totalCount
+                nodes {
+                number
+                url
+                }
+            }
+            }
+        }
+        }
+        """ % (
+            self.owner,
+            self.repo,
+            pull_numer,
+        )
+
+        data = self.graphql(query)
+        if "errors" in data:
+            return None
+        return data["data"]["repository"]["pullRequest"]["closingIssuesReferences"][
+            "nodes"
+        ]
