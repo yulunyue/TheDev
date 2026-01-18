@@ -34,7 +34,10 @@ class TodoFile:
         args, kw = cmd_parse(cmd)
         f = None
         if len(args) == 1:
-            f = args[0]
+            if "." in args[0]:
+                f = Module().load_module_object(args[0])
+            else:
+                f = args[0]
         elif len(args) == 2:
             f = getattr(Module().load_module_object(args[0])(), args[1])
         return kw, f

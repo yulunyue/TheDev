@@ -16,6 +16,10 @@ class TestReUtil(TestBase):
     def test_find_all(self):
         text = "helex"
         self.expect(ReUtil("e").findall(text), ["e", "e"])
+        self.expect(
+            ReUtil("common.*export").findall("common.util.export"),
+            ["common.util.export"],
+        )
 
     def test_search_lines(self):
         text = """

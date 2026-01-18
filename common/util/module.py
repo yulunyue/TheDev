@@ -131,8 +131,6 @@ def run_catch_error(f, limit=0, **kw):
 
 class Module:
 
-    RUN_TMP_PATH = "data/algo/run.py"
-
     def __init__(self) -> None:
         pass
 
@@ -164,7 +162,7 @@ class Module:
         return ret
 
     def megre_to_one(self, src, dst, mock_map: dict, prefix: List[str]):
-        str_util = StrUtil().set_prefix(prefix)
+        str_util = StrUtil().set_matchs(prefix)
 
         class Node:
             def __init__(self, path: str, vt: set):
@@ -173,27 +171,6 @@ class Module:
                 self.childs: Dict[str, Node] = dict()
                 self.out_deg = 0
                 self.init(vt)
-
-            def init(self, vt):
-                for ln2 in self.fp.read_line():
-                    if not ln2:
-                        continue
-                    ln = ln2.strip()
-                    if ln2.strip().startswith("from"):
-                        ln = ln2.strip().split(" ")[1]
-                        if ln.startswith("."):
-                            ln = self.fp.get_relative_path(ln)
-                        if not str_util.str_prefix_match(ln):
-                            self.lines.append(ln2)
-                            continue
-                        path = ln.replace(".", "/") + ".py"
-                        if path in vt:
-                            continue
-                        p = file_to_line(path, vt)
-                        if p is not None:
-                            self.add_depends(p)
-                    else:
-                        self.lines.append(ln2)
 
             def add_depends(self, p: "Node"):
                 if self.fp.path in p.childs:
