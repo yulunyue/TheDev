@@ -20,7 +20,3 @@ class DynAction(C5ACtion):
         ret.can_moves = self.src.can_moves.copy()
         ret.can_moves.remove(self.action)
         return ret
-
-    @property
-    def key(self):
-        return self.get_dst().acs

@@ -15,7 +15,7 @@ vvvvvvvvvvvv
 ---"""
 
     @classmethod
-    def view(self, al: Algo):
+    def view(self, al: Algo, func=None):
         from .env import CfState
 
         ret = []
@@ -24,9 +24,12 @@ vvvvvvvvvvvv
             tmp = []
             for j in range(C.ncol):
                 k = i * C.ncol + j
-                a = al.search(CfState.new(k))
-                acs = self.ACS[a.action] if a is not None else "#"
-                tmp.append(acs)
+                if func is None:
+                    a = al.search(CfState.new(k))
+                    acs = self.ACS[a.action] if a is not None else "#"
+                    tmp.append(acs)
+                else:
+                    tmp.append(func(k))
             ret.append("".join(tmp))
 
         ret.append("---")

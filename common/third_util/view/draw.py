@@ -113,7 +113,7 @@ class Draw:
         if isinstance(f, str):
             f = File(f)
         f.make_dir_if_not_exist()
-        logger.info(f.path)
+        logger.info(f)
         plt.savefig(f.path)
         return self
 

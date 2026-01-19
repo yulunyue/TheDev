@@ -70,11 +70,10 @@ class Action:
         return "\n".join(ret)
 
     def do(self):
-        """ """
-        pass
+        return self
 
     def undo(self):
-        pass
+        return self
 
     def get_dqn_network_params(self, acs: List["Action"]):
         """

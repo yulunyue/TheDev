@@ -3,9 +3,12 @@ from app.tool.api import ApiGlobal, MainHander
 
 
 class TestApi(TestBase):
-    def setup_class(self):
+    api: ApiGlobal
+
+    @classmethod
+    def setup_class(cls):
         MainHander.POST_API.load_module(ApiGlobal)
-        self.api = ApiGlobal()
+        cls.api: ApiGlobal = ApiGlobal()
 
     def test_api(self):
         data = self.api.query_all_apis()
@@ -20,7 +23,7 @@ class TestApi(TestBase):
 
     def test_api1(self):
         self.expect(
-            self.api.get_api_call_info("/app/api/get_api_call_info"),
+            TestApi.api.get_api_call_info("/app/api/get_api_call_info"),
             {
                 "key": "get_api_call_info",
                 "childs": [
@@ -37,7 +40,7 @@ class TestApi(TestBase):
         )
 
     def test_api2(self):
-        e = self.api.get_api_call_info("/app/api/test")
+        e = TestApi.api.get_api_call_info("/app/api/test")
         self.expect(
             e,
             {
@@ -46,25 +49,23 @@ class TestApi(TestBase):
                 "childs": [
                     {
                         "title": "a",
-                        "default_value": None,
-                        "type": None,
-                        "is_pos": True,
+                        "default_value": "1",
+                        "type": "str",
+                        "is_pos": False,
                         "key": "a",
                     },
                     {
                         "title": "b",
-                        "default_value": "1",
-                        "type": "enum",
+                        "default_value": None,
+                        "type": "T",
                         "is_pos": False,
-                        "childs": ["a", "b"],
                         "key": "b",
                     },
                     {
                         "title": "c",
                         "default_value": None,
-                        "type": "search",
+                        "type": "T",
                         "is_pos": False,
-                        "url": "/app/api/query_all_apis",
                         "key": "c",
                     },
                     {

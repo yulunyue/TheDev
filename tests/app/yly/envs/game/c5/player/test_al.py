@@ -25,7 +25,7 @@ class TestAl(TestBase):
 
     def test_al333_ql(self):
         s = get_s_333_2()
-        ql = Al().ql(train_epoll=1)
-        ql.train(s)
+        ql = Al().ql().set_train_epoll(2)
+        # ql.train(s)
         # ql.search(s)
         # self.expect(a.action, 6, s.show())

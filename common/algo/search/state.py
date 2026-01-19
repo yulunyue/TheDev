@@ -28,7 +28,7 @@ class State:
     data = None
     best_action: Action = None
     extra = None
-    mode = MAN1
+    mode = ""
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state

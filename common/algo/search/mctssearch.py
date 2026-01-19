@@ -85,7 +85,7 @@ class MctsSearch(Algo):
     def backpropagate(self, node: MctsState, score):
         node.update(score)
 
-    def search_main(self, init_state: State, **kw):
+    def search_best_action(self, init_state: State, **kw):
         self.ep = 0
         self.start_time = time.time()
         self.root = MctsState(init_state)

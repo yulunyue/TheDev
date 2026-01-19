@@ -32,7 +32,7 @@ class PolicyIteration(Algo):
         return ListUtil(state.get_sort_actions()).max(self.get_action_value)[1]
 
     def get_action_value(self, action: Action):
-        return action.get_reward() + self.gamma * self.v[action.get_dst().state]
+        return action.do().get_reward() + self.gamma * self.v[action.get_dst().state]
 
     def get_qsa_value(self, qsalst):
         return sum(qsalst)

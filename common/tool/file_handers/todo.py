@@ -21,23 +21,15 @@ class TodoFile:
         todo_calls = self.get_todo_calls()
         for k, v in todo_calls.items():
             if ReUtil(key).findall(k):
-                cmds.append(key)
-        if len(cmds) == 0:
-            return [f"{k}->{v}" for k, v in todo_calls.items()], 1
-        if len(cmds) > 1:
-            return [f"{k}->{todo_calls['k']}" for k in cmds], 2
-        if cmds[0] in todo_calls:
-            return self.cmd(todo_calls[cmds[0]])
-        raise Exception(list(todo_calls.keys()))
+                cmds.append(v)
+        if not cmds:
+            return "\n".join([f"{k}->{v}" for k, v in todo_calls.items()])
+        return [self.cmd(cmd) for cmd in cmds]
 
     def cmd(self, cmd):
         args, kw = cmd_parse(cmd)
-        f = None
-        if len(args) == 1:
-            if "." in args[0]:
-                f = Module().load_module_object(args[0])
-            else:
-                f = args[0]
-        elif len(args) == 2:
-            f = getattr(Module().load_module_object(args[0])(), args[1])
-        return kw, f
+        if "." in args[0]:
+            f = Module().load_module_object(args[0])
+        else:
+            f = args[0]
+        return f, kw

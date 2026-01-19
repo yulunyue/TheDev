@@ -112,7 +112,7 @@ class AlphaBateSearch(Algo):
             stacks.append(next_node)
             cur_node.child_index += 1
 
-    def search_main(self, state: State, **kw):
+    def search_best_action(self, state: State, **kw):
         if self.search_type == AlphaBateSearch.AB_TYPE:
             self.search_ab(state, [], depth=0, player_id=state.player_id, **kw)
         elif self.search_type == AlphaBateSearch.AB_MUCH:

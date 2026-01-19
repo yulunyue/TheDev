@@ -25,6 +25,7 @@ class FunInfo:
 
     def to_json(self):
         childs = []  # 前端需要这样的childs 数组
+
         for key in sorted(self.kw.keys()):
             v: dict = self.kw[key]
             v.update(key=key)
@@ -77,15 +78,15 @@ def get_function_info(v):
     if df is None:
         args = argspec.args
     else:
-        args, kgs = argspec.args[0 : -len(df)], argspec.args[len(df) + 1 :]
+        args, kgs = argspec.args[0 : -len(df)], argspec.args[len(df) :]
     kw = dict()
 
     def a_help(key, default_value, is_pos):
         cls = argspec.annotations.get(key, None)
         ret = dict(title=key, default_value=default_value, type=None, is_pos=is_pos)
 
-        if hasattr(cls, "type_info"):
-            ret.update(cls.type_info)
+        if hasattr(cls, "_type_info"):
+            ret.update(cls._type_info)
         elif cls is not None:
             ret.update(type=cls.__name__)
         elif default_value is not None:
@@ -160,68 +161,3 @@ class Module:
         ret = fn()
         os.chdir(old_pwd)
         return ret
-
-    def megre_to_one(self, src, dst, mock_map: dict, prefix: List[str]):
-        str_util = StrUtil().set_matchs(prefix)
-
-        class Node:
-            def __init__(self, path: str, vt: set):
-                self.fp = File(path)
-                self.lines = []
-                self.childs: Dict[str, Node] = dict()
-                self.out_deg = 0
-                self.init(vt)
-
-            def add_depends(self, p: "Node"):
-                if self.fp.path in p.childs:
-                    return
-                p.childs[self.fp.path] = self
-                self.out_deg += 1
-
-            def __repr__(self):
-                return f"{self.fp.path} {list(self.childs.keys())} {self.out_deg}"
-
-        nodes: Dict[str, Node] = dict()
-
-        def file_to_line(path: str, vt: set):
-            path = mock_map.get(path, path)
-            if path in vt:
-                return
-            vt.add(path)
-            if path not in nodes:
-                nodes[path] = Node(path, vt)
-            vt.remove(path)
-            return nodes[path]
-
-        lines = []
-        file_to_line(src, set())
-        q = [v for v in nodes.values() if v.out_deg == 0]
-        while q:
-            t = q
-            q = []
-            for v in t:
-                # logger.debug(v)
-                lines.extend(v.lines)
-                for u in v.childs.values():
-                    u.out_deg -= 1
-                    if u.out_deg == 0:
-                        q.append(u)
-        logger.info(File(dst).write_file("\n".join(lines)))
-
-    def compile_one(self, src, path=None):
-        if path is None:
-            path = self.RUN_TMP_PATH
-        mock_py = "common/mock.py"
-        self.megre_to_one(
-            src,
-            path,
-            mock_map={
-                "common/third_service/oj.py": mock_py,
-                "common/third_util/export.py": mock_py,
-                "common/util/export.py": mock_py,
-                "common/service/export.py": mock_py,
-                "common/algo/export.py": mock_py,
-            },
-            prefix=["common", "app"],
-        )
-        return self

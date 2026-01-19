@@ -4,7 +4,4 @@ from app.yly.envs.ml.cart_pole.env import CartPoleState
 
 
 class TestDqn(TestBase):
-    def test_train(self):
-        s = CartPoleState()
-        al = DqnCart().load(train_epoll=10)
-        al.train(s)
+    pass

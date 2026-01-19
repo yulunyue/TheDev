@@ -32,6 +32,7 @@ class Al(ALgoManage):
     def ql(self, train_epoll=1000):
         return (
             Qlearning()
-            .load(train_epoll=train_epoll)
+            .load()
             .set_model("ql_3_3_3.json", new_model=True)
+            .set_train_epoll(train_epoll)
         )
