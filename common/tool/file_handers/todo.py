@@ -26,13 +26,18 @@ class TodoFile:
             return [f"{k}->{v}" for k, v in todo_calls.items()], 1
         if len(cmds) > 1:
             return [f"{k}->{todo_calls['k']}" for k in cmds], 2
-        return self.cmd(todo_calls[cmds[0]])
+        if cmds[0] in todo_calls:
+            return self.cmd(todo_calls[cmds[0]])
+        raise Exception(list(todo_calls.keys()))
 
     def cmd(self, cmd):
         args, kw = cmd_parse(cmd)
         f = None
         if len(args) == 1:
-            f = args[0]
+            if "." in args[0]:
+                f = Module().load_module_object(args[0])
+            else:
+                f = args[0]
         elif len(args) == 2:
             f = getattr(Module().load_module_object(args[0])(), args[1])
         return kw, f

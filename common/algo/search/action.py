@@ -80,8 +80,8 @@ class Action:
         """
         rewards, dones, q_values, max_next_q_values
         """
-        from common.third_util.torch_util import torch
-        from common.third_util.np_util import np
+        from common.third_util.ml.torch_util import torch
+        from common.third_util.ml.np_util import np
 
         states = torch.tensor(np.array([a.src.state for a in acs]), dtype=torch.float)
         actions = torch.tensor([a.action for a in acs]).view(-1, 1)

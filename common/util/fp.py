@@ -127,7 +127,7 @@ class File:
         return dst
 
     def read_file(self, encoding="utf-8"):
-        data = self.read_data()
+        data = self.read_data().replace(b"\r", b"")
         if self.is_json_file():
             try:
                 return json.loads(data.decode(encoding))

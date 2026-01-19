@@ -1,5 +1,5 @@
 from common.algo.learn.sarse.qlearning import Qlearning, Action, State, np
-from common.third_util.torch_util import torch
+from common.third_util.ml.torch_util import torch
 from common.util.export import File, logger, random
 
 

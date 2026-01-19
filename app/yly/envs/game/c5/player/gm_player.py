@@ -6,7 +6,7 @@ from AlphaZero_Gomoku.game import Game, Board
 from AlphaZero_Gomoku.train import TrainPipeline
 from ..board.base import C, set_mask, BoardC5
 from ..model.static_state import StateStatic, C5ACtion
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 from common.util.log import logger
 import pickle
 

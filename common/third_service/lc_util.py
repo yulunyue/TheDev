@@ -1,4 +1,4 @@
-from common.third_util.api import Api
+from common.third_util.io.apiapi import Api
 
 
 class LeetCode(Api):

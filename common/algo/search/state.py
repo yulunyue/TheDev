@@ -245,7 +245,7 @@ class State:
         return cls.new()
 
     def draw_graph(self):
-        from common.third_util.draw import Draw
+        from common.third_util.view.draw import Draw
 
         states = self.bfs().values()
         ret = dict()

@@ -1,5 +1,5 @@
-from common.third_util.torch_util import torch, TorchDoubleNet
-from .constant import C
+from common.third_util.ml.torch_util import torch, TorchDoubleNet
+from ..constant import C
 
 
 class NetBase(torch.nn.Module):

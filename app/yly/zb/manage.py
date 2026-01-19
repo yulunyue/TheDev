@@ -1,5 +1,4 @@
 from common.util.export import (
-    ToolBase,
     logger,
     File,
     os,
@@ -57,6 +56,9 @@ class ZbMangae:
         for k in data:
             t = query_one(k)
             t.add_error_msg_flag(CS.REJECT)
+
+    def submit(self):
+        WebTool().submit_all()
 
     def view(self):
         ret: Dict[str, List[TaskCfg]] = defaultdict(list)

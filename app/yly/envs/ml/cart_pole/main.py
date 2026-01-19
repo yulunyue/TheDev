@@ -1,7 +1,7 @@
 from common.util.export import ToolBase, logger
 from common.algo.export import Dqn, Qlearning, np, random_seed, DoubleDqn
 from .env import CartPoleState
-from .net import NetBase
+from .model.net import NetBase
 
 
 class CartTool(ToolBase):

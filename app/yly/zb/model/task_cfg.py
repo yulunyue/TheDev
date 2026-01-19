@@ -16,7 +16,7 @@ from .repo_cg import RepoCg
 from common.util.export import List, Dict, File, logger
 from common.tool.export import StrUtil
 from common.third_service.git_tool.git_util import GitUtil, Patch
-from common.third_util.api import Api
+from common.third_util.io.apiapi import Api
 
 
 class TaskCfg(ConfigBase):
@@ -63,7 +63,7 @@ class TaskCfg(ConfigBase):
             raise Exception(self.resource)
         self.task_id = submit_uri.split("recordId=").pop().split("&")[0]
         if not self.name.get_value():
-            from common.third_util.api import Api
+            from common.third_util.io.apiapi import Api
 
             f = Api().download(down_load_uri)
             self.name.set_value(f.name)

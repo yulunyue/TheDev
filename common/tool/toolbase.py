@@ -98,12 +98,6 @@ class ToolBase:
                 fo.write_file("\n".join(msgs))
             last_cmd = cmd
 
-    # def do_cmd(self, *cmd):
-    #     pass
-
-    # def info(self, msg):
-    #     self.msgs.append(msg)
-
     def get_temp_file(self, name):
         path = f"data/tool/{self.__class__.__name__}/{name}"
         logger.info(path)

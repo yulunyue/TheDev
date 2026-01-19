@@ -43,6 +43,13 @@ class MockCf:
     logger = logger
     type = ""
 
+    def __init__(self, f=None, cases=None):
+        self.execute = f
+        self.cases = cases
+
+    def get_cases(self):
+        return self.cases
+
     def set_logger(self, log):
         self.logger: logger = log
 
@@ -73,11 +80,11 @@ class MockCf:
     def exec(self):
         return ""
 
-    def run(self):
+    def run(self, case_name=""):
         if os.path.exists("common/third_service/oj.py"):
             from common.third_service.oj import oj_run
 
-            oj_run(self, *sys.argv[1:])
+            oj_run(self, case_name)
         else:
             self.exec()
 

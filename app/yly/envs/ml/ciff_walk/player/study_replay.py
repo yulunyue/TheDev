@@ -1,6 +1,6 @@
 from common.algo.export import Algo, State, Action
 from common.util.export import defaultdict, random, inf
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 
 
 class RealTimeValueIteration(Algo):
