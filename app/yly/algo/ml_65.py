@@ -40,4 +40,4 @@ def get_cases():
 
 
 def main():
-    MockCf(compressed_row_sparse_matrix, get_cases()).run()
+    MockCf(compressed_row_sparse_matrix, get_cases(), __file__).run()

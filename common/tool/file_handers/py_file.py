@@ -57,5 +57,6 @@ class PyFile:
     def compile_to_one_file(self):
         temp_py_file = File(self.RUN_TMP_PATH)
         PyFile.TMP_VT = {self.fp.path}
+        logger.info(self.fp)
         logger.info(temp_py_file.write_file("\n".join(self.read_lines())))
         return self
