@@ -1,11 +1,8 @@
-# ciff value
-```cv
-tool.pytest.PyTest test key=ci
+# ciff ql
+```ql
+tool.pytest.PyTest test key=ciff.*sar
 ```
-# ciff policy
-```cp
-tool.pytest.PyTest test key=c
-```
+
 
 
 

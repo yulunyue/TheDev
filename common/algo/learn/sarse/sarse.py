@@ -2,13 +2,13 @@ from common.algo.search.algo import Algo, Action, State, np
 from common.util.export import get_log, logger, List
 
 
-class Td0(Algo):
+class Sarse(Algo):
     def load(self, n_step=1, **kw):
         self.n_step = n_step
         return super().load(**kw)
 
     def update_action(self, action: Action, **kw):
-        if action.dst.get_done():
+        if action.dst.game_over():
             return
         next_action = self.take_action(action.dst)
         self.update_td_action(action, next_action)

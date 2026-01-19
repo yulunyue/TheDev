@@ -1,4 +1,5 @@
 from common.algo.export import random_seed, ValueIteration, Qlearning
+from ..constant import C
 
 
 class Ql(Qlearning):
@@ -12,3 +13,6 @@ class Ql(Qlearning):
     def train_one(self, i, state):
         self.e_greed = 0.1 * (1 - i / self.train_epoll)
         return super().train_one(i, state)
+
+    def view(self):
+        return C.view(self)

@@ -1,11 +1,11 @@
-from .learn.dyn import PolicyIteration, ValueIteration
+from .learn.policy_iteration import PolicyIteration
+from .learn.value_iteration import ValueIteration
 from .search.state import State, Action, AbState
 from .search.algo import Algo, random_seed, np, RandomAlgo
 from .search.mctssearch import MctsSearch, MctsState
-from common.util.export import logger
 from .search.alphabate_search import AlphaBateSearch, AbDev
 from .learn.sarse.qlearning import Qlearning
-from .learn.sarse.qlearning2 import Qlearning2
+from .learn.sarse.sarse import Sarse
 from .search.algo_manage import ALgoManage
 from .base.math_util import (
     sin,

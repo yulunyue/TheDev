@@ -71,7 +71,7 @@ class Algo:
             self.q = self.model_file.read_file()
         return self
 
-    def search_main(self, state: "State") -> Action:
+    def search_main(self, state: "State", **kw) -> Action:
         pass
 
     def take_action(self, state: "State") -> Action:
