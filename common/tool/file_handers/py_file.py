@@ -54,7 +54,7 @@ class PyFile:
                 self.lines.append(ln2)
         return self
 
-    def save_to_one_file(self):
+    def compile_to_one_file(self):
         temp_py_file = File(self.RUN_TMP_PATH)
         PyFile.TMP_VT = {self.fp.path}
         logger.info(temp_py_file.write_file("\n".join(self.read_lines())))

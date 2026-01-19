@@ -21,22 +21,23 @@ def compressed_row_sparse_matrix(dense_matrix):
     return ret
 
 
-def main():
-    MockCf(
-        compressed_row_sparse_matrix,
-        dict(
-            case0=dict(
-                dense_matrix=[
-                    [1, 0, 0, 0],
-                    [0, 2, 0, 0],
-                    [3, 0, 4, 0],
-                    [1, 0, 0, 5],
-                ],
-                result=[
-                    [1, 2, 3, 4, 1, 5],
-                    [0, 1, 0, 2, 0, 3],
-                    [0, 1, 2, 4, 6],
-                ],
-            ),
+def get_cases():
+    return dict(
+        case0=dict(
+            dense_matrix=[
+                [1, 0, 0, 0],
+                [0, 2, 0, 0],
+                [3, 0, 4, 0],
+                [1, 0, 0, 5],
+            ],
+            result=[
+                [1, 2, 3, 4, 1, 5],
+                [0, 1, 0, 2, 0, 3],
+                [0, 1, 2, 4, 6],
+            ],
         ),
-    ).run()
+    )
+
+
+def main():
+    MockCf(compressed_row_sparse_matrix, get_cases()).run()

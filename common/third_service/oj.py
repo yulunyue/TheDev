@@ -1,4 +1,5 @@
 from common.util.export import logger, MockCf, get_file_path_by_cls, Module, get_dev_log
+from common.tool.export import PyFile
 
 
 def oj_run(ins: MockCf, case_name=None):
@@ -12,7 +13,7 @@ def oj_run(ins: MockCf, case_name=None):
         ins.logger = get_dev_log(case_name)
         res = ins.execute(**c)
         if res != exp:
-            logger.info(f"{case_name} {exp}!={res} FAILED")
+            logger.info(f"FAILED {case_name} {exp}!={res}")
         else:
-            logger.info(f"{case_name} {exp}=={res} PASS")
-    Module().compile_one(get_file_path_by_cls(ins.__class__))
+            logger.info(f"PASS {case_name} {exp}=={res}")
+    PyFile(get_file_path_by_cls(ins.__class__)).load()
