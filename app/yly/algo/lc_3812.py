@@ -10,7 +10,14 @@ class Solution(MockCf):
                 start="0011000",
                 target="0010001",
                 result=[1, 2, 5],
-            )
+            ),
+            case1=dict(
+                n=2,
+                edges=[[0, 1]],
+                start="00",
+                target="01",
+                result=[-1],
+            ),
         )
 
     def minimumFlips(
@@ -34,7 +41,6 @@ class Solution(MockCf):
                 cc += c
             return 0 if cc % 2 == vs[u] else 1
 
-        dfs(0)
-        return sorted(ans)
+        return sorted(ans) if dfs(0) == 0 else [-1]
 
     execute = minimumFlips
