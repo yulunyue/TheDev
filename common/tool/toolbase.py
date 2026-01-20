@@ -2,20 +2,15 @@ from common.util.export import List, os, File, SYS_ARGS, SYS_KW, logger, sys, ti
 from .file_handers.todo import TodoFile
 
 
-def make_md_file(key=None, msg=""):
-    if key is None:
-        file_dir = (
+def make_md_file(file_path=None):
+    if file_path is None:
+        file_path = (
             sys.argv[0]
-            .replace(os.getcwd() + "\\", "")
-            .replace(".py", ".md")
             .replace("\\", "/")
+            .replace("/tool/", "/doc/tool/")
+            .replace(".py", ".md")
         )
-        file_dir = f"doc/{file_dir}"
-    else:
-        file_dir = key + ".md"
-    f = File(file_dir)
-    f.write_if_not_exists(msg)
-    return f.path, "\n".join(f.read_line()[-5:])
+    return file_path
 
 
 class ToolBase:
@@ -34,7 +29,7 @@ class ToolBase:
             fun_name = self.argvs.pop()
         else:
             fun_name = ""
-        md_file = make_md_file()[0]
+        md_file = make_md_file()
         todo = TodoFile(md_file)
         logger.info(md_file)
         f = getattr(self, fun_name, None)
