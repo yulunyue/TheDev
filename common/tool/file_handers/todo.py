@@ -29,7 +29,9 @@ class TodoFile:
     def cmd(self, cmd):
         args, kw = cmd_parse(cmd)
         if "." in args[0]:
-            f = Module().load_module_object(args[0])
+            f = Module(use_cache=True).load_module_object(
+                args[0]
+            )  # get_file_path_by_cls 需要使用cache
         else:
             f = args[0]
         return f, kw

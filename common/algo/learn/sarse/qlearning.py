@@ -17,3 +17,8 @@ class Qlearning(Sarse):
 
     def get_next_actions_reward(self, a: Action):
         return max(self.get_action_reward(a) for a in a.get_dst().get_sort_actions())
+
+    def train_one(self, i, state):
+        ret = super().train_one(i, state)
+        # logger.info(self.get_model_file(f"t{i}.json").write_file(self.q))
+        return ret

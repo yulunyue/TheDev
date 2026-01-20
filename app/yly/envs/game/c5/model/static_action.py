@@ -6,10 +6,6 @@ class C5ACtion(Action):
     src: "StateStatic"
     reward = 0
 
-    def __init__(self, src, action, dst: "StateStatic", obs: dict):
-        super().__init__(src, action, dst)
-        self.set_obs(obs)
-
     def set_obs(self, obs):
         self.reward = 0
         self.obs: dict = obs

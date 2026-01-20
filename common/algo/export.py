@@ -24,5 +24,13 @@ from .base.str_util import (
 from .base.tree import Tree
 from .base.gaussian_elimination import GaussElimination
 from .base.lazyheap import LazyHeapMinMax, LazyMinHeap, LazyMaxHeap
-from .base.bin_util import encode_data, decode_data, set_mask, get_sub_bits
+from .base.bin_util import (
+    encode_data,
+    decode_data,
+    set_mask,
+    get_sub_bits,
+    low_bits,
+    ss_or_dp,
+    low_high_dp,
+)
 from .base.xor_basis import XorBais

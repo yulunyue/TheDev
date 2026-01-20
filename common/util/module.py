@@ -132,32 +132,27 @@ def run_catch_error(f, limit=0, **kw):
 
 class Module:
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, use_cache=False) -> None:
+        self.use_cache = use_cache
 
-    def load_module(self, module_name, path=None, fun_name=""):
+    def load_module(self, module_name, path=None):
         if path:
             sys.path.append(path)
-        invalidate_caches()
-        ret = md = import_module(module_name)
-
-        if fun_name:
-            for attr in fun_name.split("."):
-                ret = getattr(ret, attr)
-        sys.modules.pop(module_name)
+        if not self.use_cache:
+            invalidate_caches()
+        ret = import_module(module_name)
+        if not self.use_cache:
+            sys.modules.pop(module_name)
         if path:
             sys.path.pop()  # 同名插件
         return ret
 
-    def load_module_object(self, module_name: str, path: str = None):
-        rpaths = module_name.replace("/", ".").split(".")
-        object_name = rpaths.pop()
-        return self.load_module(".".join(rpaths), path=path, fun_name=object_name)
-
-    def run(self, path, module_name, fun_name):
-        old_pwd = os.getcwd()
-        os.chdir(path)
-        fn = self.load_module(module_name, fun_name)
-        ret = fn()
-        os.chdir(old_pwd)
-        return ret
+    def load_module_object(self, src: str, path: str = None):
+        module_name, *names = src.split("::")
+        module_name = module_name.replace(".py", "").replace("/", ".")
+        md = self.load_module(module_name, path=path)
+        if len(names) == 1:
+            return getattr(md, names[0])
+        elif len(names) == 2:
+            return getattr(getattr(md, names[0])(), names[1])
+        raise Exception(src)

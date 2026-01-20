@@ -14,6 +14,9 @@ class Sarse(Algo):
         self.q = defaultdict(int)
         return self
 
+    def train_finish(self):
+        logger.info(self.get_model_file("q.json").write_file(self.q))
+
     def update_action(self, action: Action, **kw):
         next_action = None
         if not action.dst.game_over():

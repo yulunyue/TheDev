@@ -16,4 +16,7 @@ def oj_run(ins: MockCf, case_name=None):
             logger.info(f"FAILED {case_name} {exp}!={res}")
         else:
             logger.info(f"PASS {case_name} {exp}=={res}")
-    PyFile(ins.src_file).compile_to_one_file()
+    src_file = ins.src_file
+    if src_file is None:
+        src_file = get_file_path_by_cls(ins.__class__)
+    PyFile(src_file).compile_to_one_file()

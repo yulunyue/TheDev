@@ -42,9 +42,11 @@ class MockCf:
     inputs = None
     logger = logger
     type = ""
+    execute = None
 
     def __init__(self, f=None, cases=None, src=None):
-        self.execute = f
+        if self.execute is None:
+            self.execute = f
         self.cases = cases
         self.src_file = src
 

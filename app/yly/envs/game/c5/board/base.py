@@ -29,7 +29,7 @@ class BoardC5:
         self.mask_bit = (1 << self.BIT_SIZE) - 1
         self.grid = [self.STATE_NULL] * self.size
         self.can_use = set(range(self.size))
-        self.state = 0
+        self.state = None
         return self
 
     def change_chess_statu(self, idx, player_id):
@@ -78,8 +78,18 @@ class BoardC5:
     def set_state(self, state: int):
         if self.state == state:
             return self
-        self.change_mask(state)
+        if isinstance(state, int):
+            self.change_mask(state)
+        elif state:
+            self.change_grid(state)
+        self.state = state
         return self
+
+    def change_grid(self, s: str):
+        self.grid = [self.STATE_NULL] * self.size
+        for i, v in enumerate(s.split("|")):
+            self.change_chess_statu(int(v), (i % 2) + 1)
+        self.state = s
 
     def change_mask(self, state):
         state1, state2 = self.state, state
@@ -91,7 +101,6 @@ class BoardC5:
             if state3 == state4:
                 continue
             self.change_col(l1, state3, state4)
-        self.state = state
         return self
 
     def get_loop1(self):
@@ -147,3 +156,6 @@ class BoardC5:
             ret[y][x + 1] = self.s(v)
         ret.append([" "] + [str(v) for v in range(self.width)])
         return [" ".join(row) for row in ret]
+
+    def set_actions_str(self):
+        return self

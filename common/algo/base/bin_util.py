@@ -33,13 +33,10 @@ def decode_data(mask, pos: List[int]) -> List[int]:
     return ans
 
 
-def set_mask(mask, low_idx, num, value):
-    mask_high = (mask >> (low_idx + num)) << (low_idx + num)
-    mask_mid = value << low_idx
-    mask_low = mask & POS_MASK[low_idx]
-    ret = mask_high | mask_mid | mask_low
-    # logger.info(f"{bin(mask)}\n{num}:{value}\n{bin(ret)}")
-    return ret
+def set_mask(num, start, length, value):
+    mask = POS_MASK[length] << start
+    num = num & ~mask
+    return num | ((value << start) & mask)
 
 
 def low_bits(j):

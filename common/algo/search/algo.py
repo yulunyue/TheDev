@@ -1,8 +1,6 @@
 from common.third_util.ml.np_util import np
-from common.algo.search.state import State, inf, Action
-from common.algo.search.param import Params
-from collections import deque
-from collections import defaultdict
+from .state import State, inf, Action
+from .param import Params
 from common.util.export import (
     File,
     logger,
@@ -60,18 +58,13 @@ class Algo:
         return ret
 
     def search_best_action(self, s: State, last_a: Action = None):
-        pass
+        return self.get_best_action(s)
 
     def show(self):
         return f"---name:{self.get_name()}"
 
-    model_file: File = None
-
-    def set_model(self, model_file, new_model=False):
-        self.model_file = File(f"data/model/{model_file}")
-        if self.model_file.exists() and new_model:
-            self.q = self.model_file.read_file()
-        return self
+    def set_model(self, model_file, new_model=False) -> "Algo":
+        raise NotImplementedError(model_file, new_model)
 
     def get_best_action(self, state: "State", **kw) -> Action:
         max_value, max_a = -inf, []
@@ -87,8 +80,8 @@ class Algo:
     def get_action_reward(self, a: Action):
         return
 
-    def take_action(self, state: "State") -> Action:
-        pass
+    def take_action(self, state: "State", i=0, **kw) -> Action:
+        raise NotImplementedError("todo")
 
     def update_action(self, a: Action, **kwargs):
         pass
@@ -98,9 +91,6 @@ class Algo:
 
     def get_name(self):
         return self.name
-
-    def actor(self):
-        pass
 
     def set_train_epoll(self, train_epoll):
         self.train_epoll = train_epoll
@@ -123,23 +113,24 @@ class Algo:
             total_reward = self.train_one(i, state)
             self.rewards.append(total_reward)
             if self.train_epoll_update and (i + 1) % self.train_epoll_update == 0:
-                self.train_update()
+                self.train_update_model()
         self.use_time = time.time() - start_time
-        logger.info(
-            f"{self.get_name()} train_finish {self.use_time} to {self.model_file}"
-        )
-        self.finish_train()
+        logger.info(f"{self.get_name()} train_finish {self.use_time}")
+        self.train_finish()
 
-    def train_update(self):
+    def train_update_model(self):
+        raise NotImplemented()
+
+    def train_finish(self):
         pass
 
-    def finish_train(self):
-        self.draw_reward()
+    def get_model_file(self, name):
+        return File(f"data/algo/{self.get_name()}/{name}")
 
     def draw_reward(self):
         from common.third_util.view.draw import Draw
 
-        path = f"data/algo/{self.get_name()}.svg"
+        path = self.get_model_file("rewards.svg")
         Draw().draw_line(self.rewards).save(path)
 
     max_train_round = 200

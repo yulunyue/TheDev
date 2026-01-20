@@ -4,17 +4,21 @@ from ..board.base_state import BoardC5State, BoardC5
 
 
 class StateStatic(AbState):
+    init_state = 0
 
     @classmethod
     def set_board(cls, w, h, s) -> "StateStatic":
         cls.board = BoardC5().load(w, h, s)
-        return cls.new(0).set_state(0)
+        return cls(cls.init_state).set_state(cls.init_state)
 
     def set_state(self, state: int):
         self.board.set_state(state)
         self.state = state
         self.can_moves = list(self.board.can_use)
-        depth = state.bit_count()
+        if isinstance(state, str):
+            depth = (state.count("|") + 1) if state else 0
+        else:
+            depth = state.bit_count()
         self.player_id = self.depth % 2
         return self.set_depth(depth)
 
@@ -35,7 +39,7 @@ class StateStatic(AbState):
             .set_depth(self.depth + 1)
         )
         dst.can_moves = list(self.board.can_use)
-        a = C5ACtion(self, pos, dst, obs)
+        a = C5ACtion(self, pos, dst).set_obs(obs)
         return a
 
     def make_actions(self):

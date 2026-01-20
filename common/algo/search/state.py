@@ -268,7 +268,7 @@ class State:
     def get_next(self, *args):
         dst = self
         for a in args:
-            dst = dst.get_action(a).get_dst()
+            dst = dst.get_action(a).do().get_dst()
         return dst
 
 

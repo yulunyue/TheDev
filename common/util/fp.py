@@ -18,7 +18,7 @@ class File:
     def __init__(self, path: str) -> None:
         if not isinstance(path, str):
             raise Exception(path)
-        self.path = path
+        self.path = path.replace("\\", "/")
         self.dirs = path.split("/")
         self.file_name = self.dirs.pop()
         names = self.file_name.split(".")
@@ -55,6 +55,8 @@ class File:
         return File("/".join(args))
 
     def get_abs_path(self):
+        if ":" in self.path:
+            return self.path
         cwd = os.getcwd().replace("\\", "/")
         if self.path.startswith("/"):
             if os.name == "nt":

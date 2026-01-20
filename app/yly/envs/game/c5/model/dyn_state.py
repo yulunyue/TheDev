@@ -1,13 +1,9 @@
-from .static_state import StateStatic
+from .static_state import StateStatic, BoardC5
 from .dyn_action import DynAction
 
 
 class DynState(StateStatic):
-    acs = ""
+    init_state = ""
 
     def get_action(self, pos):
         return DynAction(self, pos)
-
-    def set_acs(self, acs):
-        self.acs = acs
-        return self
