@@ -10,10 +10,15 @@ class BoardC5:
     CHESS_SIZE = 2
     DR = [[0, 1], [1, 0], [1, 1], [1, -1]]
 
-    def load(self, width=6, height=6, in_row=4):
+    def log(self, **kw):
+        if not self.just_for_view:
+            log.map(**kw)
+
+    def load(self, width=6, height=6, in_row=4, just_for_view=False):
         self.width = width
         self.height = height
         self.in_row = in_row
+        self.just_for_view = just_for_view
         self.init_size()
         self.init_mask()
         return self
@@ -37,7 +42,7 @@ class BoardC5:
 
     def change_chess_statu(self, idx, player_id):
 
-        log.map(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
+        # self.log(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
         if self.grid[idx] == player_id or self.grid[idx] + player_id == 3:
             raise Exception(self.grid[idx], player_id)
         if player_id == 0:
@@ -79,7 +84,7 @@ class BoardC5:
         return set_mask(state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id + 1)
 
     def set_state(self, state: int):
-        # log.map(a="set_state", src=self.state, dst=state)
+        # self.log(a="set_state", src=self.state, dst=state)
         if self.state == state:
             return self
         if not state:
@@ -94,7 +99,7 @@ class BoardC5:
         return self
 
     def change_grid(self, s: str):
-
+        self.reset()
         for i, v in enumerate(s.split("|")):
             self.set_pos_player_id(int(v), (i % 2) + 1)
 

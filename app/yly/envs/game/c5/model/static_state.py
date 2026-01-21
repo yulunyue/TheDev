@@ -63,7 +63,12 @@ class StateStatic(AbState):
                 score[a.action] = algo.get_action_reward(a)
         return (
             BoardC5()
-            .load(self.board.width, self.board.height, self.board.in_row)
+            .load(
+                self.board.width,
+                self.board.height,
+                self.board.in_row,
+                just_for_view=True,
+            )
             .set_state(self.state)
             .to_str(score)
         )

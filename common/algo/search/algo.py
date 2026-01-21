@@ -41,9 +41,11 @@ class Algo:
         self.name = name
         return self
 
-    def set_options(self, train_epoll=None):
+    def set_options(self, train_epoll=None, train_epoll_update=None):
         if train_epoll is not None:
             self.set_train_epoll(int(train_epoll))
+        if train_epoll_update is not None:
+            self.train_epoll_update = int(train_epoll_update)
         return self
 
     def load(self):

@@ -6,7 +6,7 @@ from app.yly.envs.game.c5.player.al import Al
 
 
 class C5Tool(ToolBase):
-    def prepare(self, env: str, tp, s: str):
+    def prepare(self, env: str, tp, s: str = None):
         clss = dict(dyn=DynState, sst=StateStatic)[tp]
         random_seed(1)
         self.s = clss.set_board(*[int(v) for v in env.split("_")], state=s)
