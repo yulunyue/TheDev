@@ -161,7 +161,6 @@ class ALgoManage:
                 break
             p = players[self.turn_idx % len(players)]
             self.turn_idx += 1
-
             p.state_num = 0
             a = p.search(s, last_a=last_a)
             AlgoInfo.new(p.get_name()).update(p.use_time, p.state_num, 0)
