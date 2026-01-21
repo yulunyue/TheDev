@@ -29,6 +29,9 @@ def random_select(states, fn):
 
 
 class Algo:
+    use_time = 0
+    train_epoll = 1
+    train_epoll_update = 0
 
     def __init__(self, name=None):
         self.name = name or self.__class__.__name__
@@ -38,6 +41,11 @@ class Algo:
         self.name = name
         return self
 
+    def set_options(self, train_epoll=None):
+        if train_epoll is not None:
+            self.set_train_epoll(int(train_epoll))
+        return self
+
     def load(self):
         self.reset()
         return self
@@ -45,8 +53,6 @@ class Algo:
     def set_params(self, params):
         self.params: Params = params
         return self
-
-    use_time = 0
 
     def search(self, state: "State", *args, last_a=None, **kw):
         if state.game_over():
@@ -96,9 +102,6 @@ class Algo:
         self.train_epoll = train_epoll
         return self
 
-    train_epoll = 1
-    train_epoll_update = 0
-
     def train_before(self):
         pass
 
@@ -113,12 +116,12 @@ class Algo:
             total_reward = self.train_one(i, state)
             self.rewards.append(total_reward)
             if self.train_epoll_update and (i + 1) % self.train_epoll_update == 0:
-                self.train_update_model()
+                self.train_update_model(i, state)
         self.use_time = time.time() - start_time
         logger.info(f"{self.get_name()} train_finish {self.use_time}")
         self.train_finish()
 
-    def train_update_model(self):
+    def train_update_model(self, i, state: State):
         raise NotImplemented()
 
     def train_finish(self):
@@ -135,7 +138,7 @@ class Algo:
 
     max_train_round = 200
 
-    def train_one(self, i, state: State):
+    def train_one(self, i, state: State, op: "Algo" = None):
         s = state.reset()
         r = 0
         self.actions: List[Action] = []
@@ -143,8 +146,9 @@ class Algo:
         while not s.game_over() and self.steps <= self.max_train_round:
             a = self.take_action(s, i=i)
             a.do()
-            r += a.get_reward()
+            reward = a.get_reward()
             s = a.get_dst()
+            r += reward
             self.update_action(a, idx=self.steps)
             self.actions.append(a)
             self.steps += 1

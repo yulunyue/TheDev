@@ -55,7 +55,7 @@ class State:
         return self.done
 
     def do_action(self, a: Action):
-        return a.get_dst()
+        return a.do().get_dst()
 
     def action_size(self):
         raise Exception("tood")
@@ -201,8 +201,8 @@ class State:
     def show_titles(self):
         return f"depth:{self.depth} done:{self.done}"
 
-    def show_body(self, info):
-        datas = [self.show_titles()] + self.to_str()
+    def show_body(self, info, algo=None):
+        datas = [self.show_titles()] + self.to_str(algo=algo)
         if self.data:
             for k, v in self.data.items():
                 datas.append(f"{k}:{v}")
@@ -212,8 +212,8 @@ class State:
             datas.append(str(info))
         return datas
 
-    def show(self, info=None, fp=None):
-        body = self.show_body(info)
+    def show(self, info=None, fp=None, algo=None):
+        body = self.show_body(info, algo=algo)
         head = f"-----{self.title}-----"
         ret = "\n".join([head] + body + ["-" * len(head)])
         if fp:
@@ -258,11 +258,12 @@ class State:
     def get_win_player(self, *args, **kw):
         return self.done - 1
 
-    def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
+    def load_ab(self, search_depth=0, alpha=-inf, bate=inf, p_action=None):
         self.search_depth = search_depth
         self.child_index = 0
         self.alpha = alpha
         self.bate = bate
+        self.p_action: Action = p_action
         return self
 
     def get_next(self, *args):

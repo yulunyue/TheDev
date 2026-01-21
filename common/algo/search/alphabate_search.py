@@ -87,10 +87,9 @@ class AlphaBateSearch(Algo):
                 continue
             sort_actions = cur_node.get_sort_actions()
             if pop_node:
-
+                pop_node.p_action.undo()
                 reward = -pop_node.alpha
                 sa = sort_actions[cur_node.child_index - 1]
-
                 if reward >= cur_node.bate:
                     cur_node.alpha = cur_node.bate
                     pop_node = stacks.pop()
@@ -99,15 +98,19 @@ class AlphaBateSearch(Algo):
                     self.set_state_best_action(
                         cur_node, sa, cur_node.search_depth, reward
                     )
+
                 pop_node = None  # 根节点每次对比完 需要找新节点
 
             if cur_node.child_index >= len(sort_actions):
                 pop_node = stacks.pop()
                 continue
             cur_action = sort_actions[cur_node.child_index]
-            next_node: AbState = cur_action.get_dst()
+            next_node: AbState = cur_action.do().get_dst()
             next_node.load_ab(
-                cur_node.search_depth + 1, -cur_node.bate, -cur_node.alpha
+                cur_node.search_depth + 1,
+                -cur_node.bate,
+                -cur_node.alpha,
+                p_action=cur_action,
             )
             stacks.append(next_node)
             cur_node.child_index += 1

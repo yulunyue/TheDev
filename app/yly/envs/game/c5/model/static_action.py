@@ -4,6 +4,7 @@ from .static_state import StateStatic
 
 class C5ACtion(Action):
     src: "StateStatic"
+    obs = None
     reward = 0
 
     def set_obs(self, obs):
@@ -17,4 +18,5 @@ class C5ACtion(Action):
 
     def show(self):
         y, x = self.src.board.get_yx(self.action)
-        return f"src:{self.src.state}, action:{y},{x},{self.src.board.s(self.src.player_id+1)},r:{self.get_reward()} dst:{self.dst.state} obs:{dict(self.obs)}"
+        dst_info = self.dst.state if self.dst else None
+        return f"src:{self.src.state}, action:{y},{x},{self.src.board.s(self.src.player_id+1)},r:{self.get_reward()} dst:{dst_info} obs:{self.obs}"

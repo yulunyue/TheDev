@@ -1,15 +1,22 @@
-from common.algo.export import AbState, Action, sigmoid_1_to_1
+from common.algo.export import AbState, Action, sigmoid_1_to_1, Algo
 from common.util.export import List
 from ..board.base_state import BoardC5State, BoardC5
 
 
 class StateStatic(AbState):
     init_state = 0
+    mode = AbState.MAN2
 
     @classmethod
-    def set_board(cls, w, h, s) -> "StateStatic":
+    def set_board(cls, w, h, s, state=None) -> "StateStatic":
         cls.board = BoardC5().load(w, h, s)
-        return cls(cls.init_state).set_state(cls.init_state)
+        if not state:
+            state = cls.init_state
+        return cls(state).set_state(state)
+
+    def reset(self):
+        self.board.set_state(self.state)
+        return self
 
     def set_state(self, state: int):
         self.board.set_state(state)
@@ -49,13 +56,16 @@ class StateStatic(AbState):
             actions.append(a)
         return actions
 
-    def to_str(self):
-
+    def to_str(self, algo: Algo = None):
+        score = dict()
+        if algo is not None:
+            for a in self.get_sort_actions():
+                score[a.action] = algo.get_action_reward(a)
         return (
             BoardC5()
             .load(self.board.width, self.board.height, self.board.in_row)
             .set_state(self.state)
-            .to_str()
+            .to_str(score)
         )
 
     def show_titles(self):

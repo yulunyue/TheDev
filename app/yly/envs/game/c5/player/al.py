@@ -1,4 +1,5 @@
 from common.algo.export import ALgoManage, Qlearning
+from .ql import Ql
 
 
 class Al(ALgoManage):
@@ -29,5 +30,5 @@ class Al(ALgoManage):
             .set_name("gomo664")
         )
 
-    def ql(self, train_epoll=1000):
-        return Qlearning().load().set_train_epoll(train_epoll)
+    def ql(self):
+        return Ql().load()

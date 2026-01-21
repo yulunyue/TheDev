@@ -32,24 +32,14 @@ class ToolBase:
         md_file = make_md_file()
         todo = TodoFile(md_file)
         logger.info(md_file)
-        f = getattr(self, fun_name, None)
-        error_msg = None
-        funs = []
-        if f is None:
-            ffs = todo.get_cmd(fun_name)
-            if isinstance(ffs, str):
-                error_msg = ffs
-            else:
-                funs.extend(ffs)
-        else:
-            funs.append([f, kw])
-        if error_msg:
-            logger.info(f"NOT FIND {fun_name}\n{error_msg}")
-        else:
-            for ff, fkw in funs:
-                if isinstance(ff, str):
-                    ff = getattr(self, ff)
-                ff(**fkw)
+        funs = todo.get_cmd(fun_name)
+        if isinstance(funs, str):
+            logger.info(f"NOT FIND {fun_name}\n{funs}")
+            return
+        for ff, fkw in funs:
+            if isinstance(ff, str):
+                ff = getattr(self, ff)
+            ff(**fkw)
 
     def get_call_fun(self):
         ret = []

@@ -27,19 +27,22 @@ class BoardC5:
         self.mask_cloumn = (1 << self.height_bit) - 1
         self.mask_row = (1 << self.row_bit) - 1
         self.mask_bit = (1 << self.BIT_SIZE) - 1
-        self.grid = [self.STATE_NULL] * self.size
-        self.can_use = set(range(self.size))
+        self.reset()
         self.state = None
         return self
 
+    def reset(self):
+        self.grid = [self.STATE_NULL] * self.size
+        self.can_use = set(range(self.size))
+
     def change_chess_statu(self, idx, player_id):
 
-        # log.map(idx=idx, player_id=player_id)
-        # if self.grid[idx] == player_id:
-        #     raise Exception("xxx")
+        # log.map(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
+        if self.grid[idx] == player_id or self.grid[idx] + player_id == 3:
+            raise Exception(self.grid[idx], player_id)
         if player_id == 0:
             self.can_use.add(idx)
-        elif self.grid[idx] == 0 and player_id:
+        elif self.grid[idx] == 0:
             self.can_use.remove(idx)
         self.grid[idx] = player_id
 
@@ -76,20 +79,24 @@ class BoardC5:
         return set_mask(state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id + 1)
 
     def set_state(self, state: int):
+        # log.map(a="set_state", src=self.state, dst=state)
         if self.state == state:
             return self
-        if isinstance(state, int):
+        if not state:
+            self.reset()
+        elif isinstance(state, int):
             self.change_mask(state)
-        elif state:
+        elif isinstance(state, str):
             self.change_grid(state)
+        else:
+            raise NotImplementedError()
         self.state = state
         return self
 
     def change_grid(self, s: str):
-        self.grid = [self.STATE_NULL] * self.size
+
         for i, v in enumerate(s.split("|")):
-            self.change_chess_statu(int(v), (i % 2) + 1)
-        self.state = s
+            self.set_pos_player_id(int(v), (i % 2) + 1)
 
     def change_mask(self, state):
         state1, state2 = self.state, state
@@ -149,11 +156,14 @@ class BoardC5:
     def s(self, v):
         return ["-", "O", "X"][v]
 
-    def to_str(self):
+    def to_str(self, score: dict):
         ret = [[f"{i}"] + [" "] * self.width for i in range(self.size // self.width)]
         for i, v in enumerate(self.grid):
             y, x = self.get_yx(i)
-            ret[y][x + 1] = self.s(v)
+            s = self.s(v)
+            if i in score:
+                s = str(score[i])
+            ret[y][x + 1] = s
         ret.append([" "] + [str(v) for v in range(self.width)])
         return [" ".join(row) for row in ret]
 

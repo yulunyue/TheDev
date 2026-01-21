@@ -168,8 +168,8 @@ class ALgoManage:
             last_a = a
             if a is None:
                 return self.actor_return(s)
-            self.record(p, a, f"actor/{idx}")
             s = s.do_action(a)
+            self.record(p, a, f"actor/{idx}")
 
         return self.actor_return(s)
 

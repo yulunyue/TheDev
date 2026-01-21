@@ -1,6 +1,6 @@
 from common.third_util.c_profile import CProfileUtil
-from common.util.export import ToolBase, logger, base64_encode, Module
-from common.tool.export import PyUtil
+from common.util.export import logger, base64_encode, Module
+from common.tool.export import PyUtil, ToolBase
 
 
 class Dfx(ToolBase):

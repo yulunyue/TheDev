@@ -177,4 +177,4 @@ Miniconda3-latest-Linux-x86_64.sh
 conda
 hwcloud_soar_script_sdk
 pytest.ini
-tic_tac_toe_self_play.pkl
+*.pkl

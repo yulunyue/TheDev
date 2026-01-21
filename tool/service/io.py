@@ -1,6 +1,5 @@
-from common.util.export import TcpServer, TcpClient, ToolBase
-from common.third_util.py_test_util import PyTestUtil
-from common.third_util.obs_util import ObsUtil
+from common.util.export import TcpServer, TcpClient
+from common.tool.export import TableBase, ToolBase
 
 
 class Io(ToolBase):
@@ -14,13 +13,14 @@ class Io(ToolBase):
         u.connect()
         u.write(dict(a=1))
 
-    def test(self):
-        PyTestUtil().set_aim("tests/test_io.py").set_root(".").main()
-
     def obs_list_buckets(self, env):
+        from common.third_util.obs_util import ObsUtil
+
         ObsUtil(env).list_buckets()
 
     def obs_upload(self, env, path):
+        from common.third_util.obs_util import ObsUtil
+
         ObsUtil(env).upload(path)
 
 
