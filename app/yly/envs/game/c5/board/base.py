@@ -37,7 +37,7 @@ class BoardC5:
 
     def change_chess_statu(self, idx, player_id):
 
-        # log.map(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
+        log.map(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
         if self.grid[idx] == player_id or self.grid[idx] + player_id == 3:
             raise Exception(self.grid[idx], player_id)
         if player_id == 0:
