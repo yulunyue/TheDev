@@ -33,3 +33,4 @@ class PnNode:
             self.left.set_right(self.right)
         elif self.right:
             self.right.set_left(self.left)
+        return self
