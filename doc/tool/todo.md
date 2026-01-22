@@ -1,5 +1,8 @@
 ```lc1
-app.yly.algo.lc_3816::Solution::run
+app.yly.algo.lc_3507::Solution::run
+```
+```debug
+app.yly.algo.lc_3507::Solution::run
 ```
 
 
