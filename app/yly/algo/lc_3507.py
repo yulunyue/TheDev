@@ -17,7 +17,7 @@ class Solution(MockCf):
                 nums[v.value] + nums[v.value + 1],
                 nums[v.value],
                 nums[v.value + 1],
-                v,
+                v.value,
             ]
             for v in nodes
         ]
@@ -25,13 +25,13 @@ class Solution(MockCf):
         need_update = [0] * (n - 1)
         heapq.heapify(h)
         while h:
-            while h and need_update[h[0][-1].value]:
-                v = need_update[h[0][-1].value]
-                s, l, r, n = heapq.heappop(h)
-                heapq.heappush(h, [s + v, l + v, r + v, n])
-                need_update[h[0][-1].value] = 0
-            s, l, r, n = h.pop(0)
-            node: PnNode = n
+            while h and need_update[h[0][-1]]:
+                v = need_update[h[0][-1]]
+                s, l, r, idx = heapq.heappop(h)
+                heapq.heappush(h, [s + v, l + v, r + v, idx])
+                need_update[h[0][-1]] = 0
+            s, l, r, idx = h.pop(0)
+            node: PnNode = nodes[idx]
 
             if node.left:
                 need_update[node.left.value] += r
