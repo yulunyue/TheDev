@@ -5,48 +5,29 @@ from common.algo.base.pn_node import PnNode
 class Solution(MockCf):
     def get_cases(self):
         return dict(
+            case2=dict(nums=[5, 1, 2, 3], result=2),
             # case0=dict(nums=[5, 2, 3, 1], result=2),
-            case1=dict(nums=[2, 2, -1, 3, -2, 2, 1, 1, 1, 0, -1], result=9)
+            # case1=dict(nums=[2, 2, -1, 3, -2, 2, 1, 1, 1, 0, -1], result=9),
         )
 
     def minimumPairRemoval(self, nums: List[int]) -> int:
         n = len(nums)
-        nodes = PnNode.make(range(n))
-        h = []
-        a = d = 0
-        for i in range(1, n):
-            h.append((nums[i] + nums[i - 1], i - 1))
-            d += 1 if nums[i - 1] > nums[i] else 0
-        rf = defaultdict(int)
-        heapq.heapify(h)
+        Solution.d = 0
 
-        # def change(n: PnNode, v):
-        #     ret = 0
-        #     nums[n.value] += v
-        #     heapq.heappush(h, (nums[n.value], n.value))
-        #     return ret
+        class Pn:
+            def __init__(self, v):
+                self.value = [nums[i] + nums[i + 1], i]
+                self.l = nums[i]
+                self.r = nums[i + 1]
+                Solution.d += 1 if nums[i] > nums[i + 1] else 0
 
-        while h and d:
-            self.logger.map(d=d, h=h[0], nums=nums, ct=rf[h[0][1]])
-            while h and rf[h[0][1]]:
-                rf[h.pop(0)] -= 1
-            if not h:
-                break
-            s, idx = h.pop(0)
-            node: PnNode = nodes[idx]
-            if node.left:
-                v = nums[node.left.value]
-                rf[(v + nums[idx], idx)] += 1
-                heapq.heappush(h, (v + s, node.left.value))
-            if node.right and node.right.right:
-                v = nums[node.right.right.value]
-                rf[(v + nums[idx], idx)] += 1
-                heapq.heappush(h, (v + s, node.value))
-            nums[idx] = s
-            # d += change(node.left, nums[node.value])
-            node.remove()
-            # rf[node.value] = 1
-            # nums[node.value] = None
+        h = Pn.make(range(n - 1))
+        a = 0
+
+        while d:
+            self.logger.map(d=d, h=h, a=a)
+            node: PnNode = h.pop(0)
+            d -= node.remove()
             a += 1
         return a
 

@@ -35,6 +35,11 @@ class BaseData:
     def log(self, op, v, result):
         logger.info(f"{self} {op} {v}->{result}", stacklevel=2)
 
+    def __it__(self, value):
+        ret = self.value > get_value(value)
+        self.log("<", value, ret)
+        return ret
+
     def __ge__(self, value):
         ret = self.value > get_value(value)
         self.log(">", value, ret)

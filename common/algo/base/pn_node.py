@@ -9,9 +9,11 @@ class PnNode:
         self.value = v
 
     @classmethod
-    def make(cls, array) -> List["PnNode"]:
+    def make(cls, array, func=None) -> List["PnNode"]:
         ret: List[PnNode] = []
         for i, v in enumerate(array):
+            if func is not None:
+                v = func(i, v)
             n = PnNode(v)
             if i != 0:
                 n.set_left(ret[-1])
@@ -34,3 +36,6 @@ class PnNode:
         elif self.right:
             self.right.set_left(self.left)
         return self
+
+    def __lt__(self, p: "PnNode"):
+        return self.value < p.value
