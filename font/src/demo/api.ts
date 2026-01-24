@@ -12,7 +12,7 @@ export class Api extends Div {
     init_node(): void {
         this.input = new Form()
         this.uri = new Search().set_option(to_node({
-            url: "/app/api/query_api",
+            url: "/app/api/query_all_apis",
             id: URIKEYID,
             title: "APIKEY",
             type: Constant.DATA_SOURCE_DYN,
@@ -39,9 +39,13 @@ export class Api extends Div {
     }
     init_event(): void {
         this.uri.on_change((src: Node, dst: Node) => {
-            let kw = oj_to_node(dst.data.kwargs)
-            // console.log(kw, dst.data.kwargs)
-            this.input.set_option(kw)
+            web_dom.post("/app/api/get_api_call_info", { key: dst.key }, (d) => {
+                console.log(d.data)
+                this.input.set_option(d)
+            })
+            // let kw = oj_to_node(dst.data.kwargs)
+            // 
+            // 
         })
         this.exec_btn.on_click(() => this.execute())
     }

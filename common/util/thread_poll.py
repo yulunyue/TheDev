@@ -3,21 +3,12 @@ from typing import List
 import time
 import sys
 
-
-class ThreadExec:
-    def load(self, func, args=None):
-        self.func = func
-        self.args = args
-        return self
-
-    def add_to_executor(self, executor: ThreadPoolExecutor):
-        self.future = executor.submit(self.func, self.args)
-        return self.future
+from .thread_exec import ThreadExec
 
 
 class ThreadManage:
-    def __init__(self) -> None:
-        self.executor = ThreadPoolExecutor()
+    def __init__(self, max_workers=100) -> None:
+        self.executor = ThreadPoolExecutor(max_workers=max_workers)
 
     def get_task(self, func, args):
         return [ThreadExec().load(func, arg) for arg in args]
@@ -28,5 +19,4 @@ class ThreadManage:
         ret = []
         for future in as_completed(futures):
             ret.append(future.result())
-            progress_bar(len(ret), len(self.tasks))
         return ret

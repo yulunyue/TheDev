@@ -26,11 +26,11 @@ export class Form extends Div {
         return new FormRow()
     }
     render_option(): void {
+        console.log(this.option.childs)
         this.body.set_childs(this.option.childs, () => this.get_row())
     }
     get_value() {
         let ret = {}
-        console.log(this)
         for (var i = 0; i < this.option.childs.length; i++) {
             let value = (this.body.childs[i] as FormRow).container.get_value()
             if (value == undefined) {

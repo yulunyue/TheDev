@@ -4,6 +4,8 @@ from .algo import Al
 
 
 class Solution(ToolBase):
+    name = "cube"
+
     def random(self, step=10):
         s = CubeState.new_shape(C.SHAPE2)
         log.debug(s.show())
@@ -15,10 +17,10 @@ class Solution(ToolBase):
 
     def view_all(self):
         s = CubeState.new_shape(C.SHAPE2)
-        logger.debug(s.show())
+        self.dev_log.debug(s.show())
         for a in s.get_sort_actions():
-            logger.debug(a.show())
-            logger.debug(a.get_dst().show())
+            self.dev_log.debug(a.show())
+            self.dev_log.debug(a.get_dst().show())
 
     def dev(self):
         self.view_all()

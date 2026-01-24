@@ -1,106 +1,26 @@
 import random
-from common.util.export import logger, json_dumps, defaultdict, math, List, Dict, Tuple
-
+from common.util.export import (
+    logger,
+    File,
+    json_dumps,
+    defaultdict,
+    math,
+    List,
+    Dict,
+    Tuple,
+    dict_to_str,
+)
+from .action import Action
 
 inf = float("inf")
-
-
-class Action:
-    check_info = None
-
-    def __init__(self, src, action, dst=None):
-        self.action = action
-        self.src: State = src
-        self.dst: State = dst
-        self.data = dict()
-
-    @property
-    def title(self):
-        return self.action
-
-    @property
-    def key(self):
-        return f"{self.src.state}->{self.action}"
-
-    def get_dst(self):
-        return self.dst
-
-    def get_data(self, key, default_value):
-        return self.data.get(key, default_value)
-
-    def set_data(self, **kw):
-        self.data.update(kw)
-        return self
-
-    p = None
-
-    def set_p(self, p):
-        self.p = p
-        return self
-
-    def set_reward(self, reward):
-        self.reward = reward
-        return self
-
-    def get_reward(self, **kwargs):
-        return self.reward  # 值越大越好
-
-    def get_src_reward(self, actions: List["Action"], **kw):
-        return self.get_reward()
-
-    def show(self, msg=None):
-        ret = f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}"
-        if self.data:
-            ret += f", data:{self.data}"
-        if msg:
-            ret += f", msg:{msg}"
-        reward = getattr(self, "reward", None)
-        if reward is not None and self.reward > 0:
-            ret += f", rwin:{self.reward}"
-        elif reward is not None and self.reward < 0:
-            ret += f", rlos:{self.reward}"
-        return ret
-
-    def show_best_actions(self):
-        a = self
-        ret = []
-        while a:
-            ret.append(a.show())
-            ret.append(a.get_dst().show())
-            a = a.get_dst().get_action()
-        return "\n".join(ret)
-
-    def do(self):
-        """ """
-        pass
-
-    def undo(self):
-        pass
-
-    def get_dqn_network_params(self, acs: List["Action"]):
-        """
-        rewards, dones, q_values, max_next_q_values
-        """
-        from common.third_util.torch_util import torch
-        from common.third_util.np_util import np
-
-        states = torch.tensor(np.array([a.src.state for a in acs]), dtype=torch.float)
-        actions = torch.tensor([a.action for a in acs]).view(-1, 1)
-        rewards = torch.tensor([a.reward for a in acs], dtype=torch.float).view(-1, 1)
-        next_states = torch.tensor(
-            np.array([(a.dst.state) for a in acs]), dtype=torch.float
-        )
-        dones = torch.tensor([a.dst.done for a in acs], dtype=torch.float).view(-1, 1)
-
-        # 下个状态的最大Q值
-
-        return states, actions, rewards, dones, next_states
 
 
 class State:
     NO_WIN = -1
     FIRST_WIN = 1
     SECONEND_WIN = 2
+    MAN2 = "MAN2"
+    MAN1 = "MAN1"
     name = "state"
     parent: "State" = None
     done = False
@@ -109,6 +29,8 @@ class State:
     data = None
     best_action: Action = None
     extra = None
+    mode = ""
+    n_visits = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -124,18 +46,18 @@ class State:
         return self
 
     @classmethod
-    def new(cls, state=None, **kw):
+    def new(cls, state):
         if cls.STATE_STORE is None:
             cls.STATE_STORE = dict()
         if state not in cls.STATE_STORE:
-            cls.STATE_STORE[state] = cls(state, **kw)
+            cls.STATE_STORE[state] = cls(state)
         return cls.STATE_STORE[state]
 
     def get_done(self):
         return self.done
 
     def do_action(self, a: Action):
-        return a.get_dst()
+        return a.do().get_dst()
 
     def action_size(self):
         raise Exception("tood")
@@ -209,7 +131,7 @@ class State:
             ret = ret.get_random_action().get_dst()
         return ret
 
-    def to_str(self):
+    def to_str(self, algo=None):
         return []
 
     def bfs(self, max_depth=15) -> Dict[str, Tuple[List[Action], "State"]]:
@@ -236,14 +158,16 @@ class State:
                 return
             if call_pos == "pre":
                 call(n, depth, action)
+            if n is None:
+                return
             actions = n.get_sort_actions()
             half = len(actions) // 2
             for a in actions[:half]:
-                util(a.get_dst(), depth + 1, a)
+                util(a.dst, depth + 1, a)
             if call_pos == "mid":
                 call(n, depth, action)
             for a in actions[half:]:
-                util(a.get_dst(), depth + 1, a)
+                util(a.dst, depth + 1, a)
             if call_pos == "after":
                 call(n, depth, action)
 
@@ -253,14 +177,17 @@ class State:
         ans = []
 
         def util(n: State, depth, action: Action):
-            key = "Root"
+            acs = ""
             if action is not None:
-                key = action.key
-            s = f'{"  " * depth}{key}: {n.show_titles()}'
+                acs = dict_to_str(a=action.action, r=action.get_reward())
+            dst = "TODO"
+            if n is not None:
+                dst = n.show_titles()
+            s = f'{"  " * depth}{acs}: {dst}'
             ans.append(s)
 
         self.dfs(util, call_pos="pre")
-        return "\n".join(ans)
+        return "\n".join(["---"] + ans + ["---"])
 
     def get_max_action_reward(self):
         reward = -inf
@@ -279,10 +206,13 @@ class State:
         return self.data[k]
 
     def show_titles(self):
-        return f"depth:{self.depth}"
+        ret = dict(depth=self.depth, done=self.done)
+        if self.n_visits is not None:
+            ret.update(n=self.n_visits, u=self.u, q=self.q)
+        return dict_to_str(**ret)
 
-    def show_body(self, info):
-        datas = [self.show_titles()] + self.to_str()
+    def show_body(self, info, algo=None):
+        datas = [self.show_titles()] + self.to_str(algo=algo)
         if self.data:
             for k, v in self.data.items():
                 datas.append(f"{k}:{v}")
@@ -292,17 +222,17 @@ class State:
             datas.append(str(info))
         return datas
 
-    def show(self, info=None):
-        body = self.show_body(info)
+    def show(self, info=None, fp=None, algo=None):
+        body = self.show_body(info, algo=algo)
         head = f"-----{self.title}-----"
-        return "\n".join([head] + body + ["-" * len(head)])
+        ret = "\n".join([head] + body + ["-" * len(head)])
+        if fp:
+            File(f"data/log/{fp}.log").write_file(ret)
+        return ret
 
     @property
     def title(self):
         return str(self.state)
-
-    def get_win_player(self, *args, **kw):
-        return self.done
 
     def get_sort_actions(self, **kw):
         if self.actions is None:
@@ -324,23 +254,39 @@ class State:
     def get_root(cls):
         return cls.new()
 
-    def draw_graph(self):
-        from common.third_util.draw import Draw
+    def get_win_player(self, *args, **kw):
+        return self.done - 1
 
-        states = self.bfs().values()
-        ret = dict()
-        for _, s in states:
-            ret[s.title] = []
-            for a in s.get_sort_actions():
-                ret[s.title].append([a.title, a.get_dst().title])
-        Draw().draw_graph(ret).save(f"data/state/{self.name}.svg")
-
-
-class AbState(State):
-
-    def load_ab(self, search_depth=0, alpha=-inf, bate=inf):
+    def load_ab(self, search_depth=0, alpha=-inf, bate=inf, p_action=None):
         self.search_depth = search_depth
         self.child_index = 0
         self.alpha = alpha
         self.bate = bate
+        self.p_action: Action = p_action
         return self
+
+    def load_mcts(self, p, p_action):
+        self.n_visits = 0
+        self.u = 0
+        self.q = 0
+        self.p_action: Action = p_action
+        self.p: State = p
+
+    def mcts_update(self, leaf_value):
+        if self.p:
+            self.p.mcts_update(-leaf_value)
+        self.n_visits += 1
+        self.q += 1.0 * (leaf_value - self.q) / self.n_visits
+
+    def calc_uct_value(self, exploration_param):
+        self.u = exploration_param * math.sqrt(self.p.n_visits / (self.n_visits + 1))
+        return self.q + self.u
+
+    def get_next(self, *args):
+        dst = self
+        for a in args:
+            dst = dst.get_action(a).do().get_dst()
+        return dst
+
+
+MctsState = AbState = State

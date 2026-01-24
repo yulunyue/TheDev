@@ -28,10 +28,13 @@ class ToolCf4(ToolBase):
         self.al.train([self.al.mc(100)])
 
     def dev2(self):
-        s = self.init_state.get_action(0).get_dst()
+        s = self.init_state
         logger.debug(s.show())
-        s = s.get_action(0).get_dst()
-        logger.debug(s.show())
+        for v in [0]:
+            a = s.get_action(v)
+            s = a.get_dst()
+            logger.debug(a.show())
+            logger.debug(s.show())
 
     def dev1(self):
         log.debug(self.init_state.show())
@@ -40,10 +43,10 @@ class ToolCf4(ToolBase):
             log.debug(a.get_dst().show())
 
     def dev(self):
-        self.dev2()
+        self.random()
 
     def debug(self):
-        self.dev2()
+        self.dev()
 
 
 if __name__ == "__main__":

@@ -23,6 +23,7 @@ class logger:
     info = get_log
     map = get_log
     debug = get_log
+    log_tree = get_log
 
 
 TheDevLoger = logger
@@ -40,6 +41,17 @@ class MockCf:
     dev = False
     inputs = None
     logger = logger
+    type = ""
+    execute = None
+
+    def __init__(self, f=None, cases=None, src=None):
+        if self.execute is None:
+            self.execute = f
+        self.cases = cases
+        self.src_file = src
+
+    def get_cases(self):
+        return self.cases
 
     def set_logger(self, log):
         self.logger: logger = log
@@ -68,23 +80,16 @@ class MockCf:
             self._o = open("output.txt", "w")
         self._o.write(f"{s}\n")
 
+    def exec(self):
+        return ""
 
-class MockCg(MockCf):
-    name = ""
+    def run(self, case_name=""):
+        if os.path.exists("common/third_service/oj.py"):
+            from common.third_service.oj import oj_run
 
-    def __init__(self):
-        super().__init__()
-        self.msgs = []
+            oj_run(self, case_name)
+        else:
+            self.exec()
 
-    def log(self, **kw):
-        info = dict(inputs=self.inputs)
-        info.update(kw)
-        print(json.dumps(info), file=sys.stderr)
-        self.inputs.clear()
 
-    def output(self, s):
-        print(s)
-
-    @classmethod
-    def main_py(cls):
-        return f"app/yly/envs/cg/{cls.name}/cg.py"
+MockCg = MockCf

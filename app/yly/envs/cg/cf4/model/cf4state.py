@@ -40,13 +40,15 @@ class F4State(AbState):
         return cls.new(ENV.INIT_MASK)
 
     def show_titles(self):
-        return f"depth:{self.depth}, s:{ENV.s(self.player_id+1)}"
+        return f"depth:{self.depth}, s:{ENV.s(self.player_id+1)} done:{self.done}"
 
     def get_action(self, pos):
         idx, state = ENV.get_next_state(self.state, pos, self.player_id)
+        if state is None:
+            return
         s = F4State.new(state, depth=self.depth + 1, player_id=1 - self.player_id)
         ENV.set_state(self.state)
-        obs = ENV.get_move_info(idx, self.player_id)
+        obs = ENV.get_move_obs(idx, 1 + self.player_id)
         return C4ACtion(self, pos, s, obs=obs)
 
     def make_actions(self):
@@ -56,7 +58,7 @@ class F4State(AbState):
             a = self.get_action(pos)
             if a is None:
                 continue
-            if a.get_dst().depth == ENV.pos_status:
+            if a.get_dst().depth == ENV.size:
                 a.dst.set_done(AbState.NO_WIN)
                 return [a]
             if a.is_self_win():
@@ -76,7 +78,4 @@ class F4State(AbState):
 
 
 class F4StateDev(F4State):
-    def __init__(self, state):
-        self.scores_record = dict()
-        self.data = dict()
-        super().__init__(state)
+    pass

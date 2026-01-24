@@ -232,17 +232,20 @@ export class Div {
         this.parent = p
         return this
     }
-    set_childs(childs: Node[], cls: any) {
-        for (var i = 0; i < childs.length; i++) {
-            let c = this.childs[i]
+    set_childs(childs: any, cls: any) {
+        let idx = 0
+        while (idx < childs.length) {
+            let c = this.childs[idx]
             if (c) {
-                c.set_option(childs[i]).show()
+                c.set_option(childs[idx]).show()
             } else {
-                this.add_child(cls().set_option(childs[i]))
+                this.add_child(cls().set_option(childs[idx]))
             }
+            idx += 1
         }
-        for (var i = childs.length; i < this.childs.length; i++) {
-            this.childs[i].hide()
+        while (idx < this.childs.length) {
+            this.childs[idx].hide()
+            idx += 1
         }
         return this
 

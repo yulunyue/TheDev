@@ -20,4 +20,4 @@ class Fp(Pig):
         if self.power == 0:
             logger.fz_num_change(-1)
             if not logger.game_over():
-                c.owner.get_num_card(3)
+                c.owner.get_num_card(3, c.owner.head is None)

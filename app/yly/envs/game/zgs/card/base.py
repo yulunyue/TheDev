@@ -27,9 +27,26 @@ class CardBase:
             s = f"to {self.dst.name}"
         if f:
             s = f"for {f.owner.name} use {f.title}"
-        self.owner.card_map[self.type].pop(0)
-        logger.debug(f"{self.owner.name} use {self.title}")
-        self.pre.next = self.next
+        logger.debug(f"{self.owner.name} use {self.title}")  # 打牌
+        self.hander()  # 响应牌
+        self.use_finish()  # 删除牌  三个阶段控制
+
+    def hander(self):
+        pass
+
+    def use_finish(self):
+        idx = 0
+        while idx < len(self.owner.card_map[self.type]):
+            d = self.owner.card_map[self.type][idx]
+            if d == self:
+                break
+            idx += 1
+        if idx < len(self.owner.card_map[self.type]):
+            self.owner.card_map[self.type].pop(idx)
+        if self.pre:
+            self.pre.next = self.next
+        else:
+            self.owner.head = self.next
         if self.next:
             self.next.pre = self.pre
         else:

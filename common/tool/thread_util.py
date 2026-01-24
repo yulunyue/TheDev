@@ -108,21 +108,3 @@ class ThreadRecord(threading.Thread):
     def set_exec(self, fun):
         self.exec_main = fun
         return self
-
-
-class TestRc(ThreadRecord):
-    def init(self):
-        self.a = 0
-        self.b = 0
-
-    def exec_main(self):
-        for _ in range(3):
-            self.a += 1
-            self.b += 1
-        return self.a
-
-    def uk(self):
-        return f"{self.a}"
-
-    def to_josn(self):
-        return dict(a=self.a, b=self.b)

@@ -18,7 +18,7 @@ class Pig:
     def __init__(self, idx, cards: List["CardBase"]):
         self.idx = idx
         self.cards = cards
-        self.head: CardBase = CardBase()
+        self.head: CardBase = None
         self.tail: CardBase = self.head
         self.card_map: Dict[str, List[CardBase]] = defaultdict(list)
 
@@ -43,13 +43,19 @@ class Pig:
         return self.power == 0
 
     def add_card(self, c: "CardBase"):
+        """
+        反死了，摸牌可以继续出
+        """
         from ..util import CARD_MAP
 
         if isinstance(c, str):
             c = CARD_MAP[c]()
         c.owner = self
-        c.pre = self.tail
-        self.tail.next = c
+        if self.head is None:
+            self.head = c
+        else:
+            c.pre = self.tail
+            self.tail.next = c
         self.tail = c
         self.card_map[c.type].append(c)
         return self
@@ -62,17 +68,26 @@ class Pig:
         if not self.power:
             return "DEAD"
         ret = []
-        c = self.head.next
+        c = self.head
         while c:
             ret.append(getattr(c, key))
             c = c.next
         return " ".join(ret)
 
+    use_card: "CardBase" = None
+
     def do(self) -> None:
-        c = self.head.next
-        while c and not logger.game_over():
+        self.use_card = self.head
+        while self.use_card and not logger.game_over():
+            self.use_card.do()
+            if self.dead:
+                return
+            self.use_card = self.use_card.next
+        judmps = self.card_map[Juedou.type][:] + self.card_map[Sha.type]
+        for c in judmps:
+            if logger.game_over() or self.dead:
+                return
             c.do()
-            c = c.next
 
     def is_enemy(self, c: "Pig"):
         return False
@@ -97,20 +112,23 @@ class Pig:
     def hander(self, c: "CardBase"):
         if c.type in {Nzrq.type, Juedou.type}:
             stp = Sha.type
+
         elif c.type in {Sha.type, Wjqf.type}:
             stp = Shan.type
         if not self.card_map[stp]:
             self.power_change(-1, c)
             return False
+        c.set_dst(None)
         self.card_map[stp][0].use(c)
         return True
 
     def lose_all_card(self):
-        self.head.next = None
+        self.use_card.next = None
+        self.head = self.tail = None
         self._has_zg = False
         self.card_map = defaultdict(list)
 
-    def get_num_card(self, num):
+    def get_num_card(self, num, is_pid_dead=False):
         from ..util import CARD_MAP
 
         while self.cards and num > 0:

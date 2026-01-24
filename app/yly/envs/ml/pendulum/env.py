@@ -1,7 +1,7 @@
 from common.algo.export import Action, State
 from common.util.export import logger, List, Dict
-from common.third_util.torch_util import torch
-from common.third_util.np_util import np
+from common.third_util.ml.torch_util import torch
+from common.third_util.ml.np_util import np
 from .constant import C
 
 ENV = None
@@ -41,7 +41,7 @@ class PenduState(State):
         if PenduState._env is None:
             import gymnasium as gym
 
-            PenduState._env = gym.make("Pendulum-v1", render_mode="human")
+            PenduState._env = gym.make("Pendulum-v1", render_mode="rgb_array")
 
         return PenduState._env
 

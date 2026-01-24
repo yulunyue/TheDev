@@ -16,3 +16,6 @@ class ListUtil:
 
     def min(self, fn=None):
         return self.get_one(lambda a, b: a < b, fn)
+
+    def filter(self, fn):
+        return [a for a in self.array if fn(a)]

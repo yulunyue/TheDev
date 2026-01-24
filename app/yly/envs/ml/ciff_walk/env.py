@@ -1,4 +1,4 @@
-from common.algo.export import State, Action
+from common.algo.export import State, Action, Algo
 from common.util.export import logger
 from typing import Dict
 import numpy as np
@@ -6,12 +6,21 @@ from .constant import C
 
 
 class CAction(Action):
+    reward = None
+    reward2 = None
+
     @property
     def key(self):
         return f"{self.src.state}:{C.ACS[self.action]}"
 
+    def do(self):
+        self.reward = self.reward2
+        return self
+
 
 class CfState(State):
+    mode = State.MAN1
+
     def __init__(self, state):
         self.y, self.x = state // C.ncol, state % C.ncol
         super().__init__(state)
@@ -31,7 +40,8 @@ class CfState(State):
                 if nx != C.ncol - 1:
                     reward = -100
                 next_state.set_done(True)
-            a = CAction(self, i, next_state).set_reward(reward)
+            a = CAction(self, i, next_state)
+            a.reward2 = reward
             actions.append(a)
         return actions
 

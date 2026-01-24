@@ -1,49 +1,7 @@
-from .state import State, Action
+from .state import State, Action, MctsState
 from .algo import Algo
 from common.util.export import List, Dict, defaultdict, math, random, CT, logger
 import time
-
-
-class MctsState:
-
-    def __init__(self, state: State, p: "MctsState" = None, p_action=None):
-        self.state = state
-        self.children = None
-        self.n_visits = 0
-        self.u = 0
-        self.q = 0
-        self.p: MctsState = p
-        state.extra = self
-        self.leaf_value = 0
-        self.p_action: Action = p_action
-
-    def get_children(self):
-        if self.children is not None:
-            return self.children
-        self.children = [
-            MctsState(d.get_dst(), self, d) for d in self.state.get_sort_actions()
-        ]
-        return self.children
-
-    def update(self, leaf_value):
-        if self.p:
-            self.p.update(-leaf_value)
-        self.n_visits += 1
-        self.q += 1.0 * (leaf_value - self.q) / self.n_visits
-
-    def calc_uct_value(self, exploration_param):
-        self.u = exploration_param * math.sqrt(self.p.n_visits / (self.n_visits + 1))
-        return self.q + self.u
-
-    def expand(self):
-        return self.get_children()
-
-    def is_leaf(self):
-        return self.state.game_over() or self.children is None
-
-    def show(self):
-        msg = f"s={self.state.state}; depth:{self.state.depth}; vt={self.n_visits}; q={'%.3f'%self.q}; u={'%.3f'%self.u};"
-        return self.state.show(msg)
 
 
 class MctsSearch(Algo):
@@ -57,18 +15,20 @@ class MctsSearch(Algo):
 
     def select(self, node: MctsState) -> MctsState:
         cur = node
-        while not cur.is_leaf():
+        while not cur.game_over():
             cur = self.get_uct_best_child(cur)
         return cur
 
     def get_uct_best_child(self, cur: MctsState):
         best_score = -float("inf")
         best_child = None
-        for child in cur.get_children():
-            score = child.calc_uct_value(self.exploration_param)
+        for a in cur.get_sort_actions():
+            dst: MctsState = a.do().get_dst()
+            dst.load_mcts(cur, a)
+            score = dst.calc_uct_value(self.exploration_param)
             if score > best_score:
                 best_score = score
-                best_child = child
+                best_child = dst
         return best_child
 
     def simulate(self, root: State, max_round=1000):
@@ -78,60 +38,55 @@ class MctsSearch(Algo):
             actions = tail.get_sort_actions()
             random_id = random.randint(0, len(actions) - 1)
             action_history.append(actions[random_id])
-
             max_round -= 1
-            if max_round <= 0:
-                raise Exception(
-                    f"simulate max  src:{tail.show()} action:{actions[random_id].show()} dst:{actions[random_id].get_dst().show()}"
-                )
-            tail = actions[random_id].get_dst()
-
+            tail = actions[random_id].do().get_dst()
         return action_history
 
     def backpropagate(self, node: MctsState, score):
-        node.update(score)
+        node.mcts_update(score)
 
-    def search_main(self, init_state: State, **kw):
+    def search_best_action(self, init_state: State, **kw):
         self.ep = 0
         self.start_time = time.time()
-        self.root = MctsState(init_state)
         while True:
-            node = self.select(self.root)  # 指导探索到待拓展的节点
-            action = node.p_action
-            if not node.state.game_over():
-                node.expand()
-                action = self.simulate(node.state)[-1]
-            value = action.get_src_reward([action])
-            self.backpropagate(node, value)
+            self.search_one_round(init_state)
             self.ep += 1
             cur_time = time.time()
             if self.ep >= self.num_episodes or cur_time - self.start_time >= self.max_t:
                 break
-        self.update_max_action(self.root)
-        return init_state.best_action
+        init_state.reset()
+        return self.get_max_ct_action(init_state)
 
-    def update_max_action(self, node: MctsState):
+    def search_one_round(self, root):
+        root.reset().load_mcts(None, None)
+        node = self.select(root)  # 指导探索到待拓展的节点
+        action = node.p_action
+        if not node.game_over():
+            node.expand()
+            action = self.simulate(node.state)[-1]
+        value = action.get_src_reward([action])
+        self.backpropagate(node, value)
+
+    def get_max_ct_action(self, node: MctsState):
         """
         UCT公式用于搜索过程中的节点选择，目的是平衡探索与利用
         访问次数用于最终决策中的移动选择，目的是选择最可靠、最经过验证的移动
         所以这使用访问次数
         """
-        best_state = None
+        best_action = None
         best_visits = -1
-        for a in node.get_children():
-            if a.n_visits > best_visits:
-                best_visits = a.n_visits
-                best_state = a
-        node.state.set_best_action(best_state.p_action)
+        for a in node.get_sort_actions():
+            d = a.get_dst()
+            if d.n_visits > best_visits:
+                best_visits = d.n_visits
+                best_action = a
+        return best_action
 
 
 class MctsSearchDev(MctsSearch):
 
-    def update(self, s: MctsState, score):
-        super().update(s, score)
-
-    def search(self, state):
-        action: Action = super().search(state)
+    def search(self, state, **kw):
+        action: Action = super().search(state, **kw)
         return action
 
     def info(self):

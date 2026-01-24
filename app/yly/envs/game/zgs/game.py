@@ -37,7 +37,6 @@ class Game:
         self.players.append(p)
 
     def load(self):
-
         self.players[-1].set_next(self.players[0])
         self.cur_player = self.players[0]
 

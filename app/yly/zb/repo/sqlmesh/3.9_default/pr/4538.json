@@ -1,0 +1,54 @@
+{
+    "after_setup_env": {},
+    "docker_image_name": "sqlmesh:latest",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-4538.zip?Expires=1766900767&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=kuidqAFqZMDj1hvM1Pud3%2FD1ym4%3D",
+    "error_msg": "skipped:TEST_RESULT_NO_CHANGE={'passed': 9} --> {'passed': 9}",
+    "issue_url": "https://github.com/TobikoData/sqlmesh/issues/4271",
+    "name": "TobikoData__sqlmesh-4538",
+    "pr_url": "https://github.com/TobikoData/sqlmesh/pull/4538",
+    "py_name": "",
+    "result": {
+        "old_detail": {},
+        "new_detail": {},
+        "test": {
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots[2]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_exception[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_exception[2]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_return_failed_skipped[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_return_failed_skipped[2]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_skip_each_node_only_once": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply[3]": "passed"
+        },
+        "code": {
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots[2]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_exception[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_exception[2]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_return_failed_skipped[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_return_failed_skipped[2]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_skip_each_node_only_once": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply[1]": "passed",
+            "tests/utils/test_concurrency.py::test_concurrent_apply[3]": "passed"
+        },
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": [
+            "tests/utils/test_concurrency.py::test_concurrent_apply[1]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply[3]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots[1]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots[2]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_exception[1]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_exception[2]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_return_failed_skipped[1]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_return_failed_skipped[2]",
+            "tests/utils/test_concurrency.py::test_concurrent_apply_to_snapshots_skip_each_node_only_once"
+        ]
+    },
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=4347&businessType=WORK",
+    "test_main": [
+        "tests/utils/test_concurrency.py"
+    ]
+}

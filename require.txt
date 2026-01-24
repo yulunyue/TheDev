@@ -1,4 +1,8 @@
 requests
+pytorch
+pytest
+coverage
 tornado
+gunicorn
 sortedcontainers
 pyyaml

@@ -1,2 +1,0 @@
-class PyUtil:
-    pass

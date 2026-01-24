@@ -1,0 +1,41 @@
+{
+    "name": "TobikoData__sqlmesh-2491",
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27134&businessType=WORK",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-2491.zip?Expires=1767778187&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=e2BM6sU0GVhdeR9MZie05s%2BAY6M%3D",
+    "error_msg": "skipped:ISSUE_0",
+    "depends_models": {},
+    "issue_url": "https://github.com/TobikoData/sqlmesh/issues/2449",
+    "local_packge_extern": "",
+    "pr_url": "https://github.com/TobikoData/sqlmesh/pull/2491",
+    "result": {
+        "old_detail": {
+            "AssertionError: expected call not found.\nExpected:.... AND \"relname\" = \\'db\\''\n  Use -v to get more diff": " tests/core/engine_adapter/test_base_postgres.py::test_columns"
+        },
+        "new_detail": {},
+        "test": {
+            "tests/core/engine_adapter/test_base_postgres.py::test_columns": "failed",
+            "tests/core/engine_adapter/test_base_postgres.py::test_table_exists": "passed",
+            "tests/core/engine_adapter/test_base_postgres.py::test_create_view": "passed",
+            "tests/core/engine_adapter/test_base_postgres.py::test_drop_view": "passed"
+        },
+        "code": {
+            "tests/core/engine_adapter/test_base_postgres.py::test_columns": "passed",
+            "tests/core/engine_adapter/test_base_postgres.py::test_table_exists": "passed",
+            "tests/core/engine_adapter/test_base_postgres.py::test_create_view": "passed",
+            "tests/core/engine_adapter/test_base_postgres.py::test_drop_view": "passed"
+        },
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [
+            "tests/core/engine_adapter/test_base_postgres.py::test_columns"
+        ],
+        "PASS_TO_PASS": [
+            "tests/core/engine_adapter/test_base_postgres.py::test_create_view",
+            "tests/core/engine_adapter/test_base_postgres.py::test_drop_view",
+            "tests/core/engine_adapter/test_base_postgres.py::test_table_exists"
+        ]
+    },
+    "test_main": [
+        "tests/core/engine_adapter/test_base_postgres.py"
+    ]
+}

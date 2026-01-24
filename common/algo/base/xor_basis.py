@@ -1,4 +1,4 @@
-from common.util.export import List, logger, StrUtil, get_log
+from common.util.export import List, logger, get_log
 
 
 class XorBais:
@@ -28,16 +28,3 @@ class XorBais:
             if res ^ self.b[i] > res:
                 res ^= self.b[i]
         return res
-
-
-class XorBarisDev(XorBais):
-    def f(self, v):
-        return StrUtil().format_pre0_bin(v, self.n)
-
-    def show(self, msg):
-        ret = "\n".join([f"--{msg}--"] + [self.f(v) for v in self.b] + ["----"])
-        get_log("algo").debug(ret)
-
-    def insert(self, x):
-        super().insert(x)
-        self.show(f"insert:{self.f(x)}")
