@@ -23,18 +23,20 @@ class DemoState(AbState):
 
         return s
 
+    r = None
+
     @classmethod
     def make(cls, *states, r=0, player_id=None):
-        ret: TestState = cls("")
-        if r is None:
-            r = random.randint(-10, 10)
+        ret: DemoState = cls("")
+        ret.r = r
         if player_id is None:
             player_id = 0
-        ret.actions = []
+        actions = []
         for i, s in enumerate(states):
-            a = DemoAction(ret, i).set_next_state(s, r)
-            ret.actions.append(a)
-        return ret.set_player_id(player_id)
+            a = DemoAction(ret, i).set_next_state(s)
+            actions.append(a)
+
+        return ret.set_player_id(player_id).set_actions(actions)
 
     @classmethod
     def make_test_state(cls):

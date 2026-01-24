@@ -15,6 +15,7 @@ class C5ACtion(Action):
         ):
             self.reward = 1
             self.dst.done = self.src.player_id + 1
+        return self
 
     def show(self):
         y, x = self.src.board.get_yx(self.action)

@@ -2,16 +2,17 @@ from .action import Action
 
 
 class DemoAction(Action):
-    def set_next_state(self, state, r):
+    reward = None
+
+    def set_next_state(self, state):
         self.next_state = state
-        self.reward = r
         return self
 
     def do(self):
         self.dst = self.next_state
-        self.dst.state = f"{self.src.state}->{self.action}->{self.dst.state}"
+        self.set_reward(self.dst.r)
+        self.dst.state = f"{self.src.state}-{self.action}"
         return self
 
     def undo(self):
-        self.dst.state = ""
         return self

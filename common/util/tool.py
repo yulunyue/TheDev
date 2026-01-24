@@ -90,6 +90,15 @@ def url_to_json(params):
     return args, kw
 
 
+def dict_to_str(indent=" ", **kw):
+    if isinstance(indent, int):
+        return json_dumps(kw, indent=indent)
+    ret = []
+    for k in sorted(kw.keys()):
+        ret.append(f"{k}={kw[k]}")
+    return indent.join(ret)
+
+
 def json_dumps(oj, indent=2):
     def util(v):
         if isinstance(v, set):

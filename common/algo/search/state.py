@@ -8,6 +8,7 @@ from common.util.export import (
     List,
     Dict,
     Tuple,
+    dict_to_str,
 )
 from .action import Action
 
@@ -29,6 +30,7 @@ class State:
     best_action: Action = None
     extra = None
     mode = ""
+    n_visits = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -129,7 +131,7 @@ class State:
             ret = ret.get_random_action().get_dst()
         return ret
 
-    def to_str(self):
+    def to_str(self, algo=None):
         return []
 
     def bfs(self, max_depth=15) -> Dict[str, Tuple[List[Action], "State"]]:
@@ -156,14 +158,16 @@ class State:
                 return
             if call_pos == "pre":
                 call(n, depth, action)
+            if n is None:
+                return
             actions = n.get_sort_actions()
             half = len(actions) // 2
             for a in actions[:half]:
-                util(a.get_dst(), depth + 1, a)
+                util(a.dst, depth + 1, a)
             if call_pos == "mid":
                 call(n, depth, action)
             for a in actions[half:]:
-                util(a.get_dst(), depth + 1, a)
+                util(a.dst, depth + 1, a)
             if call_pos == "after":
                 call(n, depth, action)
 
@@ -173,14 +177,17 @@ class State:
         ans = []
 
         def util(n: State, depth, action: Action):
-            key = "Root"
+            acs = ""
             if action is not None:
-                key = action.key
-            s = f'{"  " * depth}{key}: {n.show_titles()}'
+                acs = dict_to_str(a=action.action, r=action.get_reward())
+            dst = "TODO"
+            if n is not None:
+                dst = n.show_titles()
+            s = f'{"  " * depth}{acs}: {dst}'
             ans.append(s)
 
         self.dfs(util, call_pos="pre")
-        return "\n".join(ans)
+        return "\n".join(["---"] + ans + ["---"])
 
     def get_max_action_reward(self):
         reward = -inf
@@ -199,7 +206,10 @@ class State:
         return self.data[k]
 
     def show_titles(self):
-        return f"depth:{self.depth} done:{self.done}"
+        ret = dict(depth=self.depth, done=self.done)
+        if self.n_visits is not None:
+            ret.update(n=self.n_visits, u=self.u, q=self.q)
+        return dict_to_str(**ret)
 
     def show_body(self, info, algo=None):
         datas = [self.show_titles()] + self.to_str(algo=algo)
@@ -244,17 +254,6 @@ class State:
     def get_root(cls):
         return cls.new()
 
-    def draw_graph(self):
-        from common.third_util.view.draw import Draw
-
-        states = self.bfs().values()
-        ret = dict()
-        for _, s in states:
-            ret[s.title] = []
-            for a in s.get_sort_actions():
-                ret[s.title].append([a.title, a.get_dst().title])
-        Draw().draw_graph(ret).save(f"data/state/{self.name}.svg")
-
     def get_win_player(self, *args, **kw):
         return self.done - 1
 
@@ -266,6 +265,23 @@ class State:
         self.p_action: Action = p_action
         return self
 
+    def load_mcts(self, p, p_action):
+        self.n_visits = 0
+        self.u = 0
+        self.q = 0
+        self.p_action: Action = p_action
+        self.p: State = p
+
+    def mcts_update(self, leaf_value):
+        if self.p:
+            self.p.mcts_update(-leaf_value)
+        self.n_visits += 1
+        self.q += 1.0 * (leaf_value - self.q) / self.n_visits
+
+    def calc_uct_value(self, exploration_param):
+        self.u = exploration_param * math.sqrt(self.p.n_visits / (self.n_visits + 1))
+        return self.q + self.u
+
     def get_next(self, *args):
         dst = self
         for a in args:
@@ -273,4 +289,4 @@ class State:
         return dst
 
 
-AbState = State
+MctsState = AbState = State

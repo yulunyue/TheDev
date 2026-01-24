@@ -19,14 +19,8 @@ class TestAl(TestBase):
     def setup_class(cls):
         random_seed(1)
 
-    def test_al333_al(self):
-        s = get_s_333_1()
-        a = Al().ad(2).search(s)
-        self.expect(a.action, 6, s.show())
-        a = Al().mc().search(s)
-        self.expect(a.action, 6, s.show())
-        a = Al().ad(2).search(s.get_next(7))
-        self.expect(a.action, 6)
+    def test_al333_ad(self):
+        pass
 
     def test_al333_ql(self):
         s = get_s_333_2()

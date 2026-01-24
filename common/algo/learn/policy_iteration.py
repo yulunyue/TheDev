@@ -83,9 +83,11 @@ class PolicyIteration(Algo):
         return
 
     def log_value(self, v, diff, cnt, epoll_num):
+        return
         self.log_dir.child(f"value_{epoll_num}_{cnt}.json").write_file(
             dict(diff=diff, v=v)
         )
 
     def log_policy(self, pi, cnt):
+        return
         logger.info(self.log_dir.child(f"policy_{cnt}.json").write_file(pi))

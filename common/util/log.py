@@ -2,7 +2,7 @@ import logging
 import logging.handlers
 import os
 from .fp import File
-from .tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX
+from .tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX, dict_to_str
 import sys
 import traceback
 
@@ -44,15 +44,6 @@ def name_to_path(name: str):
     if not path.endswith(".log"):
         path += ".log"
     return path
-
-
-def dict_to_str(indent=" ", **kw):
-    if isinstance(indent, int):
-        return json_dumps(kw, indent=indent)
-    ret = [""]
-    for k, v in kw.items():
-        ret.append(f"{'%s'%k}: {v};")
-    return indent.join(ret)
 
 
 class Logger(logging.Logger):

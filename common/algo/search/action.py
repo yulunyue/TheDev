@@ -1,13 +1,11 @@
 from common.util.export import List, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from .state import State
-
 
 class Action:
-    check_info = None
 
     def __init__(self, src, action, dst=None):
+        from .state import State
+
         self.action = action
         self.src: State = src
         self.dst: State = dst
@@ -40,6 +38,8 @@ class Action:
     def set_reward(self, reward):
         self.reward = reward
         return self
+
+    reward = None
 
     def get_reward(self, **kwargs):
         return self.reward  # 值越大越好,返回当前行为的优势

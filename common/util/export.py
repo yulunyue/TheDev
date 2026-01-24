@@ -15,6 +15,7 @@ from .tool import (
     uid,
     hash_any,
     json_dumps,
+    dict_to_str,
     ii,
     md5,
     base64_encode,
@@ -23,7 +24,7 @@ from .tool import (
     SYS_KW,
     cmd_parse,
 )
-from .test import TestBase, logger, Case
+from .test import TestBase, logger
 from .fp import File, get_cache
 from .module import Module, run_catch_error
 from .thread_poll import ThreadManage, ThreadExec

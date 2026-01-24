@@ -33,7 +33,7 @@ class BoardC5:
         self.mask_row = (1 << self.row_bit) - 1
         self.mask_bit = (1 << self.BIT_SIZE) - 1
         self.reset()
-        self.state = None
+        self.state = 0
         return self
 
     def reset(self):
@@ -89,6 +89,7 @@ class BoardC5:
             return self
         if not state:
             self.reset()
+            self.state = state
         elif isinstance(state, int):
             self.change_mask(state)
         elif isinstance(state, str):

@@ -5,12 +5,14 @@ from common.tool.export import PyUtil, ToolBase
 
 def make_test(f: File):
     s = "tests/" + f.path.replace(f.file_name, f"test_{f.file_name}")
-    name = f.name.title()
+    name = f.name.title().replace("_", "")
     model_path = f.path.replace("/", ".").replace(".py", "")
     ret = File(s).write_if_not_exists(
         f"""
 from common.util.export import TestBase, logger
 from {model_path} import {name}
+
+
 class Test{name}(TestBase):
     pass
 """
