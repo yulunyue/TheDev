@@ -16,7 +16,7 @@ class Test{name}(TestBase):
 """
     )
     logger.info(ret)
-    return ret.path
+    return ret
 
 
 def files(root, name):
@@ -42,8 +42,7 @@ class PyTest(ToolBase):
 
     def test(self, key: str, fun_name=""):
         taget: List[str] = [
-            f.path + "::" + fun_name if fun_name else f.path
-            for f in get_exe_by_key(key)
+            (f.path + "::" + fun_name) if fun_name else f for f in get_exe_by_key(key)
         ]
         PyTestUtil().set_aim(*taget).main()
 

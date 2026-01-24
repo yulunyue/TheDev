@@ -122,6 +122,7 @@ class AlphaBateSearch(Algo):
             self.search_ab_loop(state)
         else:
             self.search_dfs(state, [], depth=0, player_id=state.player_id, **kw)
+        state.reset()
         return state.best_action
 
 

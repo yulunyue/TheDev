@@ -42,7 +42,7 @@ class BoardC5:
 
     def change_chess_statu(self, idx, player_id):
 
-        # self.log(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
+        self.log(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
         if self.grid[idx] == player_id or self.grid[idx] + player_id == 3:
             raise Exception(self.grid[idx], player_id)
         if player_id == 0:
@@ -84,7 +84,7 @@ class BoardC5:
         return set_mask(state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id + 1)
 
     def set_state(self, state: int):
-        # self.log(a="set_state", src=self.state, dst=state)
+        self.log(a="set_state", src=self.state, dst=state)
         if self.state == state:
             return self
         if not state:

@@ -5,7 +5,7 @@ cover
 test key=bin_util fun_name=TestBinUtil::test_setmask
 ```
 ```t1
-test key=?
+test key=search.*mctssearch.py
 ```
 ```t2
 exec key=c5.*test_al fun_name=TestAl::test_al333_ql

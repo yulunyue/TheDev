@@ -57,11 +57,12 @@ class Algo:
         return self
 
     def search(self, state: "State", *args, last_a=None, **kw):
+        state.reset()
         if state.game_over():
             return state.get_best_action()
         self.reset()
         start_time = time.time()
-        ret = self.search_best_action(state.reset(), *args, last_a=last_a, **kw)
+        ret = self.search_best_action(state, *args, last_a=last_a, **kw)
         self.use_time = time.time() - start_time
         return ret
 
@@ -165,6 +166,4 @@ class RandomAlgo(Algo):
         return s.get_random_action()
 
 
-class BestAlgo(Algo):
-    def get_best_action(self, s: State, **kw):
-        return s.get_best_action()
+BestAlgo = Algo

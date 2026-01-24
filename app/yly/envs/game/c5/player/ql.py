@@ -3,7 +3,7 @@ from common.util.export import logger
 
 
 class Ql(Qlearning):
-    train_epoll_update = 
+    train_epoll_update = 0
 
     def train_before(self):
         self.get_model_file(f"view").remove()

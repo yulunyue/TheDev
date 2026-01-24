@@ -13,6 +13,11 @@ class C5Tool(ToolBase):
         self.al = Al().set_state(self.s)
         return self
 
+    def search(self, env, tp, name, s=None):
+        self.prepare(env, tp, s=s)
+        a = self.al.get_player(name).search(self.s)
+        logger.info(a.show())
+
     # def do_cmd(self, method, *args):
     #     try:
     #         if method == "put":

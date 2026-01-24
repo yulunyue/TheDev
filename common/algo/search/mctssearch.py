@@ -13,16 +13,17 @@ class MctsState:
         self.u = 0
         self.q = 0
         self.p: MctsState = p
-        state.extra = self
+        # state.extra = self
         self.leaf_value = 0
         self.p_action: Action = p_action
 
     def get_children(self):
         if self.children is not None:
             return self.children
-        self.children = [
-            MctsState(d.get_dst(), self, d) for d in self.state.get_sort_actions()
-        ]
+        self.children = []
+        for a in self.state.get_sort_actions():
+            self.children.append(MctsState(a.do().get_dst(), self, a))
+            a.undo()
         return self.children
 
     def update(self, leaf_value):
@@ -79,7 +80,7 @@ class MctsSearch(Algo):
             random_id = random.randint(0, len(actions) - 1)
             action_history.append(actions[random_id])
             max_round -= 1
-            tail = actions[random_id].get_dst()
+            tail = actions[random_id].do().get_dst()
         return action_history
 
     def backpropagate(self, node: MctsState, score):
@@ -90,6 +91,7 @@ class MctsSearch(Algo):
         self.start_time = time.time()
         self.root = MctsState(init_state)
         while True:
+            self.root.state.reset()
             node = self.select(self.root)  # 指导探索到待拓展的节点
             action = node.p_action
             if not node.state.game_over():
@@ -101,6 +103,7 @@ class MctsSearch(Algo):
             cur_time = time.time()
             if self.ep >= self.num_episodes or cur_time - self.start_time >= self.max_t:
                 break
+        self.root.state.reset()
         return self.get_max_ct_action(self.root)
 
     def get_max_ct_action(self, node: MctsState):
