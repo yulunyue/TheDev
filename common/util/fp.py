@@ -16,7 +16,9 @@ def json_dump(oj):
 
 class File:
     def __init__(self, path: str) -> None:
-        self.path = path
+        if not isinstance(path, str):
+            raise Exception(path)
+        self.path = path.replace("\\", "/")
         self.dirs = path.split("/")
         self.file_name = self.dirs.pop()
         names = self.file_name.split(".")
@@ -25,8 +27,22 @@ class File:
         self.m_time = 0
         self.data = b""
 
+    FILES: Dict[str, "File"] = dict()
+
+    @classmethod
+    def new(cls, path):
+        if path not in File.FILES:
+            File.FILES[path] = File(path)
+            from .log import logger
+
+            # logger.info(File.FILES[path])
+        return File.FILES[path]
+
     def get_param_value(self, p, param):
         return self.get(param.key, default_value=param.default_value)
+
+    def update_param_value(self, p, param, value):
+        self.get_config()[param.key] = value
 
     def parent(self):
         return File("/".join(self.dirs))
@@ -34,11 +50,19 @@ class File:
     def get_m_time(self):
         return os.path.getmtime(self.path)
 
-    def child(self, name):
-        return File(self.path + "/" + name)
+    def child(self, *args):
+        args = [self.path] + list(args)
+        return File("/".join(args))
 
     def get_abs_path(self):
-        return os.getcwd().replace("\\", "/") + "/" + self.path
+        if ":" in self.path:
+            return self.path
+        cwd = os.getcwd().replace("\\", "/")
+        if self.path.startswith("/"):
+            if os.name == "nt":
+                return cwd[:2] + self.path
+            return self.path
+        return cwd + "/" + self.path
 
     def make_dir_if_not_exist(self, is_dir=False):
         if self.exists():
@@ -66,7 +90,7 @@ class File:
             if not isinstance(data, str):
                 data = str(data)
             with open(
-                self.path, "w", newline="", encoding=encoding
+                self.path, "w", newline="\n", encoding=encoding
             ) as f:  # newline="" 可以写LF 而不是CRLF \n 而不是 \r\n
                 f.write(data)
         return self
@@ -84,12 +108,33 @@ class File:
             return f.read()
 
     def read_line(self):
-        return self.read_data().decode("utf-8").replace("\r", "").split("\n")
+        return self.read_data().decode("utf-8").replace("\r\n", "\n").split("\n")
+
+    def copy_to(self, dst: "File", over_write=False):
+        if isinstance(dst, str):
+            dst = File(dst)
+        if dst.exists() and not over_write:
+            return dst
+        if self.is_file():
+            dst.write_file(self.read_data())
+        elif self.is_dir():
+            shutil.copy(self.path, dst.path)
+        else:
+            raise Exception(self)
+        return dst
+
+    def move_to(self, dst):
+        self.copy_to(dst)
+        self.remove()
+        return dst
 
     def read_file(self, encoding="utf-8"):
-        data = self.read_data()
+        data = self.read_data().replace(b"\r", b"")
         if self.is_json_file():
-            return json.loads(data.decode(encoding))
+            try:
+                return json.loads(data.decode(encoding))
+            except Exception as e:
+                raise Exception(self, e)
         elif self.file_name.endswith(".cfg") or self.file_name.endswith(".ini"):
             from configparser import ConfigParser
 
@@ -102,18 +147,28 @@ class File:
                     data[section][key] = val
             return data
         elif self.file_name.endswith(".toml"):
-            import toml
+            try:
+                import tomllib
 
-            return toml.load(self.path)
+                return tomllib.loads(data.decode(encoding))
+            except:
+                import toml
 
-        return data.decode(encoding)
+                return toml.load(self.path)
+        return data.decode(encoding, errors="replace")
 
     _config = None
 
-    def get(self, *keys, default_value=None):
+    def get_config(self):
         if self._config is None:
-            self._config = self.read_file()
-        tmp = self._config
+            self._config = dict()
+            if self.exists():
+                data = self.read_file()
+                self._config.update(data)
+        return self._config
+
+    def get(self, *keys, default_value=None):
+        tmp = self.get_config()
         for k in keys:
             if k not in tmp:
                 return default_value
@@ -128,26 +183,34 @@ class File:
         return self.data
 
     def exists(self):
+        if os.path.islink(self.path):
+            return True
         return os.path.exists(self.path)
 
-    def list_dir(self, depth=1, with_dir=False, filter=None) -> List["File"]:
+    def list_dir(
+        self, depth=1, with_dir=False, mathchs=None, ignores=None
+    ) -> List["File"]:
         if depth == 0:
             return []
         ret = []
 
-        def append(f):
-            if filter and not filter(f):
-                return
-            ret.append(f)
+        def check(path: str):
+            from ..tool.str_util import StrUtil
+
+            return StrUtil().set_ignores(ignores).set_matchs(mathchs).match(path)
 
         for name in os.listdir(self.path):
             f = File(self.path + "/" + name)
             if f.is_dir():
                 if with_dir:
-                    append(f)
-                ret.extend(f.list_dir(depth - 1))
-            else:
-                append(f)
+                    ret.append(f)
+                ret.extend(
+                    f.list_dir(
+                        depth - 1, with_dir=with_dir, mathchs=mathchs, ignores=ignores
+                    )
+                )
+            elif check(f.path):
+                ret.append(f)
         return ret
 
     def list_tree_file(self):
@@ -194,23 +257,38 @@ class File:
         if self.path in self.WITHE_FILE_HANDER:
             return self.WITHE_FILE_HANDER[self.path]
         self.make_dir_if_not_exist()
-        self.WITHE_FILE_HANDER[self.path] = open(self.path, "w", encoding="utf-8")
+        self.WITHE_FILE_HANDER[self.path] = open(self.path, "wb")
         return self.WITHE_FILE_HANDER[self.path]
 
-    def zip(self):
-        with zipfile.ZipFile(self.path + ".zip", "w", zipfile.ZIP_DEFLATED) as f:
-            for c in self.list_tree_file():
-                arc_name = os.path.relpath(c.path, self.path)
-                f.write(c.path, arcname=arc_name)
-        f.close()
-        return self
+    def get_bin_writer(self) -> io.TextIOWrapper:
+        self.make_dir_if_not_exist()
+        return open(self.path, "wb")
 
-    def unzip(self):
-        output_dir = self.path.replace(".zip", "")
+    def zip(self, dst=None, targets=None):
+        if dst is None:
+            dst = self.path + ".zip"
+        with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as f:
+            if targets is None:
+                targets = self.list_tree_file()
+            for c in targets:
+                if isinstance(c, File):
+                    local_path, arc_name = c.path, os.path.relpath(c.path, self.path)
+                else:
+                    local_path, arc_name = self.path + "/" + c, c
+                f.write(local_path, arcname=arc_name)
+        return File.new(dst)
+
+    def unzip(self, dst=None):
+        if dst is None:
+            dst = self.path.replace(".zip", "")
+        if isinstance(dst, str):
+            dst = File(dst)
+        if dst.exists():
+            return dst
         with zipfile.ZipFile(self.path) as zf:
             for member in zf.namelist():
-                zf.extract(member, path=output_dir)
-        return self
+                zf.extract(member, path=dst.path)
+        return dst
 
     def replace(self, info: dict):
         data = self.read_file()
@@ -220,6 +298,8 @@ class File:
         return self
 
     def remove(self):
+        if not self.exists():
+            return self
         if self.is_dir():
             shutil.rmtree(self.path)
         elif self.is_file():
@@ -228,6 +308,9 @@ class File:
 
     def rename(self, src, dst):
         return File(self.path.replace(src, dst))
+
+    def __repr__(self):
+        return f"[File: {self.get_abs_path()} ; EXIST:{self.exists()}]"
 
 
 class Cache:

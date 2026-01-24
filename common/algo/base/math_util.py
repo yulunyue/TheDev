@@ -149,10 +149,29 @@ def extended_gcd(a, b):
     return s, t
 
 
-def sigmoid(x):
+def sigmoid_numpy(x):
     import numpy as np
 
     return 1.0 / (1 + np.exp(-float(x)))
+
+
+def sigmoid_stable(x: float) -> float:
+    """
+    数值稳定版本，避免浮点数溢出
+    使用分段计算确保数值稳定性
+    """
+    if x >= 0:
+        # x >= 0 时，计算 1/(1+exp(-x))
+        exp_minus_x = math.exp(-x)
+        return 1.0 / (1.0 + exp_minus_x)
+    else:
+        # x < 0 时，计算 exp(x)/(1+exp(x))
+        exp_x = math.exp(x)
+        return exp_x / (1.0 + exp_x)
+
+
+def sigmoid_1_to_1(x):
+    return 2 * sigmoid_stable(x) - 1.0
 
 
 def atan(x):

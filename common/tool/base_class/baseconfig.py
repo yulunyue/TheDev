@@ -1,13 +1,15 @@
 import json
 from common.util.fp import File
 from typing import List, Dict
+from common.util.export import logger
 
-CONFIG_SETTING_DIR = "data/setting"
+CONFIG_SETTING_DIR = "config/setting"
 from common.tool.base_class.model import BaseModel, StrModel
 
 
 class ConfigBase:
     _params_cls_map: Dict[str, BaseModel] = None
+    _ins = dict()
 
     def __init__(self, key: str):
         self.key = key
@@ -18,16 +20,41 @@ class ConfigBase:
             self.params[k] = c
         self.init()
 
+    @classmethod
+    def get_headers(cls):
+        return cls._params_cls_map.keys()
+
+    @classmethod
+    def get_row_datas(cls):
+        ret = []
+        for v in cls._ins.values():
+            ret.append([])
+            for k in cls.get_headers():
+                u = getattr(v, k)
+                if hasattr(u, "get_value"):
+                    u = u.get_value()
+                ret[-1].append(u)
+        return ret
+
+    @classmethod
+    def new(cls, key, f=None):
+        if key not in cls._ins:
+            cls._ins[key] = cls(key).set_resource(f)
+            cls._ins[key].save()
+        return cls._ins[key]
+
     def init(self):
         pass
 
     def set_resource(self, resource: str):
         if isinstance(resource, str):
-            resource = File(resource)
+            if "/" not in resource:
+                resource = CONFIG_SETTING_DIR + "/" + resource + ".json"
+            resource = File.new(resource).write_if_not_exists(dict())
         self.resource: File = resource
         return self
 
-    def __new__(cls, *args) -> None:
+    def __new__(cls, *args):
         cls.init_param()
         return super().__new__(cls)
 
@@ -45,9 +72,18 @@ class ConfigBase:
         return ret
 
     def update_param_value(self, param, value):
-        return self.resource.update_param_value(self, param, value)
+        # logger.info([self.key, param.key, param, id(self), value])
+        if self.resource:
+            return self.resource.update_param_value(self, param, value)
+        param.value = value
+
+    resource: File = None
 
     def get_param_value(self, param):
+        if self.resource is None:
+            if param.value is None:
+                param.value = param.default_value
+            return param.value
         return self.resource.get_param_value(self, param)
 
     def update(self, **kw):
@@ -73,9 +109,12 @@ class ConfigBase:
         return {v.key: v.get_value() for v in self.params.values()}
 
     def save(self):
+        if self.resource is None:
+            return self
         cg = dict()
         if self.resource.exists():
-            cg = self.resource.read_file()
+            cg = self.resource.get_config()
         cg.update(self.to_json())
+        logger.debug(self.resource)
         self.resource.write_file(cg)
         return self

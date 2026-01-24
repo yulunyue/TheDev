@@ -7,5 +7,6 @@ import "./app.css"
 constant.init()
 let route = {
     algo, api, dev
-}[constant.get_route('main')]().mount(web_dom.get_body()).emit_mount()
+}[constant.get_route('main')]
+route().mount(web_dom.get_body()).emit_mount()
 // constant.init_body(route.div_el)

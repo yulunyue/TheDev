@@ -19,3 +19,9 @@ class Zp(Pig):
         super().power_change(num, c)
         if self.power == 0 and isinstance(c.owner, Mp):
             c.owner.lose_all_card()
+
+    def hander(self, c):
+        if c.type == "F" and isinstance(c.owner, Mp):
+            self.power_change(-1, c)
+            return False
+        return super().hander(c)

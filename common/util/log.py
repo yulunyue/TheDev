@@ -1,15 +1,23 @@
 import logging
 import logging.handlers
 import os
-from common.constant import Constant
-from common.util.fp import File
+from .fp import File
+from .tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX, dict_to_str
 import sys
 import traceback
-from common.util.tool import json_dumps
 
-LOG_SUFF = os.environ.get("THE_DEV_LOGER_SUFIX", "")
+from typing import List
+
+
+def LOGER_PREFIX(name):
+    return f"{THE_DEV_LOGER_PREFIX}={name}"
+
+
+LOG_PREFIX = ""
 LOG_DIR = "data/log"
 JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
+if THE_DEV_LOGER_PREFIX in SYS_KW:
+    LOG_DIR += f"/{SYS_KW.pop(THE_DEV_LOGER_PREFIX)}"
 LOG_MAP = dict()
 LOGGER_MODE = "LOGGER_MODE"
 
@@ -27,23 +35,15 @@ DEFAULT_FMT = "".join(
 DEBUG_FMT = "%(message)s"
 
 
-def name_to_path(name):
+def name_to_path(name: str):
+    name = name.replace(":", "_")
     if "/" not in name:
-        path = f"{LOG_DIR}/{name}"
+        path = LOG_DIR + "/" + name
     else:
         path = name
     if not path.endswith(".log"):
         path += ".log"
-    return path + LOG_SUFF
-
-
-def dict_to_str(kw: dict, indent=None):
-    if indent is not None:
-        return json_dumps(kw)
-    ret = []
-    for k, v in kw.items():
-        ret.append(f"{'%s'%k}:{v}")
-    return " ".join(ret)
+    return path
 
 
 class Logger(logging.Logger):
@@ -52,9 +52,22 @@ class Logger(logging.Logger):
         super().__init__(name)
         self.cache_msgs = []
         self.path = name_to_path(name)
+
         self.fp = File(self.path).make_dir_if_not_exist()
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
+
+    def run_capture_error(self, f, *args, captures="", **kw):
+        try:
+            f(*args, **kw)
+        except Exception as e:
+            import traceback
+
+            if captures and str(e).startswith(captures):
+                s = [f"\nERROR_MSG:{e}\n"] + traceback.format_tb(e.__traceback__)
+                self.debug("".join(s))
+            else:
+                raise Exception(e)
 
     def add_file_hander(self, fmt, mode):
         self.add_hander(
@@ -72,8 +85,8 @@ class Logger(logging.Logger):
         self.cache_msgs.clear()
         return "\n".join([str(v) for v in ret])
 
-    def map(self, indent=None, **kw):
-        self.debug(dict_to_str(kw, indent=indent), stacklevel=2)
+    def map(self, indent=" ", **kw):
+        self.info(dict_to_str(indent=indent, **kw), stacklevel=2)
 
     def debug(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
@@ -113,15 +126,26 @@ class Logger(logging.Logger):
 
 class TheDevLoger:
     def __init__(self, name, *args, **kw):
-        self.fp = File(name_to_path(name)).write_file("")
-        logger.info(self.fp.path, stacklevel=3)
+        self.name = name
+        self._fp = None
+
+    @property
+    def fp(self):
+        if self._fp is None:
+            self._fp = File(name_to_path(self.name)).write_file("")
+            logger.info(self.fp, stacklevel=4)
+        return self._fp
 
     def get_writer(self):
         return self.fp.get_writer()
 
     def write(self, msg):
         w = self.fp.get_writer()
-        w.write(f"{msg}\n")
+        if isinstance(msg, str):
+            msg = msg.encode("utf-8")
+        elif not isinstance(msg, bytes):
+            msg = str(msg).encode("utf-8")
+        w.write(msg + b"\n")
         w.flush()
 
     def info(self, msg):
@@ -134,8 +158,13 @@ class TheDevLoger:
         self.write(msg)
         self.write("\n".join(traceback.format_stack()))
 
-    def map(self, indent=None, **kw):
-        self.info(dict_to_str(kw, indent=indent))
+    def log_tree(self, g: List[List[int]], f, head=0):
+        from ..tool.str_util import StrUtil
+
+        self.write(StrUtil().format_g_tree(g, f, head=head))
+
+    def map(self, indent=" ", **kw):
+        self.info(dict_to_str(**kw, indent=indent))
 
 
 def get_dev_log(name) -> TheDevLoger:
@@ -147,8 +176,8 @@ def get_dev_log(name) -> TheDevLoger:
 def get_log(name="", fmt=None, mode="w") -> Logger:
     if name not in LOG_MAP:
         l = Logger(name, fmt, mode=mode)
-        LOG_MAP[name] = l
         l.info(l.path, stacklevel=2)
+        LOG_MAP[name] = l
     return LOG_MAP[name]
 
 
@@ -181,3 +210,5 @@ def std_mock(with_trace=True):
 
 logger = get_log("test")
 log = get_dev_log("log")
+log1 = get_dev_log("log1")
+log2 = get_dev_log("log2")

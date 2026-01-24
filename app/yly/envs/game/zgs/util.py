@@ -22,17 +22,3 @@ def wx(c: Pig, t: Pig, tp, card: CardBase):
         if cur == c:
             break
     return False
-
-
-# def tao(c: Pig, t: Pig, c1):
-#     cur = c
-#     logger.debug(f"{t.name} need 桃")
-#     while True:
-#         s = cur.card_map[Tao.type]
-#         if s and (cur.is_firend(t) or cur == t):
-#             s.pop(0).use(c1)
-#             return True
-#         cur = cur.next
-#         if cur == c:
-#             break
-#     return False

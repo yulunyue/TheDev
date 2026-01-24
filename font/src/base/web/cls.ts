@@ -126,7 +126,7 @@ export class Node {
         this.value = value
         return this
     }
-    set_childs?(childs: any[]) {
+    set_childs?(childs: any) {
         this.childs = []
         for (var i = 0; i < childs.length; i++) {
             if (childs[i] instanceof Node) {
@@ -216,7 +216,7 @@ export class Node {
         }
     }
     get_title?() {
-        return this.title || this.value
+        return this.key || this.title || this.value
     }
 }
 

@@ -1,6 +1,6 @@
 from .eg import EpsilonGreedy, Action, Bandit
 from common.util.export import defaultdict
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 
 
 class ThompsonSampling(EpsilonGreedy):

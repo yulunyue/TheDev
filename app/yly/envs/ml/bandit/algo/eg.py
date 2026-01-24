@@ -1,5 +1,5 @@
 from common.algo.export import Algo
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 from common.util.export import defaultdict, random, ListUtil
 from ..model import Bandit, Action
 from .base import BaseAlgo

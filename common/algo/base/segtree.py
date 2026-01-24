@@ -12,6 +12,8 @@ class SegTreeNode:
     8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     """
 
+    __slots__ = "_left", "_right"
+
     def __init__(self, idx=1) -> None:
         self.idx = idx
         self.todo = 0
@@ -24,12 +26,13 @@ class SegTreeNode:
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
 
-    def merge(self, lvalue, rvalue):
-        raise Exception(lvalue, rvalue)
+    def merge(self, lv, rv):
+        return lv + rv
 
     def set_range(self, l, r):
         self.l = l
         self.r = r
+        self.size = r - l + 1
         self.m = (l + r) // 2
         return self
 
@@ -59,13 +62,17 @@ class SegTreeNode:
         rv = self.right.query(l, r)
         return self.merge(lv, rv)
 
-    def build(self, nums):
+    def load(self, nums):
+        raise Exception()
+
+    def build(self, *args):
         if self.l == self.r:
-            self.do(nums[self.l])
-            return
-        self.left.build(nums)
-        self.right.build(nums)
+            self.load(*args)
+            return self
+        self.left.build(*args)
+        self.right.build(*args)
         self.up()
+        return self
 
     def update(self, l, r, value):
         if l <= self.l and self.r <= r:
@@ -99,11 +106,11 @@ class SegTreeNode:
     def show(self):
         return f"v:{self.value}"
 
-    def __str__(self):
+    def __repr__(self):
         ret = []
 
         def util(p: SegTreeNode, depth):
-            ret.append(f"{' '*depth}{p.l}-{p.r}: v={p.show()} todo={p.todo}")
+            ret.append(f"{' '*depth}{p.l}-{p.r}: {p.show()} todo={p.todo}")
             if p.l == p.r:
                 return
             util(p.left, depth + 2)

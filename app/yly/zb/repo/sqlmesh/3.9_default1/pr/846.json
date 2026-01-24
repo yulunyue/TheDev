@@ -1,0 +1,67 @@
+{
+    "name": "TobikoData__sqlmesh-846",
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27198&businessType=WORK",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-846.zip?Expires=1767778342&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=%2FQXFWe40qqwz8BX821PFncITXuk%3D",
+    "error_msg": "error:pd.testing.assert_frame_equal AssertionError: Data differs AssertionError: Data differs\n- {'order_id': 1, 'total': 9.48, 'ds': datetime.date(2022, 1, 1)}\n- {'o",
+    "depends_models": {},
+    "issue_url": "https://github.com/TobikoData/sqlmesh/issues/842",
+    "local_packge_extern": "",
+    "pr_url": "https://github.com/TobikoData/sqlmesh/pull/846",
+    "result": {
+        "old_detail": {
+            "sqlmesh.utils.errors.PlanError: Cannot generate pl.... due to failing test(s). Fix test(s) and run again": " tests/core/test_context.py::test_custom_macros tests/core/test_context.py::test_dag tests/core/test_context.py::test_render tests/core/test_context.py::test_diff tests/core/test_context.py::test_plan_apply",
+            "_duckdb.CatalogException: Catalog Error: Table wit....                                                 ^": " tests/core/test_context.py::test_evaluate_limit"
+        },
+        "new_detail": {
+            "sqlmesh.utils.errors.PlanError: Cannot generate pl.... due to failing test(s). Fix test(s) and run again": " tests/core/test_context.py::test_custom_macros tests/core/test_context.py::test_dag tests/core/test_context.py::test_render tests/core/test_context.py::test_diff tests/core/test_context.py::test_plan_apply",
+            "_duckdb.CatalogException: Catalog Error: Table wit....                                                 ^": " tests/core/test_context.py::test_evaluate_limit"
+        },
+        "test": {
+            "tests/core/test_context.py::test_global_config": "passed",
+            "tests/core/test_context.py::test_named_config": "passed",
+            "tests/core/test_context.py::test_invalid_named_config": "passed",
+            "tests/core/test_context.py::test_missing_named_config": "passed",
+            "tests/core/test_context.py::test_config_parameter": "passed",
+            "tests/core/test_context.py::test_config_not_found": "passed",
+            "tests/core/test_context.py::test_custom_macros": "error",
+            "tests/core/test_context.py::test_dag": "error",
+            "tests/core/test_context.py::test_render": "error",
+            "tests/core/test_context.py::test_diff": "error",
+            "tests/core/test_context.py::test_evaluate_limit": "failed",
+            "tests/core/test_context.py::test_ignore_files": "passed",
+            "tests/core/test_context.py::test_plan_apply": "error"
+        },
+        "code": {
+            "tests/core/test_context.py::test_global_config": "passed",
+            "tests/core/test_context.py::test_named_config": "passed",
+            "tests/core/test_context.py::test_invalid_named_config": "passed",
+            "tests/core/test_context.py::test_missing_named_config": "passed",
+            "tests/core/test_context.py::test_config_parameter": "passed",
+            "tests/core/test_context.py::test_config_not_found": "passed",
+            "tests/core/test_context.py::test_custom_macros": "error",
+            "tests/core/test_context.py::test_dag": "error",
+            "tests/core/test_context.py::test_render": "error",
+            "tests/core/test_context.py::test_diff": "error",
+            "tests/core/test_context.py::test_evaluate_limit": "failed",
+            "tests/core/test_context.py::test_ignore_files": "passed",
+            "tests/core/test_context.py::test_plan_apply": "error"
+        },
+        "FAIL_TO_FAIL": [
+            "tests/core/test_context.py::test_evaluate_limit"
+        ],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [],
+        "PASS_TO_PASS": [
+            "tests/core/test_context.py::test_config_not_found",
+            "tests/core/test_context.py::test_config_parameter",
+            "tests/core/test_context.py::test_global_config",
+            "tests/core/test_context.py::test_ignore_files",
+            "tests/core/test_context.py::test_invalid_named_config",
+            "tests/core/test_context.py::test_missing_named_config",
+            "tests/core/test_context.py::test_named_config"
+        ]
+    },
+    "test_main": [
+        "tests/core/test_context.py"
+    ]
+}

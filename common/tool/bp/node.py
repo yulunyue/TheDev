@@ -1,5 +1,4 @@
-from common.util.export import get_log, uid, THE_DEV_CONSTANT, List, Dict
-from common.service.node import Node
+from common.util.export import get_log, uid, THE_DEV_CONSTANT, List, Dict, Node
 from .bp_record import BpRecord, logger
 
 

@@ -30,14 +30,8 @@ def ii(s: str):
         try:
             ans.append(int(v))
         except Exception as e:
-            break
+            pass
     return ans
-
-
-def os_system(s: str):
-    ret = os.system(s)
-    if ret != 0:
-        raise Exception(s)
 
 
 def hash_any(c):
@@ -58,26 +52,29 @@ def md5(c: str):
     return h.hexdigest()
 
 
-def dp(c: dict, k="", mp=None):
-    if mp is None:
-        mp = defaultdict(set)
-    if isinstance(c, list):
-        for i, v in enumerate(c):
-            dp(v, i)
-    elif isinstance(c, dict):
-        for k, v in c.items():
-            dp(v, k)
-    else:
-        mp[k].add(c)
-    return mp
-
-
 def str_mid(s: str, size, fill="-"):
     if len(s) >= size:
         return s[:size]
     c = size - len(s)
     l, y = c // 2, c % 2
     return fill * l + s + fill * (l + y)
+
+
+def cmd_parse(s: str):
+    args, kw = [], dict()
+    if isinstance(s, str):
+        s = s.split(" ")
+    for v in s:
+        key, *value = v.split("=")
+        if value:
+            kw[key] = "=".join(value)
+        else:
+            args.append(key)
+    return args, kw
+
+
+THE_DEV_LOGER_PREFIX = "THE_DEV_LOGER_PREFIX"
+SYS_ARGS, SYS_KW = cmd_parse(sys.argv[1:])
 
 
 def url_to_json(params):
@@ -93,8 +90,13 @@ def url_to_json(params):
     return args, kw
 
 
-def re_search(pattern, s):
-    return re.search(pattern=pattern, string=s)
+def dict_to_str(indent=" ", **kw):
+    if isinstance(indent, int):
+        return json_dumps(kw, indent=indent)
+    ret = []
+    for k in sorted(kw.keys()):
+        ret.append(f"{k}={kw[k]}")
+    return indent.join(ret)
 
 
 def json_dumps(oj, indent=2):

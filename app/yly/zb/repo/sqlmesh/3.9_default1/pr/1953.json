@@ -1,0 +1,72 @@
+{
+    "name": "TobikoData__sqlmesh-1953",
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=144a7a09-bbc2-4527-ad1f-8dc27b83e323&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=27126016-d2ca-4d2c-b6b8-f962aa094246&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1%20ZB-4%20%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=27115&businessType=WORK",
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%89%A9%E4%B8%8B%E7%9A%84-12.3/TobikoData__sqlmesh/TobikoData__sqlmesh-1953.zip?Expires=1767778140&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=K3Q%2Buhr4lOtmlqC%2BPRyjX%2B%2B1OGg%3D",
+    "error_msg": "error:pd.testing.assert_frame_equal AssertionError: Data differs AssertionError: Data differs (exp: expected, act: actual)\n\n  order_id      total       \n       exp a",
+    "depends_models": {},
+    "issue_url": "https://github.com/TobikoData/sqlmesh/issues/1945",
+    "local_packge_extern": "",
+    "pr_url": "https://github.com/TobikoData/sqlmesh/pull/1953",
+    "result": {
+        "old_detail": {
+            "sqlmesh.utils.errors.PlanError: Cannot generate pl.... due to failing test(s). Fix test(s) and run again": " tests/core/test_test.py::test_query_only tests/core/test_test.py::test_with_rows tests/core/test_test.py::test_without_rows tests/core/test_test.py::test_column_order tests/core/test_test.py::test_partial_data tests/core/test_test.py::test_partial_data_column_order tests/core/test_test.py::test_partial_data_missing_schemas",
+            "sqlmesh.core.test.definition.TestError: Incomplete....), CAST('2023-04-01' AS DATE), INTERVAL '1' MONTH)": " tests/core/test_test.py::test_source_func"
+        },
+        "new_detail": {
+            "sqlmesh.utils.errors.PlanError: Cannot generate pl.... due to failing test(s). Fix test(s) and run again": " tests/core/test_test.py::test_without_rows tests/core/test_test.py::test_partial_data_missing_schemas"
+        },
+        "test": {
+            "tests/core/test_test.py::test_ctes": "passed",
+            "tests/core/test_test.py::test_ctes_only": "passed",
+            "tests/core/test_test.py::test_query_only": "error",
+            "tests/core/test_test.py::test_with_rows": "error",
+            "tests/core/test_test.py::test_without_rows": "error",
+            "tests/core/test_test.py::test_column_order": "error",
+            "tests/core/test_test.py::test_partial_data": "error",
+            "tests/core/test_test.py::test_partial_data_column_order": "error",
+            "tests/core/test_test.py::test_partial_data_missing_schemas": "error",
+            "tests/core/test_test.py::test_missing_column_failure": "passed",
+            "tests/core/test_test.py::test_empty_rows": "passed",
+            "tests/core/test_test.py::test_normalization[snowflake]": "passed",
+            "tests/core/test_test.py::test_test_generation": "passed",
+            "tests/core/test_test.py::test_source_func": "failed"
+        },
+        "code": {
+            "tests/core/test_test.py::test_ctes": "passed",
+            "tests/core/test_test.py::test_ctes_only": "passed",
+            "tests/core/test_test.py::test_query_only": "passed",
+            "tests/core/test_test.py::test_with_rows": "passed",
+            "tests/core/test_test.py::test_without_rows": "error",
+            "tests/core/test_test.py::test_column_order": "passed",
+            "tests/core/test_test.py::test_partial_data": "passed",
+            "tests/core/test_test.py::test_partial_data_column_order": "passed",
+            "tests/core/test_test.py::test_partial_data_missing_schemas": "error",
+            "tests/core/test_test.py::test_missing_column_failure": "passed",
+            "tests/core/test_test.py::test_empty_rows": "passed",
+            "tests/core/test_test.py::test_normalization[snowflake]": "passed",
+            "tests/core/test_test.py::test_test_generation": "passed",
+            "tests/core/test_test.py::test_source_func": "passed"
+        },
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [
+            "tests/core/test_test.py::test_column_order",
+            "tests/core/test_test.py::test_partial_data",
+            "tests/core/test_test.py::test_partial_data_column_order",
+            "tests/core/test_test.py::test_query_only",
+            "tests/core/test_test.py::test_source_func",
+            "tests/core/test_test.py::test_with_rows"
+        ],
+        "PASS_TO_PASS": [
+            "tests/core/test_test.py::test_ctes",
+            "tests/core/test_test.py::test_ctes_only",
+            "tests/core/test_test.py::test_empty_rows",
+            "tests/core/test_test.py::test_missing_column_failure",
+            "tests/core/test_test.py::test_normalization[snowflake]",
+            "tests/core/test_test.py::test_test_generation"
+        ]
+    },
+    "test_main": [
+        "tests/core/test_test.py"
+    ]
+}

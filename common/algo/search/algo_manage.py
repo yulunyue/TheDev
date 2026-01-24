@@ -1,8 +1,9 @@
-from common.algo.search.algo import Algo, RandomAlgo
+from common.algo.search.algo import Algo, RandomAlgo, BestAlgo
 from common.algo.search.state import State, Action
 from common.algo.search.alphabate_search import AbDev
 from common.algo.search.mctssearch import MctsSearchDev
 from common.algo.learn.sarse.qlearning import Qlearning
+from common.tool.export import ConfigBase, NumberModel
 from common.util.export import (
     logger,
     File,
@@ -13,28 +14,29 @@ from common.util.export import (
     os,
     get_dev_log,
 )
-from common.third_util.pt_table import PtTable, TableModel
+from common.third_util.pt_table import PtTable
 import time
 
 
-class AlgoInfo(TableModel):
+class AlgoInfo(ConfigBase):
 
-    WIN = 0
-    LOSE = 0
-    DRAW = 0
-    SCORE = 0
-    MAX_VISTE_NUM = 0
-    ALL_VISTE_NUM = 0
-    MAX_TIME = 0
-    ALL_TIME = 0
+    WIN = NumberModel(0)
+    LOSE = NumberModel(0)
+    DRAW = NumberModel(0)
+    SCORE = NumberModel(0)
+    MAX_VISTE_NUM = NumberModel(0)
+    ALL_VISTE_NUM = NumberModel(0)
+    MAX_TIME = NumberModel(0)
+    ALL_TIME = NumberModel(0)
 
     def __init__(self, key):
         self.score = []
         self.all_count = 0
         super().__init__(key)
 
-    def __new__(cls, key) -> "AlgoInfo":
-        return super().__new__(cls, key)
+    @classmethod
+    def new(cls, key) -> "AlgoInfo":
+        return super().new(key, None)
 
     @classmethod
     def get_headers(cls):
@@ -45,38 +47,29 @@ class AlgoInfo(TableModel):
         self.SCORE += score
         self.ALL_VISTE_NUM += state_num
         self.ALL_TIME += tm
-        if state_num > self.MAX_VISTE_NUM:
-            self.MAX_VISTE_NUM = state_num
-        if tm > self.MAX_TIME:
-            self.MAX_TIME = tm
+        if state_num > self.MAX_VISTE_NUM.get_value():
+            self.MAX_VISTE_NUM.set_value(state_num)
+        if tm > self.MAX_TIME.get_value():
+            self.MAX_TIME.set_value(tm)
 
     def update_result(self, tp):
         self.all_count += 1
-        setattr(self, tp, getattr(self, tp) + 1)
+        f: NumberModel = getattr(self, tp)
+        f.set_value(f.get_value() + 1)
 
-    @classmethod
-    def sort(cls, v: "AlgoInfo"):
-        return [v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE, -v.LOSE]
-
-
-class FIGHT_TYPE:
-    SIGNAL = "SIGNAL"
-    DTURN = "DTURN"
+    # @classmethod
+    # def sort(cls, v: "AlgoInfo"):
+    #     return [v.WIN, v.DRAW, -v.MAX_TIME, -v.ALL_TIME, v.SCORE, -v.LOSE]
 
 
 class ALgoManage:
     record_dir = "data/algo"
-    file_path = None
-    record_model = AlgoInfo
+
+    def best(self):
+        return BestAlgo("best").load()
 
     def ad(self, n=10):
-        return AbDev(f"ad{n}").load(n)
-
-    def am(self, n=10):
-        return AbDev(f"am{n}").load(n, search_type=AbDev.AB_MUCH)
-
-    def ab(self, n=10):
-        return AbDev(f"ab{n}").load(n, search_type=AbDev.AB_TYPE)
+        return AbDev(f"ad{n}").load(n, search_type=AbDev.AB_MUCH)
 
     def dqn(self):
         pass
@@ -87,12 +80,6 @@ class ALgoManage:
     def mcs(self, n):
         return [self.mc(i * 10) for i in range(3, n)]
 
-    def abs(self, n):
-        return [self.ab(i + 1) for i in range(5)]
-
-    def ams(self, v=5):
-        return [self.am(i + 1) for i in range(v)]
-
     def ad5(self):
         return [self.ad(i + 1) for i in range(5)]
 
@@ -102,92 +89,62 @@ class ALgoManage:
     def rd(self):
         return RandomAlgo().load()
 
-    def set_players(self, players1: List[Algo], players2: List[Algo]):
+    def get_player(self, v):
+        if isinstance(v, str):
+            if v.startswith("ad"):
+                return self.ad(int(v[2:]))
+            if v.startswith("mc"):
+                return self.mc(int(v[2:]))
+            return getattr(self, v)()
+        return v
+
+    def set_players(self, players1: List[Algo]):
         self.players: List[List[Algo]] = []
-        for p1 in players1:
-            for p2 in players2:
+        n = len(players1)
+        for i, v in enumerate(players1):
+            players1[i] = self.get_player(v)
+        for i in range(n):
+            for j in range(n):
+                p1, p2 = players1[i], players1[j]
+                if p1.get_name() == p2.get_name():
+                    continue
                 self.players.append([p1, p2])
-                self.players.append([p2, p1])
-        self.current_player = self.players[0]
-        self.record_model.clear()
-        self.a_r: Dict[str, AlgoInfo] = {
-            p.get_name(): AlgoInfo(p.get_name()) for p in players1 + players2
-        }
+        self.current_players = self.players[0]
         return self
 
     def set_state(self, state):
         self.state: State = state
         return self
 
-    def fight(self):
-        for i, p in enumerate(self.players):
-            self.pk(p)
-        logger.debug(self.show())
-        return self
+    def fight(self, turn=1):
+        idx = 0
+        for _ in range(turn):
+            for i, p in enumerate(self.players):
+                self.pk(p, idx)
+                idx += 1
+        ret = PtTable().load_form_model(AlgoInfo).show()
+        logger.debug(ret)
+        return ret
 
-    def fight_with_control(self):
-        init_state = s = self.get_state(0, self.state).reset_env()
-        history: List[Action] = []
-        while True:
-            os.system("cls")
-            self.view(
-                [s.show()]
-                + [
-                    f"{p.get_name()} do {getattr(p.search(s),'action',None)}"
-                    for p in self.current_player
-                ]
-                + [",".join([str(a.action) for a in history])]
-            )
-            cmd, *args = input("CMD: ").split(" ")
-            if cmd == "r":
-                if not args:
-                    argsv = 1
-                else:
-                    argsv = int(args[0])
-                history = history[: max(len(history) - argsv, 0)]
-                if history:
-                    s = history[-1].get_dst()
-                else:
-                    s = init_state
-            elif cmd == "a":
-                a = s.get_action(args[0])
-                history.append(a)
-                s = a.get_dst()
-            elif cmd == "p":
-                if not args:
-                    argsv = 1
-                else:
-                    argsv = int(args[0])
-                for _ in range(argsv):
-                    if s.get_done() is not None:
-                        break
-                    a = self.current_player[len(history) % 2].search(s)
-                    history.append(a)
-                    s = a.get_dst()
-            else:
-                break
-
-    def show(self):
-        return str(PtTable().load_form_model(self.record_model))
-
-    def pk(self, players1: List[Algo]):
+    def pk(self, players1: List[Algo], idx=0):
         self.current_player = players1
-        win_idx, turn_idx = self.actor(players1)
+        p2, turn_idx, s = self.actor(players1, idx)
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
         for i, p in enumerate(players1):
             key = p.get_name()
-            if win_idx == -1:
-                self.a_r[key].update_result("DRAW")
+            if p2 is None:
+                AlgoInfo.new(players1[0].get_name()).update_result("DRAW")
+                AlgoInfo.new(players1[1].get_name()).update_result("DRAW")
                 s += f"[{key}][DRAW]"
-            elif win_idx == i:
-                self.a_r[key].update_result("WIN")
+            elif p2.get_name() == p.get_name():
+                AlgoInfo.new(key).update_result("WIN")
+                s += f"[{key}][WIN]"
             else:
-                self.a_r[key].update_result("LOSE")
+                AlgoInfo.new(key).update_result("LOSE")
                 s += f"[{key}][LOSE]"
-        logger.debug(f"{s}[{win_idx}] turn:{turn_idx} file_path:{self.file_path}")
-        return win_idx
+        logger.debug(f"{s} turn:{turn_idx}")
 
-    def actor(self, players: List[Algo], max_turn=1000):
+    def actor(self, players: List[Algo], idx=0, max_turn=1000):
         """
         返还赢的玩家ID
         """
@@ -195,39 +152,48 @@ class ALgoManage:
         self.turn_idx = 0
         s = self.state
         s.reset_env()
-        for p in players:
-            p.reset()
-        self.log(s.show())
+        for i, p in enumerate(players):
+            players[i] = self.get_player(p).reset()
+        self.log(s.show(), f"actor/{idx}")
+        last_a = None
         while self.turn_idx < max_turn:
             if s.game_over():
                 break
             p = players[self.turn_idx % len(players)]
             self.turn_idx += 1
-            # b = time.time()
             p.state_num = 0
-            a = p.search(s)
+            a = p.search(s, last_a=last_a)
+            AlgoInfo.new(p.get_name()).update(p.use_time, p.state_num, 0)
+            last_a = a
             if a is None:
-                return (
-                    s.get_win_player(),
-                    self.turn_idx,
-                )
-
-            self.record(p, a)
+                return self.actor_return(s)
             s = s.do_action(a)
-        return s.get_win_player(), self.turn_idx
+            self.record(p, a, f"actor/{idx}")
+
+        return self.actor_return(s)
+
+    def actor_return(self, s: State):
+        idx = s.get_win_player()
+        if 0 <= idx < len(self.current_players):
+            p = self.current_players[idx]
+        else:
+            p = None
+        info = f"\n---turn:{self.turn_idx}---\n{s.show()}\nwin:{p}\n"
+        logger.debug(info)
+        return p, self.turn_idx, s
 
     def set_record_dir(self, path: str):
         self.record_dir = path
         return self
 
-    def record(self, p: Algo, a: Action):
+    def record(self, p: Algo, a: Action, name):
         msgs = [
             f"turn: {self.turn_idx}; {p.get_name()} do {a.show()}",
             f"{a.get_dst().show()}",
         ]
-        self.log("\n".join(msgs))
+        self.log("\n".join(msgs), name)
 
-    def log(self, msgs: str, name="pk"):
+    def log(self, msgs: str, name):
         file_name = "_pk_".join([v.get_name() for v in self.current_players])
         get_dev_log(f"{self.record_dir}/{name}/{file_name}.log").info(msgs)
 
