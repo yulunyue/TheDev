@@ -15,7 +15,7 @@ class PyBuildTool(ToolBase):
         )
         logger.info(ret)
 
-    def execute(self, path, *args):
+    def execute(self, path="", *args):
         self.build(path)
         ret = OsUtil(self.target.path).run(*args)
         logger.info(ret)

@@ -21,8 +21,8 @@ export class ListUi extends Div {
     }
     render_option(): void {
         if (this.option.childs) {
-            let childs = this.option.childs.filter((v: Node) => v.title.indexOf(this.option.filter_key) != -1)
-            console.log(childs, this.option.childs, this.option.filter_key)
+            let childs = this.option.childs.filter((v: Node) => (v.title + v.key).indexOf(this.option.filter_key) != -1)
+            // console.log(childs, this.option.childs, this.option.filter_key)
             this.set_childs(childs, () => this.get_row())
         }
     }

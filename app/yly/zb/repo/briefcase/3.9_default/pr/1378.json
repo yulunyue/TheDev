@@ -1,0 +1,49 @@
+{
+    "after_setup_env": {},
+    "down_load_uri": "https://sh-eng-dataset-zjk.oss-cn-zhangjiakou.aliyuncs.com/shien_files/SWEBench/%E4%BB%BB%E5%8A%A1/%E5%8F%91%E5%B8%83%E7%9A%84-12.3/beeware__briefcase/beeware__briefcase-1378.zip?Expires=1766564032&OSSAccessKeyId=LTAI5tB2Etp2wUEVtkT7zckM&Signature=7apDQhubRmz2dqu5hQh5XysAhaA%3D",
+    "error_msg": "success:success",
+    "need_setup_env": false,
+    "result": {
+        "old_detail": {
+            "Failed: DID NOT RAISE <class 'briefcase.exceptions.BriefcaseCommandError'>": " tests/integrations/android_sdk/ADB/test_run.py::test_older_sdk_error"
+        },
+        "new_detail": {},
+        "test": {
+            "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_older_sdk_error": "failed"
+        },
+        "code": {
+            "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]": "passed",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_older_sdk_error": "passed"
+        },
+        "FAIL_TO_FAIL": [],
+        "PASS_TO_FAIL": [],
+        "FAIL_TO_PASS": [
+            "tests/integrations/android_sdk/ADB/test_run.py::test_older_sdk_error"
+        ],
+        "PASS_TO_PASS": [
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[arbitrary-adb-error-unknown-command-CalledProcessError]",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_error_handling[device-not-found-InvalidDeviceError]",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_quiet_command",
+            "tests/integrations/android_sdk/ADB/test_run.py::test_simple_command"
+        ]
+    },
+    "submit_url": "https://ui.appen.com.cn/ssr/v3/annotation-task-start?jobId=21e77e76-372e-49c4-b6f0-edcc35fe0663&jobType=LABELING&isPublic=true&locale=zh-CN&flowId=ff4b2868-02d6-4cf5-8cf8-0140d11667d4&jobTenantId=aaaaaaaa-pppp-pppp-eeee-nnnnnnnnnnnn&title=%E6%A0%87%E6%B3%A8%E4%BB%BB%E5%8A%A1ZB-3%20Labeling%20Job&projectId=30c9f72d-c822-4534-9dab-691656d4209f&projectDisplayId=A12606&recordId=6046&businessType=WORK",
+    "test_main": [
+        "tests/integrations/android_sdk/ADB/test_run.py"
+    ],
+    "name": "beeware__briefcase-1378",
+    "issue_url": "https://github.com/beeware/briefcase/issues/1157",
+    "pr_change_files": null,
+    "pr_url": "https://github.com/beeware/briefcase/pull/1378",
+    "py_name": "",
+    "docker_image_name": "briefcase:latest",
+    "depends_models": {},
+    "local_packge_extern": ""
+}

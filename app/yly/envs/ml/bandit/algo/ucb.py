@@ -1,6 +1,6 @@
 from .eg import BaseAlgo
 from ..model import Bandit, Action
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 from ..constant import C
 
 

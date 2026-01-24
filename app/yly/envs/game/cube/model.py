@@ -1,5 +1,5 @@
 from common.algo.export import State, encode_data, decode_data, Action
-from common.third_util.np_util import np
+from common.third_util.ml.np_util import np
 from common.util.export import logger
 from .constant import C
 
@@ -10,7 +10,7 @@ class CubeAction(Action):
         if r == -1:
             r = 3
 
-        return super().show(f"{C.COLORS[c]}色，第{d}层，顺时针旋转{r}圈")
+        return super().show(f"第{d}层{C.COLORS[c]}色-顺时针旋转{r}圈")
 
 
 class CubeState(State):
@@ -50,5 +50,6 @@ class CubeState(State):
                 y, x = C.n, (i - 1) * C.n
             ic, jc = k // C.n, k % C.n
             ii, jj = y + ic, x + jc
-            ans[ii][jj] = f"{i}{self.grid[u]}"
-        return [" ".join(v) for v in ans]
+            # ans[ii][jj] = f"{i}{self.grid[u]}"
+            ans[ii][jj] = C.COLORS[self.grid[u]]
+        return ["".join(v) for v in ans]

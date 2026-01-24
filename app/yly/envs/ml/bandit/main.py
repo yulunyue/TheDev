@@ -1,6 +1,6 @@
 from .model import Bandit
 from common.util.export import ToolBase, logger
-from common.third_util.draw import Draw
+from common.third_util.view.draw import Draw
 from .algo.eg import EpsilonGreedy
 from .algo.deg import DecayingEpsilonGreedy
 from .algo.tms import ThompsonSampling

@@ -1,4 +1,4 @@
-from .base import CardBase, logger
+from .base import CardBase, logger, List
 
 
 class Juedou(CardBase):
@@ -22,4 +22,8 @@ class Juedou(CardBase):
         if aim is not None:
             self.use()
             if not wx(self.owner, aim, self.owner.IS_BAD, self):
-                aim.hander(self)
+                handers: List[Fp] = [aim, self.owner]
+                idx = 0
+                while handers[idx].hander(self):
+                    self.set_owner(handers[idx])
+                    idx = (idx + 1) % 2

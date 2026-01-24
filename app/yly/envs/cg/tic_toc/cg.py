@@ -1,6 +1,6 @@
 from common.mock import MockCg
 from common.algo.search.alphabate_search import AlphaBateSearch
-from app.yly.envs.cg.tic_toc.model.ttstate import TtState
+from app.yly.envs.cg.tic_toc.model.ttstate9 import TtState
 from app.yly.envs.cg.tic_toc.constant import C
 
 

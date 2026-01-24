@@ -1,4 +1,4 @@
-from common.third_util.tf_util import TfModule, keras, np
+from common.third_util.ml.tf_util import TfModule, keras, np
 from .constant import C
 
 TODOTODOTODOT = 1
