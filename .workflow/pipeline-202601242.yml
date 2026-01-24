@@ -20,7 +20,7 @@ stages:
         pythonVersion: '3.9'
         commands:
           - '# Python单元测试默认命令'
-          - python -m pip install require.txt
+          - python -m pip install -r require.txt
           - python -m tool.pytest cover
         report:
           path: report
