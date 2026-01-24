@@ -8,7 +8,7 @@ test key=bin_util fun_name=TestBinUtil::test_setmask
 test key=search.*mctssearch.py
 ```
 ```t2
-test key=test_demo_state
+test key=common/constant.py
 ```
 ```t3
 exec key=search.*mctssearch.py fun_name=TestMctssearch::test_search
