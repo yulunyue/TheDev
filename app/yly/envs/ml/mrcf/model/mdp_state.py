@@ -1,4 +1,4 @@
-from common.algo.search.state import State, Action
+from common.algo.search.states.state import State, Action
 from common.util.export import List, Dict, logger, random
 from .constant import C2
 import random

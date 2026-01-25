@@ -1,5 +1,5 @@
 from common.algo.search.algo import Algo, RandomAlgo, BestAlgo
-from common.algo.search.state import State, Action
+from common.algo.search.states.state import State, Action
 from common.algo.search.alphabate_search import AbDev
 from common.algo.search.mctssearch import MctsSearchDev
 from common.algo.learn.sarse.qlearning import Qlearning

@@ -1,4 +1,4 @@
-from common.algo.search.state import Action
+from common.algo.search.states.state import Action
 from .constant import C
 
 

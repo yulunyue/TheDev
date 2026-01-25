@@ -1,4 +1,4 @@
-from common.algo.search.state import State, Action
+from common.algo.search.states.state import State, Action
 from ..shape.world import World, C, ENV
 from common.util.export import logger
 
@@ -9,7 +9,7 @@ class CwState(State):
         self.board = [[int(s) for s in v.split()] for v in state.split(",")]
         ENV.load_shapes(self.board)
         self.player_id = 0
-        self.depth=0
+        self.depth = 0
 
     def make_actions(self):
 

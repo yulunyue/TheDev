@@ -1,4 +1,4 @@
-from common.algo.search.state import State
+from common.algo.search.states.state import State
 from app.yly.envs.cg.l9.model.l9action import L9Action
 from app.yly.envs.cg.l9.constant import C
 from app.yly.envs.cg.l9.shape.env import L9ENV

@@ -1,4 +1,4 @@
-from common.algo.search.state import State
+from common.algo.search.states.state import State
 
 from app.yly.envs.cg.tic_toc.constant import C
 from app.yly.envs.cg.tic_toc.model.ttaction import TtAction

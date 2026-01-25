@@ -1,4 +1,4 @@
-from common.algo.search.state import AbState, Action, State
+from common.algo.search.states.state import AbState, Action, State
 from common.util.export import Dict, List
 from .ttaction import TtAction
 from ..constant import C

@@ -1,6 +1,6 @@
 from .cf4action import F4Action
 from .constant import C
-from common.algo.search.state import AbState, Action
+from common.algo.search.states.state import AbState, Action
 from common.util.export import List, Dict, logger, log
 from .env import ENV
 

@@ -1,5 +1,5 @@
 from app.yly.envs.cg.cw.shape.cell import ShapeBase, C
-from common.algo.search.state import State, Action
+from common.algo.search.states.state import State, Action
 from .state import CwState, ENV
 from common.util.export import logger, copy
 

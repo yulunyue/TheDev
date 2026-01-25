@@ -4,7 +4,7 @@ from common.util.export import List, TYPE_CHECKING
 class Action:
 
     def __init__(self, src, action, dst=None):
-        from .state import State
+        from .states.state import State
 
         self.action = action
         self.src: State = src

@@ -1,4 +1,4 @@
-from .state import State, Action, MctsState
+from .states.state import State, Action, MctsState
 from .algo import Algo
 from common.util.export import List, Dict, defaultdict, math, random, CT, logger
 import time

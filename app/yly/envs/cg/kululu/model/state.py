@@ -1,4 +1,4 @@
-from common.algo.search.state import State
+from common.algo.search.states.state import State
 from .grid import Grid
 from common.util.export import List
 

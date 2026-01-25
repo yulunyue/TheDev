@@ -1,4 +1,4 @@
-from common.algo.search.state import Action
+from common.algo.search.states.state import Action
 from app.yly.envs.cg.l9.constant import C
 
 
