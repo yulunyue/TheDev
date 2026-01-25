@@ -21,7 +21,7 @@ from .base.str_util import (
     get_sa_prefix_doubling,
     get_height_form_sa,
 )
-from .search.demo_state import DemoState
+from .search.states.demo_state import DemoState
 from .base.tree import Tree
 from .base.gaussian_elimination import GaussElimination
 from .base.lazyheap import LazyHeapMinMax, LazyMinHeap, LazyMaxHeap

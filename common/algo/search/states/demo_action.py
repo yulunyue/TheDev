@@ -1,4 +1,4 @@
-from .states.action import Action
+from .action import Action
 
 
 class DemoAction(Action):

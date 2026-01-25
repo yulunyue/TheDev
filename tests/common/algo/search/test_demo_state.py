@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger
-from common.algo.search.demo_state import DemoState
+from common.algo.search.states.demo_state import DemoState
 
 S1 = """---
 : depth=0 done=False
