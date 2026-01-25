@@ -10,7 +10,7 @@ from common.util.export import (
     Tuple,
     dict_to_str,
 )
-from ..action import Action
+from .action import Action
 
 inf = float("inf")
 
