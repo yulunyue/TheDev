@@ -1,7 +1,7 @@
-from .states.state import State, Action, MctsState
+from .states.action import Action
+from .states.mctsstate import MctsState
 from .algo import Algo
-from common.util.export import List, Dict, defaultdict, math, random, CT, logger
-import time
+from common.util.export import List, Dict, defaultdict, math, random, CT, logger, time
 
 
 class MctsSearch(Algo):
@@ -31,7 +31,7 @@ class MctsSearch(Algo):
                 best_child = dst
         return best_child
 
-    def simulate(self, root: State, max_round=1000):
+    def simulate(self, root: MctsState, max_round=1000):
         tail = root
         action_history: List[Action] = []
         while not tail.game_over():
@@ -45,7 +45,7 @@ class MctsSearch(Algo):
     def backpropagate(self, node: MctsState, score):
         node.mcts_update(score)
 
-    def search_best_action(self, init_state: State, **kw):
+    def search_best_action(self, init_state: MctsState, **kw):
         self.ep = 0
         self.start_time = time.time()
         init_state.load_mcts()
@@ -58,7 +58,7 @@ class MctsSearch(Algo):
         init_state.reset()
         return self.get_max_ct_action(init_state)
 
-    def search_one_round(self, root: State):
+    def search_one_round(self, root: MctsState):
         root.reset()
         node = self.select(root)  # 指导探索到待拓展的节点
         action = node.p_action

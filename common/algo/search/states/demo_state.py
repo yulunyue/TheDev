@@ -1,9 +1,10 @@
-from .state import AbState, Action
+from .state import Action
+from .mctsstate import MctsState
 from common.util.export import List, Dict, logger, random, uid
 from .demo_action import DemoAction
 
 
-class DemoState(AbState):
+class DemoState(MctsState):
 
     def game_over(self):
         return False if self.actions else True

@@ -30,7 +30,6 @@ class State:
     best_action: Action = None
     extra = None
     mode = ""
-    n_visits = None
 
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
@@ -58,9 +57,6 @@ class State:
 
     def do_action(self, a: Action):
         return a.do().get_dst()
-
-    def action_size(self):
-        raise Exception("tood")
 
     def set_best_action(self, a: Action):
         self.best_action = a
@@ -257,36 +253,8 @@ class State:
     def get_win_player(self, *args, **kw):
         return self.done - 1
 
-    def load_ab(self, search_depth=0, alpha=-inf, bate=inf, p_action=None):
-        self.search_depth = search_depth
-        self.child_index = 0
-        self.alpha = alpha
-        self.bate = bate
-        self.p_action: Action = p_action
-        return self
-
-    def load_mcts(self, p_action: "Action" = None):
-        self.n_visits = 0
-        self.u = 0
-        self.q = 0
-        self.p_action: Action = p_action
-        self.p: State = p_action.src if p_action else None
-
-    def mcts_update(self, leaf_value):
-        if self.p:
-            self.p.mcts_update(-leaf_value)
-        self.n_visits += 1
-        self.q += 1.0 * (leaf_value - self.q) / self.n_visits
-
-    def calc_uct_value(self, exploration_param):
-        self.u = exploration_param * math.sqrt(self.p.n_visits / (self.n_visits + 1))
-        return self.q + self.u
-
     def get_next(self, *args):
         dst = self
         for a in args:
             dst = dst.get_action(a).do().get_dst()
         return dst
-
-
-MctsState = AbState = State
