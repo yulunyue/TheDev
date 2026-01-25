@@ -24,7 +24,7 @@ class MctsSearch(Algo):
         best_child = None
         for a in cur.get_sort_actions():
             dst: MctsState = a.do().get_dst()
-            dst.load_mcts(cur, a)
+            dst.load_mcts(a)
             score = dst.calc_uct_value(self.exploration_param)
             if score > best_score:
                 best_score = score
@@ -48,6 +48,7 @@ class MctsSearch(Algo):
     def search_best_action(self, init_state: State, **kw):
         self.ep = 0
         self.start_time = time.time()
+        init_state.load_mcts()
         while True:
             self.search_one_round(init_state)
             self.ep += 1
@@ -57,8 +58,8 @@ class MctsSearch(Algo):
         init_state.reset()
         return self.get_max_ct_action(init_state)
 
-    def search_one_round(self, root):
-        root.reset().load_mcts(None, None)
+    def search_one_round(self, root: State):
+        root.reset()
         node = self.select(root)  # 指导探索到待拓展的节点
         action = node.p_action
         if not node.game_over():

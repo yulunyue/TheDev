@@ -265,12 +265,12 @@ class State:
         self.p_action: Action = p_action
         return self
 
-    def load_mcts(self, p, p_action):
+    def load_mcts(self, p_action: "Action" = None):
         self.n_visits = 0
         self.u = 0
         self.q = 0
         self.p_action: Action = p_action
-        self.p: State = p
+        self.p: State = p_action.src if p_action else None
 
     def mcts_update(self, leaf_value):
         if self.p:
