@@ -1,5 +1,4 @@
 requests
-torch
 pytest
 coverage
 tornado
