@@ -8,6 +8,6 @@ class Solution:
         def c(i,j,n):
             return cm.comb(i+1,j)<=n
         for j in range(k,0,-1):
-            m=bisect.bisect_right(range(0,52),False,lambda i:c(i,j,n)-1
+            m=bisect.bisect_right(range(0,52),False,lambda i:c(i,j,n))-1
             n-=cm.comb(m+1,k)
             a|=1<<m
