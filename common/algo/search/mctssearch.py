@@ -1,7 +1,17 @@
 from .states.action import Action
 from .states.mctsstate import MctsState
 from .algo import Algo
-from common.util.export import List, Dict, defaultdict, math, random, CT, logger, time
+from common.util.export import (
+    List,
+    Dict,
+    defaultdict,
+    math,
+    random,
+    CT,
+    logger,
+    time,
+    Tuple,
+)
 
 
 class MctsSearch(Algo):
@@ -20,22 +30,26 @@ class MctsSearch(Algo):
         self.num_episodes = num_episodes
         return super().load(**kw)
 
-    def select(self, node: MctsState) -> MctsState:
+    def select(self, node: MctsState) -> Tuple[MctsState, List[Action]]:
         cur = node
-        while cur.has_visited:
-            cur = self.get_uct_best_child(cur)
-        cur.load_mcts()
-        return cur
+        ret = []
+        while cur.has_visited and not cur.game_over():
+            a = self.get_uct_best_child(cur)
+            ret.append(a)
+            cur = a.dst
+        if not cur.n_visits:
+            cur.expand()
+            cur.has_visited = True
+        return cur, ret
 
     def get_uct_best_child(self, cur: MctsState):
         best_score = -float("inf")
         best_child = None
         for a in cur.get_sort_actions():
-            dst: MctsState = a.do().get_dst()
-            score = dst.calc_uct_value(self.exploration_param)
+            score = a.dst.calc_uct_value(self.exploration_param)
             if score > best_score:
                 best_score = score
-                best_child = dst
+                best_child = a
         return best_child
 
     def simulate(self, root: MctsState, max_round=1000):
@@ -66,11 +80,9 @@ class MctsSearch(Algo):
 
     def search_one_round(self, root: MctsState):
         root.reset()
-        node = self.select(root)  # 指导探索到待拓展的节点
-        actions = [node.p_action]
+        node, actions = self.select(root)  # 指导探索到待拓展的节点
         if not node.game_over():
-            node.expand()
-            actions = self.simulate(node)
+            actions.extend(self.simulate(node))
         value = actions[-1].get_src_reward(actions)
         self.backpropagate(node, value)
 

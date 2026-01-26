@@ -7,6 +7,7 @@ class MctsState(AbState):
     has_visited = False
     dst: "MctsState"
     n_visits = None
+    p = None
 
     def load_mcts(self, p_action: "Action" = None):
         self.n_visits = 0
@@ -14,7 +15,6 @@ class MctsState(AbState):
         self.q = 0
         self.p_action: Action = p_action
         self.p: MctsState = p_action.src if p_action else None
-
         return self
 
     def mcts_update(self, leaf_value):
@@ -29,7 +29,6 @@ class MctsState(AbState):
         return self.q + self.u
 
     def expand(self):
-        self.has_visited = True
         for d in self.get_sort_actions():
             d.do().dst.load_mcts(d)
             d.undo()
