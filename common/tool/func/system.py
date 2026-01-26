@@ -1,4 +1,4 @@
-from .os_util import OsUtil
+from ..os_util import OsUtil
 import re
 
 

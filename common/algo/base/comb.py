@@ -29,6 +29,8 @@ class Comb:
         return v % self.mod
 
     def comb(self, n: int, k: int) -> int:
-        return self.calc_mod(
-            self.calc_mod(self.fac[n] * self.inv_fac[k]) * self.inv_fac[n - k]
+        return int(
+            self.calc_mod(
+                self.calc_mod(self.fac[n] * self.inv_fac[k]) * self.inv_fac[n - k]
+            )
         )

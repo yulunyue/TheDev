@@ -1,5 +1,5 @@
-from .os_util import OsUtil
-from .global_config import GC
+from ..os_util import OsUtil
+from ..global_config import GC
 from common.util.export import logger
 import sys
 

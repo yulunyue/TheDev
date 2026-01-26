@@ -7,7 +7,7 @@ from common.tool.base_class.table_base import (
     TableConfig,
     DictModel,
 )
-from .os_util import OsUtil
+from ..os_util import OsUtil
 import traceback
 import _thread
 import time

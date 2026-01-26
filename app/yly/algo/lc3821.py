@@ -15,10 +15,17 @@ class Solution(MockCf):
         a = 0
 
         def c(i, j, n):
-            return CMS.comb(i + 1, j) <= n
+            v = CMS.comb(i + 1, j)
+            self.logger.map(i=i + 1, j=j, v=v, n=n)
+            return v <= n
 
-        for j in range(k, 0, -1):
-            m = bisect.bisect_right(range(0, MX), False, lambda i: c(i, j, n)) - 1
+        for j in range(k):
+            m = bisect.bisect_right(
+                range(j, MX),
+                False,
+                key=lambda i: c(i, j, n),
+            )
+            m += j
             n -= CMS.comb(m + 1, k)
             a |= 1 << m
         return a
