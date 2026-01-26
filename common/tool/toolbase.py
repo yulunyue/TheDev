@@ -1,4 +1,14 @@
-from common.util.export import List, os, File, SYS_ARGS, SYS_KW, logger, sys, time
+from common.util.export import (
+    List,
+    os,
+    File,
+    SYS_ARGS,
+    SYS_KW,
+    logger,
+    sys,
+    time,
+    json_dumps,
+)
 from .file_handers.todo import TodoFile
 
 
@@ -54,7 +64,7 @@ class ToolBase:
                 ret.append(v)
         return ret
 
-    def cli(self):
+    def cli(self, do_cmd):
         fi, fo = self.get_temp_file("inp.txt"), self.get_temp_file("out.txt")
         fi.write_if_not_exists("")
         last_cmd = []
@@ -72,12 +82,14 @@ class ToolBase:
             for i, v in enumerate(cmd):
                 if i < len(last_cmd) and v == last_cmd[i]:
                     continue
-                out_put_msgs[i] = [i, v, self.do_cmd(*v.split(" "))]
+                out_put_msgs[i] = [i, v, do_cmd(*v.split(" "))]
                 flag = True
             if flag:
                 msgs = []
                 sr = sorted(out_put_msgs.values())[: len(cmd)]
                 for i, v, r in sr:
+                    if isinstance(r, dict):
+                        r = json_dumps(r)
                     msgs.append(f"i:{i} , cmd:{v}\n----------\n{r}\n-----------")
                 fo.write_file("\n".join(msgs))
             last_cmd = cmd

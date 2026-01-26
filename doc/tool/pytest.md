@@ -14,5 +14,5 @@ test key=common/constant.py
 exec key=search.*mctssearch.py fun_name=TestMctssearch::test_search
 ```
 ```debug
-exec key=c5.*test_al fun_name=TestAl::test_al333_ql
+exec key=search.*mctssearch.py fun_name=TestMctssearch::test_search
 ```

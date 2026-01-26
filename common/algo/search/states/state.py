@@ -201,11 +201,11 @@ class State:
         self.data[k] = v
         return self.data[k]
 
+    def to_json(self):
+        return dict(depth=self.depth, done=self.done)
+
     def show_titles(self):
-        ret = dict(depth=self.depth, done=self.done)
-        if self.n_visits is not None:
-            ret.update(n=self.n_visits, u=self.u, q=self.q)
-        return dict_to_str(**ret)
+        return dict_to_str(**self.to_json())
 
     def show_body(self, info, algo=None):
         datas = [self.show_titles()] + self.to_str(algo=algo)

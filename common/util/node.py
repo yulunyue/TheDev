@@ -1,4 +1,7 @@
-from common.util.export import uid, List, json, THE_DEV_CONSTANT
+import json
+from typing import List
+from ..constant import THE_DEV_CONSTANT, CT
+from .tool import uid
 
 
 class Node:

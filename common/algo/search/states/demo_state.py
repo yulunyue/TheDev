@@ -27,7 +27,7 @@ class DemoState(MctsState):
     r = None
 
     @classmethod
-    def make(cls, *states, r=0, player_id=None):
+    def make(cls, *states, r=None, player_id=None):
         ret: DemoState = cls("")
         ret.r = r
         if player_id is None:

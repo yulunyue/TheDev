@@ -4,11 +4,11 @@ from common.util.export import List, TYPE_CHECKING
 class Action:
 
     def __init__(self, src, action, dst=None):
-        from .state import State
+        from .mctsstate import MctsState
 
         self.action = action
-        self.src: State = src
-        self.dst: State = dst
+        self.src: MctsState = src
+        self.dst: MctsState = dst
         self.data = dict()
 
     @property

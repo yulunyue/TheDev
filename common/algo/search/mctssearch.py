@@ -6,8 +6,15 @@ from common.util.export import List, Dict, defaultdict, math, random, CT, logger
 
 class MctsSearch(Algo):
 
-    def load(self, max_depath=-1, max_t=CT.inf, num_episodes=1000, **kw):
-        self.exploration_param = 1.4
+    def load(
+        self,
+        max_depath=-1,
+        max_t=CT.inf,
+        num_episodes=1000,
+        exploration_param=1.4,
+        **kw,
+    ):
+        self.exploration_param = exploration_param
         self.max_depath = max_depath
         self.max_t = max_t / 1000
         self.num_episodes = num_episodes
@@ -15,8 +22,9 @@ class MctsSearch(Algo):
 
     def select(self, node: MctsState) -> MctsState:
         cur = node
-        while not cur.game_over():
+        while cur.has_visited:
             cur = self.get_uct_best_child(cur)
+        cur.load_mcts()
         return cur
 
     def get_uct_best_child(self, cur: MctsState):
@@ -24,7 +32,6 @@ class MctsSearch(Algo):
         best_child = None
         for a in cur.get_sort_actions():
             dst: MctsState = a.do().get_dst()
-            dst.load_mcts(a)
             score = dst.calc_uct_value(self.exploration_param)
             if score > best_score:
                 best_score = score
@@ -34,12 +41,11 @@ class MctsSearch(Algo):
     def simulate(self, root: MctsState, max_round=1000):
         tail = root
         action_history: List[Action] = []
-        while not tail.game_over():
-            actions = tail.get_sort_actions()
-            random_id = random.randint(0, len(actions) - 1)
-            action_history.append(actions[random_id])
+        while not tail.game_over() and max_round:
+            a = tail.get_random_action()
+            action_history.append(a)
             max_round -= 1
-            tail = actions[random_id].do().get_dst()
+            tail = a.do().dst
         return action_history
 
     def backpropagate(self, node: MctsState, score):
@@ -61,11 +67,11 @@ class MctsSearch(Algo):
     def search_one_round(self, root: MctsState):
         root.reset()
         node = self.select(root)  # 指导探索到待拓展的节点
-        action = node.p_action
+        actions = [node.p_action]
         if not node.game_over():
             node.expand()
-            action = self.simulate(node.state)[-1]
-        value = action.get_src_reward([action])
+            actions = self.simulate(node)
+        value = actions[-1].get_src_reward(actions)
         self.backpropagate(node, value)
 
     def get_max_ct_action(self, node: MctsState):

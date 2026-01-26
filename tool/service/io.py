@@ -1,5 +1,6 @@
 from common.util.export import TcpServer, TcpClient
 from common.tool.export import TableBase, ToolBase
+from common.third_util.dataa.pandas_util import PandasUtil
 
 
 class Io(ToolBase):
@@ -22,6 +23,10 @@ class Io(ToolBase):
         from common.third_util.obs_util import ObsUtil
 
         ObsUtil(env).upload(path)
+
+    def tcli(self, path):
+        p = PandasUtil().load(path)
+        self.cli(p.hander)
 
 
 if __name__ == "__main__":

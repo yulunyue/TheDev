@@ -95,7 +95,10 @@ def dict_to_str(indent=" ", **kw):
         return json_dumps(kw, indent=indent)
     ret = []
     for k in sorted(kw.keys()):
-        ret.append(f"{k}={kw[k]}")
+        v = kw[k]
+        if isinstance(v, float):
+            v = "%.3f" % v
+        ret.append(f"{k}={v}")
     return indent.join(ret)
 
 
@@ -107,7 +110,7 @@ def json_dumps(oj, indent=2):
             return v
         return str(v)
 
-    return json.dumps(oj, indent=indent, default=util)
+    return json.dumps(oj, indent=indent, default=util, ensure_ascii=False)
 
 
 def merge_dict(src, dst):

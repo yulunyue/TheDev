@@ -4,12 +4,12 @@ from common.algo.export import MctsSearch, DemoState
 
 S2 = [
     """---
-: depth=0 done=False n=1 q=-1.0 u=0
-  a=0 r=1: depth=0 done=False n=1 q=1.0 u=0.0
-  a=1 r=0: depth=0 done=False n=0 q=0 u=0.0
+: depth=0 done=False n=1 q=-5.000 u=0
+  a=0 r=1: depth=0 done=False n=0 q=0 u=0
+  a=1 r=None: depth=0 done=False n=0 q=0 u=0
     a=0 r=None: TODO
-    a=1 r=None: TODO
-  a=2 r=0: depth=0 done=False n=0 q=0 u=0.0
+    a=1 r=-5: depth=0 done=False
+  a=2 r=None: depth=0 done=False n=0 q=0 u=0
     a=0 r=None: TODO
     a=1 r=None: TODO
     a=2 r=None: TODO

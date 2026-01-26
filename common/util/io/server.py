@@ -1,4 +1,4 @@
-from common.util.export import get_log, List
+from typing import List
 from .base import Io, socket
 from .client import Client
 

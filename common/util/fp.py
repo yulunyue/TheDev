@@ -253,11 +253,11 @@ class File:
 
     WITHE_FILE_HANDER = dict()
 
-    def get_writer(self) -> io.TextIOWrapper:
+    def get_writer(self, mode="wb") -> io.TextIOWrapper:
         if self.path in self.WITHE_FILE_HANDER:
             return self.WITHE_FILE_HANDER[self.path]
         self.make_dir_if_not_exist()
-        self.WITHE_FILE_HANDER[self.path] = open(self.path, "wb")
+        self.WITHE_FILE_HANDER[self.path] = open(self.path, mode)
         return self.WITHE_FILE_HANDER[self.path]
 
     def get_bin_writer(self) -> io.TextIOWrapper:
