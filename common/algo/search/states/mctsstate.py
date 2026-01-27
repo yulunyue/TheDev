@@ -1,16 +1,18 @@
 from .abstate import AbState
 from .action import Action
-from common.util.export import math, dict_to_str
+from common.util.export import math, dict_to_str, inf
 
 
 class MctsState(AbState):
     has_visited = False
     dst: "MctsState"
-    n_visits = u = q = 0
+    n_visits = q = 0
+    u = inf
 
     def load_mcts(self, p_action: "Action"):
         self.p_action: Action = p_action
-        self.n_visits = self.u = self.q = 0
+        self.n_visits = self.q = 0
+        self.u = inf
         self.has_visited = True
         return self
 

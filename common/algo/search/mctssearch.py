@@ -1,6 +1,6 @@
 from .states.action import Action
 from .states.mctsstate import MctsState
-from .algo import Algo
+from .algo import Algo, inf
 from common.util.export import (
     List,
     Dict,
@@ -36,16 +36,23 @@ class MctsSearch(Algo):
         while cur.has_visited and not cur.game_over():
             a = self.get_uct_best_child(cur)
             ret.append(a)
-            cur = a.dst
+            cur = a.do().dst
         if not cur.has_visited:
             cur.load_mcts(None if not ret else ret[-1])
 
         return cur, ret
 
+    def calc_uct_value(self, a: Action):
+        if a.dst.n_visits == 0:
+            a.dst.u = inf
+        else:
+            a.dst.u = self.exploration_param * math.sqrt(
+                math.log(a.src.n_visits) / a.dst.n_visits
+            )
+        return a.dst.q + a.dst.u
+
     def get_uct_best_child(self, cur: MctsState):
-        return self.get_best_action(
-            cur, lambda a: a.calc_uct_value(self.exploration_param)
-        )
+        return self.get_best_action(cur, self.calc_uct_value)
 
     def simulate(self, root: MctsState, max_round=1000):
         tail = root
@@ -61,11 +68,12 @@ class MctsSearch(Algo):
         self, actions: List[Action], simu_actions: List[Action], leaf_value
     ):
         for i in range(len(actions) - 1, -1, -1):
-            s = actions[i].src
-            c = -1 if s.mode == s.MAN2 else 1
+            s = actions[i].dst
+            if s.mode == s.MAN2:
+                leaf_value = -leaf_value
             s.n_visits += 1
             s.q += 1.0 * (leaf_value - s.q) / s.n_visits
-            leaf_value *= c
+        actions[0].src.n_visits += 1
 
     def search_best_action(self, init_state: MctsState, **kw):
         self.ep = 0

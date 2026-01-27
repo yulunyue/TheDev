@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 class PyTestUtil:
     def __init__(self):
         self.flag_map = {
+            "--html": "data/coverage/pytest_report.html"
             # "--show-capture": "log",
             # "--log-file": "data/log/pytest.log",
         }

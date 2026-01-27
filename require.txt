@@ -1,5 +1,6 @@
 requests
 pytest
+pytest_html
 coverage
 tornado
 gunicorn

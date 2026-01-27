@@ -46,13 +46,13 @@ class DemoState(MctsState):
         return cls.make(
             cls.make(r=1),
             cls.make(
-                cls.make(r=2),
-                cls.make(r=-5),
+                cls.make(r=1),
+                cls.make(r=0),
             ),
             cls.make(
-                cls.make(r=3),
-                cls.make(r=-9),
-                cls.make(r=-3),
+                cls.make(r=0),
+                cls.make(r=1),
+                cls.make(r=0),
             ),
             player_id=1,
         )

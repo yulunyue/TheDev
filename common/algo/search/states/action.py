@@ -47,12 +47,6 @@ class Action:
     def get_src_reward(self, actions: List["Action"], **kw):
         return self.get_reward()
 
-    def calc_uct_value(self, exploration_param):
-        self.dst.u = exploration_param * math.sqrt(
-            self.src.n_visits / (self.dst.n_visits + 1)
-        )
-        return self.dst.q + self.dst.u
-
     def show(self, msg=None):
         ret = f"src:{self.src.state}, dst:{self.dst.state}, action:{self.action}"
         if self.data:
