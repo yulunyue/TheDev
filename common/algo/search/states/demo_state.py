@@ -7,7 +7,7 @@ from .demo_action import DemoAction
 class DemoState(MctsState):
 
     def game_over(self):
-        return False if self.actions else True
+        return self.done
 
     @classmethod
     def new_random_state(cls, size=20, min_v=2, max_v=6):
@@ -32,12 +32,14 @@ class DemoState(MctsState):
         ret.r = r
         if player_id is None:
             player_id = 0
-        actions = []
+        ret.actions = []
         for i, s in enumerate(states):
-            a = DemoAction(ret, i).set_next_state(s)
-            actions.append(a)
+            a = DemoAction(ret, i, s)
+            ret.actions.append(a)
+        return ret.set_player_id(player_id).set_done(len(ret.actions) == 0)
 
-        return ret.set_player_id(player_id).set_actions(actions)
+    def get_children(self):
+        return [v for v in super().get_children() if v.src.has_visited]
 
     @classmethod
     def make_test_state(cls):

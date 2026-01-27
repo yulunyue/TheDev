@@ -147,6 +147,9 @@ class State:
             max_depth -= 1
         return ret
 
+    def get_children(self):
+        return self.get_sort_actions()
+
     def dfs(self, call, max_depth=15, call_pos="pre"):
         def util(n: State, depth=0, action: Action = None):
             if depth > max_depth:
@@ -156,7 +159,7 @@ class State:
                 call(n, depth, action)
             if n is None:
                 return
-            actions = n.get_sort_actions()
+            actions = n.get_children()
             half = len(actions) // 2
             for a in actions[:half]:
                 util(a.dst, depth + 1, a)
@@ -175,7 +178,12 @@ class State:
         def util(n: State, depth, action: Action):
             acs = ""
             if action is not None:
-                acs = dict_to_str(a=action.action, r=action.get_reward())
+                info = dict(a=action.action)
+                if action.reward is not None:
+                    info["r"] = action.reward
+                if action.src.state:
+                    info["s"] = action.src.state
+                acs = dict_to_str(**info)
             dst = "TODO"
             if n is not None:
                 dst = n.show_titles()
@@ -202,7 +210,7 @@ class State:
         return self.data[k]
 
     def to_json(self):
-        return dict(depth=self.depth, done=self.done)
+        return dict(done=self.done)
 
     def show_titles(self):
         return dict_to_str(**self.to_json())

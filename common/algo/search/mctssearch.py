@@ -37,20 +37,15 @@ class MctsSearch(Algo):
             a = self.get_uct_best_child(cur)
             ret.append(a)
             cur = a.dst
-        if not cur.n_visits:
-            cur.expand()
-            cur.has_visited = True
+        if not cur.has_visited:
+            cur.load_mcts(None if not ret else ret[-1])
+
         return cur, ret
 
     def get_uct_best_child(self, cur: MctsState):
-        best_score = -float("inf")
-        best_child = None
-        for a in cur.get_sort_actions():
-            score = a.dst.calc_uct_value(self.exploration_param)
-            if score > best_score:
-                best_score = score
-                best_child = a
-        return best_child
+        return self.get_best_action(
+            cur, lambda a: a.calc_uct_value(self.exploration_param)
+        )
 
     def simulate(self, root: MctsState, max_round=1000):
         tail = root
@@ -62,13 +57,20 @@ class MctsSearch(Algo):
             tail = a.do().dst
         return action_history
 
-    def backpropagate(self, node: MctsState, score):
-        node.mcts_update(score)
+    def backpropagate(
+        self, actions: List[Action], simu_actions: List[Action], leaf_value
+    ):
+        for i in range(len(actions) - 1, -1, -1):
+            s = actions[i].src
+            c = -1 if s.mode == s.MAN2 else 1
+            s.n_visits += 1
+            s.q += 1.0 * (leaf_value - s.q) / s.n_visits
+            leaf_value *= c
 
     def search_best_action(self, init_state: MctsState, **kw):
         self.ep = 0
         self.start_time = time.time()
-        init_state.load_mcts()
+        init_state.load_mcts(None)
         while True:
             self.search_one_round(init_state)
             self.ep += 1
@@ -81,10 +83,14 @@ class MctsSearch(Algo):
     def search_one_round(self, root: MctsState):
         root.reset()
         node, actions = self.select(root)  # 指导探索到待拓展的节点
+        last_action = actions[-1]
+        simu_actions = []
         if not node.game_over():
-            actions.extend(self.simulate(node))
-        value = actions[-1].get_src_reward(actions)
-        self.backpropagate(node, value)
+            node.expand()
+            simu_actions = self.simulate(node)
+            last_action = simu_actions[-1]
+        value = last_action.get_src_reward(simu_actions + actions)
+        self.backpropagate(actions, simu_actions, value)
 
     def get_max_ct_action(self, node: MctsState):
         """

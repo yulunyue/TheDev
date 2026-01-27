@@ -74,19 +74,16 @@ class Algo:
     def set_model(self, model_file, new_model=False) -> "Algo":
         raise NotImplementedError(model_file, new_model)
 
-    def get_best_action(self, state: "State", **kw) -> Action:
+    def get_best_action(self, state: "State", func, **kw) -> Action:
         max_value, max_a = -inf, []
         for a in state.get_sort_actions():
-            r = self.get_action_reward(a)
+            r = func(a)
             if r > max_value:
                 max_value, max_a = r, [a]
             elif r == max_value:
                 max_a.append(a)
-        if max_a:
-            return max_a[random.randint(0, len(max_a) - 1)]
 
-    def get_action_reward(self, a: Action):
-        return
+        return max_a[0] if len(max_a) == 1 else max_a[random.randint(0, len(max_a) - 1)]
 
     def take_action(self, state: "State", i=0, **kw) -> Action:
         raise NotImplementedError("todo")

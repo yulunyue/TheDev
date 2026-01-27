@@ -24,7 +24,7 @@ class TestMctssearch(TestBase):
         random_seed(0)
 
     def test_search(self):
-        s = DemoState.make_test_state()
+        s = DemoState.make_test_state().load_mcts(None)
         al = MctsSearch().load(num_episodes=10)
         for e in S2:
             al.search_one_round(s)
