@@ -21,7 +21,7 @@ stages:
         commands:
           - '# Python单元测试默认命令'
           - python -m pip install -r require.txt
-          - python -m tool.pytest cover
+          - python -m tool.pytest all
         report:
           path: report
           index: index.html
