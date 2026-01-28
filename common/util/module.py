@@ -149,7 +149,9 @@ class Module:
 
     def load_module_object(self, src: str, path: str = None):
         module_name, *names = src.split("::")
-        module_name = module_name.replace(".py", "").replace("/", ".")
+        if module_name.endswith(".py"):
+            module_name = module_name[:-3]
+        module_name = module_name.replace("/", ".")
         md = self.load_module(module_name, path=path)
         if len(names) == 1:
             return getattr(md, names[0])

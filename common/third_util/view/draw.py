@@ -1,7 +1,5 @@
-import json
-import sys
 import matplotlib.pyplot as plt
-from common.util.export import List, defaultdict, File, logger
+from common.util.export import List, defaultdict, File, logger, json
 
 
 def lines_data(datas):
