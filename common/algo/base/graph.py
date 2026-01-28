@@ -2,7 +2,7 @@ from collections import defaultdict
 import heapq
 from typing import List, Dict
 
-from common.algo.base.node import Node
+from common.algo.base.nodes.node import Node
 
 
 class Graph(Node):

@@ -95,7 +95,7 @@ class CodingGame(Api):
     def replay(self, state, algo: Algo):
         s: State = state
         self.logger.debug(s.show())
-        from common.third_util.echarts import EChart
+        from common.third_util.view.echarts import EChart
 
         last_s = None
         # e = EChart()

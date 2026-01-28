@@ -1,4 +1,6 @@
-from typing import List, Dict
+from common.util.export import List, Dict
+from .node import Node
+from .edge import Edge
 
 
 def load_from_edges(cls: "Node", edges):
@@ -20,25 +22,3 @@ def load_from_edges(cls: "Node", edges):
         if tf is not None:
             nodes[t].out_edges[f] = Edge(nodes[t], nodes[f]).load(tf)
     return nodes
-
-
-class Node:
-
-    def __init__(self, key):
-        self.key = key
-        self.depth = 0
-        self.in_edges: Dict[str, Edge] = {}
-        self.out_edges: Dict[str, Edge] = {}
-
-    def __repr__(self):
-        return f"(key:{self.key})"
-
-
-class Edge:
-    def __init__(self, src, dst):
-        self.src: Node = src
-        self.dst: Node = dst
-
-    def load(self, value):
-        self.value = value
-        return self

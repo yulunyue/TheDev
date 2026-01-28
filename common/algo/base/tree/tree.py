@@ -1,6 +1,6 @@
-from typing import List, Dict
-from common.algo.base.node import Node, load_from_edges
-from common.util.export import logger, defaultdict
+from ..nodes.node import Node
+from ..nodes.util import load_from_edges
+from common.util.export import logger, defaultdict, List, Dict
 
 
 class Tree(Node):

@@ -1,5 +1,5 @@
 from common.util.export import MockCf, Dict, List, defaultdict
-from common.algo.base.tree import Tree, load_from_edges
+from common.algo.base.tree.tree import Tree
 
 
 class Solution(MockCf):
@@ -28,7 +28,7 @@ class Solution(MockCf):
     def main(self):
         n, k = self.ii()
         edges = [self.ii() for _ in range(n - 1)]
-        nodes: Dict[int, Tree] = load_from_edges(Tree, edges)
+        nodes: Dict[int, Tree] = Tree.load_from_edges(edges)
         root = nodes[1].bei_zhen()
 
         for _ in range(k):
@@ -40,7 +40,7 @@ class Solution(MockCf):
             p.path_value -= 1
             if p != root:
                 root.get_k_parent(p, 1).path_value -= 1
-            self.logger.info(root.show())
+            self.logger.info(root)
         self.ans = 0
 
         def dfs(r: Tree, p=None):
