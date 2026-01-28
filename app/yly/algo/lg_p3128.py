@@ -1,7 +1,9 @@
-"""
-https://www.luogu.com.cn/problem/P3128
-"""
-"""5 10
+from common.util.export import MockCf, Dict, List, defaultdict
+from common.algo.base.tree import Tree, load_from_edges
+
+
+class Solution(MockCf):
+    S1 = """5 10
 3 4
 1 5
 4 2
@@ -15,12 +17,44 @@ https://www.luogu.com.cn/problem/P3128
 3 5
 5 4
 1 5
-3 4
-9
-"""
-class Solution(MockCf):
+3 4"""
+    uri = """
+    https://www.luogu.com.cn/problem/P3128
+    """
+
+    def get_cases(self):
+        return dict(case0=dict(inps=self.S1, result="9"))
+
     def main(self):
-        n,k=self.ii()
-        for _ in range(n):
-if __name__=="__main__":
-    Solution().main()
+        n, k = self.ii()
+        edges = [self.ii() for _ in range(n - 1)]
+        nodes: Dict[int, Tree] = load_from_edges(Tree, edges)
+        root = nodes[1].bei_zhen()
+
+        for _ in range(k):
+            s, e = self.ii()
+            s, e = nodes[s], nodes[e]
+            s.path_value += 1
+            e.path_value += 1
+            p = root.get_last_lcm_parent(s, e)
+            p.path_value -= 1
+            if p != root:
+                root.get_k_parent(p, 1).path_value -= 1
+            self.logger.info(root.show())
+        self.ans = 0
+
+        def dfs(r: Tree, p=None):
+            v = r.path_value
+            for d in r.out_edges.values():
+                if d.dst != p:
+                    v += dfs(d.dst, r)
+            if v > self.ans:
+                self.ans = v
+            return v
+
+        dfs(root)
+        return self.ans
+
+
+if __name__ == "__main__":
+    print(Solution().main())

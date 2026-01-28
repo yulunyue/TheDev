@@ -94,7 +94,7 @@ class State:
             if a not in actions:
                 raise Exception(a, list(actions.keys()), self.state)
             ret = actions[a]
-            s = ret.get_dst()
+            s = ret.dst
         return ret
 
     def get_best_actions(self) -> List["Action"]:
@@ -246,9 +246,6 @@ class State:
     def get_data(self):
         return self.data
 
-    def do_move(self, action: Action):
-        return action.get_dst()
-
     def game_over(self):
         if self.done is None or self.done == False:
             return False
@@ -264,5 +261,5 @@ class State:
     def get_next(self, *args):
         dst = self
         for a in args:
-            dst = dst.get_action(a).do().get_dst()
+            dst = dst.get_action(a).do()
         return dst

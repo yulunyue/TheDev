@@ -8,7 +8,7 @@ class DynAction(C5ACtion):
         if self.dst is not None:
             self.src.board.put_chess(self.action, self.src.player_id + 1)
             self.src.board.state = self.dst.state
-            return self
+            return self.dst
         from .dyn_state import DynState
 
         self.dst = DynState(
@@ -21,7 +21,7 @@ class DynAction(C5ACtion):
         self.src.board.state = self.dst.state
         self.dst.can_moves = list(self.src.board.can_use)
         self.set_obs(obs)
-        return self
+        return self.dst
 
     def undo(self):
         self.src.board.change_chess_statu(self.action, 0)

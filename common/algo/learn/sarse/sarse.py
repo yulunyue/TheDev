@@ -30,7 +30,7 @@ class Sarse(Algo):
     def update_action(self, action: Action, **kw):
         next_action = None
         if not action.dst.game_over():
-            next_action = self.get_best_action(action.dst)
+            next_action = self.get_best_action(action.dst, self.get_action_reward)
         self.update_td_action(action, next_action)
 
     def get_action_reward(self, a: Action):
@@ -57,7 +57,7 @@ class Sarse(Algo):
         e_grade = 1 - self.e_grade * (i + 1) / self.train_epoll
         if random.random() < self.e_grade:
             return state.get_random_action()
-        return self.get_best_action(state)
+        return self.get_best_action(state, self.get_action_reward)
 
     def search_best_action(self, s, last_a=None):
-        return self.get_best_action(s, last_a=last_a)
+        return self.get_best_action(s, self.get_action_reward, last_a=last_a)

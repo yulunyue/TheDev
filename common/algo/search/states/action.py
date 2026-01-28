@@ -2,6 +2,7 @@ from common.util.export import List, TYPE_CHECKING, math
 
 
 class Action:
+    need_undo = False
 
     def __init__(self, src, action, dst=None):
         from .mctsstate import MctsState
@@ -70,7 +71,14 @@ class Action:
         return "\n".join(ret)
 
     def do(self):
-        return self
+        self.need_undo = True
+        from .state import State
+
+        if self.dst is None:
+            self.dst = self.get_dst()
+        return self.dst
 
     def undo(self):
+        # if not self.need_undo:
+        #     raise Exception("gg")
         return self

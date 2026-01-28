@@ -36,7 +36,7 @@ class MctsSearch(Algo):
         while cur.has_visited and not cur.game_over():
             a = self.get_uct_best_child(cur)
             ret.append(a)
-            cur = a.do().dst
+            cur = a.do()
         if not cur.has_visited:
             cur.load_mcts(None if not ret else ret[-1])
 
@@ -61,7 +61,7 @@ class MctsSearch(Algo):
             a = tail.get_random_action()
             action_history.append(a)
             max_round -= 1
-            tail = a.do().dst
+            tail = a.do()
         return action_history
 
     def backpropagate(

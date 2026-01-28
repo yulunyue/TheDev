@@ -5,9 +5,7 @@ from .demo_action import DemoAction
 
 
 class DemoState(MctsState):
-
-    def game_over(self):
-        return self.done
+    next_states: List["DemoState"] = None
 
     @classmethod
     def new_random_state(cls, size=20, min_v=2, max_v=6):
@@ -29,17 +27,13 @@ class DemoState(MctsState):
     @classmethod
     def make(cls, *states, r=None, player_id=None):
         ret: DemoState = cls("")
-        ret.r = r
+        ret.r, ret.next_states = r, list(states)
         if player_id is None:
             player_id = 0
-        ret.actions = []
-        for i, s in enumerate(states):
-            a = DemoAction(ret, i, s)
-            ret.actions.append(a)
-        return ret.set_player_id(player_id).set_done(len(ret.actions) == 0)
+        return ret.set_player_id(player_id).set_done(False if ret.next_states else True)
 
-    def get_children(self):
-        return [v for v in super().get_children() if v.src.has_visited]
+    def make_actions(self):
+        return [DemoAction(self, i, s) for i, s in enumerate(self.next_states)]
 
     @classmethod
     def make_test_state(cls):

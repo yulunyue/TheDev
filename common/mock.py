@@ -57,16 +57,12 @@ class MockCf:
         self.logger: logger = log
 
     def set_inputs(self, inputs: str):
-        self.inputs = inputs.split("\n")
+        self.inputs = [v for v in inputs.split("\n") if v]
         return self
 
     def input(self):
-        if os.path.exists("input.txt") and self.inputs is None:
-            self.inputs = open("input.txt").read().split("\n")
-        if self.dev:
+        if self.inputs:
             return self.inputs.pop(0)
-        if self.inputs is None:
-            self.inputs = []
         self.inputs.append(input())
         return self.inputs[-1]
 
@@ -90,6 +86,9 @@ class MockCf:
             oj_run(self, case_name)
         else:
             self.exec()
+
+    def execute(self, inps: str):
+        return self.set_inputs(inps).main()
 
 
 MockCg = MockCf
