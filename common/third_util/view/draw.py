@@ -46,13 +46,6 @@ class Draw:
         return self
 
     def draw_graph(self, datas: dict):
-        # if isinstance(datas, str):
-        #     out_put = datas.replace(".json", "")
-        #     data = {}
-        #     with open(datas, "r", encoding="utf-8") as f:
-        #         data.update(json.loads(f.read()))
-        #     self.draw_net_work2(data, out_put)
-        #     return
         import networkx as nx
 
         plt.figure(figsize=(8, 8))
@@ -78,34 +71,6 @@ class Draw:
         )
         nx.draw_networkx_edge_labels(g, pos, edge_labels=edges, font_color="#000")
         return self
-
-    def draw_net_work2(self, input_data, out_put_path):
-        import graphviz
-        from graphviz import nohtml
-
-        if isinstance(input_data, str):
-            input_data = json.load(open(input_data, "r", encoding="utf-8"))
-        g = graphviz.Digraph(
-            "g", filename=out_put_path, node_attr={"shape": "record", "height": ".1"}
-        )
-        g.attr(rankdir="LR")
-        node_map = dict()
-
-        def get_node(key):
-            if key not in node_map:
-                node_map[key] = g.node(key, label=key, fontname="Microsoft YaHei")
-            return node_map[key]
-
-        def add_edge(f, t, label=""):
-            g.edge(f, t, label=label)
-
-        for k, v in input_data.items():
-            get_node(k)
-            for e in v:
-                k1, *args = e.split(":")
-                get_node(k1)
-                add_edge(k, k1, *args)
-        g.render(format="png")
 
     def save(self, f):
         if isinstance(f, str):

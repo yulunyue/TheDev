@@ -1,4 +1,7 @@
-```lc1
+```lc
+app.yly.algo.lc_3651::Solution::run
+```
+```lg
 app.yly.algo.lg_p3128::Solution::run
 ```
 ```debug

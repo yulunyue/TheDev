@@ -1,5 +1,4 @@
 from .log import (
-    File,
     get_log,
     Logger,
     TheDevLoger,

@@ -55,3 +55,10 @@ class StrUtil:
         dfs(head)
         ret.append("---")
         return "\n".join(ret)
+
+    def format_grid(self, n, m, f):
+        ret = [[""] * m for _ in range(n)]
+        for i in range(n):
+            for j in range(m):
+                ret[i][j] = str(f[i, j])
+        return "\n".join(["-" * m * 2] + [" ".join(row) for row in ret] + ["-" * m * 2])

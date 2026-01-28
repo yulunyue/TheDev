@@ -30,7 +30,7 @@ class Solution(MockCf):
         edges = [self.ii() for _ in range(n - 1)]
         nodes: Dict[int, Tree] = Tree.load_from_edges(edges)
         root = nodes[1].bei_zhen()
-
+        self.logger.log_tree(root.to_json())
         for _ in range(k):
             s, e = self.ii()
             s, e = nodes[s], nodes[e]

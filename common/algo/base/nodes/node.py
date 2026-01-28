@@ -13,3 +13,7 @@ class Node:
 
     def show(self):
         pass
+
+    def to_json(self):
+        nodes, edges = dict(), []
+        return dict(nodes=nodes, edges=edges)

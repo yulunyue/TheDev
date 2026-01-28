@@ -15,12 +15,12 @@ class Io(ToolBase):
         u.write(dict(a=1))
 
     def obs_list_buckets(self, env):
-        from common.third_util.obs_util import ObsUtil
+        from common.third_util.io.obs_util import ObsUtil
 
         ObsUtil(env).list_buckets()
 
     def obs_upload(self, env, path):
-        from common.third_util.obs_util import ObsUtil
+        from common.third_util.io.obs_util import ObsUtil
 
         ObsUtil(env).upload(path)
 
