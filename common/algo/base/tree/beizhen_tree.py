@@ -8,6 +8,7 @@ class Tree(Node):
         super().__init__(key)
         self.bei_zen_list: List[Tree] = []
         self.path_value = 0
+        self.value = 0
         self.depth = 0
 
     def set_root(self):
@@ -95,6 +96,9 @@ class Tree(Node):
         p = self.get_last_lcm_parent(f, t)
         return f.depth + t.depth - 2 * p.depth
 
-    @classmethod
-    def load_from_edges(cls, edges) -> Dict[any, "Tree"]:
-        return load_from_edges(cls, edges)
+    def set_value(self, value):
+        self.value = value
+        return self
+
+    def get_value(self):
+        return self.value

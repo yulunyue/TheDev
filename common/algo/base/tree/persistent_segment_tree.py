@@ -1,5 +1,5 @@
 from common.util.export import List
-from .tree import SegTreeNode
+from .beizhen_tree import SegTreeNode
 
 
 class D3SegmentTree(SegTreeNode):

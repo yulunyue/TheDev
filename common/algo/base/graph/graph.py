@@ -128,13 +128,6 @@ class Graph(Node):
         dfs(b, -1)
         return edges, points, low
 
-    def floyd(self, dis, keys):
-        for k in keys:
-            for i in keys:
-                for j in keys:
-                    dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j])
-        return dis
-
     def eula_time_visit(self, start=0):
         tmstamp = 1
         stk = [start]

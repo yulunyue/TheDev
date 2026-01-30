@@ -3,7 +3,7 @@ from .node import Node
 from .edge import Edge
 
 
-def load_from_edges(cls: "Node", edges):
+def load_from_edges(cls: "Node", edges, default_edge_value=1):
 
     nodes: Dict[str, Node] = dict()
     for f, t, *args in edges:
@@ -12,11 +12,13 @@ def load_from_edges(cls: "Node", edges):
         if t not in nodes:
             nodes[t] = cls(t)
         if len(args) == 0:
-            ft = tf = 1
-        elif len(args) == 1:
-            ft = tf = args[0]
-        else:
+            ft = tf = 0
+        elif len(args) == default_edge_value:
+            ft, tf = args[0], None
+        elif len(args) == 2:
             ft = tf = args
+        else:
+            raise Exception(args)
         if ft is not None:
             nodes[f].out_edges[t] = Edge(nodes[f], nodes[t]).load(ft)
         if tf is not None:

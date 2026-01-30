@@ -24,7 +24,7 @@ from .base.str_util import (
     get_height_form_sa,
 )
 from .search.states.demo_state import DemoState
-from .base.tree.tree import Tree
+from .base.tree.beizhen_tree import Tree
 from .base.gaussian_elimination import GaussElimination
 from .base.lazyheap import LazyHeapMinMax, LazyMinHeap, LazyMaxHeap
 from .base.bin_util import (

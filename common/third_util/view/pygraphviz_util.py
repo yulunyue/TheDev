@@ -7,28 +7,42 @@ from common.util.export import File, logger
 
 class PyGraphViz:
     def load(self, f: File):
-        self.f = f.make_dir_if_not_exist()
+        if isinstance(f, str):
+            self.f = File(f)
+        else:
+            self.f = f.make_dir_if_not_exist()
         self.node_map = dict()
-        self.g = pgv.AGraph(strict=False)
-        self.g.attr(rankdir="LR")
-        self.g.add_edge("a", "b", label="first")
-        self.g.add_edge("a", "b", label="second")
+        self.edges_map = dict()
+        self.g: pgv.AGraph = pgv.AGraph(strict=True)
+
+        # self.g.attr(rankdir="LR")
+        return self
+
+    def add_edge(self, f, t, v):
+        k = f, t
+        if k not in self.edges_map:
+            self.edges_map[k] = self.g.add_edge(f, t, label=str(v))
+        return self.edges_map[k]
 
     def save(self):
+        logger.info(self.f)
         self.g.layout()
         self.g.draw(self.f.path)
 
-    def get_node(self, key):
+    def add_node(self, key):
         if key not in self.node_map:
-            self.node_map[key] = self.g.node(key, label=key, fontname="Microsoft YaHei")
+            label = key
+            if key in self.node_config:
+                label = f"{key}:{self.node_config[key]}"
+            self.node_map[key] = self.g.add_node(
+                key, label=label, fontname="Microsoft YaHei"
+            )
         return self.node_map[key]
 
-    def draw_net_work(self, nodes, edges):
+    def draw(self, nodes, edges):
         self.node_config = nodes
-
-        for k, v in input_data.items():
-            get_node(k)
-            for e in v:
-                k1, *args = e.split(":")
-                get_node(k1)
-                add_edge(k, k1, *args)
+        for k in nodes:
+            self.add_node(k)
+        for f, t, *args in edges:
+            self.add_edge(f, t, *args)
+        self.save()

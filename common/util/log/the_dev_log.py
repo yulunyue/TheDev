@@ -46,7 +46,7 @@ class TheDevLoger:
         if isinstance(g, list):
             self.write(StrUtil().format_g_tree(g, f, head=head))
         elif isinstance(g, dict):
-            pass
+            PyGraphViz().load(self.fp.path + ".png").draw(**g)
 
     def log_grid(self, n, m, f):
         from ...tool.str_util import StrUtil
