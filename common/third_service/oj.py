@@ -2,7 +2,7 @@ from common.util.export import logger, MockCf, get_file_path_by_cls, Module, get
 from common.tool.export import PyFile
 
 
-def oj_run(ins: MockCf, case_name=None):
+def oj_run(ins: "MockCf", case_name=None):
     cases: dict = ins.get_cases()
     if case_name:
         cases = [[case_name, cases[case_name]]]

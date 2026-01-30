@@ -17,6 +17,8 @@ class PyFile:
         if ReUtil("common.*export").findall(model_name):
             model_name = "common.mock"
             need_read = True
+        elif model_name.startswith("common.third_util"):
+            need_read = False
         elif model_name.startswith("common"):
             need_read = True
         # logger.info(model_name)
@@ -38,11 +40,12 @@ class PyFile:
             if not ln2:
                 continue
             ln = ln2.strip()
-            if ln2.startswith("from"):
-                ln = ln2.strip().split(" ")[1]
+            if ln.startswith("from "):
+                ln = ln.split(" ")[1]
                 if ln.startswith("."):
                     ln = self.fp.get_relative_path(ln)
                 ln, need_read = self.model_mock(ln)
+                # logger.map(ln2=ln2, ln=ln, need_read=need_read)
                 if need_read:
                     path = ln.replace(".", "/") + ".py"
                     if path not in PyFile.VT:

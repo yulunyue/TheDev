@@ -40,7 +40,7 @@ class CT:
 
 class MockCf:
     dev = False
-    inputs = None
+
     logger = logger
     type = ""
     execute = None
@@ -50,6 +50,7 @@ class MockCf:
             self.execute = f
         self.cases = cases
         self.src_file = src
+        self.inputs = []
 
     def get_cases(self):
         return self.cases
@@ -64,8 +65,7 @@ class MockCf:
     def input(self):
         if self.inputs:
             return self.inputs.pop(0)
-        self.inputs.append(input())
-        return self.inputs[-1]
+        return input()
 
     def ii(self):
         return [int(v) for v in self.input().split(" ") if v]
