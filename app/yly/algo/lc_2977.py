@@ -1,5 +1,6 @@
-from common.util.export import MockCf, List
-from common.algo.base import bin_util
+from common.util.export import MockCf, List, defaultdict
+from common.algo.base.graph.util import floyd
+from common.algo.base.tree.tietree import TieNode
 
 
 class Solution(MockCf):
@@ -23,4 +24,12 @@ class Solution(MockCf):
         changed: List[str],
         cost: List[int],
     ) -> int:
-        pass
+        ct = defaultdict(int)
+        keys = set()
+        for i, v in enumerate(original):
+            ct[original[i], changed[i]] = cost[i]
+            keys.update(original[i], changed[i])
+        floyd(ct, keys)
+        n = len(source)
+
+    execute = minimumCost
