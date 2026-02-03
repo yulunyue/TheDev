@@ -43,9 +43,7 @@ class ApiCall:
             mock_fun(path, param, ret)
         return ret
 
-    def load_module_str(self, path: str, modules: List[str], enable=True):
-        if not enable:
-            return
+    def load_module_str(self, path: str, modules: List[str]):
         if not os.path.isdir(path):
             raise Exception(path)
         return [
@@ -77,7 +75,9 @@ class ApiCall:
     def load_modules(self, mds):
         for md in mds:
             if isinstance(md, dict):
-                self.load_modules(self.load_module_str(**md))
+                if not md["enable"]:
+                    continue
+                self.load_modules(self.load_module_str(md["path"], md["modules"]))
             else:
                 self.load_module(md)
 

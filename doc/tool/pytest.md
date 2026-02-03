@@ -14,5 +14,5 @@ test key=test_node.py
 exec key=test_node.py fun_name=TestNode::test_base
 ```
 ```debug
-exec key=yml fun_name=TestYml::test_tml_to_dict
+exec key=test_api fun_name=TestApi::test_api2
 ```

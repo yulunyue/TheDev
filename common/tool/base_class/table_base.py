@@ -1,11 +1,11 @@
 from .model import NumberModel, BaseModel, StrModel, DictModel, List, Dict
 from .baseconfig import ConfigBase
 from ...constant import THE_DEV_CONSTANT
-from common.util.export import File, TypeVar, Generic, get_origin, get_args
+from common.util.export import File, TypeVar, Generic, get_origin, get_args, logger
 
 
 class TableConfig(ConfigBase):
-    pass
+    id = StrModel()
 
 
 T = TypeVar("T")
@@ -31,6 +31,7 @@ class TableBase(Generic[T]):
         if isinstance(fp, str):
             fp = File(f"config/setting/{fp}.json")
         self.fp = fp
+        logger.info(fp)
         self.config = dict()
         self.instance_map: Dict[str, ConfigBase] = dict()
         if self.fp.exists():
@@ -55,9 +56,11 @@ class TableBase(Generic[T]):
             data=dict(header=self.get_header(), body=self.get_body(**kw)),
         )
 
-    def insert(self, id, **kw) -> T:
+    def insert(self, id=None, **kw) -> T:
+        if id is None:
+            id = len(self.instance_map)
         r: ConfigBase = self.get(id)
-        return r.update(**kw)
+        return r.update(id=id, **kw)
 
     def get(self, key, name2="default") -> T:
         if key in self.instance_map:

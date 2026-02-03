@@ -19,6 +19,9 @@ export class DivFactory {
 
     static new_div(key: string): Div {
         // console.log(key, DivFactory.fac_map)
+        if (!this.fac_map[key]) {
+            console.error(key, Object.keys(this.fac_map))
+        }
         return this.fac_map[key]()
     }
 }

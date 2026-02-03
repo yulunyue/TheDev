@@ -4,14 +4,10 @@ from common.util.tool import SYS_KW, THE_DEV_LOGER_PREFIX
 
 SYS_KW[THE_DEV_LOGER_PREFIX] = "main"
 from common.third_util.http import run
-from common.tool.cid import PORT
-from app.tool.export import ROUTES
-from common.util.export import File
-
-HTTP_CONF_FiLE = File("config/setting/http.json")
-if HTTP_CONF_FiLE.exists():
-    data = HTTP_CONF_FiLE.read_file()
-    ROUTES = ROUTES + data["py_modules"]
+from common.util.export import File, logger
 
 if __name__ == "__main__":
-    run(ROUTES, port=PORT)
+    HTTP_CONF_FiLE = File(f"config/setting/{sys.argv[1]}.json")
+    logger.info(HTTP_CONF_FiLE)
+    data = HTTP_CONF_FiLE.read_file()
+    run(data["py_modules"], port=9999)

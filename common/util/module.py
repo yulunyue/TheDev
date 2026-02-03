@@ -85,8 +85,8 @@ def get_function_info(v):
         cls = argspec.annotations.get(key, None)
         ret = dict(title=key, default_value=default_value, type=None, is_pos=is_pos)
 
-        if hasattr(cls, "_type_info"):
-            ret.update(cls._type_info)
+        if hasattr(cls, "type_info"):
+            ret.update(cls.type_info)
         elif cls is not None:
             ret.update(type=cls.__name__)
         elif default_value is not None:

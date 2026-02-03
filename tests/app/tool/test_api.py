@@ -57,15 +57,17 @@ class TestApi(TestBase):
                     {
                         "title": "b",
                         "default_value": None,
-                        "type": "T",
+                        "type": "enum",
                         "is_pos": False,
+                        "childs": ["a", "b"],
                         "key": "b",
                     },
                     {
                         "title": "c",
                         "default_value": None,
-                        "type": "T",
+                        "type": "search",
                         "is_pos": False,
+                        "url": "/app/api/query_all_apis",
                         "key": "c",
                     },
                     {

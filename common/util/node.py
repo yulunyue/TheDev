@@ -117,8 +117,8 @@ def cls_util(tp, **kw):
     return T
 
 
-def enum_cls(enums):
-    return cls_util(THE_DEV_CONSTANT.WEB_VIEW_TYPE_ENUM, childs=enums)
+def enum_cls(*enums):
+    return cls_util(THE_DEV_CONSTANT.WEB_VIEW_TYPE_ENUM, childs=list(enums))
 
 
 def search_cls(url):

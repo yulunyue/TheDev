@@ -15,7 +15,7 @@ class ApiGlobal:
     def test(
         self,
         a,
-        b: enum_cls(["a", "b"]),
+        b: enum_cls("a", "b"),
         c: search_cls("/app/api/query_all_apis"),
         d="1",
         **kw,
