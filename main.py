@@ -9,5 +9,5 @@ from common.util.export import File, logger
 if __name__ == "__main__":
     HTTP_CONF_FiLE = File(f"config/setting/{sys.argv[1]}.json")
     logger.info(HTTP_CONF_FiLE)
-    data = HTTP_CONF_FiLE.read_file()
-    run(data["py_modules"], port=9999)
+    conf = HTTP_CONF_FiLE.read_file()
+    run(conf["py_modules"], port=conf["port"])

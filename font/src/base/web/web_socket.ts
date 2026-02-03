@@ -10,8 +10,7 @@ export class NetKakfa {
     }
     get_client() {
         if (!this._client) {
-            web_dom.web_host
-            this._client = new WebSocket("ws://" + web_dom.web_host + ":" + web_dom.bk_port + "/ws")
+            this._client = new WebSocket("ws://" + web_dom.web_host + ":" + web_dom.web_port + "/ws")
             this._client.onopen = () => {
                 console.log("web_socket_open")
                 this.do_login()

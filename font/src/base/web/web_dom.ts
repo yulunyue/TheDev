@@ -63,7 +63,7 @@ class WebDom {
     }
     web_host: string
     web_port: number
-    bk_port: string = "9999"
+
     url_param: any
     prefix: string
     init_href() {
@@ -73,9 +73,12 @@ class WebDom {
         var ip_ports = hrefs[2].split(':')
         this.web_host = ip_ports[0]
         this.web_port = parseInt(ip_ports[1])
+        if (this.web_port == 8888) {
+            this.web_port = 9999
+        }
         Ut.extend(this.url_param, Ut.url_to_json(location_href2[1]))
         let bk_host = this.web_host
-        this.prefix = 'http://' + bk_host + ":" + this.bk_port
+        this.prefix = 'http://' + bk_host + ":" + this.web_port
     }
     url(path: string) {
 
