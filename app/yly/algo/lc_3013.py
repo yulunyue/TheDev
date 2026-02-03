@@ -1,4 +1,4 @@
-from common.util.export import List, MockCf
+from common.util.export import List, MockCf, functools
 
 
 class Solution(MockCf):
