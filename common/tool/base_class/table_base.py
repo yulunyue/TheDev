@@ -1,7 +1,17 @@
-from .model import NumberModel, BaseModel, StrModel, DictModel, List, Dict
+from .base_model import BaseModel, StrModel, DictModel
+from .number_model import NumberModel
 from .baseconfig import ConfigBase
 from ...constant import THE_DEV_CONSTANT
-from common.util.export import File, TypeVar, Generic, get_origin, get_args, logger
+from common.util.export import (
+    File,
+    TypeVar,
+    Generic,
+    get_origin,
+    get_args,
+    logger,
+    List,
+    Dict,
+)
 
 
 class TableConfig(ConfigBase):

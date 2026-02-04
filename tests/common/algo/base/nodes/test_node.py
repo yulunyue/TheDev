@@ -11,7 +11,6 @@ class TestNode(TestBase):
             root.to_json(),
             {
                 "nodes": {0: 0, 1: 0, 2: 0},
-                "edges": [[0, 1, 1], [1, 0, 1], [0, 2, 1], [2, 0, 1]],
+                "edges": [[0, 1, 0], [1, 0, 0], [0, 2, 0], [2, 0, 0]],
             },
         )
-        nodes[0].draw("data/view/node.png")

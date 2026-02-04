@@ -102,12 +102,18 @@ def dict_to_str(indent=" ", **kw):
     return indent.join(ret)
 
 
-def json_dumps(oj, indent=2):
+def json_dumps(oj, indent=None):
+    from ..tool.base_class.model import BaseModel
+
     def util(v):
         if isinstance(v, set):
             return list(v)
         if isinstance(v, (str, int, list, dict)):
             return v
+        if hasattr(v, "to_json"):
+            return v.to_json()
+        if isinstance(v, BaseModel):
+            return v.get_value()
         return str(v)
 
     return json.dumps(oj, indent=indent, default=util, ensure_ascii=False)

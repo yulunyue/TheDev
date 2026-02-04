@@ -56,8 +56,3 @@ class BaseData:
 
     def __str__(self) -> str:
         return f"{self.key}:{self.value}"
-
-
-class Number(BaseData):
-    def init(self):
-        self.value = 0

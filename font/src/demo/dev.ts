@@ -5,13 +5,23 @@ import {
     Table, Util, dialog,
     Ct, Node, to_node, Chart,
     Svg,
-    Grid
+    Grid,
+    web_dom
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
 export class Dev extends Div {
     svg: Svg
-    init_node(): void {
 
+    init_node(): void {
+        this.add_childs([
+            this.get_window_info()
+        ])
+    }
+    get_window_info() {
+        let d = new Div()
+        let size = web_dom.get_window_size()
+        d.set_html(`width:${size.width};height:${size.height}`)
+        return d
     }
     init_style(): void {
 
@@ -73,7 +83,7 @@ export class Dev extends Div {
         }))
     }
     on_mount(): void {
-        this.test_grid()
+
     }
 
 }

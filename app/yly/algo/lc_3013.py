@@ -1,21 +1,32 @@
-from common.util.export import List, MockCf, functools
-,heapq
+from common.util.export import List, MockCf, functools, heapq, bisect
+from sortedcontainers.sortedlist import SortedList
+
 
 class Solution(MockCf):
     def get_cases(self):
         return dict(case0=dict(nums=[1, 3, 2, 6, 4, 2], k=3, dist=3, result=5))
 
     def minimumCost(self, nums: List[int], k: int, dist: int) -> int:
-        n=len(nums)
-        a,h=nums[0],[[nums[i],i] for i in range(1,k)]
-        s=mx=sum(nums[1:k])
-        heapq.heapminif(h)
-        for i in range(k,n):
-            v=nums[i]
-            while h and h[0][1]<i-dist:
-                s-=heapq.heapqpop(h)[0]
-            s+=v    
-            heapq.heapqpush(h,[v,i])
-        return nums[0]+dfs(i,dist) for i in range(1,n-d
+        n = len(nums)
+        k -= 1
+        dist += 1
+        sl = sorted(nums[1 : dist + 1])
+        tmp = mx = sum(sl[:k])
+        self.logger.info(sl)
+        for i in range(dist + 1, n):
+            lv, rv = nums[i - dist], nums[i]
+            li = bisect.bisect_left(sl, lv)
+
+            if li < k:
+                tmp -= lv - sl[k]
+            sl.pop(li)
+            ri = bisect.bisect_left(sl, rv)
+            sl.insert(ri, rv)
+            if ri < k:
+                tmp += rv - sl[k]
+            if tmp < mx:
+                mx = tmp
+            self.logger.map(i=i, lv=lv, li=li, ri=ri, rv=rv, sl=sl)
+        return nums[0] + mx
 
     execute = minimumCost

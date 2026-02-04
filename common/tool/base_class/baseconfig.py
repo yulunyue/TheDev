@@ -4,7 +4,7 @@ from typing import List, Dict
 from common.util.export import logger
 
 CONFIG_SETTING_DIR = "config/setting"
-from common.tool.base_class.model import BaseModel, StrModel
+from common.tool.base_class.model import BaseModel
 
 
 class ConfigBase:

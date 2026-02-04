@@ -15,14 +15,9 @@ def get_s_333_2():
 
 
 class TestAl(TestBase):
-    @classmethod
-    def setup_class(cls):
-        random_seed(1)
-
-    def test_al333_ad(self):
-        pass
 
     def test_al333_ql(self):
+        random_seed(1)
         s = get_s_333_2()
         self.expect(s.can_moves, [6, 7, 8])
         ql = Al().ql().set_train_epoll(4)

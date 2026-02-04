@@ -6,6 +6,7 @@ from common.util.export import (
     get_function_info,
     get_dev_log,
     logger,
+    json_dumps,
 )
 from .node import Node
 from typing import List
@@ -33,9 +34,7 @@ class ApiCall:
 
             traceback.print_exc()
             ret = dict(code=500, title=str(e))
-        if isinstance(ret, Node):
-            return json.dumps(ret.to_json(), ensure_ascii=False)
-        return ret
+        return json_dumps(ret)
 
     def call(self, path, param):
         ret = self.call_app(path, param)

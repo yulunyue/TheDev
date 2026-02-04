@@ -1,5 +1,10 @@
 from .base_class.baseconfig import ConfigBase
-from .base_class.model import StrModel, NumberModel, DictModel, ListModel, BoolModel
+from .base_class.base_model import (
+    StrModel,
+    DictModel,
+    ListModel,
+    BoolModel,
+)
 
 
 class GloablConfg(ConfigBase):

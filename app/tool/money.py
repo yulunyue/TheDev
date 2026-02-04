@@ -42,4 +42,4 @@ class Money:
             check=check,
         )
         db.save()
-        return Node(code=200, value=r.id.get_value()).to_json()
+        return Node(code=200, value=r.id)

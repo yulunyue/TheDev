@@ -87,6 +87,9 @@ class WebDom {
     get_wh_scale() {
         return window.innerWidth / window.innerHeight
     }
+    get_window_size() {
+        return { width: window.innerWidth, height: window.innerHeight }
+    }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back: any) {
 
