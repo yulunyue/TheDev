@@ -18,12 +18,12 @@ class Solution(MockCf):
             li = bisect.bisect_left(sl, lv)
 
             if li < k:
-                tmp -= lv - sl[k]
+                tmp -= lv - (sl[k] if k < len(sl) else 0)
             sl.pop(li)
             ri = bisect.bisect_left(sl, rv)
             sl.insert(ri, rv)
             if ri < k:
-                tmp += rv - sl[k]
+                tmp += rv - (sl[k] if k < len(sl) else 0)
             if tmp < mx:
                 mx = tmp
             self.logger.map(i=i, lv=lv, li=li, ri=ri, rv=rv, sl=sl)
