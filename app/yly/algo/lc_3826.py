@@ -8,6 +8,7 @@ class Solution(MockCf):
             case1=dict(nums=[1, 1, 1], k=2, result=4),
             case2=dict(nums=[13, 8, 19], k=2, result=421),
             case3=dict(nums=[5, 1, 2, 1], k=2, result=25),
+            case4=dict(nums=[18, 16, 50], k=2, result=25),
         )
 
     def minPartitionScore(self, nums: List[int], k: int) -> int:
@@ -26,7 +27,7 @@ class Solution(MockCf):
                 return v * v
             c = v / k
             j = i + 1
-            while j < n - k + 2:
+            while j < n - k + 3:
                 u = s[j] - s[i]
                 if u >= c:
                     a1 = u * u + dfs(j, k - 1)
@@ -37,6 +38,7 @@ class Solution(MockCf):
                             a1 = a2
                     return a1
                 j += 1
+            raise Exception(i, j, k, v)
             # ans = CT.inf
             # for j in range(i + 1, n - k + 2):
             #     v = s[j] - s[i]
