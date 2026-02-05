@@ -19,7 +19,7 @@ class Solution(MockCf):
                 v = s[-1] - s[i]
                 return v * v
             ans = CT.inf
-            for j in range(i + 1, n + 1):
+            for j in range(i + 1, n - k):
                 v = s[j] - s[i]
                 a = v * v + dfs(j, k - 1)
                 if a < ans:
