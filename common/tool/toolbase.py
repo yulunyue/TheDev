@@ -46,10 +46,10 @@ class ToolBase:
         if isinstance(funs, str):
             logger.info(f"NOT FIND {fun_name}\n{funs}")
             return
-        for ff, fkw in funs:
+        for ff, args, fkw in funs:
             if isinstance(ff, str):
                 ff = getattr(self, ff)
-            ff(**fkw)
+            ff(*args, **fkw)
 
     def get_call_fun(self):
         ret = []

@@ -94,7 +94,7 @@ def dict_to_str(indent=" ", **kw):
     if isinstance(indent, int):
         return json_dumps(kw, indent=indent)
     ret = []
-    for k in sorted(kw.keys()):
+    for k in kw.keys():
         v = kw[k]
         if isinstance(v, float):
             v = "%.3f" % v
