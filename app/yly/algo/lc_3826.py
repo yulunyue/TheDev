@@ -1,4 +1,4 @@
-from common.util.export import List, MockCf, functools, CT
+from common.util.export import List, MockCf, functools, CT, bisect
 
 
 class Solution(MockCf):
@@ -19,19 +19,32 @@ class Solution(MockCf):
 
         @functools.lru_cache(None)
         def dfs(i, k):
-            if k == 1:
-                v = s[-1] - s[i]
-                return v * v
             if i + k == n:
                 return sum(v * v for v in nums[i:])
-            ans = CT.inf
-            for j in range(i + 1, n - k + 2):
-                v = s[j] - s[i]
-                a = v * v + dfs(j, k - 1)
-                self.logger.map(i=i, j=j, k=k, a=a)
-                if a < ans:
-                    ans = a
-            return ans
+            v = s[-1] - s[i]
+            if k == 1:
+                return v * v
+            c = v / k
+            j = i + 1
+            while j < n - k + 2:
+                u = s[j] - s[i]
+                if u >= c:
+                    a1 = u * u + dfs(j, k - 1)
+                    if u > c and j - 1 > i:
+                        u2 = s[j - 1] - s[i]
+                        a2 = u2 * u2 + dfs(j - 1, k - 1)
+                        if a2 < a1:
+                            a1 = a2
+                    return a1
+                j += 1
+            # ans = CT.inf
+            # for j in range(i + 1, n - k + 2):
+            #     v = s[j] - s[i]
+            #     a = v * v + dfs(j, k - 1)
+            #     # self.logger.map(i=i, j=j, k=k, a=a)
+            #     if a < ans:
+            #         ans = a
+            # return ans
 
         return (dfs(0, k) + s[-1]) // 2
 
