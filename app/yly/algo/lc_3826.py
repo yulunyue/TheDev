@@ -9,6 +9,7 @@ class Solution(MockCf):
             case2=dict(nums=[13, 8, 19], k=2, result=421),
             case3=dict(nums=[5, 1, 2, 1], k=2, result=25),
             case4=dict(nums=[36, 39, 33], k=2, result=3294),
+            case5=dict(nums=[3, 11, 24, 35, 8, 2], k=5, result=1057),
         )
 
     def minPartitionScore(self, nums: List[int], k: int) -> int:
@@ -17,7 +18,7 @@ class Solution(MockCf):
 
         for v in nums:
             s.append(s[-1] + v)
-        self.logger.info(s)
+        self.logger.map(nums=nums, s=s, k=k)
 
         @functools.lru_cache(None)
         def dfs(i, k):
@@ -33,9 +34,9 @@ class Solution(MockCf):
             while u < c and j < n - k + 1:
                 j += 1
                 u = s[j] - s[i]
-            self.logger.map(i=i, j=j, k=k, v=v, c=c)
+            self.logger.map(i=i, j=j, k=k - 1, v=v, c=c)
             a = u * u + dfs(j, k - 1)
-            if u > c and j - 1 > i:
+            if j - 1 > i:
                 u = s[j - 1] - s[i]
                 a = min(a, u * u + dfs(j - 1, k - 1))
             return a
