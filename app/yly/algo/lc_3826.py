@@ -1,4 +1,5 @@
-from common.util.export import List, MockCf, functools, CT, bisect
+from common.util.export import List, MockCf, functools, CT, bisect, heapq
+from common.algo.base.pn_node import PnNode
 
 
 class Solution(MockCf):
@@ -14,33 +15,25 @@ class Solution(MockCf):
 
     def minPartitionScore(self, nums: List[int], k: int) -> int:
         n = len(nums)
-        s = [0]
-
-        for v in nums:
-            s.append(s[-1] + v)
-        self.logger.map(nums=nums, s=s, k=k)
-
-        @functools.lru_cache(None)
-        def dfs(i, k):
-            if i + k == n:
-                return sum(v * v for v in nums[i:])
-            v = s[-1] - s[i]
-            if k == 1:
-                return v * v
-            c = v / k
-            j = i + 1
-
-            u = s[j] - s[i]
-            while u < c and j < n - k + 1:
-                j += 1
-                u = s[j] - s[i]
-            self.logger.map(i=i, j=j, k=k - 1, v=v, c=c)
-            a = u * u + dfs(j, k - 1)
-            if j - 1 > i:
-                u = s[j - 1] - s[i]
-                a = min(a, u * u + dfs(j - 1, k - 1))
-            return a
-
-        return (dfs(0, k) + s[-1]) // 2
+        nodes = PnNode.make(nums)
+        heapq.heapify(nodes)
+        # self.logger.map(nums=nums, k=k)
+        while k < n:
+            while nodes and nodes[0].is_remove:
+                heapq.heappop(nodes)
+            a = heapq.heappop(nodes)
+            if a.right is None or (a.left and a.left.value < a.right.value):
+                nd = PnNode(a.left.idx, a.left.value + a.value)
+                a.left.replace(nd)
+            else:
+                nd = PnNode(a.right.idx, a.right.value + a.value)
+                a.right.replace(nd)
+            heapq.heappush(nodes, nd)
+            a.remove()
+            # self.logger.map(h=a.get_head().show())
+            k += 1
+        return (
+            sum(v.value * v.value for v in nodes if not v.is_remove) + sum(nums)
+        ) // 2
 
     execute = minPartitionScore
