@@ -15,6 +15,13 @@ class BaseModel:
         self.title = key
         self.key = key
 
+    def get_title(self):
+        return self.title
+
+    @classmethod
+    def get_type(cls):
+        return cls.__name__
+
     def clone(self):
         return self.__class__(key=self.key, default_value=self.default_value)
 

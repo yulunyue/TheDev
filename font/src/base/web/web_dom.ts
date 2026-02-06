@@ -73,7 +73,7 @@ class WebDom {
         var ip_ports = hrefs[2].split(':')
         this.web_host = ip_ports[0]
         this.web_port = parseInt(ip_ports[1])
-        if (this.web_port == 8888) {
+        if (this.web_port == 8080) {
             this.web_port = 9999
         }
         Ut.extend(this.url_param, Ut.url_to_json(location_href2[1]))

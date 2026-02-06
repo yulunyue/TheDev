@@ -55,7 +55,7 @@ import traceback
 import heapq
 import random
 from copy import deepcopy
-from itertools import permutations, accumulate
+import itertools
 import os
 from threading import Thread
 from common.mock import MockCf

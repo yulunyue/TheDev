@@ -1,5 +1,14 @@
-from common.util.export import List, MockCf, functools, CT, bisect, heapq
-from common.algo.base.pn_node import PnNode
+from common.util.export import (
+    List,
+    MockCf,
+    functools,
+    CT,
+    bisect,
+    heapq,
+    itertools,
+    deque,
+)
+from common.algo.base.geo.vec import Vec
 
 
 class Solution(MockCf):
@@ -11,29 +20,15 @@ class Solution(MockCf):
             case3=dict(nums=[5, 1, 2, 1], k=2, result=25),
             case4=dict(nums=[36, 39, 33], k=2, result=3294),
             case5=dict(nums=[3, 11, 24, 35, 8, 2], k=5, result=1057),
+            case6=dict(nums=[30, 21, 30, 45], k=2, result=4176),
         )
 
     def minPartitionScore(self, nums: List[int], k: int) -> int:
         n = len(nums)
-        nodes = PnNode.make(nums)
-        heapq.heapify(nodes)
-        # self.logger.map(nums=nums, k=k)
-        while k < n:
-            while nodes and nodes[0].is_remove:
-                heapq.heappop(nodes)
-            a = heapq.heappop(nodes)
-            if a.right is None or (a.left and a.left.value < a.right.value):
-                nd = PnNode(a.left.idx, a.left.value + a.value)
-                a.left.replace(nd)
-            else:
-                nd = PnNode(a.right.idx, a.right.value + a.value)
-                a.right.replace(nd)
-            heapq.heappush(nodes, nd)
-            a.remove()
-            # self.logger.map(h=a.get_head().show())
-            k += 1
-        return (
-            sum(v.value * v.value for v in nodes if not v.is_remove) + sum(nums)
-        ) // 2
+        pre = list(itertools.accumulate(nums, initial=0))
+        f = [0] + [CT.inf] * n
+        for K in range(1, k + 1):
+            s = pre[K - 1]
+            p = Vec(-2 * s, 1)
 
     execute = minPartitionScore

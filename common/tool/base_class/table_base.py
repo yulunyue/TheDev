@@ -23,8 +23,6 @@ T = TypeVar("T")
 
 class TableBase(Generic[T]):
     _concrete_type: ConfigBase = None
-    filter_and = None
-    filter_or = None
 
     def __class_getitem__(cls, item):
         # 创建新类时保存具体类型（如 int）
@@ -50,7 +48,7 @@ class TableBase(Generic[T]):
             self.fp.write_file(dict())
         return self
 
-    def filter(self) -> List[T]:
+    def filter(self, **kw) -> List[T]:
         ret = []
         for k in self.config.keys():
             v = self.get(k)
@@ -63,7 +61,10 @@ class TableBase(Generic[T]):
     def to_web_view(self, **kw):
         return dict(
             type=THE_DEV_CONSTANT.WEB_VIEW_TYPE_TABLE,
-            data=dict(header=self.get_header(), body=self.get_body(**kw)),
+            data=dict(
+                header=self._concrete_type.to_web_view(),
+                body=[v.to_json() for v in self.filter(**kw)],
+            ),
         )
 
     def insert(self, id=None, **kw) -> T:
@@ -72,13 +73,11 @@ class TableBase(Generic[T]):
         r: ConfigBase = self.get(id)
         return r.update(id=id, **kw)
 
-    def get(self, key, name2="default") -> T:
+    def get(self, key) -> T:
         if key in self.instance_map:
             return self.instance_map[key]
         if key in self.config:
             config = self.config[key]
-        elif name2 is not None and name2 in self.config:
-            config = self.config[name2]
         else:
             self.config[key] = config = self._concrete_type.get_default_conifg()
         self.instance_map[key] = self._concrete_type(key)

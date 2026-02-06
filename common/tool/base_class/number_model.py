@@ -10,5 +10,9 @@ class NumberModel(BaseModel):
             try:
                 value = float(value)
             except Exception as e:
-                raise Exception(e, value)
+                raise Exception(f"[{e}][{value}]")
         return super().set_value(value)
+
+    @classmethod
+    def get_type(cls):
+        return "number"

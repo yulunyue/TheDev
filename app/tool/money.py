@@ -43,3 +43,6 @@ class Money:
         )
         db.save()
         return Node(code=200, value=r.id)
+
+    def query(self, **kw):
+        return get_r().to_web_view()

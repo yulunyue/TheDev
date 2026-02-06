@@ -1,4 +1,4 @@
-from common.util.export import TestBase, logger, get_function_info
+from common.util.export import TestBase, logger
 from common.tool.export import (
     ThreadRecord,
     OsUtil,
@@ -15,25 +15,31 @@ class TableConfigTest(TableConfig):
     b = NumberModel(1)
 
 
-def fun_call(self, a, b, d=1, f=2, **kw):
-    pass
-
-
 class TestConfig(TestBase):
 
     def test_config(self):
-        t = TableBase[TableConfigTest]().set_resource("data/setting/test_table.json")
+        t = TableBase[TableConfigTest]().set_resource("test_table")
         m = t.insert("a")
         self.expect(m.b.get_value(), 1)
+        self.expect_raise_error(
+            m.b.set_value, "a", error="[could not convert string to float: 'a'][a]"
+        )
         m.update(b=2)
         self.expect(m.b.get_value(), 2)
         m.b.set_value(1)
         self.expect(m.b.get_value(), 1)
+        self.expect(
+            t.to_web_view(),
+            {
+                "type": "table",
+                "data": {
+                    "header": [
+                        {"key": "a", "title": "a", "type": "str"},
+                        {"key": "b", "title": "b", "type": "number"},
+                        {"key": "id", "title": "id", "type": "str"},
+                    ],
+                    "body": [{"a": "", "b": 1, "id": "a"}],
+                },
+            },
+        )
         t.save()
-
-    def test_fun_call(self):
-        fun_info = get_function_info(fun_call)
-        self.expect(fun_info.name, "fun_call")
-        self.expect(fun_info.has_args, False)
-        self.expect(fun_info.has_kw, True)
-        self.expect(fun_info.args, ["a", "b"])

@@ -45,3 +45,11 @@ class TestBase:
             get_dev_log(f"data/log/diff/{c}/e.txt").info(e)
 
         assert a == e, f"{a}!={e}\n{info}"
+
+    def expect_raise_error(self, fun, *args, error="", **kw):
+        try:
+            fun(*args, **kw)
+        except Exception as e:
+            self.expect(str(e), error)
+        else:
+            raise Exception("no error")

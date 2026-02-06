@@ -1,4 +1,4 @@
-from typing import List
+from common.util.export import List, deque
 
 
 class Vec:
@@ -17,18 +17,15 @@ class Vec:
     def dot(self, b: "Vec") -> int:
         return self.x * b.x + self.y * b.y
 
-
-class Geo:
-
-    def set_points(self, vecs):
-        self.vecs: List[Vec] = vecs
-        return self
-
     # Andrew 算法，计算 points 的上凸包
-    def andrew_convex_hull(self):
-        q: List[Vec] = []
-        for p in self.vecs:
+    def andrew_convex_hull(self, vecs: List["Vec"]):
+        q: deque[Vec] = deque()
+        for p in vecs:
             while len(q) > 1 and (q[-1] - q[-2]).det(p - q[-1]) >= 0:
                 q.pop()
             q.append(p)
         return q
+
+    @classmethod
+    def make(self, arrry):
+        pass

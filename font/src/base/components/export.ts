@@ -29,12 +29,12 @@ import { Axies } from "./svg/comb/axies"
 
 DivFactory.register(Ct.DOM_TYPE_INPUT, () => new Input())
 DivFactory.register(Ct.DOM_TYPE_STRING, () => new Input())
-
+DivFactory.register(Ct.DOM_TYPE_NUMBER, () => new Input())
 DivFactory.register(Ct.DOM_TYPE_PRE, () => new Pre())
 DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())
 DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
 DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
-DivFactory.register(Ct.DOM_GRID_VIEW, () => new Grid())
+DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
 export {
     Select, Pre, FormRow as Row, TextArea, Util, web_socket, Data, Button,
     Div, div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,

@@ -13,6 +13,8 @@ class ConfigBase:
 
     def __init__(self, key: str):
         self.key = key
+
+    def load(self):
         self.params: Dict[str, BaseModel] = dict()
         for k, v in self._params_cls_map.items():
             c = v.clone().set_datasource(self).set_key(k)
@@ -21,20 +23,8 @@ class ConfigBase:
         self.init()
 
     @classmethod
-    def get_headers(cls):
-        return cls._params_cls_map.keys()
-
-    @classmethod
-    def get_row_datas(cls):
-        ret = []
-        for v in cls._ins.values():
-            ret.append([])
-            for k in cls.get_headers():
-                u = getattr(v, k)
-                if hasattr(u, "get_value"):
-                    u = u.get_value()
-                ret[-1].append(u)
-        return ret
+    def get_headers_keys(cls):
+        return cls.get_params().keys()
 
     @classmethod
     def new(cls, key, f=None):
@@ -51,18 +41,27 @@ class ConfigBase:
             if "/" not in resource:
                 resource = CONFIG_SETTING_DIR + "/" + resource + ".json"
             resource = File.new(resource).write_if_not_exists(dict())
+        for p in self.get_params().values():
+            p.set_datasource(self)
         self.resource: File = resource
         return self
 
-    def __new__(cls, *args):
-        cls.init_param()
-        return super().__new__(cls)
+    # def __new__(cls, *args):
+    #     cls.init_param()
+    #     return super().__new__(cls)
 
     @classmethod
     def get_params(cls):
         if cls._params_cls_map is None:
             cls.init_param()
         return cls._params_cls_map
+
+    @classmethod
+    def to_web_view(self):
+        return [
+            dict(key=k, value=v.get_title(), type=v.get_type())
+            for k, v in self.get_params().items()
+        ]
 
     @classmethod
     def get_default_conifg(cls):
@@ -87,13 +86,13 @@ class ConfigBase:
         return self.resource.get_param_value(self, param)
 
     def update(self, **kw):
+        p = self.get_params()
         for k, v in kw.items():
-            self.params[k].set_value(v)
+            p[k].set_value(v)
         return self
 
     @classmethod
     def init_param(cls):
-        # self._config.update(self.get_config())
         from common.tool.base_class.model import BaseModel
 
         cls._params_cls_map = dict()
@@ -104,9 +103,10 @@ class ConfigBase:
             if not isinstance(v, BaseModel):
                 continue
             cls._params_cls_map[key] = v.set_key(key)
+        return cls._params_cls_map
 
     def to_json(self):
-        return {v.key: v.get_value() for v in self.params.values()}
+        return {v.key: v.get_value() for v in self.get_params().values()}
 
     def save(self):
         if self.resource is None:
