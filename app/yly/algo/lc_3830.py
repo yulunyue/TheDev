@@ -22,7 +22,7 @@ class Solution(MockCf):
                 p.append([p[-1][0] + 1, c])
         return p
 
-    def maxSumTrionic(self, nums: List[int]) -> int:
+    def longestAlternating(self, nums: List[int]) -> int:
         n = len(nums)
         pres = self.calc_p(nums)
         sufs = self.calc_p(nums[::-1])[::-1]
@@ -38,4 +38,4 @@ class Solution(MockCf):
                 ans = max(pres[i - 1][0] + sufs[i + 1][0], ans)
         return ans
 
-    execute = maxSumTrionic
+    execute = longestAlternating
