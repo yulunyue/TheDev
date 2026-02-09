@@ -35,7 +35,7 @@ class Solution(MockCf):
             if c == 0:
                 continue
             self.logger.map(i=i, c=c, p=pres[i - 1], s=sufs[i + 1])
-            if pres[i - 1][1] * c < 0 and c * sufs[i + 1][1] > 0:
+            if pres[i - 1][1] * c <= 0 and c * sufs[i + 1][1] >= 0:
                 ans = max(pres[i - 1][0] + sufs[i + 1][0], ans)
         return ans
 
