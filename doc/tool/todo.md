@@ -1,5 +1,8 @@
-```lc
+```lc1
 app.yly.algo.lc_3826::Solution::run
+```
+```lc2
+app.yly.algo.lc_3738::Solution::run
 ```
 ```lg
 app.yly.algo.lg_p3128::Solution::run

@@ -34,9 +34,9 @@ class TestConfig(TestBase):
                 "type": "table",
                 "data": {
                     "header": [
-                        {"key": "a", "title": "a", "type": "str"},
-                        {"key": "b", "title": "b", "type": "number"},
-                        {"key": "id", "title": "id", "type": "str"},
+                        {"key": "a", "value": "a", "type": "str"},
+                        {"key": "b", "value": "b", "type": "number"},
+                        {"key": "id", "value": "id", "type": "str"},
                     ],
                     "body": [{"a": "", "b": 1, "id": "a"}],
                 },
