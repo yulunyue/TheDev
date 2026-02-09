@@ -8,6 +8,7 @@ class Solution(MockCf):
             case1=dict(nums=[3, 2, 1, 2, 3, 2, 1], result=4),
             case2=dict(nums=[1, 1], result=1),
             case3=dict(nums=[1, 2, 2, 1], result=3),
+            case4=dict(nums=[1, 2, 3, 3, 2, 1], result=3),
         )
 
     def calc_p(self, nums):
