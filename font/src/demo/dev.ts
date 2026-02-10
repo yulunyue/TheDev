@@ -14,7 +14,8 @@ export class Dev extends Div {
 
     init_node(): void {
         this.add_childs([
-            this.get_window_info()
+            this.get_window_info(),
+            this.get_table()
         ])
     }
     get_window_info() {
@@ -31,7 +32,7 @@ export class Dev extends Div {
             console.log(v)
         })
     }
-    test_table_data() {
+    get_table() {
         let table = new Table()
         table.set_data({
             header: [{
@@ -44,14 +45,14 @@ export class Dev extends Div {
             }, {
                 key: "method", title: "操作", type: "btns", value: ["remove", "add"]
             }],
-            body: Util.array(27, (i: number) => {
+            body: Util.array(2, (i: number) => {
                 return {
                     a: i,
                     b: "value" + i
                 }
             })
         })
-        this.add_childs([table])
+        return table
     }
     test_graph() {
         let node = to_node({

@@ -1,4 +1,4 @@
-from .func.task import TASK_MANAGER, get_task, Task
+from .task.manage import TASK_MANAGER, get_task, Task
 from .thread_util import ThreadRecord
 from .os_util import OsUtil
 from .base_class.table_base import TableBase, TableConfig

@@ -17,7 +17,7 @@ export class TrHead extends Div {
     init_style(): void {
         this.set_style({
             border: "1px solid #000",
-            position: "sticky",
+            // position: "sticky",
             top: 0,
             zIndex: "10",
             backgroundColor: "#fff",

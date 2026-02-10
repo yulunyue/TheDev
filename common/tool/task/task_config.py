@@ -1,5 +1,4 @@
-from common.util.export import Module, get_log, THE_DEV_CONSTANT, File
-from common.tool.base_class.table_base import (
+from ..base_class.table_base import (
     TableBase,
     StrModel,
     NumberModel,
@@ -8,10 +7,6 @@ from common.tool.base_class.table_base import (
     DictModel,
 )
 from ..os_util import OsUtil
-import traceback
-import _thread
-import time
-from typing import Dict, List
 
 
 class TaskConfig(TableConfig):
@@ -71,32 +66,3 @@ class TaskConfig(TableConfig):
 
     def __repr__(self):
         return f"result:{self.result}"
-
-
-class Task:
-    def __init__(self, name):
-        self.source = TableBase[TaskConfig]().set_resource(name)
-
-    def loop(self):
-        for t in self.source.filter():
-            t.exec()
-        self.source.save()
-        return self
-
-    def run(self):
-        while True:
-            self.loop()
-            time.sleep(60)
-
-    def start(self):
-        _thread.start_new_thread(self.run, ())
-        return self
-
-
-TASK_MANAGER: Dict[str, Task] = dict()
-
-
-def get_task(name="taskconfig") -> Task:
-    if name not in TASK_MANAGER:
-        TASK_MANAGER[name] = Task(name)
-    return TASK_MANAGER[name]

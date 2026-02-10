@@ -13,6 +13,7 @@ from common.algo.base.geo.vec import Vec
 
 class Solution(MockCf):
     def get_cases(self):
+        """ """
         return dict(
             case0=dict(nums=[1, 1, 1], k=3, result=3),
             case1=dict(nums=[1, 1, 1], k=2, result=4),

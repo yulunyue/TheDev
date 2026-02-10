@@ -15,7 +15,7 @@ export class TBody extends Div {
     }
     init_style(): void {
         this.set_style({
-            height: 400,
+            maxHeight: 400,
             overflowY: "auto"
         })
     }

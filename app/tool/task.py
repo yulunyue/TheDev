@@ -1,11 +1,11 @@
 from common.tool.export import get_task
 
 
-def start_task():
-    get_task().start()
-
-
 class TaskTool:
 
+    def start(self):
+        s = get_task().start()
+        return s.source.to_web_view()
+
     def query(self, **kw):
-        return
+        return get_task().source.to_web_view()
