@@ -14,8 +14,8 @@ test key=search.*mctssearch.py
 test key=test_node.py
 ```
 ```t3
-exec key=test_config fun_name=TestConfig::test_config
+exec key=test_config fun_name=TestTool::test_base64
 ```
 ```debug
-exec key=test_api fun_name=TestApi::test_api2
+exec key=test_config fun_name=TestConfig::test_config
 ```

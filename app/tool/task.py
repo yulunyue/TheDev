@@ -2,6 +2,7 @@ from common.tool.export import get_task
 
 
 class TaskTool:
+    API_ROUTE = "/app/task"
 
     def start(self):
         s = get_task().start()

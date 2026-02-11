@@ -9,6 +9,7 @@ class TestTool(TestBase):
     def test_base64(self):
         a = base64_encode("s")
         self.expect(a, "cw==")
+        self.expect(base64_encode(a), "cw==")
 
     def test_ii(self):
         self.expect(ii("2 4  a9 9a 7"), [2, 4, 7])

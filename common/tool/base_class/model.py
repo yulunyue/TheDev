@@ -77,4 +77,4 @@ class BaseModel:
         return self.__add__(value)
 
     def __repr__(self) -> str:
-        return f"{self.key}:{self.get_value()}"
+        return f"{self.key}"

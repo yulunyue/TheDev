@@ -15,7 +15,7 @@ from common.util.export import (
 
 
 class TableConfig(ConfigBase):
-    id = StrModel()
+    pass
 
 
 T = TypeVar("T")
@@ -42,8 +42,11 @@ class TableBase(Generic[T]):
         logger.info(fp)
         self.config = dict()
         self.instance_map: Dict[str, ConfigBase] = dict()
+        self.idx = 0
         if self.fp.exists():
-            self.config.update(self.fp.read_file())
+            for k, v in self.fp.read_file().items():
+                t: ConfigBase = self.insert(k)
+                t.update(**v)
         else:
             self.fp.write_file(dict())
         return self
@@ -51,49 +54,40 @@ class TableBase(Generic[T]):
     def filter(self, **kw) -> List[T]:
         ret = []
         for k in self.config.keys():
-            v = self.get(k)
+            v: ConfigBase = self.get(k)
+            # logger.map(v=id(v), k=k, key=v.key, d=v.to_json())
             ret.append(v)
         return ret
 
     def all(self):
         return self.filter()
 
-    def to_web_view(self, **kw):
-        return dict(
-            type=THE_DEV_CONSTANT.WEB_VIEW_TYPE_TABLE,
-            data=dict(
-                header=self._concrete_type.to_web_view(),
-                body=[v.to_json() for v in self.filter(**kw)],
-            ),
-        )
-
-    def insert(self, id=None, **kw) -> T:
-        if id is None:
-            id = len(self.instance_map)
-        r: ConfigBase = self.get(id)
-        return r.update(id=id, **kw)
+    def insert(self, idx=None) -> T:
+        self.idx += 1
+        if idx is None:
+            idx = self.idx
+        return self.get(idx)
 
     def get(self, key) -> T:
         if key in self.instance_map:
             return self.instance_map[key]
-        if key in self.config:
-            config = self.config[key]
-        else:
-            self.config[key] = config = self._concrete_type.get_default_conifg()
         self.instance_map[key] = self._concrete_type(key)
-        self.instance_map[key].set_resource(self).update(**config)
+        self.instance_map[key].set_resource(self)
+        self.config[key] = dict()
         return self.instance_map[key]
 
     def save(self):
         self.fp.write_file(self.config)
         return self
 
-    def update_param_value(self, row: ConfigBase, ins: BaseModel, vlaue):
-        if row.key not in self.config:
-            self.config[row.key] = dict()
-        self.config[row.key][ins.key] = vlaue
+    def update_param_value(self, row: ConfigBase, ins: BaseModel, value):
+        # if row.key not in self.config:
+        #     self.config[row.key] = dict()
+        # logger.map(k1=row.key, k2=ins.key, v=value)
+        self.config[row.key][ins.key] = value
 
     def get_param_value(self, row: ConfigBase, ins: BaseModel):
+        # logger.map(key=row.key, k=ins.key)
         if ins.key not in self.config[row.key]:
-            self.config[row.key][ins.key] = ins.default_value
+            return ins.default_value
         return self.config[row.key][ins.key]

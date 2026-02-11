@@ -6,3 +6,4 @@ tornado
 gunicorn
 sortedcontainers
 pyyaml
+pymysql

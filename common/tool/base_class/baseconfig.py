@@ -16,7 +16,7 @@ class ConfigBase:
 
     def load(self):
         self.params: Dict[str, BaseModel] = dict()
-        for k, v in self._params_cls_map.items():
+        for k, v in self.get_params().items():
             c = v.clone().set_datasource(self).set_key(k)
             setattr(self, k, c)
             self.params[k] = c
@@ -26,12 +26,12 @@ class ConfigBase:
     def get_headers_keys(cls):
         return cls.get_params().keys()
 
-    @classmethod
-    def new(cls, key, f=None):
-        if key not in cls._ins:
-            cls._ins[key] = cls(key).set_resource(f)
-            cls._ins[key].save()
-        return cls._ins[key]
+    # @classmethod
+    # def new(cls, key, f=None):
+    #     if key not in cls._ins:
+    #         cls._ins[key] = cls(key).set_resource(f)
+    #         cls._ins[key].save()
+    #     return cls._ins[key]
 
     def init(self):
         pass
@@ -41,20 +41,15 @@ class ConfigBase:
             if "/" not in resource:
                 resource = CONFIG_SETTING_DIR + "/" + resource + ".json"
             resource = File.new(resource).write_if_not_exists(dict())
-        for p in self.get_params().values():
-            p.set_datasource(self)
+        self.load()
         self.resource: File = resource
         return self
 
-    # def __new__(cls, *args):
-    #     cls.init_param()
-    #     return super().__new__(cls)
-
     @classmethod
-    def get_params(cls):
-        if cls._params_cls_map is None:
-            cls.init_param()
-        return cls._params_cls_map
+    def get_params(self):
+        if self._params_cls_map is None:
+            self.init_param()
+        return self._params_cls_map
 
     @classmethod
     def to_web_view(self):
@@ -86,9 +81,10 @@ class ConfigBase:
         return self.resource.get_param_value(self, param)
 
     def update(self, **kw):
-        p = self.get_params()
+
         for k, v in kw.items():
-            p[k].set_value(v)
+            if k in self.params:
+                self.params[k].set_value(v)
         return self
 
     @classmethod
@@ -106,7 +102,7 @@ class ConfigBase:
         return cls._params_cls_map
 
     def to_json(self):
-        return {v.key: v.get_value() for v in self.get_params().values()}
+        return {v.key: v.get_value() for v in self.params.values()}
 
     def save(self):
         if self.resource is None:

@@ -19,7 +19,11 @@ def uid(s):
 
 
 def base64_encode(s: str):
-    return base64.b64encode(s.encode()).decode()
+    try:
+        base64.b64decode(s, validate=True)
+        return s
+    except Exception as e:
+        return base64.b64encode(s.encode()).decode()
 
 
 def ii(s: str):

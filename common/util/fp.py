@@ -20,10 +20,12 @@ class File:
             raise Exception(path)
         self.path = path.replace("\\", "/")
         self.dirs = path.split("/")
-        self.file_name = self.dirs.pop()
+        self.name = self.file_name = self.dirs.pop()
+        self.type = ""
         names = self.file_name.split(".")
-        self.name = names[0]
-        self.type = names[-1]
+        if len(names) > 1:
+            self.type = names.pop()
+            self.name = ".".join(names)
         self.m_time = 0
         self.data = b""
 
@@ -45,7 +47,9 @@ class File:
         self.get_config()[param.key] = value
 
     def parent(self):
-        return File("/".join(self.dirs))
+        dirs = self.get_abs_path().split("/")
+        dirs.pop()
+        return File("/".join(dirs))
 
     def get_m_time(self):
         return os.path.getmtime(self.path)
@@ -213,8 +217,8 @@ class File:
                 ret.append(f)
         return ret
 
-    def list_tree_file(self):
-        return self.list_dir(-1)
+    def list_tree_file(self, with_dir=False):
+        return self.list_dir(-1, with_dir=with_dir)
 
     def is_dir(self):
         return os.path.isdir(self.path)

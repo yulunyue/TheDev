@@ -21,3 +21,4 @@ from .re_util import ReUtil
 from .str_util import StrUtil
 from .toolbase import ToolBase
 from .file_handers.py_file import PyFile
+from .front.table import FrontTable

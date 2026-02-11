@@ -40,12 +40,8 @@ export class Api extends Div {
     init_event(): void {
         this.uri.on_change((src: Node, dst: Node) => {
             web_dom.post("/app/api/get_api_call_info", { key: dst.key }, (d) => {
-                console.log(d.data)
                 this.input.set_option(d)
             })
-            // let kw = oj_to_node(dst.data.kwargs)
-            // 
-            // 
         })
         this.exec_btn.on_click(() => this.execute())
     }

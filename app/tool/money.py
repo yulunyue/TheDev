@@ -1,9 +1,16 @@
-from common.tool.export import TableConfig, StrModel, NumberModel, TableBase
+from common.tool.export import (
+    TableConfig,
+    StrModel,
+    NumberModel,
+    TableBase,
+    FrontTable,
+    DateModel,
+)
 from common.util.export import Node, enum_cls, time
 
 
 class MoneyConfig(TableConfig):
-    date = StrModel()
+    date = DateModel()
     money = NumberModel()
     user = StrModel()
     detail = StrModel()
@@ -42,7 +49,7 @@ class Money:
             check=check,
         )
         db.save()
-        return db.to_web_view()
+        return FrontTable().load_from_table(db)
 
     def query(self, **kw):
-        return get_r().to_web_view()
+        return FrontTable().load_from_table(get_r())
