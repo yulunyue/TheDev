@@ -34,7 +34,7 @@ export class Api extends Div {
     init_style(): void {
         this.set_style_flex(
             Constant.VERTICAL
-        ).full()
+        )
         this.result.set_flex_grow(1)
     }
     init_event(): void {

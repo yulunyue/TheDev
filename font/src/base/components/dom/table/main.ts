@@ -82,7 +82,7 @@ export class Table extends Div {
             this.head_div,
             this.table_container,
             this.tail_div
-        ]).full()
+        ])
     }
 
     init_style() {

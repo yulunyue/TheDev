@@ -36,4 +36,5 @@ from .base.bin_util import (
     ss_or_dp,
     low_high_dp,
 )
+from .base.block import Block
 from .base.xor_basis import XorBais

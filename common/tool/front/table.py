@@ -1,22 +1,32 @@
-from common.util.node import Node
+from common.util.export import Node, List, Dict, Any
 from common.tool.export import TableBase, ConfigBase
 
 
 class FrontTable(Node):
     def init(self):
-        self.header = dict()
-        self.body = dict()
+        self.header: List[Dict] = []
+        self.body: List[Dict] = []
 
-    def set_header(self, header):
-        self.header = header
+    def set_header(self, *header):
+        self.header = []
+        for h in header:
+            if isinstance(h, dict):
+                self.header.append(h)
+            else:
+                self.header.append(dict(key=h, value=h))
+
         return self
 
     def set_body(self, body):
         self.body = body
         return self
 
+    def append_row(self, _uid, **kw):
+        self.body.append(kw)
+        return self
+
     def load_from_table(self, t: TableBase[ConfigBase], **kw):
-        return self.set_header(t._concrete_type.to_web_view()).set_body(
+        return self.set_header(*t._concrete_type.to_web_view()).set_body(
             [v.to_json() for v in t.filter(**kw)],
         )
 

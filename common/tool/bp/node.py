@@ -4,7 +4,6 @@ from .bp_record import BpRecord, logger
 
 class BpNode:
     key = None
-    state = THE_DEV_CONSTANT.STATE_WAIT
 
     def __init__(self):
         self.value = None

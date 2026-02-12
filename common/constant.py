@@ -1,17 +1,11 @@
 class Constant:
     APP_NAME = "TheDev"
-    MOD = (10**9) + 7
-    inf = float("inf")
-    WEB_VIEW_TYPE_ENUM = "enum"
-    WEB_VIEW_TYPE_SEARCH = "search"
-    KEY_BODY = "body"
     CODE_500 = 500
     CODE_200 = 200
-    STATE_WAIT = "WAIT"
-    STATE_DOING = "DOING"
-    STATE_FINISH = "FINISH"
-    STATE_ERROR = "ERROR"
-    FlowChartTD = "flowchart TD"
+    K_TYPE = "type"
+    K_KEY = "key"
+    K_DATA = "data"
+    K_VALUE = "value"
 
 
 class CT:
@@ -22,4 +16,4 @@ class CT:
     max = lambda a, b: a if a > b else b
 
 
-THE_DEV_CONSTANT = Constant()
+C = THE_DEV_CONSTANT = Constant()
