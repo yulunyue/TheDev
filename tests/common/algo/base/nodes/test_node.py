@@ -1,4 +1,4 @@
-from common.algo.base.nodes.node import Node
+from common.algo.base.nodes.node import Node,
 from common.algo.base.nodes.util import load_from_edges
 from common.util.export import TestBase
 

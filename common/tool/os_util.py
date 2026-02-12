@@ -1,8 +1,14 @@
 import subprocess
-from common.util.export import File, TheDevLoger, get_dev_log, logger, Thread, List
-import os
-import sys
-import re
+from common.util.export import (
+    File,
+    TheDevLoger,
+    get_dev_log,
+    logger,
+    Thread,
+    List,
+    os,
+    sys,
+)
 
 
 class OsUtil:

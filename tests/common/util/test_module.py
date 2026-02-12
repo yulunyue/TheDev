@@ -1,5 +1,11 @@
-from common.util.test import TestBase
-from common.util.module import Module, get_function_info
+from common.util.export import (
+    TestBase,
+    Module,
+    get_function_info,
+    enum_cls,
+    TypeVar,
+    Generic,
+)
 
 
 class Cls1:
@@ -37,3 +43,27 @@ class TestModule(TestBase):
         self.expect(fun_info.has_args, False)
         self.expect(fun_info.has_kw, True)
         self.expect(fun_info.args, ["a", "b"])
+
+    def test_fun_auto(self):
+
+        def fun_call2(a: enum_cls("22")):
+            pass
+
+        fun_info = get_function_info(fun_call2).to_json()
+        self.expect(
+            fun_info,
+            {
+                "key": "fun_call2",
+                "title": "fun_call2",
+                "childs": [
+                    {
+                        "title": "a",
+                        "default_value": None,
+                        "type": "enum",
+                        "is_pos": True,
+                        "childs": ["22"],
+                        "key": "a",
+                    }
+                ],
+            },
+        )

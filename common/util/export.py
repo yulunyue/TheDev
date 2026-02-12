@@ -2,8 +2,8 @@ from .log import (
     get_log,
     Logger,
     TheDevLoger,
-    get_dev_log,
     log,
+    get_dev_log,
     log1,
     log2,
     logger,
@@ -31,6 +31,7 @@ from .list_util import ListUtil
 from .node import Node, search_cls, enum_cls
 from .apicall import ApiCall
 from .io.export import TcpServer, TcpClient, TempFile
+import re
 from typing import (
     List,
     Dict,

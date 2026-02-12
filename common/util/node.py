@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Type
 from ..constant import THE_DEV_CONSTANT, CT
 from .tool import uid
 
@@ -117,9 +117,13 @@ def cls_util(tp, **kw):
     return T
 
 
-def enum_cls(*enums):
+def enum_cls(*enums) -> Type[Node]:
     return cls_util("enum", childs=list(enums))
 
 
 def search_cls(url):
     return cls_util("search", url=url)
+
+
+def file_cls():
+    return cls_util("file")
