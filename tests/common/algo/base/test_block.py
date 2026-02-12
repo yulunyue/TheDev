@@ -10,5 +10,6 @@ class TestBlock(TestBase):
         b = Block(8)
         self.expect(b.n, 3)
         b.update(2, 5, 1)
-        self.expect(b.data, [0, 0, 1, 1, 1, 1, 0, 0])
+        self.expect(b.data, [0, 0, 1, 0, 0, 0, 0, 0])
+        self.expect(b.todo, [0, 1, 0])
         self.expect(b.query(0, 7), 4)

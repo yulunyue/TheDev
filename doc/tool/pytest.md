@@ -17,5 +17,5 @@ test key=test_node.py
 exec key=test_block fun_name=TestBlock::test_all
 ```
 ```debug
-exec key=test_config fun_name=TestConfig::test_config
+exec key=test_block fun_name=TestBlock::test_all
 ```

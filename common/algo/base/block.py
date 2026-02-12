@@ -18,6 +18,9 @@ class Block:
         return i, i * self.n
 
     def update_area(self, l, r, v):
+        if l + self.n - 1 == r:
+            self.do(l // self.n, v)
+            return
         for i in range(l, r + 1):
             self.data[i] += v
 
@@ -58,3 +61,10 @@ class Block:
             ans += self.query_todo(il + 1)
             il += 1
         return ans
+
+    def down(self):
+        for i, v in enumerate(self.todo):
+            if v:
+                for j in range(self.n):
+                    self.data[j + i * self.n] += v
+                self.todo[i] = 0
