@@ -10,7 +10,7 @@ class ApiGlobal:
         return MainHander.POST_API.to_json()
 
     def get_api_call_info(self, key: str, **kw):
-        return get_function_info(MainHander.POST_API.fun_map[key]).to_json()
+        return get_function_info(MainHander.POST_API.fun_map[key])
 
     def test(
         self,
@@ -20,4 +20,4 @@ class ApiGlobal:
         d="1",
         **kw,
     ):
-        return Node().set_value(f"{[a,b,c,d]}").to_json()
+        return Node().set_value(dict(a=a, b=b, c=c, d=d))
