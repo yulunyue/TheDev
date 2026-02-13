@@ -6,7 +6,8 @@ import {
     Ct, Node, to_node, Chart,
     Svg,
     Grid,
-    web_dom
+    web_dom,
+    FileInput
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
 export class Dev extends Div {
@@ -15,7 +16,8 @@ export class Dev extends Div {
     init_node(): void {
         this.add_childs([
             this.get_window_info(),
-            this.get_table()
+            this.get_table(),
+            new FileInput()
         ])
     }
     get_window_info() {

@@ -1,6 +1,6 @@
-import { Div } from "./div";
-import { Style, Node, Fn1 } from "../../web/cls"
-import Constant from "../../web/constant";
+import { Div } from "../div";
+import { Style, Node, Fn1 } from "../../../web/cls"
+import Constant from "../../../web/constant";
 export class Button extends Div {
     constructor() {
         super("button")

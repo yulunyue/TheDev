@@ -135,11 +135,41 @@ class WebDom {
         }
 
     }
+
     hander_res(node: Node) {
         return node
     }
     post(url: string, data: any, call_back?: Fn1Void<Node>) {
         this.xml_http_request(this.HTTP_POST_METHOD, url, data, call_back)
+    }
+    post_file(path: string, formData: FormData) {
+        const xhr = new XMLHttpRequest();
+        let url = this.url(path)
+        xhr.open('POST', url, true);
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                dlg.open_progress_bar(percent)
+            }
+        });
+
+        // 完成监听
+        xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const data = JSON.parse(xhr.responseText);
+
+            } else {
+
+            }
+            dlg.close()
+        });
+
+        // 错误监听
+        xhr.addEventListener('error', () => {
+            dlg.close()
+        });
+        xhr.send(formData);
+
     }
     get(url: string, data: any, call_back?: Fn1Void<Node>) {
         this.xml_http_request(this.HTTP_GET_METHOD, url, data, call_back)

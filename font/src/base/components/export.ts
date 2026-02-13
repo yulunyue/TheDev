@@ -1,7 +1,8 @@
-import { input, Input, text_area, TextArea, TextAreaRich } from "./dom/input"
-import { search, Search } from "./dom/search"
+import { input, Input, text_area, TextArea, TextAreaRich } from "./dom/form/input"
+import { FileInput } from "./dom/form/file"
+import { search, Search } from "./dom/form/search"
 import { SvgNode, svg } from "./svg/svg"
-import { button, Button } from "./dom/button"
+import { button, Button } from "./dom/form/button"
 import { div, Div, DivFactory, Container } from "./dom/div"
 import { GNode } from "./svg/gnode"
 import { Progress } from "./svg/comb/progress"
@@ -16,7 +17,7 @@ import web_dom from "../../base/web/web_dom"
 import { Line } from "./svg/line"
 import { Form } from "./dom/form/main"
 import { FormRow } from "./dom/form/row"
-import { Select } from "./dom/select";
+import { Select } from "./dom/form/select";
 import Mock from "../../model/mock"
 import Util from "../tool/util"
 import Data from "../tool/data"
@@ -35,10 +36,11 @@ DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())
 DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
 DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
 DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
+DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
 export {
     Select, Pre, FormRow as Row, TextArea, Util, web_socket, Data, Button,
     Div, div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, button, input, tree, Form, node,
     to_node, Grid, ListUi, Table, Ct, search, Search, TextAreaRich, label,
-    Container, Label, oj_to_node, Chart, Axies, Mock
+    Container, Label, oj_to_node, Chart, Axies, Mock, FileInput
 }

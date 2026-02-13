@@ -10,8 +10,8 @@ export interface Style {
     right?: number | string
     bottom?: number | string
     top?: number | string
-    width?: number
-    height?: number
+    width?: number | string
+    height?: number | string
     textWrap?: "wrap"
     maxWidth?: number
     maxHeight?: number

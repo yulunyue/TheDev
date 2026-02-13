@@ -78,5 +78,8 @@ class Dig {
     close() {
         return this.get_dialog().hide()
     }
+    open_progress_bar(s: any) {
+
+    }
 }
 export default new Dig()
