@@ -23,23 +23,38 @@ class Block:
         self.data[i] = v
 
     def update_area(self, i, l, r, v):
-        l1 = i * self.n
-        r1 = l1 + self.n
-        if r1 >= self.size:
-            r1 = self.size
         if r - l + 1 == self.n:
             self.do(i, v)
             return
-        for j in range(l1, r1):
-            u = 0
-            if l <= j <= r:
-                u = v
-            self.set_data(j, self.data[j] + u + self.todo[i])
-        self.todo[i] = 0
+        for j in range(l, r + 1):
+            self.set_data(j, self.data[j] + v)
+        self.down(i)
 
     def do(self, i, v):
         self.todo[i] += v
         return self
+
+    def get(self, i):
+        return self.data[idx] + self.todo[i // self.n]
+
+    def query_data(self, l, r):
+        return sum(self.data[l : r + 1])
+
+    def query_area(self, l, r, i):
+        return self.query_data(l, r) + self.query_todo(i)
+
+    def query_todo(self, i):
+        if i == self.n - 1:
+            return self.todo[i] * (self.size - i * self.n)
+        return self.todo[i] * self.n
+
+    def down(self, i):
+        if self.todo[i] == 0:
+            return
+        for j in range(self.n):
+            idx = j + i * self.n
+            self.set_data(idx, self.data[idx] + self.todo[i])
+        self.todo[i] = 0
 
     def update(self, l, r, v):
         il, lr = self.get_l(l)
@@ -53,18 +68,7 @@ class Block:
             self.do(il, v)
             il += 1
 
-    def get(self, i):
-        return self.data[idx] + self.todo[i // self.n]
-
-    def query_area(self, l, r, i):
-        return sum(self.data[l : r + 1]) + self.todo[i] * (r - l + 1)
-
-    def query_todo(self, i):
-        if i == self.n - 1:
-            return self.todo[i] * (self.size - i * self.n)
-        return self.todo[i] * self.n
-
-    def query_range(self, l, r):
+    def query(self, l, r):
         il, lr = self.get_l(l)
         ir, rl = self.get_r(r)
         ans = 0
@@ -77,15 +81,3 @@ class Block:
             ans += self.query_todo(il + 1)
             il += 1
         return ans
-
-    def down(self):
-        for i, v in enumerate(self.todo):
-            if v:
-                for j in range(self.n):
-                    self.data[j + i * self.n] += v
-                self.todo[i] = 0
-
-    def find(self, l, r, target):
-        il, lr = self.get_l(l)
-        ir, rl = self.get_r(r)
-        return

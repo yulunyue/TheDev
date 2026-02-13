@@ -12,8 +12,13 @@ class Bk(Block):
         return super().update_area(l, r, v)
 
     def set_data(self, i, v):
-        self.pos
+        self.pos[v] = i
         return super().set_data(i, v)
+
+    def find(self, r, target):
+        for j in range(r):
+            i = j // self.n
+        return
 
 
 class Solution(MockCf):
