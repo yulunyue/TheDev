@@ -1,7 +1,7 @@
-import { Div } from "./div";
-import web_dom from "../../web/web_dom"
+import { Div } from "../div";
+import web_dom from "../../../web/web_dom"
 import { Title, Button } from "./button";
-import Constant from "../../web/constant";
+import Constant from "../../../web/constant";
 export class Input extends Div {
     el: HTMLInputElement
     constructor() {
@@ -22,10 +22,11 @@ export class Input extends Div {
             outline: "none",
             margin: Constant.DEFAULT_MARGIN,
             padding: Constant.DEFAULT_PADDING,
+            width: `calc(100% - ${(Constant.DEFAULT_MARGIN + Constant.DEFAULT_PADDING) * 2}px)`,
             borderTop: "none",
             borderLeft: "none",
             borderRight: "none",
-            width: 1
+
         })
     }
     render_option() {

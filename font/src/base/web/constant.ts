@@ -54,6 +54,7 @@ class Constant {
     DOM_TYPE_TABLE = "table"
     DOM_TYPE_GRID = "grid"
     DOM_TYPE_NUMBER = "number"
+    DOM_TYPE_FILE = "file"
 
 }
 export default new Constant()

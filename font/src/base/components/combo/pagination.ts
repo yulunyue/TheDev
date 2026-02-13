@@ -1,9 +1,9 @@
-import { Div } from "./div";
-import { Span } from "./label";
-import { Select } from "./select";
+import { Div } from "../dom/div";
+import { Span } from "../dom/label";
+import { Select } from "../dom/form/select";
 import { Dom, Node, to_node } from "../../web/cls";
-import { Button } from "./button";
-import { Input } from "./input";
+import { Button } from "../dom/form/button";
+import { Input } from "../dom/form/input";
 import Util from "../../tool/util"
 import Constant from "../../web/constant";
 export class Pagination extends Div {

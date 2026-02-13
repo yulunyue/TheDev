@@ -2,10 +2,9 @@ import { Div } from "../div";
 import Ct from "../../../web/constant"
 import web from "../../../web/web_dom"
 import { Node, to_node } from "../../../web/cls";
-import { Input } from "../input";
-import { Button, Buttons } from "../button";
+import { Input } from "../form/input";
 import { Label } from "../label"
-import { Pagination } from "../pagination";
+import { Pagination } from "../../combo/pagination";
 import Util from "../../../tool/util"
 import { Constant } from "../../export";
 import { BodyTd } from "./td";

@@ -7,8 +7,8 @@ import { Node } from "../../../web/cls";
 import { SvgNode, svg } from "../svg";
 import { Div } from "../../dom/div";
 import Constant from "../../../web/constant";
-import { button } from "../../dom/button";
-import { Input, input } from "../../dom/input";
+import { button } from "../../dom/form/button";
+import { Input, input } from "../../dom/form/input";
 
 class ProgrePoint extends GNode {
     rect: Rect

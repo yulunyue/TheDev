@@ -19,8 +19,6 @@ class Solution(MockCf):
             if v in last_idx:
                 for j in range(last_idx[v], i):
                     bs.update(j, i, -u)
-            bs.down()
-            self.logger.info(bs.data[: i + 1])
             last_idx[v] = i
 
     execute = longestBalanced

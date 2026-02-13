@@ -23,9 +23,6 @@ th {
 
 }
 
-tr:nth-child(even) {
-    background-color: #dddddd;
-}
 .load_gif {
     background-image: url('./resource/img/load.gif');
 }

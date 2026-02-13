@@ -1,6 +1,13 @@
 from typing import Dict
 from common.third_util.http import MainHander
-from common.util.export import File, get_function_info, Node, enum_cls, search_cls
+from common.util.export import (
+    File,
+    get_function_info,
+    Node,
+    enum_cls,
+    search_cls,
+    file_cls,
+)
 
 
 class ApiGlobal:
@@ -11,6 +18,9 @@ class ApiGlobal:
 
     def get_api_call_info(self, key: str, **kw):
         return get_function_info(MainHander.POST_API.fun_map[key])
+
+    def post_file(self, file: file_cls):
+        pass
 
     def test(
         self,
