@@ -26,6 +26,8 @@ class Block:
         if r - l + 1 == self.n:
             self.do(i, v)
             return
+        self.set_datas(i,l,r,v)
+    def set_datas(self,i,l,r,v):
         for j in range(l, r + 1):
             self.set_data(j, self.data[j] + v)
         self.down(i)
@@ -35,7 +37,7 @@ class Block:
         return self
 
     def get(self, i):
-        return self.data[idx] + self.todo[i // self.n]
+        return self.data[i] + self.todo[i // self.n]
 
     def query_data(self, l, r):
         return sum(self.data[l : r + 1])
