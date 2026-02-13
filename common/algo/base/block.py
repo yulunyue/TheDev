@@ -10,35 +10,51 @@ class Block:
 
     def get_l(self, idx):
         i = idx // self.n
-        l = i * self.n
-        return i, min(l + self.n, self.size) - 1
+        r = (i + 1) * self.n
+        if r >= self.size:
+            r = self.size
+        return i, r - 1
 
     def get_r(self, idx):
         i = idx // self.n
         return i, i * self.n
 
-    def update_area(self, l, r, v):
-        if l + self.n - 1 == r:
-            self.do(l // self.n, v)
+    def set_data(self, i, v):
+        self.data[i] = v
+
+    def update_area(self, i, l, r, v):
+        l1 = i * self.n
+        r1 = l1 + self.n
+        if r1 >= self.size:
+            r1 = self.size
+        if r - l + 1 == self.n:
+            self.do(i, v)
             return
-        for i in range(l, r + 1):
-            self.data[i] += v
+        for j in range(l1, r1):
+            u = 0
+            if l <= j <= r:
+                u = v
+            self.set_data(j, self.data[j] + u + self.todo[i])
+        self.todo[i] = 0
 
     def do(self, i, v):
-        self.todo[i] = v
+        self.todo[i] += v
         return self
 
     def update(self, l, r, v):
         il, lr = self.get_l(l)
         ir, rl = self.get_r(r)
         if il == ir:
-            self.update_area(l, r, v)
+            self.update_area(il, l, r, v)
         else:
-            self.update_area(l, lr, v)
-            self.update_area(rl, r, v)
+            self.update_area(il, l, lr, v)
+            self.update_area(ir, rl, r, v)
         while il + 1 <= ir - 1:
             self.do(il, v)
             il += 1
+
+    def get(self, i):
+        return self.data[idx] + self.todo[i // self.n]
 
     def query_area(self, l, r, i):
         return sum(self.data[l : r + 1]) + self.todo[i] * (r - l + 1)
@@ -48,7 +64,7 @@ class Block:
             return self.todo[i] * (self.size - i * self.n)
         return self.todo[i] * self.n
 
-    def query(self, l, r):
+    def query_range(self, l, r):
         il, lr = self.get_l(l)
         ir, rl = self.get_r(r)
         ans = 0
@@ -68,3 +84,8 @@ class Block:
                 for j in range(self.n):
                     self.data[j + i * self.n] += v
                 self.todo[i] = 0
+
+    def find(self, l, r, target):
+        il, lr = self.get_l(l)
+        ir, rl = self.get_r(r)
+        return
