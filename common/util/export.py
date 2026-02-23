@@ -69,3 +69,4 @@ from abc import ABC, abstractmethod
 
 inf = float("inf")
 null = None
+true, false = True, False
