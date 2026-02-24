@@ -4,9 +4,10 @@ from common.util.export import math
 class Block:
     def __init__(self, size):
         self.n = math.ceil(math.sqrt(size))
+        self.m = math.ceil(size/self.n)
         self.size = size
         self.data = [0] * size
-        self.todo = [0] * self.n
+        self.todo = [0] * self.m
 
     def get_l(self, idx):
         i = idx // self.n
@@ -23,7 +24,7 @@ class Block:
         self.data[i] = v
 
     def update_area(self, i, l, r, v):
-        if r - l + 1 == self.n:
+        if l%self.n==0 and (r==self.size-1 or r-l==self.n-1):
             self.do(i, v)
             return
         self.set_datas(i,l,r,v)
@@ -55,6 +56,8 @@ class Block:
             return
         for j in range(self.n):
             idx = j + i * self.n
+            if idx>=self.size:
+                break
             self.set_data(idx, self.data[idx] + self.todo[i])
         self.todo[i] = 0
 
