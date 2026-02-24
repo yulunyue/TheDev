@@ -20,7 +20,7 @@ class Comb:
 
     def pow(self, a, b):
         if self.mod is not None:
-            return pow(a, b, slef.mod)
+            return pow(a, b, self.mod)
         return pow(a, b)
 
     def calc_mod(self, v):
@@ -29,7 +29,11 @@ class Comb:
         return v % self.mod
 
     def comb(self, n: int, k: int) -> int:
-        return int(
+        if n < k:
+            raise Exception(n, k)
+        if k == 0 or k == n:
+            return 1
+        return round(
             self.calc_mod(
                 self.calc_mod(self.fac[n] * self.inv_fac[k]) * self.inv_fac[n - k]
             )
