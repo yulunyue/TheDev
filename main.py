@@ -12,7 +12,7 @@ def start():
     HTTP_CONF_FiLE = File(f"config/setting/{sys.argv[1]}.json")
     logger.info(HTTP_CONF_FiLE)
     conf = HTTP_CONF_FiLE.read_file()
-    run(conf["py_modules"], port=conf["port"])
+    run(conf["py_modules"], port=conf.get("port", 9999))
 
 
 if __name__ == "__main__":

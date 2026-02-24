@@ -1,4 +1,4 @@
-from common.util.export import List, defaultdict, MockCf
+from common.util.export import List, defaultdict, MockCf, functools
 from common.algo.base.comb import Comb
 
 MX = 20
@@ -17,29 +17,38 @@ class Solution(MockCf):
         )
 
     def countSequences(self, nums: List[int], k: int) -> int:
-        ct = [0] * 6
+        ct, kt = [0] * 7, [0] * 7
         a1 = 1
-        kt = [0] * 6
         for v in nums:
-            if v == 1:
-                a1 *= 3
-                continue
-            elif k % v == 0:
+            if k % v == 0:
                 k = k // v
-                kt[v] += 1
+                if v == 4:
+                    kt[2] += 2
+                elif v == 5:
+                    kt[2] += 1
+                    kt[3] += 1
+                else:
+                    kt[v] += 1
             ct[v] += 1
-        kt[2] += 2 * kt[4]
-        kt[4] = 0
+
         if k != 1:
             return 0
-        a24 = 0
-        for i in range(ct[4] + 1):
-            for j in range(ct[2] + 1):
-                if i * 2 + j == kt[2]:
-                    a24 += F[ct[4], i] * F[ct[2], j]
-        a35 = F[ct[3], kt[3]] * F[ct[5], kt[5]]
-        if a24 == 0:
-            a24 = 1
-        return a1 * a35 * a24
+        a2346 = 0
+        for a6 in range(ct[6] + 1):
+            for a4 in range(ct[4] + 1):
+                for
+            c6, r6, r2, r3 = a6, ct[6] - c6, ct[2], ct[3]
+            while c6 - r6 <= min(r2 - kt[2], r3 - kt[3]):
+                c6 += 1
+                for k6 in range(r6 + 1):
+                    k2, k3 = kt[2] - k6, kt[3] - k6
+                    if k2 < 0 or k3 < 0:
+                        break
+                r6 -= 1
+
+        a1, a5 = 3 ** ct[1], F[ct[5], kt[5]]
+        if a2346 == 0:
+            a2346 = 1
+        return a1 * a5 * a2346
 
     execute = countSequences
