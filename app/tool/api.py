@@ -7,6 +7,7 @@ from common.util.export import (
     enum_cls,
     search_cls,
     file_cls,
+    b64_code,
 )
 
 
@@ -31,3 +32,6 @@ class ApiGlobal:
         **kw,
     ):
         return Node().set_value(dict(a=a, b=b, c=c, d=d))
+
+    def b64_code(self, code: str, **kw):
+        return Node(value=b64_code(code))

@@ -22,6 +22,7 @@ from .tool import (
     SYS_ARGS,
     SYS_KW,
     cmd_parse,
+    b64_code,
 )
 from .test import TestBase, logger
 from .fp import File, get_cache
