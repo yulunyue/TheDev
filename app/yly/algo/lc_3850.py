@@ -16,7 +16,7 @@ for k in range(MX):
     for m in range(k + 1):
         for n in range(k + 1 - m):
             G[-1].append([m, n, n - m])
-    for j in range(MX - k * 2):
+    for j in range(MX):
         for i in range(k + j * 2, MX):
             F[i, k] += u(i, j + k, j)
 
@@ -27,6 +27,8 @@ class Solution(MockCf):
             case0=dict(nums=[2, 3, 2], k=6, result=2),
             case1=dict(nums=[4, 6, 3], k=2, result=2),
             case2=dict(nums=[5], k=4, result=0),
+            case3=dict(nums=[2, 2], k=4, result=1),
+            case4=dict(nums=[2] * 19, k=524288, result=1),
         )
 
     def countSequences(self, nums: List[int], k: int) -> int:
