@@ -26,6 +26,7 @@ class Solution(MockCf):
         return dict(
             case0=dict(nums=[2, 3, 2], k=6, result=2),
             case1=dict(nums=[4, 6, 3], k=2, result=2),
+            case2=dict(nums=[5], k=4, result=0),
         )
 
     def countSequences(self, nums: List[int], k: int) -> int:
@@ -56,8 +57,6 @@ class Solution(MockCf):
                     #     l6=l6, r6=r6, l3=l3, r3=r3, l4=l4, r4=r4, k2=k21, a=a2346
                     # )
         a1, a5 = 3 ** ct[1], F[ct[5], kt[5]]
-        if a2346 == 0:
-            a2346 = 1
         return a1 * a5 * a2346
 
     execute = countSequences
