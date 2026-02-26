@@ -37,7 +37,7 @@ class Solution(MockCf):
             t = t.replace(v, "") + v
             sufs[i] = t
         t = ""
-        self.logger.info(s)
+        # self.logger.info(s)
         for i, v in enumerate(s):
             for k in self.get_key(sufs[i], ct):
                 if k not in pos:
@@ -48,7 +48,7 @@ class Solution(MockCf):
             for k in self.get_key(t, ct):
                 if k in pos:
                     ans = max(ans, i - pos[k])
-                    self.logger.map(i=i, t2=t, k=k)
+                    # self.logger.map(i=i, t2=t, k=k)
         return ans
 
     execute = longestBalanced
