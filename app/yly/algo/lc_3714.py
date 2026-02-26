@@ -6,6 +6,7 @@ class Solution(MockCf):
         return dict(
             case0=dict(s="abbac", result=4),
             case1=dict(s="aba", result=2),
+            case2=dict(s="aabcc", result=3),
         )
 
     def longestBalanced(self, s: str) -> int:
@@ -15,25 +16,35 @@ class Solution(MockCf):
         ans = 1
         for i, v in enumerate(s):
             ct[v] += 1
-
-            min_ct, max_ct = inf, -inf
-            for u in ct.values():
-                if u == 0:
-                    continue
-                min_ct, max_ct = min(min_ct, u), max(max_ct, u)
-            if min_ct == max_ct:
+            min_ct, max_ct, key = inf, -inf, "c"
+            nm = 0
+            for k, u in ct.items():
+                # if u == 0:
+                #     continue
+                if u < min_ct:
+                    key, min_ct = k, u
+                if u == min_ct:
+                    key = min(k, key)
+                if u > max_ct:
+                    max_ct = u
+                if u:
+                    nm += 1
+            if nm * max_ct == i + 1:
                 ans = i + 1
-                continue
-            key = ""
-            for k, v in ct.items():
-                if v > min_ct:
-                    key += f"{k}:{v-min_ct};"
+            for k in "abc":
+                # if ct[k] == 0:
+                #     continue
+                if ct[k] >= min_ct:
+                    key += f"{ct[k]-min_ct}"
 
             if key in mp:
-                ans = max(ans, i - mp[key] + 1)
+                ans = max(ans, i - mp[key])
             else:
                 mp[key] = i
-            self.logger.map(i=i, key=key, mp=mp)
+
+            # if max_ct == min_ct:
+            #     ans = i + 1
+            self.logger.map(i=i, key=key, mp=mp, min_ct=min_ct, max_ct=max_ct, nm=nm)
 
         return ans
 
