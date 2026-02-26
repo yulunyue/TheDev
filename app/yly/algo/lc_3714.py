@@ -1,27 +1,28 @@
-class Solution:
+from common.util.export import MockCf, defaultdict
+
+
+class Solution(MockCf):
     def get_cases(self):
         return dict(case0=dict(s="abbac", result=4))
 
     def longestBalanced(self, s: str) -> int:
         n = len(s)
+        ct = dict(a=0, b=0, c=0)
+        keys = "abc"
+        mp = dict()
         ans = 1
-        ct = {chr(v): 1 for v in range(ord("a"), ord("z") + 1)}
-        t = [ct]
         for i, v in enumerate(s):
-            c = t[-1].copy()
-            c[v] += 1
-            for j in range(i + 1 - ans + 1):
-                le = None
-                for k, u in c.items():
-                    e = u - t[j][k]
-                    if e == 0:
-                        continue
-                    elif le is None:
-                        le = e
-                    elif le != e:
-                        le = None
-                        break
-                if le is not None:
-                    ans = max(ans, i - j + 1)
-            t.append(c)
+            ct[v] += 1
+            min_ct = min(ct.values())
+            key = ""
+            for k in keys:
+                key += str(ct[k] - min_ct)
+            if key in mp:
+                ans = max(ans, i - mp[key] + 1)
+            else:
+                mp[key] = i
+            # self.logger.map(i=0, key=key, mp=mp)
+
         return ans
+
+    execute = longestBalanced
