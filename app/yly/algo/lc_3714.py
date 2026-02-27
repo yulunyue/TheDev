@@ -1,9 +1,11 @@
-class Solution:
+from common.util.export import MockCf
+
+
+class Solution(MockCf):
     def get_cases(self):
         return dict(case0=dict(s="abbac", result=4))
 
     def longestBalanced(self, s: str) -> int:
-        n = len(s)
         ans = 1
         ct = {chr(v): 1 for v in range(ord("a"), ord("z") + 1)}
         t = [ct]
@@ -25,3 +27,5 @@ class Solution:
                     ans = max(ans, i - j + 1)
             t.append(c)
         return ans
+
+    execute = longestBalanced
