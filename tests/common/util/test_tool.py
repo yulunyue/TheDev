@@ -1,4 +1,13 @@
-from common.util.export import TestBase, uid, base64_encode, ii, hash_any, md5, random
+from common.util.export import (
+    TestBase,
+    uid,
+    base64_encode,
+    ii,
+    hash_any,
+    md5,
+    random,
+    base64_decode,
+)
 
 
 class TestTool(TestBase):
@@ -9,7 +18,11 @@ class TestTool(TestBase):
     def test_base64(self):
         a = base64_encode("s")
         self.expect(a, "cw==")
-        self.expect(base64_encode(a), "cw==")
+        self.expect(base64_decode(a), "s")
+
+        b = base64_encode("""a\\nc""")
+        self.expect(b, "YVxuYw==")
+        self.expect(base64_decode(b), """a\\nc""")
 
     def test_ii(self):
         self.expect(ii("2 4  a9 9a 7"), [2, 4, 7])

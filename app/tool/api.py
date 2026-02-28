@@ -32,6 +32,3 @@ class ApiGlobal:
         **kw,
     ):
         return Node().set_value(dict(a=a, b=b, c=c, d=d))
-
-    def b64_code(self, code: str, **kw):
-        return Node(value=b64_code(code))

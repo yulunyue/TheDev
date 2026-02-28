@@ -14,8 +14,8 @@ test key=search.*mctssearch.py
 test key=test_node.py
 ```
 ```t3
-exec key=test_py.py fun_name=TestPy::test_eval
+exec key=test_tool.py fun_name=TestTool::test_base64
 ```
 ```debug
-exec key=test_block fun_name=TestBlock::test_all
+exec key=test_yml fun_name=TestYml::test_yml_to_dict
 ```
