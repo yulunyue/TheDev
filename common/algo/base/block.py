@@ -6,7 +6,8 @@ class Block:
         self.n = math.ceil(math.sqrt(size))
         self.m = math.ceil(size / self.n)
         self.size = size
-        self.data = [[0] * self.n for _ in range(self.m)]
+        self.data = [[0] * self.n for _ in range(self.m - 1)]
+        self.data.append([0] * (size - self.n * (self.m - 1)))
         self.todo = [0] * self.m
 
     def get_l(self, idx):
@@ -53,7 +54,7 @@ class Block:
         self.do(i)
 
     def do(self, i):
-        for j in range(self.n):
+        for j in range(len(self.data[i])):
             self.data[i][j] += self.todo[i]
         self.todo[i] = 0
 
@@ -66,7 +67,7 @@ class Block:
             self.update_area(il, l, lr, v)
             self.update_area(ir, rl, r, v)
         while il + 1 <= ir - 1:
-            self.todo[il] += v
+            self.todo[il + 1] += v
             il += 1
 
     # def query(self, l, r):
