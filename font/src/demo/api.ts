@@ -27,7 +27,9 @@ export class Api extends Div {
                     this.exec_btn,
                 ]).set_style_flex(Constant.VERTICAL),
                 this.input
-            ]),
+            ]).set_style({
+                minWidth: 240,
+            }),
             this.result
         ])
     }

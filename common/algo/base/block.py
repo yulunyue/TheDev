@@ -6,7 +6,8 @@ class Block:
         self.n = math.ceil(math.sqrt(size))
         self.m = math.ceil(size / self.n)
         self.size = size
-        self.data = [0] * size
+        self.data = [[0] * self.n for _ in range(self.m - 1)]
+        self.data.append([0] * (size - self.n * (self.m - 1)))
         self.todo = [0] * self.m
 
     def get_l(self, idx):
@@ -20,26 +21,21 @@ class Block:
         i = idx // self.n
         return i, i * self.n
 
-    def set_data(self, idx, i, v):
-        self.data[i] = v
-
     def update_area(self, i, l, r, v):
         if l % self.n == 0 and (r == self.size - 1 or r - l == self.n - 1):
-            self.do(i, v)
+            self.todo[i] += v
             return
         self.set_datas(i, l, r, v)
 
     def set_datas(self, i, l, r, v):
-        for j in range(l, r + 1):
-            self.set_data(i, j, self.data[j] + v)
         self.down(i)
-
-    def do(self, i, v):
-        self.todo[i] += v
-        return self
+        m = self.n * i
+        for j in range(l - m, r - m + 1):
+            self.data[i][j] += v
 
     def get(self, i):
-        return self.data[i] + self.todo[i // self.n]
+        m, j = i // self.n, i % self.n
+        return self.data[m][j] + self.todo[m]
 
     def query_data(self, l, r):
         return sum(self.data[l : r + 1])
@@ -55,11 +51,11 @@ class Block:
     def down(self, i):
         if self.todo[i] == 0:
             return
-        for j in range(self.n):
-            idx = j + i * self.n
-            if idx >= self.size:
-                break
-            self.set_data(i, idx, self.data[idx] + self.todo[i])
+        self.do(i)
+
+    def do(self, i):
+        for j in range(len(self.data[i])):
+            self.data[i][j] += self.todo[i]
         self.todo[i] = 0
 
     def update(self, l, r, v):
@@ -71,19 +67,28 @@ class Block:
             self.update_area(il, l, lr, v)
             self.update_area(ir, rl, r, v)
         while il + 1 <= ir - 1:
-            self.do(il, v)
+            self.todo[il + 1] += v
             il += 1
 
-    def query(self, l, r):
-        il, lr = self.get_l(l)
-        ir, rl = self.get_r(r)
-        ans = 0
-        if il == ir:
-            ans += self.query_area(l, r, il)
-        else:
-            ans += self.query_area(l, lr, il)
-            ans += self.query_area(rl, r, ir)
-        while il + 1 <= ir - 1:
-            ans += self.query_todo(il + 1)
-            il += 1
+    # def query(self, l, r):
+    #     il, lr = self.get_l(l)
+    #     ir, rl = self.get_r(r)
+    #     ans = 0
+    #     if il == ir:
+    #         ans += self.query_area(l, r, il)
+    #     else:
+    #         ans += self.query_area(l, lr, il)
+    #         ans += self.query_area(rl, r, ir)
+    #     while il + 1 <= ir - 1:
+    #         ans += self.query_todo(il + 1)
+    #         il += 1
+    #     return ans
+
+    def get_data(self):
+        ans = []
+        for i in range(self.m):
+            t = []
+            for v in self.data[i]:
+                t.append(v + self.todo[i])
+            ans.append(t)
         return ans

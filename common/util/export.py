@@ -18,11 +18,13 @@ from .tool import (
     ii,
     md5,
     base64_encode,
+    base64_decode,
     url_to_json,
     SYS_ARGS,
     SYS_KW,
     cmd_parse,
     b64_code,
+    is_base64_code,
 )
 from .test import TestBase, logger
 from .fp import File, get_cache

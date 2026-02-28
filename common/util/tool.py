@@ -18,16 +18,21 @@ def uid(s):
     return f"{s}_{UK_MAP[s]}"
 
 
-def base64_decode(s: str):
+def is_base64_code(s: str):
     try:
-        s = base64.b64decode(s, validate=True).decode()
-        return s
+        s = base64.b64decode(s, validate=True)
+        return True
     except Exception as e:
-        return s
+        return False
+
+
+def base64_decode(s: str):
+    s = base64.b64decode(s).decode()
+    return s
 
 
 def base64_encode(s: str):
-    return base64.b64encode(base64_decode(s).encode()).decode()
+    return base64.b64encode(s.encode()).decode()
 
 
 def b64_code(s: str):

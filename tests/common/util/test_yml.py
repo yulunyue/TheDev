@@ -3,14 +3,16 @@ from common.util.yml import Yml, VALUE_KEY
 
 
 class TestYml(TestBase):
-    def test_tml_to_dict(self):
+    def test_yml_to_dict(self):
         a = """
 b:
   c: d
   e: f
   g: 'h'
+
 c: "f"
-f: 
+f:
+g: "a\\nc" 
 """
         d = Yml().load(a)
         self.expect(

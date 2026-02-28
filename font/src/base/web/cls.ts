@@ -28,6 +28,7 @@ export interface Style {
     marginRight?: number
     padding?: number | string
     fontSize?: number | string
+    overflowWrap?: "break-word"
     zIndex?: string
     display?: "flex" | "none" | "" | "initial" | "inline-block" | "inline"
     outline?: "none"

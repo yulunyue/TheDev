@@ -60,9 +60,8 @@ export class Pre extends Div {
     }
     init_style(): void {
         this.set_style({
-            //padding: Constant.DEFAULT_PADDING,
-
-            //textWrap: "wrap"
+            whiteSpace: "pre-wrap",
+            overflowWrap: "break-word",
             height: 1,
             overflowY: "auto"
         })
