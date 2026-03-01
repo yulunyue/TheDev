@@ -114,3 +114,14 @@ def low_high_dp(low, high, *args, calc_args=None, ret_fun=None):
         return a
 
     return dfs(0, True, True, *args)
+
+
+def to_2(v: int):
+    ans = []
+    u = 1
+    while v:
+        if v & 1:
+            ans.append(u)
+        u *= 2
+        v = v >> 1
+    return ans
