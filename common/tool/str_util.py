@@ -41,20 +41,9 @@ class StrUtil:
         return result
 
     def format_g_tree(self, g: List[List[int]], f, head=0):
-        ret = ["---"]
+        from common.algo.base.nodes.node import Node
 
-        def dfs(u, p=-1, depth=0):
-            ret.append(f'{" "*depth}-{u}: {f(u)}')
-            if u >= len(g):
-                return
-            for k in g[u]:
-                if k == p:
-                    continue
-                dfs(k, u, depth + 2)
-
-        dfs(head)
-        ret.append("---")
-        return "\n".join(ret)
+        return Node.load_from_edges(g)[head].show(f)
 
     def format_grid(self, n, m, f):
         ret = [[""] * m for _ in range(n)]

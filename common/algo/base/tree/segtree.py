@@ -27,7 +27,7 @@ class SegTreeNode:
         self.value = self.merge(self.left.value, self.right.value)
 
     def merge(self, lv, rv):
-        return lv + rv
+        raise NotImplementedError
 
     def set_range(self, l, r):
         self.l = l
@@ -106,7 +106,7 @@ class SegTreeNode:
     def show(self):
         return f"v:{self.value}"
 
-    def __repr__(self):
+    def print(self):
         ret = []
 
         def util(p: SegTreeNode, depth):
