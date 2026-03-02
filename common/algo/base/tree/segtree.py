@@ -30,25 +30,11 @@ class SegTreeNode:
         raise NotImplementedError
 
     def set_range(self, l, r):
-        self.l = l
-        self.r = r
+        self.l: int = l
+        self.r: int = r
         self.size = r - l + 1
         self.m = (l + r) // 2
         return self
-
-    @property
-    def left(self):
-        if not self._left:
-            self._left = self.__class__(self.idx * 2).set_range(self.l, self.m)
-        return self._left
-
-    @property
-    def right(self):
-        if not self._right:
-            self._right = self.__class__(
-                self.idx * 2 + 1,
-            ).set_range(self.m + 1, self.r)
-        return self._right
 
     def query(self, l, r):
         if l <= self.l and self.r <= r:
@@ -63,14 +49,20 @@ class SegTreeNode:
         return self.merge(lv, rv)
 
     def load(self, nums):
-        raise Exception()
+        raise NotImplementedError
 
     def build(self, *args):
         if self.l == self.r:
             self.load(*args)
             return self
-        self.left.build(*args)
-        self.right.build(*args)
+        self.left = self.__class__(self.idx * 2).set_range(self.l, self.m).build(*args)
+        self.right = (
+            self.__class__(
+                self.idx * 2 + 1,
+            )
+            .set_range(self.m + 1, self.r)
+            .build(*args)
+        )
         self.up()
         return self
 
