@@ -42,6 +42,9 @@ class Node:
         self.dfs(util)
         return dict(nodes=nodes, edges=edges)
 
+    def __repr__(self):
+        return str(self.key)
+
     @classmethod
     def load_from_edges(cls, edges):
         from .util import load_from_edges
@@ -57,8 +60,9 @@ class Node:
         ret = ["---"]
         from .edge import Edge
 
-        def util(u, p=-1, depth=0):
-            ret.append(f'{" "*depth}-{u}: {fn(u)}')
+        def util(u: Node, p=None):
+            s = ""
+            ret.append(f'{" "*u.depth}-{u.key}: {s}')
 
         self.dfs(util)
         ret.append("---")

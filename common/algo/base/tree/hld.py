@@ -55,7 +55,7 @@ class HLD:
 
     def update_path(self, u: HeavyNode, v: HeavyNode, val):
         while u.top != v.top:
-            if u.depth < v.depth:
+            if u.depth > v.depth:
                 u, v = v, u
             self.seg.update(u.top.dfn, u.dfn, val)
             u = u.top.parent
@@ -70,9 +70,11 @@ class HLD:
             value = self.seg.query(u.top.dfn, u.dfn)
             res = self.seg.merge(value, res)
             u = u.top.parent
+
         if u.depth > v.depth:
             u, v = v, u
-        res = self.seg.merge(self.seg.query(u.dfn, v.dfn), res)
+        value = self.seg.query(u.dfn, v.dfn)
+        res = self.seg.merge(value, res)
         return res
 
     def update_subtree(self, u: HeavyNode, val):

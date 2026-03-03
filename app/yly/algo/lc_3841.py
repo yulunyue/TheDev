@@ -1,4 +1,4 @@
-from common.util.export import List, true, false, MockCf
+from common.util.export import List, true, false, MockCf, true, false, TheDevLoger
 from common.algo.base.tree.hld import HLD, SegTreeNode, HeavyNode
 import string
 
@@ -8,9 +8,10 @@ MK = {v: 1 << (ord(v) - ord("a")) for v in string.ascii_lowercase}
 class T(SegTreeNode):
     h: HLD = None
     s = []
+    logger: TheDevLoger = None
 
     def load(self, s):
-        self.value = MK[s[self.l]]
+        self.value = MK[s[T.h.rnk[self.l].key]]
 
     def do(self, v):
         self.value ^= v
@@ -25,12 +26,25 @@ class T(SegTreeNode):
 class Solution(MockCf):
     def get_cases(self):
         return dict(
-            case0=dict(
+            case1=dict(
                 n=3,
                 edges=[[0, 1], [1, 2]],
                 s="aac",
                 queries=["query 0 2", "update 1 b", "query 0 2"],
                 result=[true, false],
+            ),
+            case0=dict(
+                n=4,
+                edges=[[0, 1], [0, 2], [0, 3]],
+                s="abca",
+                queries=[
+                    "query 1 2",
+                    "update 0 b",
+                    "query 2 3",
+                    "update 3 a",
+                    "query 1 3",
+                ],
+                result=[false, false, true],
             ),
         )
 
@@ -38,9 +52,12 @@ class Solution(MockCf):
         self, n: int, edges: list[list[int]], s: str, queries: list[str]
     ) -> list[bool]:
         T.s = s2 = list(s)
+        T.logger = self.logger
         nodes = HeavyNode.load_from_edges(edges)
+
         root = nodes[0]
         h = T.h = HLD().set_root(root)
+        self.logger.info(root.show())
         t = T().set_range(0, h.timer - 1).build(s)
         h.set_seg(t)
         ret = []
