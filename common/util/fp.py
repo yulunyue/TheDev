@@ -4,6 +4,7 @@ from typing import List, Dict
 import zipfile
 import shutil
 import io
+from .tool import time_format
 
 
 def dump_default(v):
@@ -40,6 +41,9 @@ class File:
             # logger.info(File.FILES[path])
         return File.FILES[path]
 
+    def get_size(self):
+        return os.path.getsize(self.path)
+
     def get_param_value(self, p, param):
         return self.get(param.key, default_value=param.default_value)
 
@@ -53,6 +57,9 @@ class File:
 
     def get_m_time(self):
         return os.path.getmtime(self.path)
+
+    def get_m_time_str(self):
+        return time_format(self.get_m_time())
 
     def child(self, *args):
         args = [self.path] + list(args)
@@ -275,12 +282,21 @@ class File:
             if targets is None:
                 targets = self.list_tree_file()
             for c in targets:
-                if isinstance(c, File):
+                if isinstance(c, str):
+                    local_path, arc_name, c = self.path + "/" + c, c, self.child(c)
+                if c.is_file():
                     local_path, arc_name = c.path, os.path.relpath(c.path, self.path)
+                    f.write(local_path, arcname=arc_name)
                 else:
-                    local_path, arc_name = self.path + "/" + c, c
-                f.write(local_path, arcname=arc_name)
-        return File.new(dst)
+                    for d in c.list_tree_file():
+                        if "__pycache__" in d.path:
+                            continue
+                        local_path, arc_name = d.path, os.path.relpath(
+                            d.path, self.path
+                        )
+                        f.write(local_path, arcname=arc_name)
+
+        return File(dst)
 
     def unzip(self, dst=None):
         if dst is None:

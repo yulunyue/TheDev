@@ -7,6 +7,14 @@ import re
 import json
 import hashlib
 import base64
+import time
+
+
+def time_format(timestamp):
+    time_struct = time.localtime(timestamp)
+    format_date = time.strftime("%Y-%m-%d %H:%M:%S", time_struct)
+    return format_date
+
 
 UK_MAP = dict()
 

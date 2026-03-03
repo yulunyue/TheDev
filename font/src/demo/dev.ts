@@ -1,5 +1,3 @@
-
-import data from "src/base/tool/data";
 import {
     Div, Search, Button, TextAreaRich,
     Table, Util, dialog,
@@ -7,7 +5,8 @@ import {
     Svg,
     Grid,
     web_dom,
-    FileInput
+    FileInput,
+    Form
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
 export class Dev extends Div {
@@ -17,7 +16,21 @@ export class Dev extends Div {
         this.add_childs([
             this.get_window_info(),
             this.get_table(),
-            new FileInput()
+            this.get_form(),
+        ])
+    }
+    get_form() {
+        let fm = new Form().set_option({
+            childs: [
+                { "type": "input", title: "a", key: "a" },
+                { "type": "file", title: "b", key: "b" }
+            ]
+        })
+        function submit() {
+
+        }
+        return new Div().add_childs([
+            fm, new Button().set_html("submit").on_click(submit)
         ])
     }
     get_window_info() {

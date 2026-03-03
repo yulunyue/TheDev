@@ -1,20 +1,35 @@
 import { Input } from "./input";
+import { Button } from "./button";
+import { Div } from "../div"
 import web_dom from "../../../web/web_dom"
-export class FileInput extends Input {
+import Constant from "../../../web/constant";
+export class FileInput extends Div {
+    inp: Input
+    btn: Button
+    path: string
+    init_style(): void {
+        this.set_style_flex(Constant.VERTICAL)
+    }
     init_node() {
-        this.set_attr("type", "file")
+        this.inp = new Input().set_attr("type", "file")
+        this.btn = new Button().set_html("upload")
+        this.add_childs([this.inp, this.btn])
     }
     init_event(): void {
-        this.el.onchange = ((v: any) => {
+        this.inp.el.onchange = ((v: any) => {
             this.on_file_change()
         })
+        this.btn.on_click(() => this.upload())
+    }
+    upload() {
+        let formData = new FormData()
+        formData.append('file', this.inp.el.files[0]);
+        web_dom.post_file("/app/api/post_file", formData)
     }
     on_file_change() {
-        console.log(this.get_form_data())
+
     }
-    get_form_data() {
-        let formData = new FormData()
-        formData.append('file', this.el.files[0]);
-        return formData
+    get_value() {
+        return this.path
     }
 }

@@ -16,6 +16,7 @@ class TestApi(TestBase):
             data["childs"],
             [
                 dict(key="/app/api/get_api_call_info"),
+                {"key": "/app/api/post_file"},
                 dict(key="/app/api/query_all_apis"),
                 dict(key="/app/api/test"),
             ],
@@ -23,7 +24,7 @@ class TestApi(TestBase):
 
     def test_api1(self):
         self.expect(
-            TestApi.api.get_api_call_info("/app/api/get_api_call_info"),
+            TestApi.api.get_api_call_info("/app/api/get_api_call_info").to_json(),
             {
                 "key": "get_api_call_info",
                 "childs": [
@@ -40,7 +41,7 @@ class TestApi(TestBase):
         )
 
     def test_api2(self):
-        e = TestApi.api.get_api_call_info("/app/api/test")
+        e = TestApi.api.get_api_call_info("/app/api/test").to_json()
         self.expect(
             e,
             {

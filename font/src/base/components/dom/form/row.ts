@@ -1,7 +1,6 @@
 import { Div, Container } from "../div";
 import web from "../../../web/web_dom"
 import { not_null, Node } from "../../../web/cls"
-import { Input, input } from "./input";
 import { Search, search } from "./search";
 import { Select } from "./select";
 import Constant from "../../../web/constant"

@@ -21,7 +21,7 @@ class FrontTable(Node):
         self.body = body
         return self
 
-    def append_row(self, _uid, **kw):
+    def append_row(self, **kw):
         self.body.append(kw)
         return self
 

@@ -82,11 +82,17 @@ class MainHander(RequestHandler):
         self, application: Application, request: HTTPServerRequest, **kwargs
     ) -> None:
         self.path = request.path
+        req_content_type: str = request.headers.get("content-type", "")
         if request.method.upper() == "POST":
-            try:
+            if req_content_type.startswith("application/json"):
                 self.params = json.loads(request.body)
-            except:
-                self.params = {}
+            elif req_content_type.startswith("multipart/form-data"):
+                files = dict()
+                for f in request.files.get("file"):
+                    files[f["filename"]] = f["body"]
+                self.params = dict(files=files)
+            else:
+                raise Exception(r=req_content_type)
         else:
             self.params = request.query_arguments
         super().__init__(application, request, **kwargs)
@@ -117,7 +123,7 @@ class MainHander(RequestHandler):
         self.write(data)
 
     def content_type(self):
-        rt = HTML_CONTENT_TYPE.get(self.path.split(".")[-1], HTML_CONTENT_TYPE["json"])
+        rt = HTML_CONTENT_TYPE.get(self.path.split(".")[-1], "")
         # print(self.path, rt)
         return rt
 

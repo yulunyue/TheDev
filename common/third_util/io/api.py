@@ -150,6 +150,9 @@ class Api:
     def post_data(self, url, param=None, headers=None):
         return self.http("POST", url, headers=headers, param=param)
 
+    def post_files(self, url, *files):
+        return self.http("POST", files=[("files", open(d, "rb")) for d in files])
+
     def put(self, url, data=None, header=None):
         return self.http("PUT", url, data, header)
 
@@ -175,6 +178,7 @@ class Api:
         path,
         data=None,
         headers=None,
+        files=None,
         param=None,
         timeout=None,
         stream=False,
@@ -201,6 +205,8 @@ class Api:
             if stream:
                 params.update(dict(stream=True))
         else:
+            if files is not None:
+                params.update(files=files)
             if param is not None:
                 params.update(dict(params=param))
             if data is not None:

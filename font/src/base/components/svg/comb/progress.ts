@@ -8,7 +8,7 @@ import { SvgNode, svg } from "../svg";
 import { Div } from "../../dom/div";
 import Constant from "../../../web/constant";
 import { button } from "../../dom/form/button";
-import { Input, input } from "../../dom/form/input";
+import { Input } from "../../dom/form/input";
 
 class ProgrePoint extends GNode {
     rect: Rect
@@ -50,7 +50,7 @@ export class Progress extends Div {
         this.value = this.min_g.add_child(new ProgrePoint())
         this.max_value = this.min_g.add_child(new ProgrePoint())
         // this.progre_points = this.add_child(new GNode())
-        this.input_line = input().set_width(Constant.INPUT_NUMBER_WIDTH)
+        this.input_line = new Input().set_width(Constant.INPUT_NUMBER_WIDTH)
         this.add_childs([
             svg().add_childs([this.min_g]).set_width(1),
             button().set_html("<<").on_click(() => this.set_value(this.value.value - 1)),

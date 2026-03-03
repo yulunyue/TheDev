@@ -11,7 +11,7 @@ test key=bin_util fun_name=TestBinUtil::test_setmask
 test key=search.*mctssearch.py
 ```
 ```t2
-test key=test_node.py
+test key=test_api.py
 ```
 ```t3
 exec key=test_tool.py fun_name=TestTool::test_base64

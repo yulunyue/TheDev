@@ -125,5 +125,9 @@ def search_cls(url):
     return cls_util("search", url=url)
 
 
+class file:
+    pass
+
+
 def file_cls():
     return cls_util("file")

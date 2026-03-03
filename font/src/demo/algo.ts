@@ -1,7 +1,7 @@
 
 import {
     Div, Svg, svg, Constant, Node, web_dom, tree, Form, dialog, Row, node, Select, Pre,
-    GNode, button, div, input, Input, Progress, DivFactory,
+    GNode, button, div, Input, Progress, DivFactory,
     TextArea
 } from "../base/components/export";
 
