@@ -27,10 +27,10 @@ class Cli(ToolBase):
         self.upload()
 
     def upload(self):
-        Api().post_files(
-            f"http://{CONFIG['ip']}:{CONFIG['port']}/app/api/post_file",
-            "data/the_dev.zip",
-        )
+        uri = f"http://{CONFIG['ip']}:{CONFIG['port']}"
+        api = Api()
+        api.post_files(f"{uri}/app/api/post_file", "data/the_dev.zip")
+        api.post(f"{uri}/app/util/restart", data=dict(path="data/upload/the_dev.zip"))
 
 
 if __name__ == "__main__":
