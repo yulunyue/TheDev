@@ -26,7 +26,7 @@ class HLD:
         return self
 
     def dfs1(self, u: HeavyNode, p: Edge = None):
-        u.set_parent(None if p is None else p.src)
+        u.set_parent(u if p is None else p.src)
         u.size = 1
         max_sz = 0
         for e in u.out_edges.values():
@@ -42,9 +42,10 @@ class HLD:
 
     def dfs2(self, u: HeavyNode, tp: HeavyNode):
         u.dfn = self.timer
+        self.timer += 1
         u.top = tp
         self.rnk.append(u)
-        self.timer += 1
+
         if u.heavy:
             self.dfs2(u.heavy, tp)
         for e in u.out_edges.values():

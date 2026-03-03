@@ -33,7 +33,7 @@ class Solution(MockCf):
                 queries=["query 0 2", "update 1 b", "query 0 2"],
                 result=[true, false],
             ),
-            case0=dict(
+            case2=dict(
                 n=4,
                 edges=[[0, 1], [0, 2], [0, 3]],
                 s="abca",
@@ -45,6 +45,13 @@ class Solution(MockCf):
                     "query 1 3",
                 ],
                 result=[false, false, true],
+            ),
+            case0=dict(
+                n=3,
+                edges=[[0, 2], [0, 1]],
+                s="ghh",
+                queries=["query 1 2"],
+                result=[true],
             ),
         )
 
@@ -58,7 +65,7 @@ class Solution(MockCf):
         root = nodes[0]
         h = T.h = HLD().set_root(root)
         self.logger.info(root.show())
-        t = T().set_range(0, h.timer - 1).build(s)
+        t = T().set_range(0, n - 1).build(s)
         h.set_seg(t)
         ret = []
         for s in queries:
