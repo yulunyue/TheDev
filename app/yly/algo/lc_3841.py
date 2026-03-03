@@ -53,11 +53,18 @@ class Solution(MockCf):
                 queries=["query 1 2"],
                 result=[true],
             ),
-            case0=dict(
+            case4=dict(
                 n=4,
                 edges=[[2, 3], [0, 1], [0, 2]],
                 s="tqtt",
                 queries=["query 3 1"],
+                result=[false],
+            ),
+            case0=dict(
+                n=3,
+                edges=[[0, 1], [0, 2]],
+                s="cee",
+                queries=["query 0 1"],
                 result=[false],
             ),
         )
