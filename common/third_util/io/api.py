@@ -151,7 +151,7 @@ class Api:
         return self.http("POST", url, headers=headers, param=param)
 
     def post_files(self, url, *files):
-        return self.http("POST", files=[("files", open(d, "rb")) for d in files])
+        return self.http("POST", url, files=[("file", open(d, "rb")) for d in files])
 
     def put(self, url, data=None, header=None):
         return self.http("PUT", url, data, header)
