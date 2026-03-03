@@ -55,7 +55,7 @@ class HLD:
 
     def update_path(self, u: HeavyNode, v: HeavyNode, val):
         while u.top != v.top:
-            if u.depth > v.depth:
+            if u.depth < v.depth:
                 u, v = v, u
             self.seg.update(u.top.dfn, u.dfn, val)
             u = u.top.parent
