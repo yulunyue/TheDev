@@ -20,7 +20,7 @@ class T(SegTreeNode):
         return lv ^ rv
 
     def show(self):
-        return f"{T.h.rnk[self.l].key}-{T.h.rnk[self.r].key} v:{self.value}"
+        return f"{T.h.rnk[self.l].key}-{T.h.rnk[self.r].key} v:{bin(self.value)}"
 
 
 class Solution(MockCf):
@@ -46,12 +46,19 @@ class Solution(MockCf):
                 ],
                 result=[false, false, true],
             ),
-            case0=dict(
+            case3=dict(
                 n=3,
                 edges=[[0, 2], [0, 1]],
                 s="ghh",
                 queries=["query 1 2"],
                 result=[true],
+            ),
+            case0=dict(
+                n=4,
+                edges=[[2, 3], [0, 1], [0, 2]],
+                s="tqtt",
+                queries=["query 3 1"],
+                result=[false],
             ),
         )
 

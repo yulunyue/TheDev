@@ -55,23 +55,31 @@ class HLD:
             self.dfs2(v, v)
 
     def update_path(self, u: HeavyNode, v: HeavyNode, val):
+        if u.dfn == v.dfn == 0:
+            self.seg.update(u.dfn, v.dfn, val)
+            return
         while u.top != v.top:
             if u.depth < v.depth:
                 u, v = v, u
             self.seg.update(u.top.dfn, u.dfn, val)
             u = u.top.parent
+        if u.dfn == v.dfn == 0:
+            return
         if u.depth > v.depth:
             u, v = v, u
         self.seg.update(u.dfn, v.dfn, val)
 
     def query_path(self, u: HeavyNode, v: HeavyNode, res=0):
+        if u.dfn == v.dfn == 0:
+            return self.seg.query(0, 0)
         while u.top != v.top:
             if u.depth < v.depth:
                 u, v = v, u
             value = self.seg.query(u.top.dfn, u.dfn)
             res = self.seg.merge(value, res)
             u = u.top.parent
-
+        if u.dfn == v.dfn == 0:
+            return res
         if u.depth > v.depth:
             u, v = v, u
         value = self.seg.query(u.dfn, v.dfn)
