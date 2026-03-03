@@ -18,7 +18,7 @@ class Cli(ToolBase):
         f = File("./")
         f.zip(
             "data/the_dev.zip",
-            targets=["font/dist", "common", "app"],
+            targets=["font/dist", "common", "app/tool"],
         )
 
     def build(self):

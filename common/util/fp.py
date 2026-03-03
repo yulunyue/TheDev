@@ -303,8 +303,6 @@ class File:
             dst = self.path.replace(".zip", "")
         if isinstance(dst, str):
             dst = File(dst)
-        if dst.exists():
-            return dst
         with zipfile.ZipFile(self.path) as zf:
             for member in zf.namelist():
                 zf.extract(member, path=dst.path)
