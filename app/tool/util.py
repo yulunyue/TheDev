@@ -14,4 +14,4 @@ class Util:
     def restart(self, path: str):
         f = File(path)
         f.unzip("./")
-        return Node("ok")
+        return Node()
