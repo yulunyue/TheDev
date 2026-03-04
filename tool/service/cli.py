@@ -18,12 +18,12 @@ class Cli(ToolBase):
 
     def install(self, ip_port):
         api = Api().set_endpoint(f"http://{ip_port}")
-        api.post_files(f"/app/manage/post_file1", "data/the_dev.zip")
-        api.post(f"/app/manage/unzip1", data=dict(path="data/upload/the_dev.zip"))
+        api.post_files(f"/app/manage/post_file", "data/the_dev.zip")
+        api.post(f"/app/manage/unzip", data=dict(path="data/upload/the_dev.zip"))
 
     def restart(self, ip_port, config):
         api = Api().set_endpoint(f"http://{ip_port}")
-        api.post(f"/app/manage/restart1", data=dict(config=config))
+        api.post(f"/app/manage/restart", data=dict(config=config))
 
 
 if __name__ == "__main__":

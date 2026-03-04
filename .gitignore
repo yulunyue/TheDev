@@ -178,3 +178,5 @@ conda
 hwcloud_soar_script_sdk
 pytest.ini
 *.pkl
+app/yly/info/Information-632/code/
+*.zip
