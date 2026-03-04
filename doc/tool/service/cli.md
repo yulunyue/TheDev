@@ -1,9 +1,13 @@
-``` build
-build
+```package
+package
 ```
-```all
-build_all
+```npm_build
+npm_build
 ```
-```upload
-upload
+```restart_sec
+restart ip_port=100.93.29.131:8448 config=http2
+```
+
+```restart_local
+restart 10.159.230.217:8448
 ```

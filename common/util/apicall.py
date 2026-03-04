@@ -74,7 +74,7 @@ class ApiCall:
     def load_modules(self, mds):
         for md in mds:
             if isinstance(md, dict):
-                if not md["enable"]:
+                if md.get("disable"):
                     continue
                 self.load_modules(self.load_module_str(md["path"], md["modules"]))
             else:

@@ -275,9 +275,10 @@ class File:
         self.make_dir_if_not_exist()
         return open(self.path, "wb")
 
-    def zip(self, dst=None, targets=None):
+    def zip(self, dst=None, targets=None, ignores=None):
         if dst is None:
             dst = self.path + ".zip"
+        dst_file = File(dst).remove()
         with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as f:
             if targets is None:
                 targets = self.list_tree_file()
@@ -288,15 +289,13 @@ class File:
                     local_path, arc_name = c.path, os.path.relpath(c.path, self.path)
                     f.write(local_path, arcname=arc_name)
                 else:
-                    for d in c.list_tree_file():
-                        if "__pycache__" in d.path:
-                            continue
+                    for d in c.list_dir(ignores=ignores):
                         local_path, arc_name = d.path, os.path.relpath(
                             d.path, self.path
                         )
                         f.write(local_path, arcname=arc_name)
 
-        return File(dst)
+        return dst_file
 
     def unzip(self, dst=None):
         if dst is None:

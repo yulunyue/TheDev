@@ -82,17 +82,12 @@ class MainHander(RequestHandler):
         self, application: Application, request: HTTPServerRequest, **kwargs
     ) -> None:
         self.path = request.path
-        req_content_type: str = request.headers.get("content-type", "")
+        self.req_content_type: str = request.headers.get("content-type", "")
         if request.method.upper() == "POST":
-            if req_content_type.startswith("application/json"):
+            if self.req_content_type.startswith("application/json"):
                 self.params = json.loads(request.body)
-            elif req_content_type.startswith("multipart/form-data"):
-                files = dict()
-                for f in request.files.get("file"):
-                    files[f["filename"]] = f["body"]
-                self.params = dict(files=files)
             else:
-                raise Exception(r=req_content_type)
+                self.params = dict()
         else:
             self.params = request.query_arguments
         super().__init__(application, request, **kwargs)
@@ -107,6 +102,13 @@ class MainHander(RequestHandler):
         self.out(ret, self.params)
 
     def post(self, *args):
+        if self.req_content_type.startswith("multipart/form-data"):
+            files = dict()
+            for filess in self.request.files.values():
+                for f in filess:
+                    files[f["filename"]] = f["body"]
+            if files:
+                self.params.update(files=files)
         ret = self.POST_API.call(self.path, self.params)
         logger.info(f"[{self.path}]")
         self.out(ret, self.params)
@@ -138,7 +140,7 @@ def run(gs: list, port):
     app = Application(
         [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHander)]
     )
-    logger.info(f"listen:{port}")
+    logger.info(f"listen:{port} pid:{os.getpid()}")
     app.listen(port, "0.0.0.0")
     IOLoop.instance().start()
 

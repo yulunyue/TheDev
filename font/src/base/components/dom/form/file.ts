@@ -24,7 +24,7 @@ export class FileInput extends Div {
     upload() {
         let formData = new FormData()
         formData.append('file', this.inp.el.files[0]);
-        web_dom.post_file("/app/api/post_file", formData)
+        web_dom.post_file("/app/manage/post_file", formData)
     }
     on_file_change() {
 

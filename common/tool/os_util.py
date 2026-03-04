@@ -114,10 +114,13 @@ class OsUtil:
     def stop(self):
         self.process.kill()
 
-    def system(self, *args):
-        self.args = " ".join(args)
-        cmd = f"{self.fun_name} {self.args}"
+    def system(self, *args, **kw):
+        cmd = " ".join(self.get_cmd(args, kw))
         self.logger.info(cmd)
         ret = os.system(cmd)
         if ret:
             self.error(cmd)
+
+    def new_exec(self, *args):
+        cmd = self.get_cmd(args)
+        self.logger.info(cmd)

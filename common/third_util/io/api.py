@@ -109,8 +109,16 @@ class Api:
             self.cache = cache
         return self
 
+    end_point = ""
+
     def get_endpoint(self):
+        if self.end_point:
+            return self.end_point
         return API_CONFIG.get(self.name).endpoint.get_value()
+
+    def set_endpoint(self, s):
+        self.end_point = s
+        return self
 
     def url(self, path):
         if isinstance(path, list):
@@ -150,8 +158,12 @@ class Api:
     def post_data(self, url, param=None, headers=None):
         return self.http("POST", url, headers=headers, param=param)
 
-    def post_files(self, url, *files):
-        return self.http("POST", url, files=[("file", open(d, "rb")) for d in files])
+    def post_files(self, url, path, name="file"):
+        return self.http(
+            "POST",
+            url,
+            files={name: open(path, "rb")},
+        )
 
     def put(self, url, data=None, header=None):
         return self.http("PUT", url, data, header)
@@ -222,6 +234,7 @@ class Api:
             proxies=proxies,
             **params,
         )
+        logger.info(params)
         if stream:
             res.raise_for_status()
             from common.third_util.tqdm_util import tqdm
