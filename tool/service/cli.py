@@ -22,7 +22,7 @@ class Cli(ToolBase):
         api.post(f"/app/manage/unzip1", data=dict(path="data/upload/the_dev.zip"))
 
     def restart(self, ip_port, config):
-        api = Api().set_endpoint(ip_port)
+        api = Api().set_endpoint(f"http://{ip_port}")
         api.post(f"/app/manage/restart1", data=dict(config=config))
 
 
