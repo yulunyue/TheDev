@@ -13,7 +13,7 @@ class Solution(MockCf):
         t = SortedList()
         j = 0
         x = mx = 0
-        self.logger.info(nums)
+        # self.logger.info(nums)
         for i, v in enumerate(nums):
             t.add(v)
             x ^= v
@@ -26,7 +26,7 @@ class Solution(MockCf):
                 if y > mx:
                     mx = y
                 y ^= nums[l]
-            self.logger.map(v=v, j=j, i=i, x=x, y=y, mx=mx, t=list(t))
+            # self.logger.map(v=v, j=j, i=i, x=x, y=y, mx=mx, t=list(t))
         return mx
 
     execute = maxXor
