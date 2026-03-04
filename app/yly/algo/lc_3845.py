@@ -4,7 +4,10 @@ from sortedcontainers import SortedList
 
 class Solution(MockCf):
     def get_cases(self):
-        return dict(case0=dict(nums=[5, 4, 5, 6], k=2, result=7))
+        return dict(
+            case1=dict(nums=[5, 4, 5, 6], k=2, result=7),
+            case0=dict(nums=[5, 4, 5, 6], k=1, result=6),
+        )
 
     def maxXor(self, nums: list[int], k: int) -> int:
         t = SortedList()
@@ -19,11 +22,11 @@ class Solution(MockCf):
                 x ^= nums[j]
                 j += 1
             y = x
-            for k in range(j, i + 1):
+            for l in range(j, i + 1):
                 if y > mx:
                     mx = y
-                y ^= nums[j]
-            self.logger.map(v=v, j=j, i=i, x=x, y=y, mx=mx)
+                y ^= nums[l]
+            self.logger.map(v=v, j=j, i=i, x=x, y=y, mx=mx, t=list(t))
         return mx
 
     execute = maxXor
