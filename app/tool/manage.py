@@ -30,5 +30,5 @@ class Manage:
                 OsUtil("kill").run("-9", pid_file.read_file())
             except Exception as e:
                 logger.info(e)
-        OsUtil("python").system("main.py", config, "2>&1", "&")
+        # OsUtil("python").system("main.py", config, "2>&1", "&")
         return Node()
