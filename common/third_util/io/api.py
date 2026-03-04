@@ -234,7 +234,6 @@ class Api:
             proxies=proxies,
             **params,
         )
-        logger.info(params)
         if stream:
             res.raise_for_status()
             from common.third_util.tqdm_util import tqdm
