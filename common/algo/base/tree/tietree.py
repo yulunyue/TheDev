@@ -8,10 +8,14 @@ class TieNode:
         self.depth = -1
         self.key = key
         self.p = p
-        self.childs: Dict[str, TieNode] = dict()
+        self.load()
+
+    def load(self):
+        self.childs: Dict[str, TieNode] = defaultdict(lambda: None)
+        return self
 
     def get(self, key):
-        if key not in self.childs:
+        if self.childs[key] is None:
             self.childs[key] = self.__class__(key, self).load()
         return self.childs[key]
 
@@ -34,6 +38,7 @@ class TieNode:
 
     def remove(self, s):
         tmp = self
+        tmp.size -= 1
         for i in range(len(s)):
             tmp = tmp.childs[s[i]]
             tmp.size -= 1
