@@ -13,20 +13,18 @@ class T(TieNode):
             self.idx = idx
 
     def to_str(self):
-        return f"{self.idx}"
+        return f"{self.size}"
 
     def q(self, s: List[int]):
         root = self
         u = 0
         for v in s:
             v1: T = root.get(1 - v)
-            v2: T = root.get(v)
-            if v1.idx >= T.j and v1.size:
-                root = v1
-                u = u * 2 + 1
-            else:
-                u = u * 2 + v
-                root = v2
+            root: T = root.get(v)
+            k=0
+            if v1.size:
+                root,k = v1,1
+            u = u * 2 + k
         return u
 
 
@@ -39,24 +37,27 @@ class Solution(MockCf):
 
     def maxXor(self, nums: list[int], k: int) -> int:
         t = SortedList()
-        T.j = x = 0
+        u=0
         mx = max(nums)
+        T.j = 0
         n = mx.bit_length()
+        x=[[0]*n]
+        for v in nums:
+            u^=v
+            x.append(to_2(u,n)[0])
         s = T()
-        s.add([0] * n)
-        self.logger.info(s.show())
+        self.logger.map(nums=nums,k=k)
         for i, v in enumerate(nums):
             t.add(v)
-            x ^= v
-            y = s.q(to_2(x, n)[0])
+            s.add(x[i])
+            y = s.q(x[i+1])
             if y > mx:
                 mx = y
-            s.add(to_2(v, n)[0], i)
             while T.j < i and t[-1] - t[0] > k:
                 t.remove(nums[T.j])
-                x ^= nums[T.j]
+                s.remove(x[T.j])
                 T.j += 1
-            self.logger.map(x=bin(x), j=T.j, s=s.show())
+            self.logger.map(x=x[i+1],y=y, j=T.j, s=s.show())
         return mx
 
     execute = maxXor
