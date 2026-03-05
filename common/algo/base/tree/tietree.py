@@ -3,54 +3,81 @@ from common.util.export import List, Dict, defaultdict, logger
 
 class TieNode:
 
-    def __init__(self):
-        self.childs = dict()
+    def __init__(self, key="R", p=None):
+        self.size = 0
+        self.depth = -1
+        self.key = key
+        self.p = p
+        self.childs: Dict[str, TieNode] = dict()
 
-    def add(self, s) -> "TieNode":
+    def get(self, key):
+        if key not in self.childs:
+            self.childs[key] = self.__class__(key, self).load()
+        return self.childs[key]
+
+    def load(self):
+        return self
+
+    def update_pos(self, idx):
+        raise NotImplementedError
+
+    def add(self, s, idx=None) -> "TieNode":
+        tmp = self
+        tmp.size += 1
+        for i in range(len(s)):
+            tmp = tmp.get(s[i])
+            if idx is not None:
+                tmp.update_pos(idx)
+            tmp.size += 1
+
+        return tmp
+
+    def remove(self, s):
         tmp = self
         for i in range(len(s)):
-            if tmp.childs.get(s[i], None) is None:
-                tmp.childs[s[i]] = self.__class__().set_key(s[: i + 1]).set_parent(tmp)
             tmp = tmp.childs[s[i]]
-        return tmp
+            tmp.size -= 1
 
     def search(self, s):
         root = self
-        ret: List[TieNode] = []
+        ret: List[TieNode] = [root]
         for v in s:
             if v not in root.childs:
                 return ret
             root: TieNode = root.childs[v]
-            if root.value is not None:
-                ret.append(root)
+            if root.size == 0:
+                return ret
+            ret.append(root)
         return ret
 
-    def set_key(self, key):
-        self.key = key
-        return self
-
-    p: "TieNode" = None
-
-    def set_parent(self, p):
-        self.p = p
-        return self
-
-    value = None
+    value = 0
 
     def set_value(self, v):
         self.value = v
         return self
 
-    key = "_ROOT"
+    def to_str(self):
+        return f"{self.value}:{self.size}"
 
     def show(self):
         ret = ["----"]
 
         def dfs(n: TieNode, depth=0):
-            v = str(n.value) if n.value is not None else ""
-            ret.append(f"{' '*depth}-{n.key}: {v}")
+            ret.append(f"{' '*depth}-{n.key}: {n.to_str()}")
             for v in n.childs.values():
                 dfs(v, depth + 2)
 
         dfs(self)
         return "\n".join(ret + ["----"])
+
+    def get_next_child(self):
+        raise NotImplementedError
+
+    def query(self, s):
+        root = self
+        for v in s:
+            u = self.get_next_child(v)
+            if u not in root.childs or root.childs[u] == 0:
+                return root
+            root: TieNode = root.childs[v]
+        return root

@@ -116,12 +116,12 @@ def low_high_dp(low, high, *args, calc_args=None, ret_fun=None):
     return dfs(0, True, True, *args)
 
 
-def to_2(v: int):
-    ans = []
-    u = 1
+def to_2(v: int, n: int):
+    ans = [0] * n
+    t = 0
     while v:
         if v & 1:
-            ans.append(u)
-        u *= 2
+            ans[n - t - 1] = 1
         v = v >> 1
-    return ans
+        t += 1
+    return ans, t
