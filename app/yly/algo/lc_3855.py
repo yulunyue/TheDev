@@ -12,9 +12,9 @@ class Solution(MockCf):
         s = (l + r) * n // 2
         a = 0
         d = pow(n, (k - 1), CT.MOD)
+
         for i in range(k):
-            m = k - 1 - i
-            a = (a + s * pow(10, m, CT.MOD)) % CT.MOD
-        return (a * d) % CT.MOD
+            a += 10**i
+        return (a * d * s) % CT.MOD
 
     execute = sumOfNumbers
