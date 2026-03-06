@@ -11,10 +11,10 @@ class Solution(MockCf):
         n = r - l + 1
         s = (l + r) * n // 2
         a = 0
-        d = n ** (k - 1)
+        d = pow(n, (k - 1), CT.MOD)
         for i in range(k):
             m = k - 1 - i
-            a += s * (10**m)
+            a = (a + s * pow(10, m, CT.MOD)) % CT.MOD
         return (a * d) % CT.MOD
 
     execute = sumOfNumbers
