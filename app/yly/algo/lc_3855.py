@@ -1,4 +1,4 @@
-from common.util.export import MockCf, CT
+from common.util.export import MockCf, CT,math
 
 
 class Solution(MockCf):
@@ -10,11 +10,9 @@ class Solution(MockCf):
     def sumOfNumbers(self, l: int, r: int, k: int) -> int:
         n = r - l + 1
         s = (l + r) * n // 2
-        a = 0
+        a = pow(10,k,CT.MOD)-1
         d = pow(n, (k - 1), CT.MOD)
-        for i in range(k):
-            m = k - 1 - i
-            a = (a + s * pow(10, m, CT.MOD)) % CT.MOD
-        return (a * d) % CT.MOD
+        b = pow(9,-1,CT.MOD)
+        return round(a *s* d*b) % CT.MOD
 
     execute = sumOfNumbers
