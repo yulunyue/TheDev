@@ -49,12 +49,18 @@ class Solution(MockCf):
         for i, v in enumerate(nums):
             while mnt and nums[mnt[-1]] < v:
                 mnt.pop()
+            while mxt and nums[mxt[-1]]>v:
+                mxt.pop()
             mnt.append(i)
+            mxt.append(i)
             s.add(x[i])
-            while T.j < i and t[-1] - t[0] > k:
-                t.remove(nums[T.j])
+            while T.j < i and nums[mnt[0]] - nums[mxt[0]] > k:
                 s.remove(x[T.j])
                 T.j += 1
+                if mnt[0]<T.j:
+                    mnt.popleft()
+                if mxt[0]<T.j:
+                    mxt.popleft()
             y = s.q(x[i + 1])
             if y > mx:
                 mx = y
