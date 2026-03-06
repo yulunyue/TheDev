@@ -1,9 +1,9 @@
 ```lc1
-app.yly.algo.lc_3845::Solution::run
+app.yly.algo.lc_3855::Solution::run
 ```
 
 ```lc2
-app.yly.algo.lc_3841::Solution::run
+app.yly.algo.lc_3885::Solution::run
 ```
 ```debug
 app.yly.algo.lc_3845::Solution::run case0
