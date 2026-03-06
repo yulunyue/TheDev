@@ -50,10 +50,21 @@ class ObsUtil:
         if f.is_dir():
             f = f.zip()
         res = self.obs_client.uploadFile(
-            self.config.bucket.get_value(), f.file_name, f.get_abs_path()
+            self.config.bucket.get_value(),
+            f.file_name,
+            f.get_abs_path(),
+            progressCallback=self.progress_show,
         )
         obj_uri = res["body"]["objectUrl"]
         logger.info(f"wget {obj_uri} -O {f.file_name}")
+
+    size = 0
+
+    def progress_show(self, current, all_size, size):
+        size = int(size * 100)
+        if size != self.size:
+            logger.map(current=current, all_size=all_size, size=size)
+        self.size = size
 
     def check(self):
         pass
