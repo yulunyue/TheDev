@@ -20,18 +20,15 @@ class Solution(MockCf):
 
         @functools.lru_cache(None)
         def dfs(i, c, e, z, o):
-            if z < 0 or o < 0:
+            if i == a or z < 0 or o < 0 or c > l or e > l:
                 ret = 0
-            elif i == a:
-                ret = 1
-            elif c == l:
-                ret = dfs(i + 1, 0, e + 1, z, o - 1)
-            elif e == l:
-                ret = dfs(i + 1, c + 1, 0, z - 1, o)
+            elif c + z <= l and e + o <= l:
+                self.logger.map(i=i, c0=c, r0=z, c1=e, r1=o)
+                ret = C.comb(a - i, z)
             else:
                 ret = dfs(i + 1, c + 1, 0, z - 1, o) + dfs(i + 1, 0, e + 1, z, o - 1)
-            self.logger.map(i=i, c0=c, c1=e, r0=z, r1=o, ret=ret)
-            return ret
+
+            return ret % CT.MOD
 
         e = dfs(0, 0, 0, z, o)
         dfs.cache_clear()
