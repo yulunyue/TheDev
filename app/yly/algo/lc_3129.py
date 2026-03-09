@@ -28,7 +28,7 @@ class Solution(MockCf):
                 a = dfs(i, j - 1, 0) + dfs(i, j - 1, 1)
                 if j > limit:
                     a -= dfs(i, j - limit - 1, 0)
-            return a
+            return a % CT.MOD
 
         e = dfs(zero, one, 0) + dfs(zero, one, 1)
         dfs.cache_clear()
