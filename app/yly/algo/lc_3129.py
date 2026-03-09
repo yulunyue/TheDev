@@ -13,24 +13,24 @@ class Solution(MockCf):
         )
 
     def numberOfStableArrays(self, zero: int, one: int, limit: int) -> int:
-        z, o, l = zero, one, limit
-        a = z + o
-        # b = C.comb(a, z)
-        d = 0
 
         @functools.lru_cache(None)
-        def dfs(i, c, e, z, o):
-            if i == a or z < 0 or o < 0 or c > l or e > l:
-                ret = 0
-            elif c + z <= l and e + o <= l:
-                self.logger.map(i=i, c0=c, r0=z, c1=e, r1=o)
-                ret = C.comb(a - i, z)
+        def dfs(i, j, k):
+            if i == 0:
+                return 1 if j <= limit and k == 1 else 0
+            if j == 0:
+                return 1 if i <= limit and k == 0 else 0
+            if k == 0:
+                a = dfs(i - 1, j, 0) + dfs(i - 1, j, 1)
+                if i > limit:
+                    a -= dfs(i - limit - 1, j, 1)
             else:
-                ret = dfs(i + 1, c + 1, 0, z - 1, o) + dfs(i + 1, 0, e + 1, z, o - 1)
+                a = dfs(i, j - 1, 0) + dfs(i, j - 1, 1)
+                if j > limit:
+                    a -= dfs(i, j - limit - 1, 0)
+            return a
 
-            return ret % CT.MOD
-
-        e = dfs(0, 0, 0, z, o)
+        e = dfs(zero, one, 0) + dfs(zero, one, 1)
         dfs.cache_clear()
         return e
 
