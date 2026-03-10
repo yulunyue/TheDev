@@ -41,6 +41,7 @@ class ConfigBase:
             if "/" not in resource:
                 resource = CONFIG_SETTING_DIR + "/" + resource + ".json"
             resource = File.new(resource).write_if_not_exists(dict())
+            logger.info(resource)
         self.load()
         self.resource: File = resource
         return self

@@ -36,8 +36,11 @@ class ObsUtil:
 
     def list_buckets(self):
         r = self.obs_client.listBuckets()
-        ret = [d["name"] for d in r["body"]["buckets"]]
-        logger.info(ret)
+        try:
+            ret = [d["name"] for d in r["body"]["buckets"]]
+        except Exception as e:
+            logger.error(e)
+            return r
         return ret
 
     def list_dir(self, prefix=""):

@@ -13,7 +13,6 @@ export class NetKakfa {
             this._client = new WebSocket("ws://" + web_dom.web_host + ":" + web_dom.web_port + "/ws")
             this._client.onopen = () => {
                 console.log("web_socket_open")
-                this.do_login()
 
             }
             this._client.onclose = function () {
@@ -30,15 +29,6 @@ export class NetKakfa {
             type: tp,
             data: data
         }))
-    }
-    do_login() {
-        Data.get_user_name((user_name: string) => {
-            this.send_data("login", { user_name })
-        })
-    }
-    login(call_back: any) {
-        this._login = call_back
-        return this
     }
     hander_msg(data: any) {
         let obj = JSON.parse(data)

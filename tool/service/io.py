@@ -1,4 +1,4 @@
-from common.util.export import TcpServer, TcpClient
+from common.util.export import TcpServer, TcpClient, logger
 from common.tool.export import TableBase, ToolBase
 from common.third_util.dataa.pandas_util import PandasUtil
 
@@ -17,7 +17,7 @@ class Io(ToolBase):
     def obs_list_buckets(self, env):
         from common.third_util.io.obs_util import ObsUtil
 
-        ObsUtil(env).list_buckets()
+        logger.info(ObsUtil(env).list_buckets())
 
     def obs_upload(self, env, path):
         from common.third_util.io.obs_util import ObsUtil

@@ -1,18 +1,17 @@
 import { dialog } from "../components/export"
 import web_dom from "../web/web_dom"
 export class Data {
-    get_user_name(call_back: any) {
+    get_user_name() {
         let user_name = web_dom.get_local("user_name")
         if (!user_name) {
             dialog.open_form({
                 user_name: "input"
             }, (data: any) => {
                 web_dom.set_local("user_name", data.user_name)
-                call_back(data.user_name)
+                dialog.alart("登录成功请重试")
             })
-        } else {
-            call_back(user_name)
         }
+        return user_name
 
     }
 }

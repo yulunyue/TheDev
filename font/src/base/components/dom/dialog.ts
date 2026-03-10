@@ -78,6 +78,9 @@ class Dig {
     close() {
         return this.get_dialog().hide()
     }
+    alart(s: string) {
+        alert(s)
+    }
     open_progress_bar(s: any) {
 
     }
