@@ -12,6 +12,7 @@ from ..node import Node
 from typing import List
 import json
 import os
+from .apibase import ApiBase
 
 
 class ApiCall:
@@ -59,7 +60,7 @@ class ApiCall:
         self.fun_map[key] = fun
         logger.info(f"register {key} {fun.__name__}")
 
-    def load_module(self, cls):
+    def load_module(self, cls: ApiBase):
         m = cls()
 
         moudule_name_key = cls.API_ROUTE

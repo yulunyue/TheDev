@@ -32,7 +32,7 @@ from .module import Module, run_catch_error
 from .thread_poll import ThreadManage, ThreadExec
 from .list_util import ListUtil
 from .node import Node, search_cls, enum_cls
-from .api.apicall import ApiCall
+from .api.apicall import ApiCall, ApiBase
 from .io.export import TcpServer, TcpClient, TempFile
 import re
 from typing import (
