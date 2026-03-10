@@ -8,7 +8,7 @@ from common.util.export import (
     logger,
     json_dumps,
 )
-from .node import Node
+from ..node import Node
 from typing import List
 import json
 import os
@@ -63,6 +63,8 @@ class ApiCall:
         m = cls()
 
         moudule_name_key = cls.API_ROUTE
+        if not moudule_name_key:
+            raise Exception(moudule_name_key)
         for fun_name in dir(m):
             if fun_name.startswith("_"):
                 continue
