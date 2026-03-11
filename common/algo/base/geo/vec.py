@@ -2,7 +2,9 @@ class Vec:
     __slots__ = "x", "y"
 
     def __init__(self, x: int, y: int = None):
-        if y is None:
+        if isinstance(x, Vec):
+            self.x, self.y = x.x, x.y
+        elif y is None:
             self.x, self.y = x[0], x[1]
         else:
             self.x, self.y = x, y
@@ -16,11 +18,14 @@ class Vec:
     def dot(self, b: "Vec") -> int:  # a*b*cos
         return self.x * b.x + self.y * b.y
 
-    def is_left(self, b: "Vec"):  # 平行同方向也算
-        return self.det(b) >= 0
-
-    def is_right(self, b: "Vec"):  # 平行逆方向也算
+    def on_the_right_of(self, b: "Vec"):  # 平行同方向也算
         return self.det(b) <= 0
+
+    def on_the_left_of(self, b: "Vec"):  # 平行逆方向也算
+        return self.det(b) >= 0
 
     def area(self, b: "Vec"):
         return abs(self.det(b))
+
+    def __repr__(self):
+        return f"[{self.x},{self.y}]"

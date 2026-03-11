@@ -11,7 +11,7 @@ class Andrew:
         while len(self.q) > 1:
             a1 = self.q[-1] - self.q[-2]
             a2 = p - self.q[-1]
-            if not a1.is_left(a2):
+            if not a1.on_the_right_of(a2):
                 break
             self.q.pop()
         self.q.append(p)
