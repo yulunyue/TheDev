@@ -135,7 +135,7 @@ class MainHander(RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "*")
 
 
-def run(gs: list, port):
+def run(gs: Dict[str, str], port):
     MainHander.POST_API.load_modules(gs)
     app = Application(
         [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHander)]

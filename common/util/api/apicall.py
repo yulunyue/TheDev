@@ -1,15 +1,9 @@
-from common.util.export import (
-    File,
-    get_log,
-    uid,
-    Module,
-    get_function_info,
-    get_dev_log,
-    logger,
-    json_dumps,
-)
+from ..fp import File
+from ..log import logger, get_log, get_dev_log
+from ..module import get_function_info, Module
+from ..tool import uid, json_dumps
 from ..node import Node
-from typing import List
+from typing import List, Dict
 import json
 import os
 from .apibase import ApiBase
@@ -43,13 +37,6 @@ class ApiCall:
             mock_fun(path, param, ret)
         return ret
 
-    def load_module_str(self, path: str, modules: List[str]):
-        if not os.path.isdir(path):
-            raise Exception(path)
-        return [
-            Module().load_module_object(moudule_name, path) for moudule_name in modules
-        ]
-
     def register(self, key: str, fun):
         keys = key.split("/")[-4:]
         if keys[0]:
@@ -60,12 +47,9 @@ class ApiCall:
         self.fun_map[key] = fun
         logger.info(f"register {key} {fun.__name__}")
 
-    def load_module(self, cls: ApiBase):
-        m = cls()
+    def load_module(self, moudule_name_key, cls: ApiBase):
 
-        moudule_name_key = cls.API_ROUTE
-        if not moudule_name_key:
-            raise Exception(moudule_name_key)
+        m = cls()
         for fun_name in dir(m):
             if fun_name.startswith("_"):
                 continue
@@ -74,14 +58,13 @@ class ApiCall:
             if callable(f):
                 self.register(fun_key, f)
 
-    def load_modules(self, mds):
+    def load_modules(self, mds: List[Dict]):
         for md in mds:
-            if isinstance(md, dict):
-                if md.get("disable"):
+            for k, path in md["modules"].items():
+                if k[0] == "#":
                     continue
-                self.load_modules(self.load_module_str(md["path"], md["modules"]))
-            else:
-                self.load_module(md)
+                cl = Module().load_module_object(path, md["path"])
+                self.load_module(k, cl)
 
     def to_json(self):
         childs = []

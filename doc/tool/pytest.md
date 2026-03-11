@@ -8,10 +8,10 @@ base
 test key=bin_util fun_name=TestBinUtil::test_setmask
 ```
 ```t1
-test key=search.*mctssearch.py
+test key=test_vec
 ```
 ```t2
-test key=test_api.py
+exec key=test_vec.py fun_name=TestVec::test_base
 ```
 ```t3
 exec key=test_tool.py fun_name=TestTool::test_base64

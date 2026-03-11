@@ -13,7 +13,6 @@ from common.util.export import (
 
 
 class ApiGlobal:
-    API_ROUTE = "/app/api"
 
     def query_all_apis(self, **kw):
         return MainHander.POST_API.to_json()
