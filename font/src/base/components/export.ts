@@ -4,7 +4,7 @@ import { TextAreaRich } from "./dom/form/text_area_rich"
 import { FileInput } from "./dom/form/file"
 import { search, Search } from "./dom/form/search"
 import { SvgNode, svg } from "./svg/svg"
-import { button, Button } from "./dom/form/button"
+import { Button } from "./dom/form/button"
 import { div, Div, DivFactory, Container } from "./dom/div"
 import { GNode } from "./svg/gnode"
 import { Progress } from "./svg/comb/progress"
@@ -42,7 +42,7 @@ DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
 export {
     Select, Pre, FormRow as Row, TextArea, Util, web_socket, Data, Button,
     Div, div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
-    Constant, Node, Line, GNode, button, tree, Form, node,
+    Constant, Node, Line, GNode, tree, Form, node,
     to_node, Grid, ListUi, Table, Ct, search, Search, TextAreaRich, label,
     Container, Label, oj_to_node, Chart, Axies, Mock, FileInput
 }

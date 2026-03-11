@@ -30,6 +30,7 @@ export class Select extends Div {
             margin: Constant.DEFAULT_MARGIN,
             padding: Constant.DEFAULT_PADDING,
             border: "1px solid #ccc",
+            maxWidth: Constant.WIDTH_TEXT,
             width: `calc(100% - ${Constant.DEFAULT_MARGIN * 2}px)`
         })
     }

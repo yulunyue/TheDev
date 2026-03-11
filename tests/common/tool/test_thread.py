@@ -1,4 +1,4 @@
-from common.tool.thread_util import ThreadRecord
+from common.util.thread.thread_util import ThreadRecord
 from common.util.export import TestBase
 
 

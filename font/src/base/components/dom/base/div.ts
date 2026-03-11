@@ -54,7 +54,7 @@ export class Div {
         return this.set_style({
             width: 1,
             height: 1,
-            position: "absolute"
+            // position: "absolute"
         })
     }
 
@@ -152,6 +152,7 @@ export class Div {
     }
     set_size(size: number) {
         this.size = size
+        this.set_style({ flex: size })
         return this
     }
     set_height(h: number) {
@@ -270,7 +271,11 @@ export class Div {
         }
         if (this.option.id) {
             DivFactory.set(this.option.id, this)
+            if (this.option.local_storge_enable) {
+                web_dom.get_local(this.option.id, (v: any) => this.set_value(v))
+            }
         }
+
         this.render_option()
         return this
     }

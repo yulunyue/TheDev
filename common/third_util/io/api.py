@@ -1,4 +1,4 @@
-import requests
+from .http_util import requests
 from common.util.export import (
     get_log,
     File,
@@ -7,9 +7,7 @@ from common.util.export import (
     ThreadManage,
     json_dumps,
 )
-import urllib3
 
-urllib3.disable_warnings()
 logger = get_log("api")
 from common.tool.export import NumberModel, StrModel, ConfigBase, TableBase, DictModel
 

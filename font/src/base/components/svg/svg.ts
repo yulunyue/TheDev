@@ -23,10 +23,6 @@ export class SvgNode extends Div {
     }
     init_style(): void {
         this.set_attr("shape-rendering", "geometricPrecision")
-        this.set_style({
-            width: 1,
-            height: 1
-        })
     }
     on_render(): void {
 

@@ -34,6 +34,4 @@ export class Title extends Div {
         return this
     }
 }
-export function button() {
-    return new Button()
-}
+

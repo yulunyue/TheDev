@@ -21,6 +21,7 @@ export class Search extends Div {
             zIndex: Constant.Z_INDEX_1
         }).hide()
     }
+
     init_event(): void {
         this.input.on_click(() => this.emit_search())
         // this.input.on_input(() => this.emit_search())

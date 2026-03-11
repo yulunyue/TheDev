@@ -9,18 +9,10 @@
 p {
     cursor: default;
 }
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td,
-th {
-    border: 1px solid #dddddd;
-    padding: 8px;
-    text-align: left;
-
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;  /* 让 body 继承视口高度 */
 }
 
 .load_gif {

@@ -15,7 +15,6 @@ export class Api extends Div {
             url: "/app/api/query_all_apis",
             id: URIKEYID,
             title: "APIKEY",
-            type: Constant.DATA_SOURCE_DYN,
             local_storge_enable: true
         }))
         this.exec_btn = new Button().set_html("执行")
@@ -55,7 +54,7 @@ export class Api extends Div {
         })
     }
     on_mount(): void {
-        web_dom.get_local(URIKEYID, (v: any) => this.uri.set_value(v))
+
 
     }
 

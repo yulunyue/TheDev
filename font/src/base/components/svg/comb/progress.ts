@@ -4,10 +4,10 @@ import { Line } from "../line";
 import { Rect } from "../rect";
 import { Text, text } from "../text";
 import { Node } from "../../../web/cls";
-import { SvgNode, svg } from "../svg";
+import { SvgNode } from "../svg";
 import { Div } from "../../dom/div";
 import Constant from "../../../web/constant";
-import { button } from "../../dom/form/button";
+import { Button } from "../../dom/form/button";
 import { Input } from "../../dom/form/input";
 
 class ProgrePoint extends GNode {
@@ -42,21 +42,24 @@ export class Progress extends Div {
     margin: number = 10
     height: number = 0
     width: number = 0
+    g: SvgNode
+    init_style(): void {
+        this.g.set_size(1)
+        this.set_style_flex(Constant.VERTICAL).set_height(Constant.INPUT_HEIGHT)
+    }
     init_node(): void {
-        // this.points = []
         this.min_g = new GNode()
-        // this.bg = this.min_g.add_child(new Rect())
         this.main_line = this.min_g.add_child(new Line().with_arrow())
         this.value = this.min_g.add_child(new ProgrePoint())
         this.max_value = this.min_g.add_child(new ProgrePoint())
-        // this.progre_points = this.add_child(new GNode())
         this.input_line = new Input().set_width(Constant.INPUT_NUMBER_WIDTH)
+        this.g = new SvgNode().add_childs([this.min_g])
         this.add_childs([
-            svg().add_childs([this.min_g]).set_width(1),
-            button().set_html("<<").on_click(() => this.set_value(this.value.value - 1)),
+            this.g,
+            new Button().set_html("<<").on_click(() => this.set_value(this.value.value - 1)),
             this.input_line,
-            button().set_html("go").on_click(() => this.set_value(this.input_line.get_int())),
-            button().set_html(">>").on_click(() => this.set_value(this.value.value + 1)),
+            new Button().set_html("go").on_click(() => this.set_value(this.input_line.get_int())),
+            new Button().set_html(">>").on_click(() => this.set_value(this.value.value + 1)),
         ])
         web_dom.bind_key((tp: string, e: KeyboardEvent) => {
             if (tp == 'keydown' && e.key == Constant.KEY_RIGHT) {
@@ -113,11 +116,12 @@ export class Progress extends Div {
 
     }
     draw() {
-        let rect = this.min_g.parent.get_rect()
+        let rect = this.g.get_rect()
         this.height = rect.height / 2
         this.value.set_y(this.height)
         this.max_value.set_y(this.height)
         this.width = rect.width - 2 * this.margin
+        // console.log(this.height, this.width)
         // this.bg.set_wh(rect.width, rect.height)
         this.main_line.set_d([
             { x: this.margin, y: this.height },
@@ -126,7 +130,7 @@ export class Progress extends Div {
         this.set_option(new Node())
     }
     on_mount(): void {
-        this.draw()
+        web_dom.next_frame(() => this.draw())
     }
     set_option(option: Node): this {
         this.set_max_value(option.childs.length)

@@ -52,7 +52,7 @@ class MockCf:
         self.src_file = src
         self.inputs = []
 
-    def get_cases(self):
+    def get_cases(self) -> Dict:
         return self.cases
 
     def set_logger(self, log):
@@ -90,6 +90,9 @@ class MockCf:
 
     def execute(self, inps: str):
         return self.set_inputs(inps).main()
+
+    def execute_by_thread(self, case: dict):
+        result = case.pop("result")
 
 
 MockCg = MockCf
