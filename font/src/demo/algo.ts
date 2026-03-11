@@ -44,7 +44,7 @@ class Algo extends Div {
     init_node() {
         this.init_edit_dialog()
         this.div = div()
-        this.pro = new Progress().set_size(1).on_change(() => this.goto())
+        this.pro = new Progress()
 
         this.add_childs([
             //div().set_size(1).add_childs([this.div]),
@@ -55,7 +55,7 @@ class Algo extends Div {
             ]).set_height(Constant.DEFAULT_LINE_HEIGHT)
         ])
     }
-    init_event(): void {
+    init_event2(): void {
         this.code_select.on_change(() => {
             let o = this.code_select.get_value()
             this.code_pre.set_value(o.value)
@@ -128,7 +128,7 @@ class Algo extends Div {
     }
     on_mount() {
         //this.test()
-        this.load()
+        //this.load()
         // this.open_setting()
 
     }
