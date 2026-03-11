@@ -1,4 +1,13 @@
-from common.util.export import ApiBase, File, Node, Module, MockCf, logger, C
+from common.util.export import (
+    ApiBase,
+    File,
+    Node,
+    Module,
+    MockCf,
+    logger,
+    C,
+    execute_by_thread,
+)
 from common.tool.export import TableBase
 
 ROOT = File("app/yly/algo")
@@ -31,12 +40,12 @@ class Algo(ApiBase):
         return Node(childs=nodes)
 
     def run(self, code, **kw):
-        v: dict = code[C.K_VALUE]["path"]
+        v: dict = code[C.K_VALUE]
         path, case, code = v["path"], v["case"], v["code"]
         tmp_path = "data/algo/tmp.py"
         File(tmp_path).write_file(code)
-        m: MockCf = Module().load_module_object(tmp_path + "::Solution")
-        return m.execute_by_thread(case)
+        m: MockCf = Module().load_module_object(tmp_path + "::Solution")()
+        return execute_by_thread(m, case)
 
 
 if __name__ == "__main__":

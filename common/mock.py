@@ -81,18 +81,44 @@ class MockCf:
         return ""
 
     def run(self, case_name=""):
-        if os.path.exists("common/third_service/oj.py"):
-            from common.third_service.oj import oj_run
-
-            oj_run(self, case_name)
-        else:
-            self.exec()
+        oj_run(self, case_name)
 
     def execute(self, inps: str):
         return self.set_inputs(inps).main()
 
-    def execute_by_thread(self, case: dict):
-        result = case.pop("result")
+
+def oj_run(ins: "MockCf", case_name=None):
+    from common.tool.export import PyFile
+
+    cases: dict = ins.get_cases()
+    if case_name:
+        cases = [[case_name, cases[case_name]]]
+    else:
+        cases = cases.items()
+    for case_name, c in cases:
+        exp = c.pop("result")
+        ins.logger = get_dev_log(case_name)
+        res = ins.execute(**c)
+        if res != exp:
+            logger.info(f"FAILED {case_name} {exp}!={res}")
+        else:
+            logger.info(f"PASS {case_name} {exp}=={res}")
+    src_file = ins.src_file
+    if src_file is None:
+        src_file = get_file_path_by_cls(ins.__class__)
+    PyFile(src_file).compile_to_one_file()
+
+
+def execute_by_thread(i: MockCf, case: dict):
+    from common.util.export import ThreadRecord
+
+    result = case.pop("result")
+
+    class T(ThreadRecord):
+        def exec_main(self):
+            return i.execute(**case)
+
+    return T().execute().get_records()
 
 
 MockCg = MockCf

@@ -1,18 +1,11 @@
 import sys
 import threading
 import time
-from types import FrameType
+
 import traceback
 from ..fp import File
 from ..log import logger
-
-
-class FmInfo:
-    def __init__(self, frame) -> None:
-        self.frame: FrameType = frame
-
-    def get_local_self(self):
-        return self.frame.f_locals["self"]
+from .fm_info import FmInfo, FrameType
 
 
 class ThreadRecord(threading.Thread):
@@ -61,6 +54,9 @@ class ThreadRecord(threading.Thread):
         self._last_state = state
         return self.localtrace
 
+    def get_records(self):
+        return self.records
+
     def execute(self, *args, **kw) -> "ThreadRecord":
         self.state = 0
         self.records = []
@@ -74,14 +70,10 @@ class ThreadRecord(threading.Thread):
         return self
 
     def exec_main(self, *args, **kw):
-        raise Exception("todo")
+        return self.exec_fun(**self.kw)
 
     def to_josn(self):
         return dict()
-
-    def log(self):
-        for r in self.records:
-            logger.map(**r)
 
     def uk(self):
         return ""
@@ -107,5 +99,5 @@ class ThreadRecord(threading.Thread):
         PU_UTIL.register(left=left, right=right).run()
 
     def set_exec(self, fun):
-        self.exec_main = fun
+        self.exec_fun = fun
         return self
