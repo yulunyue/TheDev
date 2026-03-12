@@ -9,6 +9,7 @@ export class Api extends Column {
     input: Form
     result: Container
     exec_btn: Button
+    left_main: Div
     init_node(): void {
         this.input = new Form()
         this.uri = new Search().set_option(to_node({
@@ -19,20 +20,25 @@ export class Api extends Column {
         }))
         this.exec_btn = new Button().set_html("执行")
         this.result = new Container()
+        this.left_main = new Div().add_childs([
+            new Column().add_childs([
+                this.uri,
+                this.exec_btn,
+            ]),
+            this.input
+        ])
         this.add_childs([
-            new Div().add_childs([
-                new Column().add_childs([
-                    this.uri,
-                    this.exec_btn,
-                ]),
-                this.input
-            ]).set_style({
-                minWidth: 240,
-            }),
+            this.left_main,
             this.result
         ])
     }
-
+    init_style(): void {
+        this.left_main.set_style({
+            minWidth: 240,
+        })
+        this.result.set_size(1)
+        super.init_style()
+    }
     init_event(): void {
         this.uri.on_change((src: Node, dst: Node) => {
             web_dom.post("/app/api/get_api_call_info", { key: dst.key }, (d) => {

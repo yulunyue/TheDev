@@ -3,14 +3,19 @@ from collections import defaultdict
 
 
 class UniFind:
-    def __init__(self) -> None:
-        self.p = dict()
+    def __init__(self, n=None) -> None:
+        if n is None:
+            self.p = dict()
+        else:
+            self.p = list(range(0, n))
+        self.size = 0
 
     def merge(self, child, parent, *args):
         parent1 = self.find(parent)
         child1 = self.find(child)
         if self.can_merge(child, child1, parent, parent1, *args):
             self.p[child1] = parent1
+            self.size += 1
             return parent1, True
         return None, False
 
@@ -25,10 +30,10 @@ class UniFind:
         to/from_ = value
         y/x = (to/from_)*(y/to)/(x/form_)
         """
-        return x == y
+        return x != y
 
     def find(self, v):
-        if v not in self.p:
+        if isinstance(self.p, dict) and v not in self.p:
             self.p[v] = v
         if self.p[v] != v:
             p = self.find(self.p[v])

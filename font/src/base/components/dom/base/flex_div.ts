@@ -1,5 +1,6 @@
 import { Div } from "./div";
 import Constant from "../../../web/constant"
+import { Row } from "./row";
 export class FlexDiv extends Div {
 
     get_direction() {
@@ -14,6 +15,13 @@ export class FlexDiv extends Div {
             alignContent: "center",
         })
     }
-
+    new_cls() {
+        return new Row()
+    }
+    render_option(): void {
+        if (this.option.childs) {
+            this.set_childs(this.option.childs, this.new_cls)
+        }
+    }
 
 } 

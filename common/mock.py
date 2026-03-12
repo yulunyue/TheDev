@@ -108,6 +108,7 @@ class MockCf:
 
 def oj_run(ins: "MockCf", case_name=None):
     from common.tool.export import PyFile
+    from common.util.export import get_dev_log, logger, get_file_path_by_cls
 
     cases: dict = ins.get_cases()
     if case_name:

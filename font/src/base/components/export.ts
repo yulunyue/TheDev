@@ -41,6 +41,8 @@ DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
 DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
 DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
 DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
+DivFactory.register(Ct.DOM_TYPE_ROW, () => new Row())
+DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new Column())
 export {
     Select, Pre, FormRow, TextArea, Util, web_socket, Data, Button,
     Div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
