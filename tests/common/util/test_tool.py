@@ -3,7 +3,7 @@ from common.util.export import (
     uid,
     base64_encode,
     ii,
-    hash_any,
+    hash_any_str,
     md5,
     random,
     base64_decode,
@@ -28,9 +28,9 @@ class TestTool(TestBase):
         self.expect(ii("2 4  a9 9a 7"), [2, 4, 7])
 
     def test_hash_any(self):
-        self.expect(hash_any("aa"), "aa")
-        self.expect(hash_any([0, 1, 2]), "012")
-        self.expect(hash_any(dict(a=1)), "a1")
+        self.expect(hash_any_str("aa"), "aa")
+        self.expect(hash_any_str([0, 1, 2]), "012")
+        self.expect(hash_any_str(dict(a=1)), "a1")
 
     def test_md5(self):
         self.expect(md5("aa"), "4124bc0a9335c27f086f24ba207a4912")

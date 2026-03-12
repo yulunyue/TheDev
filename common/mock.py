@@ -78,13 +78,32 @@ class MockCf:
         self._o.write(f"{s}\n")
 
     def exec(self):
-        return ""
+        raise NotImplementedError
 
     def run(self, case_name=""):
         oj_run(self, case_name)
 
     def execute(self, inps: str):
         return self.set_inputs(inps).main()
+
+    def init(self, **kw):
+        raise NotImplementedError
+
+    def set_layout(self, keys):
+        self.layout_keys = keys
+        return self
+
+    def get_layout(self):
+        from common.tool.export import get_dom_type
+
+        n = len(self.layout_keys)
+        m = int(math.sqrt(n))
+        ret = []
+        for i, k in enumerate(self.layout_keys):
+            if i % m == 0:
+                ret.append([])
+            ret[-1].append(get_dom_type(k, getattr(self, k)))
+        return ret
 
 
 def oj_run(ins: "MockCf", case_name=None):
@@ -110,15 +129,34 @@ def oj_run(ins: "MockCf", case_name=None):
 
 
 def execute_by_thread(i: MockCf, case: dict):
-    from common.util.export import ThreadRecord
+    from common.util.export import ThreadRecord, hash_any_str
 
     result = case.pop("result")
+    keys_pre = set(dir(i))
+    i.init(**case)
+    i.set_layout(set(dir(i)) - keys_pre)
 
     class T(ThreadRecord):
         def exec_main(self):
-            return i.execute(**case)
+            return i.exec()
 
-    return T().execute().get_records()
+        def uk(self):
+            return "".join(hash_any_str(getattr(i, key)) for key in i.layout_keys)
+
+        def to_josn(self):
+            ret = dict()
+            for key in i.layout_keys:
+                v = getattr(i, key)
+                if hasattr(v, "to_json"):
+                    ret[key] = v.to_json()
+                else:
+                    ret[key] = v
+            return ret
+
+    return dict(
+        layout=i.get_layout(),
+        records=T().execute().get_records(),
+    )
 
 
 MockCg = MockCf

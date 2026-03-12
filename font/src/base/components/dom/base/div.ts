@@ -58,11 +58,6 @@ export class Div {
         })
     }
 
-    set_flex_grow(grow: number) {
-        return this.set_div_style({
-            flexGrow: grow + ""
-        })
-    }
     set_border() {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
@@ -180,15 +175,7 @@ export class Div {
             transform: "translate(-50%,-50%)"
         })
     }
-    set_style_flex(direction: number) {
-        return this.set_div_style({
-            flexDirection: direction == Constant.VERTICAL ? "row" : "column",
-            display: "flex",
-            justifyContent: "center",
-            alignContent: "center",
-            flexGrow: this.size + "",
-        })
-    }
+
     init_style() {
 
     }

@@ -1,10 +1,10 @@
 
 import {
-    Div, Constant, Node, web_dom, oj_to_node, Form, to_node, Search, Container,
+    Column, Row, Div, Constant, Node, web_dom, oj_to_node, Form, to_node, Search, Container,
     Button
 } from "../base/components/export";
 const URIKEYID = "api_key"
-export class Api extends Div {
+export class Api extends Column {
     uri: Search
     input: Form
     result: Container
@@ -21,10 +21,10 @@ export class Api extends Div {
         this.result = new Container()
         this.add_childs([
             new Div().add_childs([
-                new Div().add_childs([
+                new Column().add_childs([
                     this.uri,
                     this.exec_btn,
-                ]).set_style_flex(Constant.VERTICAL),
+                ]),
                 this.input
             ]).set_style({
                 minWidth: 240,
@@ -32,12 +32,7 @@ export class Api extends Div {
             this.result
         ])
     }
-    init_style(): void {
-        this.set_style_flex(
-            Constant.VERTICAL
-        )
-        this.result.set_flex_grow(1)
-    }
+
     init_event(): void {
         this.uri.on_change((src: Node, dst: Node) => {
             web_dom.post("/app/api/get_api_call_info", { key: dst.key }, (d) => {

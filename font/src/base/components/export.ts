@@ -5,7 +5,9 @@ import { FileInput } from "./dom/form/file"
 import { search, Search } from "./dom/form/search"
 import { SvgNode, svg } from "./svg/svg"
 import { Button } from "./dom/form/button"
-import { div, Div, DivFactory, Container } from "./dom/div"
+import { Div, DivFactory, Container } from "./dom/div"
+import { Row } from "./dom/base/row"
+import { Column } from "./dom/base/column"
 import { GNode } from "./svg/gnode"
 import { Progress } from "./svg/comb/progress"
 import { tree } from "./svg/comb/tree"
@@ -40,9 +42,9 @@ DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
 DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
 DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
 export {
-    Select, Pre, FormRow as Row, TextArea, Util, web_socket, Data, Button,
-    Div, div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
+    Select, Pre, FormRow, TextArea, Util, web_socket, Data, Button,
+    Div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, tree, Form, node,
     to_node, Grid, ListUi, Table, Ct, search, Search, TextAreaRich, label,
-    Container, Label, oj_to_node, Chart, Axies, Mock, FileInput
+    Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column
 }

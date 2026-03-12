@@ -2,25 +2,27 @@
 import {
     Div, Svg, svg, Constant, Node, web_dom, tree, Form, dialog, Row, to_node, Select, Pre,
     GNode, Button, Input, Progress, DivFactory, Search, Container,
-    TextArea
+    TextArea,
+    Column
 } from "../base/components/export";
 
 let URIKEYID = "ALGO_SEARCH"
-class Algo extends Div {
+class Algo extends Row {
     container: Container
     pro: Progress
     dialog_div: Form
     code_select: Search
     head_msg: Div
-    head_container: Div
+    head_container: Column
     head_run_btn: Button
     head_edit_btn: Button
     init_style(): void {
         //this.set_style_ab_full()
-        this.container.set_size(1)
+        this.container.set_size(1).full()
         this.head_msg.set_size(1)
-        this.head_container.set_style_flex(Constant.VERTICAL)
-        this.set_style_flex(Constant.HORIZONTAL).full()
+        this.full()
+        super.init_style()
+
     }
     init_node() {
         this.code_select = new Search().set_option(to_node({
@@ -33,7 +35,7 @@ class Algo extends Div {
         this.head_msg = new Div()
         this.head_edit_btn = new Button().set_html("EDIT")
         this.head_run_btn = new Button().set_html("RUN")
-        this.head_container = new Div().add_childs([
+        this.head_container = new Column().add_childs([
             this.head_msg,
             this.code_select,
             this.head_edit_btn,
@@ -79,7 +81,7 @@ class Algo extends Div {
         web_dom.post('/app/algo/run', {
             code: this.code_select.get_value()
         }, (node: Node) => {
-            console.log(node)
+            this.pro.set_option({ childs: node.data.records })
         })
     }
     on_mount() {

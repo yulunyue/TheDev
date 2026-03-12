@@ -6,6 +6,7 @@ import { Text, text } from "../text";
 import { Node } from "../../../web/cls";
 import { SvgNode } from "../svg";
 import { Div } from "../../dom/div";
+import { Column } from "../../dom/base/column";
 import Constant from "../../../web/constant";
 import { Button } from "../../dom/form/button";
 import { Input } from "../../dom/form/input";
@@ -30,7 +31,7 @@ class ProgrePoint extends GNode {
     }
 }
 
-export class Progress extends Div {
+export class Progress extends Column {
     main_line: Line
     min_g: GNode
     // points: ProgrePoint[]
@@ -45,7 +46,8 @@ export class Progress extends Div {
     g: SvgNode
     init_style(): void {
         this.g.set_size(1)
-        this.set_style_flex(Constant.VERTICAL).set_height(Constant.INPUT_HEIGHT)
+        this.set_height(Constant.INPUT_HEIGHT)
+        super.init_style()
     }
     init_node(): void {
         this.min_g = new GNode()

@@ -45,7 +45,7 @@ class Algo(ApiBase):
         tmp_path = "data/algo/tmp.py"
         File(tmp_path).write_file(code)
         m: MockCf = Module().load_module_object(tmp_path + "::Solution")()
-        return execute_by_thread(m, case)
+        return Node(data=execute_by_thread(m, case))
 
 
 if __name__ == "__main__":

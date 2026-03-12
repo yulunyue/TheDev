@@ -1,4 +1,4 @@
-import { Div, div } from "./div";
+import { Div } from "./div";
 import web_dom from "../../web/web_dom"
 
 import { Node } from "../../web/cls";
@@ -8,9 +8,9 @@ export class Dialog extends Div {
     main: Div
     init_node() {
         web_dom.get_body().appendChild(this.el)
-        this.main = this.add_child(div())
-        this.header = this.add_child(div())
-        this.container = this.main.add_child(div())
+        this.main = this.add_child(new Div())
+        this.header = this.add_child(new Div())
+        this.container = this.main.add_child(new Div())
     }
 
     init_style(): void {

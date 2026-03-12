@@ -1,6 +1,6 @@
 import web_dom from "../base/web/web_dom"
 
-import { div } from "../base/components/dom/div"
+import { Div } from "../base/components/dom/div"
 class Constant {
     web_socket_port: string
     web_backend_port: number
@@ -15,7 +15,7 @@ class Constant {
 
     }
     init_body(body: any) {
-        let dialog = div().set_html(
+        let dialog = new Div().set_html(
             "x"
         ).set_div_style({
             position: "fixed",

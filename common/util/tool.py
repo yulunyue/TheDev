@@ -63,14 +63,14 @@ def ii(s: str):
     return ans
 
 
-def hash_any(c):
+def hash_any_str(c):
     res = ""
     if isinstance(c, dict):
         for k in sorted(c.keys()):
-            res += k + hash_any(c[k])
+            res += k + hash_any_str(c[k])
     elif isinstance(c, list):
         for v in c:
-            res += hash_any(v)
+            res += hash_any_str(v)
     else:
         res += str(c)
     return res

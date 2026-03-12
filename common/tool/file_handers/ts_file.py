@@ -1,10 +1,10 @@
 from common.util.fp import File
 import json
-from common.util.tool import hash_any
+from common.util.tool import hash_any_str
 
 
 class TsFile:
-    PREFIX = 'let DATA='
+    PREFIX = "let DATA="
 
     def __init__(self) -> None:
         self.config = dict()
@@ -18,11 +18,12 @@ class TsFile:
         return self
 
     def get_content(self):
-        return f'{TsFile.PREFIX}{json.dumps(self.config)}\nexport default DATA'
+        return f"{TsFile.PREFIX}{json.dumps(self.config)}\nexport default DATA"
 
     def load_content(self):
-        self.config = json.loads(self.fp.read_file().split('\n')[
-                                 0][len(TsFile.PREFIX):])
+        self.config = json.loads(
+            self.fp.read_file().split("\n")[0][len(TsFile.PREFIX) :]
+        )
 
     def set(self, keys, value):
         tmp = self.config
@@ -39,12 +40,12 @@ class TsFile:
         return tmp.get(keys[-1], defalt_value)
 
     def update_api(self, path, param, data):
-        self.set([path, hash_any(param)], data)
+        self.set([path, hash_any_str(param)], data)
 
     def test(self):
         self.load("data/test/a.ts")
-        self.set(["a", "b"], self.get(["a", "b"], 0)+1)
+        self.set(["a", "b"], self.get(["a", "b"], 0) + 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     TsFile().test()

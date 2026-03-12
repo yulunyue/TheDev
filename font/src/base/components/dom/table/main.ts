@@ -50,9 +50,9 @@ export class Table extends Div {
     init_tail_div() {
         this.pagination = new Pagination()
         this.tail_div = new Div().add_childs([
-            new Div().set_flex_grow(1),
+            new Div(),
             this.pagination
-        ]).set_style_flex(Constant.VERTICAL)
+        ])
     }
     init_head_div() {
         this.search_input = new Input().set_placeholder("关键字搜索")
@@ -62,7 +62,7 @@ export class Table extends Div {
             new Button().set_html("搜索").on_click(() => this.filter()),
             new Button().set_html("添加").on_click(() => this.add()),
             new Button().set_html("保存").on_click(() => this.save_all())
-        ]).set_style_flex(Ct.VERTICAL).set_style({ width: 1 })
+        ]).set_style({ width: 1 })
 
     }
     add() {

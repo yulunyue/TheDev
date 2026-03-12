@@ -3,7 +3,7 @@ from common.util.export import (
     get_log,
     File,
     get_cache,
-    hash_any,
+    hash_any_str,
     ThreadManage,
     json_dumps,
 )
@@ -174,7 +174,7 @@ class Api:
         return API_CONFIG.get(self.name).proxy.get_value()
 
     def get_mock_data(self, uri, method, param):
-        k = method + "|" + hash_any(uri) + "|" + hash_any(param)
+        k = method + "|" + hash_any_str(uri) + "|" + hash_any_str(param)
         if self.cache and self.cache.exists(k):
             return k, self.cache.get(k)
         return k, None

@@ -13,7 +13,4 @@ export class Container extends Div {
         return this.main.get_value()
     }
 }
-export function div(node_type?: string) {
-    return new Div(node_type, "")
-}
 export { Div, DivFactory }

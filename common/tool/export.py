@@ -22,3 +22,4 @@ from .toolbase import ToolBase
 from .file_handers.py_file import PyFile
 from .front.table import FrontTable
 from .front.domfile import DomFile
+from .front.util import get_dom_type

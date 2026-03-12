@@ -1,5 +1,4 @@
 import { graphlib, render } from "dagre-d3"
-import { div } from "../../base/components/dom/div"
 import * as d3 from "d3"
 import Ct from "src/base/web/constant";
 import { SvgNode } from "../../base/components/svg/svg";

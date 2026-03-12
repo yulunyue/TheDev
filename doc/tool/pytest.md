@@ -14,7 +14,7 @@ test key=test_vec
 exec key=test_vec.py fun_name=TestVec::test_base
 ```
 ```t3
-exec key=test_tool.py fun_name=TestTool::test_base64
+exec key=test_thread.py fun_name=TestThread::test_rc
 ```
 ```debug
 exec key=test_yml fun_name=TestYml::test_yml_to_dict

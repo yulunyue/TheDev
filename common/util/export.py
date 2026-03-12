@@ -12,7 +12,7 @@ from .log import (
 from .module import Module, get_function_info, get_file_path_by_cls
 from .tool import (
     uid,
-    hash_any,
+    hash_any_str,
     json_dumps,
     dict_to_str,
     ii,

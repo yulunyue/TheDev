@@ -1,15 +1,11 @@
 import { Input } from "./input";
 import { Button } from "./button";
-import { Div } from "../div"
+import { Row } from "../base/row";
 import web_dom from "../../../web/web_dom"
-import Constant from "../../../web/constant";
-export class FileInput extends Div {
+export class FileInput extends Row {
     inp: Input
     btn: Button
     path: string
-    init_style(): void {
-        this.set_style_flex(Constant.VERTICAL)
-    }
     init_node() {
         this.inp = new Input().set_attr("type", "file")
         this.btn = new Button().set_html("upload")
