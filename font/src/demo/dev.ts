@@ -21,7 +21,8 @@ export class Dev extends Div {
             this.get_window_info(),
             this.get_table(),
             this.get_form(),
-            this.get_row()
+            this.get_row(),
+            this.test_grid()
         ])
     }
     get_row() {
@@ -118,9 +119,9 @@ export class Dev extends Div {
         this.add_child(chart)
     }
     test_grid() {
-        this.add_child(new Grid().set_option({
+        return new Grid().set_option({
             childs: []
-        }))
+        })
     }
     on_mount(): void {
 

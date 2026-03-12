@@ -8,6 +8,10 @@ export class Title extends Div {
         })
     }
     render_option(): void {
-        this.set_html(this.option.get_title() + ":" + this.option.value)
+        this.set_value(this.option.value)
+    }
+    set_value(value: any): this {
+        this.set_html(this.option.get_title() + ":" + value)
+        return this
     }
 }

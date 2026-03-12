@@ -30,7 +30,7 @@ export class FlexDiv extends Div {
             let childs = []
             for (var i = 0; i < this.option.childs.length; i++) {
                 let o = this.option.childs[i]
-                childs.push(DivFactory.new_div(o.type).set_option(o))
+                childs.push(DivFactory.new_div(o.type, o.key).set_option(o))
             }
             this.add_childs(childs)
         }

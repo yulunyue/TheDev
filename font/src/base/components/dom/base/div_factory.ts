@@ -6,6 +6,7 @@ export class DivFactory {
     static instance = {}
     static set(key: string, value: any) {
         DivFactory.instance[key] = value
+        return value
     }
     static get(key: string) {
         if (!DivFactory.instance[key]) {
@@ -17,11 +18,11 @@ export class DivFactory {
         DivFactory.fac_map[key] = fun
     }
 
-    static new_div(key: string): Div {
+    static new_div(type: string, key: string): Div {
         // console.log(key, DivFactory.fac_map)
-        if (!this.fac_map[key]) {
-            console.error(key, Object.keys(this.fac_map))
+        if (!this.fac_map[type]) {
+            console.error(key, type, Object.keys(this.fac_map))
         }
-        return this.fac_map[key]()
+        return DivFactory.set(key, this.fac_map[type]())
     }
 }

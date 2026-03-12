@@ -72,6 +72,9 @@ export class Progress extends Column {
             }
         })
     }
+    render_option(): void {
+
+    }
     set_max_value(value: number) {
         this.max_value.set_value(value, this.width)
         this.do_change()
@@ -96,7 +99,7 @@ export class Progress extends Column {
         }
         this.input_line.set_value(value)
         this.value.set_value(value, Math.min(pos + this.margin, this.width))
-        // this._on_change(value)
+        this.do_select({ value: value, pos: pos })
         return this
     }
     init_event() {
@@ -129,15 +132,15 @@ export class Progress extends Column {
             { x: this.margin, y: this.height },
             { x: this.width + this.margin, y: this.height }
         ])
-        this.set_option(new Node())
+        this.set_option({ value: 0, data: { max_length: 0 } })
     }
     on_mount(): void {
         web_dom.next_frame(() => this.draw())
     }
     set_option(option: Node): this {
-        this.set_max_value(option.childs.length)
-        this.set_value(option.value || 0)
-        return this
+        this.set_max_value(option.data.max_length)
+        this.set_value(option.value)
+        return super.set_option(option)
     }
 
 }

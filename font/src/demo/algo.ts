@@ -16,6 +16,7 @@ class Algo extends Row {
     head_container: Column
     head_run_btn: Button
     head_edit_btn: Button
+    records: any
     init_style(): void {
         //this.set_style_ab_full()
         this.container.set_size(1).full()
@@ -50,39 +51,40 @@ class Algo extends Row {
 
     init_event(): void {
         this.head_run_btn.on_click(() => this.run())
+        this.pro.on_select((v: any) => this.goto())
 
     }
     open_setting() {
         dialog.open(this.dialog_div)
     }
 
-    render_option() {
-
-    }
     goto() {
-        let idx = this.pro.get_value()
-        if (!this.option.data.record || !this.option.data.record[idx]) {
+        if (!this.records) {
             return
         }
-        for (var key in this.option.data.record[idx]) {
-            let d = DivFactory.get(key)
-            d.set_option(this.option.data.record[idx][key])
+        let v = this.records[this.pro.get_value()]
+        if (!v) {
+            return
+        }
+        for (var key in v) {
+            let d: Div = DivFactory.get(key)
+            d.set_value(v[key])
         }
     }
     test() {
     }
 
     get_case() {
-        // return this.case_pre.get_value()
-    }
-    load() {
+
     }
     run() {
         web_dom.post('/app/algo/run', {
             code: this.code_select.get_value()
         }, (node: Node) => {
-            this.pro.set_option({ childs: node.data.records })
+            this.records = node.data.records
             this.container.set_option(node.data.layout)
+            this.pro.set_option({ data: { max_length: this.records.length } })
+
         })
     }
     on_mount() {

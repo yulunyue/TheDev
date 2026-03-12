@@ -16,7 +16,10 @@ export class Grid extends SvgNode {
     cell_width: number
     cell_height: number
     init_node(): void {
-        this.g = this.add_child(new GNode())
+        this.g = new GNode()
+        this.add_childs([
+            this.g
+        ])
     }
     draw_child() {
 
