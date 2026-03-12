@@ -1,5 +1,5 @@
 import { Div } from "../dom/div";
-import { Span } from "../dom/label";
+import { Span } from "../dom/base/label";
 import { Select } from "../dom/form/select";
 import { Dom, Node, to_node } from "../../web/cls";
 import { Button } from "../dom/form/button";

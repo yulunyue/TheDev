@@ -94,16 +94,18 @@ class MockCf:
         return self
 
     def get_layout(self):
-        from common.tool.export import get_dom_type
+        from common.tool.export import get_dom_type, Row, Column
 
         n = len(self.layout_keys)
-        m = int(math.sqrt(n))
-        ret = []
+        m = math.ceil(math.sqrt(n))
+        r = Row()
+
         for i, k in enumerate(self.layout_keys):
             if i % m == 0:
-                ret.append([])
-            ret[-1].append(get_dom_type(k, getattr(self, k)))
-        return ret
+                c = Column()
+                r.add(c)
+            c.add(get_dom_type(k, getattr(self, k)))
+        return r
 
 
 def oj_run(ins: "MockCf", case_name=None):

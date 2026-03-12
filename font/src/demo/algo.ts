@@ -43,7 +43,7 @@ class Algo extends Row {
         ])
         this.add_childs([
             this.head_container,
-            this.container.set_html("2"),
+            this.container,
             this.pro,
         ])
     }
@@ -82,6 +82,7 @@ class Algo extends Row {
             code: this.code_select.get_value()
         }, (node: Node) => {
             this.pro.set_option({ childs: node.data.records })
+            this.container.set_option(node.data.layout)
         })
     }
     on_mount() {

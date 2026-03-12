@@ -3,7 +3,6 @@ import web_dom from "../../../web/web_dom"
 import Ct from "../../../web/constant"
 import { Title, Button } from "./button";
 import { Node, to_node } from "../../../web/cls";
-import { listui } from "../list";
 import { Div } from "../div"
 import { ListUi } from "../list";
 import Constant from "../../../web/constant"

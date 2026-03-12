@@ -1,6 +1,6 @@
-import { Div } from "./div";
-import web from "../../web/web_dom"
-import { Constant, Node } from "../export";
+import { Div } from "../div";
+import web from "../../../web/web_dom"
+import { Constant, Node } from "../../export";
 export class Label extends Div {
     text: string = null
     change_color: string = null
@@ -48,9 +48,7 @@ export class Span extends Div {
         return this.set_html(value)
     }
 }
-export function label() {
-    return new Label()
-}
+
 export class Pre extends Div {
     constructor() {
         super("pre")

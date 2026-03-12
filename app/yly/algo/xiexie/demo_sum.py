@@ -1,4 +1,4 @@
-from common.util.export import MockCf, execute_by_thread, logger
+from common.util.export import MockCf, execute_by_thread, logger, json_dumps
 
 CASE0 = dict(n=3, result=6)
 
@@ -19,4 +19,4 @@ class Solution(MockCf):
 
 
 if __name__ == "__main__":
-    logger.info(execute_by_thread(Solution(), CASE0))
+    logger.info(json_dumps(execute_by_thread(Solution(), CASE0), indent=4))

@@ -218,7 +218,12 @@ export class Node {
         }
     }
     get_title?() {
-        return this.key || this.title || this.value
+        if (this.title) {
+            return this.title
+        } else if (this.key) {
+            return this.key
+        }
+        return this.value
     }
 }
 

@@ -2,7 +2,7 @@ import { GNode, } from "../gnode"
 import { Node, Style, } from "../../../web/cls"
 import Constant from "../../../web/constant"
 import { Div } from "../../dom/div"
-import { Pre } from "../../dom/label"
+import { Pre } from "../../dom/base/label"
 import web_dom from "../../../web/web_dom"
 
 export class Text extends GNode {

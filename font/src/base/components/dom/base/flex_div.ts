@@ -1,6 +1,7 @@
 import { Div } from "./div";
 import Constant from "../../../web/constant"
 import { Row } from "./row";
+import { DivFactory } from "./div_factory";
 export class FlexDiv extends Div {
 
     get_direction() {
@@ -13,15 +14,27 @@ export class FlexDiv extends Div {
             display: "flex",
             justifyContent: "center",
             alignContent: "center",
+
         })
     }
-    new_cls() {
-        return new Row()
+    set_center() {
+        this.set_div_style({
+            alignItems: "center"
+        })
+        return this
     }
+
     render_option(): void {
         if (this.option.childs) {
-            this.set_childs(this.option.childs, this.new_cls)
+            this.clear()
+            let childs = []
+            for (var i = 0; i < this.option.childs.length; i++) {
+                let o = this.option.childs[i]
+                childs.push(DivFactory.new_div(o.type).set_option(o))
+            }
+            this.add_childs(childs)
         }
+
     }
 
 } 

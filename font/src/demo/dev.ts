@@ -5,25 +5,52 @@ import {
     Svg,
     Grid,
     web_dom,
+    Row, Column,
     FileInput,
-    Form
+    Form,
+    Constant
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
 export class Dev extends Div {
     svg: Svg
+    init_style(): void {
 
+    }
     init_node(): void {
         this.add_childs([
             this.get_window_info(),
             this.get_table(),
             this.get_form(),
+            this.get_row()
         ])
+    }
+    get_row() {
+        return new Column().set_option({
+            childs: [
+                {
+                    type: Constant.DOM_TYPE_ROW,
+                    childs: [{
+                        type: Constant.DOM_TYPE_STRING,
+                        value: "12",
+                    }, {
+                        type: Constant.DOM_TYPE_STRING,
+                        value: "34",
+
+                    }]
+                },
+                {
+                    type: Constant.DOM_TYPE_STRING,
+                    value: "56",
+                    size: 1
+                }
+            ]
+        }).set_height(200).set_center()
     }
     get_form() {
         let fm = new Form().set_option({
             childs: [
                 { "type": "input", title: "a", key: "a" },
-                { "type": "file", title: "b", key: "b" }
+                { "type": Constant.DOM_TYPE_FILE, title: "b", key: "b" }
             ]
         })
         function submit() {
@@ -38,9 +65,6 @@ export class Dev extends Div {
         let size = web_dom.get_window_size()
         d.set_html(`width:${size.width};height:${size.height}`)
         return d
-    }
-    init_style(): void {
-
     }
     test_open_edit_dialog() {
         dialog.open_form({ a: "input" }, (v: any) => {

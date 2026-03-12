@@ -262,6 +262,9 @@ export class Div {
                 web_dom.get_local(this.option.id, (v: any) => this.set_value(v))
             }
         }
+        if (this.option.size) {
+            this.set_size(this.option.size)
+        }
 
         this.render_option()
         return this

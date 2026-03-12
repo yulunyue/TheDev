@@ -6,7 +6,7 @@ import { Div } from "./base/div"
 export class Container extends Div {
     main: Div
     render_option() {
-        this.main = DivFactory.new_div(this.option.type).set_option(this.option)
+        this.main = DivFactory.new_div(this.option.type).set_option(this.option).full()
         this.clear().add_child(this.main)
     }
     get_value() {

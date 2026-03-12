@@ -1,3 +1,18 @@
 class Row:
-    def get_json(self):
-        pass
+    type = "row"
+
+    def __init__(self):
+        self.childs = []
+
+    def add(self, c):
+        self.childs.append(c)
+        return self
+
+    def get_childs(self):
+        return self.childs
+
+    def to_json(self):
+        return dict(
+            type=self.type,
+            childs=self.get_childs(),
+        )
