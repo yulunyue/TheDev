@@ -5,6 +5,7 @@ from common.util.tool import SYS_KW, THE_DEV_LOGER_PREFIX
 SYS_KW[THE_DEV_LOGER_PREFIX] = sys.argv[1] if len(sys.argv) > 1 else "dev"
 from common.third_util.http import run
 from common.util.export import File, logger
+from app.tool.task import get_task
 
 
 def start():
@@ -12,6 +13,7 @@ def start():
     logger.info(HTTP_CONF_FiLE)
     conf = HTTP_CONF_FiLE.read_file()
     File(f"data/proc/{sys.argv[1]}.pid").write_file(str(os.getpid()))
+    get_task().start()
     run(conf["py_modules"], port=conf.get("port", 9999))
 
 

@@ -7,11 +7,11 @@ from ..base_class.table_base import (
     DictModel,
 )
 from ..os_util import OsUtil
+from common.util.export import time, File, Module, traceback, C
 
 
 class TaskConfig(TableConfig):
-    module_name = StrModel()
-    fun_name = StrModel()
+    fun_path = StrModel()
     root_path = StrModel()
     args = StrModel()
     log_type = StrModel()
@@ -24,21 +24,11 @@ class TaskConfig(TableConfig):
     def get_call(self):
         if self._fun:
             return self._fun
-
-        module_name = self.module_name.get_value()
-        if module_name:
-            self._fun = Module().load_module(
-                module_name,
-                self.root_path.get_value(),
-                self.fun_name.get_value(),
-            )
-        else:
-            self._fun = (
-                OsUtil()
-                .set_logger(self.get_log())
-                .set_env(self.root_path.get_value(), self.fun_name.get_value())
-                .run
-            )
+        fun_path = self.fun_path.get_value()
+        self._fun = Module().load_module_object(
+            fun_path,
+            self.root_path.get_value(),
+        )
         return self._fun
 
     def get_log(self):
@@ -60,7 +50,7 @@ class TaskConfig(TableConfig):
             )
         except Exception as e:
             self.result.update(
-                code=THE_DEV_CONSTANT.CODE_500, value=traceback.format_exc().split("\n")
+                code=C.CODE_500, value=traceback.format_exc().split("\n")
             )
         self.last_finish_t.set_value(time.time())
 

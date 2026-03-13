@@ -1,5 +1,4 @@
-from common.util.export import ToolBase
-from common.tool.export import Task, get_task, TASK_MANAGER
+from common.tool.export import Task, get_task, TASK_MANAGER, ToolBase
 
 
 class TaskTool(ToolBase):
