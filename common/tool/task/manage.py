@@ -17,8 +17,9 @@ from .task_config import TaskConfig
 
 class Task:
     def __init__(self, name):
+
         self.source = TableBase[TaskConfig]().set_resource(name)
-        self.main_thread = Thread(target=self.run)
+        self.main_thread = Thread(target=self.run, daemon=True)
 
     def loop(self):
         for t in self.source.filter():
