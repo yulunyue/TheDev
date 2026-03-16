@@ -67,6 +67,6 @@ class Solution(MockCf):
             m, v = ss.split(" ")
             u = getattr(s, m)(int(v))
             if u is not None:
-                r.append()
+                r.append(u)
             self.logger.map(s=ss, t=s.t.to_str())
         return r
