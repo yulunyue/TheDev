@@ -16,12 +16,12 @@ class SegTreeNode:
 
     def __init__(self, idx=1) -> None:
         self.idx = idx
-        self.todo = 0
+        self.todo = None
         self._left: SegTreeNode = None
         self._right: SegTreeNode = None
 
-    def do(self, v):
-        raise Exception(v)
+    def do(self, *v):
+        raise NotImplementedError
 
     def up(self):
         self.value = self.merge(self.left.value, self.right.value)
@@ -48,7 +48,7 @@ class SegTreeNode:
         rv = self.right.query(l, r)
         return self.merge(lv, rv)
 
-    def load(self, nums):
+    def load(self, *args):
         raise NotImplementedError
 
     def build(self, *args):
@@ -66,22 +66,22 @@ class SegTreeNode:
         self.up()
         return self
 
-    def update(self, l, r, value):
+    def update(self, l, r, *v):
         if l <= self.l and self.r <= r:
-            self.do(value)
+            self.do(*v)
             return
         self.down()
         if self.m < r:
-            self.right.update(l, r, value)
+            self.right.update(l, r, *v)
         if self.m >= l:
-            self.left.update(l, r, value)
+            self.left.update(l, r, *v)
         self.up()
 
     def down(self):
-        if self.todo:
-            self.left.do(self.todo)
-            self.right.do(self.todo)
-            self.todo = 0
+        if self.todo is not None:
+            self.left.do(*self.todo)
+            self.right.do(*self.todo)
+            self.todo = None
 
     def find(self, ql: int, qr: int, target: int) -> int:
         if self.l > qr or self.r < ql:
@@ -98,7 +98,7 @@ class SegTreeNode:
     def show(self):
         return f"v:{self.value}"
 
-    def print(self):
+    def to_str(self):
         ret = []
 
         def util(p: SegTreeNode, depth):
