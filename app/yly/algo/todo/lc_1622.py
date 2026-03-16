@@ -29,9 +29,13 @@ class Fancy:
         self.t.update(self.idx, self.idx, val, 0)
 
     def addAll(self, inc: int) -> None:
+        if self.idx < 0:
+            return
         self.t.update(0, self.idx, inc, 0)
 
     def multAll(self, m: int) -> None:
+        if self.idx < 0:
+            return
         self.t.update(0, self.idx, m, 1)
 
     def getIndex(self, idx: int) -> int:
