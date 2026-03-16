@@ -4,7 +4,7 @@ from common.util.export import List, MockCf
 class Solution(MockCf):
     def get_cases(self):
         return dict(
-            case0=dict(
+            case2=dict(
                 grid=[
                     [3, 4, 5, 1, 3],
                     [3, 3, 4, 2, 3],
@@ -19,6 +19,15 @@ class Solution(MockCf):
                     [1, 2, 3],
                     [4, 5, 6],
                     [7, 8, 9],
+                ],
+                result=[20, 9, 8],
+            ),
+            case0=dict(
+                grid=[
+                    [1, 2, 3, 4],
+                    [4, 5, 6, 7],
+                    [7, 8, 9, 9],
+                    [9, 9, 9, 9],
                 ],
                 result=[20, 9, 8],
             ),
@@ -62,16 +71,17 @@ class Solution(MockCf):
                 - grid[y - l][x]
                 - grid[y + l][x]
             )
-            # self.logger.map(y=y, x=x, l=l, r=ret)
+            self.logger.map(y=y, x=x, l=l, r=ret)
             return ret
 
-        mx = []
+        mx = set()
         for i in range(n):
             yt, yb = i, n - i - 1
             for j in range(m):
                 xl, xr = j, m - j - 1
                 l = min(xl, xr, yt, yb)
-                mx.append(calc(i, j, l))
+                for k in range(1, l + 1):
+                    mx.add(calc(i, j, k))
         # self.logger.info(mx)
         return sorted(mx, reverse=True)[:3]
 
