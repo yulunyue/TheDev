@@ -115,6 +115,9 @@ class MockCf:
     def log(self, msg):
         pass
 
+    def get_agent(self, **kw):
+        return
+
 
 def oj_run(ins: "MockCf", case_name=None):
     from common.tool.export import PyFile
@@ -128,11 +131,11 @@ def oj_run(ins: "MockCf", case_name=None):
     for case_name, c in cases:
         exp = c.pop("result")
         ins.logger = get_dev_log(case_name)
-        if ins.cls_agent is not None:
-
+        agent = ins.get_agent(**c)
+        if agent is not None:
             methods, args, res = c["methods"][1:], c["args"][1:], [None]
             for i, method in enumerate(methods):
-                u = getattr(ins.cls_agent, method)(*args[i])
+                u = getattr(agent, method)(*args[i])
                 ins.log(f"{method} {args[i]}")
                 res.append(u)
         else:

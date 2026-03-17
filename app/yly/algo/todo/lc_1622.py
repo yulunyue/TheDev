@@ -18,7 +18,10 @@ class T(SegTreeNode):
             if self.todo[i] is None:
                 self.todo[i] = [v, is_inc]
             elif self.todo[i][1] == is_inc:
-                self.todo[i][0] += v
+                if is_inc:
+                    self.todo[i][0] += v
+                else:
+                    self.todo[i][0] *= v
             else:
                 self.down(i, L, R)
                 self.todo[i] = [v, is_inc]
@@ -52,7 +55,9 @@ class Fancy:
 
 
 class Solution(MockCf):
-    cls_agent = Fancy(3)
+    def get_agent(self, **kw):
+        self.agent = Fancy(3)
+        return self.agent
 
     def get_cases(self):
         return dict(
@@ -74,7 +79,22 @@ class Solution(MockCf):
                 args=[[], [2], [3], [7], [2], [0], [3], [10], [2], [0], [1], [2]],
                 result=[null, null, null, null, null, 10, null, null, null, 26, 34, 20],
             ),
+            case0=dict(
+                methods=[
+                    "Fancy",
+                    "append",
+                    "append",
+                    "multAll",
+                    "getIndex",
+                    "getIndex",
+                    "multAll",
+                    "multAll",
+                    "getIndex",
+                ],
+                args=[[], [5], [8], [6], [0], [1], [2], [5], [1]],
+                result=[None, None, None, None, 30, 48, None, None, 480],
+            ),
         )
 
     def log(self, msg):
-        self.logger.map(op=msg, t=self.cls_agent.t.to_str())
+        self.logger.map(op=msg, t=self.agent.t.to_str())
