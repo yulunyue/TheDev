@@ -7,12 +7,13 @@ class T(SegTreeNode):
         self.value = [0] * self.size
 
     def merge(self, lv, rv):
-        return lv + rv
+        return 0
 
     def calc(self, i, l, r, v, f):
+        if l != r:
+            return 0
         if f == 0:
             return (self.value[i] + v * (r - l + 1)) % CT.MOD
-
         return (self.value[i] * v) % CT.MOD
 
 

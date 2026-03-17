@@ -21,7 +21,7 @@ class SegTreeNode:
         self.load(*args)
 
     def do(self, i, l, r, L, R, *v):
-        self.value[i] = self.calc(i, l, r, *v)
+        self.value[i] = self.calc(i, L, R, *v)
         if l != r:
             self.down(i, l, r, L, R)
             self.todo[i] = v
