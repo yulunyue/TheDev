@@ -1,4 +1,4 @@
-from common.util.export import MockCf, CT, List
+from common.util.export import MockCf, CT, List, null
 from common.algo.base.tree.segtree import SegTreeNode
 
 
@@ -10,7 +10,6 @@ class T(SegTreeNode):
         return lv + rv
 
     def do(self, i, L, R, v, is_inc):
-
         if is_inc:
             self.value[i] += v * (R - L + 1)
         else:
@@ -55,34 +54,29 @@ class Fancy:
 
 
 class Solution(MockCf):
+    cls_agent = Fancy(3)
+
     def get_cases(self):
         return dict(
-            case0=dict(
-                req=[
-                    "append 2",
-                    "append 1",
-                    "addAll 2",
-                    "getIndex 0",
-                    "append 1",
-                    "multAll 2",
-                    "append 1",
-                    "addAll 1",
-                    "getIndex 0",
-                    "getIndex 1",
-                    "getIndex 2",
-                    "getIndex 3",
+            case1=dict(
+                methods=[
+                    "Fancy",
+                    "append",
+                    "addAll",
+                    "append",
+                    "multAll",
+                    "getIndex",
+                    "addAll",
+                    "append",
+                    "multAll",
+                    "getIndex",
+                    "getIndex",
+                    "getIndex",
                 ],
-                result=[4, 9, 7, 3, 2],
+                args=[[], [2], [3], [7], [2], [0], [3], [10], [2], [0], [1], [2]],
+                result=[null, null, null, null, null, 10, null, null, null, 26, 34, 20],
             ),
         )
 
-    def execute(self, req: List[str]):
-        s = Fancy(5)
-        r = []
-        for ss in req:
-            m, v = ss.split(" ")
-            u = getattr(s, m)(int(v))
-            if u is not None:
-                r.append(u)
-            self.logger.map(s=ss, t=s.t.to_str())
-        return r
+    def log(self, msg):
+        self.logger.map(op=msg, t=self.cls_agent.t.to_str())

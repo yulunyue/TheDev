@@ -86,7 +86,12 @@ class SegTreeNode:
         ret = []
 
         def util(i, depth, l, r):
-            ret.append(f"{' '*depth}{l}-{r}: {self.value[i]} todo={self.todo[i]}")
+            info = f"{' '*depth}{l}-{r}: "
+            if self.value[i]:
+                info += f"{self.value[i]} "
+            if self.todo[i]:
+                info += f"todo={self.todo[i]}"
+            ret.append(info)
             if l == r:
                 return
             m = (l + r) // 2
