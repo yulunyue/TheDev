@@ -7,14 +7,19 @@ class T(SegTreeNode):
         self.value = [0] * self.size
 
     def merge(self, lv, rv):
-        return 0
+        return lv + rv
 
-    def calc(self, i, l, r, v, f):
-        if l != r:
-            return 0
-        if f == 0:
-            return (self.value[i] + v * (r - l + 1)) % CT.MOD
-        return (self.value[i] * v) % CT.MOD
+    def do(self, i, L, R, inc, mul):
+
+        if self.todo[i] is None:
+            self.todo[i] = [inc, mul]
+        self.value[i] = (
+            (self.value[i] * self.todo[i][0] + self.todo[i][1]) * (R - L + 1) % CT.MOD
+        )
+        self.todo[i] = [
+            (self.todo[i][0] * mul + inc) % CT.MOD,
+            (self.todo[i][1] * mul) % CT.MOD,
+        ]
 
 
 class Fancy:
@@ -29,12 +34,12 @@ class Fancy:
     def addAll(self, inc: int) -> None:
         if self.idx < 0:
             return
-        self.t.update(0, self.idx, inc, 0)
+        self.t.update(0, self.idx, inc, 1)
 
     def multAll(self, m: int) -> None:
         if self.idx < 0:
             return
-        self.t.update(0, self.idx, m, 1)
+        self.t.update(0, self.idx, 0, m)
 
     def getIndex(self, idx: int) -> int:
         if idx > self.idx:
@@ -60,7 +65,7 @@ class Solution(MockCf):
                     "getIndex 2",
                     "getIndex 3",
                 ],
-                result=[4],
+                result=[4, 9, 7, 3, 2],
             ),
         )
 

@@ -11,26 +11,20 @@ class SegTreeNode:
     8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     """
 
-    todo: List
-    value: List
+    todo: list
+    value: list
 
     def __init__(self, n: int, *args) -> None:
         self.n = n
-        self.size = 2 << self.n.bit_length()
+        self.size = 4 * n
         self.todo = [None] * self.size
         self.load(*args)
 
-    def do(self, i, l, r, L, R, *v):
-        self.value[i] = self.calc(i, L, R, *v)
-        if l != r:
-            self.down(i, l, r, L, R)
-            self.todo[i] = v
+    def do(self, i, L, R, *v):
+        raise NotImplementedError
 
     def up(self, i):
         self.value[i] = self.merge(self.value[i * 2], self.value[i * 2 + 1])
-
-    def calc(self, *args):
-        raise NotImplementedError
 
     def merge(self, lv, rv):
         raise NotImplementedError
@@ -38,14 +32,12 @@ class SegTreeNode:
     def query_array(self, i, l, r, L, R):
         if l <= L and R <= r:
             return self.value[i]
-        self.down(i, l, r, L, R)
+        self.down(i, L, R)
         m = (L + R) // 2
         if r <= m:
-            lv = self.query_array(i * 2, l, r, L, m)
-            return lv
+            return self.query_array(i * 2, l, r, L, m)
         if m < l:
-            rv = self.query_array(i * 2 + 1, l, r, m + 1, R)
-            return rv
+            return self.query_array(i * 2 + 1, l, r, m + 1, R)
         lv = self.query_array(i * 2, l, r, L, m)
         rv = self.query_array(i * 2 + 1, l, r, m + 1, R)
         return self.merge(lv, rv)
@@ -58,9 +50,9 @@ class SegTreeNode:
 
     def update_area(self, i, l, r, L, R, *v):
         if l <= L and R <= r:
-            self.do(i, l, r, L, R, *v)
+            self.do(i, L, R, *v)
             return
-        self.down(i, l, r, L, R)
+        self.down(i, L, R)
         m = (L + R) // 2
         if m < r:
             self.update_area(i * 2 + 1, l, r, m + 1, R, *v)
@@ -71,11 +63,11 @@ class SegTreeNode:
     def update(self, l, r, *v):
         self.update_area(1, l, r, 0, self.n, *v)
 
-    def down(self, i, l, r, L, R):
+    def down(self, i, L, R):
         if self.todo[i] is not None:
             m = (L + R) // 2
-            self.do(i * 2, l, r, L, m, *self.todo[i])
-            self.do(i * 2 + 1, l, r, m + 1, R, *self.todo[i])
+            self.do(i * 2, L, m, *self.todo[i])
+            self.do(i * 2 + 1, m + 1, R, *self.todo[i])
             self.todo[i] = None
 
     def find(self, ql: int, qr: int, target: int) -> int:
