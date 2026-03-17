@@ -19,11 +19,9 @@ class T(SegTreeNode):
                 self.todo[i] = [v, is_inc]
             elif self.todo[i][1] == is_inc:
                 self.todo[i][0] += v
-            elif is_inc:
+            else:
                 self.down(i, L, R)
                 self.todo[i] = [v, is_inc]
-            else:
-                self.todo[i][0] *= v
             self.todo[i][0] %= CT.MOD
         self.value[i] %= CT.MOD
 
