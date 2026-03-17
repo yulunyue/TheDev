@@ -9,11 +9,11 @@ class T(SegTreeNode):
     def merge(self, lv, rv):
         return lv + rv
 
-    def do(self, i, v, f):
+    def calc(self, i, l, r, v, f):
         if f == 0:
-            self.value[i] = (self.value[i] + v * self.size) % CT.MOD
-        else:
-            self.value[i] = (self.value[i] * v) % CT.MOD
+            return (self.value[i] + v * (r - l + 1)) % CT.MOD
+
+        return (self.value[i] * v) % CT.MOD
 
 
 class Fancy:
