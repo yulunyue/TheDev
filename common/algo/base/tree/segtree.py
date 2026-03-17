@@ -1,5 +1,4 @@
-from typing import NoReturn
-from common.util.export import logger
+from common.util.export import logger, List
 
 inf = float("inf")
 
@@ -12,76 +11,68 @@ class SegTreeNode:
     8[0-0]  9[1-1] 10[2-2] 11[3-3] 12[4-4] 13[5-5]
     """
 
-    __slots__ = "_left", "_right"
+    todo: List
+    value: List
 
-    def __init__(self, idx=1) -> None:
-        self.idx = idx
-        self.todo = None
-        self._left: SegTreeNode = None
-        self._right: SegTreeNode = None
+    def __init__(self, n: int, *args) -> None:
+        self.n = n
+        self.size = 2 << self.n.bit_length()
+        self.todo = [None] * self.size
+        self.load(*args)
 
-    def do(self, *v):
+    def do(self, i, *v):
         raise NotImplementedError
 
-    def up(self):
-        self.value = self.merge(self.left.value, self.right.value)
+    def up(self, i):
+        self.value[i] = self.merge(self.value[i * 2], self.value[i * 2 + 1])
 
     def merge(self, lv, rv):
         raise NotImplementedError
 
-    def set_range(self, l, r):
-        self.l: int = l
-        self.r: int = r
-        self.size = r - l + 1
-        self.m = (l + r) // 2
-        return self
+    def query_array(self, i, l, r, L, R):
+        if l <= L and r <= R:
+            return self.value[i]
+        self.down(i)
+        m = (L + R) // 2
+        if r <= m:
+            lv = self.query_array(i * 2, l, r, L, m)
+            return lv
+        if m < l:
+            rv = self.query_array(i * 2 + 1, l, r, m + 1, R)
+            return rv
+        lv = self.query_array(i * 2, l, r, L, m)
+        rv = self.query_array(i * 2 + 1, l, r, m + 1, R)
+        return self.merge(lv, rv)
 
     def query(self, l, r):
-        if l <= self.l and self.r <= r:
-            return self.value
-        self.down()
-        if r <= self.m:
-            return self.left.query(l, r)
-        if self.m < l:
-            return self.right.query(l, r)
-        lv = self.left.query(l, r)
-        rv = self.right.query(l, r)
-        return self.merge(lv, rv)
+        return self.query_array(1, l, r, 0, self.n)
 
     def load(self, *args):
         raise NotImplementedError
 
-    def build(self, *args):
-        if self.l == self.r:
-            self.load(*args)
-            return self
-        self.left = self.__class__(self.idx * 2).set_range(self.l, self.m).build(*args)
-        self.right = (
-            self.__class__(
-                self.idx * 2 + 1,
-            )
-            .set_range(self.m + 1, self.r)
-            .build(*args)
-        )
-        self.up()
-        return self
+    def update_area(self, i, l, r, L, R, *v):
+        if l <= L and R <= r:
+            self.do(i, *v)
+            if l != r:
+                self.down(i)
+                self.todo[i] = v
+            return
+        self.down(i)
+        m = (L + R) // 2
+        if m < r:
+            self.update_area(i * 2 + 1, l, r, m + 1, R, *v)
+        if m >= l:
+            self.update_area(i * 2, l, r, L, m, *v)
+        self.up(i)
 
     def update(self, l, r, *v):
-        if l <= self.l and self.r <= r:
-            self.do(*v)
-            return
-        self.down()
-        if self.m < r:
-            self.right.update(l, r, *v)
-        if self.m >= l:
-            self.left.update(l, r, *v)
-        self.up()
+        self.update_area(1, l, r, 0, self.n, *v)
 
-    def down(self):
-        if self.todo is not None:
-            self.left.do(*self.todo)
-            self.right.do(*self.todo)
-            self.todo = None
+    def down(self, i):
+        if self.todo[i] is not None:
+            self.do(i, *self.todo[i])
+            self.do(i, *self.todo[i])
+            self.todo[i] = None
 
     def find(self, ql: int, qr: int, target: int) -> int:
         if self.l > qr or self.r < ql:
@@ -95,18 +86,15 @@ class SegTreeNode:
             idx = self.right.find(ql, qr, target)
         return idx
 
-    def show(self):
-        return f"v:{self.value}"
-
     def to_str(self):
         ret = []
 
         def util(p: SegTreeNode, depth):
             ret.append(f"{' '*depth}{p.l}-{p.r}: {p.show()} todo={p.todo}")
-            if p.l == p.r:
-                return
-            util(p.left, depth + 2)
-            util(p.right, depth + 2)
+            # if p.l == p.r:
+            #     return
+            # util(p.left, depth + 2)
+            # util(p.right, depth + 2)
 
-        util(self, 0)
+        # util(self, 0)
         return "\n".join(["-" * 10] + ret + ["-" * 10])

@@ -3,25 +3,22 @@ from common.algo.base.tree.segtree import SegTreeNode
 
 
 class T(SegTreeNode):
-    def load(self, *args):
-        self.value = 0
+    def load(self):
+        self.value = [0] * self.size
 
     def merge(self, lv, rv):
         return lv + rv
 
-    def do(self, v, f):
+    def do(self, i, v, f):
         if f == 0:
-            self.value = (self.value + v * self.size) % CT.MOD
+            self.value[i] = (self.value[i] + v * self.size) % CT.MOD
         else:
-            self.value = (self.value * v) % CT.MOD
-        if self.size > 1:
-            self.down()
-            self.todo = [v, f]
+            self.value[i] = (self.value[i] * v) % CT.MOD
 
 
 class Fancy:
     def __init__(self, n=10**5):
-        self.t = T().set_range(0, n).build()
+        self.t = T(n)
         self.idx = -1
 
     def append(self, val: int) -> None:
@@ -39,6 +36,8 @@ class Fancy:
         self.t.update(0, self.idx, m, 1)
 
     def getIndex(self, idx: int) -> int:
+        if idx > self.idx:
+            return -1
         return self.t.query(idx, idx) % CT.MOD
 
 
@@ -65,7 +64,7 @@ class Solution(MockCf):
         )
 
     def execute(self, req: List[str]):
-        s = Fancy(4)
+        s = Fancy(5)
         r = []
         for ss in req:
             m, v = ss.split(" ")
