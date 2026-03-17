@@ -9,17 +9,24 @@ class T(SegTreeNode):
     def merge(self, lv, rv):
         return lv + rv
 
-    def do(self, i, L, R, inc, mul):
+    def do(self, i, L, R, v, is_inc):
 
-        if self.todo[i] is None:
-            self.todo[i] = [inc, mul]
-        self.value[i] = (
-            (self.value[i] * self.todo[i][0] + self.todo[i][1]) * (R - L + 1) % CT.MOD
-        )
-        self.todo[i] = [
-            (self.todo[i][0] * mul + inc) % CT.MOD,
-            (self.todo[i][1] * mul) % CT.MOD,
-        ]
+        if is_inc:
+            self.value[i] += v * (R - L + 1)
+        else:
+            self.value[i] *= v
+        if L < R:
+            if self.todo[i] is None:
+                self.todo[i] = [v, is_inc]
+            elif self.todo[i][1] == is_inc:
+                self.todo[i][0] += v
+            elif is_inc:
+                self.down(i, L, R)
+                self.todo[i] = [v, is_inc]
+            else:
+                self.todo[i][0] *= v
+            self.todo[i][0] %= CT.MOD
+        self.value[i] %= CT.MOD
 
 
 class Fancy:
@@ -29,7 +36,7 @@ class Fancy:
 
     def append(self, val: int) -> None:
         self.idx += 1
-        self.t.update(self.idx, self.idx, val, 0)
+        self.t.update(self.idx, self.idx, val, 1)
 
     def addAll(self, inc: int) -> None:
         if self.idx < 0:
@@ -39,7 +46,7 @@ class Fancy:
     def multAll(self, m: int) -> None:
         if self.idx < 0:
             return
-        self.t.update(0, self.idx, 0, m)
+        self.t.update(0, self.idx, m, 0)
 
     def getIndex(self, idx: int) -> int:
         if idx > self.idx:
