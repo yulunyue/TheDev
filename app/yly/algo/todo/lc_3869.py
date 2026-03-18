@@ -7,10 +7,13 @@ class Solution(MockCf):
         return dict(
             case0=dict(l=12340, r=12341, result=1),
             case1=dict(l=8, r=10, result=3),
+            case2=dict(l=13,r=135,result=122),
         )
 
     def countFancy(self, l: int, r: int) -> int:
-        def call_good(value, up_down, last_value, s, depth=0):
+        def call_good(value, up_down, last_value, s, depth,fr):
+            if fr:
+                return None,None,0
             if last_value is None:
                 return up_down, value, s + value
             if value == last_value:
@@ -32,9 +35,11 @@ class Solution(MockCf):
                     return 0
             return 1
 
-        def check(up_down, last_value, s, depth=0):
-            return 1 if up_down != 0 or is_up_down(s) else 0
-
+        def check(up_down, last_value, s, depth,fr):
+            a=1 if up_down != 0 or is_up_down(s) else 0
+            if not a:
+                self.logger.map(v=last_value,u=up_down,s=s,d=depth,a=a)
+            return a
         return low_high_dp(
             l,
             r,
