@@ -11,11 +11,11 @@ class TestBinUtil(TestBase):
 
     def test_low_high_dp(self):
         # 数位和被三整除
-        def calc_args(v, a, i):
+        def calc_args(v, a, depth):
             return [(v + a) % 3]
 
-        def ret_fun(a, i):
-            return a == 0
+        def ret_fun(v, depth):
+            return v == 0
 
         for _ in range(6):
             l, r = random.randint(3, 50), random.randint(105, 200)

@@ -93,6 +93,17 @@ def ss_or_dp(nums):  # 返回的是 2**x
 
 
 def low_high_dp(low, high, *args, calc_args=None, ret_fun=None):
+    """
+    ret_fun(*args, depth) -> bool:
+    calc_args(v,*args,depth)-> args
+    求能被3整除
+    def calc_args(v, a, depth):
+        return [(v + a) % 3]
+
+    def ret_fun(v, depth):
+        return v == 0
+    args = (0,)
+    """
     if isinstance(low, int):
         low = [int(v) for v in str(low)]
     if isinstance(high, int):
@@ -102,14 +113,16 @@ def low_high_dp(low, high, *args, calc_args=None, ret_fun=None):
     @functools.lru_cache(None)
     def dfs(i, low_limit, high_limit, *args):
         if i >= len(high):
-            return 1 if ret_fun is None else ret_fun(*args, i=i)
+            return 1 if ret_fun is None else ret_fun(*args, depth=i)
         l = low[i] if low_limit else 0
         h = high[i] if high_limit else 9
         a = 0
         for v in range(l, h + 1):
             argsi = args
             if calc_args:
-                argsi = calc_args(v, *args, i=i)
+                argsi = calc_args(v, *args, depth=i)
+                if argsi is None:
+                    continue
             a += dfs(i + 1, low_limit and v == l, high_limit and v == h, *argsi)
         return a
 
