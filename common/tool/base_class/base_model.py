@@ -34,11 +34,21 @@ class DictModel(BaseModel):
             default_value=default_value or dict(), data_source=data_source, key=key
         )
 
+    def get(self, name):
+        ret = self.get_value()
+        if name not in ret:
+            raise Exception(name, list(ret.keys()))
+        return ret[name]
+
     def get_value(self) -> dict:
         return super().get_value()
 
     def update(self, **kw):
         return self.set_value(kw)
+
+    def load(self, **kw):
+        self._kw = kw
+        return self
 
 
 ENABLE = "enable"

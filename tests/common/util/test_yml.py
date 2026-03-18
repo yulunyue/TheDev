@@ -1,4 +1,4 @@
-from common.util.export import TestBase, logger
+from common.util.export import TestBase
 from common.util.yml import Yml, VALUE_KEY
 
 
@@ -12,7 +12,6 @@ b:
 
 c: "f"
 f:
-g: "a\\nc" 
 """
         d = Yml().load(a)
         self.expect(

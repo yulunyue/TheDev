@@ -46,7 +46,7 @@ class MockCf:
     execute = None
 
     def __init__(self, f=None, cases=None, src=None):
-        if self.execute is None:
+        if f is not None:
             self.execute = f
         self.cases = cases
         self.src_file = src
@@ -83,6 +83,11 @@ class MockCf:
     def run(self, case_name=""):
         oj_run(self, case_name)
 
+    cls_agent = None
+
+    def main(self):
+        raise NotImplemented
+
     def execute(self, inps: str):
         return self.set_inputs(inps).main()
 
@@ -107,6 +112,12 @@ class MockCf:
             c.add(get_dom_type(k, getattr(self, k)))
         return r
 
+    def log(self, msg):
+        pass
+
+    def get_agent(self, **kw):
+        return
+
 
 def oj_run(ins: "MockCf", case_name=None):
     from common.tool.export import PyFile
@@ -120,7 +131,15 @@ def oj_run(ins: "MockCf", case_name=None):
     for case_name, c in cases:
         exp = c.pop("result")
         ins.logger = get_dev_log(case_name)
-        res = ins.execute(**c)
+        agent = ins.get_agent(**c)
+        if agent is not None:
+            methods, args, res = c["methods"][1:], c["args"][1:], [None]
+            for i, method in enumerate(methods):
+                u = getattr(agent, method)(*args[i])
+                ins.log(f"{method} {args[i]}")
+                res.append(u)
+        else:
+            res = ins.execute(**c)
         if res != exp:
             logger.info(f"FAILED {case_name} {exp}!={res}")
         else:
