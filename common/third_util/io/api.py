@@ -1,6 +1,6 @@
 from .http_util import requests
 from common.util.export import (
-    get_log,
+    get_dev_log,
     File,
     get_cache,
     hash_any_str,
@@ -8,8 +8,10 @@ from common.util.export import (
     json_dumps,
 )
 
-logger = get_log("api")
+logger = get_dev_log("api")
 from common.tool.export import NumberModel, StrModel, ConfigBase, TableBase, DictModel
+
+USER_AGENT_DEFAULT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
 
 
 class ApiConfig(ConfigBase):
@@ -19,6 +21,7 @@ class ApiConfig(ConfigBase):
     timeout = NumberModel(default_value=10)
     user_name = StrModel()
     pass_word = StrModel()
+    config = DictModel()
 
 
 API_CONFIG = TableBase[ApiConfig]().set_resource("api")
@@ -98,6 +101,9 @@ class Api:
     def name(self):
         return self._name
 
+    def get_config(self, name):
+        return API_CONFIG.get(self.name).config.get(name)
+
     def set_cache(self, cache=None):
         if cache is None:
             self.cache = get_cache(
@@ -113,6 +119,12 @@ class Api:
         if self.end_point:
             return self.end_point
         return API_CONFIG.get(self.name).endpoint.get_value()
+
+    def get_password(self):
+        return API_CONFIG.get(self.name).pass_word.get_value()
+
+    def get_username(self):
+        return API_CONFIG.get(self.name).user_name.get_value()
 
     def set_endpoint(self, s):
         self.end_point = s
@@ -150,11 +162,14 @@ class Api:
         )
         return f
 
-    def post(self, url, data=None, headers=None):
-        return self.http("POST", url, data=data, headers=headers)
+    def post(self, url, data=None, headers=None, cookies=None):
+        return self.http("POST", url, data=data, headers=headers, cookies=cookies)[1]
+
+    def post_res(self, url, data=None, headers=None):
+        return self.http("POST", url, data=data, headers=headers)[0]
 
     def post_data(self, url, param=None, headers=None):
-        return self.http("POST", url, headers=headers, param=param)
+        return self.hander_res(elf.http("POST", url, headers=headers, param=param))
 
     def post_files(self, url, path, name="file"):
         return self.http(
@@ -182,32 +197,48 @@ class Api:
     def get_timeout(self):
         return API_CONFIG.get(self.name).timeout.get_value()
 
+    def log(self, res: requests.Response, method, params, headers, cookies, content):
+        if not self.log_enable:
+            return
+        logger.info(
+            f"---begin uri:{res.url} method:{method} status:{res.status_code}---"
+        )
+        if params:
+            logger.info(f"req_body:{json_dumps(params,indent=2)}")
+        if headers:
+            logger.info(f"req_headers: {json_dumps(dict(headers),indent=2)}")
+        if cookies:
+            logger.info(f"req_cookies: {json_dumps(dict(cookies),indent=2)}")
+        if isinstance(content, bytes):
+            logger.info(f"res_body: {content}")
+        else:
+            logger.info(f"res_body: {json_dumps(content,indent=2)}")
+        logger.info(f"res_headers: {json_dumps(dict(res.headers.copy()),indent=2)}")
+        logger.info(f"res_cookies: {json_dumps(dict(res.cookies.copy()),indent=2)}")
+        logger.info(f"---end---")
+
     def http(
         self,
         method,
         path,
         data=None,
         headers=None,
+        cookies: dict = None,
         files=None,
         param=None,
         timeout=None,
-        stream=False,
-        writer=None,
+        stream=None,
     ):
         if headers is None:
             headers = self.get_headers()
-        headers.update(
-            {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-            }
-        )
+        if "User-Agent" not in headers:
+            headers["User-Agent"] = USER_AGENT_DEFAULT
         uri = self.url(path)
         key, mock_res = self.get_mock_data(path, method, data or param)
         if mock_res:
             return mock_res
         proxies = self.get_proxy()
         timeout = timeout or self.get_timeout()
-
         params = dict()
         if method == "GET":
             if data:
@@ -221,7 +252,11 @@ class Api:
                 params.update(dict(params=param))
             if data is not None:
                 params.update(dict(json=data))
-        cookies = API_CONFIG.get(self.name).cookie.get_value() or {}
+        local_cookie = API_CONFIG.get(self.name).cookie.get_value()
+        if cookies is None:
+            cookies = local_cookie
+        elif local_cookie:
+            cookies.update(local_cookie)
         res: requests.Response = requests.request(
             url=uri,
             headers=headers,
@@ -232,47 +267,28 @@ class Api:
             proxies=proxies,
             **params,
         )
-        if stream:
-            res.raise_for_status()
-            from common.third_util.tqdm_util import tqdm
-
-            total = int(res.headers.get("content-length", 0))
-            t = tqdm(total=total, unit="iB", unit_scale=True)
-            for data in res.iter_content(chunk_size=8192):
-                writer.write(data)
-                t.update(len(data))
-            t.close()
-            return
-        if res.status_code <= 300:
-            content_type = res.headers.get(Api.CONTENT_TYPE)
-            ret = res.content
-            if Api.APPLICATION_JSON in content_type:
+        content_type = res.headers.get(Api.CONTENT_TYPE, "")
+        if Api.APPLICATION_JSON in content_type:
+            try:
                 ret = res.json()
-                if self.log_enable:
-                    logger.debug(
-                        f"DO HTTP [{method}] {uri} {proxies} {timeout} length={len(ret)}\n {json_dumps(ret)} "
-                    )
-            else:
-                logger.debug(content_type)
-            if self.cache:
-                self.cache.set(key, ret)
+            except Exception as e:
+                ret = res.content
+        else:
+            ret = res.content
+        self.log(res, method, data or param, headers, cookies, ret)
+        return res, ret
 
-            return ret
-        return self.hander_error(method, uri, res, data or param, cookies)
+    def hander_stream(self, res: requests.Response, stream=False, writer=None):
+        res.raise_for_status()
+        from common.third_util.tqdm_util import tqdm
 
-    def hander_error(self, method, uri, res: requests.Response, data, cookies):
-        File("data/log/http/http_error.html").write_file(res.content)
-        raise Exception(
-            f"{method}:{uri}:{res.status_code}:{res.content[:256]}:{str(data)[:40]},{cookies}"
-        )
+        total = int(res.headers.get("content-length", 0))
+        t = tqdm(total=total, unit="iB", unit_scale=True)
+        for data in res.iter_content(chunk_size=8192):
+            writer.write(data)
+            t.update(len(data))
+        t.close()
+        return
 
     def parse(self, value):
         return value
-
-    _ins = None
-
-    @classmethod
-    def ins(cls):
-        if cls._ins is None:
-            cls._ins = cls().set_cache()
-        return cls._ins

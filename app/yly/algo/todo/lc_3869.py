@@ -13,13 +13,13 @@ class Solution(MockCf):
         def call_good(value, up_down, last_value, s, depth=0):
             if last_value is None:
                 return up_down, value, s + value
+            if value == last_value:
+                return 0, value, s + value
             if up_down is None:
-                if value == last_value:
-                    return
                 return -1 if value < last_value else 1, value, s + value
             c = value - last_value
             if c * up_down <= 0:
-                return
+                return 0, value, s + value
             return up_down, value, s + value
 
         @functools.lru_cache(None)
@@ -32,30 +32,17 @@ class Solution(MockCf):
                     return 0
             return 1
 
-        a = low_high_dp(
+        def check(up_down, last_value, s, depth=0):
+            return 1 if up_down != 0 or is_up_down(s) else 0
+
+        return low_high_dp(
             l,
             r,
             None,
             None,
             0,
             calc_args=call_good,
+            ret_fun=check,
         )
-        b = low_high_dp(
-            l,
-            r,
-            0,
-            calc_args=lambda v, last_v, **kw: [v + last_v],
-            ret_fun=lambda v, **kw: is_up_down(v),
-        )
-        c = low_high_dp(
-            l,
-            r,
-            None,
-            None,
-            0,
-            calc_args=call_good,
-            ret_fun=lambda a, b, v, **kw: is_up_down(v),
-        )
-        return a + b - c
 
     execute = countFancy
