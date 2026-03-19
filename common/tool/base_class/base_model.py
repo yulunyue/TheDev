@@ -34,11 +34,11 @@ class DictModel(BaseModel):
             default_value=default_value or dict(), data_source=data_source, key=key
         )
 
-    def get(self, name):
+    def get(self, name, default_value=None):
         ret = self.get_value()
-        if name not in ret:
+        if name not in ret and default_value is None:
             raise Exception(name, list(ret.keys()))
-        return ret[name]
+        return ret.get(name, default_value)
 
     def get_value(self) -> dict:
         return super().get_value()

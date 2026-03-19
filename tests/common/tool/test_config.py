@@ -1,6 +1,5 @@
-from common.util.export import TestBase, logger
+from common.util.export import TestBase, logger, ThreadRecord
 from common.tool.export import (
-    ThreadRecord,
     OsUtil,
     TableBase,
     StrModel,
@@ -15,7 +14,7 @@ class TableConfigTest(TableConfig):
     b = NumberModel(1)
 
 
-class TestConfig(TestBase):
+class TestConfig:
 
     def test_config(self):
         t = TableBase[TableConfigTest]().set_resource("test_table")

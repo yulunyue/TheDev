@@ -27,7 +27,8 @@ from .tool import (
     is_base64_code,
 )
 from .test import TestBase, logger
-from .fp import File, get_cache
+from .fp import File
+from .cache import get_cache
 from .module import Module, run_catch_error
 from .thread.thread_poll import ThreadManage, ThreadExec
 from .list_util import ListUtil

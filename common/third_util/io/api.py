@@ -101,8 +101,8 @@ class Api:
     def name(self):
         return self._name
 
-    def get_config(self, name):
-        return API_CONFIG.get(self.name).config.get(name)
+    def get_config(self, name, default_value=None):
+        return API_CONFIG.get(self.name).config.get(name, default_value)
 
     def set_cache(self, cache=None):
         if cache is None:
@@ -252,11 +252,9 @@ class Api:
                 params.update(dict(params=param))
             if data is not None:
                 params.update(dict(json=data))
-        local_cookie = API_CONFIG.get(self.name).cookie.get_value()
+
         if cookies is None:
-            cookies = local_cookie
-        elif local_cookie:
-            cookies.update(local_cookie)
+            cookies = API_CONFIG.get(self.name).cookie.get_value()
         res: requests.Response = requests.request(
             url=uri,
             headers=headers,

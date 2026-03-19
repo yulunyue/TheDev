@@ -1,4 +1,5 @@
 from .fp import File
+from typing import Dict
 
 
 class Cache:
