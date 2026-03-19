@@ -4,4 +4,5 @@ export class Column extends FlexDiv {
     get_direction() {
         return Constant.VERTICAL
     }
+
 }

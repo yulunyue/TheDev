@@ -57,7 +57,7 @@ export class Table extends Div {
     init_head_div() {
         this.search_input = new Input().set_placeholder("关键字搜索")
         this.head_div = new Div().add_childs([
-            new Div().set_style({ flexGrow: "1" }),
+            new Div().set_style({ flexGrow: 1 }),
             this.search_input.set_width(Constant.WIDTH_TEXT),
             new Button().set_html("搜索").on_click(() => this.filter()),
             new Button().set_html("添加").on_click(() => this.add()),

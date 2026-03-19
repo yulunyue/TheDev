@@ -22,7 +22,7 @@ export interface Style {
     flex?: any
     stroke?: string
     strokeWidth?: string
-    flexGrow?: string
+    flexGrow?: number
     visibility?: "hidden" | "visible"
     margin?: number | string
     marginLeft?: number

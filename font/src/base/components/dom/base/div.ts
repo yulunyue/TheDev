@@ -40,8 +40,9 @@ export class Div {
     }
     set_color(s: string) {
         this.set_style({
-            color: s
+            backgroundColor: s
         })
+
     }
     get_child(idx: number, call: any) {
         if (this.childs[idx]) {
@@ -147,7 +148,7 @@ export class Div {
     }
     set_size(size: number) {
         this.size = size
-        this.set_style({ flex: size })
+        this.set_style({ flexGrow: size })
         return this
     }
     set_height(h: number) {
