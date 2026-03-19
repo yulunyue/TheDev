@@ -21,10 +21,12 @@ from .tool import (
     base64_decode,
     url_to_json,
     SYS_ARGS,
+    assert_dict,
     SYS_KW,
     cmd_parse,
     b64_code,
     is_base64_code,
+    asset_exception,
 )
 from .test import TestBase, logger
 from .fp import File

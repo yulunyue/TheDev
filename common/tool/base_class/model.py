@@ -43,11 +43,11 @@ class BaseModel:
     def set_value(self, value):
         return self.data_source.update_param_value(self, value)
 
-    web_type = ""
-
-    def to_web_view(self):
+    def to_json(self):
         return dict(
-            type=self.web_type, value=self.value, defaullt_value=self.default_value
+            type=self.get_type(),
+            key=self.key,
+            defaullt_value=self.default_value,
         )
 
     def __gt__(self, value):

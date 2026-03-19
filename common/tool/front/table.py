@@ -1,5 +1,5 @@
 from common.util.export import Node, List, Dict, Any
-from common.tool.export import FileConfig, ConfigBase
+from .util import get_dom_type
 
 
 class FrontTable(Node):
@@ -10,25 +10,16 @@ class FrontTable(Node):
     def set_header(self, *header):
         self.header = []
         for h in header:
-            if isinstance(h, dict):
-                self.header.append(h)
-            else:
-                self.header.append(dict(key=h, value=h))
-
+            self.header.append(get_dom_type(h))
         return self
 
-    def set_body(self, body):
+    def set_body(self, body: list):
         self.body = body
         return self
 
     def append_row(self, **kw):
         self.body.append(kw)
         return self
-
-    def load_from_table(self, t: ConfigBase, **kw):
-        return self.set_header(*t._concrete_type.to_web_view()).set_body(
-            [v.to_json() for v in t.filter(**kw)],
-        )
 
     def get_header(self):
         return self.header

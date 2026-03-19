@@ -22,13 +22,14 @@ class FileConfig(ConfigBase):
         cls.fp = File(cls.resource_path)
         cls.instance_map: Dict[str, ConfigBase] = dict()
         cls.idx = 0
-        cls.config = cls.fp.read_file()
         if cls.fp.exists():
-            for k, v in cls.config.items():
+            cls.config = cls.fp.read_file()
+            items = list(cls.config.items())
+            for k, v in items:
                 t: ConfigBase = cls.insert(k)
                 t.update(**v)
         else:
-            cls.fp.write_file(dict())
+            cls.config = dict()
         return cls.instance_map
 
     @classmethod
@@ -46,7 +47,6 @@ class FileConfig(ConfigBase):
 
     @classmethod
     def get(cls, key):
-        ins = cls.get_map_form_resource()
         if key in ins:
             return ins[key]
         ins[key] = cls.insert(key)
@@ -58,7 +58,10 @@ class FileConfig(ConfigBase):
         return cls
 
     def update_param_value(self, ins: BaseModel, value):
-        self.__class__.config[self._id][ins.key] = value
+        c = self.__class__.config
+        if self._id not in c:
+            c[self._id] = dict()
+        c[self._id][ins.key] = value
 
     def get_param_value(self, ins: BaseModel):
         # logger.map(key=row.key, k=ins.key)
@@ -71,4 +74,4 @@ class FileConfig(ConfigBase):
 
     @classmethod
     def all(cls):
-        return cls.get_map_form_resource().values()
+        return cls.instance_map.values()

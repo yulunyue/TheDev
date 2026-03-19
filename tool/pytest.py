@@ -3,24 +3,6 @@ from common.util.export import logger, base64_encode, File, SYS_ARGS, List, Modu
 from common.tool.export import PyUtil, ToolBase
 
 
-def make_test(f: File):
-    s = "tests/" + f.path.replace(f.file_name, f"test_{f.file_name}")
-    name = f.name.title().replace("_", "")
-    model_path = f.path.replace("/", ".").replace(".py", "")
-    ret = File(s).write_if_not_exists(
-        f"""
-from common.util.export import TestBase, logger
-from {model_path} import {name}
-
-
-class Test{name}(TestBase):
-    pass
-"""
-    )
-    logger.info(ret)
-    return ret
-
-
 def files(root, name):
     return File(root).list_dir(depth=8, mathchs=[name], ignores=[".*__pycache__"])
 
@@ -33,7 +15,7 @@ def get_exe_by_key(name):
             raise Exception(app_commons)
         else:
             taget_src = app_commons[0]
-        taget = [make_test(taget_src)]
+        taget = [taget_src]
     return taget
 
 

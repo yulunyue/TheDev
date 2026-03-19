@@ -1,15 +1,13 @@
-import json
-from common.util.fp import File
-from typing import List, Dict
-from common.util.export import logger
-
-CONFIG_SETTING_DIR = "config/setting"
-from common.tool.base_class.model import BaseModel
+from common.util.export import logger, File, json, List, Dict
+from .model import BaseModel
+from ..front.table import FrontTable
+from ..front.form import Form
 
 
 class ConfigBase:
     _params_cls_map: Dict[str, BaseModel] = None
     resource_path = ""
+    _id = None
 
     def __init__(self, key: str):
         self._id = key
@@ -37,11 +35,16 @@ class ConfigBase:
         return self._params_cls_map
 
     @classmethod
-    def to_web_view(self):
-        return [
-            dict(key=k, value=v.get_title(), type=v.get_type())
-            for k, v in self.get_params().items()
-        ]
+    def to_form_view(cls):
+        return Form().set_body(*cls.get_params().values())
+
+    @classmethod
+    def to_table_view(cls):
+        return FrontTable().set_header(*cls.get_params().values()).set_body(cls.all())
+
+    @classmethod
+    def all(cls):
+        raise NotImplementedError
 
     @classmethod
     def get_default_conifg(cls):
@@ -79,7 +82,9 @@ class ConfigBase:
         return cls
 
     def to_json(self):
-        return {v.key: v.get_value() for v in self.params.values()}
+        ret = dict(_id=self._id)
+        ret.update({v.key: v.get_value() for v in self.params.values()})
+        return ret
 
     def save(self):
         if self.resource is None:
@@ -91,3 +96,6 @@ class ConfigBase:
         logger.debug(self.resource)
         self.resource.write_file(cg)
         return self
+
+    def __repr__(self):
+        return f"[id:{self._id}]"

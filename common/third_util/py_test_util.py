@@ -15,9 +15,10 @@ class PyTestUtil:
         }
         self.flags = [
             "-l",
-            "-v",
+            "-vv",
             "-s",
         ]  # ["--json-report --json-report-file=result.json"]
+        self.debug()
 
     def debug(self):
         """--full-trace"""

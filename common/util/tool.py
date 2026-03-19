@@ -8,6 +8,7 @@ import json
 import hashlib
 import base64
 import time
+from collections.abc import ValuesView
 
 
 def time_format(timestamp):
@@ -143,9 +144,16 @@ def json_dumps(oj, indent=None):
             return v.to_json()
         if isinstance(v, BaseModel):
             return v.get_value()
+        if isinstance(v, ValuesView):
+            return list(v)
         return str(v)
 
     return json.dumps(oj, indent=indent, default=util, ensure_ascii=False)
+
+
+def assert_dict(a, b):
+    a, b = json_dumps(a), json_dumps(b)
+    assert a == b
 
 
 def merge_dict(src, dst):
@@ -167,3 +175,12 @@ def merge_dict(src, dst):
 
     util(src, dst, [])
     return src, record
+
+
+def asset_exception(fun, *args, msg="", **kw):
+    s = ""
+    try:
+        fun(*args, **ke)
+    except Exception as e:
+        s = str(e)
+    assert s, msg
