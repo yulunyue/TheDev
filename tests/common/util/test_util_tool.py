@@ -25,7 +25,7 @@ from common.util.tool import (
 
 class TestTool:
     """Test class for common.util.tool functions"""
-    
+
     def expect(self, actual, expected, message=""):
         """Custom assertion method"""
         if actual != expected:
@@ -38,10 +38,10 @@ class TestTool:
     def test_uid(self):
         """Test uid function"""
         import common.util.tool as tool_module
-        
+
         # Reset the UK_MAP for consistent testing
         tool_module.UK_MAP.clear()
-        
+
         self.expect(uid("a"), "a_0")
         self.expect(uid("a"), "a_1")
 
@@ -66,7 +66,7 @@ class TestTool:
         self.expect(hash_any_str("aa"), "aa")
         self.expect(hash_any_str([0, 1, 2]), "012")
         self.expect(hash_any_str(dict(a=1)), "a1")
-        
+
         # Test nested structure
         nested_dict = {"a": 1, "b": {"c": 2}}
         result = hash_any_str(nested_dict)
@@ -81,10 +81,10 @@ class TestTool:
         """Test random function"""
         random.seed(0)
         ins = [random.randint(1, 100) for _ in range(10)]
-        
+
         random.seed(0)
         e = [random.randint(1, 100) for _ in range(10)]
-        
+
         self.expect(ins, e)
 
     def test_additional_functions(self):
@@ -93,7 +93,7 @@ class TestTool:
         encoded = base64_encode("test")
         decoded = b64_code(encoded)
         self.expect(decoded, "test")
-        
+
         # Test is_base64_code
         self.expect(is_base64_code("aGVsbG8="), True)
         self.expect(is_base64_code("invalid"), False)
@@ -102,7 +102,7 @@ class TestTool:
 def run_tests():
     """Run all test methods"""
     print("🚀 Starting test_util_tool.py tests...\n")
-    
+
     test_instance = TestTool()
     tests = [
         ("UID", test_instance.test_uid),
@@ -113,10 +113,10 @@ def run_tests():
         ("Random", test_instance.test_random),
         ("Additional Functions", test_instance.test_additional_functions),
     ]
-    
+
     passed = 0
     total = len(tests)
-    
+
     for test_name, test_func in tests:
         try:
             print(f"🔍 Testing {test_name}...")
@@ -126,11 +126,12 @@ def run_tests():
         except Exception as e:
             print(f"❌ {test_name} test failed: {e}\n")
             import traceback
+
             traceback.print_exc()
             print()
-    
+
     print(f"📊 Test Results: {passed}/{total} tests passed")
-    
+
     if passed == total:
         print("🎉 All test_util_tool.py tests passed!")
         return True
