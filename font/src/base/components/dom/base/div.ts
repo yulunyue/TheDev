@@ -148,7 +148,7 @@ export class Div {
     }
     set_size(size: number) {
         this.size = size
-        this.set_style({ flexGrow: size })
+        this.set_style({ flexGrow: size + "" })
         return this
     }
     set_height(h: number) {
@@ -266,13 +266,8 @@ export class Div {
         if (this.option.size) {
             this.set_size(this.option.size)
         }
-
         this.render_option()
         return this
-    }
-    update_option(option: Node, cls: any) {
-        // this.set_childs(option.childs,cls)
-        // this.set_option(option)
     }
     remove(i: number) {
 

@@ -10,4 +10,4 @@ class Form:
         return self
 
     def to_json(self):
-        return dict(type="form", data=self.body)
+        return dict(type="form", childs=self.body)

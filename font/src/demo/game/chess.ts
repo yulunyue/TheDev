@@ -16,13 +16,15 @@ export class Chess extends Column {
     top_control: Div
     pro: Progress
     top_form: Form
+    chess_width: number
     init_style(): void {
         super.init_style()
         this.full().set_center()
         this.left.set_size(1)
         this.right.set_size(1)
-        this.middle.set_width(400)
-        this.g.set_height(400)
+        this.chess_width = 300
+        this.middle.set_width(this.chess_width)
+        this.g.set_height(this.chess_width)
     }
     init_node(): void {
         this.g = new Grid().set_option({
@@ -41,6 +43,9 @@ export class Chess extends Column {
             this.middle,
             this.right
         ])
+    }
+    render(): void {
+        this.top_form.set_uri("/game/chess/bd")
     }
 
 }

@@ -29,7 +29,7 @@ class TestConfig:
             Fg.to_form_view(),
             {
                 "type": "form",
-                "data": [
+                "childs": [
                     {"type": "str", "key": "a", "defaullt_value": ""},
                     {"type": "number", "key": "b", "defaullt_value": 1},
                 ],

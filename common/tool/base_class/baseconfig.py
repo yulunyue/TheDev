@@ -9,17 +9,15 @@ class ConfigBase:
     resource_path = ""
     _id = None
 
-    def __init__(self, key: str):
-        self._id = key
-        self.load()
-
-    def load(self):
+    def load(self, _id):
+        self._id = _id
         self.params: Dict[str, BaseModel] = dict()
         for k, v in self.get_params().items():
             c = v.clone().set_datasource(self).set_key(k)
             setattr(self, k, c)
             self.params[k] = c
         self.init()
+        return self
 
     @classmethod
     def get_headers_keys(cls):
@@ -33,6 +31,8 @@ class ConfigBase:
         if self._params_cls_map is None:
             self.init_param()
         return self._params_cls_map
+
+    front_apis = ["to_form_view", "to_table_view"]
 
     @classmethod
     def to_form_view(cls):
@@ -96,6 +96,17 @@ class ConfigBase:
         logger.debug(self.resource)
         self.resource.write_file(cg)
         return self
+
+    @classmethod
+    def set_resource(cls, path):
+        cls.resource_path = path
+        cls.init_param()
+        cls.init_resource()
+        return cls
+
+    @classmethod
+    def init_resource(cls):
+        raise NotImplementedError
 
     def __repr__(self):
         return f"[id:{self._id}]"

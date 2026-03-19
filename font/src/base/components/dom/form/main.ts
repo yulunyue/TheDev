@@ -26,8 +26,13 @@ export class Form extends Div {
         return new FormRow()
     }
     render_option(): void {
-        console.log(this.option.childs)
         this.body.set_childs(this.option.childs, () => this.get_row())
+
+    }
+    load_form_uri() {
+        web.post(this.option.url + "/to_form_view", {}, (v: any) => {
+            this.set_option(v)
+        })
     }
     get_value() {
         let ret = {}
@@ -42,6 +47,11 @@ export class Form extends Div {
     }
     get(key: string, default_value?: string) {
         return not_null(this.get_value()[key], default_value)
+    }
+    set_uri(s: string): this {
+        this.option.url = s
+        this.load_form_uri()
+        return this
     }
 
 }

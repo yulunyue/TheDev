@@ -17,7 +17,7 @@ from common.util.export import (
 class FileConfig(ConfigBase):
 
     @classmethod
-    def get_map_form_resource(cls):
+    def init_resource(cls):
         assert cls.resource_path
         cls.fp = File(cls.resource_path)
         cls.instance_map: Dict[str, ConfigBase] = dict()
@@ -31,11 +31,6 @@ class FileConfig(ConfigBase):
         else:
             cls.config = dict()
         return cls.instance_map
-
-    @classmethod
-    def init_param(cls):
-        super().init_param()
-        cls.get_map_form_resource()
 
     @classmethod
     def insert(cls, idx=None):

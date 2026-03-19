@@ -2,7 +2,7 @@ import { Input } from "./dom/form/input"
 import { TextArea } from "./dom/form/text_area"
 import { TextAreaRich } from "./dom/form/text_area_rich"
 import { FileInput } from "./dom/form/file"
-import { search, Search } from "./dom/form/search"
+import { Search } from "./dom/form/search"
 import { SvgNode, svg } from "./svg/svg"
 import { Button } from "./dom/form/button"
 import { Div, DivFactory, Container } from "./dom/div"
@@ -44,10 +44,11 @@ DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
 DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
 DivFactory.register(Ct.DOM_TYPE_ROW, () => new Row())
 DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new Column())
+DivFactory.register(Ct.DOM_TYPE_BUTTON, () => new Button())
 export {
     Select, Pre, FormRow, TextArea, Util, web_socket, Data, Button,
     Div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, tree, Form, node,
-    to_node, Grid, ListUi, Table, Ct, search, Search, TextAreaRich,
+    to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich,
     Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column
 }

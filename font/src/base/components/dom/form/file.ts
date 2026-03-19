@@ -2,7 +2,8 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { Row } from "../base/row";
 import web_dom from "../../../web/web_dom"
-export class FileInput extends Row {
+import { Column } from "../base/column";
+export class FileInput extends Column {
     inp: Input
     btn: Button
     path: string
@@ -10,6 +11,7 @@ export class FileInput extends Row {
         this.inp = new Input().set_attr("type", "file")
         this.btn = new Button().set_html("upload")
         this.add_childs([this.inp, this.btn])
+        console.log("xx")
     }
     init_event(): void {
         this.inp.el.onchange = ((v: any) => {

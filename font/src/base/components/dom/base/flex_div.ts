@@ -12,8 +12,8 @@ export class FlexDiv extends Div {
         this.set_div_style({
             flexDirection: this.get_direction() == Constant.VERTICAL ? "row" : "column",
             display: "flex",
-            justifyContent: "center",
-            alignContent: "center",
+            // justifyContent: "center",
+            // alignContent: "center",
 
         })
     }
@@ -25,7 +25,7 @@ export class FlexDiv extends Div {
     }
 
     render_option(): void {
-        if (this.option.childs) {
+        if (this.option.childs && this.option.childs.length) {
             this.clear()
             let childs = []
             for (var i = 0; i < this.option.childs.length; i++) {

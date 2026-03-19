@@ -70,9 +70,3 @@ export class Search extends Div {
     }
 
 }
-export function search() {
-    return new Search()
-}
-export function search_dev() {
-    return search()
-}

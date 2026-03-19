@@ -8,23 +8,35 @@ import {
     Row, Column,
     FileInput,
     Form,
-    Constant
+    Constant,
+    Pre
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
-export class Dev extends Div {
-    svg: Svg
-    init_style(): void {
-
-    }
-    init_node(): void {
-        this.add_childs([
-            this.get_window_info(),
-            this.get_table(),
-            this.get_form(),
-            this.get_row(),
-            this.test_grid()
+let DEV_FUNC = {
+    form() {
+        let childs = [
+            { "type": Constant.DOM_TYPE_INPUT, title: "a", key: "a" },
+            { "type": Constant.DOM_TYPE_FILE, title: "b", key: "b" },
+            { "type": Constant.DOM_TYPE_BUTTON, title: "c", key: "c" }
+        ]
+        let pre = new Pre().set_html("pre")
+        let fm = new Form().set_option({
+            childs: childs
+        })
+        fm.on_click((type: string) => {
+            pre.set_html("xxx")
+        })
+        return new Div().add_childs([
+            new Column().add_childs([
+                fm,
+                pre
+            ])
         ])
     }
+}
+export class Dev extends Div {
+    svg: Svg
+
     get_row() {
         return new Column().set_option({
             childs: [
@@ -47,20 +59,7 @@ export class Dev extends Div {
             ]
         }).set_height(200).set_center()
     }
-    get_form() {
-        let fm = new Form().set_option({
-            childs: [
-                { "type": "input", title: "a", key: "a" },
-                { "type": Constant.DOM_TYPE_FILE, title: "b", key: "b" }
-            ]
-        })
-        function submit() {
 
-        }
-        return new Div().add_childs([
-            fm, new Button().set_html("submit").on_click(submit)
-        ])
-    }
     get_window_info() {
         let d = new Div()
         let size = web_dom.get_window_size()
@@ -123,8 +122,13 @@ export class Dev extends Div {
             childs: []
         })
     }
+
     on_mount(): void {
 
+    }
+    render(): void {
+        let method = web_dom.get_param("method")
+        this.add_childs([DEV_FUNC[method]()])
     }
 
 }

@@ -8,7 +8,7 @@ export class Container extends Div {
     render_option() {
         this.main = DivFactory.new_div(
             this.option.type, this.option.key
-        ).set_option(this.option).full()
+        ).set_option(this.option)
         this.clear().add_child(this.main)
     }
     get_value() {

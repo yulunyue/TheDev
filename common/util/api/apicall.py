@@ -38,23 +38,20 @@ class ApiCall:
         return ret
 
     def register(self, key: str, fun):
-        keys = key.split("/")[-4:]
-        if keys[0]:
-            keys[0] = ""
-        key = "/".join(keys)
         if key in self.fun_map:
             raise Exception(key, self.fun_map[key])
         self.fun_map[key] = fun
         logger.info(f"register {key} {fun.__name__}")
 
     def load_module(self, moudule_name_key, cls: ApiBase):
-
         m = cls()
-        for fun_name in dir(m):
-            if fun_name.startswith("_"):
-                continue
+        if hasattr(cls, "front_apis"):
+            apis = cls.front_apis
+        else:
+            apis = [v for v in dir(m) if not v.startswith("_")]
+        for fun_name in apis:
             f = getattr(m, fun_name)
-            fun_key = f"/{moudule_name_key}/{fun_name}"
+            fun_key = f"{moudule_name_key}/{fun_name}"
             if callable(f):
                 self.register(fun_key, f)
 

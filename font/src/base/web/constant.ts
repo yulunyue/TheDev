@@ -42,9 +42,7 @@ class Constant {
     Z_INDEX_1 = "1"
 
     DATA_SOURCE_DYN = "data_source_dyn"
-
     EVENT_CHANGE = "event_change"
-
     DOM_TYPE_INPUT = "input"
     DOM_TYPE_STRING = "str"
     DOM_TYPE_MERA_GRAPH = "graph"
@@ -58,6 +56,7 @@ class Constant {
     DOM_TYPE_FILE = "DomFile"
     DOM_TYPE_ROW = "row"
     DOM_TYPE_COLUMN = "column"
+    DOM_TYPE_BUTTON = "button"
 
 }
 export default new Constant()
