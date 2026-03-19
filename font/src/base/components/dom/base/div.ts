@@ -297,6 +297,12 @@ export class Div {
         this.el.innerHTML = text
         return this
     }
+    set_uri(s: string) {
+        web_dom.post(s, (data: Node) => {
+            this.set_option(data)
+        })
+        return this
+    }
     set_value(value: any) {
         // console.log(this.option.id, this.option.local_storge_enable, value)
         if (this.option.id && this.option.local_storge_enable) {

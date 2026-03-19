@@ -9,5 +9,5 @@ constant.init()
 let route = {
     algo, api, dev, chess
 }[constant.get_route('main')]
-route().mount(web_dom.get_body()).emit_mount()
+route().mount(web_dom.get_body()).render()
 // constant.init_body(route.div_el)
