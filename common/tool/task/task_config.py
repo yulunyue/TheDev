@@ -1,16 +1,15 @@
 from ..base_class.table_base import (
-    TableBase,
+    FileConfig,
     StrModel,
     NumberModel,
     ConfigBase,
-    TableConfig,
     DictModel,
 )
 from ..os_util import OsUtil
 from common.util.export import time, File, Module, traceback, C
 
 
-class TaskConfig(TableConfig):
+class TaskConfig(FileConfig):
     fun_path = StrModel()
     root_path = StrModel()
     args = StrModel()
@@ -19,6 +18,7 @@ class TaskConfig(TableConfig):
     last_begin_t = NumberModel(default_value=0)
     last_finish_t = NumberModel(default_value=0)
     result = DictModel()
+    resource_path = "config/setting/taskconfig.json"
     _fun = None
 
     def get_call(self):
@@ -53,6 +53,3 @@ class TaskConfig(TableConfig):
                 code=C.CODE_500, value=traceback.format_exc().split("\n")
             )
         self.last_finish_t.set_value(time.time())
-
-    def __repr__(self):
-        return f"result:{self.result}"

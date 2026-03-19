@@ -8,6 +8,7 @@ from .base_class.base_model import (
 
 
 class GloablConfg(ConfigBase):
+    resource_path = "config/setting/gloabl_setting.json"
     chrome_driver_path = StrModel("/thedev/data/chrome_driver")
     chrome_driver_uri = StrModel(
         "https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chromedriver-win64.zip"
@@ -26,4 +27,4 @@ class GloablConfg(ConfigBase):
     github_token = StrModel()
 
 
-GC = GloablConfg("GC").set_resource("gloabl_setting")
+GC = GloablConfg

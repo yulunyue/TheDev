@@ -8,7 +8,7 @@ from common.util.export import (
     C,
     execute_by_thread,
 )
-from common.tool.export import TableBase
+from common.tool.export import FileConfig
 
 ROOT = File("app/yly/algo")
 

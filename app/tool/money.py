@@ -2,7 +2,7 @@ from common.tool.export import (
     TableConfig,
     StrModel,
     NumberModel,
-    TableBase,
+    FileConfig,
     FrontTable,
     DateModel,
 )
@@ -15,16 +15,6 @@ class MoneyConfig(TableConfig):
     user = StrModel()
     detail = StrModel()
     check = StrModel()
-
-
-R: TableBase[MoneyConfig] = None
-
-
-def get_r():
-    global R
-    if R is None:
-        R = TableBase[MoneyConfig]().set_resource("money")
-    return R
 
 
 class Money:

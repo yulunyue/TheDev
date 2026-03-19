@@ -1,5 +1,5 @@
 from common.util.export import TcpServer, TcpClient, logger
-from common.tool.export import TableBase, ToolBase
+from common.tool.export import FileConfig, ToolBase
 from common.third_util.dataa.pandas_util import PandasUtil
 
 

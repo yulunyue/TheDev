@@ -3,7 +3,6 @@ from common.tool.export import DomFile, FrontTable, OsUtil, System
 
 
 class Manage:
-    API_ROUTE = "/app/manage"
     UPLOAD_ROOT = File("data/upload").make_dir_if_not_exist(True)
 
     def post_file(self, files: DomFile, **kw):

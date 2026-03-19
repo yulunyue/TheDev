@@ -9,12 +9,13 @@ from common.util.export import (
 )
 
 logger = get_dev_log("api")
-from common.tool.export import NumberModel, StrModel, ConfigBase, TableBase, DictModel
+from common.tool.export import NumberModel, StrModel, ConfigBase, FileConfig, DictModel
 
 USER_AGENT_DEFAULT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
 
 
-class ApiConfig(ConfigBase):
+class ApiConfig(FileConfig):
+    resource_path = "config/setting/api.json"
     endpoint = StrModel()
     cookie = DictModel()
     proxy = DictModel()
@@ -24,7 +25,7 @@ class ApiConfig(ConfigBase):
     config = DictModel()
 
 
-API_CONFIG = TableBase[ApiConfig]().set_resource("api")
+API_CONFIG = ApiConfig.init_param()
 
 
 def get_proxy(key=None):

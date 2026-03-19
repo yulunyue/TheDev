@@ -9,10 +9,11 @@ from common.tool.base_class.model import BaseModel
 
 class ConfigBase:
     _params_cls_map: Dict[str, BaseModel] = None
-    _ins = dict()
+    resource_path = ""
 
     def __init__(self, key: str):
-        self.key = key
+        self._id = key
+        self.load()
 
     def load(self):
         self.params: Dict[str, BaseModel] = dict()
@@ -26,25 +27,8 @@ class ConfigBase:
     def get_headers_keys(cls):
         return cls.get_params().keys()
 
-    # @classmethod
-    # def new(cls, key, f=None):
-    #     if key not in cls._ins:
-    #         cls._ins[key] = cls(key).set_resource(f)
-    #         cls._ins[key].save()
-    #     return cls._ins[key]
-
     def init(self):
         pass
-
-    def set_resource(self, resource: str):
-        if isinstance(resource, str):
-            if "/" not in resource:
-                resource = CONFIG_SETTING_DIR + "/" + resource + ".json"
-            resource = File.new(resource).write_if_not_exists(dict())
-            logger.info(resource)
-        self.load()
-        self.resource: File = resource
-        return self
 
     @classmethod
     def get_params(self):
@@ -66,23 +50,15 @@ class ConfigBase:
             ret[key] = v.default_value
         return ret
 
+    @classmethod
     def update_param_value(self, param, value):
-        # logger.info([self.key, param.key, param, id(self), value])
-        if self.resource:
-            return self.resource.update_param_value(self, param, value)
-        param.value = value
+        raise NotImplementedError
 
-    resource: File = None
-
+    @classmethod
     def get_param_value(self, param):
-        if self.resource is None:
-            if param.value is None:
-                param.value = param.default_value
-            return param.value
-        return self.resource.get_param_value(self, param)
+        raise NotImplemented
 
     def update(self, **kw):
-
         for k, v in kw.items():
             if k in self.params:
                 self.params[k].set_value(v)
@@ -100,7 +76,7 @@ class ConfigBase:
             if not isinstance(v, BaseModel):
                 continue
             cls._params_cls_map[key] = v.set_key(key)
-        return cls._params_cls_map
+        return cls
 
     def to_json(self):
         return {v.key: v.get_value() for v in self.params.values()}

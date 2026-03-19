@@ -1,15 +1,15 @@
 from common.util.export import TestBase, logger, ThreadRecord
 from common.tool.export import (
     OsUtil,
-    TableBase,
+    FileConfig,
     StrModel,
     NumberModel,
-    TableConfig,
     ConfigBase,
 )
 
 
-class TableConfigTest(TableConfig):
+class Fg(FileConfig):
+    resource_path = "data/test_table.json"
     a = StrModel()
     b = NumberModel(1)
 
@@ -17,9 +17,9 @@ class TableConfigTest(TableConfig):
 class TestConfig:
 
     def test_config(self):
-        t = TableBase[TableConfigTest]().set_resource("test_table")
-        m = t.insert("p1")
-        self.expect(m.b.get_value(), 1)
+        Fg.init_param()
+        m: Fg = Fg.insert("a")
+        assert m.b.get_value(), 1
 
         self.expect_raise_error(
             m.b.set_value, "a", error="[could not convert string to float: 'a'][a]"

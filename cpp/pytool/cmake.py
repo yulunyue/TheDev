@@ -2,7 +2,7 @@ from common.tool.export import (
     TableConfig,
     StrModel,
     ListModel,
-    TableBase,
+    FileConfig,
     OsUtil,
     NumberModel,
 )
@@ -21,7 +21,7 @@ class NodeConfig(TableConfig):
 
 class CMake:
     def __init__(self, src, resource="cpp_build"):
-        self.source = TableBase[NodeConfig]().set_resource(resource)
+        self.source = FileConfig[NodeConfig]().set_resource(resource)
         self.root = self.source.get(src)
         self.root.src.set_value(src)
 

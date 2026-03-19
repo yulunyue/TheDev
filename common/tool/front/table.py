@@ -1,5 +1,5 @@
 from common.util.export import Node, List, Dict, Any
-from common.tool.export import TableBase, ConfigBase
+from common.tool.export import FileConfig, ConfigBase
 
 
 class FrontTable(Node):
@@ -25,7 +25,7 @@ class FrontTable(Node):
         self.body.append(kw)
         return self
 
-    def load_from_table(self, t: TableBase[ConfigBase], **kw):
+    def load_from_table(self, t: ConfigBase, **kw):
         return self.set_header(*t._concrete_type.to_web_view()).set_body(
             [v.to_json() for v in t.filter(**kw)],
         )

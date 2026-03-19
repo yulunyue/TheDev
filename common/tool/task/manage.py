@@ -9,22 +9,19 @@ from common.util.export import (
     Thread,
     time,
 )
-from ..base_class.table_base import (
-    TableBase,
-)
+
 from .task_config import TaskConfig
 
 
 class Task:
-    def __init__(self, name):
-
-        self.source = TableBase[TaskConfig]().set_resource(name)
+    def __init__(self):
+        TaskConfig.init_param()
         self.main_thread = Thread(target=self.run, daemon=True)
 
     def loop(self):
-        for t in self.source.filter():
+        for t in TaskConfig.all():
             t.exec()
-        self.source.save()
+        TaskConfig.save()
         return self
 
     def run(self):
@@ -37,10 +34,4 @@ class Task:
         return self
 
 
-TASK_MANAGER: Dict[str, Task] = dict()
-
-
-def get_task(name="taskconfig") -> Task:
-    if name not in TASK_MANAGER:
-        TASK_MANAGER[name] = Task(name)
-    return TASK_MANAGER[name]
+T = Task()

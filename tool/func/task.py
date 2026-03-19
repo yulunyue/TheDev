@@ -1,11 +1,9 @@
-from common.tool.export import Task, get_task, TASK_MANAGER, ToolBase
+from common.tool.export import T, ToolBase
 
 
 class TaskTool(ToolBase):
     def loop(self):
-        t = get_task()
-        t.loop()
-        t.source.save()
+        T.loop()
 
     def run_task(self, name="cargo_c4", **kw):
         t = get_task()

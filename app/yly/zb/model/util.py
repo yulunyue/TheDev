@@ -1,7 +1,7 @@
 from common.util.export import logger, File, time, List
 from common.tool.export import (
     ConfigBase,
-    TableBase,
+    FileConfig,
     NumberModel,
     StrModel,
     ListModel,

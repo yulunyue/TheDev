@@ -14,80 +14,61 @@ from common.util.export import (
 )
 
 
-class TableConfig(ConfigBase):
-    pass
+class FileConfig(ConfigBase):
 
-
-T = TypeVar("T")
-
-
-class TableBase(Generic[T]):
-    _concrete_type: ConfigBase = None
-
-    def __class_getitem__(cls, item):
-        # 创建新类时保存具体类型（如 int）
-        new_class = super().__class_getitem__(item)
-        new_class._concrete_type = item
-        return new_class
-
-    def __new__(cls):
-        ret = super().__new__(cls)
-        ret._concrete_type = cls._concrete_type
-        return ret
-
-    def set_resource(self, fp):
-        if isinstance(fp, str):
-            fp = File(f"config/setting/{fp}.json")
-        self.fp = fp
-        logger.info(fp)
-        self.config = dict()
-        self.instance_map: Dict[str, ConfigBase] = dict()
-        self.idx = 0
-        if self.fp.exists():
-            for k, v in self.fp.read_file().items():
-                t: ConfigBase = self.insert(k)
+    @classmethod
+    def get_map_form_resource(cls):
+        assert cls.resource_path
+        cls.fp = File(cls.resource_path)
+        cls.instance_map: Dict[str, ConfigBase] = dict()
+        cls.idx = 0
+        cls.config = cls.fp.read_file()
+        if cls.fp.exists():
+            for k, v in cls.config.items():
+                t: ConfigBase = cls.insert(k)
                 t.update(**v)
         else:
-            self.fp.write_file(dict())
-        return self
+            cls.fp.write_file(dict())
+        return cls.instance_map
 
-    def filter(self, **kw) -> List[T]:
-        ret = []
-        for k in self.config.keys():
-            v: ConfigBase = self.get(k)
-            # logger.map(v=id(v), k=k, key=v.key, d=v.to_json())
-            ret.append(v)
-        return ret
+    @classmethod
+    def init_param(cls):
+        super().init_param()
+        cls.get_map_form_resource()
 
-    def all(self):
-        return self.filter()
-
-    def insert(self, idx=None) -> T:
-        self.idx += 1
+    @classmethod
+    def insert(cls, idx=None):
+        cls.idx += 1
         if idx is None:
             idx = self.idx
-        return self.get(idx)
+        cls.instance_map[idx] = cls(idx)
+        return cls.instance_map[idx]
 
-    def get(self, key) -> T:
-        if key in self.instance_map:
-            return self.instance_map[key]
-        self.instance_map[key] = self._concrete_type(key)
-        self.instance_map[key].set_resource(self)
-        self.config[key] = dict()
-        return self.instance_map[key]
+    @classmethod
+    def get(cls, key):
+        ins = cls.get_map_form_resource()
+        if key in ins:
+            return ins[key]
+        ins[key] = cls.insert(key)
+        return ins[key]
 
-    def save(self):
-        self.fp.write_file(self.config)
-        return self
+    @classmethod
+    def save(cls):
+        cls.fp.write_file(cls.config)
+        return cls
 
-    def update_param_value(self, row: ConfigBase, ins: BaseModel, value):
-        # if row.key not in self.config:
-        #     self.config[row.key] = dict()
-        # logger.map(k1=row.key, k2=ins.key, v=value)
-        self.config[row.key][ins.key] = value
+    def update_param_value(self, ins: BaseModel, value):
+        self.__class__.config[self._id][ins.key] = value
 
-    def get_param_value(self, row: ConfigBase, ins: BaseModel):
+    def get_param_value(self, ins: BaseModel):
         # logger.map(key=row.key, k=ins.key)
-        if ins.key not in self.config[row.key]:
+        if self._id not in self.__class__.config:
             return ins.default_value
-        return self.config[row.key][ins.key]
+        c = self.__class__.config[self._id]
+        if ins.key in c:
+            return c[ins.key]
+        return ins.default_value
+
+    @classmethod
+    def all(cls):
+        return cls.get_map_form_resource().values()

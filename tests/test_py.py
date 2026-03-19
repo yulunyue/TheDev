@@ -1,6 +1,6 @@
 from common.util.export import TestBase
 
 
-class TestPy(TestBase):
+class TestPy:
     def test_eval(self):
-        self.expect(eval("1+1"), 2)
+        assert eval("1+1"), 2
