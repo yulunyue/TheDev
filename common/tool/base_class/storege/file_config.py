@@ -1,7 +1,6 @@
 from ..base_model import BaseModel, StrModel, DictModel
-from ..number_model import NumberModel
-from ..baseconfig import ConfigBase
-from ....constant import THE_DEV_CONSTANT
+from ..base_model.number_model import NumberModel
+from ..extern_cls.front import FrontExtern
 from common.util.export import (
     File,
     TypeVar,
@@ -11,10 +10,11 @@ from common.util.export import (
     logger,
     List,
     Dict,
+    THE_DEV_CONSTANT,
 )
 
 
-class FileConfig(ConfigBase):
+class FileConfig(FrontExtern):
 
     @classmethod
     def init_resource(cls):

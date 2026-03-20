@@ -8,7 +8,7 @@ from .base_class.base_model import (
     ListModel,
     BoolModel,
 )
-from .base_class.number_model import NumberModel
+from .base_class.base_model.number_model import NumberModel
 from .base_class.date_model import DateModel
 from .bp.node import BpNode
 from .mock import Mock

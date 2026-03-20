@@ -1,4 +1,4 @@
-from .model import BaseModel
+from .base_model.model import BaseModel
 
 
 def get_dates(value):

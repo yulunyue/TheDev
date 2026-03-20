@@ -1,10 +1,7 @@
 from ..base_class.storege.file_config import (
     FileConfig,
-    StrModel,
-    NumberModel,
-    ConfigBase,
-    DictModel,
 )
+from ..base_class.base_model import StrModel, NumberModel, DictModel
 from ..os_util import OsUtil
 from common.util.export import time, File, Module, traceback, C
 

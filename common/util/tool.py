@@ -133,7 +133,7 @@ def dict_to_str(indent=" ", **kw):
 
 
 def json_dumps(oj, indent=None):
-    from ..tool.base_class.model import BaseModel
+    from ..tool.base_class.base_model.model import BaseModel
 
     def util(v):
         if isinstance(v, set):

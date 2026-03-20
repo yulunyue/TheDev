@@ -1,7 +1,5 @@
 from common.util.export import logger, File, json, List, Dict
-from .model import BaseModel
-from ..front.table import FrontTable
-from ..front.form import Form
+from .base_model.model import BaseModel
 
 
 class ConfigBase:
@@ -32,20 +30,6 @@ class ConfigBase:
             self.init_param()
         return self._params_cls_map
 
-    front_apis = ["to_form_row_view", "to_table_view"]
-
-    @classmethod
-    def get_font_columns(cls):
-        return cls.get_params().values()
-
-    @classmethod
-    def to_form_row_view(cls):
-        return Form().set_row().set_body(*cls.get_font_columns())
-
-    @classmethod
-    def to_table_view(cls):
-        return FrontTable().set_header(*cls.get_params().values()).set_body(cls.all())
-
     @classmethod
     def all(cls):
         raise NotImplementedError
@@ -73,7 +57,7 @@ class ConfigBase:
 
     @classmethod
     def init_param(cls):
-        from common.tool.base_class.model import BaseModel
+        from common.tool.base_class.base_model.model import BaseModel
 
         cls._params_cls_map = dict()
         for key in dir(cls):

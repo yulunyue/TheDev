@@ -6,5 +6,9 @@ class Bd(FileConfig):
     size = NumberModel()
     records = ListModel()
 
+    @classmethod
+    def get_font_columns(cls):
+        return [cls.name, cls.size]
+
 
 Bd.init_param()
