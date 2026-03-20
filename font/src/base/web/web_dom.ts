@@ -142,7 +142,7 @@ class WebDom {
     post(url: string, data: any, call_back?: Fn1Void<Node>) {
         this.xml_http_request(this.HTTP_POST_METHOD, url, data, call_back)
     }
-    post_file(path: string, formData: FormData) {
+    post_file(path: string, formData: FormData, call_back: any) {
         const xhr = new XMLHttpRequest();
         let url = this.url(path)
         xhr.open('POST', url, true);
@@ -157,7 +157,7 @@ class WebDom {
         xhr.addEventListener('load', () => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 const data = JSON.parse(xhr.responseText);
-
+                call_back(data)
             } else {
 
             }

@@ -27,7 +27,13 @@ class Fun {
         let s1 = this.ts_compile(s)
         let FN_MAP = DivFactory.fac_map
         return eval(s1)
-
+    }
+    register_call(call: any, ...args: any) {
+        return function () {
+            if (call) {
+                call(...args)
+            }
+        }
     }
 }
 export default new Fun()

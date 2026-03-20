@@ -41,8 +41,9 @@ class Constant {
 
     Z_INDEX_1 = "1"
 
-    DATA_SOURCE_DYN = "data_source_dyn"
     EVENT_CHANGE = "event_change"
+    EVENT_SUBMIT = "event_submit"
+
     DOM_TYPE_INPUT = "input"
     DOM_TYPE_STRING = "str"
     DOM_TYPE_MERA_GRAPH = "graph"
@@ -54,6 +55,8 @@ class Constant {
     DOM_TYPE_GRID = "grid"
     DOM_TYPE_NUMBER = "number"
     DOM_TYPE_FILE = "DomFile"
+    DOM_TYPE_FORM_ROW = "form_row"
+    DOM_TYPE_FORM_COLUMN = "form_column"
     DOM_TYPE_ROW = "row"
     DOM_TYPE_COLUMN = "column"
     DOM_TYPE_BUTTON = "button"

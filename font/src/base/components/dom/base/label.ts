@@ -56,6 +56,12 @@ export class Pre extends Div {
     init_node(): void {
 
     }
+    set_value(value: any): this {
+        if (value instanceof Object) {
+            value = JSON.stringify(value, null, 2)
+        }
+        return this.set_html(value)
+    }
     init_style(): void {
         this.set_style({
             whiteSpace: "pre-wrap",
@@ -65,7 +71,7 @@ export class Pre extends Div {
         })
     }
     render_option() {
-        this.set_html(JSON.stringify(this.option, null, 2))
+        this.set_value(this.option.value)
     }
 }
 

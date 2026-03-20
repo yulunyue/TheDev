@@ -4,7 +4,7 @@ import { not_null, Node } from "../../../web/cls"
 import { Search } from "./search";
 import { Select } from "./select";
 import Constant from "../../../web/constant"
-export class FormRow extends Div {
+export class FormContainer extends Div {
     title: Div
     body: Div
     container: Container

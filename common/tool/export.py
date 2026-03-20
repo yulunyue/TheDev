@@ -1,6 +1,6 @@
 from .task.manage import Task, T
 from .os_util import OsUtil
-from .base_class.table_base import FileConfig
+from .base_class.storege.file_config import FileConfig
 from .base_class.baseconfig import ConfigBase
 from .base_class.base_model import (
     StrModel,

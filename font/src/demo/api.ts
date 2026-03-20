@@ -1,30 +1,26 @@
 
 import {
-    Column, Row, Div, Constant, Node, web_dom, oj_to_node, Form, to_node, Search, Container,
-    Button
+    Column, Row, Div, Constant, Node, web_dom, oj_to_node, to_node, Search, Container,
+    Button,
+    FormRow
 } from "../base/components/export";
 const URIKEYID = "api_key"
 export class Api extends Column {
     uri: Search
-    input: Form
+    input: FormRow
     result: Container
-    exec_btn: Button
     left_main: Div
     init_node(): void {
-        this.input = new Form()
+        this.input = new FormRow()
         this.uri = new Search().set_option(to_node({
             url: "/app/api/query_all_apis",
             id: URIKEYID,
             title: "APIKEY",
             local_storge_enable: true
         }))
-        this.exec_btn = new Button().set_html("执行")
         this.result = new Container()
         this.left_main = new Div().add_childs([
-            new Column().add_childs([
-                this.uri,
-                this.exec_btn,
-            ]),
+            this.uri,
             this.input
         ])
         this.add_childs([
@@ -45,7 +41,7 @@ export class Api extends Column {
                 this.input.set_option(d)
             })
         })
-        this.exec_btn.on_click(() => this.execute())
+        this.input.on_submit(() => this.execute())
     }
     execute() {
         let info = this.uri.get_value()

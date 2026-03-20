@@ -6,10 +6,14 @@ class Manage:
     UPLOAD_ROOT = File("data/upload").make_dir_if_not_exist(True)
 
     def post_file(self, files: DomFile, **kw):
-        if isinstance(files, dict):
-            for file_name, body in files.items():
-                logger.map(name=file_name, size=len(body))
-                self.UPLOAD_ROOT.child(file_name).write_file(body)
+        fps = []
+        for file_name, body in files.items():
+            logger.map(name=file_name, size=len(body))
+            f = self.UPLOAD_ROOT.child(file_name).write_file(body)
+            fps.append(f.get_abs_path())
+        return Node(value=fps)
+
+    def query(self, **kw):
         ft = FrontTable().set_header("path", "update_time", "size")
         for f in self.UPLOAD_ROOT.list_tree_file():
             ft.append_row(

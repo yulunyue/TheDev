@@ -1,4 +1,4 @@
-from ..base_class.table_base import (
+from ..base_class.storege.file_config import (
     FileConfig,
     StrModel,
     NumberModel,

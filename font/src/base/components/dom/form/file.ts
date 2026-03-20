@@ -2,11 +2,12 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { Row } from "../base/row";
 import web_dom from "../../../web/web_dom"
+import { Node } from "../../../web/cls"
 import { Column } from "../base/column";
 export class FileInput extends Column {
     inp: Input
     btn: Button
-    path: string
+    path: any
     init_node() {
         this.inp = new Input().set_attr("type", "file")
         this.btn = new Button().set_html("upload")
@@ -22,7 +23,9 @@ export class FileInput extends Column {
     upload() {
         let formData = new FormData()
         formData.append('file', this.inp.el.files[0]);
-        web_dom.post_file("/app/manage/post_file", formData)
+        web_dom.post_file("/app/manage/post_file", formData, (v: Node) => {
+            this.path = v.value
+        })
     }
     on_file_change() {
 

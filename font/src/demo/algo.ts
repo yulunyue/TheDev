@@ -1,16 +1,17 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, Form, dialog, Row, to_node, Select, Pre,
+    Div, Svg, svg, Constant, Node, web_dom, tree, dialog, Row, to_node, Select, Pre,
     GNode, Button, Input, Progress, DivFactory, Search, Container,
     TextArea,
-    Column
+    Column,
+    FormRow
 } from "../base/components/export";
 
 let URIKEYID = "ALGO_SEARCH"
 class Algo extends Row {
     container: Container
     pro: Progress
-    dialog_div: Form
+    dialog_div: FormRow
     code_select: Search
     head_msg: Div
     head_container: Column

@@ -1,6 +1,7 @@
 import { Div } from "../div";
 import { TextArea } from "./text_area";
-import { Title, Button } from "./button";
+import { Button } from "./button";
+import { Title } from "./title";
 export class TextAreaRich extends Div {
     area: TextArea
     title: Title

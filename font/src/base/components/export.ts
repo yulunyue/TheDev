@@ -20,8 +20,8 @@ import Constant from "../../base/web/constant"
 import { Node, node, to_node, oj_to_node } from "../../base/web/cls"
 import web_dom from "../../base/web/web_dom"
 import { Line } from "./svg/line"
-import { Form } from "./dom/form/main"
-import { FormRow } from "./dom/form/row"
+import { FormRow } from "./dom/form/form_row"
+import { FormColumn } from "./dom/form/from_column"
 import { Select } from "./dom/form/select";
 import Mock from "../../model/mock"
 import Util from "../tool/util"
@@ -45,10 +45,12 @@ DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
 DivFactory.register(Ct.DOM_TYPE_ROW, () => new Row())
 DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new Column())
 DivFactory.register(Ct.DOM_TYPE_BUTTON, () => new Button())
+DivFactory.register(Ct.DOM_TYPE_FORM_COLUMN, () => new FormColumn())
+DivFactory.register(Ct.DOM_TYPE_FORM_ROW, () => new FormRow())
 export {
-    Select, Pre, FormRow, TextArea, Util, web_socket, Data, Button,
+    Select, Pre, TextArea, Util, web_socket, Data, Button,
     Div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
-    Constant, Node, Line, GNode, tree, Form, node,
+    Constant, Node, Line, GNode, tree, node, FormRow, FormColumn,
     to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich,
     Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column
 }

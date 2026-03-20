@@ -1,6 +1,6 @@
 
 import {
-    Div, Constant, Node, web_dom, oj_to_node, Form, to_node, Search, Container,
+    Div, Constant, Node, web_dom, oj_to_node, FormColumn, to_node, Search, Container,
     Button, Progress,
     Svg,
     Grid,
@@ -15,7 +15,7 @@ export class Chess extends Column {
     middle: Div
     top_control: Div
     pro: Progress
-    top_form: Form
+    top_form: FormColumn
     chess_width: number
     init_style(): void {
         super.init_style()
@@ -29,7 +29,7 @@ export class Chess extends Column {
     init_node(): void {
         this.g = new Grid().set_option({
         })
-        this.top_form = new Form()
+        this.top_form = new FormColumn()
         this.pro = new Progress()
         this.left = new Div()
         this.right = new Div()

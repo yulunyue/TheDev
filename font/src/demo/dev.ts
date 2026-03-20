@@ -1,3 +1,4 @@
+import data from "src/base/tool/data";
 import {
     Div, Search, Button, TextAreaRich,
     Table, Util, dialog,
@@ -7,28 +8,31 @@ import {
     web_dom,
     Row, Column,
     FileInput,
-    Form,
+    FormColumn, FormRow,
     Constant,
     Pre
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
 let DEV_FUNC = {
     form() {
-        let childs = [
-            { "type": Constant.DOM_TYPE_INPUT, title: "a", key: "a" },
-            { "type": Constant.DOM_TYPE_FILE, title: "b", key: "b" },
-            { "type": Constant.DOM_TYPE_BUTTON, title: "c", key: "c" }
-        ]
+        let op = {
+            childs: [
+                { "type": Constant.DOM_TYPE_INPUT, title: "a", key: "a" },
+                { "type": Constant.DOM_TYPE_FILE, title: "b", key: "b" },
+            ]
+        }
         let pre = new Pre().set_html("pre")
-        let fm = new Form().set_option({
-            childs: childs
-        })
-        fm.on_click((type: string) => {
-            pre.set_html("xxx")
-        })
-        return new Div().add_childs([
+        function fm_init(fm: FormRow) {
+            return fm.on_submit((type: string) => {
+                console.log(type, fm.get_value())
+                pre.set_value({ type: type, value: fm.get_value() })
+            }).set_option(op)
+        }
+
+        return new Row().add_childs([
+            fm_init(new FormColumn()),
             new Column().add_childs([
-                fm,
+                fm_init(new FormRow()),
                 pre
             ])
         ])

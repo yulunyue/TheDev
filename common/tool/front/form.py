@@ -2,6 +2,14 @@ from .util import get_dom_type
 
 
 class Form:
+    def set_row(self):
+        self.form_type = "form_row"
+        return self
+
+    def set_column(self):
+        self.form_type = "form_column"
+        return self
+
     def __init__(self):
         self.body = []
 
@@ -10,4 +18,4 @@ class Form:
         return self
 
     def to_json(self):
-        return dict(type="form", childs=self.body)
+        return dict(type=self.form_type, childs=self.body)

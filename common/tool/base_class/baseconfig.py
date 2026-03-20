@@ -32,11 +32,15 @@ class ConfigBase:
             self.init_param()
         return self._params_cls_map
 
-    front_apis = ["to_form_view", "to_table_view"]
+    front_apis = ["to_form_row_view", "to_table_view"]
 
     @classmethod
-    def to_form_view(cls):
-        return Form().set_body(*cls.get_params().values())
+    def get_font_columns(cls):
+        return cls.get_params().values()
+
+    @classmethod
+    def to_form_row_view(cls):
+        return Form().set_row().set_body(*cls.get_font_columns())
 
     @classmethod
     def to_table_view(cls):

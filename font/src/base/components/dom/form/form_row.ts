@@ -2,11 +2,18 @@ import { Div } from "../div";
 import web from "../../../web/web_dom"
 import { not_null, Node } from "../../../web/cls"
 import Constant from "../../../web/constant"
-import { FormRow } from "./row";
-export class Form extends Div {
+import { FormContainer } from "./container";
+import { Button } from "./button";
+import F from "../../../tool/fun";
+export class FormRow extends Div {
     header: Div
     body: Div
     footer: Div
+    _submit_call_back: any
+    on_submit(call: any) {
+        this.event_hander[Constant.EVENT_SUBMIT] = call
+        return this
+    }
     init_style(): void {
         this.set_style({
             // textAlign: "center"
@@ -23,11 +30,20 @@ export class Form extends Div {
         ])
     }
     get_row() {
-        return new FormRow()
+        return new FormContainer()
     }
     render_option(): void {
         this.body.set_childs(this.option.childs, () => this.get_row())
-
+        this.render_footer()
+    }
+    render_footer() {
+        let btns = this.option.data.btns || { submit: "提交" }
+        this.footer.clear()
+        for (var key in btns) {
+            let btn = new Button().set_html(btns[key])
+            btn.on_click(F.register_call(this.event_hander[Constant.EVENT_SUBMIT], key))
+            this.footer.add_child(btn)
+        }
     }
     load_form_uri() {
         web.post(this.option.url + "/to_form_view", {}, (v: any) => {
@@ -37,7 +53,7 @@ export class Form extends Div {
     get_value() {
         let ret = {}
         for (var i = 0; i < this.option.childs.length; i++) {
-            let value = (this.body.childs[i] as FormRow).container.get_value()
+            let value = (this.body.childs[i] as FormContainer).container.get_value()
             if (value == undefined) {
                 value = null
             }

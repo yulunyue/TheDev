@@ -8,6 +8,10 @@ export class Button extends Div {
     init_node() {
 
     }
+    set_value(value: any): this {
+        this.set_html(value)
+        return this
+    }
     init_style(): void {
         this.set_style({
             outline: "none",
@@ -21,17 +25,6 @@ export class Buttons extends Div {
         this.clear().add_childs(this.option.childs.map(v => {
             return new Button().set_html(v.title)
         }))
-    }
-}
-export class Title extends Div {
-    title: Div
-    btns: Button[]
-    init_node(): void {
-        this.title = this.add_child(new Div()).set_size(1)
-    }
-    set_btns(btns: Button[]) {
-        this.add_childs(btns)
-        return this
     }
 }
 
