@@ -4,6 +4,7 @@ from .util import get_dom_type
 class Form:
     def set_row(self):
         self.form_type = "form_row"
+        self.btn_default = dict()
         return self
 
     def set_column(self):

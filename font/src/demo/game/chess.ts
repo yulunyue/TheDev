@@ -22,7 +22,7 @@ export class Chess extends Column {
         this.full().set_center()
         this.left.set_size(1)
         this.right.set_size(1)
-        this.chess_width = 300
+        this.chess_width = 400
         this.middle.set_width(this.chess_width)
         this.g.set_height(this.chess_width)
     }

@@ -38,8 +38,13 @@ export class Search extends Div {
         return this
     }
     emit_search() {
-        web_dom.post(this.option.url, {
-            key: this.input.get_value()
+        let url = this.option.url
+        if (!url) {
+            url = this.option.parent.url + "/search"
+        }
+        web_dom.post(url, {
+            key: this.input.get_value(),
+            name: this.option.key,
         }, (node: Node) => {
             this.listui.set_option(node)
             this.show_search_dialog()
@@ -49,7 +54,6 @@ export class Search extends Div {
 
     show_search_dialog() {
         // console.log(this.get_rect(), this.el)
-
         this.dialog.set_style({
             left: this.get_a_x(),
             top: this.get_a_y() + this.get_height(),

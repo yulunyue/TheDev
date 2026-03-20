@@ -7,6 +7,8 @@ from .base_class.base_model import (
     DictModel,
     ListModel,
     BoolModel,
+    SearchModel,
+    EncroyModel,
 )
 from .base_class.base_model.number_model import NumberModel
 from .base_class.date_model import DateModel

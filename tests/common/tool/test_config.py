@@ -15,23 +15,23 @@ from common.tool.export import (
 
 
 class Fg(FileConfig):
-    resource_path = "data/test_table.json"
     a = StrModel()
     b = NumberModel(1)
 
 
-Fg.init_param()
+Fg.set_resource("data/test_table.json")
 
 
 class TestConfig:
     def test_config(self):
+        f = Fg()
         assert_dict(
-            Fg.to_form_view(),
+            f.to_form_row_view(),
             {
-                "type": "form",
+                "type": "form_row",
                 "childs": [
-                    {"type": "str", "key": "a", "defaullt_value": ""},
-                    {"type": "number", "key": "b", "defaullt_value": 1},
+                    {"type": "input", "key": "a", "value": ""},
+                    {"type": "number", "key": "b", "value": 1},
                 ],
             },
         )
@@ -52,8 +52,8 @@ class TestConfig:
                 "type": "table",
                 "data": {
                     "header": [
-                        {"type": "str", "key": "a", "defaullt_value": ""},
-                        {"type": "number", "key": "b", "defaullt_value": 1},
+                        {"type": "input", "key": "a", "value": ""},
+                        {"type": "number", "key": "b", "value": 1},
                     ],
                     "body": [
                         {"_id": "dt0", "a": "", "b": 3},

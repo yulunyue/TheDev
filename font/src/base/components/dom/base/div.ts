@@ -221,12 +221,15 @@ export class Div {
         this.parent = p
         return this
     }
+    parse_child_option(o: Node) {  //原地修改子类的option
+
+    }
     set_childs(childs: any, cls: any) {
         let idx = 0
         while (idx < childs.length) {
-            let c = this.childs[idx]
-            if (c) {
-                c.set_option(childs[idx]).show()
+            this.parse_child_option(childs[idx])
+            if (this.childs[idx]) {
+                this.childs[idx].set_option(childs[idx]).show()
             } else {
                 this.add_child(cls().set_option(childs[idx]))
             }

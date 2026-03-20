@@ -12,7 +12,6 @@ export class FileInput extends Column {
         this.inp = new Input().set_attr("type", "file")
         this.btn = new Button().set_html("upload")
         this.add_childs([this.inp, this.btn])
-        console.log("xx")
     }
     init_event(): void {
         this.inp.el.onchange = ((v: any) => {

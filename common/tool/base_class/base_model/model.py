@@ -36,18 +36,22 @@ class BaseModel:
         return self
 
     def get_value(self) -> str:
+        value = None
         if self.data_source is not None:
-            return self.data_source.get_param_value(self)
-        return self.default_value
+            value = self.data_source.get_param_value(self)
+        if value is None:
+            value = self.default_value
+        return value
 
     def set_value(self, value):
         return self.data_source.update_param_value(self, value)
 
     def to_json(self):
+        v = self.get_value()
         return dict(
             type=self.get_type(),
             key=self.key,
-            defaullt_value=self.default_value,
+            value=self.default_value,
         )
 
     def __gt__(self, value):

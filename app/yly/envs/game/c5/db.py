@@ -1,8 +1,15 @@
-from common.tool.export import ConfigBase, StrModel, NumberModel, ListModel, FileConfig
+from common.tool.export import (
+    ConfigBase,
+    StrModel,
+    NumberModel,
+    ListModel,
+    FileConfig,
+    SearchModel,
+)
 
 
 class Bd(FileConfig):
-    name = StrModel()
+    name = SearchModel()
     size = NumberModel()
     records = ListModel()
 

@@ -45,8 +45,11 @@ export class FormRow extends Div {
             this.footer.add_child(btn)
         }
     }
+    get_form_view_url() {
+        return "/to_form_row_view"
+    }
     load_form_uri() {
-        web.post(this.option.url + "/to_form_view", {}, (v: any) => {
+        web.post(this.option.url + this.get_form_view_url(), {}, (v: any) => {
             this.set_option(v)
         })
     }

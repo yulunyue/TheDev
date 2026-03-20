@@ -37,7 +37,7 @@ class FileConfig(FrontExtern):
         cls.idx += 1
         if idx is None:
             idx = self.idx
-        cls.instance_map[idx] = cls(idx)
+        cls.instance_map[idx] = cls().load(idx)
         return cls.instance_map[idx]
 
     @classmethod

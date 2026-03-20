@@ -22,19 +22,23 @@ let DEV_FUNC = {
             ]
         }
         let pre = new Pre().set_html("pre")
-        function fm_init(fm: FormRow) {
-            return fm.on_submit((type: string) => {
+        function fm_init(fm: FormRow, ops: Node) {
+            fm.on_submit((type: string) => {
                 console.log(type, fm.get_value())
                 pre.set_value({ type: type, value: fm.get_value() })
-            }).set_option(op)
+            })
+            ops && fm.set_option(ops)
+            return fm
         }
 
         return new Row().add_childs([
-            fm_init(new FormColumn()),
+            fm_init(new FormColumn(), op),
             new Column().add_childs([
-                fm_init(new FormRow()),
-                pre
-            ])
+                fm_init(new FormRow(), op),
+                pre.set_size(1),
+                fm_init(new FormRow().set_uri("/app/user"), null)
+            ]),
+
         ])
     }
 }
