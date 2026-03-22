@@ -14,8 +14,8 @@ export class Div {
     size: number = 0
     _value: any = null
     event_hander: any
-    do_change(src?: any, dst?: any) {
-        this.event_hander[Constant.EVENT_CHANGE]?.(src, dst)
+    do_change(key: string, src?: any, dst?: any) {
+        this.event_hander[Constant.EVENT_CHANGE]?.(key, src, dst)
         return this
     }
     on_change(call: any) {
@@ -285,9 +285,6 @@ export class Div {
         return this
     }
     set_html(text: string | Fn1<any, string>) {
-        if (text == null || text == undefined) {
-            return this
-        }
         if (typeof text == 'function') {
             text(this.el)
             return this
@@ -301,14 +298,15 @@ export class Div {
         })
         return this
     }
-    set_value(value: any) {
+    set_data(value: any) {
         // console.log(this.option.id, this.option.local_storge_enable, value)
         if (this.option.id && this.option.local_storge_enable) {
             web_dom.set_local(this.option.id, value.dump())
         }
-        this.do_select(value)
         return this
     }
-
+    set_value(value: any) {
+        return this
+    }
 
 }

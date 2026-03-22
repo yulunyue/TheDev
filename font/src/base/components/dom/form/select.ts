@@ -36,7 +36,7 @@ export class Select extends Div {
     }
     init_event(): void {
         web.bind_change(this.el, () => {
-            this.do_change()
+            // this.do_change()
         })
     }
 
@@ -48,7 +48,7 @@ export class Select extends Div {
             let so = this.childs[i]
             if (so.option.key == key) {
                 so.do_select(true)
-                this.do_change()
+                // this.do_change()
             } else {
                 so.do_select(false)
             }

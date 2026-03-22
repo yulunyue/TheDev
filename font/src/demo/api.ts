@@ -44,7 +44,7 @@ export class Api extends Column {
         this.input.on_submit(() => this.execute())
     }
     execute() {
-        let info = this.uri.get_value()
+        let info = this.uri.option.data
         web_dom.post(info.key, this.input.get_value(), (v: Node) => {
             v.type = v.type || Constant.DOM_TYPE_PRE
             this.result.set_option(v)

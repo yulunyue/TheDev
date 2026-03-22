@@ -77,7 +77,6 @@ export class Progress extends Column {
     }
     set_max_value(value: number) {
         this.max_value.set_value(value, this.width)
-        this.do_change()
         return this
     }
     get_value() {

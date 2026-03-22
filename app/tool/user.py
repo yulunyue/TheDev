@@ -13,5 +13,11 @@ class User(FileConfig):
     visite_num = NumberModel(default_value=0)
     password = EncroyModel()
 
+    @classmethod
+    def get_id(self, name, **kw):
+        if not name:
+            return "default"
+        return name
+
 
 User.set_resource("config/setting/user.json")

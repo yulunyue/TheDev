@@ -23,9 +23,11 @@ let DEV_FUNC = {
         }
         let pre = new Pre().set_html("pre")
         function fm_init(fm: FormRow, ops: Node) {
-            fm.on_submit((type: string) => {
-                console.log(type, fm.get_value())
-                pre.set_value({ type: type, value: fm.get_value() })
+            fm.on_submit((type: string, value: any) => {
+                pre.set_value({ type: type, value: fm.get_value(), d: value })
+            })
+            fm.on_change((key: string, value: any, data: any) => {
+                pre.set_value({ key: key, value: value, data: data })
             })
             ops && fm.set_option(ops)
             return fm
