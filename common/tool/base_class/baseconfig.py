@@ -32,7 +32,7 @@ class ConfigBase:
 
     @classmethod
     def get_id(self, **kw):
-        return hash_any_str(kw)
+        raise NotImplementedError
 
     @classmethod
     def get_params(self):

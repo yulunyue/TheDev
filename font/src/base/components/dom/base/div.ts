@@ -23,6 +23,10 @@ export class Div {
         this.event_hander[Constant.EVENT_CHANGE] = call
         return this
     }
+    on_move(call: any) {
+        this.event_hander[Constant.EVENT_MOVE] = call
+        return this
+    }
     on_click(call_back: any) {
         web_dom.bind_click(this.el, call_back)
         return this

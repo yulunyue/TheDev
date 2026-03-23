@@ -27,8 +27,7 @@ export class Chess extends Column {
         this.g.set_height(this.chess_width)
     }
     init_node(): void {
-        this.g = new Grid().set_option({
-        })
+        this.g = new Grid()
         this.top_form = new FormColumn()
         this.pro = new Progress()
         this.left = new Div()
@@ -44,8 +43,14 @@ export class Chess extends Column {
             this.right
         ])
     }
+    init_event(): void {
+        this.top_form.on_submit(this.hander_sub.bind(this))
+    }
+    hander_sub(key: string, op: any) {
+        console.log(key, op)
+    }
     render(): void {
-        this.top_form.set_uri("/game/chess/bd")
+        this.top_form.set_uri("/game/chess/bd").set_id("game_chess")
     }
 
 }

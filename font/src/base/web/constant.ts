@@ -14,6 +14,7 @@ class Constant {
     VERTICAL = 1
 
     COLOR_WHITE = '#fff'
+    COLOR_WHITE1 = '#eee'
     COLOR_YELLOW = '#ff0'
     COLOR_BALCK = '#000'
     COLOR_BLUE = '#00f'
@@ -43,7 +44,9 @@ class Constant {
 
     EVENT_CHANGE = "event_change"
     EVENT_SUBMIT = "event_submit"
-
+    EVENT_MOVE = "event_move"
+    EVENT_CLICK = "event_click"
+    DOM_TYPE_SELECT = "select"
     DOM_TYPE_INPUT = "input"
     DOM_TYPE_STRING = "str"
     DOM_TYPE_MERA_GRAPH = "graph"

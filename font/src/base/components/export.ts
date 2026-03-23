@@ -47,6 +47,7 @@ DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new Column())
 DivFactory.register(Ct.DOM_TYPE_BUTTON, () => new Button())
 DivFactory.register(Ct.DOM_TYPE_FORM_COLUMN, () => new FormColumn())
 DivFactory.register(Ct.DOM_TYPE_FORM_ROW, () => new FormRow())
+DivFactory.register(Ct.DOM_TYPE_SELECT, () => new Select())
 export {
     Select, Pre, TextArea, Util, web_socket, Data, Button,
     Div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,

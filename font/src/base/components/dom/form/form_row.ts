@@ -54,10 +54,10 @@ export class FormRow extends Div {
                 type: type,
                 value: this.get_value()
             }, (data: Node) => {
-                this.event_hander[Constant.EVENT_SUBMIT](type, data.value)
+                this.event_hander[Constant.EVENT_SUBMIT]?.(type, data.value)
             })
         } else {
-            this.event_hander[Constant.EVENT_SUBMIT](type, this.get_value())
+            this.event_hander[Constant.EVENT_SUBMIT]?.(type, this.get_value())
         }
     }
     get_form_view_url() {
@@ -89,7 +89,7 @@ export class FormRow extends Div {
     }
     set_value(value: any): this {
         for (var key in value) {
-            console.log(key, value, value[key], this.child_map[key])
+            // console.log(key, value, value[key], this.child_map[key])
             this.child_map[key]?.set_value(value[key])
         }
         return this
