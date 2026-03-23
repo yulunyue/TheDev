@@ -25,20 +25,25 @@ export class Search extends Div {
         this.input.on_click(() => this.emit_search())
         // this.input.on_input(() => this.emit_search())
         this.input.on_input(() => this.listui.filter(this.input.get_value()))
-        this.listui.on_select((src: any) => {
-            this.set_data(src)
-            this.do_select(src)
+        this.listui.on_change((key: string, src: any, dst: Node) => {
+            this.set_data(dst)
+            this.do_change(this.option.key, null, dst.value)
         })
     }
     set_title(s: string) {
         this.input.set_placeholder(s)
         return this
     }
-    set_data(value: Node): this {
-        this.option.data = value
-        this.input.set_value(value.get_title())
+    set_data(v: Node): this {
+        this.option.data = v.value
+        this.input.set_value(v.title)
         this.dialog.hide()
-        return super.set_data(value)
+        return super.set_data({ title: v.title, value: v.value })
+    }
+    set_value(v: Node): this {
+        this.input.set_value(v.title)
+        this.do_change(this.option.key, null, v.value)
+        return this
     }
     get_value() {
         return this.input.get_value()

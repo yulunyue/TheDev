@@ -12,12 +12,11 @@ export class Api extends Column {
     left_main: Div
     init_node(): void {
         this.input = new FormRow()
-        this.uri = new Search().set_option(to_node({
+        this.uri = new Search().set_option({
             url: "/app/api/query_all_apis",
-            id: URIKEYID,
             title: "APIKEY",
             local_storge_enable: true
-        }))
+        })
         this.result = new Container()
         this.left_main = new Div().add_childs([
             this.uri,
@@ -36,12 +35,12 @@ export class Api extends Column {
         super.init_style()
     }
     init_event(): void {
-        this.uri.on_change((src: Node, dst: Node) => {
+        this.uri.on_change((key: string, src: Node, dst: Node) => {
             web_dom.post("/app/api/get_api_call_info", { key: dst.key }, (d) => {
                 this.input.set_option(d)
             })
         })
-        this.input.on_submit(() => this.execute())
+        this.input.on_submit(this.execute.bind(this))
     }
     execute() {
         let info = this.uri.option.data
@@ -50,9 +49,8 @@ export class Api extends Column {
             this.result.set_option(v)
         })
     }
-    on_mount(): void {
-
-
+    render(): void {
+        this.uri.set_id(URIKEYID)
     }
 
 }

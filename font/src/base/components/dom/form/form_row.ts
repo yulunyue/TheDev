@@ -30,11 +30,13 @@ export class FormRow extends Div {
             this.footer
         ])
     }
-    get_row() {
-        return new FormContainer().on_change(this.do_change)
+    get_row(o: Node) {
+        let r = new FormContainer().set_option(o).on_change(this.do_change)
+        this.child_map[o.key] = r
+        return r
     }
     render_option(): void {
-        this.body.set_childs(this.option.childs, () => this.get_row())
+        this.body.set_childs(this.option.childs, (o: Node) => this.get_row(o))
         this.render_footer()
     }
     render_footer() {
@@ -47,12 +49,16 @@ export class FormRow extends Div {
         }
     }
     submit_hander(type: string) {
-        web.post(this.option.url + "/web_submit", {
-            type: type,
-            value: this.get_value()
-        }, (data: Node) => {
-            this.event_hander[Constant.EVENT_SUBMIT](type, data.value)
-        })
+        if (this.option.url) {
+            web.post(this.option.url + "/web_submit", {
+                type: type,
+                value: this.get_value()
+            }, (data: Node) => {
+                this.event_hander[Constant.EVENT_SUBMIT](type, data.value)
+            })
+        } else {
+            this.event_hander[Constant.EVENT_SUBMIT](type, this.get_value())
+        }
     }
     get_form_view_url() {
         return "/to_form_row_view"
@@ -79,6 +85,13 @@ export class FormRow extends Div {
     set_uri(s: string): this {
         this.option.url = s
         this.load_form_uri()
+        return this
+    }
+    set_value(value: any): this {
+        for (var key in value) {
+            console.log(key, value, value[key], this.child_map[key])
+            this.child_map[key]?.set_value(value[key])
+        }
         return this
     }
 

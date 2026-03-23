@@ -51,7 +51,9 @@ export class Input extends Div {
     }
     on_change(call: any): this {
         // this.el.onchange = call
-        this.el.oninput = call
+        this.el.oninput = (e: any) => {
+            call(this.option.key, e.data, this.el.value)
+        }
         return this
     }
 

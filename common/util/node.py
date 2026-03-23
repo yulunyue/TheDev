@@ -5,6 +5,8 @@ from .tool import uid
 
 
 class Node:
+    type = ""
+
     def __init__(
         self,
         code=0,
@@ -17,7 +19,8 @@ class Node:
         childs=None,
     ) -> None:
         self.code = code
-        self.type = type
+        if type:
+            self.type = type
         self.key = key or uid("node")
         self.title = title
         self.value = value
@@ -80,9 +83,13 @@ class Node:
         ret.parent = self
         return ret
 
+    @classmethod
+    def get_dom_type(cls, v):
+        return v
+
     def add_node(self, *args):
         for n in args:
-            self.childs.append(n)
+            self.childs.append(self.__class__.get_dom_type(n))
         return self
 
     def to_json(self, **kw):
@@ -91,7 +98,7 @@ class Node:
             key=self.key,
             title=self.get_title(),
             value=self.value,
-            childs=[c.to_json() for c in self.get_childs()],
+            childs=self.childs,
             data=self.get_data(),
         )
         ret.update(kw)

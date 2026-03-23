@@ -28,7 +28,7 @@ export class Label extends Div {
     on_click(call_back: any) {
         web.bind_mouseenter(this.el, () => {
             this.set_style({
-                backgroundColor: "green"
+                backgroundColor: "#888"
             })
         })
         web.bind_mouseleave(this.el, () => {

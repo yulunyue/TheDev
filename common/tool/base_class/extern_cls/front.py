@@ -25,8 +25,7 @@ class FrontExtern(ConfigBase):
     @classmethod
     def web_submit(cls, type, value: dict, **kw):
         s = cls.insert(**value)
-        if type == C.METHOD_INSERT_UPDATE:
-            s.save()
+        s.save()
         return Node(value=s)
 
     @classmethod

@@ -1,6 +1,9 @@
-def get_dom_type(v, key=None, size=1):
-    if isinstance(v, dict):
-        return v
-    elif hasattr(v, "to_json"):
-        return v.to_json()
-    return dict(key=v, value=v, type="str", size=size)
+from common.util.export import Node
+
+
+class FontBase(Node):
+    @classmethod
+    def get_dom_type(cls, v, key=None, size=1):
+        if isinstance(v, dict) or hasattr(v, "to_json"):
+            return v
+        return dict(key=v, value=v, title=v, type="str", size=size)

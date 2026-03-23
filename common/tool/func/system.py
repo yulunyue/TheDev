@@ -8,7 +8,6 @@ def find_port(result: str, port):
     for line in result.split("\n"):
         if re.search(pattern, line):
             ret = line.strip().split(" ")
-            logger.info(ret)
             return ret
 
     return [""]
@@ -18,7 +17,7 @@ class System:
     @classmethod
     def get_pid_by_port_windows(cls, port):
         statu, result, stderror = OsUtil("netstat").run("-ano")
-        return find_port(result, port)
+        return find_port(result, port)[0]
 
     @classmethod
     def get_pid_by_port_linux(cls, port):

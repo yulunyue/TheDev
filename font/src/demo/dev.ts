@@ -27,6 +27,9 @@ let DEV_FUNC = {
                 pre.set_value({ type: type, value: fm.get_value(), d: value })
             })
             fm.on_change((key: string, value: any, data: any) => {
+                if (typeof data == "object") {
+                    fm.set_value(data)
+                }
                 pre.set_value({ key: key, value: value, data: data })
             })
             ops && fm.set_option(ops)

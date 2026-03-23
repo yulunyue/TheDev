@@ -1,8 +1,8 @@
 from common.util.export import Node, List, Dict, Any
-from .util import get_dom_type
+from .util import FontBase
 
 
-class FrontTable(Node):
+class FrontTable(FontBase):
     def init(self):
         self.header: List[Dict] = []
         self.body: List[Dict] = []
@@ -10,7 +10,7 @@ class FrontTable(Node):
     def set_header(self, *header):
         self.header = []
         for h in header:
-            self.header.append(get_dom_type(h))
+            self.header.append(FontBase.get_dom_type(h))
         return self
 
     def set_body(self, body: list):

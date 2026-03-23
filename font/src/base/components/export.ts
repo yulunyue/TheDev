@@ -34,7 +34,7 @@ import { Chart } from "./svg/comb/chart"
 import { Axies } from "./svg/comb/axies"
 
 DivFactory.register(Ct.DOM_TYPE_INPUT, () => new Input())
-DivFactory.register(Ct.DOM_TYPE_STRING, () => new Title())
+DivFactory.register(Ct.DOM_TYPE_STRING, () => new Input())
 DivFactory.register(Ct.DOM_TYPE_NUMBER, () => new Input())
 DivFactory.register(Ct.DOM_TYPE_PRE, () => new Pre())
 DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())

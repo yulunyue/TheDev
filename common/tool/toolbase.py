@@ -66,11 +66,12 @@ class ToolBase:
 
     def cli(self, do_cmd):
         fi, fo = self.get_temp_file("inp.txt"), self.get_temp_file("out.txt")
+        logger.map(fi=fi, fo=fo)
         fi.write_if_not_exists("")
         last_cmd = []
         out_put_msgs = dict()
         while True:
-            time.sleep(1)
+            time.sleep(0.5)
             cmd = [
                 v
                 for v in fi.read_fast_file().split("\n")
