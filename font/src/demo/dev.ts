@@ -138,21 +138,19 @@ let DEV_FUNC = {
     },
     sys() {
         let d = new Div()
+        let d1 = new Div().set_html("xx")
         let size = web_dom.get_window_size()
         d.set_html(`width:${size.width};height:${size.height}`)
-        Data.get_user_name()
+        Data.get_user_name((s: string) => {
+            d1.set_html(s)
+        })
         return new Div().add_childs([
-            d,
+            d, d1
         ])
     }
 }
 export class Dev extends Div {
     svg: Svg
-    test_open_edit_dialog() {
-        dialog.open_form({ a: "input" }, (v: any) => {
-            console.log(v)
-        })
-    }
 
     test_graph() {
         let node = to_node({
