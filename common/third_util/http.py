@@ -4,22 +4,22 @@ from tornado.httputil import HTTPServerRequest
 from tornado.web import Application, RequestHandler
 from tornado.websocket import WebSocketHandler
 from tornado.ioloop import PeriodicCallback, IOLoop
-import _thread
-import json
-import signal
-import sys
-import json
-import os
+
 
 from common.util.export import (
     File,
     get_log,
+    _thread,
+    json,
     uid,
     Module,
     get_function_info,
     File,
     ApiCall,
     Node,
+    signal,
+    sys,
+    C,
 )
 
 
@@ -39,29 +39,22 @@ HTML_CONTENT_TYPE = dict(
 
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
-    user_name = ""
+    hander_msg = None
 
     def open(self, *args: str, **kwargs: str):
         logger.info(f"WebSocket opened {self}")
         return super().open(*args, **kwargs)
 
-    def hander_msg(self, node: Node):
-        if node.type == "login":
-            self.user_name = node.data["user_name"]
-            WEB_SOCKET_CLIENTS[self.user_name] = self
-            node.title = f"welcom {self.user_name}"
-            return node
-
     def on_message(self, message):
-        oj = json.loads(message)
-        res = self.hander_msg(Node(type=oj["type"], data=oj["data"]))
+        msg = Node(**json.loads(message))
+        if TornadaWebSocketConnectHandler.hander_msg:
+            TornadaWebSocketConnectHandler.hander_msg(msg)
+
         if res:
             self.write_message(res.to_json())
 
     def on_close(self):
         logger.info(f"WebSocket closed {self}")
-        if self.user_name in WEB_SOCKET_CLIENTS:
-            WEB_SOCKET_CLIENTS.pop(self.user_name)
 
     def check_origin(self, origin):
         return True

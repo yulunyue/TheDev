@@ -50,15 +50,17 @@ export class Chess extends Column {
             this.pre
         ])
         this.middle = new Div().add_childs([
-            this.top_form,
             this.g,
             this.pro,
         ])
         this.add_childs([
             new Div().set_size(1),
-            new Column().add_childs([
-                this.middle,
-                this.right,
+            new Row().add_childs([
+                this.top_form,
+                new Column().add_childs([
+                    this.middle,
+                    this.right
+                ])
             ]),
             new Div().set_size(1)
         ])
