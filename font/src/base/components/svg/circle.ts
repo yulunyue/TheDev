@@ -32,7 +32,6 @@ export class Circle extends GNode {
         return parseFloat(this.get_attr("cy"))
     }
     render_option(): void {
-        console.warn(this.option)
         this.set_x(this.option.x).set_y(this.option.y).set_r(this.option.value)
     }
 }

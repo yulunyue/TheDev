@@ -1,6 +1,6 @@
 
 import {
-    Div, Svg, svg, Constant, Node, web_dom, tree, dialog, Row, to_node, Select, Pre,
+    Div, Svg, Constant, Node, web_dom, tree, dialog, Row, to_node, Select, Pre,
     GNode, Button, Input, Progress, DivFactory, Search, Container,
     TextArea,
     Column,

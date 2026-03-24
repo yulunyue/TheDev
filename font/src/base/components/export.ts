@@ -3,7 +3,7 @@ import { TextArea } from "./dom/form/text_area"
 import { TextAreaRich } from "./dom/form/text_area_rich"
 import { FileInput } from "./dom/form/file"
 import { Search } from "./dom/form/search"
-import { SvgNode, svg } from "./svg/svg"
+import { SvgNode } from "./svg/svg"
 import { Button } from "./dom/form/button"
 import { Div, DivFactory, Container } from "./dom/div"
 import { Row } from "./dom/base/row"
@@ -23,6 +23,7 @@ import { Line } from "./svg/line"
 import { FormRow } from "./dom/form/form_row"
 import { FormColumn } from "./dom/form/from_column"
 import { Select } from "./dom/form/select";
+
 import Mock from "../../model/mock"
 import Util from "../tool/util"
 import Data from "../tool/data"
@@ -50,7 +51,7 @@ DivFactory.register(Ct.DOM_TYPE_FORM_ROW, () => new FormRow())
 DivFactory.register(Ct.DOM_TYPE_SELECT, () => new Select())
 export {
     Select, Pre, TextArea, Util, web_socket, Data, Button,
-    Div, SvgNode as Svg, svg, Progress, Input, web_dom, dialog, DivFactory,
+    Div, SvgNode as Svg, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, tree, node, FormRow, FormColumn,
     to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich,
     Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column

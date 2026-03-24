@@ -29,7 +29,3 @@ export class SvgNode extends Div {
     }
 
 }
-export function svg() {
-    return new SvgNode()
-}
-

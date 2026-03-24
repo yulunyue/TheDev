@@ -48,50 +48,11 @@ export class GNode extends Div {
     set_pos(y: number, x: number): this {
         return this.set_x(x).set_y(y)
     }
-    get_attr(key: string) {
-        return this.el.getAttribute(key)
-    }
-
     set_width(w: number) {
         return this.set_attr("width", w)
     }
     set_height(w: number) {
         return this.set_attr("height", w)
-    }
-    set_style(style: Style) {
-        web_dom.set_el_style(this.el, style)
-        return this
-    }
-    mount(el: any) {
-        el.appendChild(this.el)
-        return this
-    }
-    set_parent(p: any) {
-        this.parent = p
-        return this
-    }
-    add_child(c: any) {
-        c.mount(this.el)
-        c.set_parent(this)
-        c.index = this.childs.length
-        this.childs.push(c)
-        return c
-    }
-
-    get_width() {
-        return this.el.clientWidth
-    }
-    get_height() {
-        return this.el.clientHeight
-    }
-    add_childs(childs: any[]) {
-        for (var i = 0; i < childs.length; i++) {
-            this.add_child(childs[i])
-        }
-        return this
-    }
-    clear() {
-        return this.set_html("")
     }
     update_pos() {
         return this.set_style({ transform: `translate(${Math.floor(this.x)}px, ${Math.floor(this.y)}px)` })
@@ -133,20 +94,4 @@ export class GNode extends Div {
     get_y() {
         return this.y
     }
-    set_option(option: Node): this {
-        this.option.set_option(option)
-        this.render_option()
-        return this
-    }
-    render_option() {
-
-    }
-    on_mount() {
-
-    }
-    emit_mount() {
-        this.on_mount()
-        return this
-    }
-
 }

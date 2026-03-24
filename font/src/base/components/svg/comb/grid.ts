@@ -5,11 +5,9 @@ import { SvgNode } from "../svg";
 import { Circle } from "../circle";
 import { Rect, Polygon } from "../rect";
 import web_dom from "../../../web/web_dom";
-import { Constant } from "../../export";
+import { Constant, DivFactory } from "../../export";
+import { GComponent } from "../container";
 import { Dom } from "../../../web/cls";
-const NODE_GEN = {
-
-}
 export class Grid extends SvgNode {
     g: GNode
     bg: Rect
@@ -17,14 +15,24 @@ export class Grid extends SvgNode {
     left: number
     cell_width: number
     cell_height: number
+    calc_e(e: any, f: any) {
+        let x = Math.floor((e.offsetX - this.left) / this.cell_width)
+        let y = Math.floor((e.offsetY - this.top) / this.cell_height)
+        if (x < 0 || y < 0 || x >= this.option.data.x || y >= this.option.data.y) {
+            return
+        }
+        f?.(e.offsetY, e.offsetX, y, x)
+    }
+    on_click(f: any) {
+        this.event_hander[Constant.EVENT_CLICK] = f
+        return this
+    }
     init_event(): void {
         web_dom.bind_mousemove(this.el, (e: any) => {
-            let x = Math.floor((e.offsetX - this.left) / this.cell_width)
-            let y = Math.floor((e.offsetY - this.top) / this.cell_height)
-            if (x < 0 || y < 0 || x >= this.option.data.x || y >= this.option.data.y) {
-                return
-            }
-            this.event_hander[Constant.EVENT_MOVE]?.(e.offsetY, e.offsetX, y, x)
+            this.calc_e(e, this.event_hander[Constant.EVENT_MOVE])
+        })
+        web_dom.bind_mouseup(this.el, (e: any) => {
+            this.calc_e(e, this.event_hander[Constant.EVENT_CLICK])
         })
     }
     init_node(): void {
@@ -41,15 +49,19 @@ export class Grid extends SvgNode {
             this.option.data.height
         )
     }
-    draw_child() {
-        // for (var i = 0; i < this.option.childs.length; i += 1) {
-        //     let op = this.option.childs[i]
-        //     let fun = NODE_GEN[op.type] || Text
-        //     let el: Text = new fun().set_option(op)
-        //     el.set_width(this.cell_width).set_height(this.cell_height)
-        //     el.set_x(op.x * this.cell_width).set_y(op.y * this.cell_height)
-        //     this.g.add_child(el)
-        // }
+    draw_child(o: Node) {
+
+    }
+    draw_childs() {
+        for (var i = 0; i < this.option.childs.length; i += 1) {
+            let op = this.option.childs[i]
+
+            // let fun = NODE_GEN[op.type] || Text
+            // let el: Text = new fun().set_option(op)
+            // el.set_width(this.cell_width).set_height(this.cell_height)
+            // el.set_x(op.x * this.cell_width).set_y(op.y * this.cell_height)
+            // this.g.add_child(el)
+        }
     }
     init_data() {
         let rect = this.get_rect()
@@ -59,8 +71,6 @@ export class Grid extends SvgNode {
         this.cell_height = this.option.data.width / (this.option.data.x + 1)
         this.top = this.cell_height / 2
         this.left = this.cell_width / 2
-        console.log(this.option.data)
-
     }
     draw_lines() {
 
@@ -86,7 +96,7 @@ export class Grid extends SvgNode {
         this.g.clear()
         this.draw_background()
         this.draw_lines()
-        // this.draw_child()
+        this.draw_childs()
     }
 
     render_option(): void {
