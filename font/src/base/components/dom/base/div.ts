@@ -270,6 +270,9 @@ export class Div {
         if (this.option.size) {
             this.set_size(this.option.size)
         }
+        if (this.option.color) {
+            this.set_color(this.option.color)
+        }
         this.render_option()
         return this
     }

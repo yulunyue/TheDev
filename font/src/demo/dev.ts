@@ -99,6 +99,7 @@ let DEV_FUNC = {
         })
         return table
     },
+    default_color: Constant.COLOR_BALCK2,
     grid() {
         let p1 = new Pre().set_html("p1")
         let p2 = new Pre().set_html("p2")
@@ -107,13 +108,22 @@ let DEV_FUNC = {
             height: 300,
             margin: 40
         }).set_option({
-            data: {
-                x: 6, y: 6
-            }
+            x: 6, y: 6,
+            childs: [{
+                x: 0, y: 0, type: Constant.SVG_TYPE_CIRCLE, color: Constant.COLOR_WHITE2,
+            }, {
+                x: 0, y: 1, type: Constant.SVG_TYPE_CIRCLE, color: Constant.COLOR_BALCK2,
+            }]
         }).on_move((y: number, x: number, i: number, j: number) => {
             p1.set_value({ x, y, i, j })
-        }).on_click((y: number, x: number, i: number, j: number) => {
+        })
+        g.on_click((y: number, x: number, i: number, j: number) => {
             p2.set_value({ x, y, i, j })
+            g.draw_child({
+                y: i, x: j, type: Constant.SVG_TYPE_CIRCLE,
+                color: DEV_FUNC.default_color
+            })
+            DEV_FUNC.default_color = DEV_FUNC.default_color == Constant.COLOR_BALCK2 ? Constant.COLOR_WHITE2 : Constant.COLOR_BALCK2
         })
         return new Column().add_childs([
             g,

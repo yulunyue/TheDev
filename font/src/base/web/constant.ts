@@ -15,8 +15,10 @@ class Constant {
 
     COLOR_WHITE = '#fff'
     COLOR_WHITE1 = '#eee'
+    COLOR_WHITE2 = '#ccc'
     COLOR_YELLOW = '#ff0'
     COLOR_BALCK = '#000'
+    COLOR_BALCK2 = '#222'
     COLOR_BLUE = '#00f'
     COLOR_GRAY = '#888'
     COLOR_TANS = 'transparent'
