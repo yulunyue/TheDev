@@ -1,4 +1,4 @@
-import data from "src/base/tool/data";
+
 import {
     Div, Search, Button, TextAreaRich,
     Table, Util, dialog,
@@ -10,9 +10,12 @@ import {
     FileInput,
     FormColumn, FormRow,
     Constant,
-    Pre
+    Pre,
+    Data,
+
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
+
 let DEV_FUNC = {
     form() {
         let op = {
@@ -132,18 +135,19 @@ let DEV_FUNC = {
                 p2
             ])
         ])
+    },
+    sys() {
+        let d = new Div()
+        let size = web_dom.get_window_size()
+        d.set_html(`width:${size.width};height:${size.height}`)
+        Data.get_user_name()
+        return new Div().add_childs([
+            d,
+        ])
     }
 }
 export class Dev extends Div {
     svg: Svg
-
-
-    get_window_info() {
-        let d = new Div()
-        let size = web_dom.get_window_size()
-        d.set_html(`width:${size.width};height:${size.height}`)
-        return d
-    }
     test_open_edit_dialog() {
         dialog.open_form({ a: "input" }, (v: any) => {
             console.log(v)
