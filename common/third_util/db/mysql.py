@@ -21,7 +21,6 @@ class MysqlBackend:
 
     def get_conn(self):
         if self._conn is None:
-
             self._conn = pymysql.connect(
                 host=self.ip,
                 port=int(self.port),
