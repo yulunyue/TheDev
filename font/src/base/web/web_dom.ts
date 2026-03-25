@@ -44,6 +44,9 @@ class WebDom {
         }
         return ret
     }
+    get_loacl_str(key: string) {
+        return localStorage.getItem("yly_" + key)
+    }
     get_param(key: string, defult_value?: any) {
         if (!(key in this.url_param)) {
             return defult_value

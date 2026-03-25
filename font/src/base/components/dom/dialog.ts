@@ -2,68 +2,50 @@ import { Div } from "./div";
 import web_dom from "../../web/web_dom"
 
 import { Node } from "../../web/cls";
-export class Dialog extends Div {
-    container: Div
+import { Row, Container } from "../export";
+
+export class Dialog extends Row {
     header: Div
     main: Div
     init_node() {
-        web_dom.get_body().appendChild(this.el)
-        this.main = this.add_child(new Div())
         this.header = this.add_child(new Div())
-        this.container = this.main.add_child(new Div())
+        this.main = this.add_child(new Div())
     }
-
     init_style(): void {
         this.set_style_ab_full().set_style({
             zIndex: "100",
-            backgroundColor: "#8888"
-
+            backgroundColor: "#8888",
+            left: 0,
+            top: 0,
         })
         this.main.set_style_center_by_position().set_style({
             backgroundColor: "#fff",
         })
-        this.hide()
-    }
-    init_event(): void {
 
     }
-    open_form(oj: any, call: any) {
-        // let rows = []
-        // for (var key in oj) {
-        //     rows.push(
-        //         row1().set_option(new Node().set_type(
-        //             oj[key]
-        //         ).set_title(
-        //             key
-        //         ).set_key(key))
-        //     )
-        // }
-        // return this.open(form().set_rows(rows).ok(call))
+    init_event(): void {
+        this.on_click(this.hide.bind(this))
+        this.main.on_click(() => { })
     }
-    open(c: any) {
-        this.container.clear().add_child(c)
-        c._dialog = this
+    open(o: Div) {
+        this.main.clear().add_child(o)
         this.show()
-        web_dom.bind_click(this.el, () => {
-            this.hide()
-        })
-        web_dom.bind_click(this.container.el, () => {
-        })
         return this
+    }
+    render(): void {
+        console.log("xx")
+        this.hide()
     }
 }
 class Dig {
     dig: Dialog
     get_dialog() {
         if (!this.dig) {
-            this.dig = new Dialog()
+            this.dig = new Dialog().mount(web_dom.get_body())
         }
         return this.dig
     }
-    open_form(oj: any, call: any) {
-        return this.get_dialog().open_form(oj, call)
-    }
-    open(c: any) {
+    open(c: Div) {
         return this.get_dialog().open(c)
     }
     open_loading() {

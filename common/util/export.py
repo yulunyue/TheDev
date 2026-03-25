@@ -73,6 +73,7 @@ import sys
 import hashlib
 import time
 import _thread
+import signal
 from abc import ABC, abstractmethod
 
 inf = float("inf")

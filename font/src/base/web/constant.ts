@@ -68,5 +68,7 @@ class Constant {
     DOM_TYPE_COLUMN = "column"
     DOM_TYPE_BUTTON = "button"
 
+    username = "username"
+
 }
 export default new Constant()

@@ -11,6 +11,5 @@ constant.init()
 let route = {
     algo, api, dev, chess, talk
 }[constant.get_route('main')]
-Data.get_user_name()
 route().mount(web_dom.get_body()).render()
 // constant.init_body(route.div_el)

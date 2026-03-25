@@ -1,17 +1,24 @@
-import { dialog } from "../components/export"
+import { Constant, dialog, FormRow } from "../components/export"
 import web_dom from "../web/web_dom"
 export class Data {
-    get_user_name(callback: any) {
-        let user_name = web_dom.get_local("user_name")
+    get_user_name(call: any) {
+        let user_name = web_dom.get_loacl_str(Constant.username)
         if (!user_name) {
-            dialog.open_form({
-                user_name: "input"
-            }, (data: any) => {
-                web_dom.set_local("user_name", data.user_name)
-                dialog.alart("登录成功请重试")
+            let t = new FormRow().set_option({
+                childs: [{
+                    type: Constant.DOM_TYPE_INPUT, key: Constant.username,
+                    title: Constant.username
+                }]
+            }).on_submit((type: string, data: any) => {
+                web_dom.set_local(Constant.username, data.username)
+                call(data.username)
+                dialog.close()
             })
+            dialog.open(t)
+        } else {
+            call(user_name)
         }
-        return user_name
+
 
     }
 }
