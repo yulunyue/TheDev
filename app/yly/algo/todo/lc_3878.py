@@ -1,4 +1,4 @@
-from common.util.export import MockCf, List
+from common.util.export import MockCf, List, functools
 
 
 class Solution(MockCf):
@@ -15,25 +15,23 @@ class Solution(MockCf):
         )
 
     def countGoodSubarrays(self, nums: list[int]) -> int:
-        s = 0
         n = len(nums)
-        ans = [0] * n
-        ct = dict()
-        for i, v in enumerate(nums):
+        mx = max(nums)
+        mx_or = (1 << mx.bit_length()) - 1
 
-            u, t = 1, v
-            for j in range(i - 1, -1, -1):
-                vu = v & nums[j]
-                if nums[j] < v:
-                    u += vu == nums[j]
-                    continue
-                if vu == v:
-                    u += ans[j]
-                break
-            ct[v] = i
-            self.logger.map(u=u)
-            ans[i] = u
-            s += u
-        return s
+        @functools.lru_cache(None)
+        def dfs(i, v):
+            if i < 0:
+                return 0
+            v_or = nums[i] | v
+            if v_or == v or v_or == nums[i]:
+                return 1 + dfs(i - 1, v_or)
+            if v_or == mx_or:
+                return i + 1
+            r = dfs(i - 1, v_or)
+            # self.logger.map(i=i, v=v, r=r)
+            return r
+
+        return sum([dfs(i, 0) for i in range(1, n)])
 
     execute = countGoodSubarrays
