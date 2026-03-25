@@ -22,7 +22,7 @@ export class Search extends Div {
     }
 
     init_event(): void {
-        this.input.on_click(() => this.emit_search())
+        this.input.on_click(() => this.emit_search(this.open_dialog.bind(this)))
         // this.input.on_input(() => this.emit_search())
         this.input.on_input(() => this.listui.filter(this.input.get_value()))
         this.listui.on_change((key: string, src: any, dst: Node) => {
@@ -40,29 +40,32 @@ export class Search extends Div {
         this.dialog.hide()
         return super.set_data({ title: v.title, value: v.value })
     }
-    set_value(v: Node): this {
-        this.input.set_value(v.title)
-        this.do_change(this.option.key, null, v.value)
+    set_value(v: string): this {
+        this.input.set_value(v)
+        this.emit_search((node: Node) => {
+            this.do_change(this.option.key, null, this.listui.get_data(v))
+        })
         return this
     }
     get_value() {
         return this.input.get_value()
     }
-    emit_search() {
-        let url = this.option.url
-        if (!url) {
-            url = this.option.parent.url + "/web_search"
+    open_dialog(node: Node) {
+        if (this.listui.option.data.size) {
+            this.show_search_dialog()
+        } else {
+            this.dialog.hide()
         }
+    }
+    emit_search(call_back: any) {
+        let url = this.option.url
         web_dom.post(url, {
             key: this.input.get_value(),
             name: this.option.key,
         }, (node: Node) => {
             this.listui.set_option(node)
-            if (this.listui.option.data.size) {
-                this.show_search_dialog()
-            } else {
-                this.dialog.hide()
-            }
+            call_back(node)
+
         })
         return this
     }

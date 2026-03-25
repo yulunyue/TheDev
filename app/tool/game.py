@@ -12,3 +12,6 @@ class F5Chess(ApiBase):
 
     def fight(self):
         pass
+
+    def calc(self):
+        pass

@@ -1,5 +1,5 @@
 import { Div } from "../div";
-import web from "../../../web/web_dom"
+import web_dom from "../../../web/web_dom"
 import { not_null, Node } from "../../../web/cls"
 import Constant from "../../../web/constant"
 import { FormContainer } from "./container";
@@ -35,8 +35,20 @@ export class FormRow extends Div {
         this.child_map[o.key] = r
         return r
     }
+    render_childs(childs: any) {
+        this.body.set_childs(childs, (o: Node) => this.get_row(o))
+        if (this.option.id) {
+            web_dom.get_local(this.option.id, (v: any) => this.set_value(v))
+        }
+    }
     render_option(): void {
-        this.body.set_childs(this.option.childs, (o: Node) => this.get_row(o))
+        if (this.option.url) {
+            web_dom.post(this.option.url + this.get_form_view_url(), {}, (v: any) => {
+                this.render_childs(v.childs)
+            })
+        } else {
+            this.render_childs(this.option.childs)
+        }
         this.render_footer()
     }
     render_footer() {
@@ -50,7 +62,7 @@ export class FormRow extends Div {
     }
     submit_hander(type: string) {
         if (this.option.url) {
-            web.post(this.option.url + "/web_submit", {
+            web_dom.post(this.option.url + "/web_submit", {
                 type: type,
                 value: this.get_value()
             }, (data: Node) => {
@@ -64,9 +76,7 @@ export class FormRow extends Div {
         return "/to_form_row_view"
     }
     load_form_uri() {
-        web.post(this.option.url + this.get_form_view_url(), {}, (v: any) => {
-            this.set_option(v)
-        })
+
     }
     get_value() {
         let ret = {}
@@ -82,15 +92,12 @@ export class FormRow extends Div {
     get(key: string, default_value?: string) {
         return not_null(this.get_value()[key], default_value)
     }
-    set_uri(s: string): this {
-        this.option.url = s
-        this.load_form_uri()
-        return this
-    }
+
     set_value(value: any): this {
-        for (var key in value) {
+        console.log(value)
+        for (var key in this.child_map) {
             // console.log(key, value, value[key], this.child_map[key])
-            this.child_map[key]?.set_value(value[key])
+            this.child_map[key].set_value(value[key])
         }
         return this
     }

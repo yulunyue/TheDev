@@ -14,8 +14,8 @@ export class Api extends Column {
         this.input = new FormRow()
         this.uri = new Search().set_option({
             url: "/app/api/query_all_apis",
-            title: "APIKEY",
-            local_storge_enable: true
+            id: URIKEYID,
+            title: "APIKEY"
         })
         this.result = new Container()
         this.left_main = new Div().add_childs([
@@ -50,7 +50,7 @@ export class Api extends Column {
         })
     }
     render(): void {
-        this.uri.set_id(URIKEYID)
+
     }
 
 }

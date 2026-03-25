@@ -4,6 +4,7 @@ import Ct from "../../web/constant"
 import web_dom from "../../web/web_dom"
 import { Label } from "./base/label";
 export class ListUi extends Div {
+    data: any
     constructor() {
         super("div")
     }
@@ -19,12 +20,21 @@ export class ListUi extends Div {
         let lb = new Label().set_border().set_option(o)
         return lb.on_click(() => this.do_change(this.option.key, null, lb.option))
     }
+    get_data(key: string) {
+        return this.data[key]
+    }
     render_option(): void {
         this.option.data.size = 0
+        this.data = {}
         if (this.option.childs.length) {
-            let childs = this.option.childs.filter(
-                (v: Node) => v.title.indexOf(this.option.filter_key) != -1
-            )
+            let childs = []
+            for (var i = 0; i < this.option.childs.length; i += 1) {
+                let v = this.option.childs[i]
+                if (v.title.indexOf(this.option.filter_key) != -1) {
+                    childs.push(v)
+                }
+                this.data[v.title] = v
+            }
             this.option.data.size = childs.length
             this.set_childs(childs, this.get_row.bind(this))
 

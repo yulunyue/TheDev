@@ -39,7 +39,7 @@ class WebDom {
         return location.href
     }
     get_local(key: string, call?: any) {
-        let ret = to_node(JSON.parse(localStorage.getItem("yly_" + key)))
+        let ret = JSON.parse(localStorage.getItem("yly_" + key))
         if (ret) {
             call?.(ret)
         }
