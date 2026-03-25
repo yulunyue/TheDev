@@ -9,7 +9,7 @@ import Util from "../../../tool/util"
 import { Constant } from "../../export";
 export class Th extends Div {
     constructor() {
-        super("th", "")
+        super("th")
     }
     init_style(): void {
         this.set_style({

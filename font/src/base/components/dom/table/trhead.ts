@@ -11,7 +11,7 @@ import { Th } from "./th";
 import { TrBody } from "./trbody";
 export class TrHead extends Div {
     constructor() {
-        super("tr", "")
+        super("tr")
     }
     init_style(): void {
         this.set_style({

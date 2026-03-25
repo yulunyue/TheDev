@@ -1,14 +1,13 @@
-from common.third_util.selenium_util import SeleniumUtil, By, WebElement
-from common.util.export import time, logger, ToolBase
+from common.third_util.tool.selenium_util import SeleniumUtil, By, WebElement
+from common.util.export import time, logger
+from common.tool.export import ToolBase
 
 
 class WebTool(ToolBase):
-    def prepare(self):
-        self.s = SeleniumUtil().load()
-        return self
 
-    def do_cmd(self, *args):
-        return self.s.do_cmd(*args)
+    def dev(self, *args):
+        s = SeleniumUtil().load()
+        self.cli(s.do_cmd)
 
 
 if __name__ == "__main__":

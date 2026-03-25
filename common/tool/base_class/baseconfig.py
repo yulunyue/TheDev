@@ -1,4 +1,4 @@
-from common.util.export import logger, File, json, List, Dict
+from common.util.export import logger, File, json, List, Dict, hash_any_str
 from .base_model.model import BaseModel
 
 
@@ -18,11 +18,21 @@ class ConfigBase:
         return self
 
     @classmethod
+    def insert(cls, **kw) -> "ConfigBase":
+        idx = cls.get_id(**kw)
+        cls.instance_map[idx] = cls().load(idx).update(**kw)
+        return cls.instance_map[idx]
+
+    @classmethod
     def get_headers_keys(cls):
         return cls.get_params().keys()
 
     def init(self):
         pass
+
+    @classmethod
+    def get_id(self, **kw):
+        raise NotImplementedError
 
     @classmethod
     def get_params(self):
@@ -42,6 +52,12 @@ class ConfigBase:
         return ret
 
     @classmethod
+    def get(cls, key):
+        if key in cls.instance_map:
+            return cls.instance_map[key]
+        return cls.insert(_id=key)
+
+    @classmethod
     def update_param_value(self, param, value):
         raise NotImplementedError
 
@@ -49,7 +65,7 @@ class ConfigBase:
     def get_param_value(self, param):
         raise NotImplemented
 
-    def update(self, **kw):
+    def update(self, **kw) -> "ConfigBase":
         for k, v in kw.items():
             if k in self.params:
                 self.params[k].set_value(v)
@@ -59,6 +75,7 @@ class ConfigBase:
     def init_param(cls):
         from common.tool.base_class.base_model.model import BaseModel
 
+        cls.instance_map = dict()
         cls._params_cls_map = dict()
         for key in dir(cls):
             if key.startswith("_"):
@@ -75,15 +92,7 @@ class ConfigBase:
         return ret
 
     def save(self):
-        if self.resource is None:
-            return self
-        cg = dict()
-        if self.resource.exists():
-            cg = self.resource.get_config()
-        cg.update(self.to_json())
-        logger.debug(self.resource)
-        self.resource.write_file(cg)
-        return self
+        raise NotImplementedError
 
     @classmethod
     def set_resource(cls, path):
@@ -95,6 +104,14 @@ class ConfigBase:
     @classmethod
     def init_resource(cls):
         raise NotImplementedError
+
+    @classmethod
+    def query(cls, key):
+        ret: List[ConfigBase] = []
+        for k, v in cls.instance_map.items():
+            if key in str(k):
+                ret.append(v)
+        return ret
 
     def __repr__(self):
         return f"[id:{self._id}]"

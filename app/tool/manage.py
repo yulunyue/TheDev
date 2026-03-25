@@ -1,5 +1,12 @@
 from common.util.export import Node, b64_code, File, logger, os
-from common.tool.export import DomFile, FrontTable, OsUtil, System
+from common.tool.export import (
+    DomFile,
+    FrontTable,
+    OsUtil,
+    System,
+    IO_MANAGE,
+    FontSearch,
+)
 
 
 class Manage:
@@ -35,3 +42,6 @@ class Manage:
                 logger.info(e)
         OsUtil("python").system("main.py", config, "2>&1", "&")
         return Node()
+
+    def get_ios(self):
+        return FontSearch().add_node(*IO_MANAGE.keys())

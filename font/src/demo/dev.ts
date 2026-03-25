@@ -1,4 +1,4 @@
-import data from "src/base/tool/data";
+
 import {
     Div, Search, Button, TextAreaRich,
     Table, Util, dialog,
@@ -10,22 +10,39 @@ import {
     FileInput,
     FormColumn, FormRow,
     Constant,
-    Pre
+    Pre,
+    Data,
+
 } from "../base/components/export";
 import { D3Chart, MeraGraph } from "../third/export"
+
 let DEV_FUNC = {
     form() {
         let op = {
             childs: [
-                { "type": Constant.DOM_TYPE_INPUT, title: "a", key: "a" },
-                { "type": Constant.DOM_TYPE_FILE, title: "b", key: "b" },
+                { type: Constant.DOM_TYPE_INPUT, title: "a", key: "a" },
+                { type: Constant.DOM_TYPE_FILE, title: "b", key: "b" },
+                {
+                    type: Constant.DOM_TYPE_SELECT, title: "c", key: "c", childs: [{
+                        title: "a",
+                        value: "a"
+                    }, {
+                        title: "b",
+                        value: "b"
+                    }]
+                }
             ]
         }
         let pre = new Pre().set_html("pre")
         function fm_init(fm: FormRow, ops: Node) {
-            fm.on_submit((type: string) => {
-                console.log(type, fm.get_value())
-                pre.set_value({ type: type, value: fm.get_value() })
+            fm.on_submit((type: string, value: any) => {
+                pre.set_value({ type: type, value: fm.get_value(), d: value })
+            })
+            fm.on_change((key: string, value: any, data: any) => {
+                if (typeof data == "object") {
+                    fm.set_value(data)
+                }
+                pre.set_value({ key: key, value: value, data: data })
             })
             ops && fm.set_option(ops)
             return fm
@@ -40,12 +57,8 @@ let DEV_FUNC = {
             ]),
 
         ])
-    }
-}
-export class Dev extends Div {
-    svg: Svg
-
-    get_row() {
+    },
+    layout() {
         return new Column().set_option({
             childs: [
                 {
@@ -66,20 +79,8 @@ export class Dev extends Div {
                 }
             ]
         }).set_height(200).set_center()
-    }
-
-    get_window_info() {
-        let d = new Div()
-        let size = web_dom.get_window_size()
-        d.set_html(`width:${size.width};height:${size.height}`)
-        return d
-    }
-    test_open_edit_dialog() {
-        dialog.open_form({ a: "input" }, (v: any) => {
-            console.log(v)
-        })
-    }
-    get_table() {
+    },
+    table() {
         let table = new Table()
         table.set_data({
             header: [{
@@ -100,7 +101,59 @@ export class Dev extends Div {
             })
         })
         return table
+    },
+    default_color: Constant.COLOR_BALCK2,
+    grid() {
+        let p1 = new Pre().set_html("p1")
+        let p2 = new Pre().set_html("p2")
+        let g = new Grid().set_style({
+            width: 300,
+            height: 300,
+            margin: 40
+        }).set_option({
+            x: 6, y: 6,
+            childs: [{
+                x: 0, y: 0, type: Constant.SVG_TYPE_CIRCLE, color: Constant.COLOR_WHITE2,
+            }, {
+                x: 0, y: 1, type: Constant.SVG_TYPE_CIRCLE, color: Constant.COLOR_BALCK2,
+            }]
+        }).on_move((y: number, x: number, i: number, j: number) => {
+            p1.set_value({ x, y, i, j })
+        })
+        g.on_click((y: number, x: number, i: number, j: number) => {
+            p2.set_value({ x, y, i, j })
+            g.draw_child({
+                y: i, x: j, type: Constant.SVG_TYPE_CIRCLE,
+                color: DEV_FUNC.default_color
+            })
+            DEV_FUNC.default_color = DEV_FUNC.default_color == Constant.COLOR_BALCK2 ? Constant.COLOR_WHITE2 : Constant.COLOR_BALCK2
+        })
+        return new Column().add_childs([
+            g,
+            new Row().add_childs([
+                p1,
+                p2
+            ])
+        ])
+    },
+    sys() {
+        let d = new Div()
+        let size = web_dom.get_window_size()
+        d.set_html(`width:${size.width};height:${size.height}`)
+        Data.get_user_name()
+        return new Div().add_childs([
+            d,
+        ])
     }
+}
+export class Dev extends Div {
+    svg: Svg
+    test_open_edit_dialog() {
+        dialog.open_form({ a: "input" }, (v: any) => {
+            console.log(v)
+        })
+    }
+
     test_graph() {
         let node = to_node({
             value: "flowchart TD",
@@ -125,11 +178,7 @@ export class Dev extends Div {
         })
         this.add_child(chart)
     }
-    test_grid() {
-        return new Grid().set_option({
-            childs: []
-        })
-    }
+
 
     on_mount(): void {
 

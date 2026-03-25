@@ -36,7 +36,7 @@ export class Select extends Div {
     }
     init_event(): void {
         web.bind_change(this.el, () => {
-            this.do_change()
+            this.do_change(this.option.key, null, this.get_value())
         })
     }
 
@@ -48,7 +48,7 @@ export class Select extends Div {
             let so = this.childs[i]
             if (so.option.key == key) {
                 so.do_select(true)
-                this.do_change()
+                // this.do_change()
             } else {
                 so.do_select(false)
             }
@@ -58,11 +58,11 @@ export class Select extends Div {
     }
     get_value() {
         for (var i = 0; i < this.option.childs.length; i++) {
-            if (this.option.childs[i].key == this.el.value) {
-                return this.option.childs[i]
+            if (this.option.childs[i].title == this.el.value) {
+                return this.option.childs[i].value
             }
         }
-        return this.option.childs[0]
+        return this.option.childs[0].value
     }
     render_option(): void {
         if (this.option.url) {
@@ -74,7 +74,4 @@ export class Select extends Div {
             this.set_childs(this.option.childs, (v: any) => new SeOption().set_option(v))
         }
     }
-}
-export function select() {
-    return new Select()
 }

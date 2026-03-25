@@ -11,7 +11,7 @@ import { BodyTd } from "./td";
 export class TrBody extends Div {
     field_map: object
     constructor() {
-        super("tr", "")
+        super("tr")
     }
     row_idx: number
     set_row_idx(idx: number) {

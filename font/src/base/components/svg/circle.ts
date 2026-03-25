@@ -13,9 +13,6 @@ export class Circle extends GNode {
         })
     }
     set_r(radius: number) {
-        if (!radius) {
-            radius = 1
-        }
         this.set_attr("r", radius + "")
         return this
     }
@@ -32,7 +29,7 @@ export class Circle extends GNode {
         return parseFloat(this.get_attr("cy"))
     }
     render_option(): void {
-        console.warn(this.option)
-        this.set_x(this.option.x).set_y(this.option.y).set_r(this.option.value)
+        let r = this.option.data.width / 2
+        this.set_x(r).set_y(r).set_r(r - 3)
     }
 }

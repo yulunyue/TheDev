@@ -34,6 +34,3 @@ export class Polygon extends GNode {
         this.set_points(this.option.value)
     }
 }
-export function polygon() {
-    return new Polygon()
-}

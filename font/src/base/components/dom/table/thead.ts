@@ -10,7 +10,7 @@ import Util from "../../../tool/util"
 import { Constant } from "../../export";
 export class Thead extends Div {
     constructor() {
-        super("thead", "")
+        super("thead")
     }
     init_style(): void {
 

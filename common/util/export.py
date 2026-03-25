@@ -37,6 +37,7 @@ from .list_util import ListUtil
 from .node import Node, search_cls, enum_cls
 from .api.apicall import ApiCall, ApiBase
 from .io.export import TcpServer, TcpClient, TempFile
+from .io.manage import IO_MANAGE
 from .thread.thread_util import ThreadRecord
 import re
 from typing import (
@@ -71,7 +72,7 @@ from common.mock import MockCf, execute_by_thread, oj_run
 import sys
 import hashlib
 import time
-
+import _thread
 from abc import ABC, abstractmethod
 
 inf = float("inf")

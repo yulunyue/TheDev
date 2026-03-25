@@ -2,7 +2,7 @@ import { Line } from "../line";
 import { Node, to_node } from "../../../web/cls";
 import { Text, text } from "../comb/div_text";
 import { GNode } from "../gnode";
-import { SvgNode, svg } from "../svg";
+import { SvgNode } from "../svg";
 export class TreeNode extends GNode {
     line: Line
     text: Text

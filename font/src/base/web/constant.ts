@@ -14,8 +14,11 @@ class Constant {
     VERTICAL = 1
 
     COLOR_WHITE = '#fff'
+    COLOR_WHITE1 = '#eee'
+    COLOR_WHITE2 = '#ccc'
     COLOR_YELLOW = '#ff0'
     COLOR_BALCK = '#000'
+    COLOR_BALCK2 = '#222'
     COLOR_BLUE = '#00f'
     COLOR_GRAY = '#888'
     COLOR_TANS = 'transparent'
@@ -43,9 +46,13 @@ class Constant {
 
     EVENT_CHANGE = "event_change"
     EVENT_SUBMIT = "event_submit"
-
+    EVENT_MOVE = "event_move"
+    EVENT_CLICK = "event_click"
+    DOM_TYPE_SELECT = "select"
     DOM_TYPE_INPUT = "input"
+    DOM_TYPE_TITLE = "title"
     DOM_TYPE_STRING = "str"
+    SVG_TYPE_CIRCLE = "circle"
     DOM_TYPE_MERA_GRAPH = "graph"
     DOM_TYPE_D3_CHART = "d3chart"
     DOM_TYPE_PRE = "pre"

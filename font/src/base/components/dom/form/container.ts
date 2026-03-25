@@ -36,6 +36,10 @@ export class FormContainer extends Div {
         this.container.set_option(this.option)
         return this
     }
+    set_value(value: any): this {
+        this.container.main?.set_value(value)
+        return this
+    }
     on_change(call: any) {
         this.container.main?.on_change(call)
         return this

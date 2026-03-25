@@ -7,7 +7,7 @@ import web_dom from "../../web/web_dom"
 export class SvgNode extends Div {
     def: Defs
     constructor() {
-        super("svg", "div")
+        super("svg")
         this.add_child(new Defs())
     }
     create_element(name: string) {
@@ -29,7 +29,3 @@ export class SvgNode extends Div {
     }
 
 }
-export function svg() {
-    return new SvgNode()
-}
-

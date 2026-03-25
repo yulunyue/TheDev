@@ -62,9 +62,3 @@ class ApiCall:
                     continue
                 cl = Module().load_module_object(path, md["path"])
                 self.load_module(k, cl)
-
-    def to_json(self):
-        childs = []
-        for k in sorted(self.fun_map.keys()):
-            childs.append(dict(key=k))
-        return dict(childs=childs)

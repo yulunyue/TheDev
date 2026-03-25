@@ -10,7 +10,7 @@ import { Constant } from "../../export";
 import { TrHead } from "./trhead";
 export class TBody extends Div {
     constructor() {
-        super("tbody", "")
+        super("tbody")
     }
     init_style(): void {
         this.set_style({

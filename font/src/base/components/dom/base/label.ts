@@ -19,7 +19,7 @@ export class Label extends Div {
         return this
     }
     render_option(): void {
-        this.set_html(this.option.title || this.option.key || this.option.value)
+        this.set_html(this.option.title)
     }
     set_change_color(color: string) {
         this.change_color = color
@@ -28,7 +28,7 @@ export class Label extends Div {
     on_click(call_back: any) {
         web.bind_mouseenter(this.el, () => {
             this.set_style({
-                backgroundColor: "green"
+                backgroundColor: "#888"
             })
         })
         web.bind_mouseleave(this.el, () => {

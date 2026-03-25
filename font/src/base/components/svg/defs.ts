@@ -110,6 +110,3 @@ export class Defs extends GNode {
         return 'url(#' + k + ')'
     }
 }
-export function defs() {
-    return new Defs()
-}

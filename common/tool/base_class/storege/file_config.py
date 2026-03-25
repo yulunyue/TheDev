@@ -20,32 +20,15 @@ class FileConfig(FrontExtern):
     def init_resource(cls):
         assert cls.resource_path
         cls.fp = File(cls.resource_path)
-        cls.instance_map: Dict[str, ConfigBase] = dict()
-        cls.idx = 0
+
         if cls.fp.exists():
             cls.config = cls.fp.read_file()
             items = list(cls.config.items())
             for k, v in items:
-                t: ConfigBase = cls.insert(k)
-                t.update(**v)
+                t: FileConfig = cls.insert(**v)
         else:
             cls.config = dict()
         return cls.instance_map
-
-    @classmethod
-    def insert(cls, idx=None):
-        cls.idx += 1
-        if idx is None:
-            idx = self.idx
-        cls.instance_map[idx] = cls().load(idx)
-        return cls.instance_map[idx]
-
-    @classmethod
-    def get(cls, key):
-        if key in ins:
-            return ins[key]
-        ins[key] = cls.insert(key)
-        return ins[key]
 
     @classmethod
     def save(cls):

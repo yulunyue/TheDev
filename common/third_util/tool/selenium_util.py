@@ -170,24 +170,21 @@ class SeleniumUtil:
 
     def load(self, dev_port=9257):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
+        chrome_exe = File(GC.chrome_bin_path.get_value())
+        chrome_driver = File(GC.chrome_driver_path.get_value())
+        from common.third_util.io.api import Api
 
+        if not chrome_exe.exists():
+            Api().download(GC.chrome_bin_uri.get_value()).unzip(chrome_exe.path)
+        if not chrome_driver.exists():
+            Api().download(GC.chrome_driver_uri.get_value()).unzip(chrome_driver.path)
+        if not chrome_exe.exists() or not chrome_driver.exists():
+            raise Exception(
+                f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
+            )
         if dev_port:
-            chrome_exe = File(GC.chrome_bin_path.get_value())
-            chrome_driver = File(GC.chrome_driver_path.get_value())
-            from common.third_util.io.apiapi import Api
-
-            if not chrome_exe.exists():
-                Api().download(GC.chrome_bin_uri.get_value()).unzip(chrome_exe.path)
-            if not chrome_driver.exists():
-                Api().download(GC.chrome_driver_uri.get_value()).unzip(
-                    chrome_driver.path
-                )
-            if not chrome_exe.exists() or not chrome_driver.exists():
-                raise Exception(
-                    f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
-                )
             os_util = OsUtil(chrome_exe.child("chrome-win64/chrome.exe").get_abs_path())
-            info = System.check_port(dev_port)
+            info = System.get_pid_by_port(dev_port)
             if not info:
                 raise Exception(
                     " ".join(
@@ -210,14 +207,6 @@ class SeleniumUtil:
             self.options.add_argument("--auto-open-devtools-for-tabs")
             self.options.add_argument("--disable-extensions")  # 禁用扩展
             self.options.add_argument("--no-first-run")  # 跳过首次运行提示
-            # 启用 CDP
-            # self.options.add_experimental_option(
-            #     "excludeSwitches", ["enable-automation"]
-            # )
-            # self.options.add_experimental_option("useAutomationExtension", False)
-            # 设置性能日志
-            # caps = self.options.to_capabilities()
-            # caps["goog:loggingPrefs"] = {"performance": "ALL"}
 
             if dev_port:
                 self.options.debugger_address = f"127.0.0.1:{dev_port}"
@@ -237,7 +226,7 @@ class SeleniumUtil:
 
         self.load()
         if self.driver.current_url == url:
-            return url
+            return self
         self.driver.get(url)
         current_url = self.driver.current_url
         for _ in range(7):
@@ -251,7 +240,7 @@ class SeleniumUtil:
             current_url = new_url
             logger.info(f"HTTP重定向到: {current_url}")
 
-        return current_url
+        return self
 
     def wait_for_window(self):
         """等待新窗口打开"""
@@ -290,7 +279,16 @@ class SeleniumUtil:
 
     def reload(self):
         self.driver.refresh()
-        return self.current_url
+        return self
+
+    def get_cookies(self, name=None):
+        cookies = self.driver.get_cookies()
+        ret = dict()
+        for c in cookies:
+            if name is not None and c["name"] == name:
+                return c["value"]
+            ret[c["name"]] = c["value"]
+        return ret
 
     def do_cmd(self, method, *args):
         try:
@@ -314,7 +312,12 @@ class SeleniumUtil:
             elif method == "id":
                 return self.e_format(self.get_element_by_id(args[0]))
             elif method == "get_cookies":
-                return self.driver.get_cookies()
+                name = None if len(args) == 0 else args[0]
+                return self.get_cookies(name=name)
             return "todo"
         except Exception as e:
             return str(e)
+
+    def do_cmds(self, *args):
+        for a in args:
+            self.do_cmd(a)

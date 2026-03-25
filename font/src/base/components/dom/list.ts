@@ -5,7 +5,7 @@ import web_dom from "../../web/web_dom"
 import { Label } from "./base/label";
 export class ListUi extends Div {
     constructor() {
-        super("div", "")
+        super("div")
     }
     init_style(): void {
         this.set_style({
@@ -15,15 +15,19 @@ export class ListUi extends Div {
     filter(s: any) {
         this.set_option({ filter_key: s })
     }
-    get_row() {
-        let lb = new Label().set_border()
-        return lb.on_click(() => this.set_value(lb.option))
+    get_row(o: Node) {
+        let lb = new Label().set_border().set_option(o)
+        return lb.on_click(() => this.do_change(this.option.key, null, lb.option))
     }
     render_option(): void {
-        if (this.option.childs) {
-            let childs = this.option.childs.filter((v: Node) => (v.title + v.key).indexOf(this.option.filter_key) != -1)
-            // console.log(childs, this.option.childs, this.option.filter_key)
-            this.set_childs(childs, () => this.get_row())
+        this.option.data.size = 0
+        if (this.option.childs.length) {
+            let childs = this.option.childs.filter(
+                (v: Node) => v.title.indexOf(this.option.filter_key) != -1
+            )
+            this.option.data.size = childs.length
+            this.set_childs(childs, this.get_row.bind(this))
+
         }
     }
 }

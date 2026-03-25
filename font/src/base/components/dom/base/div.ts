@@ -1,5 +1,5 @@
 import web_dom from "../../../web/web_dom"
-import { Style, Node, Fn1, to_node, not_null, node } from "../../../web/cls"
+import { Style, Node, Fn1, Fn3Void, to_node, not_null, node } from "../../../web/cls"
 import { Dom } from "../../../web/cls"
 import Util from "../../../tool/util"
 import Constant from "../../../web/constant"
@@ -11,15 +11,20 @@ export class Div {
     parent: Div
     option: Node
     index: number
+    child_map: any
     size: number = 0
     _value: any = null
     event_hander: any
-    do_change(src?: any, dst?: any) {
-        this.event_hander[Constant.EVENT_CHANGE]?.(src, dst)
+    do_change(key: string, src?: any, dst?: any) {
+        this.event_hander[Constant.EVENT_CHANGE]?.(key, src, dst)
         return this
     }
-    on_change(call: any) {
+    on_change(call: Fn3Void<string, Node, Node>) {
         this.event_hander[Constant.EVENT_CHANGE] = call
+        return this
+    }
+    on_move(call: any) {
+        this.event_hander[Constant.EVENT_MOVE] = call
         return this
     }
     on_click(call_back: any) {
@@ -62,13 +67,15 @@ export class Div {
     set_border() {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
-    constructor(node_type: string = 'div', parent_node_type: string = "div") {
+    constructor(node_type: string = 'div') {
         this.childs = []
         this.event_hander = {}
+        this.child_map = {}
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         this.parent = null
         this.option = new Node()
+        this.do_change = this.do_change.bind(this)
         this.init_node()
         this.init_style()
         this.init_event()
@@ -231,7 +238,7 @@ export class Div {
             if (this.childs[idx]) {
                 this.childs[idx].set_option(childs[idx]).show()
             } else {
-                this.add_child(cls().set_option(childs[idx]))
+                this.add_child(cls(childs[idx]))
             }
             idx += 1
         }
@@ -260,16 +267,19 @@ export class Div {
         if (this.option.title) {
             this.set_title(this.option.title)
         }
-        if (this.option.id) {
-            DivFactory.set(this.option.id, this)
-            if (this.option.local_storge_enable) {
-                web_dom.get_local(this.option.id, (v: any) => this.set_value(v))
-            }
-        }
         if (this.option.size) {
             this.set_size(this.option.size)
         }
+        if (this.option.color) {
+            this.set_color(this.option.color)
+        }
         this.render_option()
+        return this
+    }
+    set_id(id: string) {
+        this.option.id = id
+        web_dom.get_local(this.option.id, (v: any) => this.set_value(v))
+        DivFactory.set(this.option.id, this)
         return this
     }
     remove(i: number) {
@@ -285,9 +295,6 @@ export class Div {
         return this
     }
     set_html(text: string | Fn1<any, string>) {
-        if (text == null || text == undefined) {
-            return this
-        }
         if (typeof text == 'function') {
             text(this.el)
             return this
@@ -301,14 +308,15 @@ export class Div {
         })
         return this
     }
-    set_value(value: any) {
+    set_data(value: Node) {
         // console.log(this.option.id, this.option.local_storge_enable, value)
         if (this.option.id && this.option.local_storge_enable) {
-            web_dom.set_local(this.option.id, value.dump())
+            web_dom.set_local(this.option.id, value)
         }
-        this.do_select(value)
         return this
     }
-
+    set_value(value: any) {
+        return this
+    }
 
 }

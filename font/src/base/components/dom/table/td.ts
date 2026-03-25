@@ -11,7 +11,7 @@ import { Constant } from "../../export";
 export class HeadTd extends Div {
     ins: Div
     constructor() {
-        super("td", "")
+        super("td")
     }
     render_option(): void {
         let ins = new Label().set_html(this.option.value)

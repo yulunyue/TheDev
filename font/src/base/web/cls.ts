@@ -68,6 +68,9 @@ export interface Fn1Void<P> {
 export interface Fn2Void<P, T> {
     (p: P, t: T): any
 }
+export interface Fn3Void<P, T, U> {
+    (p: P, t: T, u: U): any
+}
 export interface Fn<T> {
     (): T
 }
@@ -218,12 +221,7 @@ export class Node {
         }
     }
     get_title?() {
-        if (this.title) {
-            return this.title
-        } else if (this.key) {
-            return this.key
-        }
-        return this.value
+        return this.title
     }
 }
 
