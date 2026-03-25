@@ -140,7 +140,6 @@ let DEV_FUNC = {
         let d = new Div()
         let size = web_dom.get_window_size()
         d.set_html(`width:${size.width};height:${size.height}`)
-        Data.get_user_name()
         return new Div().add_childs([
             d,
         ])

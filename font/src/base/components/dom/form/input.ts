@@ -21,7 +21,7 @@ export class Input extends Div {
             outline: "none",
             margin: Constant.DEFAULT_MARGIN,
             padding: Constant.DEFAULT_PADDING,
-            width: `calc(100% - ${(Constant.DEFAULT_MARGIN + Constant.DEFAULT_PADDING) * 2}px)`,
+            //width: `calc(100% - ${(Constant.DEFAULT_MARGIN + Constant.DEFAULT_PADDING) * 2}px)`,
             borderTop: "none",
             borderLeft: "none",
             borderRight: "none",

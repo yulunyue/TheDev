@@ -1,7 +1,7 @@
 import { dialog } from "../components/export"
 import web_dom from "../web/web_dom"
 export class Data {
-    get_user_name() {
+    get_user_name(callback: any) {
         let user_name = web_dom.get_local("user_name")
         if (!user_name) {
             dialog.open_form({
