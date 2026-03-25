@@ -25,9 +25,9 @@ export class Chess extends Column {
         this.chess_width = 400
         this.middle.set_width(this.chess_width)
         this.g.set_style({
-            // width: this.chess_width - 2,
-            // height: this.chess_width - 2,
-            border: "1px solid #000"
+            width: this.chess_width,
+            height: this.chess_width,
+            // border: "1px solid #000"
         })
     }
     fight() {
