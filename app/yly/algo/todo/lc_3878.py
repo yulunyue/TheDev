@@ -37,6 +37,7 @@ class Solution(MockCf):
         for i in range(n):
             s += dfs(i, 0, False)
             self.logger.map(i=i, s=s)
+        dfs.cache_clear()
         return s
 
     execute = countGoodSubarrays

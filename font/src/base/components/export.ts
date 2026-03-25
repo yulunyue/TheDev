@@ -53,6 +53,6 @@ export {
     Select, Pre, TextArea, Util, web_socket, Data, Button,
     Div, SvgNode as Svg, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, tree, node, FormRow, FormColumn,
-    to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich,
+    to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich, Title,
     Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column
 }

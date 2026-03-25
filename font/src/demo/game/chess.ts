@@ -7,6 +7,7 @@ import {
     Row,
     Pre,
     Column,
+    Title
 } from "../../base/components/export";
 export class Chess extends Column {
     g: Grid
@@ -19,6 +20,7 @@ export class Chess extends Column {
     user: Search
     chess_width: number
     pre: Pre
+    title: Title
     init_style(): void {
         super.init_style()
         this.full().set_center()
@@ -46,13 +48,13 @@ export class Chess extends Column {
         this.user = new Search()
         this.algo = new Search()
         this.pre = new Pre()
-
+        this.title = new Title()
         this.right = new Row().add_childs([
             new Column().add_childs([
                 this.user,
                 new Button().set_html("对战").on_click(this.fight.bind(this))
             ]),
-
+            this.title,
             new Column().add_childs([
                 this.algo,
                 new Button().set_html("分析").on_click(this.execute.bind(this)),
@@ -88,6 +90,7 @@ export class Chess extends Column {
             url: "/game/f5chess/get_user",
             title: "用户"
         })
+        this.title.set_html("info")
         this.algo.set_option({
             url: "/game/f5chess/get_algo",
             title: "算法"
