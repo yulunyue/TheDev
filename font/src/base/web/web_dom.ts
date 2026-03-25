@@ -3,6 +3,7 @@ import Ut from "../tool/util"
 import F from "../tool/fun"
 import Ct from "./constant"
 import dlg from "../components/dom/dialog"
+
 class WebDom {
     HTTP_GET_METHOD: string = "GET"
     HTTP_POST_METHOD: string = "POST"
@@ -106,6 +107,7 @@ class WebDom {
         } else if (method == this.HTTP_POST_METHOD) {
             req.open(method, url);
             req.setRequestHeader(this.HTTP_CONTENT_TYPE_KEY, this.HTTP_CONTENT_TYPE_JSON)
+            req.setRequestHeader(Ct.the_dev_user, this.get_loacl_str(Ct.username))
             for (var key in this.headers) {
                 if (this.headers[key]) {
                     req.setRequestHeader(key, this.headers[key]);

@@ -6,7 +6,8 @@ class Constant:
     K_KEY = "key"
     K_DATA = "data"
     K_VALUE = "value"
-    METHOD_INSERT_UPDATE = "METHOD_INSERT_UPDATE"
+    METHOD_INSERT_UPDATE = "INSERT_UPDATE"
+    METHOD_LOGIN = "login"
 
 
 class CT:

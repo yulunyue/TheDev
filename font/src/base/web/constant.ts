@@ -28,6 +28,7 @@ class Constant {
 
 
     INPUT_NUMBER_WIDTH = 20
+    INPUT_STR_WIDTH = 100
     INPUT_HEIGHT = 40
     INPUT_STRING_MIN_WIDTH = 50
     TEXT_AREA_WIDTH = 600
@@ -67,8 +68,10 @@ class Constant {
     DOM_TYPE_ROW = "row"
     DOM_TYPE_COLUMN = "column"
     DOM_TYPE_BUTTON = "button"
-
+    the_dev_user = "the_dev_user"
     username = "username"
+    METHOD_LOGIN = "login"
+    METHOD_SEND_TO = "send_to"
 
 }
 export default new Constant()

@@ -17,7 +17,7 @@ class ApiCall:
     def add_hock(self, call):
         self.mock_call.append(call)
 
-    def call_app(self, path, params):
+    def call_app(self, path, params, env):
         if path not in self.fun_map:
             return dict(code=404, title=f"{path} not in {list(self.fun_map.keys())}")
         try:
@@ -31,8 +31,8 @@ class ApiCall:
             ret = dict(code=500, title=str(e))
         return json_dumps(ret)
 
-    def call(self, path, param):
-        ret = self.call_app(path, param)
+    def call(self, path, param, env):
+        ret = self.call_app(path, param, env)
         for mock_fun in self.mock_call:
             mock_fun(path, param, ret)
         return ret

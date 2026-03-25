@@ -12,6 +12,7 @@ export class Chess extends Column {
     g: Grid
     right: Div
     middle: Div
+    algo: Search
     top_control: Div
     pro: Progress
     top_form: FormColumn
@@ -39,15 +40,21 @@ export class Chess extends Column {
         this.top_form = new FormColumn()
         this.pro = new Progress()
         this.user = new Search()
+        this.algo = new Search()
         this.pre = new Pre()
-        this.right = new Div().add_childs([
-            this.user,
+
+        this.right = new Row().add_childs([
             new Column().add_childs([
-                new Button().set_html("对战").on_click(this.fight.bind(this)),
-                new Button().set_html("执行").on_click(this.execute.bind(this)),
-                new Button().set_html("回滚").on_click(this.rollback.bind(this)),
+                this.user,
+                new Button().set_html("对战").on_click(this.fight.bind(this))
             ]),
-            this.pre
+
+            new Column().add_childs([
+                this.algo,
+                new Button().set_html("分析").on_click(this.execute.bind(this)),
+            ]),
+            this.pre.set_size(1),
+
         ])
         this.middle = new Div().add_childs([
             this.g,
@@ -74,7 +81,12 @@ export class Chess extends Column {
     render(): void {
         this.top_form.set_uri("/game/chess/bd").set_id("game_chess")
         this.user.set_option({
-            url: "/game/chess/get_user"
+            url: "/game/f5chess/get_user",
+            title: "用户"
+        })
+        this.algo.set_option({
+            url: "/game/f5chess/get_algo",
+            title: "算法"
         })
     }
 

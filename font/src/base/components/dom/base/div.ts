@@ -154,6 +154,16 @@ export class Div {
         return this.el.getAttribute(key)
     }
     set_size(size: number) {
+        // 尽可能的压缩
+        this.size = size
+        this.set_style({ flex: size + "" })
+        return this
+    }
+    scroll_to_bottom() {
+        this.el.scrollTo(0, this.el.scrollHeight)
+    }
+    set_flex(size: number) {
+        // 尽量不压缩
         this.size = size
         this.set_style({ flexGrow: size + "" })
         return this

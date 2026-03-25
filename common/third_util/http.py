@@ -41,6 +41,7 @@ HTML_CONTENT_TYPE = dict(
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
     hander_msg = None
+    username: str
 
     def open(self, *args: str, **kwargs: str):
         logger.info(f"WebSocket opened {self}")
@@ -48,11 +49,11 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
 
     def on_message(self, message):
         msg = Node(**json.loads(message))
-        if TornadaWebSocketConnectHandler.hander_msg:
-            TornadaWebSocketConnectHandler.hander_msg(msg)
-
-        if res:
-            self.write_message(res.to_json())
+        if msg.type == C.METHOD_LOGIN:
+            self.username = msg.value
+            self.write_message(dict(type=C.METHOD_LOGIN))
+        else:
+            TornadaWebSocketConnectHandler.hander_msg(self, msg)
 
     def on_close(self):
         logger.info(f"WebSocket closed {self}")
