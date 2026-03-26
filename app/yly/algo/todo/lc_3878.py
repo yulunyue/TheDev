@@ -33,6 +33,18 @@ class Solution(MockCf):
             r = dfs(i - 1, v_or, False)
             return r
 
+        a=0
+        s=0
+        vor=0
+        is_max=False
+        for i,v in enumerate(nums):
+            nv=vor|v
+            if nv==mx_or:
+                a+=n-i
+            elif nv==v
+            vor=nv
+            
+            
         s = 0
         for i in range(n):
             s += dfs(i, 0, False)
