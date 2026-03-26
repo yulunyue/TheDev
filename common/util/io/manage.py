@@ -7,8 +7,8 @@ class Manage:
     def __init__(self):
         self.io_map: Dict[str, Io] = dict()
 
-    def hander_msg(self, io, msg: Node):
-        self.io_map[msg.key] = io
+    def hander_msg(self, io: Io, msg: Node):
+        self.io_map[io.username] = io
         return self
 
 

@@ -98,7 +98,6 @@ export class Node {
     el?: any = null
     size?: number = 0
     color?: string = ""
-    local_storge_enable?: boolean = false
     filter_key?: string = ""
 
     constructor(key?: string) {

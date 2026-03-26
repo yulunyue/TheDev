@@ -7,7 +7,11 @@ export class FormColumn extends FormRow {
     }
     init_style(): void {
         this.set_style({ display: "flex", flexDirection: "row", alignItems: "center" })
-        this.body.set_style({ display: "flex", flexDirection: "row" }).set_size(1)
+        this.body.set_style({
+            display: "flex", flexDirection: "row",
+            justifyContent: "space-between",
+            // borderBottom: "1px solid #000"
+        }).set_size(1)
     }
     get_row(o: Node): FormContainer {
         return super.get_row(o).set_style({

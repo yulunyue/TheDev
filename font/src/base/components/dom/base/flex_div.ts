@@ -12,7 +12,7 @@ export class FlexDiv extends Div {
         this.set_div_style({
             flexDirection: this.get_direction() == Constant.VERTICAL ? "row" : "column",
             display: "flex",
-            // justifyContent: "center",
+            justifyContent: "space-around",
             // alignContent: "center",
 
         })

@@ -66,7 +66,6 @@ export class Pre extends Div {
         this.set_style({
             whiteSpace: "pre-wrap",
             overflowWrap: "break-word",
-            height: 1,
             overflowY: "auto"
         })
     }

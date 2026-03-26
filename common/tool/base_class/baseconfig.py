@@ -95,6 +95,10 @@ class ConfigBase:
         raise NotImplementedError
 
     @classmethod
+    def get_font_columns(cls):
+        return cls.get_params().values()
+
+    @classmethod
     def set_resource(cls, path):
         cls.resource_path = path
         cls.init_param()

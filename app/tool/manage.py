@@ -1,10 +1,9 @@
-from common.util.export import Node, b64_code, File, logger, os
+from common.util.export import Node, b64_code, File, logger, IO_MANAGE
 from common.tool.export import (
     DomFile,
     FrontTable,
     OsUtil,
     System,
-    IO_MANAGE,
     FontSearch,
 )
 

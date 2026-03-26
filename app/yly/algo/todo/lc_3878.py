@@ -11,6 +11,7 @@ class Solution(MockCf):
     def get_cases(self):
         return dict(
             case1=dict(nums=[1, 2, 3], result=5),
+            case3=dict(nums=[1, 3, 1], result=6),
             case0=dict(nums=[6, 10, 4], result=3),
         )
 
@@ -20,16 +21,16 @@ class Solution(MockCf):
         mx_or = (1 << mx.bit_length()) - 1
 
         @functools.lru_cache(None)
-        def dfs(i, v):
+        def dfs(i, v,  max_exist):
             if i < 0:
                 return 0
+            if nums[i] == mx_or:
+                return i + 1
             v_or = nums[i] | v
             if v_or == v or v_or == nums[i]:
-                return 1 + dfs(i - 1, v_or)
-            if v_or == mx_or:
-                return i + 1
-            r = dfs(i - 1, v_or)
-            # self.logger.map(i=i, v=v, r=r)
+                max_exist = max_exist or v_or == nums[i]
+                return  max_exist+ dfs(i - 1, v_or,max_exist)
+            r = dfs(i - 1, v_or, False)
             return r
 
         a=0
@@ -44,5 +45,11 @@ class Solution(MockCf):
             vor=nv
             
             
+        s = 0
+        for i in range(n):
+            s += dfs(i, 0, False)
+            self.logger.map(i=i, s=s)
+        dfs.cache_clear()
+        return s
 
     execute = countGoodSubarrays

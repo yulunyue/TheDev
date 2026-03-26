@@ -154,6 +154,16 @@ export class Div {
         return this.el.getAttribute(key)
     }
     set_size(size: number) {
+        // 尽可能的压缩
+        this.size = size
+        this.set_style({ flex: size + "" })
+        return this
+    }
+    scroll_to_bottom() {
+        this.el.scrollTo(0, this.el.scrollHeight)
+    }
+    set_flex(size: number) {
+        // 尽量不压缩
         this.size = size
         this.set_style({ flexGrow: size + "" })
         return this
@@ -264,6 +274,7 @@ export class Div {
     }
     set_option(option: Node) {
         this.option.set_option(option)
+        this.render_option()
         if (this.option.title) {
             this.set_title(this.option.title)
         }
@@ -273,15 +284,12 @@ export class Div {
         if (this.option.color) {
             this.set_color(this.option.color)
         }
-        this.render_option()
+        if (this.option.id) {
+            DivFactory.set(this.option.id, this)
+        }
         return this
     }
-    set_id(id: string) {
-        this.option.id = id
-        web_dom.get_local(this.option.id, (v: any) => this.set_value(v))
-        DivFactory.set(this.option.id, this)
-        return this
-    }
+
     remove(i: number) {
 
     }
@@ -309,10 +317,7 @@ export class Div {
         return this
     }
     set_data(value: Node) {
-        // console.log(this.option.id, this.option.local_storge_enable, value)
-        if (this.option.id && this.option.local_storge_enable) {
-            web_dom.set_local(this.option.id, value)
-        }
+
         return this
     }
     set_value(value: any) {

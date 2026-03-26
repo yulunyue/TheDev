@@ -88,6 +88,8 @@ class Node:
         return v
 
     def add_node(self, *args):
+        if len(args) == 1:
+            args = args[0]
         for n in args:
             self.childs.append(self.__class__.get_dom_type(n))
         return self

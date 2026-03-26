@@ -20,6 +20,7 @@ from common.util.export import (
     signal,
     sys,
     C,
+    os,
 )
 
 
@@ -40,6 +41,7 @@ HTML_CONTENT_TYPE = dict(
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
     hander_msg = None
+    username: str
 
     def open(self, *args: str, **kwargs: str):
         logger.info(f"WebSocket opened {self}")
@@ -47,11 +49,11 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
 
     def on_message(self, message):
         msg = Node(**json.loads(message))
-        if TornadaWebSocketConnectHandler.hander_msg:
-            TornadaWebSocketConnectHandler.hander_msg(msg)
-
-        if res:
-            self.write_message(res.to_json())
+        if msg.type == C.METHOD_LOGIN:
+            self.username = msg.value
+            self.write_message(dict(type=C.METHOD_LOGIN))
+        else:
+            TornadaWebSocketConnectHandler.hander_msg(self, msg)
 
     def on_close(self):
         logger.info(f"WebSocket closed {self}")
@@ -76,6 +78,8 @@ class MainHander(RequestHandler):
     ) -> None:
         self.path = request.path
         self.req_content_type: str = request.headers.get("content-type", "")
+        self.envs = dict()
+        self.envs[C.THE_DEV_USER] = request.headers.get(C.THE_DEV_USER)
         if request.method.upper() == "POST":
             if self.req_content_type.startswith("application/json"):
                 self.params = json.loads(request.body)
@@ -83,6 +87,7 @@ class MainHander(RequestHandler):
                 self.params = dict()
         else:
             self.params = request.query_arguments
+
         super().__init__(application, request, **kwargs)
 
     def get(self, *args):
@@ -102,7 +107,7 @@ class MainHander(RequestHandler):
                     files[f["filename"]] = f["body"]
             if files:
                 self.params.update(files=files)
-        ret = self.POST_API.call(self.path, self.params)
+        ret = self.POST_API.call(self.path, self.params, self.envs)
         logger.info(f"[{self.path}]")
         self.out(ret, self.params)
 
