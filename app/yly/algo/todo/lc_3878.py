@@ -32,6 +32,17 @@ class Solution(MockCf):
             # self.logger.map(i=i, v=v, r=r)
             return r
 
-        return sum([dfs(i, 0) for i in range(1, n)])
+        a=0
+        s=0
+        vor=0
+        is_max=False
+        for i,v in enumerate(nums):
+            nv=vor|v
+            if nv==mx_or:
+                a+=n-i
+            elif nv==v
+            vor=nv
+            
+            
 
     execute = countGoodSubarrays
