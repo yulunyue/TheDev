@@ -78,6 +78,8 @@ class MainHander(RequestHandler):
     ) -> None:
         self.path = request.path
         self.req_content_type: str = request.headers.get("content-type", "")
+        self.envs = dict()
+        self.envs[C.THE_DEV_USER] = request.headers.get(C.THE_DEV_USER)
         if request.method.upper() == "POST":
             if self.req_content_type.startswith("application/json"):
                 self.params = json.loads(request.body)
@@ -85,6 +87,7 @@ class MainHander(RequestHandler):
                 self.params = dict()
         else:
             self.params = request.query_arguments
+
         super().__init__(application, request, **kwargs)
 
     def get(self, *args):
@@ -104,7 +107,7 @@ class MainHander(RequestHandler):
                     files[f["filename"]] = f["body"]
             if files:
                 self.params.update(files=files)
-        ret = self.POST_API.call(self.path, self.params)
+        ret = self.POST_API.call(self.path, self.params, self.envs)
         logger.info(f"[{self.path}]")
         self.out(ret, self.params)
 

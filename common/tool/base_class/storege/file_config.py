@@ -1,6 +1,6 @@
 from ..base_model import BaseModel, StrModel, DictModel
 from ..base_model.number_model import NumberModel
-from ..extern_cls.front import FrontExtern
+from ..baseconfig import ConfigBase
 from common.util.export import (
     File,
     TypeVar,
@@ -14,7 +14,7 @@ from common.util.export import (
 )
 
 
-class FileConfig(FrontExtern):
+class FileConfig(ConfigBase):
 
     @classmethod
     def init_resource(cls):

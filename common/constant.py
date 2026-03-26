@@ -2,11 +2,14 @@ class Constant:
     APP_NAME = "TheDev"
     CODE_500 = 500
     CODE_200 = 200
-    K_TYPE = "type"
-    K_KEY = "key"
-    K_DATA = "data"
-    K_VALUE = "value"
+    TYPE = "type"
+    KEY = "key"
+    DATA = "data"
+    VALUE = "value"
     METHOD_INSERT_UPDATE = "INSERT_UPDATE"
+    THE_DEV_USER = "the_dev_user"
+    USERNAME = "username"
+    PASSWORD = "password"
     METHOD_LOGIN = "login"
 
 

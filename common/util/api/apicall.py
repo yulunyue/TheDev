@@ -21,6 +21,9 @@ class ApiCall:
         if path not in self.fun_map:
             return dict(code=404, title=f"{path} not in {list(self.fun_map.keys())}")
         try:
+            ins: ApiBase = self.fun_map.__self__
+            ins.ROUTE_PATH = path
+            ins.set_env(**env)
             ret = self.fun_map[path](**params)
         except Exception as e:
 

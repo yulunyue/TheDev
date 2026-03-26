@@ -6,9 +6,10 @@ from common.tool.export import (
     NumberModel,
     SelectModel,
 )
+from .template.front import FormBase
 
 
-class User(FileConfig):
+class UserModel(FileConfig):
     name = SearchModel()
     title = StrModel()
     visite_num = NumberModel(default_value=0)
@@ -22,4 +23,8 @@ class User(FileConfig):
         return name
 
 
-User.set_resource("config/setting/user.json")
+UserModel.set_resource("config/setting/user.json")
+
+
+class User(FormBase):
+    model = UserModel
