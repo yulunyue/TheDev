@@ -5,7 +5,8 @@ class Solution(MockCf):
     def get_cases(self):
         return dict(
             case1=dict(grid=[[1, 4], [2, 3]], result=True),
-            case0=dict(grid=[[5, 5, 6, 2, 2, 2]], result=True),
+            case2=dict(grid=[[5, 5, 6, 2, 2, 2]], result=True),
+            case0=dict(grid=[[1], [2], [2]], result=True),
         )
 
     def canPartitionGrid(self, grid: List[List[int]]) -> bool:
@@ -32,12 +33,12 @@ class Solution(MockCf):
                     nm = ct[-c] - ct1[-c]
                     if g[i + 1][0] == -c or g[i + 1][-1] == -c:
                         return True
-                    target = 0
+                    target = n - 2
                 else:
-                    nm = ct[c] - ct1[c]
+                    nm = ct1[c]
                     if g[i][0] == c or g[i][-1] == c:
                         return True
-                    target = n - 2
+                    target = 0
                 if nm and i != target:
                     return True
 
