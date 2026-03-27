@@ -316,10 +316,6 @@ export class Div {
         })
         return this
     }
-    set_data(value: Node) {
-
-        return this
-    }
     set_value(value: any) {
         return this
     }

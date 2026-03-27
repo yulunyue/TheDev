@@ -21,13 +21,13 @@ class ApiCall:
         if path not in self.fun_map:
             return dict(code=404, title=f"{path} not in {list(self.fun_map.keys())}")
         try:
-            ins: ApiBase = self.fun_map.__self__
+            ins: ApiBase = self.fun_map[path].__self__
             ins.ROUTE_PATH = path
-            ins.set_env(**env)
+            if hasattr(ins, "set_env"):
+                ins.set_env(**env)
             ret = self.fun_map[path](**params)
         except Exception as e:
-
-            get_log("api").exception(e)
+            logger.info(e)
             import traceback
 
             traceback.print_exc()
@@ -48,6 +48,8 @@ class ApiCall:
 
     def load_module(self, moudule_name_key, cls: ApiBase):
         m = cls()
+        if getattr(cls, "API_ROUTE", None):
+            moudule_name_key = cls.API_ROUTE
         if hasattr(cls, "front_apis"):
             apis = cls.front_apis
         else:

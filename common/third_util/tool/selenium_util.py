@@ -1,7 +1,7 @@
 from selenium import webdriver
 from common.tool.export import OsUtil, GC, System
 from selenium.webdriver.chrome.options import Options
-from common.util.export import File, logger, time, List
+from common.util.export import File, logger, time, List, url_to_json, url_parse
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -11,6 +11,10 @@ from selenium.webdriver.remote.webelement import WebElement
 
 class SeleniumUtil:
     driver: webdriver.Chrome = None
+
+    def __init__(self, dev_port=9527, default_time_out=10):
+        self.dev_port = dev_port
+        self.default_time_out = default_time_out
 
     @property
     def logger(self):
@@ -104,14 +108,6 @@ class SeleniumUtil:
                 er = f"{e}:{e2}"
             self.logger.debug(er)
 
-    def play(self, fun):
-        try:
-            fun()
-        except Exception as e:
-            raise Exception(e)
-        finally:
-            self.print_info()
-
     def get_element_by_id(self, key):
         return self.wait.until(EC.presence_of_element_located((By.ID, key)))
 
@@ -168,10 +164,17 @@ class SeleniumUtil:
     def wait_url_contains(self, key):
         self.wait.until(EC.url_contains(key))
 
-    def wait_url_is(self, url):
-        self.wait.until(EC.url_to_be(url))
+    def wait_url_is(self, url, timeout=None):
+        self.wait_todo(EC.url_to_be(url), timeout=timeout)
 
-    def load(self, dev_port=9257):
+    def wait_todo(self, f, timeout=None):
+        if timeout is None:
+            wait = self.wait
+        else:
+            wait = WebDriverWait(self.driver, timeout)
+        wait.until(f)
+
+    def load(self):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
         chrome_exe = File(GC.chrome_bin_path.get_value())
         chrome_driver = File(GC.chrome_driver_path.get_value())
@@ -185,15 +188,16 @@ class SeleniumUtil:
             raise Exception(
                 f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
             )
-        if dev_port:
-            os_util = OsUtil(chrome_exe.child("chrome-win64/chrome.exe").get_abs_path())
-            info = System.get_pid_by_port(dev_port)
+        chrome_exe_file = chrome_exe.child("chrome-win64/chrome.exe")
+        if self.dev_port:
+            os_util = OsUtil("")
+            info = System.get_pid_by_port(self.dev_port)
             if not info:
                 raise Exception(
                     " ".join(
                         [
-                            os_util.fun_name,
-                            f"--remote-debugging-port={dev_port}",
+                            chrome_exe_file.get_abs_path(),
+                            f"--remote-debugging-port={self.dev_port}",
                             f'--user-data-dir="{user_data_dir.get_abs_path()}"',
                         ]
                     )
@@ -207,16 +211,24 @@ class SeleniumUtil:
                 ).get_abs_path(),
                 service_args=["--verbose", "--log-path=data/log/chromedriver.log"],
             )
-            self.options.add_argument("--auto-open-devtools-for-tabs")
+
+            # self.options.add_argument("--auto-open-devtools-for-tabs")
             self.options.add_argument("--disable-extensions")  # 禁用扩展
             self.options.add_argument("--no-first-run")  # 跳过首次运行提示
-
-            if dev_port:
-                self.options.debugger_address = f"127.0.0.1:{dev_port}"
+            self.options.add_argument("--ignore-certificate-errors")
+            if self.dev_port:
+                self.options.debugger_address = f"127.0.0.1:{self.dev_port}"
+                self.options.add_argument("--start-maximized")
             else:
+                self.options.binary_location = chrome_exe_file.get_abs_path()
+                self.options.add_argument("--no-sandbox")
                 self.options.add_argument("--headless")
+                self.options.add_argument("--window-size=1920,1080")
+                self.options.add_argument(
+                    f"--user-data-dir={chrome_driver.child('dev_user_data4').make_dir_if_not_exist(True).get_abs_path()}"
+                )
             self.driver = webdriver.Chrome(options=self.options, service=service)
-            self.wait = WebDriverWait(self.driver, 8)
+            self.wait = WebDriverWait(self.driver, self.default_time_out)
             # self.driver.set_page_load_timeout(10)
 
         return self
@@ -225,23 +237,28 @@ class SeleniumUtil:
     def current_url(self):
         return self.driver.current_url
 
-    def get(self, url):
+    def url_change(self, f: str, t: str):
+        pass
 
+    def get(self, url, time_out=20, wait_time=0.5):
         self.load()
         if self.driver.current_url == url:
-            return self
-        self.driver.get(url)
-        current_url = self.driver.current_url
-        for _ in range(7):
+            self.reload()
+        else:
+            self.driver.get(url)
+        last_url = None
+        while time_out > 0:
             self.wait.until(
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
-            time.sleep(1)
-            new_url = self.driver.current_url
-            if new_url == current_url:
+            new_url, args, kw = url_parse(self.driver.current_url)
+            if new_url != last_url:
+                self.url_change(last_url, new_url)
+                last_url = new_url
+            if new_url == url:
                 break
-            current_url = new_url
-            logger.info(f"HTTP重定向到: {current_url}")
+            time_out -= wait_time
+            time.sleep(wait_time)
 
         return self
 

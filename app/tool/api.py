@@ -9,10 +9,11 @@ from common.util.export import (
     search_cls,
     b64_code,
     Dict,
+    ApiBase,
 )
 
 
-class ApiGlobal:
+class ApiGlobal(ApiBase):
 
     def query_all_apis(self, **kw):
         return FontSearch().add_node(*MainHander.POST_API.fun_map.keys())

@@ -29,3 +29,4 @@ from .front.util import FontBase
 from .front.row import Row
 from .front.column import Column
 from .front.search import FontSearch
+from .front.form import Form

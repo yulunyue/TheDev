@@ -39,14 +39,16 @@ class WebDom {
         return location.href
     }
     get_local(key: string, call?: any) {
-        let ret = JSON.parse(localStorage.getItem("yly_" + key))
+        return this.get_loacl_str(key, (v: string) => {
+            call(JSON.parse(v))
+        })
+    }
+    get_loacl_str(key: string, call?: any) {
+        let ret = localStorage.getItem("yly_" + key)
         if (ret) {
             call?.(ret)
         }
         return ret
-    }
-    get_loacl_str(key: string) {
-        return localStorage.getItem("yly_" + key)
     }
     get_param(key: string, defult_value?: any) {
         if (!(key in this.url_param)) {

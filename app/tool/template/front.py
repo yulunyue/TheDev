@@ -1,4 +1,3 @@
-from ..baseconfig import ConfigBase
 from common.tool.export import FrontTable, Form, ConfigBase
 
 from common.util.export import Node, C, ApiBase

@@ -33,7 +33,7 @@ export class ListUi extends Div {
                 if (v.title.indexOf(this.option.filter_key) != -1) {
                     childs.push(v)
                 }
-                this.data[v.title] = v
+                this.data[v.title] = v.value
             }
             this.option.data.size = childs.length
             this.set_childs(childs, this.get_row.bind(this))

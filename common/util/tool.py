@@ -120,6 +120,15 @@ def url_to_json(params):
     return args, kw
 
 
+def url_parse(s: str):
+    idx = s.find("?")
+    if idx == -1:
+        return s, [], dict()
+    else:
+        args, kw = url_to_json(s[idx + 1 :])
+        return s[:idx], args, kw
+
+
 def dict_to_str(indent=" ", **kw):
     if isinstance(indent, int):
         return json_dumps(kw, indent=indent)

@@ -23,10 +23,13 @@ export class Search extends Div {
 
     init_event(): void {
         this.input.on_click(() => this.emit_search(this.open_dialog.bind(this)))
-        // this.input.on_input(() => this.emit_search())
         this.input.on_input(() => this.listui.filter(this.input.get_value()))
         this.listui.on_change((key: string, src: any, dst: Node) => {
-            this.set_data(dst)
+            this.input.set_value(dst.title)
+            if (this.option.id) {
+                web_dom.set_local(this.option.id, dst.title)
+            }
+            this.dialog.hide()
             this.do_change(this.option.key, null, dst.value)
         })
     }
@@ -34,15 +37,9 @@ export class Search extends Div {
         this.input.set_placeholder(s)
         return this
     }
-    set_data(v: Node): this {
-        this.option.data = v.value
-        this.input.set_value(v.title)
-        this.dialog.hide()
-        return super.set_data({ title: v.title, value: v.value })
-    }
     set_value(v: string): this {
         this.input.set_value(v)
-        this.emit_search((node: Node) => {
+        this.emit_search(() => {
             this.do_change(this.option.key, null, this.listui.get_data(v))
         })
         return this
@@ -50,7 +47,7 @@ export class Search extends Div {
     get_value() {
         return this.input.get_value()
     }
-    open_dialog(node: Node) {
+    open_dialog() {
         if (this.listui.option.data.size) {
             this.show_search_dialog()
         } else {
@@ -64,12 +61,16 @@ export class Search extends Div {
             name: this.option.key,
         }, (node: Node) => {
             this.listui.set_option(node)
-            call_back(node)
+            call_back()
 
         })
         return this
     }
-
+    render_option(): void {
+        if (this.option.id) {
+            web_dom.get_loacl_str(this.option.id, (v: any) => this.set_value(v))
+        }
+    }
     show_search_dialog() {
         // console.log(this.get_rect(), this.el)
         this.dialog.set_style({
