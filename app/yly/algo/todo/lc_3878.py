@@ -33,23 +33,21 @@ class Solution(MockCf):
             r = dfs(i - 1, v_or, False)
             return r
 
-        a=0
-        s=0
-        vor=0
-        is_max=False
+        suf=[0]*(n+1)
+        for i in range(n-1,-1-1):
+            suf[i]=suf[i+1]|nums[i]
+        s,ev=0,[0,0]
         for i,v in enumerate(nums):
-            nv=vor|v
-            if nv==mx_or:
-                a+=n-i
-            elif nv==v
-            vor=nv
-            
-            
-        s = 0
-        for i in range(n):
-            s += dfs(i, 0, False)
-            self.logger.map(i=i, s=s)
-        dfs.cache_clear()
+            if v==mx_or:
+                ev=[i+1,i+1]
+            elif suf[i]==suf[i+1] or suf[i]==nums[i]:
+                for ei in range(2):
+                    nei=ei or suf[i]==nums[i]
+                    ev[ei]=nei+ev[nei]
+                    
+            else:
+                ev[1]=ev[0]
+            s+=ev[1]
         return s
 
     execute = countGoodSubarrays
