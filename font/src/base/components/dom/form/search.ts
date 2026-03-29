@@ -20,10 +20,17 @@ export class Search extends Div {
             zIndex: Constant.Z_INDEX_1
         }).hide()
     }
-
+    filter() {
+        this.listui.filter(this.input.get_value())
+        if (this.listui.option.data.size == 0) {
+            this.dialog.hide()
+        } else {
+            this.dialog.show()
+        }
+    }
     init_event(): void {
         this.input.on_click(() => this.emit_search(this.open_dialog.bind(this)))
-        this.input.on_input(() => this.listui.filter(this.input.get_value()))
+        this.input.on_input(this.filter.bind(this))
         this.listui.on_change((key: string, src: any, dst: Node) => {
             this.input.set_value(dst.title)
             if (this.option.id) {

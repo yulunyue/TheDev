@@ -21,7 +21,7 @@ class Solution(MockCf):
         mx_or = (1 << mx.bit_length()) - 1
 
         @functools.lru_cache(None)
-        def dfs(i, v,  max_exist):
+        def dfs(i, v, max_exist):
             if i < 0:
                 return 0
             if nums[i] == mx_or:
@@ -29,25 +29,27 @@ class Solution(MockCf):
             v_or = nums[i] | v
             if v_or == v or v_or == nums[i]:
                 max_exist = max_exist or v_or == nums[i]
-                return  max_exist+ dfs(i - 1, v_or,max_exist)
+                return max_exist + dfs(i - 1, v_or, max_exist)
             r = dfs(i - 1, v_or, False)
             return r
 
-        suf=[0]*(n+1)
-        for i in range(n-1,-1-1):
-            suf[i]=suf[i+1]|nums[i]
-        s,ev=0,[0,0]
-        for i,v in enumerate(nums):
-            if v==mx_or:
-                ev=[i+1,i+1]
-            elif suf[i]==suf[i+1] or suf[i]==nums[i]:
+        suf = [0] * (n + 1)
+        for i in range(n - 1, -1, -1):
+            suf[i] = suf[i + 1] | nums[i]
+        self.log(suf=suf, nums=nums)
+        s, ev = 0, [0, 0]
+        for i, v in enumerate(nums):
+            if v == mx_or:
+                ev = [i + 1, i + 1]
+            elif suf[i] == suf[i + 1] or suf[i] == nums[i]:
                 for ei in range(2):
-                    nei=ei or suf[i]==nums[i]
-                    ev[ei]=nei+ev[nei]
-                    
+                    nei = ei or suf[i] == nums[i]
+                    ev[ei] = nei + ev[nei]
+
             else:
-                ev[1]=ev[0]
-            s+=ev[1]
+                ev[1] = ev[0]
+            self.log(i=i, v=v, ev=ev)
+            s += ev[1]
         return s
 
     execute = countGoodSubarrays

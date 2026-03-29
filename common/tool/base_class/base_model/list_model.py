@@ -10,3 +10,7 @@ class ListModel(BaseModel):
 
     def get_value(self) -> list:
         return super().get_value()
+
+    def append(self, v):
+        self.get_value().append(v)
+        return self

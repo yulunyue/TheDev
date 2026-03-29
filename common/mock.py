@@ -112,8 +112,8 @@ class MockCf:
             c.add(get_dom_type(k, getattr(self, k)))
         return r
 
-    def log(self, msg):
-        pass
+    def log(self, **kw):
+        self.logger.map(**kw)
 
     def get_agent(self, **kw):
         return

@@ -13,6 +13,8 @@ class Bd(FileConfig):
     name = SearchModel()
     size = SelectModel().set_options(4, 6, 10)
     records = ListModel()
+    player_0 = StrModel()
+    player_1 = StrModel()
 
     @classmethod
     def get_font_columns(cls):

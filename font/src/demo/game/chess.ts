@@ -79,12 +79,28 @@ export class Chess extends Column {
             new Div().set_size(1)
         ])
     }
+    hander_on_click(y: number, x: number, i: number, j: number) {
+        web_dom.post("/game/f5chess/put", { i, j }, (data: any) => {
+            this.g.draw_child({ y: i, x: j, type: Constant.SVG_TYPE_CIRCLE })
+        })
+    }
     init_event(): void {
         this.top_form.on_submit(this.hander_sub.bind(this))
         this.top_form.on_change(this.hander_change.bind(this))
+        this.g.on_click(this.hander_on_click.bind(this))
+    }
+    draw(dst: any) {
+        this.title.set_html(`${dst.name}回合${dst.records.length};`)
+        this.g.set_option({
+            x: dst.size,
+            y: dst.size
+        })
     }
     hander_change(key: string, src: any, dst: any) {
-        console.log(key, src, dst)
+        if (key == "name") {
+            this.draw(dst)
+        }
+        // console.warn(key, src, dst)
         // web_dom.set_local("game_chess", dst)
     }
     hander_sub(key: string, op: any) {

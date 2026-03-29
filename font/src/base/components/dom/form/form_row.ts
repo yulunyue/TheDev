@@ -30,15 +30,27 @@ export class FormRow extends Div {
             this.footer
         ])
     }
+    do_change(key: string, src?: any, dst?: any) {
+        if (this.option.id) {
+            web_dom.set_local(this.option.id, this.get_value())
+        }
+        return super.do_change(key, src, dst)
+    }
     get_row(o: Node) {
         let r = new FormContainer().set_option(o).on_change(this.do_change)
         this.child_map[o.key] = r
         return r
     }
-    render_childs(childs: any) {
-        this.body.set_childs(childs, (o: Node) => this.get_row(o))
+    render_childs(childs: Node[]) {
+        for (var i = 0; i < childs.length; i++) {
+            let o = childs[i]
+            if (o.type == Constant.DOM_TYPE_SEARCH && !o.url) {
+                o.url = this.option.url + "/web_search"
+            }
+        }
+        this.body.set_childs(childs, this.get_row.bind(this))
         if (this.option.id) {
-            web_dom.get_local(this.option.id, (v: any) => this.set_value(v))
+            web_dom.get_local(this.option.id, this.set_value.bind(this))
         }
     }
     render_option(): void {
@@ -52,7 +64,7 @@ export class FormRow extends Div {
         this.render_footer()
     }
     render_footer() {
-        let btns = this.option.data.btns || { insert: "提交" }
+        let btns = this.option.data.btns || { insert: "保存" }
         this.footer.clear()
         for (var key in btns) {
             let btn = new Button().set_html(btns[key])
@@ -80,12 +92,9 @@ export class FormRow extends Div {
     }
     get_value() {
         let ret = {}
-        for (var i = 0; i < this.option.childs.length; i++) {
-            let value = (this.body.childs[i] as FormContainer).container.get_value()
-            if (value == undefined) {
-                value = null
-            }
-            ret[this.option.childs[i].key] = value
+        for (var key in this.child_map) {
+            let value = this.child_map[key].get_value()
+            ret[key] = value
         }
         return ret
     }
@@ -94,7 +103,6 @@ export class FormRow extends Div {
     }
 
     set_value(value: any): this {
-        console.log(value)
         for (var key in this.child_map) {
             // console.log(key, value, value[key], this.child_map[key])
             this.child_map[key].set_value(value[key])

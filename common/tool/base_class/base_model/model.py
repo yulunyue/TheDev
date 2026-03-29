@@ -46,6 +46,9 @@ class BaseModel:
     def set_value(self, value):
         return self.data_source.update_param_value(self, value)
 
+    def set_value_if_none(self, value):
+        return self.data_source.update_param_value(self, value, if_none=True)
+
     def to_json(self):
         v = self.get_value()
         return dict(

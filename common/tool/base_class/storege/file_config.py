@@ -35,10 +35,12 @@ class FileConfig(ConfigBase):
         cls.fp.write_file(cls.config)
         return cls
 
-    def update_param_value(self, ins: BaseModel, value):
+    def update_param_value(self, ins: BaseModel, value, if_none=False):
         c = self.__class__.config
         if self._id not in c:
             c[self._id] = dict()
+        if ins.key in c[self._id] and if_none:
+            return
         c[self._id][ins.key] = value
 
     def get_param_value(self, ins: BaseModel):
