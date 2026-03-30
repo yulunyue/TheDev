@@ -11,6 +11,11 @@ export class FormRow extends Div {
     body: Div
     footer: Div
     _submit_call_back: any
+    input_width: number
+    set_input_width(width: number) {
+        this.input_width = width
+        return this
+    }
     on_submit(call: any) {
         this.event_hander[Constant.EVENT_SUBMIT] = call
         return this
@@ -37,8 +42,10 @@ export class FormRow extends Div {
         return super.do_change(key, src, dst)
     }
     get_row(o: Node) {
-        let r = new FormContainer().set_option(o).on_change(this.do_change)
-        this.child_map[o.key] = r
+        let r = new FormContainer()
+        if (this.input_width) {
+            r.container.set_width(this.input_width)
+        }
         return r
     }
     render_childs(childs: Node[]) {
@@ -49,6 +56,11 @@ export class FormRow extends Div {
             }
         }
         this.body.set_childs(childs, this.get_row.bind(this))
+        for (var i = 0; i < childs.length; i++) {
+            let o = childs[i]
+            this.body.childs[i].set_option(o).on_change(this.do_change.bind(this))
+            this.child_map[o.key] = this.body.childs[i]
+        }
         if (this.option.id) {
             web_dom.get_local(this.option.id, this.set_value.bind(this))
         }
@@ -90,7 +102,7 @@ export class FormRow extends Div {
     load_form_uri() {
 
     }
-    get_value() {
+    get_value(): any {
         let ret = {}
         for (var key in this.child_map) {
             let value = this.child_map[key].get_value()

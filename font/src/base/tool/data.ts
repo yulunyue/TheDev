@@ -2,7 +2,7 @@ import { Constant, dialog, FormRow } from "../components/export"
 import web_dom from "../web/web_dom"
 export class Data {
     get_user_name(call: any) {
-        let user_name = web_dom.get_loacl_str(Constant.username)
+        let user_name = web_dom.get_local_data(Constant.username)
         if (!user_name) {
             let t = new FormRow().set_option({
                 childs: [{

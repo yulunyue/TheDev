@@ -38,17 +38,30 @@ class WebDom {
     get_location() {
         return location.href
     }
-    get_local(key: string, call?: any) {
-        return this.get_loacl_str(key, (v: string) => {
-            call(JSON.parse(v))
-        })
+    get_local(key: string, hander_after: any) {
+        this.get_loacl_str(key, hander_after, (v: string) => JSON.parse(v))
+
     }
-    get_loacl_str(key: string, call?: any) {
+    get_loacl_str(key: string, hander_after: any, hander_pre?: any) {
         let ret = localStorage.getItem("yly_" + key)
         if (ret) {
-            call?.(ret)
+            if (hander_pre) {
+                ret = hander_pre(ret)
+            }
+            hander_after(ret)
         }
-        return ret
+    }
+    get_local_data(key: string, default_value?: any) {
+        let ret = localStorage.getItem("yly_" + key)
+        if (ret) {
+            try {
+                return JSON.parse(ret)
+            }
+            catch {
+                return ret
+            }
+        }
+        return default_value
     }
     get_param(key: string, defult_value?: any) {
         if (!(key in this.url_param)) {
@@ -109,7 +122,7 @@ class WebDom {
         } else if (method == this.HTTP_POST_METHOD) {
             req.open(method, url);
             req.setRequestHeader(this.HTTP_CONTENT_TYPE_KEY, this.HTTP_CONTENT_TYPE_JSON)
-            req.setRequestHeader(Ct.the_dev_user, this.get_loacl_str(Ct.username))
+            req.setRequestHeader(Ct.the_dev_user, this.get_local_data(Ct.username))
             for (var key in this.headers) {
                 if (this.headers[key]) {
                     req.setRequestHeader(key, this.headers[key]);

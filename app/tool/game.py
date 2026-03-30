@@ -4,14 +4,8 @@ from common.util.export import IO_MANAGE, ApiBase
 from .template.front import FormBase
 
 
-class ChessBd(FormBase, ApiBase):
+class ChessF5(FormBase, ApiBase):
     model = Bd
-
-    def get_user(self, **kw):
-        return FontSearch().add_node(IO_MANAGE.io_map.keys())
-
-    def get_algo(self, **kw):
-        return FontSearch()
 
     def fight(self):
         pass
