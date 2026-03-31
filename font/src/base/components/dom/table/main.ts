@@ -45,6 +45,7 @@ export class Table extends Div {
     }
     init_event(): void {
         this.search_btn.on_click(this.filter.bind(this))
+        this.pagination.on_change(this.show_body.bind(this))
     }
     init_node(): void {
         this.search_input = new Input().set_placeholder("关键字搜索")
@@ -103,7 +104,6 @@ export class Table extends Div {
     }
     set_body(items: any[]) {
         this.option.data.all_rows = items
-        this.pagination.on_change(this.show_body.bind(this))
         this.filter()
         return this
     }
