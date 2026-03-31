@@ -24,7 +24,7 @@ export class TrBody extends Div {
         this.clear().add_childs(this.option.childs.map(v => {
             this.field_map[v.key] = new BodyTd().set_row_idx(
                 this.row_idx
-            ).on_change(null).set_option(v)
+            ).set_option(v)
             return this.field_map[v.key]
         }))
     }

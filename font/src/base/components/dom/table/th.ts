@@ -17,7 +17,14 @@ export class Th extends Div {
             top: 0
         })
     }
+    set_value(value: any): this {
+        if (typeof value == "object") {
+            value = JSON.stringify(value)
+        }
+        this.set_html(value)
+        return this
+    }
     render_option(): void {
-        this.set_html(this.option.title || this.option.value)
+        this.set_value(this.option.value)
     }
 }

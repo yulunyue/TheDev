@@ -10,46 +10,68 @@ export class Pagination extends Div {
     page_size_select: Select
     page_info: Span
     cur_page: Input
-
-    init_node(): void {
-        this.option.data = { all_length: 0, cur_page: 0 }
-        this.page_size_select = new Select().set_style({
+    left_btn: Button
+    go_btn: Button
+    right_btn: Button
+    init_style(): void {
+        this.page_size_select.set_style({
             width: Constant.INPUT_NUMBER_WIDTH
-        }).set_option({
-            childs: [
-                new Node().set_value(10)
-            ]
         })
-        this.cur_page = new Input().set_option(new Node().set_type(Constant.NUMBER)).set_style({
+        this.cur_page.set_style({
+            width: Constant.INPUT_NUMBER_WIDTH,
             textAlign: "center"
-        }).set_value(this.option.data.cur_page)
+        })
+    }
+    init_event(): void {
+        this.left_btn.on_click(() => this.add(-1))
+        this.right_btn.on_click(() => this.add(1))
+        this.go_btn.on_click(() => this.jump(this.cur_page.get_int()))
+        this.page_size_select.on_change(this.page_size_change.bind(this))
+    }
+    init_node(): void {
+        this.page_size_select = new Select()
+        this.cur_page = new Input()
         this.page_info = new Span()
-        this.render_page_size()
-        this.add_child(this.page_size_select)
+        this.left_btn = new Button().set_html("<<")
+        this.right_btn = new Button().set_html(">>")
+        this.go_btn = new Button().set_html("go")
         this.add_childs([
-            new Button().set_html("<<").on_click(() => this.add(-1)),
+            this.page_size_select,
+            this.left_btn,
             this.cur_page,
             this.page_info,
-            new Button().set_html("go").on_click(() => this.jump(this.cur_page.get_int())),
-            new Button().set_html(">>").on_click(() => this.add(1)),
+            this.go_btn,
+            this.right_btn,
         ])
     }
     add(v: number) {
-        return this.jump(this.option.data.cur_page + v)
+        return this.jump(this.cur_page.get_int() + v)
+    }
+    page_size_change() {
+        let max_page_size = Math.ceil(this.option.data.all_length / this.page_size_select.get_int())
+        this.page_info.set_value(`/${max_page_size}-${this.option.data.all_length}`)
+        this.jump(0)
     }
     jump(v: number) {
-        let page_size = this.page_size_select.get_value().value
-        let max_page = Math.floor(this.option.data.all_length / page_size)
-        v = (v + max_page) % max_page
-        this.do_change(this.option.data.cur_page, v)
-        this.option.data.cur_page = v
-        this.render_option()
+        let page_size = this.page_size_select.get_int()
+        let cur_page = this.cur_page.get_int()
+        let max_page = Math.ceil(this.option.data.all_length / page_size)
+        if (v < 1) {
+            v = 1
+        }
+        if (v > max_page) {
+            v = max_page
+        }
+        this.cur_page.set_value(v)
+        this.do_change(this.option.key, cur_page, v)
         return this
     }
     set_length(length: number) {
-        this.option.data.all_length = length
-        this.jump(0)
-        return this
+        return this.set_option({
+            data: {
+                all_length: length
+            }
+        })
     }
     render_page_size() {
         this.page_size_select.set_option(
@@ -59,28 +81,28 @@ export class Pagination extends Div {
                     title: i
                 })
             }))
-        ).on_change(() => {
-            this.jump(0)
-        })
+        )
     }
     render_option(): void {
-        let page_size = this.page_size_select.get_value().value
-        this.cur_page.set_value(this.option.data.cur_page)
-        let max_page_size = Math.floor(this.option.data.all_length / page_size)
+        this.option.data.all_length = this.option.data.all_length || 0
+        this.render_page_size()
+        this.cur_page.set_value(1)
+        let max_page_size = Math.ceil(this.option.data.all_length / this.page_size_select.get_int())
         this.page_info.set_value(`/${max_page_size}-${this.option.data.all_length}`)
 
     }
     get_cur_idxs() {
-        let page_size = this.page_size_select.get_value().value
-        let cur_page = this.cur_page.get_int()
+        let page_size = this.page_size_select.get_int()
+        let cur_page = this.cur_page.get_int() - 1
         let ret = []
         for (var i = 0; i < page_size; i++) {
+            if (i >= this.option.data.all_length) {
+                break
+            }
             ret.push(i + cur_page * page_size)
         }
         return ret
     }
-    on_mount() {
-        // this.jump(0)
-    }
+
 
 }

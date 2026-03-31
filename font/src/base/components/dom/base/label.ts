@@ -15,6 +15,9 @@ export class Label extends Div {
         })
     }
     set_value(value: any): this {
+        if (typeof value == "object") {
+            value = JSON.stringify(value)
+        }
         this.set_html(value)
         return this
     }

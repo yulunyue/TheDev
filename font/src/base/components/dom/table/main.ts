@@ -19,24 +19,28 @@ export class Table extends Div {
     body_div: TBody
     head_div: Column
     head_title: Title
-    tail_div: Div
+    tail_div: Column
     table_container: Div
     pagination: Pagination
     search_input: Input
     table: Div
     src_data: any
     search_btn: Button
+    tail_left: Title
     init_style() {
         this.table_container.set_style({
             textAlign: "left",
             overflow: "auto",
+            width: 1,
             maxHeight: 600,
         })
         this.table.set_style({
             overflow: "auto",
             maxHeight: 600,
+            width: 1
         })
         this.head_title.set_flex(1)
+        this.tail_left.set_flex(1)
         this.head_div.set_style({
             width: 1
         })
@@ -68,7 +72,9 @@ export class Table extends Div {
             this.table
         ])
         this.pagination = new Pagination()
-        this.tail_div = new Div().add_childs([
+        this.tail_left = new Title()
+        this.tail_div = new Column().add_childs([
+            this.tail_left,
             this.pagination
         ])
         this.add_childs([
@@ -76,19 +82,6 @@ export class Table extends Div {
             this.table_container,
             this.tail_div
         ])
-    }
-    hander_row_change(th: any) {
-        let { idx, key, value } = th
-        this.src_data.body[idx][key] = value
-    }
-    add() {
-        this.header_tr.add_one_row()
-        return this
-    }
-    save_all() {
-        if (this.option.key) {
-            this.http("save", this.src_data, () => { })
-        }
     }
 
 
@@ -109,15 +102,13 @@ export class Table extends Div {
     }
     show_body() {
         this.body_div.clear()
-        let idx = this.pagination.get_cur_idxs()
-
-        for (var i = 0; i < idx.length; i++) {
-            let data = this.option.data.rows[idx[i]]
-            console.log(data)
+        let idxs = this.pagination.get_cur_idxs()
+        for (var i = 0; i < idxs.length; i++) {
+            let data = this.option.data.rows[idxs[i]]
             if (!data) {
                 return
             }
-            let td = this.header_tr.new_dom_row(idx[i]).set_data(data)
+            let td = this.header_tr.new_dom_row(idxs[i]).set_data(data)
             this.body_div.add_child(td)
         }
     }
