@@ -6,6 +6,9 @@ from common.util.export import Node, C, ApiBase
 class FormBase(ApiBase):
     model: ConfigBase = ConfigBase
 
+    def get(self, key, **kw):
+        return self.__class__.model.get(key)
+
     def to_form_row_view(self):
         return Form().set_row().set_body(*self.__class__.model.get_font_columns())
 
