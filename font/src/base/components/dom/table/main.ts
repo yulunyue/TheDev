@@ -13,10 +13,12 @@ import { TrBody } from "./trbody";
 import { TBody } from "./tbody";
 import { Thead } from "./thead";
 import { Column } from "../../export";
+import { Title } from "../form/title";
 export class Table extends Div {
     header_tr: TrHead
     body_div: TBody
-    head_div: Div
+    head_div: Column
+    head_title: Title
     tail_div: Div
     table_container: Div
     pagination: Pagination
@@ -34,9 +36,11 @@ export class Table extends Div {
             overflow: "auto",
             maxHeight: 600,
         })
+        this.head_title.set_flex(1)
         this.head_div.set_style({
             width: 1
         })
+        this.search_input.set_style({ width: Constant.WIDTH_TEXT })
         this.table.set_style({ overflow: "auto" })
     }
     init_event(): void {
@@ -45,7 +49,9 @@ export class Table extends Div {
     init_node(): void {
         this.search_input = new Input().set_placeholder("关键字搜索")
         this.search_btn = new Button().set_html("搜索")
-        this.head_div = new Div().add_childs([
+        this.head_title = new Title()
+        this.head_div = new Column().add_childs([
+            this.head_title,
             this.search_input,
             this.search_btn,
         ])
@@ -93,6 +99,7 @@ export class Table extends Div {
         let sv = this.search_input.get_value()
         this.option.data.rows = Util.filter_json_array(this.option.data.all_rows, sv)
         this.pagination.set_length(this.option.data.rows.length)
+        this.show_body()
     }
     set_body(items: any[]) {
         this.option.data.all_rows = items
