@@ -81,9 +81,8 @@ let DEV_FUNC = {
         }).set_height(200).set_center()
     },
     table() {
-        let table = new Table()
-        table.set_data({
-            header: [{
+        let table = new Table().set_option({
+            childs: [{
                 key: "a",
                 value: "a"
             }, {
@@ -93,7 +92,7 @@ let DEV_FUNC = {
             }, {
                 key: "method", title: "操作", type: "btns", value: ["remove", "add"]
             }],
-            body: Util.array(2, (i: number) => {
+            value: Util.array(13, (i: number) => {
                 return {
                     a: i,
                     b: "value" + i

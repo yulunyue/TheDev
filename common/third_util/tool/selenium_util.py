@@ -225,7 +225,7 @@ class SeleniumUtil:
                 self.options.add_argument("--headless")
                 self.options.add_argument("--window-size=1920,1080")
                 self.options.add_argument(
-                    f"--user-data-dir={chrome_driver.child('dev_user_data4').make_dir_if_not_exist(True).get_abs_path()}"
+                    f"--user-data-dir={chrome_driver.child('dev_user_data6').make_dir_if_not_exist(True).get_abs_path()}"
                 )
             self.driver = webdriver.Chrome(options=self.options, service=service)
             self.wait = WebDriverWait(self.driver, self.default_time_out)

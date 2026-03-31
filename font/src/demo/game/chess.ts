@@ -27,7 +27,7 @@ export class Chess extends Column {
         super.init_style()
         this.full().set_center()
         this.chess_width = 400
-        this.top_form.set_input_width(50)
+        this.top_form.set_input_width(60)
         // this.middle.set_width(this.chess_width)
         this.g.set_style({
             width: this.chess_width,

@@ -16,6 +16,9 @@ export class Div {
     _value: any = null
     event_hander: any
     do_change(key: string, src?: any, dst?: any) {
+        if (src == null && dst == null) {
+            return this
+        }
         this.event_hander[Constant.EVENT_CHANGE]?.(key, src, dst)
         return this
     }
