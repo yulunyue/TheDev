@@ -70,7 +70,7 @@ export class Chess extends Column {
         let players = [dst.player_0, dst.player_1]
         let colors = ["黑", "白"]
         let idx = dst.records.length % 2
-        this.title.set_html(`[回合[${dst.records.length}] [${players[idx]}执${colors[idx]}] `)
+        this.title.set_html(`回合[${dst.records.length}] [${players[idx]}执${colors[idx]}] `)
         let childs = []
         for (var i = 0; i < dst.records.length; i++) {
             let v = dst.records[i]
