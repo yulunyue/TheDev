@@ -15,11 +15,9 @@ import data from "src/base/tool/data";
 let COLORS = [Constant.COLOR_BALCK2, Constant.COLOR_WHITE2]
 export class Chess extends Column {
     g: Grid
-    algo: Search
     top_control: Div
     pro: Progress
     top_form: FormColumn
-    user: Search
     chess_width: number
     pre: Pre
     title: Title
@@ -35,21 +33,10 @@ export class Chess extends Column {
             // border: "1px solid #000"
         })
     }
-    fight() {
-
-    }
-    execute() {
-
-    }
-    rollback() {
-
-    }
     init_node(): void {
         this.g = new Grid()
         this.top_form = new FormColumn()
         this.pro = new Progress()
-        this.user = new Search()
-        this.algo = new Search()
         this.pre = new Pre()
         this.title = new Title()
         this.add_childs([
@@ -69,8 +56,8 @@ export class Chess extends Column {
         web_dom.post("/game/f5chess/play", {
             name: top_value.name,
             y: i, x: j,
-        }, (data: any) => {
-            this.draw(data)
+        }, () => {
+            this.draw()
         })
 
     }
@@ -79,11 +66,11 @@ export class Chess extends Column {
         this.top_form.on_change(this.hander_change.bind(this))
         this.g.on_click(this.hander_on_click.bind(this))
     }
-    draw(dst: any) {
+    show_data(dst: any) {
         let players = [dst.player_0, dst.player_1]
         let colors = ["黑", "白"]
         let idx = dst.records.length % 2
-        this.title.set_html(`[${dst.name}] [${dst.player_0}] VS [${dst.player_1}] 回合[${dst.records.length}] [${players[idx]}执${colors[idx]}] `)
+        this.title.set_html(`回合[${dst.records.length}] [${players[idx]}执${colors[idx]}] `)
         let childs = []
         for (var i = 0; i < dst.records.length; i++) {
             let v = dst.records[i]
@@ -100,10 +87,20 @@ export class Chess extends Column {
             childs: childs
         })
     }
+    uri(path: string) {
+        return "/game/f5chess" + path
+    }
+    draw() {
+        web_dom.post(this.uri("/get"), {
+            key: this.top_form.get_value().name
+        }, (data) => {
+            this.show_data(data)
+        })
+    }
     hander_change(key: string, src: any, dst: any) {
-        // if (key == "name") {
-        //     this.draw(this.top_form.get_value())
-        // }
+        if (key == "name") {
+            this.draw()
+        }
     }
     hander_sub(key: string, op: any) {
         console.log(key, op)
@@ -113,15 +110,8 @@ export class Chess extends Column {
             url: "/game/f5chess",
             id: "game_chess"
         })
-        this.user.set_option({
-            url: "/game/f5chess/get_user",
-            title: "用户"
-        })
         this.title.set_html("info")
-        this.algo.set_option({
-            url: "/game/f5chess/get_algo",
-            title: "算法"
-        })
+
     }
 
 }

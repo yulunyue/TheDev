@@ -11,7 +11,7 @@ from common.tool.export import (
 
 class Bd(FileConfig):
     name = SearchModel()
-    size = SelectModel().set_options(4, 6, 10)
+    size = SelectModel().set_options(3, 4, 6, 10)
     records = ListModel()
     p0 = SearchModel()
     p1 = SearchModel()
