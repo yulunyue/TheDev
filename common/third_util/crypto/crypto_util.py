@@ -15,7 +15,7 @@ class CryptoGraphy:
     def __init__(self):
         self.root_dir = File("data/cert/gen")
 
-    def load_from_pem(self, cert_data: str):
+    def load_from_cert(self, cert_data: str):
         if is_base64_code(cert_data):
             cert_data = base64_decode(cert_data)
         if isinstance(cert_data, str):

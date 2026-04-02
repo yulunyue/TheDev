@@ -15,6 +15,10 @@ export class Div {
     size: number = 0
     _value: any = null
     event_hander: any
+
+    init_table_style(): void {
+
+    }
     do_change(key: string, src?: any, dst?: any) {
         if (src == null && dst == null) {
             return this
@@ -320,6 +324,7 @@ export class Div {
         return this
     }
     set_value(value: any) {
+        // console.trace(value)
         return this
     }
 

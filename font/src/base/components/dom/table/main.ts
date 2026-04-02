@@ -3,18 +3,18 @@ import Ct from "../../../web/constant"
 import web from "../../../web/web_dom"
 import { Node, to_node } from "../../../web/cls";
 import { Input } from "../form/input";
-import { Button, Buttons } from "../form/button";
+import { Button } from "../form/button";
 import { Label } from "../base/label"
 import { Pagination } from "../../combo/pagination";
 import Util from "../../../tool/util"
-import { Constant } from "../../export";
+import { Constant, Row } from "../../export";
 import { TrHead } from "./trhead";
 import { TrBody } from "./trbody";
 import { TBody } from "./tbody";
 import { Thead } from "./thead";
 import { Column } from "../../export";
 import { Title } from "../form/title";
-export class Table extends Div {
+export class Table extends Row {
     header_tr: TrHead
     body_div: TBody
     head_div: Column
@@ -32,11 +32,9 @@ export class Table extends Div {
             textAlign: "left",
             overflow: "auto",
             width: 1,
-            maxHeight: 600,
         })
         this.table.set_style({
             overflow: "auto",
-            maxHeight: 600,
             width: 1
         })
         this.head_title.set_flex(1)
@@ -45,7 +43,9 @@ export class Table extends Div {
             width: 1
         })
         this.search_input.set_style({ width: Constant.WIDTH_TEXT })
-        this.table.set_style({ overflow: "auto" })
+        this.set_style({ overflow: "auto" })
+
+
     }
     init_event(): void {
         this.search_btn.on_click(this.filter.bind(this))

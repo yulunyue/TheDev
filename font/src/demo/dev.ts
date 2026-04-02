@@ -14,7 +14,7 @@ import {
     Data,
 
 } from "../base/components/export";
-import { D3Chart, MeraGraph } from "../third/export"
+import { D3DagreUtil } from "../third/d3_dagre_util"
 
 let DEV_FUNC = {
     form() {
@@ -84,18 +84,26 @@ let DEV_FUNC = {
         let table = new Table().set_option({
             childs: [{
                 key: "a",
-                value: "a"
+                value: "a",
+                type: Constant.DOM_TYPE_STRING
             }, {
                 key: "b",
                 value: "b",
-                type: "input"
+                type: Constant.DOM_TYPE_INPUT
             }, {
-                key: "method", title: "操作", type: "btns", value: ["remove", "add"]
+                key: "c",
+                value: "c",
+                type: Constant.DOM_TYPE_PRE
+            }, {
+                key: "method", title: "操作",
+                type: Constant.DOM_TYPE_BTNS,
+                value: ["remove", "add"]
             }],
-            value: Util.array(13, (i: number) => {
+            value: Util.array(103, (i: number) => {
                 return {
                     a: i,
-                    b: "value" + i
+                    b: "value" + i,
+                    c: Util.array(303, (v: any) => v)
                 }
             })
         })
@@ -135,6 +143,7 @@ let DEV_FUNC = {
             ])
         ])
     },
+
     sys() {
         let d = new Div()
         let d1 = new Div().set_html("xx")
@@ -146,43 +155,28 @@ let DEV_FUNC = {
         return new Div().add_childs([
             d, d1
         ])
+    },
+    dagre() {
+        let dagre = new D3DagreUtil().set_style({
+            width: 500,
+            height: 500
+        })
+        web_dom.next_frame(() => {
+            dagre.set_option({})
+        })
+        return new Div().add_childs([
+            dagre
+        ])
     }
 }
 export class Dev extends Div {
     svg: Svg
-
-    test_graph() {
-        let node = to_node({
-            value: "flowchart TD",
-            data: {
-                A: ["BC"],
-                C: [["B"]]
-            }
-        })
-
-        this.add_child(new MeraGraph().set_option(node))
-    }
-    test_graph_xy() {
-        let node = to_node({
-            value: MeraGraph.TYPE_XY,
-            data: [[-32, 12], [-32, -94], [-32, -15], [-30, 88]]
-        })
-        this.add_child(new MeraGraph().set_option(node))
-    }
-    test_chart() {
-        let chart = new D3Chart().set_option({
-
-        })
-        this.add_child(chart)
-    }
-
-
-    on_mount(): void {
-
+    init_style(): void {
+        this.full()
     }
     render(): void {
         let method = web_dom.get_param("method")
-        this.add_childs([DEV_FUNC[method]()])
+        this.add_childs([DEV_FUNC[method]().full()])
     }
 
 }

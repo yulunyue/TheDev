@@ -18,3 +18,19 @@ body, html {
 .load_gif {
     background-image: url('./resource/img/load.gif');
 }
+
+.node rect, .node circle, .node polygon {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: #fff;
+}
+.node .label {
+    font-size: 14px;
+    font-family: sans-serif;
+    fill: #333;
+}
+.edgePath path {
+    stroke: #555;
+    stroke-width: 1.5px;
+    fill: none;
+}

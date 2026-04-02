@@ -6,7 +6,7 @@ from common.tool.export import DomFile, FrontTable
 class Util:
 
     def cert_dump(self, data: str, **kw):
-        return Node(value=CryptoGraphy().load_from_data(data))
+        return Node(value=CryptoGraphy().load_from_cert(data))
 
     def b64_code(self, code: str, **kw):
         return Node(value=b64_code(code))
