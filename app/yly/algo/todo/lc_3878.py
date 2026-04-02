@@ -49,7 +49,7 @@ class Solution(MockCf):
             else:
                 ev[1] = ev[0]
             self.log(i=i, v=v, ev=ev)
-            s += ev[1]
+            s += ev[0]
         return s
 
     execute = countGoodSubarrays
