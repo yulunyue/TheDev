@@ -11,10 +11,15 @@ export class Label extends Div {
         this.set_style({
             fontFamily: Constant.DEFAULT_FONT_FAMILY,
             fontSize: Constant.DEFAULT_FONT_SIZE,
-            textWrap: "wrap"
+            textWrap: "wrap",
+            textOverflow: "ellipsis"
+
         })
     }
     set_value(value: any): this {
+        if (typeof value == "object") {
+            value = JSON.stringify(value)
+        }
         this.set_html(value)
         return this
     }
@@ -40,37 +45,6 @@ export class Label extends Div {
     }
 
 }
-export class Span extends Div {
-    constructor() {
-        super("span")
-    }
-    set_value(value: any): this {
-        return this.set_html(value)
-    }
-}
 
-export class Pre extends Div {
-    constructor() {
-        super("pre")
-    }
-    init_node(): void {
 
-    }
-    set_value(value: any): this {
-        if (value instanceof Object) {
-            value = JSON.stringify(value, null, 2)
-        }
-        return this.set_html(value)
-    }
-    init_style(): void {
-        this.set_style({
-            whiteSpace: "pre-wrap",
-            overflowWrap: "break-word",
-            overflowY: "auto"
-        })
-    }
-    render_option() {
-        this.set_value(this.option.value)
-    }
-}
 

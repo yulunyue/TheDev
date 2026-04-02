@@ -4,17 +4,19 @@ from common.util.export import List, File, TempFile
 
 
 class PandasUtil:
+    @classmethod
+    def is_excel_file(cls, name):
+        return name in {"xlsx"}
+
+    def dump_json(self):
+        File(self.path + ".json").write_file(self.to_json())
+
     def load(self, path: str):
         self.path = path
-        if path.endswith(".shp"):
-            import geopandas as gp
-
-            self.instance = gp.read_file(path)
-        else:
-            self.instance = pd.read_excel(path, sheet_name="Sheet1")
+        self.instance = pd.read_excel(path)
         return self
 
-    def info(self):
+    def get_info(self):
         f = TempFile(TempFile.STR_MODE)
         self.instance.info(buf=f)
         return f.data
@@ -31,3 +33,6 @@ class PandasUtil:
 
     def hander(self, method, *args):
         return getattr(self, method)(*args)
+
+    def to_json(self):
+        return self.instance.to_json(force_ascii=False, orient="columns")

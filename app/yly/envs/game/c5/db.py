@@ -11,14 +11,14 @@ from common.tool.export import (
 
 class Bd(FileConfig):
     name = SearchModel()
-    size = SelectModel().set_options(4, 6, 10)
+    size = SelectModel().set_options(3, 4, 6, 10)
     records = ListModel()
-    player_0 = StrModel()
-    player_1 = StrModel()
+    p0 = SearchModel()
+    p1 = SearchModel()
 
     @classmethod
     def get_font_columns(cls):
-        return [cls.name, cls.size]
+        return [cls.name, cls.size, cls.p0, cls.p1]
 
     @classmethod
     def get_id(cls, name, **kw):

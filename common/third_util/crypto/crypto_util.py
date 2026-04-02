@@ -13,9 +13,9 @@ import sys
 
 class CryptoGraphy:
     def __init__(self):
-        self.tmp_file = File("data/cert/root.pem")
+        self.root_dir = File("data/cert/gen")
 
-    def load_from_data(self, cert_data: str):
+    def load_from_cert(self, cert_data: str):
         if is_base64_code(cert_data):
             cert_data = base64_decode(cert_data)
         if isinstance(cert_data, str):
@@ -28,6 +28,9 @@ class CryptoGraphy:
         except Exception as e:
             raise Exception(e, cert_data[:100])
         return self
+
+    def load_from_jks(self, data: str, password: str):
+        pass
 
     def to_json(self):
         return dict(

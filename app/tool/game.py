@@ -4,22 +4,13 @@ from common.util.export import IO_MANAGE, ApiBase
 from .template.front import FormBase
 
 
-class ChessBd(FormBase, ApiBase):
+class ChessF5(FormBase, ApiBase):
     model = Bd
-
-    def get_user(self, **kw):
-        return FontSearch().add_node(IO_MANAGE.io_map.keys())
-
-    def get_algo(self, **kw):
-        return FontSearch()
-
-    def fight(self):
-        pass
 
     def play(self, name, y, x, **kw):
         c: Bd = Bd.get(name)
-        c.player_0.set_value_if_none(self.username)
-        c.player_1.set_value_if_none(self.username)
+        c.p0.set_value_if_none(self.username)
+        c.p1.set_value_if_none(self.username)
         c.records.append(c.size.get_value() * y + x)
         c.save()
         return c

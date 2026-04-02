@@ -37,14 +37,14 @@ export class FormContainer extends Div {
         return this
     }
     set_value(value: any): this {
-        this.container.main?.set_value(value)
+        this.container.main.set_value(value)
         return this
     }
     on_change(call: any) {
-        this.container.main?.on_change(call)
+        this.container.main.on_change(call)
         return this
     }
     get_value() {
-        return this.container.main?.get_value()
+        return this.container.main.get_value()
     }
 }

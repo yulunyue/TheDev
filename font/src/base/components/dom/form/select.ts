@@ -64,6 +64,9 @@ export class Select extends Div {
         }
         return this.option.childs[0].value
     }
+    get_int() {
+        return parseInt(this.get_value())
+    }
     render_option(): void {
         if (this.option.url) {
             web.post(this.option.url, {}, (node: Node) => {

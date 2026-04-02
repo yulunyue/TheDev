@@ -14,5 +14,9 @@ export class Container extends Div {
     get_value() {
         return this.main.get_value()
     }
+    set_value(value: any): this {
+        this.main.set_value(value)
+        return this
+    }
 }
 export { Div, DivFactory }

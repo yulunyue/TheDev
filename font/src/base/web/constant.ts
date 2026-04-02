@@ -30,6 +30,7 @@ class Constant {
     INPUT_NUMBER_WIDTH = 20
     INPUT_STR_WIDTH = 100
     INPUT_HEIGHT = 40
+    TABLE_ROW_MIN_HEIGHT = 80
     INPUT_STRING_MIN_WIDTH = 50
     TEXT_AREA_WIDTH = 600
     TEXT_AREA_HEIGHT_1 = 100
@@ -51,6 +52,7 @@ class Constant {
     EVENT_CLICK = "event_click"
     DOM_TYPE_SELECT = "select"
     DOM_TYPE_INPUT = "input"
+    DOM_TYPE_BTNS = 'btns'
     DOM_TYPE_TITLE = "title"
     DOM_TYPE_STRING = "str"
     SVG_TYPE_CIRCLE = "circle"

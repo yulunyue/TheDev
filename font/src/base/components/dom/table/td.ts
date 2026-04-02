@@ -1,9 +1,9 @@
-import { Div } from "../div";
+import { Container, Div } from "../div";
 import Ct from "../../../web/constant"
 import web from "../../../web/web_dom"
 import { Node, to_node } from "../../../web/cls";
 import { Input } from "../form/input";
-import { Button, Buttons } from "../form/button";
+import { Button } from "../form/button";
 import { Label } from "../base/label"
 import { Pagination } from "../../combo/pagination";
 import Util from "../../../tool/util"
@@ -20,31 +20,27 @@ export class HeadTd extends Div {
 }
 export class BodyTd extends HeadTd {
     row_idx: number
+    ins: Container
+    init_node(): void {
+        this.ins = new Container()
+        this.add_child(this.ins)
+    }
     set_row_idx(idx: number) {
         this.row_idx = idx
         return this
     }
     init_style(): void {
-
-    }
-    render_option(): void {
-        let ins = null
-        if (this.option.type == "input") {
-            ins = new Input().set_value(this.option.value)
-        }
-        else if (this.option.type == 'btns') {
-            ins = new Buttons().set_option(to_node({
-                childs: this.option.value.map((v: any) => {
-                    return { title: v }
-                })
-            }))
-        }
-        else {
-            ins = new Label().set_html(this.option.title || this.option.value)
-        }
-        this.ins = this.clear().add_child(ins).on_change(() => {
-            //this._on_change({ idx: this.row_idx, key: this.option.key, value: this.ins.get_value() })
+        this.ins.set_style({
+            maxHeight: Constant.TABLE_ROW_MIN_HEIGHT,
+            overflow: "auto"
         })
+        this.set_style({
+            textOverflow: "ellipsis"
+        })
+    }
+    set_option(o: Node) {
+        this.ins.set_option(o)
+        return this
     }
     set_value(value: any) {
         this.ins.set_value(value)
