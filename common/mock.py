@@ -37,7 +37,7 @@ class CT:
 
 class MockCf:
     dev = False
-
+    logger: logger = None
     type = ""
     execute = None
 
@@ -109,6 +109,8 @@ class MockCf:
         return r
 
     def log(self, **kw):
+        if self.logger is None:
+            return
         self.logger.map(**kw)
 
     def get_agent(self, **kw):
