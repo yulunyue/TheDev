@@ -27,9 +27,6 @@ class logger:
     log_grid = get_log
 
 
-TheDevLoger = logger
-
-
 class CT:
     MOD = (10**9) + 7
     inf = float("inf")
@@ -41,7 +38,6 @@ class CT:
 class MockCf:
     dev = False
 
-    logger = logger
     type = ""
     execute = None
 
