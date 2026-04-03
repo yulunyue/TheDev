@@ -11,16 +11,15 @@ import {
     Title,
     Data
 } from "../../base/components/export";
-import data from "src/base/tool/data";
 let COLORS = [Constant.COLOR_BALCK2, Constant.COLOR_WHITE2]
 export class Chess extends Column {
     g: Grid
-    top_control: Div
     pro: Progress
     top_form: FormColumn
     chess_width: number
     pre: Pre
     title: Title
+    tail: Div
     init_style(): void {
         super.init_style()
         this.full().set_center()
@@ -38,17 +37,16 @@ export class Chess extends Column {
         this.top_form = new FormColumn()
         this.pro = new Progress()
         this.pre = new Pre()
+        this.tail = new Row()
         this.title = new Title()
         this.add_childs([
             new Div().set_size(1),
             new Row().add_childs([
                 this.top_form,
-                this.title,
                 this.g,
                 this.pro,
-
             ]),
-            new Div().set_size(1)
+            this.tail
         ])
     }
     hander_on_click(y: number, x: number, i: number, j: number) {
@@ -62,8 +60,6 @@ export class Chess extends Column {
 
     }
     init_event(): void {
-        this.top_form.on_submit(this.hander_sub.bind(this))
-        this.top_form.on_change(this.hander_change.bind(this))
         this.g.on_click(this.hander_on_click.bind(this))
     }
     show_data(dst: any) {
