@@ -92,12 +92,12 @@ class Solution(MockCf):
                 xl = rbs[i - 1][0] + 1
             if i < n - 1 and xr >= rbs[i + 1][0]:
                 xr = rbs[i + 1][0] - 1
-            nfl = max(
-                fl + calc_ct(xl, x), fr + calc_ct(lxl + 1, x) if lxl is not None else 0
-            )
-            nfr = max(fl + calc_ct(x, xr), fr + calc_ct(lxr + 1, x) if )
+            nfl = fl + calc_ct(xl, x)
+            if lxl is not None:
+                nfl = max(nfl, fr + calc_ct(max(lxr + 1, xl), x))
+            nfr = max(fl, fr) + calc_ct(x, xr)
             fl, fr = nfl, nfr
-            self.log(i=i, x=x, xl=xl, xr=xr, fl=fl, fr=fr)
+            self.log(i=i, x=x, z=z, xl=xl, xr=xr, fl=fl, fr=fr)
             lxl, lxr = xl, xr
         return max(fl, fr)
 
