@@ -1,7 +1,7 @@
 from ..yly.envs.game.c5.db import Bd
 from common.tool.export import FontSearch
 from common.util.export import IO_MANAGE, ApiBase
-from .template.front import FormBase
+from ...common.tool.front.form_base import FormBase
 
 
 class ChessF5(FormBase, ApiBase):

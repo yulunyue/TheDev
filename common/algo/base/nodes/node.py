@@ -23,12 +23,12 @@ class Node:
     def get_value(self):
         return 0
 
-    def dfs(self, fn, p=None):
-        fn(self, p)
+    def dfs(self, fn, depth, p=None):
+        fn(self, depth, p)
         for e in self.out_edges.values():
             if p and e.dst.key == p.src.key:
                 continue
-            e.dst.dfs(fn, e)
+            e.dst.dfs(fn, depth + 1, e)
 
     def to_json(self):
         nodes, edges = dict(), []
@@ -60,10 +60,12 @@ class Node:
         ret = ["---"]
         from .edge import Edge
 
-        def util(u: Node, p=None):
+        def util(u: Node, depth, p=None):
             s = ""
-            ret.append(f'{" "*u.depth}-{u.key}: {s}')
+            if fn:
+                s = fn(u, depth)
+            ret.append(f'{" "*(depth*2)}-{u.key}: {s}')
 
-        self.dfs(util)
+        self.dfs(util, 0)
         ret.append("---")
         return "\n".join(ret)

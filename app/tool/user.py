@@ -6,7 +6,7 @@ from common.tool.export import (
     NumberModel,
     SelectModel,
 )
-from .template.front import FormBase
+from ...common.tool.front.form_base import FormBase
 
 
 class UserModel(FileConfig):

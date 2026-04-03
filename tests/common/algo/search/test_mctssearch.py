@@ -77,7 +77,7 @@ S2 = (
 )
 
 
-class TestMctssearch(TestBase):
+class TestMctssearch:
 
     def test_search(self):
         random_seed(0)

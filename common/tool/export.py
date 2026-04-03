@@ -30,3 +30,4 @@ from .front.row import Row
 from .front.column import Column
 from .front.search import FontSearch
 from .front.form import Form
+from .front.form_base import FormBase

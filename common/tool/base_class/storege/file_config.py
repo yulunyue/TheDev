@@ -13,6 +13,8 @@ from common.util.export import (
     THE_DEV_CONSTANT,
 )
 
+T = TypeVar("T", bound="FileConfig")
+
 
 class FileConfig(ConfigBase):
 
@@ -52,6 +54,5 @@ class FileConfig(ConfigBase):
             return c[ins.key]
         return ins.default_value
 
-    @classmethod
-    def all(cls):
-        return cls.instance_map.values()
+    def all(self: T) -> List[T]:
+        return self.__class__.instance_map.values()

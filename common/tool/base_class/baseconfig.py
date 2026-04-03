@@ -1,4 +1,4 @@
-from common.util.export import logger, File, json, List, Dict, hash_any_str
+from common.util.export import logger, File, json, List, Dict, hash_any_str, time
 from .base_model.model import BaseModel
 
 
@@ -18,8 +18,8 @@ class ConfigBase:
         return self
 
     @classmethod
-    def insert(cls, **kw) -> "ConfigBase":
-        idx = cls.get_id(**kw)
+    def insert(cls, *args, **kw) -> "ConfigBase":
+        idx = cls.get_id(*args, **kw)
         cls.instance_map[idx] = cls().load(idx).update(**kw)
         return cls.instance_map[idx]
 
@@ -31,8 +31,10 @@ class ConfigBase:
         pass
 
     @classmethod
-    def get_id(self, **kw):
-        raise NotImplementedError
+    def get_id(self, *args, **kw):
+        if len(args):
+            return args[0]
+        return time.time()
 
     @classmethod
     def get_params(self):

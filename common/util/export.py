@@ -53,6 +53,7 @@ from typing import (
     TYPE_CHECKING,
     final,
     Any,
+    Self,
 )
 from collections import defaultdict, deque, Counter
 import functools
