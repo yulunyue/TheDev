@@ -15,11 +15,14 @@ class Solution(MockCf):
     不包含待定a的字串等于strm
     采用贪心的策略
     对于strn的每个不满足的F，从左到右
-    我们需要找到最后一个待定a，将它改成b即可
-
-    需要担心的是，改成b后会不会导致后面的
-
-
+    我们找到最后一个待定a，将它改成b
+    需要担心的是，改成b后会不会导致后面的f不成立
+    假设
+    strm AbBaC
+    AbB?C
+      B?CaD
+    CaD 为strm的前缀
+    AbB 为strm的后缀 所以|B|!=|D|
     """
 
     def get_cases(self):
