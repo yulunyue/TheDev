@@ -45,7 +45,7 @@ export class D3DagreUtil extends Svg {
 
         // // 6. (可选) 添加缩放和平移功能，提升用户体验
         const zoom = d3.zoom().on("zoom", (event) => {
-            this.inner.attr("transform", event.transform);
+            // this.inner.attr("transform", event.transform);
         });
         this.svg.call(zoom);
     }
