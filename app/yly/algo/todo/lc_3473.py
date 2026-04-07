@@ -59,12 +59,13 @@ class Solution(MockCf):
                     if s[i + j] and s[i + j] != str2[j]:
                         return ""
                     t[i + j] = s[i + j] = str2[j]
-            else:
+        for i, v in enumerate(str1):
+            if v == "F":
                 k = None
                 for j in range(m - 1, -1, -1):
+                    if s[i + j] == str2[j]:
+                        return ""
                     if t[i + j] == str2[j]:
-                        if s[i + j] == str2[j]:
-                            return ""
                         if s[i + j] == "" and k is None:
                             k = i + j
                     else:
