@@ -22,7 +22,9 @@ class Solution(MockCf):
     AbB?C
       B?CaD
     CaD 为strm的前缀
-    AbB 为strm的后缀 所以|B|!=|D|
+    AbB 为strm的后缀 所以|B|!=|C|
+    设B=EF |F|=|C|
+    AbEF 为 AbEFaC的后缀
     """
 
     def get_cases(self):
