@@ -5,8 +5,8 @@ from common.tool.export import (
     SearchModel,
     NumberModel,
     SelectModel,
+    FormBase,
 )
-from ...common.tool.front.form_base import FormBase
 
 
 class UserModel(FileConfig):

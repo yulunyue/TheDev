@@ -15,7 +15,6 @@ USER_AGENT_DEFAULT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.
 
 
 class ApiConfig(FileConfig):
-    resource_path = "config/setting/api.json"
     endpoint = StrModel()
     cookie = DictModel()
     proxy = DictModel()
@@ -25,7 +24,7 @@ class ApiConfig(FileConfig):
     config = DictModel()
 
 
-API_CONFIG = ApiConfig.init_param()
+API_CONFIG = ApiConfig.set_resource("config/setting/api.json")
 
 
 def get_proxy(key=None):

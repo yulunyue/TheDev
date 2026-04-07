@@ -7,6 +7,7 @@ from typing import List, Dict
 import json
 import os
 from .apibase import ApiBase
+import traceback
 
 
 class ApiCall:
@@ -27,11 +28,9 @@ class ApiCall:
                 ins.set_env(**env)
             ret = self.fun_map[path](**params)
         except Exception as e:
-            logger.info(e)
-            import traceback
+            logger.exception(e, stack_info=True)
 
-            traceback.print_exc()
-            ret = dict(code=500, title=str(e))
+            ret = dict(code=500, title=str(e) + traceback.format_exc())
         return json_dumps(ret)
 
     def call(self, path, param, env):

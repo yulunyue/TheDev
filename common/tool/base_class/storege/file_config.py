@@ -24,21 +24,21 @@ class FileConfig(ConfigBase):
         cls.fp = File(cls.resource_path)
 
         if cls.fp.exists():
-            cls.config = cls.fp.read_file()
-            items = list(cls.config.items())
+            cls._config = cls.fp.read_file()
+            items = list(cls._config.items())
             for k, v in items:
                 t: FileConfig = cls.insert(**v)
         else:
-            cls.config = dict()
+            cls._config = dict()
         return cls.instance_map
 
     @classmethod
     def save(cls):
-        cls.fp.write_file(cls.config)
+        cls.fp.write_file(cls._config)
         return cls
 
     def update_param_value(self, ins: BaseModel, value, if_none=False):
-        c = self.__class__.config
+        c = self.__class__._config
         if self._id not in c:
             c[self._id] = dict()
         if ins.key in c[self._id] and if_none:
@@ -47,9 +47,9 @@ class FileConfig(ConfigBase):
 
     def get_param_value(self, ins: BaseModel):
         # logger.map(key=row.key, k=ins.key)
-        if self._id not in self.__class__.config:
+        if self._id not in self.__class__._config:
             return ins.default_value
-        c = self.__class__.config[self._id]
+        c = self.__class__._config[self._id]
         if ins.key in c:
             return c[ins.key]
         return ins.default_value

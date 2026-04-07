@@ -1,4 +1,4 @@
-from common.util.export import logger, File, json, List, Dict, hash_any_str, time
+from common.util.export import logger, File, json, List, Dict, hash_any_str, time, Self
 from .base_model.model import BaseModel
 
 
@@ -54,7 +54,7 @@ class ConfigBase:
         return ret
 
     @classmethod
-    def get(cls, key):
+    def get(cls, key) -> Self:
         if key in cls.instance_map:
             return cls.instance_map[key]
         return cls.insert(_id=key)
