@@ -48,6 +48,7 @@ class Solution(MockCf):
             case0=dict(str1="TFTF", str2="ab", result="ababa"),
             case1=dict(str1="F", str2="da", result="aa"),
             case2=dict(str1="FT", str2="wvxyy", result="awvxyy"),
+            case3=dict(str1="TTFFT", str2="fff", result=""),
         )
 
     def generateString(self, str1: str, str2: str) -> str:
@@ -63,12 +64,18 @@ class Solution(MockCf):
         for i, v in enumerate(str1):
             if v == "F":
                 k = None
+                ct = 0
                 for j in range(m - 1, -1, -1):
-                    if (s[i + j] and s[i + j] != str2[j]) or t[i + j] != str2[j]:
+                    if s[i + j] == str2[j]:
+                        ct += 1
+                        continue
+                    if t[i + j] != str2[j]:
                         k = None
                         break
                     if s[i + j] == "" and k is None:
                         k = i + j
+                if ct == m:
+                    return ""
                 if k is not None:
                     t[k] = "b"
         return "".join(t)
