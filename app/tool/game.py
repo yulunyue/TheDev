@@ -1,7 +1,7 @@
 from ..yly.envs.game.c5.db import Bd
 from ..yly.envs.game.c5.player.al import Al
 from common.tool.export import FontSearch, FormBase
-from common.util.export import IO_MANAGE, ApiBase
+from common.util.export import IO_MANAGE, ApiBase, Node
 
 
 AI_PLAYER = {"ad3", "mc100"}
@@ -17,6 +17,13 @@ class ChessF5(FormBase, ApiBase):
         if key == Bd.name.__name__:
             return super().web_search(key, name, **kw)
         return FontSearch().add_node(AI_PLAYER)
+
+    def web_submit(self, type, value, **kw):
+        c = Bd.insert(value)
+        Bd.get_state()
+        if type == "save":
+            pass
+        return Node()
 
     def play(self, name, y, x, **kw):
         Al.get_player()
