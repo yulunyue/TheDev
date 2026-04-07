@@ -6,6 +6,7 @@ import traceback
 from ..fp import File
 from ..log import logger
 from .fm_info import FmInfo, FrameType
+import math
 
 
 class ThreadRecord(threading.Thread):
@@ -14,9 +15,6 @@ class ThreadRecord(threading.Thread):
         super().__init__(target=self.exec)
         self.error_msg = ""
         self.result = None
-
-    def format(self):
-        return self.uk()
 
     def init(self):
         pass
@@ -40,18 +38,31 @@ class ThreadRecord(threading.Thread):
     def globaltrace(self, frame, event, arg):
         return self.localtrace
 
-    _last_state = None
+    def set_layout(self, keys):
+        self._layout_keys = keys
+        self._last_state = dict()
+        for k in keys:
+            self._last_state.update(self.get_current_value(k))
+        return self
+
+    def get_current_value(self, key):
+        v = getattr(self.ins, key)
+        if hasattr(v, "thread_current_view"):
+            return v.thread_current_view(key)
+        return {key: v}
 
     def localtrace(self, frame, event, arg):
         if event == "return":
             return self.localtrace
-        # print(frame, event, arg)
-        state = self.uk()
-        if state != self._last_state:
-            # print(f"{state},{self._last_state},{self.to_josn()}")
-            self.msgs.append(self.format())
-            self.records.append(self.to_josn())
-        self._last_state = state
+
+        for k in self._layout_keys:
+            value_map = self.get_current_value(k)
+            for key, current_value in value_map.items():
+
+                if current_value != self._last_state[key]:
+                    self.records.append(dict(key=key, value=current_value))
+                    self._last_state[key] = current_value
+                    return self.localtrace
         return self.localtrace
 
     def get_records(self):
@@ -70,13 +81,7 @@ class ThreadRecord(threading.Thread):
         return self
 
     def exec_main(self, *args, **kw):
-        return self.exec_fun(**self.kw)
-
-    def to_josn(self):
-        return dict()
-
-    def uk(self):
-        return ""
+        return self.ins.exec(**self.kw)
 
     def cli(self, path="data/log/thread_view.log", *args, **kw):
         from common.third_util.pynut_util import PU_UTIL
@@ -97,6 +102,24 @@ class ThreadRecord(threading.Thread):
 
         show()
         PU_UTIL.register(left=left, right=right).run()
+
+    def get_layout(self):
+        from common.tool.export import FontBase, Row, Column, to_web_view
+
+        n = len(self._layout_keys)
+        m = math.ceil(math.sqrt(n))
+        r = Row()
+
+        for i, k in enumerate(self._layout_keys):
+            if i % m == 0:
+                c = Column()
+                r.add(c)
+            c.add(to_web_view(k, getattr(self.ins, k)))
+        return r
+
+    def set_ins(self, ins):
+        self.ins = ins
+        return self
 
     def set_exec(self, fun):
         self.exec_fun = fun

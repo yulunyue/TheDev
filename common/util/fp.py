@@ -4,15 +4,7 @@ from typing import List, Dict
 import zipfile
 import shutil
 import io
-from .tool import time_format
-
-
-def dump_default(v):
-    return str(v)
-
-
-def json_dump(oj):
-    return json.dumps(oj, indent=4, ensure_ascii=False, default=dump_default)
+from .tool import time_format, json_dumps
 
 
 class File:
@@ -90,9 +82,8 @@ class File:
         return self
 
     def write_file(self, data: str, encoding="utf-8"):
-
         if isinstance(data, dict) or isinstance(data, list):
-            data = json_dump(data)
+            data = json_dumps(data, indent=2)
         self.make_dir_if_not_exist()
         if isinstance(data, bytes):
             with open(self.path, "wb") as f:

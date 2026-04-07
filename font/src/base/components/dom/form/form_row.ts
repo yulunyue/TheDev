@@ -76,7 +76,7 @@ export class FormRow extends Div {
         this.render_footer()
     }
     render_footer() {
-        let btns = this.option.data.btns || { insert: "提交" }
+        let btns = this.option.data.btns || { submit: "提交" }
         this.footer.clear()
         for (var key in btns) {
             let btn = new Button().set_html(btns[key])

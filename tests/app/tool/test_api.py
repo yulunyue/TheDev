@@ -5,15 +5,14 @@ from app.tool.api import ApiGlobal, MainHander
 class TestApi(TestBase):
     api: ApiGlobal
 
-    @classmethod
-    def setup_class(cls):
-        MainHander.POST_API.load_module(ApiGlobal)
-        cls.api: ApiGlobal = ApiGlobal()
+    def setup_method(self):
+        MainHander.POST_API.load_module("/app/api/", ApiGlobal)
+        self.api: ApiGlobal = ApiGlobal()
 
     def test_api(self):
         data = self.api.query_all_apis()
         self.expect(
-            data["childs"],
+            data.to_json()["childs"],
             [
                 dict(key="/app/api/get_api_call_info"),
                 {"key": "/app/api/post_file"},
