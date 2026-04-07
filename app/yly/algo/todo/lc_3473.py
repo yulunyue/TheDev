@@ -46,6 +46,7 @@ class Solution(MockCf):
     def get_cases(self):
         return dict(
             case0=dict(str1="TFTF", str2="ab", result="ababa"),
+            case1=dict(str1="F", str2="da", result="aa"),
         )
 
     def generateString(self, str1: str, str2: str) -> str:
@@ -59,12 +60,18 @@ class Solution(MockCf):
                         return ""
                     t[i + j] = s[i + j] = str2[j]
             else:
+                k = None
                 for j in range(m - 1, -1, -1):
                     if t[i + j] == str2[j]:
                         if s[i + j] == str2[j]:
                             return ""
-                        t[i + j] = "b"
+                        if s[i + j] == "" and k is None:
+                            k = i + j
+                    else:
+                        k = None
                         break
+                if k is not None:
+                    t[k] = "b"
         return "".join(t)
 
     execute = generateString
