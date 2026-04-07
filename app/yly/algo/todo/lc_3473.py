@@ -20,10 +20,12 @@ class Solution(MockCf):
     假设
     strm AbBaC
     AbB?C
-      B?CaD
-    CaD 为strm的前缀
-    AbB 为strm的后缀 所以|B|!=|C|
-    设B=EF |F|=|C|
+      A?BaC
+    BaC 为strm的前缀
+    A 为strm的后缀 
+    如果|B|==|A|
+    则 BaC不可能为AbB前缀
+    如果|B|<|A|
     AbEF 为 AbEFaC的后缀
     """
 
