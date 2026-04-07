@@ -19,7 +19,7 @@ export class Chess extends Column {
     chess_width: number
     pre: Pre
     title: Title
-    tail: Div
+    right_div: Div
     init_style(): void {
         super.init_style()
         this.full().set_center()
@@ -31,13 +31,14 @@ export class Chess extends Column {
             height: this.chess_width,
             // border: "1px solid #000"
         })
+        this.right_div.set_size(1)
     }
     init_node(): void {
         this.g = new Grid()
         this.top_form = new FormColumn()
         this.pro = new Progress()
         this.pre = new Pre()
-        this.tail = new Row()
+        this.right_div = new Row()
         this.title = new Title()
         this.add_childs([
             new Div().set_size(1),
@@ -46,7 +47,7 @@ export class Chess extends Column {
                 this.g,
                 this.pro,
             ]),
-            this.tail
+            this.right_div
         ])
     }
     hander_on_click(y: number, x: number, i: number, j: number) {
