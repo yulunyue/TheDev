@@ -21,12 +21,26 @@ class Solution(MockCf):
     strm AbBaC
     AbB?C
       A?BaC
-    BaC 为strm的前缀
-    A 为strm的后缀 
+    BaC 为 AbBaC 的前缀
+    A 为 AbBaC 的后缀
+
     如果|B|==|A|
     则 BaC不可能为AbB前缀
+
     如果|B|<|A|
-    AbEF 为 AbEFaC的后缀
+    A = BD
+    BaC 为 BDbBaC 的前缀
+    aC 为 DbBaC 的前缀
+    |C|=|D|
+    C=Eb D=aE
+    BD 为 BDbBaC 的后缀
+    BaE 为 BDbBaEb
+    Eb长为|aE|的后缀 不可能为aE
+
+    如果|B|>|A|
+    B=DA
+    DAaC 为 AbDAaC 的前缀
+    DAa 的长为|DAc|的前缀不可能为 AbD
     """
 
     def get_cases(self):
@@ -36,8 +50,8 @@ class Solution(MockCf):
 
     def generateString(self, str1: str, str2: str) -> str:
         n, m = len(str1), len(str2)
-        s = [""] * (n + m)
-        t = ["a"] * (n + m)
+        s = [""] * (n + m - 1)
+        t = ["a"] * (n + m - 1)
         for i, v in enumerate(str1):
             if v == "T":
                 for j in range(m):
@@ -45,6 +59,12 @@ class Solution(MockCf):
                         return ""
                     t[i + j] = s[i + j] = str2[j]
             else:
-                pass
+                for j in range(m - 1, -1, -1):
+                    if t[i + j] == str2[j]:
+                        if s[i + j] == str2[j]:
+                            return ""
+                        t[i + j] = "b"
+                        break
+        return "".join(t)
 
     execute = generateString
