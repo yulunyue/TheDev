@@ -9,11 +9,11 @@ class Node:
 
     def __init__(
         self,
-        code=0,
+        code=None,
         type="",
         key="",
         title="",
-        size=0,
+        size=None,
         value=None,
         data=None,
         childs=None,
@@ -21,7 +21,7 @@ class Node:
         self.code = code
         if type:
             self.type = type
-        self.key = key or uid("node")
+        self.key = key
         self.title = title
         self.value = value
         self.size = size
@@ -60,43 +60,24 @@ class Node:
             self.data[k] = v
         return self
 
-    def add_child(
-        self,
-        code=0,
-        type="",
-        key="",
-        title="",
-        value=None,
-        data=None,
-        childs=None,
-    ):
-        ret = Node(
-            code=code,
-            type=type,
-            key=key,
-            title=title,
-            value=value,
-            data=data,
-            childs=childs,
-        )
+    def add_child(self, **kw):
+        ret = self.__class__(**kw)
         self.childs.append(ret)
-        ret.parent = self
         return ret
 
-    @classmethod
-    def get_dom_type(cls, v):
-        return v
+    def get_type(self):
+        return self.type
 
     def add_node(self, *args):
         if len(args) == 1:
             args = args[0]
-        for n in args:
-            self.childs.append(self.__class__.get_dom_type(n))
+        for a in args:
+            self.add_child(value=a)
         return self
 
     def to_json(self, **kw):
         ret = dict(
-            type=self.type,
+            type=self.get_type(),
             key=self.key,
             title=self.get_title(),
             value=self.value,
@@ -114,9 +95,6 @@ class Node:
 
     def get_data(self):
         return self.data
-
-    def __str__(self):
-        return json.dumps(self.to_json(), indent=4, ensure_ascii=False)
 
 
 def cls_util(tp, **kw):

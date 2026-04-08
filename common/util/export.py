@@ -70,7 +70,7 @@ from copy import deepcopy
 import itertools
 import os
 from threading import Thread
-from common.mock import MockCf, execute_by_thread, oj_run
+from common.mock import MockCf, execute_by_thread, oj_run, exec_thread_recode_file
 import sys
 import hashlib
 import time

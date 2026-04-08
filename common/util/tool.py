@@ -189,7 +189,7 @@ def merge_dict(src, dst):
 def asset_exception(fun, *args, msg="", **kw):
     s = ""
     try:
-        fun(*args, **ke)
+        fun(*args, **kw)
     except Exception as e:
         s = str(e)
     assert s, msg

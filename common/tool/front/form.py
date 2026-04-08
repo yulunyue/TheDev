@@ -4,7 +4,7 @@ from .util import FontBase
 class Form(FontBase):
     def set_row(self):
         self.form_type = "form_row"
-        self.btn_default = dict()
+
         return self
 
     def set_column(self):
@@ -13,10 +13,16 @@ class Form(FontBase):
 
     def __init__(self):
         self.body = []
+        self.btns = dict(submit="提交")
+
+    def set_btns(self, **kw):
+        self.btns.update(kw)
+        return self
 
     def set_body(self, *body: list):
         self.body = [FontBase.get_dom_type(d) for d in body]
         return self
 
     def to_json(self):
-        return dict(type=self.form_type, childs=self.body)
+        ret = dict(type=self.form_type, childs=self.body, data=dict(btns=self.btns))
+        return

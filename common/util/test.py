@@ -21,6 +21,9 @@ class TestBase:
     def setup_class(cls):
         pass
 
+    def setup_method(self):
+        pass
+
     def prepare_case(self, *args):
         pass
 

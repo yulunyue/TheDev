@@ -56,13 +56,14 @@ export class Chess extends Column {
             name: top_value.name,
             y: i, x: j,
         }, () => {
-            this.draw()
+
         })
 
     }
     init_event(): void {
         this.g.on_click(this.hander_on_click.bind(this))
     }
+
     show_data(dst: any) {
         let players = [dst.player_0, dst.player_1]
         let colors = ["黑", "白"]
@@ -94,11 +95,7 @@ export class Chess extends Column {
             this.show_data(data)
         })
     }
-    hander_change(key: string, src: any, dst: any) {
-        if (key == "name") {
-            this.draw()
-        }
-    }
+
     hander_sub(key: string, op: any) {
         console.log(key, op)
     }

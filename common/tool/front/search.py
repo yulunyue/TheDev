@@ -5,6 +5,5 @@ from .util import FontBase
 class FontSearch(FontBase):
     type = "search"
 
-    @classmethod
-    def get_dom_type(cls, v):
-        return dict(title=v, value=dict(key=v))
+    def get_title(self):
+        return self.title or self.value

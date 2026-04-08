@@ -2,7 +2,7 @@ import json
 import sys
 import functools
 import heapq
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Callable
 import math
 from collections import defaultdict, deque
 import os
@@ -90,24 +90,6 @@ class MockCf:
     def init(self, **kw):
         raise NotImplementedError
 
-    def set_layout(self, keys):
-        self.layout_keys = keys
-        return self
-
-    def get_layout(self):
-        from common.tool.export import get_dom_type, Row, Column
-
-        n = len(self.layout_keys)
-        m = math.ceil(math.sqrt(n))
-        r = Row()
-
-        for i, k in enumerate(self.layout_keys):
-            if i % m == 0:
-                c = Column()
-                r.add(c)
-            c.add(get_dom_type(k, getattr(self, k)))
-        return r
-
     def log(self, **kw):
         if self.logger is None:
             return
@@ -117,7 +99,7 @@ class MockCf:
         return
 
 
-def oj_run(ins: "MockCf", case_name=None):
+def oj_run(ins: "MockCf", case_name=None, with_thread=False):
     from common.tool.export import PyFile
     from common.util.export import get_dev_log, logger, get_file_path_by_cls
 
@@ -148,35 +130,29 @@ def oj_run(ins: "MockCf", case_name=None):
     PyFile(src_file).compile_to_one_file()
 
 
-def execute_by_thread(i: MockCf, case: dict):
+def execute_by_thread(ins: MockCf, case: dict):
     from common.util.export import ThreadRecord, hash_any_str
 
     result = case.pop("result")
-    keys_pre = set(dir(i))
-    i.init(**case)
-    i.set_layout(set(dir(i)) - keys_pre)
+    keys_pre = set(dir(ins))
+    ins.init(**case)
 
-    class T(ThreadRecord):
-        def exec_main(self):
-            return i.exec()
-
-        def uk(self):
-            return "".join(hash_any_str(getattr(i, key)) for key in i.layout_keys)
-
-        def to_josn(self):
-            ret = dict()
-            for key in i.layout_keys:
-                v = getattr(i, key)
-                if hasattr(v, "to_json"):
-                    ret[key] = v.to_json()
-                else:
-                    ret[key] = v
-            return ret
-
+    t = ThreadRecord().set_ins(ins)
+    t.set_layout(set(dir(ins)) - keys_pre)
     return dict(
-        layout=i.get_layout(),
-        records=T().execute().get_records(),
+        layout=t.get_layout(),
+        records=t.execute().get_records(),
     )
+
+
+def exec_thread_recode_file(cls: Callable[[], MockCf], case_name):
+    from common.util.export import File, logger
+
+    i = cls()
+    case = i.get_cases()[case_name]
+    e = execute_by_thread(i, case)
+    f = File(f"data/cases/{case_name}.json")
+    logger.info(f.write_file(e))
 
 
 MockCg = MockCf

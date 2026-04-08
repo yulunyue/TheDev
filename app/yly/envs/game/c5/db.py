@@ -7,6 +7,7 @@ from common.tool.export import (
     SearchModel,
     SelectModel,
 )
+from .board.base_state import BoardC5State
 
 
 class Bd(FileConfig):
@@ -23,6 +24,9 @@ class Bd(FileConfig):
     @classmethod
     def get_id(cls, name, **kw):
         return str(name)
+
+    def get_state(self):
+        s = BoardC5State()
 
 
 Bd.set_resource("data/game/chess.json")
