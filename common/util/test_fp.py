@@ -89,7 +89,7 @@ class TestFile(unittest.TestCase):
 
     def test_write_and_read_json_file(self):
         """测试 JSON 文件的写入和读取"""
-        file_obj = File(self.test_file)
+        file_obj = File(self.test_file + ".json")
 
         # 写入字典（自动转换为 JSON）
         test_data = {"key": "value", "number": 42, "list": [1, 2, 3]}
@@ -349,6 +349,7 @@ class TestFile(unittest.TestCase):
 
         # 验证写入成功
         self.assertEqual(file_obj.read_file(), "test line\n")
+        writer.close()
 
 
 class TestFileClassMethods(unittest.TestCase):

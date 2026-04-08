@@ -77,6 +77,8 @@ import time
 import _thread
 import signal
 from abc import ABC, abstractmethod
+from .re_util import ReUtil
+from .str_util import StrUtil
 
 inf = float("inf")
 null = None

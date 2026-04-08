@@ -44,7 +44,7 @@ class MockCf:
     def __init__(self, f=None, cases=None, src=None):
         if f is not None:
             self.execute = f
-        self.cases = cases
+        self.cases: dict = cases or dict()
         self.src_file = src
         self.inputs = []
 

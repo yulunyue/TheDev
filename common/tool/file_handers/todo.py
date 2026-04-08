@@ -1,5 +1,4 @@
-from common.util.export import File, logger, SYS_ARGS, cmd_parse, Module
-from ..re_util import ReUtil
+from common.util.export import File, logger, SYS_ARGS, cmd_parse, Module, ReUtil
 
 
 class TodoFile:

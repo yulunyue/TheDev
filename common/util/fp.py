@@ -13,7 +13,7 @@ class File:
         if not isinstance(path, str):
             raise Exception(path)
         self.path = path.replace("\\", "/")
-        self.dirs = path.split("/")
+        self.dirs = self.path.split("/")
         self.name = self.file_name = self.dirs.pop()
         self.type = ""
         names = self.file_name.split(".")

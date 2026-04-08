@@ -19,8 +19,6 @@ from .bp.compile import BpCompile, BP
 from .global_config import GC
 from .func.py_util import PyUtil
 from .func.system import System
-from .re_util import ReUtil
-from .str_util import StrUtil
 from .toolbase import ToolBase
 from .file_handers.py_file import PyFile
 from .front.table import FrontTable
