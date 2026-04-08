@@ -5,6 +5,7 @@ import zipfile
 import shutil
 import io
 from .tool import time_format, json_dumps
+from .str_util import StrUtil
 
 
 class File:
@@ -197,7 +198,6 @@ class File:
         ret = []
 
         def check(path: str):
-            from ..tool.str_util import StrUtil
 
             return StrUtil().set_ignores(ignores).set_matchs(mathchs).match(path)
 

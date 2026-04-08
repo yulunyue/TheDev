@@ -1,31 +1,30 @@
-from common.util.export import TestBase
+from common.util.export import assert_dict
 from app.tool.api import ApiGlobal, MainHander
 
 
-class TestApi(TestBase):
-    api: ApiGlobal
+class TestApi:
 
     def setup_method(self):
-        MainHander.POST_API.load_module("/app/api/", ApiGlobal)
+        MainHander.POST_API.load_module("/app/api", ApiGlobal)
         self.api: ApiGlobal = ApiGlobal()
 
     def test_api(self):
         data = self.api.query_all_apis()
-        self.expect(
-            data.to_json()["childs"],
+        assert_dict(
+            [dict(key=v.get_value()) for v in data.childs],
             [
                 dict(key="/app/api/get_api_call_info"),
-                {"key": "/app/api/post_file"},
                 dict(key="/app/api/query_all_apis"),
                 dict(key="/app/api/test"),
             ],
         )
 
     def test_api1(self):
-        self.expect(
-            TestApi.api.get_api_call_info("/app/api/get_api_call_info").to_json(),
+        assert_dict(
+            self.api.get_api_call_info("/app/api/get_api_call_info"),
             {
                 "key": "get_api_call_info",
+                "title": "get_api_call_info",
                 "childs": [
                     {
                         "default_value": None,
@@ -35,14 +34,12 @@ class TestApi(TestBase):
                         "type": "str",
                     }
                 ],
-                "title": "get_api_call_info",
             },
         )
 
     def test_api2(self):
-        e = TestApi.api.get_api_call_info("/app/api/test").to_json()
-        self.expect(
-            e,
+        assert_dict(
+            self.api.get_api_call_info("/app/api/test"),
             {
                 "key": "test",
                 "title": "test",

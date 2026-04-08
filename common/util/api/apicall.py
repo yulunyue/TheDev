@@ -24,8 +24,8 @@ class ApiCall:
         try:
             ins: ApiBase = self.fun_map[path].__self__
             ins.ROUTE_PATH = path
-            if hasattr(ins, "set_env"):
-                ins.set_env(**env)
+            if hasattr(ins, "_set_env"):
+                ins._set_env(**env)
             ret = self.fun_map[path](**params)
         except Exception as e:
             logger.exception(e, stack_info=True)

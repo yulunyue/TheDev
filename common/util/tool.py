@@ -157,7 +157,9 @@ def json_dumps(oj, indent=None):
             return list(v)
         return str(v)
 
-    return json.dumps(oj, indent=indent, default=util, ensure_ascii=False)
+    return json.dumps(
+        oj, indent=indent, default=util, ensure_ascii=False, sort_keys=True
+    )
 
 
 def assert_dict(a, b):

@@ -75,12 +75,15 @@ class Node:
             self.add_child(value=a)
         return self
 
+    def get_value(self):
+        return self.value
+
     def to_json(self, **kw):
         ret = dict(
             type=self.get_type(),
-            key=self.key,
+            key=self.key or self.get_title(),
             title=self.get_title(),
-            value=self.value,
+            value=self.get_value(),
             childs=self.childs,
             data=self.get_data(),
         )

@@ -1,5 +1,4 @@
 import re
-from common.util.export import log
 
 
 def wrap_ret(fun):

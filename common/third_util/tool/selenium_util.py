@@ -222,7 +222,7 @@ class SeleniumUtil:
             else:
                 self.options.binary_location = chrome_exe_file.get_abs_path()
                 self.options.add_argument("--no-sandbox")
-                self.options.add_argument("--headless")
+                # self.options.add_argument("--headless")
                 self.options.add_argument("--window-size=1920,1080")
                 # self.options.add_argument(
                 #     f"--user-data-dir={chrome_driver.child('dev_user_data7').make_dir_if_not_exist(True).get_abs_path()}"
