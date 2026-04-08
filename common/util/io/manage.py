@@ -11,5 +11,8 @@ class Manage:
         self.io_map[io.username] = io
         return self
 
+    def get_all_users(self):
+        return list(self.io_map.keys())
+
 
 IO_MANAGE = Manage()

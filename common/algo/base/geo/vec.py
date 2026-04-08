@@ -18,11 +18,11 @@ class Vec:
     def dot(self, b: "Vec") -> int:  # a*b*cos
         return self.x * b.x + self.y * b.y
 
-    def on_the_right_of(self, b: "Vec"):  # 平行同方向也算
-        return self.det(b) <= 0
+    def on_the_left_of(self, b: "Vec"):  # 平行同方向也算
+        return self.det(b) < 0
 
-    def on_the_left_of(self, b: "Vec"):  # 平行逆方向也算
-        return self.det(b) >= 0
+    def on_the_right_of(self, b: "Vec"):  # 平行逆方向也算
+        return self.det(b) > 0
 
     def area(self, b: "Vec"):
         return abs(self.det(b))

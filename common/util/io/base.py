@@ -11,6 +11,7 @@ class Io:
     sock: socket.socket
     childs: Dict[str, "Io"]
     _logger: Logger = None
+    username = None
 
     def set_addr(self, src_ip=None, src_port=None, dst_ip=None, dst_port=None):
         self.src_ip: str = src_ip

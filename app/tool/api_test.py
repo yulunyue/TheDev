@@ -3,8 +3,8 @@ from app.tool.api import ApiGlobal, MainHander
 
 
 class TestApi:
-
-    def setup_method(self):
+    @classmethod
+    def setup_class(self):
         MainHander.POST_API.load_module("/app/api", ApiGlobal)
         self.api: ApiGlobal = ApiGlobal()
 

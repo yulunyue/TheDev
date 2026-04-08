@@ -27,7 +27,7 @@ class FileConfig(ConfigBase):
             cls._config = cls.fp.read_file()
             items = list(cls._config.items())
             for k, v in items:
-                t: FileConfig = cls.insert(**v)
+                cls.insert(k, **v)
         else:
             cls._config = dict()
         return cls.instance_map

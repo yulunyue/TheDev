@@ -1,5 +1,5 @@
 from common.util.test import TestBase
-from common.tool.export import ReUtil
+from common.util.re_util import ReUtil
 
 
 class TestReUtil(TestBase):

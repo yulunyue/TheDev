@@ -18,7 +18,7 @@ class ConfigBase:
         return self
 
     @classmethod
-    def insert(cls, *args, **kw) -> "ConfigBase":
+    def insert(cls, *args, **kw) -> "Self":
         idx = cls.get_id(*args, **kw)
         cls.instance_map[idx] = cls().load(idx).update(**kw)
         return cls.instance_map[idx]

@@ -1,5 +1,4 @@
-from typing import List, Dict
-import json
+from common.util.export import Self
 
 
 class BaseModel:
@@ -14,6 +13,11 @@ class BaseModel:
         self.ops = []
         self.title = key
         self.key = key
+        self.model: Self = None
+
+    def set_model(self, model):
+        self.model: Self = model
+        return self
 
     def get_title(self):
         return self.title
@@ -23,7 +27,9 @@ class BaseModel:
         return cls.__name__
 
     def clone(self):
-        return self.__class__(key=self.key, default_value=self.default_value)
+        return self.__class__(key=self.key, default_value=self.default_value).set_model(
+            self
+        )
 
     def set_datasource(self, data_source):
         self.data_source = data_source

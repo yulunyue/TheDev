@@ -34,12 +34,12 @@ class Node:
         nodes, edges = dict(), []
         from .edge import Edge
 
-        def util(n: Node, e: Edge):
+        def util(n: Node, depth, e: Edge = None):
             nodes[n.key] = n.get_value()
             if e is not None:
                 edges.append([e.src.key, e.dst.key, e.get_value()])
 
-        self.dfs(util)
+        self.dfs(util, 0)
         return dict(nodes=nodes, edges=edges)
 
     def __repr__(self):

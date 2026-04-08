@@ -1,7 +1,7 @@
-from common.algo.base.str_util import z_kmp
+from common.algo.base.str_util_algo import z_kmp
 
 
-class TestStrUtil:
+class TestAlgoStrUtil:
     def test_zkmp(self):
         """
         z 函数第

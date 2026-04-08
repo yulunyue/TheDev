@@ -215,7 +215,7 @@ class SeleniumUtil:
             self.options.add_argument("--disable-extensions")  # 禁用扩展
             self.options.add_argument("--no-first-run")  # 跳过首次运行提示
             self.options.add_argument("--ignore-certificate-errors")
-            if isinstance(self.dev_port):
+            if isinstance(self.dev_port, int):
                 self.options.debugger_address = f"127.0.0.1:{self.dev_port}"
                 self.options.add_argument("--start-maximized")
             else:

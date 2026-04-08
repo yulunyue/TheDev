@@ -101,15 +101,17 @@ class ALgoManage:
     def set_players(self, players1: List[Algo]):
         self.players: List[List[Algo]] = []
         n = len(players1)
-        for i, v in enumerate(players1):
-            players1[i] = self.get_player(v)
         for i in range(n):
             for j in range(n):
                 p1, p2 = players1[i], players1[j]
                 if p1.get_name() == p2.get_name():
                     continue
                 self.players.append([p1, p2])
-        self.current_players = self.players[0]
+        self.set_current_players(self.players[0])
+        return self
+
+    def set_current_players(self, players: List[str]):
+        self.current_players = [self.get_player(p) for p in players]
         return self
 
     def set_state(self, state):
@@ -127,7 +129,7 @@ class ALgoManage:
         return ret
 
     def pk(self, players1: List[Algo], idx=0):
-        self.current_player = players1
+        self.set_current_players(players)
         p2, turn_idx, s = self.actor(players1, idx)
         s = f"{players1[0].get_name()} pk {players1[1].get_name()} "
         for i, p in enumerate(players1):
@@ -148,8 +150,9 @@ class ALgoManage:
         """
         返还赢的玩家ID
         """
-        self.current_players = players
+        self.set_current_players(players)
         self.turn_idx = 0
+        self.record_actions: List[Action] = []
         s = self.state
         s.reset_env()
         for i, p in enumerate(players):
@@ -161,12 +164,12 @@ class ALgoManage:
                 break
             p = players[self.turn_idx % len(players)]
             self.turn_idx += 1
-            p.state_num = 0
             a = p.search(s, last_a=last_a)
             AlgoInfo.new(p.get_name()).update(p.use_time, p.state_num, 0)
             last_a = a
             if a is None:
                 return self.actor_return(s)
+            self.record_actions.append(a)
             s = s.do_action(a)
             self.record(p, a, f"actor/{idx}")
 

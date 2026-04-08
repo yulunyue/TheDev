@@ -2,8 +2,11 @@ from .model import BaseModel
 
 
 class SelectModel(BaseModel):
-    def set_options(self, *args):
-        self.options = list(args)
+    model: "SelectModel"
+
+    def set_options(self, *args, **kw):
+        self.options: dict = {a: a for a in args}
+        self.options.update(kw)
         return self
 
     def to_json(self):
@@ -12,3 +15,6 @@ class SelectModel(BaseModel):
             key=self.key,
             childs=[dict(title=o, value=o) for o in self.options],
         )
+
+    def get_data(self):
+        return self.model.options[self.get_value()]

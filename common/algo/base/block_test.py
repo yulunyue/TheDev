@@ -1,14 +1,14 @@
 from common.util.export import TestBase
-from .block import isqrt, Block
+from common.algo.base.block import isqrt2, Block
 
 
 class TestBlock(TestBase):
     def test_isqrt(sefl):
-        assert isqrt(7) == (3, 3)
+        assert isqrt2(7) == (3, 3)
 
     def test_all(self):
         """
-        0 1 2|3 4 5|6 7 4
+        0 1 2|3 4 5|6 7
         """
         b = Block(8)
         self.expect(b.n, 3)

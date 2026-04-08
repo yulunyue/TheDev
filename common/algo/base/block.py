@@ -8,12 +8,11 @@ def isqrt2(size: int):
 
 
 class Block:
-    def __init__(self, size):
-        self.n, self.m = isqrt(size)
+    def __init__(self, size, default_value=0):
+        self.n, self.m = isqrt2(size)
         self.size = size
-        self.data = [[0] * self.n for _ in range(self.m - 1)]
-        self.data.append([0] * (size - self.n * (self.m - 1)))
-        self.todo = [0] * self.m
+        self.data = [default_value] * size
+        self.todo = [default_value] * self.m
 
     def get_l(self, idx):
         i = idx // self.n
@@ -34,13 +33,8 @@ class Block:
 
     def set_datas(self, i, l, r, v):
         self.down(i)
-        m = self.n * i
-        for j in range(l - m, r - m + 1):
-            self.data[i][j] += v
-
-    def get(self, i):
-        m, j = i // self.n, i % self.n
-        return self.data[m][j] + self.todo[m]
+        for j in range(l, r + 1):
+            self.change(j, v)
 
     def query_data(self, l, r):
         return sum(self.data[l : r + 1])
@@ -57,11 +51,17 @@ class Block:
         if self.todo[i] == 0:
             return
         self.do(i)
+        self.todo[i] = 0
+
+    def change(self, k, v):
+        self.data[k] += v
 
     def do(self, i):
-        for j in range(len(self.data[i])):
-            self.data[i][j] += self.todo[i]
-        self.todo[i] = 0
+        for j in range(self.n):
+            k = j + i * self.n
+            if k > self.size:
+                break
+            self.change(k, self.todo[i])
 
     def update(self, l, r, v):
         il, lr = self.get_l(l)
@@ -75,19 +75,19 @@ class Block:
             self.todo[il + 1] += v
             il += 1
 
-    # def query(self, l, r):
-    #     il, lr = self.get_l(l)
-    #     ir, rl = self.get_r(r)
-    #     ans = 0
-    #     if il == ir:
-    #         ans += self.query_area(l, r, il)
-    #     else:
-    #         ans += self.query_area(l, lr, il)
-    #         ans += self.query_area(rl, r, ir)
-    #     while il + 1 <= ir - 1:
-    #         ans += self.query_todo(il + 1)
-    #         il += 1
-    #     return ans
+    def query(self, l, r):
+        il, lr = self.get_l(l)
+        ir, rl = self.get_r(r)
+        ans = 0
+        if il == ir:
+            ans += self.query_area(l, r, il)
+        else:
+            ans += self.query_area(l, lr, il)
+            ans += self.query_area(rl, r, ir)
+        while il + 1 <= ir - 1:
+            ans += self.query_todo(il + 1)
+            il += 1
+        return ans
 
     def get_data(self):
         ans = []

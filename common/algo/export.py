@@ -18,7 +18,7 @@ from .base.math_util import (
     sigmoid_stable,
 )
 from .base.comb import Comb
-from .base.str_util import (
+from .base.str_util_algo import (
     manacher_get_odd_p,
     get_sa_prefix_doubling,
     get_height_form_sa,

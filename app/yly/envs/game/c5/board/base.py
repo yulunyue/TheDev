@@ -42,7 +42,7 @@ class BoardC5:
 
     def change_chess_statu(self, idx, player_id):
 
-        self.log(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
+        # self.log(state=self.state, idx=idx, player_id=player_id, can_use=self.can_use)
         if self.grid[idx] == player_id or self.grid[idx] + player_id == 3:
             raise Exception(self.grid[idx], player_id)
         if player_id == 0:
@@ -173,5 +173,6 @@ class BoardC5:
         ret.append([" "] + [str(v) for v in range(self.width)])
         return [" ".join(row) for row in ret]
 
-    def set_actions_str(self):
-        return self
+    def load_records(self, records):
+        for i, idx in enumerate(records):
+            self.change_chess_statu(idx, (i % 2) + self.STATE_FIRST)
