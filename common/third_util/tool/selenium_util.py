@@ -189,8 +189,7 @@ class SeleniumUtil:
                 f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
             )
         chrome_exe_file = chrome_exe.child("chrome-win64/chrome.exe")
-        if self.dev_port:
-            os_util = OsUtil("")
+        if isinstance(self.dev_port, int):
             info = System.get_pid_by_port(self.dev_port)
             if not info:
                 raise Exception(
@@ -216,13 +215,14 @@ class SeleniumUtil:
             self.options.add_argument("--disable-extensions")  # 禁用扩展
             self.options.add_argument("--no-first-run")  # 跳过首次运行提示
             self.options.add_argument("--ignore-certificate-errors")
-            if self.dev_port:
+            if isinstance(self.dev_port):
                 self.options.debugger_address = f"127.0.0.1:{self.dev_port}"
                 self.options.add_argument("--start-maximized")
             else:
+                if self.dev_port != "dev":
+                    self.options.add_argument("--headless")
                 self.options.binary_location = chrome_exe_file.get_abs_path()
                 self.options.add_argument("--no-sandbox")
-                # self.options.add_argument("--headless")
                 self.options.add_argument("--window-size=1920,1080")
                 # self.options.add_argument(
                 #     f"--user-data-dir={chrome_driver.child('dev_user_data7').make_dir_if_not_exist(True).get_abs_path()}"

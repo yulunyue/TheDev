@@ -49,6 +49,7 @@ def z_kmp(s):
     """
     n = len(s)
     z = [0] * n
+    z[0] = n
     l = r = 0
     for i in range(1, n):
         if i < r:

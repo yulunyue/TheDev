@@ -1,10 +1,15 @@
 from common.util.export import math
 
 
+def isqrt2(size: int):
+    n = math.ceil(math.sqrt(size))
+    m = math.ceil(size / n)
+    return n, m
+
+
 class Block:
     def __init__(self, size):
-        self.n = math.ceil(math.sqrt(size))
-        self.m = math.ceil(size / self.n)
+        self.n, self.m = isqrt(size)
         self.size = size
         self.data = [[0] * self.n for _ in range(self.m - 1)]
         self.data.append([0] * (size - self.n * (self.m - 1)))
