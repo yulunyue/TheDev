@@ -72,13 +72,10 @@ class Action:
 
     def do(self):
         self.need_undo = True
-        from .state import State
 
         if self.dst is None:
             self.dst = self.get_dst()
         return self.dst
 
     def undo(self):
-        # if not self.need_undo:
-        #     raise Exception("gg")
         return self

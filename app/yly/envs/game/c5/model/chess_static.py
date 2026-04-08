@@ -3,20 +3,15 @@ from common.util.export import List
 from ..board.base_state import BoardC5State, BoardC5
 
 
-class StateStatic(AbState):
+class ChessState(AbState):
     init_state = 0
     mode = AbState.MAN2
+    env: BoardC5
 
     @classmethod
-    def set_board(cls, w, h, s, state=None) -> "StateStatic":
-        cls.board = BoardC5().load(w, h, s)
-        if not state:
-            state = cls.init_state
-        return cls(state).set_state(state)
-
-    def reset(self):
-        self.board.set_state(self.state)
-        return self
+    def set_board(cls, w, h, s, state=0) -> "ChessState":
+        board = BoardC5().load(w, h, s).set_state_any(state)
+        return cls.new(board.state).set_env(board)
 
     def set_state(self, state: int):
         self.board.set_state(state)
@@ -31,22 +26,22 @@ class StateStatic(AbState):
 
     def set_depth(self, depth):
         self.depth = depth
-        self.done = None if self.depth != self.board.size else StateStatic.NO_WIN
+        self.done = None if self.depth != self.env.size else ChessState.NO_WIN
         return self
 
     def get_action(self, pos):
-        from .static_action import C5ACtion
+        from .chess_action import ChessACtion
 
         state = self.board.get_next_state(self.state, pos, self.player_id)
         obs = self.board.set_state(self.state).put_chess(pos, self.player_id + 1)
         self.board.state = state
-        dst: StateStatic = (
-            StateStatic.new(state)
+        dst: ChessState = (
+            ChessState.new(state)
             .set_player_id(1 - self.player_id)
             .set_depth(self.depth + 1)
         )
         dst.can_moves = list(self.board.can_use)
-        a = C5ACtion(self, pos, dst).set_obs(obs)
+        a = ChessACtion(self, pos, dst).set_obs(obs)
         return a
 
     def make_actions(self):

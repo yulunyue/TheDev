@@ -8,6 +8,7 @@ from common.tool.export import (
     SelectModel,
 )
 from .board.base_state import BoardC5State
+from .model.chess_static import ChessState
 
 
 class Bd(FileConfig):
@@ -28,12 +29,12 @@ class Bd(FileConfig):
         return str(name)
 
     def get_state(self):
-        return
+        return ChessState()
 
-    def get_board(self):
-        s = BoardC5State()
+    def get_state(self):
+        BoardC5State()
         size = self.size.get_data()
-        s.load(**size)
+        s = BoardC5State().load(**size)
         s.load_records(self.records.get_value())
         return s
 

@@ -1,9 +1,9 @@
 from common.algo.export import AbState, Action, sigmoid_1_to_1
-from .static_state import StateStatic
+from .chess_static import ChessState
 
 
-class C5ACtion(Action):
-    src: "StateStatic"
+class ChessACtion(Action):
+    src: "ChessState"
     obs = None
     reward = 0
 

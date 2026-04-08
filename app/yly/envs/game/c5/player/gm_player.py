@@ -5,7 +5,7 @@ from AlphaZero_Gomoku.policy_value_net_numpy import PolicyValueNetNumpy
 from AlphaZero_Gomoku.game import Game, Board
 from AlphaZero_Gomoku.train import TrainPipeline
 from ..board.base import C, set_mask, BoardC5
-from ..model.static_state import StateStatic, C5ACtion
+from ..model.chess_static import ChessState, C5ACtion
 from common.third_util.ml.np_util import np
 from common.util.log import logger
 import pickle
@@ -41,7 +41,7 @@ class GmuMo(Algo):
         self.c = C2().load(c.width, c.height, c.in_row)
         return super().load()
 
-    def search_main(self, s: StateStatic, last_a: C5ACtion = None):
+    def search_main(self, s: ChessState, last_a: C5ACtion = None):
         self.c.set_state(s.state)
         if last_a:
             self.c.b.last_move = last_a.action

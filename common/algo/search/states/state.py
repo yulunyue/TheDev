@@ -31,6 +31,10 @@ class State:
     extra = None
     mode = ""
 
+    def set_env(self, env):
+        self.env = env
+        return self
+
     def __init__(self, state=None, player_id=0, depth=0) -> None:
         self.state: int = state
         self.depth = depth
@@ -46,8 +50,6 @@ class State:
 
     @classmethod
     def new(cls, state):
-        if cls.STATE_STORE is None:
-            cls.STATE_STORE = dict()
         if state not in cls.STATE_STORE:
             cls.STATE_STORE[state] = cls(state)
         return cls.STATE_STORE[state]
