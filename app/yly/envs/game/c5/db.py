@@ -29,14 +29,10 @@ class Bd(FileConfig):
         return str(name)
 
     def get_state(self):
-        return ChessState()
-
-    def get_state(self):
-        BoardC5State()
-        size = self.size.get_data()
-        s = BoardC5State().load(**size)
-        s.load_records(self.records.get_value())
-        return s
+        w = self.size.get_data()
+        return ChessState.set_board(
+            *size,
+        )
 
 
 Bd.set_resource("data/game/chess.json")

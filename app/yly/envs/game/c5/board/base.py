@@ -8,11 +8,9 @@ class BoardC5:
     STATE_SECONED = 2
     DR = [[0, 1], [1, 0], [1, 1], [1, -1]]
 
-    def load(self, width=6, height=6, in_row=4):
-        self.width = width
-        self.height = height
+    def load(self, width, height, in_row):
+        self.width, self.height, self.in_row = width, height, in_row
         self.size = self.width * self.height
-        self.in_row = in_row
         self.init_size()
         self.init_mask()
         return self
@@ -38,34 +36,6 @@ class BoardC5:
             self.state_statu |= mask
         return self
 
-    def xx(self, idx, player_id):
-        ct = defaultdict(int)
-        for i in range(len(self.DR)):
-            lv, l0 = self.get_dirction_ct(idx, i, player_id, -1, self.in_row)
-            rv, r0 = self.get_dirction_ct(idx, i, player_id, 1, self.in_row - lv - l0)
-            if lv + rv + l0 + r0 + 1 >= self.in_row:
-                ct[
-                    lv + rv + 1, 1 if l0 + r0 else 0
-                ] += 1  # l0 + r0不等于1 表示两个方向都有可能
-        return ct
-
-    def get_dirction_ct(self, idx, i, player_id, chen, size):
-        c0 = cv = 0
-        ct = 1
-        has_op = 0
-        while ct < size:
-            nx = self.get_next_pos(idx, i, ct * chen)
-            if nx is None or has_op:
-                break
-            if self.grid[nx] == 3 - player_id:
-                has_op = 1
-            if self.grid[nx] == player_id:
-                cv += 1
-            if self.grid[nx] == self.STATE_NULL:
-                c0 += 1
-            ct += 1
-        return cv, c0
-
     def get_next_state(self, state, idx, player_id):
         return set_mask(state, idx * self.CHESS_SIZE, self.CHESS_SIZE, player_id + 1)
 
@@ -82,6 +52,9 @@ class BoardC5:
         self.state_pos = state >> self.size
         self.state_statu = state ^ (self.state_pos << self.size)
         return self
+
+    def get_state(self):
+        return self.state_pos << self.size | self.state_statu
 
     def change_grid(self, s: str):
         self.set_state(0)

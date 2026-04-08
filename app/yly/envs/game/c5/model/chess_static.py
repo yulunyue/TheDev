@@ -1,17 +1,21 @@
 from common.algo.export import AbState, Action, sigmoid_1_to_1, Algo
-from common.util.export import List
+from common.util.export import List, Self
 from ..board.base_state import BoardC5State, BoardC5
 
 
-class ChessState(AbState):
+class ChessState664(AbState):
     init_state = 0
     mode = AbState.MAN2
     env: BoardC5
+    w = 6
+    h = 6
+    in_row = 4
+    STATE_STORE = dict()
 
     @classmethod
-    def set_board(cls, w, h, s, state=0) -> "ChessState":
-        board = BoardC5().load(w, h, s).set_state_any(state)
-        return cls.new(board.state).set_env(board)
+    def set_board(cls, state=0) -> "Self":
+        board = BoardC5().load(cls.w, cls.h, cls.s).set_state_any(state)
+        return cls.new(board.get_state()).set_env(board)
 
     def set_state(self, state: int):
         self.board.set_state(state)
@@ -70,3 +74,10 @@ class ChessState(AbState):
 
     def show_titles(self):
         return f"depth:{self.depth}; player:{self.player_id+1}{self.board.s(self.player_id+1)}; done:{self.done}"
+
+
+class ChessState333(ChessState):
+    w = 3
+    h = 3
+    in_row = 3
+    STATE_STORE = dict()
