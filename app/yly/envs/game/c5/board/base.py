@@ -35,18 +35,18 @@ class BoardC5:
         for i in range(self.size):
             iy, ix = self.get_yx(i)
             for dy, dx in self.DR:
-                idxs = [i]
+                idxs = [[i, 0]]
                 mask = self.mask_sets[i]
                 for j in range(1, self.in_row):
                     ny, nx = iy + dy * j, ix + dx * j
                     if 0 <= ny < self.height and 0 <= nx < self.width:
                         idx = self.yx_to_idx(ny, nx)
-                        idxs.append(idx)
+                        idxs.append([idx, j])
                         mask |= self.mask_sets[idx]
                 if len(idxs) < self.in_row:
                     continue
-                for idx in idxs:
-                    self.lines[idx].append(len(self.line_mask))
+                for idx, j in idxs:
+                    self.lines[idx].append([len(self.line_mask), j])
                 self.line_mask.append(mask)
                 self.line_state.append(0)
 
@@ -62,7 +62,7 @@ class BoardC5:
         return self
 
     def change_idx_statu(self, idx, last_player_id, cur_player_id):
-        for line_id in self.lines[idx]:
+        for line_id, j in self.lines[idx]:
             pass
 
     def put_chess(self, idx, player_id):
