@@ -1,12 +1,4 @@
-from common.util.export import TestBase
-
-
-class A:
-    d = dict()
-
-
-class B(A):
-    d = dict()
+from common.util.export import TestBase, math
 
 
 class TestPy:
@@ -15,3 +7,8 @@ class TestPy:
 
     def test_zip(self):
         assert list(zip("12", "34")) == [("1", "3"), ("2", "4")]
+
+    def test_math(self):
+        assert math.log(2, 2) == 1
+        assert math.log(1, 2) == 0
+        assert math.log(8, 2) == 3

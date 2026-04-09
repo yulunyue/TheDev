@@ -224,9 +224,9 @@ class SeleniumUtil:
                 self.options.binary_location = chrome_exe_file.get_abs_path()
                 self.options.add_argument("--no-sandbox")
                 self.options.add_argument("--window-size=1920,1080")
-                # self.options.add_argument(
-                #     f"--user-data-dir={chrome_driver.child('dev_user_data7').make_dir_if_not_exist(True).get_abs_path()}"
-                # )
+                self.options.add_argument(
+                    f"--user-data-dir={chrome_driver.child('dev_user_data11').make_dir_if_not_exist(True).get_abs_path()}"
+                )
             self.driver = webdriver.Chrome(options=self.options, service=service)
             self.wait = WebDriverWait(self.driver, self.default_time_out)
             # self.driver.set_page_load_timeout(10)
@@ -240,22 +240,26 @@ class SeleniumUtil:
     def url_change(self, f: str, t: str):
         pass
 
-    def get(self, url, time_out=20, wait_time=0.5):
+    def get(self, url, start_url="", time_out=20, wait_time=0.5):
         self.load()
+        if not start_url:
+            start_url = url
         if self.driver.current_url == url:
             self.reload()
         else:
-            self.driver.get(url)
+            self.driver.get(start_url)
+
         last_url = None
         while time_out > 0:
             self.wait.until(
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
+            logger.info(self.driver.current_url)
             new_url, args, kw = url_parse(self.driver.current_url)
             if new_url != last_url:
                 self.url_change(last_url, new_url)
                 last_url = new_url
-            if new_url == url:
+            if new_url.startswith(url):
                 break
             time_out -= wait_time
             time.sleep(wait_time)

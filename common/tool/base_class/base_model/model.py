@@ -1,4 +1,6 @@
-from common.util.export import Self
+from common.util.export import List, TypeVar
+
+T = TypeVar("T", bound="BaseModel")
 
 
 class BaseModel:
@@ -13,10 +15,10 @@ class BaseModel:
         self.ops = []
         self.title = key
         self.key = key
-        self.model: Self = None
+        self.model: T = None
 
     def set_model(self, model):
-        self.model: Self = model
+        self.model: T = model
         return self
 
     def get_title(self):

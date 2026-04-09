@@ -37,7 +37,7 @@ export class Api extends Column {
     }
     init_event(): void {
         this.uri.on_change((key: string, src: Node, dst: Node) => {
-            web_dom.post("/app/api/get_api_call_info", { key: dst.key }, (d) => {
+            web_dom.post("/app/api/get_api_call_info", { key: dst }, (d) => {
                 this.input.set_option(d)
                 let data = this.local_data[this.uri.get_value()]
                 if (data) {

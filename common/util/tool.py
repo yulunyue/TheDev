@@ -36,7 +36,7 @@ def is_base64_code(s: str):
 
 
 def base64_decode(s: str):
-    s = base64.b64decode(s).decode()
+    s = base64.b64decode(s)
     return s
 
 

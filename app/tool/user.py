@@ -16,12 +16,6 @@ class UserModel(FileConfig):
     password = EncroyModel()
     user_type = SelectModel().set_options(0, 1, 2)
 
-    @classmethod
-    def get_id(self, name, **kw):
-        if not name:
-            return "default"
-        return name
-
 
 UserModel.set_resource("config/setting/user.json")
 

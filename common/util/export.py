@@ -41,6 +41,7 @@ from .io.export import TcpServer, TcpClient, TempFile
 from .io.manage import IO_MANAGE
 from .thread.thread_util import ThreadRecord
 import re
+import base64
 from typing import (
     List,
     Dict,
@@ -53,10 +54,15 @@ from typing import (
     TYPE_CHECKING,
     final,
     Any,
-    Self,
     Type,
     Callable,
 )
+
+try:
+    from typing import Self
+except Exception as e:
+    Self = Any
+
 from collections import defaultdict, deque, Counter
 import functools
 import json

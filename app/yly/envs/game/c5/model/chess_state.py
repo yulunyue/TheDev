@@ -50,26 +50,15 @@ class CState664(AbState):
 
     def make_actions(self):
         actions = []
-        for pos in self.can_moves:
+        self.env.set_state(self.state)
+        for pos in self.env.get_next_states():
             a = self.get_action(pos)
             actions.append(a)
         return actions
 
     def to_str(self, algo: Algo = None):
-        score = dict()
-        if algo is not None:
-            for a in self.get_sort_actions():
-                score[a.action] = algo.get_action_reward(a)
         return (
-            BoardC5()
-            .load(
-                self.board.width,
-                self.board.height,
-                self.board.in_row,
-                just_for_view=True,
-            )
-            .set_state(self.state)
-            .to_str(score)
+            BoardC5().load(self.w, self.h, self.in_row).set_state(self.state).to_str()
         )
 
     def show_titles(self):

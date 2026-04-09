@@ -45,7 +45,7 @@ def low_bits(j):
     while i:
         low_bit = i & -i
         ret.append(low_bit)
-        i -= low_bit
+        i ^= low_bit
     return ret
 
 
