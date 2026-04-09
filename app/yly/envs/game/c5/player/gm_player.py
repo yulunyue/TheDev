@@ -5,7 +5,7 @@ from AlphaZero_Gomoku.policy_value_net_numpy import PolicyValueNetNumpy
 from AlphaZero_Gomoku.game import Game, Board
 from AlphaZero_Gomoku.train import TrainPipeline
 from ..board.base import C, set_mask, BoardC5
-from ..model.chess_static import ChessState, C5ACtion
+from ..model.chess_state import ChessState, C5ACtion
 from common.third_util.ml.np_util import np
 from common.util.log import logger
 import pickle

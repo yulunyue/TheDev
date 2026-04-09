@@ -7,14 +7,13 @@ from common.tool.export import (
     SearchModel,
     SelectModel,
 )
-from .board.base_state import BoardC5State
-from .model.chess_static import ChessState
+from .model.chess_state_map import CHESS_MAP_CLS_FUNC, CState333
 
 
 class Bd(FileConfig):
     name = SearchModel(default_value="default")
-    size = SelectModel(default_value="size_3x3x3").set_options(
-        size_3x3x3=dict(width=3, height=3, in_row=3),
+    size = SelectModel(default_value=CState333.__name__).set_options(
+        *CHESS_MAP_CLS_FUNC.keys()
     )
     records = ListModel()
     p0 = SearchModel(default_value="ad3")
@@ -29,10 +28,8 @@ class Bd(FileConfig):
         return str(name)
 
     def get_state(self):
-        w = self.size.get_data()
-        return ChessState.set_board(
-            *size,
-        )
+        cls = CHESS_MAP_CLS_FUNC[self.size.get_value()]
+        return cls.set_board(self.records.get_value())
 
 
 Bd.set_resource("data/game/chess.json")

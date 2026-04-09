@@ -1,5 +1,5 @@
 ```lc1
-app.yly.algo.todo.lc_3653::Solution::run
+app.yly.algo.todo.lc_3892::Solution::run
 ```
 
 ```lc2

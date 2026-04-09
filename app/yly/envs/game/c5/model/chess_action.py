@@ -1,5 +1,5 @@
 from common.algo.export import AbState, Action, sigmoid_1_to_1
-from .chess_static import ChessState
+from .chess_state import ChessState
 
 
 class ChessACtion(Action):
