@@ -46,12 +46,21 @@ class BoardC5:
                 if len(idxs) < self.in_row:
                     continue
                 for idx, j in idxs:
-                    self.lines[idx].append([len(self.line_mask), j])
+                    self.lines[idx].append(
+                        [
+                            len(self.line_mask),
+                            j,
+                            1 << j,
+                            self.in_row_state ^ (1 << j),
+                        ]
+                    )
                 self.line_mask.append(mask)
-                self.line_state.append(0)
+                self.line_state.append([0, 0])
 
     def init_size(self):
         self.size = self.width * self.height
+        self.in_row_state = 1 << self.in_row + 1
+        self.ct = [[0] * self.in_row_state, [0] * self.in_row_state]
 
     def init_mask(self):
         self.mask_h = (1 << self.height) - 1
@@ -63,7 +72,12 @@ class BoardC5:
 
     def change_idx_statu(self, idx, last_player_id, cur_player_id):
         for line_id, j in self.lines[idx]:
-            pass
+            a0, a1 = self.line_state[line_id]
+            if cur_player_id == 0:
+                a0 ^= 1 << j
+                a1 ^= 1 << j
+            elif cur_player_id == 1:
+                a0 |= 1 << j
 
     def put_chess(self, idx, player_id):
         has_chess = self.state_pos & self.mask_sets[idx]
