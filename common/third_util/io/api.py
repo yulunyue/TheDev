@@ -154,7 +154,7 @@ class Api:
     def download(self, url: str, dst=None, data=None, timeout=3600):
         if dst is None:
             dst = f"/Thedev/data/download/{url.split('/').pop().split('?')[0]}"
-        f = File(dst)
+        f = File(dst).make_dir_if_not_exist()
         if f.exists():
             return f
         self.http(
@@ -169,7 +169,7 @@ class Api:
         return self.http("POST", url, data=data, headers=headers)[0]
 
     def post_data(self, url, param=None, headers=None):
-        return self.hander_res(elf.http("POST", url, headers=headers, param=param))
+        return self.http("POST", url, headers=headers, param=param)[1]
 
     def post_files(self, url, path, name="file"):
         return self.http(

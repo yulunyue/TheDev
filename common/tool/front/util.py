@@ -2,7 +2,7 @@ from common.util.export import Node
 
 
 class FontBase(Node):
-    pass
+    type = "pre"
 
 
 def to_web_view(k, v):

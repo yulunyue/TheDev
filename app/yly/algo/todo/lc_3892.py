@@ -11,13 +11,16 @@ class Solution(MockCf):
 
     def get_cases(self):
         return dict(
+            case2=dict(nums=[4, 5, 3], k=0, result=0),
             case0=dict(nums=[4, 2, 0, 1, 3], k=2, result=3),
             case1=dict(nums=[4, 5, 3, 6], k=2, result=0),
+            case3=dict(nums=[1, 1], k=2, result=-1),
         )
 
     def minOperations(self, nums: list[int], k: int) -> int:
         n = len(nums)
-
+        if k == 0:
+            return 0
         ops = [0] * n
         for i in range(n):
             ops[i] = CT.max(0, 1 + CT.max(nums[i - 1], nums[(i + 1) % n]) - nums[i])
@@ -27,11 +30,13 @@ class Solution(MockCf):
     def op2(self, ops, k):
         n = len(ops)
         self.log(ops=ops, k=k)
+        if k * 2 >= n + 1:
+            return CT.inf
 
         @functools.lru_cache(None)
         def dfs(i, k):
             if i == 0:
-                return ops[0]
+                return ops[0] if k == 1 else CT.inf
             if i + 2 < k * 2:
                 return CT.inf
             b = dfs(i - 1, k)
@@ -41,8 +46,18 @@ class Solution(MockCf):
             self.log(i=i, ops=ops, k=k)
             return CT.min(c, b)
 
-        r = dfs(n - 1, k)
-        dfs.cache_clear()
-        return r
+        # r = dfs(n - 1, k)
+        # dfs.cache_clear()
+        # return r
+
+        f = [[0] * n for _ in range(k + 1)]
+        for i in range(k):
+            f[i][i * 2 + 1] = CT.inf
+            for j in range(i * 2 + 1, n - 1):
+                not_choose = f[i + 1][j]
+                choose = f[i][j - 1] + ops[j]
+                f[i + 1][j + 1] = CT.min(not_choose, choose)
+
+        return f[-1][-1]
 
     execute = minOperations

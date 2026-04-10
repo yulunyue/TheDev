@@ -55,8 +55,12 @@ export class Api extends Column {
     }
     execute() {
         web_dom.post(this.uri.input.get_value(), this.input.get_value(), (v: Node) => {
-            v.type = v.type || Constant.DOM_TYPE_PRE
-            this.result.set_option(v)
+            if (!v.type) {
+                this.result.set_option({ type: Constant.DOM_TYPE_PRE, value: v })
+            } else {
+                this.result.set_option(v)
+            }
+
         })
     }
     local_data: any

@@ -12,6 +12,7 @@ export class FormRow extends Div {
     footer: Div
     _submit_call_back: any
     input_width: number
+    child_map: any
     set_input_width(width: number) {
         this.input_width = width
         return this
@@ -56,6 +57,7 @@ export class FormRow extends Div {
             }
         }
         this.body.set_childs(childs, this.get_row.bind(this))
+        this.child_map = {}
         for (var i = 0; i < childs.length; i++) {
             let o = childs[i]
             this.body.childs[i].set_option(o).on_change(this.do_change.bind(this))

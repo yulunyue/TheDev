@@ -11,7 +11,6 @@ export class Div {
     parent: Div
     option: Node
     index: number
-    child_map: any
     size: number = 0
     _value: any = null
     event_hander: any
@@ -77,7 +76,6 @@ export class Div {
     constructor(node_type: string = 'div') {
         this.childs = []
         this.event_hander = {}
-        this.child_map = {}
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
         this.parent = null
