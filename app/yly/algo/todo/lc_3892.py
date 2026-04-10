@@ -51,11 +51,11 @@ class Solution(MockCf):
         # return r
 
         f = [[0] * n for _ in range(k + 1)]
-        for i in range(k):
-            f[i][i * 2 + 1] = CT.inf
+        for i in range(1,k+1):
+            f[i][i * 2 - 1] = CT.inf
             for j in range(i * 2 + 1, n - 1):
-                not_choose = f[i + 1][j]
-                choose = f[i][j - 1] + ops[j]
+                not_choose = f[i][j]
+                choose = f[i-1][j - 1] + ops[j]
                 f[i + 1][j + 1] = CT.min(not_choose, choose)
 
         return f[-1][-1]
