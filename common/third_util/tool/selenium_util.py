@@ -1,104 +1,33 @@
-from selenium import webdriver
+# from selenium import webdriver
+from selenium.webdriver.chrome.webdriver import WebDriver
+from seleniumwire import webdriver
+from seleniumwire.request import Request, Response
 from common.tool.export import OsUtil, GC, System
+
 from selenium.webdriver.chrome.options import Options
+
+Chrome = webdriver.Chrome
 from common.util.export import File, logger, time, List, url_to_json, url_parse
 from selenium.webdriver.chrome.service import Service
+
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from .selenium_script import wart_until_doc_ready
 
 
 class SeleniumUtil:
-    driver: webdriver.Chrome = None
+    driver: WebDriver = None
 
-    def __init__(self, dev_port=9527, default_time_out=10):
+    def __init__(self, dev_port=9527, default_time_out=6):
         self.dev_port = dev_port
         self.default_time_out = default_time_out
 
     @property
     def logger(self):
         return logger
-
-    def get_xpath_from_chrome_devtools(self, element):
-        """
-        模拟 Chrome DevTools 复制 XPath 的功能
-        """
-        js_code = """
-        function getXPathForElement(element) {
-            const idx = (sib, name) => sib 
-                ? idx(sib.previousElementSibling, name||sib.localName) + (sib.localName == name)
-                : 1;
-            const segs = elm => !elm || elm.nodeType !== 1 
-                ? ['']
-                : elm.id && document.getElementById(elm.id) === elm
-                    ? [`//*[@id="${elm.id}"]`]
-                    : [...segs(elm.parentNode), `${elm.localName.toLowerCase()}[${idx(elm)}]`];
-            return segs(element).join('/');
-        }
-        return getXPathForElement(arguments[0]);
-        """
-
-        return self.driver.execute_script(js_code, element)
-
-    def e_format_node(self, element: WebElement, text_max_size=20):
-        ret = [""]
-        element_id = element.get_attribute("id")
-        tag_name = element.tag_name
-        # 获取其他有用的属性
-        class_attr = element.get_attribute("class") or ""
-        name_attr = element.get_attribute("name") or ""
-        url = element.get_attribute("url") or ""
-        title = element.get_attribute("title") or ""
-        disabled = element.get_attribute("disabled")
-        # 获取位置和大小
-        location_str = ""
-        try:
-            location = element.location
-            size = element.size
-            location_str = f"位置: ({location['x']}, {location['y']}); 大小: {size['width']}x{size['height']}"
-
-        except:
-            location_str = ""
-        # 获取可见文本（截断）
-        try:
-            text = element.text.strip()
-            if len(text) > text_max_size * 2:
-                text = text[:text_max_size] + "..." + text[-text_max_size:]
-        except:
-            text = ""
-        ret.append(
-            "; ".join(
-                [
-                    f"标签: <{tag_name}>",
-                    f"ID: [{element_id}]",
-                    f"title: [{title}]",
-                    f"disabled: [{disabled}]",
-                    f"type: [{element.get_attribute('type')}]",
-                ]
-            )
-        )
-        ret.append(f"   XPATH:{self.get_xpath_from_chrome_devtools(element)} ")
-        if class_attr:
-            ret.append(f"   类: {class_attr};")
-
-        if name_attr:
-            ret.append(f"   Name: {name_attr}")
-        if url:
-            ret.append(f"   uri: {url}")
-        ret.append(f"   {location_str}")
-        if text:
-            ret.append(f"   文本: {text}")
-
-        return "\n".join(ret)
-
-    def e_format(self, element: WebElement, text_max_size=20):
-        if isinstance(element, list):
-            rets = []
-            for e in element:
-                rets.append(self.e_format_node(e, text_max_size))
-            return "\n".join(rets)
-        return self.e_format_node(element, text_max_size)
 
     def print_info(self):
         for e in self.find_elements_by_xpath("//*[text()!='']"):
@@ -174,6 +103,12 @@ class SeleniumUtil:
             wait = WebDriverWait(self.driver, timeout)
         wait.until(f)
 
+    def request_interceptor(self, request: Request):
+        logger.map(uri=request.url, method=request.method, headers=request.headers)
+
+    def response_interceptor(self, request: Request, response: Response):
+        logger.map(uri=request.url, method=request.method, headers=request.headers)
+
     def load(self):
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
         chrome_exe = File(GC.chrome_bin_path.get_value())
@@ -225,46 +160,60 @@ class SeleniumUtil:
                 self.options.add_argument("--no-sandbox")
                 self.options.add_argument("--window-size=1920,1080")
                 self.options.add_argument(
-                    f"--user-data-dir={chrome_driver.child('dev_user_data11').make_dir_if_not_exist(True).get_abs_path()}"
+                    f"--user-data-dir={chrome_driver.child('dev_user_data12').make_dir_if_not_exist(True).get_abs_path()}"
                 )
-            self.driver = webdriver.Chrome(options=self.options, service=service)
+            self.driver = Chrome(
+                options=self.options,
+                service=service,
+                # seleniumwire_options=dict(
+                #     request_interceptor=self.request_interceptor,
+                #     response_interceptor=self.response_interceptor,
+                # ),
+            )
             self.wait = WebDriverWait(self.driver, self.default_time_out)
             # self.driver.set_page_load_timeout(10)
 
         return self
 
-    @property
-    def current_url(self):
-        return self.driver.current_url
-
     def url_change(self, f: str, t: str):
         pass
 
-    def get(self, url, start_url="", time_out=20, wait_time=0.5):
+    def get(self, url):
         self.load()
-        if not start_url:
-            start_url = url
         if self.driver.current_url == url:
             self.reload()
         else:
-            self.driver.get(start_url)
-
-        last_url = None
-        while time_out > 0:
-            self.wait.until(
-                lambda d: d.execute_script("return document.readyState") == "complete"
-            )
-            logger.info(self.driver.current_url)
-            new_url, args, kw = url_parse(self.driver.current_url)
-            if new_url != last_url:
-                self.url_change(last_url, new_url)
-                last_url = new_url
-            if new_url.startswith(url):
-                break
-            time_out -= wait_time
-            time.sleep(wait_time)
-
+            self.driver.get(url)
         return self
+
+    def wait_until(self, func=None, time_out=120, wait_time=0.2):
+        self.wait_result = None
+        self.last_url = None
+
+        self.request_offset_size = 0
+        try:
+            while time_out > 0 and self.wait_result is None:
+                new_url, args, kw = url_parse(self.driver.current_url)
+                if self.last_url != new_url:
+                    wart_until_doc_ready(self.wait)
+                    self.url_change(self.last_url, new_url)
+                self.handel_new_requests()
+                if func is not None:
+                    self.wait_result = func()
+                self.last_url = new_url
+                time_out -= wait_time
+                time.sleep(wait_time)
+        except Exception as e:
+            logger.exception(e)
+        finally:
+            self.driver.quit()
+        return self.wait_result
+
+    def handel_new_requests(self) -> List[Request]:
+        requests: List[Request] = self.driver.requests
+        while self.request_offset_size < len(requests):
+            self.request_interceptor(requests[self.request_offset_size])
+            self.request_offset_size += 1
 
     def wait_for_window(self):
         """等待新窗口打开"""

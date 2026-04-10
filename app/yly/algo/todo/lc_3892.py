@@ -17,26 +17,32 @@ class Solution(MockCf):
 
     def minOperations(self, nums: list[int], k: int) -> int:
         n = len(nums)
-        if k > n // 2:
-            return -1
+
         ops = [0] * n
         for i in range(n):
             ops[i] = CT.max(0, 1 + CT.max(nums[i - 1], nums[(i + 1) % n]) - nums[i])
-        self.log(ops=ops)
+        r = CT.min(self.op2(ops[: n - 1], k), self.op2(ops[1:n], k))
+        return -1 if r == CT.inf else r
+
+    def op2(self, ops, k):
+        n = len(ops)
+        self.log(ops=ops, k=k)
 
         @functools.lru_cache(None)
-        def dfs(i, k, zero_has):
-            if k == 0:
-                return 0
-            if i == n - 1 and zero_has:
-                return dfs(i + 1, k, zero_has)
-            if i >= n:
+        def dfs(i, k):
+            if i == 0:
+                return ops[0]
+            if i + 2 < k * 2:
                 return CT.inf
-            c = ops[i] + dfs(i + 2, k - 1, zero_has or i == 0)
-            b = dfs(i + 1, k, zero_has)
-            # self.log(i=i, k=k, zero_has=zero_has, c=c, b=b)
+            b = dfs(i - 1, k)
+            if k == 1:
+                return CT.min(ops[i], b)
+            c = ops[i] + dfs(i - 2, k - 1)
+            self.log(i=i, ops=ops, k=k)
             return CT.min(c, b)
 
-        return dfs(0, k, False)
+        r = dfs(n - 1, k)
+        dfs.cache_clear()
+        return r
 
     execute = minOperations
