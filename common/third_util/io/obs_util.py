@@ -71,9 +71,3 @@ class ObsUtil:
 
     def check(self):
         pass
-
-
-if __name__ == "__main__":
-    args, kw = sys_argc_parse()
-    print(args, kw)
-    print(getattr(ObsUtil(**kw), args[0])(*args[1:]))
