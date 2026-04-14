@@ -22,23 +22,29 @@ class Solution(MockCf):
 
     def countArrays(self, digitSum: list[int]) -> int:
         mx = 5001
-        ct = [set() for _ in range(mx)]
+        ct = [[] for _ in range(mx)]
         n = len(digitSum)
         for s in range(mx):
             v = sum([int(v) for v in str(s)])
-            ct[v].add(s)
-
-        dt = [1] * mx
-        for i in range(n - 1, -1, -1):
-            ds = [0] * mx
+            ct[v].append(s)
+        lt = ct[digitSum[-1]]
+        dt = {v: len(lt) - i for i, v in enumerate(lt)}
+        for i in range(n - 2, -1, -1):
+            cur, nxt = ct[digitSum[i]], ct[digitSum[i + 1]]
+            cur_i, nxt_i = len(cur) - 1, len(nxt) - 1
+            st = dict()
             num = 0
-            se = ct[digitSum[i]]
-            for j in range(mx):
-                if j in se:
-                    num += 1
-                ds[j] = (num * dt[j]) % CT.MOD
-            self.log(ds=ds)
-            dt = ds
-        return dt[-1]
+            ns = 0
+            while cur_i >= 0:
+                while cur[cur_i] <= nxt[nxt_i] and nxt_i >= 0:
+                    num = (num + dt[nxt[nxt_i]]) % CT.MOD
+                    nxt_i -= 1
+                ns = (ns + num) % CT.MOD
+                st[cur[cur_i]] = ns
+                cur_i -= 1
+            # self.log(dt=dt, st=st, cur=cur, nxt=nxt)
+            dt = st
+
+        return dt[ct[digitSum[0]][0]]
 
     execute = countArrays
