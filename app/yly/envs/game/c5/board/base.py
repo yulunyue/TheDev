@@ -32,18 +32,20 @@ class BoardC5:
         self.lines = [[] for _ in range(self.size)]
         self.line_mask = []
         self.line_state = []
+        in_row = self.in_row - 1
         for i in range(self.size):
-            iy, ix = self.get_yx(i)
-            for dy, dx in self.DR:
+            for k, (dy, dx) in enumerate(self.DR):
+                iy, ix = self.get_yx(i)
                 idxs = [[i, 0]]
-                mask = self.mask_sets[i]
-                for j in range(1, self.in_row):
+
+                mask = 0
+                for j in range(-in_row + 1, in_row):
                     ny, nx = iy + dy * j, ix + dx * j
                     if 0 <= ny < self.height and 0 <= nx < self.width:
                         idx = self.yx_to_idx(ny, nx)
                         idxs.append([idx, j])
                         mask |= self.mask_sets[idx]
-                if len(idxs) < self.in_row:
+                if len(idxs) < in_row:
                     continue
                 for idx, j in idxs:
                     self.lines[idx].append(
