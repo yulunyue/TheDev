@@ -21,16 +21,24 @@ class Solution(MockCf):
         )
 
     def countArrays(self, digitSum: list[int]) -> int:
-        ct = [set() for _ in range(51)]
-        MX = 5000
+        mx = 5001
+        ct = [set() for _ in range(mx)]
         n = len(digitSum)
-        for s in range(MX, -1, -1):
+        for s in range(mx):
             v = sum([int(v) for v in str(s)])
             ct[v].add(s)
-        ct = [0] * (MX + 1)
+
+        dt = [1] * mx
         for i in range(n - 1, -1, -1):
-            s = ct[digitSum[i]]
-            for j in range(1, MX + 1):
-                ct[j] = ct[j - 1] + (j in s)
+            ds = [0] * mx
+            num = 0
+            se = ct[digitSum[i]]
+            for j in range(mx):
+                if j in se:
+                    num += 1
+                ds[j] = (num * dt[j]) % CT.MOD
+            self.log(ds=ds)
+            dt = ds
+        return dt[-1]
 
     execute = countArrays
