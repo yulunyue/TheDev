@@ -1,24 +1,23 @@
 from common.util.export import TestBase
 from common.util.yml import Yml, VALUE_KEY
 
-
-class TestYml(TestBase):
-    def test_yml_to_dict(self):
-        a = """
-b:
+A = """
+b: 
   c: d
   e: f
   g: 'h'
-
 c: "f"
-f:
+f: 
 """
-        d = Yml().load(a)
+
+
+class TestYml(TestBase):
+    def test_yml_to_dict(self):
+        d = Yml().load(A)
         self.expect(
             d.data,
             {
                 "b": {
-                    VALUE_KEY: "",
                     "c": {VALUE_KEY: "d"},
                     "e": {VALUE_KEY: "f"},
                     "g": {VALUE_KEY: "h"},
@@ -28,3 +27,5 @@ f:
             },
         )
         self.expect(d.get("b.g"), "h")
+        dump_str = A.replace("'", "").replace('"', "")
+        self.expect(d.dumps(), dump_str)

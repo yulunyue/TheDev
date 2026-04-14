@@ -4,7 +4,6 @@ import json
 from collections import defaultdict
 import sys
 import re
-import json
 import hashlib
 import base64
 import time
@@ -195,3 +194,35 @@ def asset_exception(fun, *args, msg="", **kw):
     except Exception as e:
         s = str(e)
     assert s, msg
+
+
+def json_get(data, keys: str, default_value=None):
+    if isinstance(keys, str):
+        ks = keys.split(".")
+    else:
+        ks = keys
+    r = data
+    for key in ks:
+        if key not in r:
+            if default_value is None:
+                raise Exception(data, keys)
+            return default_value
+        r = r[key]
+    return r
+
+
+def json_set(data, keys: str, value):
+    ks = keys.split(".")
+    r = data
+    for i, key in enumerate(ks):
+        if key not in r:
+            if i == len(ks) - 1:
+                r[key] = value
+                return True
+            r[key] = dict()
+        elif i == len(ks) - 1:
+            if r[key] != value:
+                r[key] = value
+                return True
+        r = r[key]
+    return False

@@ -21,21 +21,16 @@ class Solution(MockCf):
         )
 
     def countArrays(self, digitSum: list[int]) -> int:
-        ct = [[] for _ in range(51)]
-        for s in range(5000, -1, -1):
-            ct[sum([int(v) for v in str(s)])].append(s)
-
-        @functools.lru_cache(None)
-        def dfs(i, last_v):
-            if i == len(digitSum):
-                return 1
-            ans = 0
-            for u in ct[digitSum[i]]:
-                if u < last_v:
-                    break
-                ans = (ans + dfs(i + 1, u)) % CT.MOD
-            return ans
-
-        return dfs(0, 0)
+        ct = [set() for _ in range(51)]
+        MX = 5000
+        n = len(digitSum)
+        for s in range(MX, -1, -1):
+            v = sum([int(v) for v in str(s)])
+            ct[v].add(s)
+        ct = [0] * (MX + 1)
+        for i in range(n - 1, -1, -1):
+            s = ct[digitSum[i]]
+            for j in range(1, MX + 1):
+                ct[j] = ct[j - 1] + (j in s)
 
     execute = countArrays

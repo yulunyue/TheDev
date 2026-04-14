@@ -1,3 +1,6 @@
+from .tool import json_get
+
+
 def value_parse(s: str):
     s = s.strip()
     if s.startswith("'") and s.endswith("'"):
@@ -27,13 +30,15 @@ class Yml:
             if split_index == -1:
                 continue
             key = s1[:split_index].strip()
-            value_str = s1[split_index + 1:].strip()
+            value_str = s1[split_index + 1 :].strip()
             # Only create entry if there's a key and it's not already in the parent
             if key:  # Ensure key is not empty
                 while q and q[-1][0] >= indent:
                     q.pop()
                 if key not in q[-1][1]:
                     value = value_parse(value_str) if value_str else ""
+                    if VALUE_KEY in q[-1][1]:
+                        q[-1][1].pop(VALUE_KEY)
                     mp = q[-1][1][key] = {VALUE_KEY: value}
                     q.append([indent, mp])
         return q[0][1]
@@ -43,14 +48,33 @@ class Yml:
         return self
 
     def get(self, keys, defalut_value=None):
-        keys = keys
-        if isinstance(keys, str):
-            keys = keys.split(".")
-        ret = self.data
-        for key in keys:
-            if key not in ret:
-                if defalut_value is None:
-                    raise Exception(keys, list(ret.keys()))
-                return defalut_value
-            ret = ret[key]
+        ret = json_get(self.data, keys, {VALUE_KEY: defalut_value})
+        if ret[VALUE_KEY] is None:
+            raise Exception(self.data, keys)
         return ret[VALUE_KEY]
+
+    def dfs(self, keys, value: dict, func):
+        if VALUE_KEY in value:
+            func(keys, value[VALUE_KEY], True)
+            return
+        if keys:
+            func(keys, value, False)
+        for k, v in value.items():
+            ks = keys + [k]
+            self.dfs(ks, v, func)
+
+    def dumps(self, indent=2):
+        ret = [""]
+
+        def util(keys, value, is_leaf):
+            head = " " * (len(keys) - 1) * indent + keys[-1]
+            if is_leaf:
+                ret.append(f"{head}: {value}")
+            else:
+                ret.append(f"{head}: ")
+
+        self.dfs([], self.data, util)
+        return "\n".join(ret + [""])
+
+    def update(self, key, value):
+        pass

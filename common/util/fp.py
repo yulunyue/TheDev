@@ -37,12 +37,6 @@ class File:
     def get_size(self):
         return os.path.getsize(self.path)
 
-    def get_param_value(self, p, param):
-        return self.get(param.key, default_value=param.default_value)
-
-    def update_param_value(self, p, param, value):
-        self.get_config()[param.key] = value
-
     def parent(self):
         dirs = self.get_abs_path().split("/")
         dirs.pop()

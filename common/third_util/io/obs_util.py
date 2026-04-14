@@ -1,18 +1,21 @@
 from common.util.export import logger, File
-from common.tool.export import ConfigBase, StrModel
+from common.tool.export import FileConfig, StrModel
 from obs import ObsClient
 
 
-class ObsConfig(ConfigBase):
+class ObsConfig(FileConfig):
     ak = StrModel()
     sk = StrModel()
     endpoint = StrModel()
     bucket = StrModel()
 
 
+ObsConfig.set_resource(f"config/setting/obs.json")
+
+
 class ObsUtil:
     def __init__(self, name):
-        self.config = ObsConfig(name).set_resource(f"obs_{name}")
+        self.config = ObsConfig.get(name)
         self._obs_client: ObsClient = None
 
     @property
