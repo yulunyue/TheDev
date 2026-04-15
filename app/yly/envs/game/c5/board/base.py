@@ -11,7 +11,7 @@ class BoardC5:
     STATE_NULL = 0
     STATE_FIRST = 1
     STATE_SECONED = 2
-    DR = [[0, 1], [1, 0], [1, 1], [1, -1]]  # y,x
+    DR = [[0, 1], [1, 0], [1, 1], [1, -1]]  # y,x 东，南，东南，西南
 
     def load(self, width, height, in_row):
         self.width, self.height, self.in_row = width, height, in_row
@@ -190,7 +190,7 @@ class BoardC5:
                 ret[i + in_row] = format(v & 3)
                 v = v >> 2
 
-        return "".join(ret)
+        return bin(v) + ":" + "".join(ret)
 
     def states_all_format(self):
         return {
