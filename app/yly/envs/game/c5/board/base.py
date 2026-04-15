@@ -3,9 +3,8 @@ from common.util.export import List, Dict, defaultdict, logger, log, math
 
 
 def format(v):
-    if v < 0 or v > 2:
-        return "-"
-    return ["-", "O", "X"][v]
+    s = ["-", "O", "X", "#"]
+    return s[v]
 
 
 class BoardC5:
@@ -30,34 +29,39 @@ class BoardC5:
 
     def init_line_mask(self):
         self.lines = [[] for _ in range(self.size)]
+        self.points_lines = [[] for _ in range(self.size)]
         self.line_mask = []
         self.line_state = []
+        self.line_center = []
         in_row = self.in_row - 1
+        self.line_state_ct = [0] * (1 << (2 * in_row + 2))
         for i in range(self.size):
             for k, (dy, dx) in enumerate(self.DR):
                 iy, ix = self.get_yx(i)
                 idxs = [[i, 0]]
-
                 mask = 0
-                for j in range(-in_row + 1, in_row):
+                line_state = 0
+                for j in range(-in_row, in_row + 1):
+                    if j == 0:
+                        continue
                     ny, nx = iy + dy * j, ix + dx * j
+                    pos = (j + in_row) if j < 0 else (j + in_row - 1)
                     if 0 <= ny < self.height and 0 <= nx < self.width:
                         idx = self.yx_to_idx(ny, nx)
-                        idxs.append([idx, j])
+                        idxs.append([idx, pos])
                         mask |= self.mask_sets[idx]
-                if len(idxs) < in_row:
+                    else:
+                        line_state |= 3 << (pos * 2)
+
+                if len(idxs) <= in_row:
                     continue
+                line_id = len(self.line_mask)
                 for idx, j in idxs:
-                    self.lines[idx].append(
-                        [
-                            len(self.line_mask),
-                            j,
-                            1 << j,
-                            self.in_row_state ^ (1 << j),
-                        ]
-                    )
+                    self.lines[idx].append([line_id, j])
+                self.points_lines[i].append(line_id)
+                self.line_center.append(i)
                 self.line_mask.append(mask)
-                self.line_state.append([0, 0])
+                self.line_state.append(line_state)
 
     def init_size(self):
         self.size = self.width * self.height
@@ -74,12 +78,14 @@ class BoardC5:
 
     def change_idx_statu(self, idx, last_player_id, cur_player_id):
         for line_id, j in self.lines[idx]:
-            a0, a1 = self.line_state[line_id]
-            if cur_player_id == 0:
-                a0 ^= 1 << j
-                a1 ^= 1 << j
-            elif cur_player_id == 1:
-                a0 |= 1 << j
+            last_mask = self.line_state[line_id]
+            new_mask = set_mask(last_mask, j * 2, 2, cur_player_id)
+            self.line_mask_change(last_mask, new_mask)
+            self.line_state[line_id] = new_mask
+
+    def line_mask_change(self, f, t):
+        self.line_state_ct[f] -= 1
+        self.line_state_ct[t] += 1
 
     def put_chess(self, idx, player_id):
         has_chess = self.state_pos & self.mask_sets[idx]
@@ -158,9 +164,11 @@ class BoardC5:
             can_move ^= low_bit
         return ret
 
-    def mask_format(self, v):
-
+    def mask_format(self, i):
+        v, center_pos = self.line_mask[i], self.line_center[i]
         ret = [["0"] * self.width for _ in range(self.height)]
+        center_y, center_x = self.get_yx(center_pos)
+        ret[center_y][center_x] = "C"
         while v:
             low_bit = v & -v
             idx = round(math.log(low_bit, 2))
@@ -168,3 +176,35 @@ class BoardC5:
             ret[y][x] = "1"
             v ^= low_bit
         return "\n".join(["".join(row) for row in ret])
+
+    def mask_formats(self, v):
+        return [self.mask_format(u) for u in v]
+
+    def foramt_line_state(self, v):
+        in_row = self.in_row - 1
+        ret = ["#"] * (in_row * 2 + 1)
+        for i in range(-in_row, in_row + 1):
+            if i == 0:
+                ret[i + in_row] = "?"
+            else:
+                ret[i + in_row] = format(v & 3)
+                v = v >> 2
+
+        return "".join(ret)
+
+    def states_all_format(self):
+        return {
+            self.foramt_line_state(i): v
+            for i, v in enumerate(self.line_state_ct)
+            if v > 0
+        }
+
+    def show(self, state=None):
+        if state is None:
+            state = self.get_state()
+        return (
+            BoardC5()
+            .load(self.width, self.height, self.in_row)
+            .set_state(state)
+            .to_str()
+        )
