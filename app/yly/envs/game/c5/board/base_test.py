@@ -94,10 +94,8 @@ class TestBase:
 
     def test_put_chess(self):
         b = BoardC5().load(2, 2, 2)
-        view = BoardC5().load(2, 2, 2)
         b.put_chess(0, 1)
+        assert [b.foramt_line_state(v) for v in b.line_state] == [], b.show()
         next_states = b.get_next_states()
         assert b.states_all_format() == {"O?#": 3}, b.show()
-        assert next_states == [49, 81, 145], [
-            view.set_state(v).to_str() for v in next_states
-        ]
+        assert next_states == [49, 81, 145]
