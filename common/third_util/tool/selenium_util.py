@@ -195,7 +195,7 @@ class SeleniumUtil:
             while time_out > 0 and self.wait_result is None:
                 new_url, args, kw = url_parse(self.driver.current_url)
                 if self.last_url != new_url:
-                    wart_until_doc_ready(self.wait)
+                    # wart_until_doc_ready(self.wait)
                     self.url_change(self.last_url, new_url)
                 self.handel_new_requests()
                 if func is not None:

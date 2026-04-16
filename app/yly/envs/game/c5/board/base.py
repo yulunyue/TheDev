@@ -38,7 +38,7 @@ class BoardC5:
         for i in range(self.size):
             for k, (dy, dx) in enumerate(self.DR):
                 iy, ix = self.get_yx(i)
-                idxs = [[i, 0]]
+                idxs = []
                 mask = 0
                 line_state = 0
                 for j in range(-in_row, in_row + 1):
@@ -53,7 +53,7 @@ class BoardC5:
                     else:
                         line_state |= 3 << (pos * 2)
 
-                if len(idxs) <= in_row:
+                if len(idxs) < in_row:
                     continue
                 line_id = len(self.line_mask)
                 for idx, j in idxs:
