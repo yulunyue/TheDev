@@ -20,6 +20,15 @@ class SegTreeNode:
         self.todo = [None] * self.size
         self.load(*args)
 
+    def build(self, node, l, r):
+        if l == r:
+            self.do(node, l, r)
+            return
+        m = (l + r) // 2
+        self.build(node * 2, l, m)  # 初始化左子树
+        self.build(node * 2 + 1, m + 1, r)  # 初始化右子树
+        self.up(node)
+
     def do(self, i, L, R, *v):
         raise NotImplementedError
 
@@ -87,9 +96,9 @@ class SegTreeNode:
 
         def util(i, depth, l, r):
             info = f"{' '*depth}{l}-{r}: "
-            if self.value[i]:
+            if self.value[i] is not None:
                 info += f"{self.value[i]} "
-            if self.todo[i]:
+            if self.todo[i] is not None:
                 info += f"todo={self.todo[i]}"
             ret.append(info)
             if l == r:

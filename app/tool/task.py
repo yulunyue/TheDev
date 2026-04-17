@@ -1,12 +1,24 @@
-from common.tool.export import get_task
+from common.tool.export import (
+    FileConfig,
+    StrModel,
+    EncroyModel,
+    SearchModel,
+    NumberModel,
+    SelectModel,
+    FormBase,
+)
 
 
-class TaskTool:
-    API_ROUTE = "/app/task"
+class TaskModel(FileConfig):
+    name = SearchModel()
+    title = StrModel()
+    visite_num = NumberModel(default_value=0)
+    password = EncroyModel()
+    user_type = SelectModel().set_options(0, 1, 2)
 
-    def start(self):
-        s = get_task().start()
-        return s.source.to_web_view()
 
-    def query(self, **kw):
-        return get_task().source.to_web_view()
+TaskModel.set_resource("config/setting/task.json")
+
+
+class TaskExec(FormBase):
+    model = TaskModel

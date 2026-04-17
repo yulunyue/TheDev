@@ -54,5 +54,6 @@ class FileConfig(ConfigBase):
             return c[ins.key]
         return ins.default_value
 
-    def all(self: T) -> List[T]:
-        return self.__class__.instance_map.values()
+    @classmethod
+    def all(cls: T) -> List[T]:
+        return cls.instance_map.values()

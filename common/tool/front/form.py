@@ -1,4 +1,4 @@
-from .util import FontBase
+from .util import FontBase, to_web_view
 
 
 class Form(FontBase):
@@ -20,9 +20,9 @@ class Form(FontBase):
         return self
 
     def set_body(self, *body: list):
-        self.body = [FontBase.get_dom_type(d) for d in body]
+        self.body = [to_web_view(d) for d in body]
         return self
 
     def to_json(self):
         ret = dict(type=self.form_type, childs=self.body, data=dict(btns=self.btns))
-        return
+        return ret

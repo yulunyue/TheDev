@@ -1,5 +1,5 @@
 from common.util.export import Node, List, Dict, Any
-from .util import FontBase
+from .util import FontBase, to_web_view
 
 
 class FrontTable(FontBase):
@@ -10,7 +10,7 @@ class FrontTable(FontBase):
     def set_header(self, *header):
         self.header = []
         for h in header:
-            self.header.append(FontBase.get_dom_type(h))
+            self.header.append(to_web_view(h))
         return self
 
     def set_body(self, body: list):

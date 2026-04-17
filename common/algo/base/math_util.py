@@ -55,6 +55,7 @@ def cos(v):
 
 def prime_gcds(max_value):
     ret = defaultdict(set)
+    ret[1] = {1}
     for i in range(2, max_value):
         if len(ret[i]):
             continue
