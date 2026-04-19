@@ -109,7 +109,7 @@ def oj_run(ins: "MockCf", case_name=None, with_thread=False):
     else:
         cases = cases.items()
     for case_name, c in cases:
-        exp = c.pop("result")
+        exp = c.pop("expected")
         ins.logger = get_dev_log(case_name)
         agent = ins.get_agent(**c)
         if agent is not None:

@@ -190,7 +190,7 @@ class BoardC5:
                 ret[i + in_row] = format(v & 3)
                 v = v >> 2
 
-        return bin(v) + ":" + "".join(ret)
+        return "".join(ret)
 
     def states_all_format(self):
         return {
