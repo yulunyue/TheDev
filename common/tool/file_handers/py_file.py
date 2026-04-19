@@ -1,4 +1,4 @@
-from common.util.export import File, Dict, logger, StrUtil, ReUtil
+from common.util.export import File, Dict, logger, StrUtil, ReUtil,Tuple
 
 
 class PyFile:
@@ -11,7 +11,7 @@ class PyFile:
         self.lines = []
         self.depends: Dict[str, PyFile] = dict()
 
-    def model_mock(self, model_name: str) -> tuple[str, bool]:
+    def model_mock(self, model_name: str) -> Tuple[str, bool]:
         need_read = False
         if ReUtil("common.*export").findall(model_name):
             model_name = "common.mock"
