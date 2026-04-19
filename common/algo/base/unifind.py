@@ -11,15 +11,15 @@ class UniFind:
         self.size = 0
 
     def merge(self, child, parent, *args):
-        parent1 = self.find(parent)
-        child1 = self.find(child)
-        if self.can_merge(child, child1, parent, parent1, *args):
-            self.p[child1] = parent1
+        parent_parant = self.find(parent)
+        child_parant = self.find(child)
+        if self.can_merge(child, child_parant, parent, parent_parant, *args):
+            self.p[child_parant] = parent_parant
             self.size += 1
-            return parent1, True
+            return parent_parant, True
         return None, False
 
-    def can_merge(self, from_, x, to, y, *args):
+    def can_merge(self, child, child_parant, parent, parent_parant, *args):
         """
         乘法的带权并查集
         #    x      y
@@ -30,7 +30,7 @@ class UniFind:
         to/from_ = value
         y/x = (to/from_)*(y/to)/(x/form_)
         """
-        return x != y
+        return child_parant != parent_parant
 
     def find(self, v):
         if isinstance(self.p, dict) and v not in self.p:
@@ -46,7 +46,11 @@ class UniFind:
 
     def show(self):
         mp = defaultdict(set)
-        for k in self.p.keys():
+        if isinstance(self.p,list):
+            datas=enumerate(self.p)
+        else:
+            datas=self.p.items()
+        for k,v in datas:
             if k == self.find(k):
                 continue
             mp[self.find(k)].add(k)
