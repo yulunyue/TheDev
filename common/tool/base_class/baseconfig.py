@@ -18,8 +18,7 @@ class ConfigBase:
         return self
 
     @classmethod
-    def insert(cls, *args, **kw) -> "Self":
-        idx = cls.get_id(*args, **kw)
+    def insert(cls, idx, **kw) -> "Self":
         cls.instance_map[idx] = cls().load(idx).update(**kw)
         return cls.instance_map[idx]
 
@@ -29,12 +28,6 @@ class ConfigBase:
 
     def init(self):
         pass
-
-    @classmethod
-    def get_id(self, *args, **kw):
-        if len(args):
-            return args[0]
-        return time.time()
 
     @classmethod
     def get_params(self):
@@ -57,7 +50,7 @@ class ConfigBase:
     def get(cls, key) -> Self:
         if key in cls.instance_map:
             return cls.instance_map[key]
-        return cls.insert(_id=key)
+        return cls.insert(key)
 
     @classmethod
     def update_param_value(self, param, value):
@@ -67,7 +60,7 @@ class ConfigBase:
     def get_param_value(self, param):
         raise NotImplemented
 
-    def update(self, **kw) -> "ConfigBase":
+    def update(self, **kw) -> "Self":
         for k, v in kw.items():
             if k in self.params:
                 self.params[k].set_value(v)

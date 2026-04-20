@@ -128,7 +128,7 @@ export class Table extends Row {
     }
     http(method: string, data: any, callback: any) {
         web.post(this.get_uri(method), data, (v: Node) => {
-            callback(v.data)
+            callback(v)
         })
     }
     get_uri(method: string) {

@@ -24,3 +24,7 @@ class DictModel(BaseModel):
     def load(self, **kw):
         self._kw = kw
         return self
+
+    @classmethod
+    def get_type(cls):
+        return "pre"

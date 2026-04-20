@@ -15,7 +15,6 @@ from .task_config import TaskConfig
 
 class Task:
     def __init__(self):
-        TaskConfig.init_param()
         self.main_thread = Thread(target=self.run, daemon=True)
 
     def loop(self):
@@ -33,5 +32,8 @@ class Task:
         self.main_thread.start()
         return self
 
+    def add_task(self, name, **kw):
+        return TaskConfig.get(name).update(name=name, **kw)
 
-T = Task()
+
+TASK_MANAGE = Task()

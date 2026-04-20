@@ -1,4 +1,4 @@
-from common.util.export import TestBase, Node, ApiBase
+from common.util.export import TestBase, Node, ApiBase, json_dumps
 from common.tool.export import FormBase, ConfigBase, StrModel, NumberModel, FileConfig
 import pytest
 
@@ -31,12 +31,12 @@ class TestFormBase:
     def test_get(self):
         test_form = TestForm()
         model = test_form.get("test_key")
-        assert hasattr(model, '_id')
+        assert hasattr(model, "_id")
 
     def test_to_form_row_view(self):
         test_form = TestForm()
         result = test_form.to_form_row_view()
-        assert hasattr(result, 'to_json')
+        assert hasattr(result, "to_json")
         json_result = result.to_json()
         assert json_result["type"] == "form_row"
         assert len(json_result["childs"]) == 3
@@ -44,7 +44,7 @@ class TestFormBase:
     def test_to_form_column_view(self):
         test_form = TestForm()
         result = test_form.to_form_column_view()
-        assert hasattr(result, 'to_json')
+        assert hasattr(result, "to_json")
         json_result = result.to_json()
         assert json_result["type"] == "form_column"
         assert len(json_result["childs"]) == 3
@@ -58,16 +58,24 @@ class TestFormBase:
     def test_to_table_view_empty(self):
         test_form = TestForm()
         result = test_form.to_table_view()
-        assert hasattr(result, 'to_json')
+        assert hasattr(result, "to_json")
         json_result = result.to_json()
-        assert json_result["type"] == "table"
-        assert "childs" in json_result
-        assert "value" in json_result
+        assert json_dumps(json_result) == json_dumps(
+            {
+                "childs": [
+                    {"key": "age", "type": "number", "value": 18},
+                    {"key": "email", "type": "input", "value": ""},
+                    {"key": "name", "type": "input", "value": ""},
+                ],
+                "type": "table",
+                "value": [],
+            }
+        )
 
     def test_form_with_empty_model(self):
         test_form = TestFormEmpty()
         result = test_form.to_form_row_view()
-        assert hasattr(result, 'to_json')
+        assert hasattr(result, "to_json")
         json_result = result.to_json()
         assert json_result["type"] == "form_row"
 
@@ -77,7 +85,7 @@ class TestFormBase:
 
         custom_form = CustomForm()
         result = custom_form.to_form_row_view()
-        assert hasattr(result, 'to_json')
+        assert hasattr(result, "to_json")
         json_result = result.to_json()
         assert json_result["type"] == "form_row"
 
@@ -92,29 +100,29 @@ class TestFormBase:
 
     def test_model_structure(self):
         params = TestModel.get_params()
-        assert 'name' in params
-        assert 'age' in params
-        assert 'email' in params
+        assert "name" in params
+        assert "age" in params
+        assert "email" in params
 
     def test_form_row_structure(self):
         test_form = TestForm()
         result = test_form.to_form_row_view().to_json()
-        assert 'childs' in result
-        assert 'data' in result
-        assert 'btns' in result['data']
+        assert "childs" in result
+        assert "data" in result
+        assert "btns" in result["data"]
 
     def test_form_column_structure(self):
         test_form = TestForm()
         result = test_form.to_form_column_view().to_json()
-        assert 'childs' in result
-        assert 'data' in result
+        assert "childs" in result
+        assert "data" in result
 
     def test_table_structure(self):
         test_form = TestForm()
         result = test_form.to_table_view().to_json()
-        assert 'type' in result
-        assert 'childs' in result
-        assert 'value' in result
+        assert "type" in result
+        assert "childs" in result
+        assert "value" in result
 
     def test_search_returns_list(self):
         test_form = TestForm()

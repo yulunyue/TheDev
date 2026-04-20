@@ -7,6 +7,7 @@ from common.util.export import time, File, Module, traceback, C
 
 
 class TaskConfig(FileConfig):
+    name = StrModel()
     fun_path = StrModel()
     root_path = StrModel()
     args = StrModel()
@@ -15,7 +16,6 @@ class TaskConfig(FileConfig):
     last_begin_t = NumberModel(default_value=0)
     last_finish_t = NumberModel(default_value=0)
     result = DictModel()
-    resource_path = "config/setting/taskconfig.json"
     _fun = None
 
     def get_call(self):
@@ -42,6 +42,7 @@ class TaskConfig(FileConfig):
             return
         self.last_begin_t.set_value(now_t)
         try:
+
             self.result.update(
                 value=self.get_call()(*self.args.get_value().split(",")),
             )
@@ -50,3 +51,7 @@ class TaskConfig(FileConfig):
                 code=C.CODE_500, value=traceback.format_exc().split("\n")
             )
         self.last_finish_t.set_value(time.time())
+        return self.result.get_value()
+
+
+TaskConfig.set_resource("config/setting/task.json")
