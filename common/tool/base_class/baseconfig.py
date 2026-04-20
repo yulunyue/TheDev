@@ -86,8 +86,13 @@ class ConfigBase:
         ret.update({v.key: v.get_value() for v in self.params.values()})
         return ret
 
-    def save(self):
+    @classmethod
+    def save_to_local(cls):
         raise NotImplementedError
+
+    @classmethod
+    def save(cls):
+        cls.save_to_local()
 
     @classmethod
     def get_font_columns(cls):

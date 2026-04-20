@@ -34,7 +34,7 @@ class FileConfig(ConfigBase):
                 cls.insert(k, **v)
 
     @classmethod
-    def save(cls):
+    def save_to_local(cls):
         cls.fp.write_file(cls.instance_map)
         return cls
 

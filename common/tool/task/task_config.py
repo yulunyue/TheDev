@@ -52,6 +52,3 @@ class TaskConfig(FileConfig):
             )
         self.last_finish_t.set_value(time.time())
         return self.result.get_value()
-
-
-TaskConfig.set_resource("config/setting/task.json")

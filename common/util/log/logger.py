@@ -23,10 +23,14 @@ class Logger(logging.Logger):
         super().__init__(name)
         self.cache_msgs = []
         self.path = name_to_path(name)
-
         self.fp = File(self.path).make_dir_if_not_exist()
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
+        self.log_call_hock = None
+
+    def set_log_call_hock(self, log_call_hock):
+        self.log_call_hock = log_call_hock
+        return self
 
     def run_capture_error(self, f, *args, captures="", **kw):
         try:
@@ -74,7 +78,6 @@ class Logger(logging.Logger):
     def info(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
     ):
-
         return super().info(
             msg,
             *args,

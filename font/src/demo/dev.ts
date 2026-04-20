@@ -12,6 +12,7 @@ import {
     Constant,
     Pre,
     Data,
+    web_socket,
 
 } from "../base/components/export";
 import { D3DagreUtil } from "../third/d3_dagre_util"
@@ -110,8 +111,12 @@ let DEV_FUNC = {
         return table
     },
     url_table() {
-        let table = new Table().set_option({
+        let op = {
             url: "/app/task"
+        }
+        let table = new Table().set_option(op)
+        web_socket.sub("app_task_table_update", () => {
+            table.set_option(op)
         })
         return table
     },
