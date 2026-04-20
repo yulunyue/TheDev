@@ -56,6 +56,8 @@ class UniFind:
             mp[self.find(k)].add(k)
         ret = ["-" * 10]
         for k, value in mp.items():
-            ret.append(f"{k}:{value}")
+            ret.append(f"{k}:{self.value[k]}")
+            for v in value:
+                ret.append(f"-{v}:{self.value[v]}")
         ret.append("-" * 10)
         return "\n".join(ret)

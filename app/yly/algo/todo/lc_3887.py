@@ -10,13 +10,13 @@ class Uf(UniFind):
         if child_parant==parent_parant and (d+w)%2==1:
             return False
         self.value[parent_parant],self.value[child_parant]=d,0
-        return super().can_merge(child, child_parant, parent, parent_parant, w)
+        return True
 
 class Solution(MockCf):
     def get_cases(self):
         return dict(
-            case1=dict(n=3, edges=[[0, 1, 1], [1, 2, 1], [0, 2, 1]], result=2),
-            case0=dict( n = 3, edges = [[0,1,1],[1,2,1],[0,2,0]],result=3)
+            case1=dict(n=3, edges=[[0, 1, 1], [1, 2, 1], [0, 2, 1]], expected=2),
+            case0=dict( n = 3, edges = [[0,1,1],[1,2,1],[0,2,0]],expected=3)
         )
 
     def numberOfEdgesAdded(self, n: int, edges: List[List[int]]) -> int:
@@ -24,7 +24,7 @@ class Solution(MockCf):
         u=Uf(n)
         for f,t,w in edges:
             ans+=u.merge(f,t,w)[1]
-            # self.log(ans=ans,u=u.show())
+            self.log(f=f,t=t,w=w,ans=ans,u=u.show())
         return ans
             
 
