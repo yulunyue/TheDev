@@ -90,7 +90,8 @@ export class UtilCls {
     }
     uri_join(array: string[]) {
         let ret = ""
-        for (var v in array) {
+        for (var i = 0; i < array.length; i++) {
+            let v = array[i]
             if (ret.endsWith("/") && v.startsWith("/")) {
                 ret += v.slice(1)
             } else if (ret.endsWith("/") || v.startsWith("/")) {

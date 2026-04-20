@@ -7,18 +7,19 @@ from common.tool.export import (
     SelectModel,
     FormBase,
 )
+from common.util.export import C
 
 
 class TaskModel(FileConfig):
-    name = SearchModel()
-    title = StrModel()
-    visite_num = NumberModel(default_value=0)
-    password = EncroyModel()
-    user_type = SelectModel().set_options(0, 1, 2)
+    name = StrModel()
+    state = SelectModel().set_options()
+    create_time = NumberModel()
+    start_time = NumberModel()
+    end_time = NumberModel()
 
 
 TaskModel.set_resource("config/setting/task.json")
 
 
-class TaskExec(FormBase):
+class TaskManage(FormBase):
     model = TaskModel

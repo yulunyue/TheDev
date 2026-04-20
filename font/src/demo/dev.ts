@@ -103,9 +103,15 @@ let DEV_FUNC = {
                 return {
                     a: i,
                     b: "value" + i,
-                    c: Util.array(303, (v: any) => v)
+                    c: Util.array(i + 1, (v: any) => v)
                 }
             })
+        })
+        return table
+    },
+    url_table() {
+        let table = new Table().set_option({
+            url: "/app/task"
         })
         return table
     },

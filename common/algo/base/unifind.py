@@ -8,14 +8,12 @@ class UniFind:
             self.p = dict()
         else:
             self.p = list(range(0, n))
-        self.size = 0
 
     def merge(self, child, parent, *args):
         parent_parant = self.find(parent)
         child_parant = self.find(child)
         if self.can_merge(child, child_parant, parent, parent_parant, *args):
             self.p[child_parant] = parent_parant
-            self.size += 1
             return parent_parant, True
         return None, False
 
@@ -46,11 +44,11 @@ class UniFind:
 
     def show(self):
         mp = defaultdict(set)
-        if isinstance(self.p,list):
-            datas=enumerate(self.p)
+        if isinstance(self.p, list):
+            datas = enumerate(self.p)
         else:
-            datas=self.p.items()
-        for k,v in datas:
+            datas = self.p.items()
+        for k, v in datas:
             if k == self.find(k):
                 continue
             mp[self.find(k)].add(k)
