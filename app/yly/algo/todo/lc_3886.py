@@ -7,3 +7,8 @@ class Solution:
         nums = [3,1,2]
 
 输出： 3
+        n = len(nums)
+        self.ans=0
+        def solve(k):
+            for lr in range(k-1,n,k):
+                pre_down=pre_downs[lr]

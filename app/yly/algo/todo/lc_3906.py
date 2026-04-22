@@ -16,4 +16,10 @@ class Solution:
             if lnum>0:
                 r=[0]*lnum+r
             return r
-        f(u(l),u(r),check)
+        def calc(v,a,depth):
+            if depth not in vt:
+                return [v]
+            if v>a:
+                return
+            return [a]
+        f(u(l),u(r),check,0)
