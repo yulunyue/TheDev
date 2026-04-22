@@ -1,19 +1,10 @@
-from common.tool.export import (
-    FormBase,
-    TaskConfig,
-    TASK_MANAGE,
-)
+from common.tool.export import FormBase, TaskConfig, Task, TASK_MANAGE
 from common.util.export import C, IO_MANAGE
+import time
 
 
-class TaskCg(TaskConfig):
-    @classmethod
-    def save_to_local(cls):
-        super().save_to_local()
+class TaskManage(FormBase, Task):
+    model = TaskConfig
 
 
-TaskCg.set_resource("config/setting/task.json")
-
-
-class TaskManage(FormBase):
-    model = TaskCg
+TASK_MANAGE.set_resource("config/setting/task.json").start()

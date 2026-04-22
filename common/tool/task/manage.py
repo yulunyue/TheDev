@@ -8,19 +8,23 @@ from common.util.export import (
     ThreadManage,
     Thread,
     time,
+    Type,
 )
 
 from .task_config import TaskConfig
 
 
 class Task:
-    def __init__(self):
-        self.main_thread = Thread(target=self.run, daemon=True)
+    model: Type[TaskConfig] = TaskConfig
+
+    def set_resource(self, path):
+        self.model.set_resource(path)
+        return self
 
     def loop(self):
-        for t in TaskConfig.all():
+        for t in self.model.all():
             t.exec()
-        TaskConfig.save()
+        self.model.save()
         return self
 
     def run(self):
@@ -29,11 +33,12 @@ class Task:
             time.sleep(1)
 
     def start(self):
+        self.main_thread = Thread(target=self.run, daemon=True)
         self.main_thread.start()
         return self
 
     def add_task(self, name, **kw):
-        return TaskConfig.get(name).update(name=name, **kw)
+        return self.model.get(name).update(name=name, **kw)
 
 
 TASK_MANAGE = Task()

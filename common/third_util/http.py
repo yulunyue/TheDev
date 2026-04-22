@@ -4,7 +4,7 @@ from tornado.httputil import HTTPServerRequest
 from tornado.web import Application, RequestHandler
 from tornado.websocket import WebSocketHandler
 from tornado.ioloop import PeriodicCallback, IOLoop
-
+import asyncio
 
 from common.util.export import (
     File,
@@ -41,18 +41,26 @@ HTML_CONTENT_TYPE = dict(
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
     hander_msg = None
-    username: str
+    username: str = ""
 
     def open(self, *args: str, **kwargs: str):
-        logger.info(f"WebSocket opened {self}")
+        logger.info(f"WebSocket opened {self} {self.ws_connection}")
         return super().open(*args, **kwargs)
 
     def on_message(self, message):
         msg = Node(**json.loads(message))
+        # logger.info(
+        #     f"{self} {self.request} {self.ws_connection} {self.username} {message}"
+        # )
         if msg.type == C.METHOD_LOGIN:
             self.username = msg.value
+            logger.info(message)
+            self.write_message(dict(type=C.METHOD_LOGIN_OK))
+        elif not self.username:
+            # logger.info(f"{self.request} {message}")
+            logger.info(message)
             self.write_message(dict(type=C.METHOD_LOGIN))
-        else:
+        elif TornadaWebSocketConnectHandler.hander_msg:
             TornadaWebSocketConnectHandler.hander_msg(self, msg)
 
     def on_close(self):
@@ -60,6 +68,13 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
 
     def check_origin(self, origin):
         return True
+
+    async def send_async_msg(self, data):
+        self.write_message(data)
+        asyncio.wait()
+
+    def send_data(self, data):
+        asyncio.run(self.send_async_msg(data))
 
 
 WEB_SOCKET_CLIENTS: Dict[str, TornadaWebSocketConnectHandler] = dict()

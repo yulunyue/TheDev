@@ -1,4 +1,4 @@
-from .task.manage import Task, TASK_MANAGE, TaskConfig
+from .task.manage import Task, TaskConfig, TASK_MANAGE
 from .os_util import OsUtil
 from .base_class.storege.file_config import FileConfig
 from .base_class.baseconfig import ConfigBase
