@@ -14,7 +14,8 @@ export class FlexDiv extends Div {
             display: "flex",
             justifyContent: "space-between",
             // alignContent: "center",
-
+            overflow: "auto",
+            // minHeight: 0
         })
     }
     set_align_space_around() {

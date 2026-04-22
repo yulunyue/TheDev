@@ -5,6 +5,12 @@ import { Div } from "./base/div"
 
 export class Container extends Div {
     main: Div
+    init_style(): void {
+        this.set_style({
+            overflow: "auto",
+            minHeight: 0,
+        })
+    }
     render_option() {
         this.main = DivFactory.new_div(
             this.option.type, this.option.key

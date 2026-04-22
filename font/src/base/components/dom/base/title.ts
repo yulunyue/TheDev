@@ -11,7 +11,10 @@ export class Title extends Div {
         this.set_value(this.option.value)
     }
     set_value(value: any): this {
-        this.set_html(this.option.title + ":" + value)
+        if (this.option.title) {
+            value = this.option.title + ":" + value
+        }
+        this.set_html(value)
         return this
     }
 }

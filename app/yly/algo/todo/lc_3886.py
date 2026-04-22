@@ -1,14 +1,4 @@
 from common.util.export import MockCf
-from common.algo.base.tree.segtree import SegTreeNode
-
-        n = len(nums)
-        self.ans=0
-        def solve(k):
-            for lr in range(k-1,n,k):
-                pre_down=pre_downs[lr]
-
-class T(SegTreeNode):
-    pass
 
 
 class Solution(MockCf):
@@ -21,16 +11,45 @@ class Solution(MockCf):
     """
 
     def get_cases(self):
-        return dict(case0=dict(nums=[3, 1, 2], result=3))
+        return dict(case0=dict(nums=[3, 1, 2], expected=3))
 
     def sortableIntegers(self, nums: list[int]) -> int:
         n = len(nums)
-        t = T(n - 1, nums)
-        for i in range(n):
+        self.ans = 0
+        next_up = [n] * n
+        last_up_idx = n
+        for i in range(n - 1, 0, -1):
+            if nums[i - 1] > nums[i]:
+                last_up_idx = i
+            next_up[i - 1] = last_up_idx
+
+        def solve(k):
+            lmx = -float("-inf")
+            for l in range(0, n, k):
+
+                r = l + k - 1
+                nup = next_up[l]
+                if nup > r:
+                    lmx = next_up[nup - 1]
+                    continue
+                if next_up[nup] <= r:
+                    return False
+                if nums[r] > nums[l]:
+                    return False
+                if nums[nup] < lmx:
+                    return False
+                lmx = next_up[nup - 1]
+            self.ans += k
+            return True
+
+        for i in range(1, n):
             if n % i:
                 continue
             j = n // i
-            for j in range(i + j, n, j):
-                t.query()
+            if i > j:
+                break
+            solve(i)
+            solve(j)
+        return self.ans
 
     execute = sortableIntegers

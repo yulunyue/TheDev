@@ -10,10 +10,13 @@ from common.util.export import (
     b64_code,
     Dict,
     ApiBase,
+    logger,
+    C,
 )
 
 
 class ApiGlobal(ApiBase):
+    idx = 0
 
     def query_all_apis(self, **kw):
         return FontSearch().add_node(*MainHander.POST_API.fun_map.keys())
@@ -29,4 +32,9 @@ class ApiGlobal(ApiBase):
         d="1",
         **kw,
     ):
-        return Node().set_value(dict(a=a, b=b, c=c, d=d))
+        ApiGlobal.idx += 3
+        for i in range(10):
+            logger.info(f"{ApiGlobal.idx}{i}xx", extra=C.TOPIC_WEB_LOG)
+        return Node(childs=[dict(key=i) for i in range(ApiGlobal.idx)]).set_value(
+            dict(a=a, b=b, c=c, d=d)
+        )

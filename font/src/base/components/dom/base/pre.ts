@@ -19,7 +19,7 @@ export class Pre extends Div {
         this.set_style({
             whiteSpace: "pre-wrap",
             overflowWrap: "break-word",
-            overflow: "auto"
+            // overflow: "auto"
         })
     }
     render_option() {

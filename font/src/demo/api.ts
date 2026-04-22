@@ -54,6 +54,12 @@ export class Api extends Column {
         })
         this.right_main.set_size(1)
         this.result.set_size(1)
+        this.log_container.set_style({
+            height: 200
+        })
+        this.set_style({
+            height: 1
+        })
         super.init_style()
     }
     init_event(): void {
