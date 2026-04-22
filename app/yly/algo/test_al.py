@@ -6,7 +6,7 @@ class TestAl:
     @pytest.mark.parametrize(
         "algo,case_name",
         [
-            ("lc_3883", "case0"),
+            ("lc_3887", "case1"),
         ],
     )
     def test_case(self, algo, case_name):
@@ -19,7 +19,7 @@ class TestAl:
     @pytest.mark.parametrize(
         "algo",
         [
-            ("lc_3883"),
+            ("lc_3887"),
         ],
     )
     def test_all(self, algo):
