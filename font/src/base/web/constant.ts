@@ -74,6 +74,8 @@ class Constant {
     username = "username"
     METHOD_LOGIN = "login"
     METHOD_SEND_TO = "send_to"
-
+    METHOD_SUB = "sub"
+    TOPIC_TASK_UPDATE_MSG = "TOPIC_TASK_UPDATE_MSG"
+    TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
 }
 export default new Constant()

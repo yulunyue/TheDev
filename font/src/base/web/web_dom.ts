@@ -110,7 +110,7 @@ class WebDom {
         return { width: window.innerWidth, height: window.innerHeight }
     }
     headers = {}
-    xml_http_request(method: string, path: string, data: any, call_back: any) {
+    xml_http_request(method: string, path: string, data: any, call_back: any, call_back_finiish: any) {
 
         let url = this.url(path)
         // dlg.open_loading()
@@ -143,24 +143,28 @@ class WebDom {
                     return
                 }
                 let data: any = this.hander_res(JSON.parse(req.responseText))
+                call_back_finiish?.(data)
                 if (data && data.code > 300) {
-                    alert(data.code + '->' + data.title)
+                    this.alert(data.code + '->' + data.title)
                 }
                 else if (data) {
                     // call_back(new Node().set_option(data))
                     call_back(data)
                 }
+
                 // dlg.close()
             }
         }
 
     }
-
+    alert(s: string) {
+        alert(s)
+    }
     hander_res(node: Node) {
         return node
     }
-    post(url: string, data: any, call_back?: Fn1Void<Node>) {
-        this.xml_http_request(this.HTTP_POST_METHOD, url, data, call_back)
+    post(url: string, data: any, call_back?: Fn1Void<Node>, call_back_error?: any) {
+        this.xml_http_request(this.HTTP_POST_METHOD, url, data, call_back, call_back_error)
     }
     post_file(path: string, formData: FormData, call_back: any) {
         const xhr = new XMLHttpRequest();
@@ -191,8 +195,8 @@ class WebDom {
         xhr.send(formData);
 
     }
-    get(url: string, data: any, call_back?: Fn1Void<Node>) {
-        this.xml_http_request(this.HTTP_GET_METHOD, url, data, call_back)
+    get(url: string, data: any, call_back?: Fn1Void<Node>, call_back_finish?: any) {
+        this.xml_http_request(this.HTTP_GET_METHOD, url, data, call_back, call_back_finish)
     }
     bind_click(dom: Dom, call_back: any) {
         dom.onclick = (e) => {
@@ -208,6 +212,9 @@ class WebDom {
     }
     next_frame(callback: any) {
         requestAnimationFrame(callback)
+    }
+    set_time_out(f: any, t: number) {
+        setTimeout(f, t)
     }
     bind_key(call_back: Fn2Void<string, KeyboardEvent>) {
         window.document.body.onkeydown = (e: KeyboardEvent) => {

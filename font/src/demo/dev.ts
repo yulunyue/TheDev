@@ -115,7 +115,7 @@ let DEV_FUNC = {
             url: "/app/task"
         }
         let table = new Table().set_option(op)
-        web_socket.sub("app_task_table_update", () => {
+        web_socket.sub(Constant.TOPIC_TASK_UPDATE_MSG, () => {
             table.set_option(op)
         })
         return table
@@ -154,7 +154,6 @@ let DEV_FUNC = {
             ])
         ])
     },
-
     sys() {
         let d = new Div()
         let d1 = new Div().set_html("xx")
@@ -177,6 +176,14 @@ let DEV_FUNC = {
         })
         return new Div().add_childs([
             dagre
+        ])
+    },
+    search() {
+        let s = new Search().set_option({
+
+        })
+        return new Column().add_childs([
+
         ])
     }
 }

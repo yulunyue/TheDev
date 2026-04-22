@@ -4,7 +4,7 @@ from tornado.httputil import HTTPServerRequest
 from tornado.web import Application, RequestHandler
 from tornado.websocket import WebSocketHandler
 from tornado.ioloop import PeriodicCallback, IOLoop
-
+import asyncio
 
 from common.util.export import (
     File,
@@ -41,25 +41,47 @@ HTML_CONTENT_TYPE = dict(
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
     hander_msg = None
-    username: str
+    username: str = ""
 
     def open(self, *args: str, **kwargs: str):
-        logger.info(f"WebSocket opened {self}")
+        logger.info(f"WebSocket opened {self} {self.ws_connection}")
         return super().open(*args, **kwargs)
 
     def on_message(self, message):
         msg = Node(**json.loads(message))
+        # logger.info(
+        #     f"{self} {self.request} {self.ws_connection} {self.username} {message}"
+        # )
         if msg.type == C.METHOD_LOGIN:
             self.username = msg.value
+            logger.info(message)
+            self.write_message(dict(type=C.METHOD_LOGIN_OK))
+        elif not self.username:
+            # logger.info(f"{self.request} {message}")
+            logger.info(message)
             self.write_message(dict(type=C.METHOD_LOGIN))
-        else:
+        elif TornadaWebSocketConnectHandler.hander_msg:
             TornadaWebSocketConnectHandler.hander_msg(self, msg)
 
     def on_close(self):
         logger.info(f"WebSocket closed {self}")
+        TornadaWebSocketConnectHandler.hander_msg(
+            self, Node(type=C.METHOD_LOGIN, value=self.username)
+        )
 
     def check_origin(self, origin):
         return True
+
+    def send_message(self, data):
+        if self.ws_connection and not self.ws_connection.is_closing():
+            try:
+                self.write_message(data)
+            except Exception as e:
+                print(f"Failed to send message: {e}")
+
+    def send_data(self, data):
+        ioloop = tornado.ioloop.IOLoop.current()
+        ioloop.add_callback(self.send_message, data)
 
 
 WEB_SOCKET_CLIENTS: Dict[str, TornadaWebSocketConnectHandler] = dict()

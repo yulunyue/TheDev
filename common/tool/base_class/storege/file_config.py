@@ -26,12 +26,12 @@ class FileConfig(ConfigBase):
 
     @classmethod
     def load_data_from_file(cls):
-        has_change, data = cls.fp.read_fast_file()
-        if has_change:
-            cls._config.update(data)
-            items = list(cls._config.items())
-            for k, v in items:
-                cls.insert(k, **v)
+        if not cls.fp.exists():
+            return
+        cls._config.update(cls.fp.read_file())
+        items = list(cls._config.items())
+        for k, v in items:
+            cls.insert(k, **v)
 
     @classmethod
     def save_to_local(cls):
@@ -57,5 +57,4 @@ class FileConfig(ConfigBase):
 
     @classmethod
     def all(cls) -> List[Self]:
-        cls.load_data_from_file()
         return cls.instance_map.values()
