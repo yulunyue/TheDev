@@ -70,8 +70,7 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         return True
 
     async def send_async_msg(self, data):
-        self.write_message(data)
-        asyncio.wait()
+        await self.write_message(data)
 
     def send_data(self, data):
         asyncio.run(self.send_async_msg(data))
