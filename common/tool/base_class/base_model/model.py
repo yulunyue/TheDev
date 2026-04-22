@@ -22,7 +22,7 @@ class BaseModel:
         return self
 
     def get_title(self):
-        return self.title
+        return self.title or self.key
 
     @classmethod
     def get_type(cls):
@@ -57,13 +57,16 @@ class BaseModel:
     def set_value_if_none(self, value):
         return self.data_source.update_param_value(self, value, if_none=True)
 
-    def to_json(self):
+    def to_json(self, **kw):
         v = self.get_value()
-        return dict(
+        ret = dict(
             type=self.get_type(),
             key=self.key,
-            value=self.default_value,
+            value=v,
+            title=self.get_title(),
         )
+        ret.update(kw)
+        return ret
 
     def __gt__(self, value):
         if isinstance(value, BaseModel):

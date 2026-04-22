@@ -51,3 +51,13 @@ class StrUtil:
             for j in range(m):
                 ret[i][j] = str(f[i, j])
         return "\n".join(["-" * m * 2] + [" ".join(row) for row in ret] + ["-" * m * 2])
+
+    def get_mid_str(self, s: str, pre, end):
+        pre_idx = s.find(pre)
+        if pre_idx == -1:
+            raise Exception(s, f"not find {pre}")
+        s = s[pre_idx + len(pre) :]
+        end_idx = s.find(end)
+        if end_idx == -1:
+            raise Exception(s, f"not find {end}")
+        return s[:end_idx]

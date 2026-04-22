@@ -1,24 +1,10 @@
-from common.tool.export import (
-    FileConfig,
-    StrModel,
-    EncroyModel,
-    SearchModel,
-    NumberModel,
-    SelectModel,
-    FormBase,
-)
+from common.tool.export import FormBase, TaskConfig, Task, TASK_MANAGE
+from common.util.export import C, IO_MANAGE
+import time
 
 
-class TaskModel(FileConfig):
-    name = SearchModel()
-    title = StrModel()
-    visite_num = NumberModel(default_value=0)
-    password = EncroyModel()
-    user_type = SelectModel().set_options(0, 1, 2)
+class TaskManage(FormBase, Task):
+    model = TaskConfig
 
 
-TaskModel.set_resource("config/setting/task.json")
-
-
-class TaskExec(FormBase):
-    model = TaskModel
+TASK_MANAGE.set_resource("config/setting/task.json").start()

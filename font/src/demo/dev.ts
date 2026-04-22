@@ -12,6 +12,7 @@ import {
     Constant,
     Pre,
     Data,
+    web_socket,
 
 } from "../base/components/export";
 import { D3DagreUtil } from "../third/d3_dagre_util"
@@ -103,9 +104,19 @@ let DEV_FUNC = {
                 return {
                     a: i,
                     b: "value" + i,
-                    c: Util.array(303, (v: any) => v)
+                    c: Util.array(i + 1, (v: any) => v)
                 }
             })
+        })
+        return table
+    },
+    url_table() {
+        let op = {
+            url: "/app/task"
+        }
+        let table = new Table().set_option(op)
+        web_socket.sub(Constant.TOPIC_TASK_UPDATE_MSG, () => {
+            table.set_option(op)
         })
         return table
     },
@@ -143,7 +154,6 @@ let DEV_FUNC = {
             ])
         ])
     },
-
     sys() {
         let d = new Div()
         let d1 = new Div().set_html("xx")
@@ -166,6 +176,14 @@ let DEV_FUNC = {
         })
         return new Div().add_childs([
             dagre
+        ])
+    },
+    search() {
+        let s = new Search().set_option({
+
+        })
+        return new Column().add_childs([
+
         ])
     }
 }

@@ -2,6 +2,7 @@ import logging
 import logging.handlers
 from .util import name_to_path, File, LOGGER_MODE, dict_to_str, LOG_MAP
 import os
+from ...constant import C
 
 DEFAULT_FMT = "".join(
     [
@@ -23,10 +24,14 @@ class Logger(logging.Logger):
         super().__init__(name)
         self.cache_msgs = []
         self.path = name_to_path(name)
-
         self.fp = File(self.path).make_dir_if_not_exist()
         self.add_file_hander(fmt, mode)
         self.add_hander(logging.StreamHandler(), logging.INFO)
+        self.log_call_hock = None
+
+    def set_log_call_hock(self, log_call_hock):
+        self.log_call_hock = log_call_hock
+        return self
 
     def run_capture_error(self, f, *args, captures="", **kw):
         try:
@@ -71,17 +76,15 @@ class Logger(logging.Logger):
             extra=extra,
         )
 
-    def info(
-        self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
-    ):
+    def info(self, msg, *args, stacklevel=1, extra=None):
+        if extra:
+            from ..io.manage import IO_MANAGE
 
+            IO_MANAGE.send(extra, msg)
         return super().info(
             msg,
             *args,
-            exc_info=exc_info,
-            stack_info=stack_info,
             stacklevel=stacklevel + 1,
-            extra=extra,
         )
 
     def add_hander(self, h: logging.Handler, level, fmt=None):

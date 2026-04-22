@@ -119,7 +119,7 @@ export class Table extends Row {
     }
     render_option(): void {
         if (this.option.url) {
-            this.http("get", {}, (o: Node) => {
+            this.http("to_table_view", {}, (o: Node) => {
                 this.draw(o)
             })
         } else {
@@ -128,7 +128,7 @@ export class Table extends Row {
     }
     http(method: string, data: any, callback: any) {
         web.post(this.get_uri(method), data, (v: Node) => {
-            callback(v.data)
+            callback(v)
         })
     }
     get_uri(method: string) {

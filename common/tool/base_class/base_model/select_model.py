@@ -10,9 +10,8 @@ class SelectModel(BaseModel):
         return self
 
     def to_json(self):
-        return dict(
+        return super().to_json(
             type="select",
-            key=self.key,
             childs=[dict(title=o, value=o) for o in self.options],
         )
 

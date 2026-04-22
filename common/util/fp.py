@@ -173,11 +173,14 @@ class File:
         return tmp
 
     def read_fast_file(self):
+        if not self.exists():
+            return False, None
         m_time = self.get_m_time()
         if self.m_time != m_time:
             self.data = self.read_file()
             self.m_time = self.m_time
-        return self.data
+            return True, self.data
+        return False, self.data
 
     def exists(self):
         if os.path.islink(self.path):

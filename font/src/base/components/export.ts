@@ -6,6 +6,7 @@ import { Search } from "./dom/form/search"
 import { SvgNode } from "./svg/svg"
 import { Button } from "./dom/form/button"
 import { Div, DivFactory, Container } from "./dom/div"
+import { ListContainer } from "./dom/list_container"
 import { Row } from "./dom/base/row"
 import { Column } from "./dom/base/column"
 import { GNode } from "./svg/gnode"
@@ -57,5 +58,6 @@ export {
     Div, SvgNode as Svg, Progress, Input, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, tree, node, FormRow, FormColumn,
     to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich, Title, Span,
-    Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column
+    Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column,
+    ListContainer
 }

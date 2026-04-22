@@ -6,11 +6,19 @@ class Constant:
     KEY = "key"
     DATA = "data"
     VALUE = "value"
+    STATE_FAILED = "STATE_FAILED"
+    STATE_SUCCESS = "STATE_SUCCESS"
+    STATE_RUNING = "STATE_RUNING"
     METHOD_INSERT_UPDATE = "INSERT_UPDATE"
     THE_DEV_USER = "the_dev_user"
     USERNAME = "username"
     PASSWORD = "password"
     METHOD_LOGIN = "login"
+    METHOD_LOGIN_OUT = "login_out"
+    METHOD_LOGIN_OK = "login_ok"
+    METHOD_SUB = "sub"
+    TOPIC_TASK_UPDATE_MSG = "TOPIC_TASK_UPDATE_MSG"
+    TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
 
 
 class CT:

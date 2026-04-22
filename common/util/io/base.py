@@ -51,7 +51,10 @@ class Io:
         self.send(data)
 
     def send(self, data):
-        pass
+        raise NotImplemented
+
+    def send_data(self, data):
+        self.write(data)
 
     def start(self):
         Thread(target=self.run, daemon=True).start()

@@ -11,30 +11,31 @@ from common.util.export import (
     List,
     Dict,
     THE_DEV_CONSTANT,
+    Self,
 )
-
-T = TypeVar("T", bound="FileConfig")
 
 
 class FileConfig(ConfigBase):
 
     @classmethod
     def init_resource(cls):
-        assert cls.resource_path
         cls.fp = File(cls.resource_path)
-
-        if cls.fp.exists():
-            cls._config = cls.fp.read_file()
-            items = list(cls._config.items())
-            for k, v in items:
-                cls.insert(k, **v)
-        else:
-            cls._config = dict()
+        cls._config = dict()
+        cls.load_data_from_file()
         return cls.instance_map
 
     @classmethod
-    def save(cls):
-        cls.fp.write_file(cls._config)
+    def load_data_from_file(cls):
+        if not cls.fp.exists():
+            return
+        cls._config.update(cls.fp.read_file())
+        items = list(cls._config.items())
+        for k, v in items:
+            cls.insert(k, **v)
+
+    @classmethod
+    def save_to_local(cls):
+        cls.fp.write_file(cls.instance_map)
         return cls
 
     def update_param_value(self, ins: BaseModel, value, if_none=False):
@@ -55,5 +56,5 @@ class FileConfig(ConfigBase):
         return ins.default_value
 
     @classmethod
-    def all(cls: T) -> List[T]:
+    def all(cls) -> List[Self]:
         return cls.instance_map.values()

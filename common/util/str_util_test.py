@@ -17,6 +17,9 @@ class TestStrUtil(unittest.TestCase):
         """初始化测试环境"""
         self.str_util = StrUtil()
 
+    def test_get_mid_str(self):
+        assert self.str_util.get_mid_str("abc", "a", "c") == "b"
+
     def test_str_util_creation(self):
         """测试 StrUtil 创建"""
         str_util = StrUtil()

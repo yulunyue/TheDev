@@ -25,6 +25,6 @@ export class Th extends Div {
         return this
     }
     render_option(): void {
-        this.set_value(this.option.value)
+        this.set_value(this.option.title)
     }
 }
