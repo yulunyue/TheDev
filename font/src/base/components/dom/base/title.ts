@@ -3,8 +3,8 @@ import { Div } from "./div";
 export class Title extends Div {
     init_style(): void {
         this.set_style({
-            alignItems: "center",
-            textAlign: "center"
+            // alignItems: "center",
+            // textAlign: "center"
         })
     }
     render_option(): void {
