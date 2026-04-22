@@ -65,15 +65,23 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
 
     def on_close(self):
         logger.info(f"WebSocket closed {self}")
+        TornadaWebSocketConnectHandler.hander_msg(
+            self, Node(type=C.METHOD_LOGIN, value=self.username)
+        )
 
     def check_origin(self, origin):
         return True
 
-    async def send_async_msg(self, data):
-        await self.write_message(data)
+    def send_message(self, data):
+        if self.ws_connection and not self.ws_connection.is_closing():
+            try:
+                self.write_message(data)
+            except Exception as e:
+                print(f"Failed to send message: {e}")
 
     def send_data(self, data):
-        asyncio.run(self.send_async_msg(data))
+        ioloop = tornado.ioloop.IOLoop.current()
+        ioloop.add_callback(self.send_message, data)
 
 
 WEB_SOCKET_CLIENTS: Dict[str, TornadaWebSocketConnectHandler] = dict()

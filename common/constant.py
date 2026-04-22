@@ -14,6 +14,7 @@ class Constant:
     USERNAME = "username"
     PASSWORD = "password"
     METHOD_LOGIN = "login"
+    METHOD_LOGIN_OUT = "login_out"
     METHOD_LOGIN_OK = "login_ok"
     METHOD_SUB = "sub"
     TOPIC_TASK_UPDATE_MSG = "TOPIC_TASK_UPDATE_MSG"
