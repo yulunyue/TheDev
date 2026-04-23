@@ -1,23 +1,38 @@
 import {
     Column, Row, Div, Constant, Node, web_dom,
-    Button, web_socket, Ct
+    Button, web_socket, Ct, Label, Span
 } from "../../base/components/export";
 import { TodoRow } from "./todo_row";
 
-export class TodoContainer extends Column {
+export class TodoContainer extends Div {
     todo_rows: TodoRow[] = []
     on_refresh: any
+    all_data: any
     init_style(): void {
         this.set_style({
             flex: "1",
-            overflow: "auto"
+            overflow: "auto",
+            padding: "8px"
         })
+        super.init_style()
     }
-    set_todos(todos: any[]): this {
-        this.clear_rows()
-        for (let todo of todos) {
-            this.add_todo_row(todo)
+    init_node(): void {
+    }
+    set_current_tab(idx: number): void {
+        this.render_tab(idx)
+    }
+    render_tab(idx: number): void {
+        this.clear()
+        this.todo_rows = []
+        if (!this.all_data || !this.all_data.childs[idx]) return
+        let childs = this.all_data.childs[idx].childs
+        for (let child of childs) {
+            this.add_todo_row(child.value)
         }
+    }
+    set_stats(data: Node, current_tab: number = 0): this {
+        this.all_data = data
+        this.render_tab(current_tab)
         return this
     }
     add_todo_row(todo: any): TodoRow {
@@ -30,7 +45,6 @@ export class TodoContainer extends Column {
         return row
     }
     clear_rows(): void {
-        this.clear()
         this.todo_rows = []
     }
     handle_update(todo: any): void {

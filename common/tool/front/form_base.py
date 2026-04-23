@@ -16,7 +16,9 @@ class FormBase(ApiBase):
         return Form().set_column().set_body(*self.__class__.model.get_font_columns())
 
     def web_submit(self, type, value: dict, **kw):
-        s = self.__class__.model.insert(**value)
+        _id = value.get("_id") or value.get("title") or str(len(self.__class__.model.instance_map) + 1)
+        value.pop("_id", None)
+        s = self.__class__.model.insert(_id, **value)
         s.save()
         return Node(value=s)
 

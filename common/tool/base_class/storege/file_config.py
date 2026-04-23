@@ -26,9 +26,10 @@ class FileConfig(ConfigBase):
 
     @classmethod
     def load_data_from_file(cls):
-        if not cls.fp.exists():
+        has_update, config = cls.fp.read_fast_file()
+        if not has_update:
             return
-        cls._config.update(cls.fp.read_file())
+        cls._config.update(config)
         items = list(cls._config.items())
         for k, v in items:
             cls.insert(k, **v)
@@ -57,4 +58,5 @@ class FileConfig(ConfigBase):
 
     @classmethod
     def all(cls) -> List[Self]:
+        cls.load_data_from_file()
         return cls.instance_map.values()

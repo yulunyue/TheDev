@@ -13,10 +13,10 @@ export interface Style {
     width?: number | string
     height?: number | string
     textWrap?: "wrap"
-    maxWidth?: number
-    maxHeight?: number
-    minWidth?: number
-    minHeight?: number
+    maxWidth?: number | string
+    maxHeight?: number | string
+    minWidth?: number | string
+    minHeight?: number | string
     flexWrap?: "wrap"
     fill?: string
     flex?: any
