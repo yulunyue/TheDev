@@ -52,6 +52,8 @@ class Constant {
     EVENT_CLICK = "event_click"
     DOM_TYPE_SELECT = "select"
     DOM_TYPE_INPUT = "input"
+    DOM_TYPE_DATE = "DateModel"
+    DOM_TYPE_BOOL = "BoolModel"
     DOM_TYPE_BTNS = 'btns'
     DOM_TYPE_TITLE = "title"
     DOM_TYPE_STRING = "str"

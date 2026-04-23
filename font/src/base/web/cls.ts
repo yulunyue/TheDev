@@ -25,9 +25,15 @@ export interface Style {
     flexGrow?: any
     visibility?: "hidden" | "visible"
     margin?: number | string
-    marginLeft?: number
-    marginRight?: number
+    marginLeft?: number | string
+    marginRight?: number | string
+    marginTop?: number | string
+    marginBottom?: number | string
     padding?: number | string
+    paddingLeft?: number | string
+    paddingRight?: number | string
+    paddingTop?: number | string
+    paddingBottom?: number | string
     fontSize?: number | string
     overflowWrap?: "break-word"
     zIndex?: string
@@ -36,6 +42,7 @@ export interface Style {
     whiteSpace?: "pre-line" | "nowrap" | "pre-wrap"
     wordWrap?: "break-word"
     border?: string
+    borderRadius?: number | string
     transform?: string
     borderLeft?: string
     borderTop?: string
@@ -58,6 +65,12 @@ export interface Style {
     justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around"
     alignContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around"
     alignItems?: "flex-start" | "flex-end" | "center" | "baseline" | "stretch"
+    boxShadow?: string
+    opacity?: number | string
+    lineHeight?: number | string
+    fontWeight?: number | string
+    textDecoration?: string
+    letterSpacing?: number | string
 }
 export interface FnVoid {
     (): any

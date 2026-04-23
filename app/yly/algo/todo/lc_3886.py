@@ -11,7 +11,9 @@ class Solution(MockCf):
     """
 
     def get_cases(self):
-        return dict(case0=dict(nums=[3, 1, 2], expected=3))
+        return dict(
+            case0=dict(nums=[3, 1, 2], expected=3),
+        )
 
     def sortableIntegers(self, nums: list[int]) -> int:
         n = len(nums)
@@ -24,21 +26,23 @@ class Solution(MockCf):
             next_up[i - 1] = last_up_idx
 
         def solve(k):
-            lmx = -float("-inf")
+            lmx = float("-inf")
             for l in range(0, n, k):
-
                 r = l + k - 1
                 nup = next_up[l]
                 if nup > r:
-                    lmx = next_up[nup - 1]
+                    if nums[l] < lmx:
+                        return False
+                    lmx = nums[r]
                     continue
+                if nums[nup] < lmx:
+                    return False
                 if next_up[nup] <= r:
                     return False
                 if nums[r] > nums[l]:
                     return False
-                if nums[nup] < lmx:
-                    return False
-                lmx = next_up[nup - 1]
+
+                lmx = nums[nup - 1]
             self.ans += k
             return True
 
@@ -49,7 +53,8 @@ class Solution(MockCf):
             if i > j:
                 break
             solve(i)
-            solve(j)
+            if i != j:
+                solve(j)
         return self.ans
 
     execute = sortableIntegers

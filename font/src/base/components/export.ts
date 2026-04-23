@@ -1,4 +1,6 @@
 import { Input } from "./dom/form/input"
+import { DateInput } from "./dom/form/date_input"
+import { Checkbox } from "./dom/form/checkbox"
 import { TextArea } from "./dom/form/text_area"
 import { TextAreaRich } from "./dom/form/text_area_rich"
 import { FileInput } from "./dom/form/file"
@@ -37,27 +39,34 @@ import Ct from "../../base/web/constant"
 import { Chart } from "./svg/comb/chart"
 import { Axies } from "./svg/comb/axies"
 
-DivFactory.register(Ct.DOM_TYPE_INPUT, () => new Input())
-DivFactory.register(Ct.DOM_TYPE_STRING, () => new Input())
-DivFactory.register(Ct.DOM_TYPE_NUMBER, () => new Input())
-DivFactory.register(Ct.DOM_TYPE_PRE, () => new Pre())
-DivFactory.register(Ct.DOM_TYPE_DIV, () => new Div())
-DivFactory.register(Ct.DOM_TYPE_TITLE, () => new Title())
-DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())
-DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
-DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
-DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
-DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
-DivFactory.register(Ct.DOM_TYPE_ROW, () => new Row())
-DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new Column())
-DivFactory.register(Ct.DOM_TYPE_BUTTON, () => new Button())
-DivFactory.register(Ct.DOM_TYPE_FORM_COLUMN, () => new FormColumn())
-DivFactory.register(Ct.DOM_TYPE_FORM_ROW, () => new FormRow())
-DivFactory.register(Ct.DOM_TYPE_SELECT, () => new Select())
-DivFactory.register(Ct.DOM_TYPE_BTNS, () => new Buttons())
+function init_div_factory() {
+    DivFactory.register(Ct.DOM_TYPE_INPUT, () => new Input())
+    DivFactory.register(Ct.DOM_TYPE_STRING, () => new Input())
+    DivFactory.register(Ct.DOM_TYPE_NUMBER, () => new Input())
+    DivFactory.register(Ct.DOM_TYPE_DATE, () => new DateInput())
+    DivFactory.register(Ct.DOM_TYPE_BOOL, () => new Checkbox())
+    DivFactory.register(Ct.DOM_TYPE_PRE, () => new Pre())
+    DivFactory.register(Ct.DOM_TYPE_DIV, () => new Div())
+    DivFactory.register(Ct.DOM_TYPE_TITLE, () => new Title())
+    DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())
+    DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
+    DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
+    DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
+    DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
+    DivFactory.register(Ct.DOM_TYPE_ROW, () => new Row())
+    DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new Column())
+    DivFactory.register(Ct.DOM_TYPE_BUTTON, () => new Button())
+    DivFactory.register(Ct.DOM_TYPE_FORM_COLUMN, () => new FormColumn())
+    DivFactory.register(Ct.DOM_TYPE_FORM_ROW, () => new FormRow())
+    DivFactory.register(Ct.DOM_TYPE_SELECT, () => new Select())
+    DivFactory.register(Ct.DOM_TYPE_BTNS, () => new Buttons())
+}
+
+init_div_factory()
+
 export {
     Select, Pre, TextArea, Util, web_socket, Data, Button,
-    Div, SvgNode as Svg, Progress, Input, web_dom, dialog, DivFactory,
+    Div, SvgNode as Svg, Progress, Input, DateInput, Checkbox, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, tree, node, FormRow, FormColumn,
     to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich, Title, Span,
     Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column,

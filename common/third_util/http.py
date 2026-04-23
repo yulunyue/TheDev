@@ -80,8 +80,7 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
                 print(f"Failed to send message: {e}")
 
     def send_data(self, data):
-        ioloop = tornado.ioloop.IOLoop.current()
-        ioloop.add_callback(self.send_message, data)
+        self.send_message(data)
 
 
 WEB_SOCKET_CLIENTS: Dict[str, TornadaWebSocketConnectHandler] = dict()
@@ -121,7 +120,7 @@ class MainHander(RequestHandler):
         logger.info(f"{list(args)}:{len(ret)}")
         self.out(ret, self.params)
 
-    def post(self, *args):
+    async def post(self, *args):
         if self.req_content_type.startswith("multipart/form-data"):
             files = dict()
             for filess in self.request.files.values():
