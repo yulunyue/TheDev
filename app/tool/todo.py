@@ -29,10 +29,7 @@ class Todo(FormBase):
 
     def web_search(self, key, name, **kw):
         return Node(
-            childs=[
-                dict(title=v._id, value=v)
-                for v in self.__class__.model.all()
-            ]
+            childs=[dict(title=v._id, value=v) for v in self.__class__.model.all()]
         )
 
     def get_score(self, **kw):
@@ -46,7 +43,7 @@ class Todo(FormBase):
         return Node(value=score)
 
     def get_stats(self, **kw):
-        self.__class__.model.reload()
+
         study_done = []
         study_pending = []
         entertainment_done = []
@@ -66,10 +63,22 @@ class Todo(FormBase):
                     entertainment_pending.append(todo)
         return Node(
             childs=[
-                dict(title="学习已完成", childs=[dict(title=v._id, value=v) for v in study_done]),
-                dict(title="学习未完成", childs=[dict(title=v._id, value=v) for v in study_pending]),
-                dict(title="娱乐已完成", childs=[dict(title=v._id, value=v) for v in entertainment_done]),
-                dict(title="娱乐未完成", childs=[dict(title=v._id, value=v) for v in entertainment_pending]),
+                dict(
+                    title="学习已完成",
+                    childs=[dict(title=v._id, value=v) for v in study_done],
+                ),
+                dict(
+                    title="学习未完成",
+                    childs=[dict(title=v._id, value=v) for v in study_pending],
+                ),
+                dict(
+                    title="娱乐已完成",
+                    childs=[dict(title=v._id, value=v) for v in entertainment_done],
+                ),
+                dict(
+                    title="娱乐未完成",
+                    childs=[dict(title=v._id, value=v) for v in entertainment_pending],
+                ),
             ],
-            value=self.get_score().value
+            value=self.get_score().value,
         )
