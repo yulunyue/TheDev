@@ -17,8 +17,12 @@ class TodoModel(FileConfig):
     category = SelectModel().set_options("study", "entertainment")
     done = BoolModel(default_value=False)
     priority = NumberModel(default_value=0)
-    create_time = DateModel()
-    update_time = DateModel()
+    create_time = DateModel().set_visible(False)
+    update_time = DateModel().set_visible(False)
+
+    @classmethod
+    def get_font_columns(cls):
+        return [v for v in cls.get_params().values() if v.visible]
 
 
 TodoModel.set_resource("config/setting/todo.json")
@@ -46,7 +50,6 @@ class Todo(FormBase):
         return Node(value=score)
 
     def get_stats(self, **kw):
-        self.__class__.model.reload()
         study_done = []
         study_pending = []
         entertainment_done = []

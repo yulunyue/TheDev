@@ -16,6 +16,7 @@ class BaseModel:
         self.title = key
         self.key = key
         self.model: T = None
+        self.visible = True
 
     def set_model(self, model):
         self.model: T = model
@@ -64,9 +65,14 @@ class BaseModel:
             key=self.key,
             value=v,
             title=self.get_title(),
+            visible=self.visible,
         )
         ret.update(kw)
         return ret
+
+    def set_visible(self, visible: bool):
+        self.visible = visible
+        return self
 
     def __gt__(self, value):
         if isinstance(value, BaseModel):

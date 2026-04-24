@@ -16,8 +16,13 @@ class FormBase(ApiBase):
         return Form().set_column().set_body(*self.__class__.model.get_font_columns())
 
     def web_submit(self, type, value: dict, **kw):
+        from common.util.export import time as current_time
         _id = value.get("_id") or value.get("title") or str(len(self.__class__.model.instance_map) + 1)
         value.pop("_id", None)
+        now = current_time.strftime("%Y-%m-%d %H:%M:%S")
+        if "create_time" not in value or not value.get("create_time"):
+            value["create_time"] = now
+        value["update_time"] = now
         s = self.__class__.model.insert(_id, **value)
         s.save()
         return Node(value=s)
