@@ -20,8 +20,8 @@ class Cli(ToolBase):
     def install(self, ip_port):
         api = Api().set_endpoint(f"http://{ip_port}")
         res = api.post_files(f"/app/manage/post_file", "data/the_dev.zip")
-        logger.info(res)
-        # api.post(f"/app/manage/unzip", data=dict(path="data/upload/the_dev.zip"))
+        res1 = api.post(f"/app/manage/unzip", data=dict(path="data/upload/the_dev.zip"))
+        logger.map(res=res, res1=res1)
 
     def restart(self, ip_port, config):
         api = Api().set_endpoint(f"http://{ip_port}")

@@ -14,7 +14,12 @@ from common.util.export import Node, C, Type, List, time
 class TodoModel(FileConfig):
     title = StrModel().not_null()
     content = StrModel()
-    category = SelectModel().set_options("study", "entertainment")
+    category = SelectModel().set_options(
+        study="学习",
+        entertainment="娱乐",
+        sport="运动",
+        life="生活",
+    )
     done = BoolModel(default_value=False)
     create_time = DateModel()
     update_time = DateModel()
@@ -25,7 +30,7 @@ class TodoModel(FileConfig):
 
     @classmethod
     def get_form_columns(cls):
-        return [cls.title, cls.content, cls.category, cls.done]
+        return [cls.category, cls.title, cls.content, cls.done]
 
 
 TodoModel.set_resource("config/setting/todo.json")
@@ -34,12 +39,15 @@ TodoModel.set_resource("config/setting/todo.json")
 class Todo(FormBase):
     model: Type[TodoModel] = TodoModel
 
+    def category(self):
+        return TodoModel.category
+
     def web_search(self, category, done, **kw):
         todos = []
         models: List[TodoModel] = sorted(
             self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
         )
-        score_map = dict(study=1, entertainment=-1)
+        score_map = dict(study=1, entertainment=-1, life=2, sport=3)
         score = 0
         for v in models:
             if v.category == category and v.done == done:

@@ -1,7 +1,8 @@
 import {
     Column, Row, Div, Constant, Node, web_dom,
     Button, FormRow, Search, web_socket, Ct, dialog, Select,
-    Span
+    Span,
+    Data
 } from "../../base/components/export";
 import { TodoContainer } from "./todo_container";
 
@@ -28,7 +29,7 @@ export class TodoMain extends Row {
     }
     init_node(): void {
         this.search_input = new Search()
-        this.add_btn = new Button().set_html("+ Add")
+        this.add_btn = new Button().set_html("新增")
         this.category_select = new Select()
         this.done_select = new Select()
         this.top_form = new FormRow()
@@ -86,7 +87,9 @@ export class TodoMain extends Row {
         this.category_select.set_option({
             childs: [
                 { title: "学习", value: "study" },
-                { title: "娱乐", value: "entertainment" }
+                { title: "娱乐", value: "entertainment" },
+                { title: "运动", value: "sport" },
+                { title: "生活", value: "life" }
             ],
             value: "study"
         })
@@ -97,7 +100,10 @@ export class TodoMain extends Row {
             ],
             value: "false"
         })
-        this.load_todos()
+
+        Data.get_user_name((user_name: any) => {
+            this.load_todos()
+        })
     }
 }
 

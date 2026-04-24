@@ -26,6 +26,8 @@ class FileConfig(ConfigBase):
     @classmethod
     def load_data_from_file(cls):
         has_update, cls._config = cls.fp.read_fast_file()
+        if cls._config is None:
+            cls._config = dict()
         if not has_update:
             return
         cls.instance_map = dict()

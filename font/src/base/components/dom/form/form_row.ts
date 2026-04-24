@@ -91,7 +91,6 @@ export class FormRow extends Div {
         for (var key in btns) {
             let btn = new Button().set_html(btns[key])
             btn.on_click(F.register_call((tp: string) => this.submit_hander(tp), key))
-            btn.hide()
             this.foot_btns[key] = btn
             this.footer.add_child(btn)
         }
