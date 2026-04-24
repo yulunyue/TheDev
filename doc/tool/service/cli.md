@@ -10,9 +10,9 @@ install ip_port=100.93.29.131:8448
 ```restart_sec
 restart ip_port=100.93.29.131:8448 config=sec
 ```
-```install_bolun
+```bolun_install
 install ip_port=1.14.97.154:10001
 ```
-```restart_bolun
+```bolun_restart
 restart ip_port=1.14.97.154:10001 config=production
 ```
