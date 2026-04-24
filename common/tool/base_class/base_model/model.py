@@ -5,6 +5,7 @@ class BaseModel:
     value = None
     view_state = C.VIEW_SATTE_MAX
     can_is_null = True
+    layout = None
 
     def __init__(self, default_value=None, key=None, data_source=None) -> None:
         self.default_value = default_value
@@ -15,6 +16,14 @@ class BaseModel:
         self.ops = []
         self.title = key
         self.key = key
+
+    def set_layout(self, layout):
+        self.layout = layout
+        return self
+
+    def set_title(self, title):
+        self.title = title
+        return self
 
     def not_null(self):
         self.can_is_null = False
@@ -75,6 +84,7 @@ class BaseModel:
             key=self.key,
             value=v,
             title=self.get_title(),
+            data=dict(layout=self.layout),
         )
         ret.update(kw)
         return ret

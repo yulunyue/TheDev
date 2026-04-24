@@ -14,7 +14,14 @@ export class Div {
     size: number = 0
     _value: any = null
     event_hander: any
-
+    disable(state: boolean) {
+        if (state) {
+            this.set_attr("disabled", "disabled")
+        } else {
+            this.set_attr("disabled", "enabled")
+        }
+        return this
+    }
     init_table_style(): void {
 
     }
@@ -97,6 +104,13 @@ export class Div {
             position: "fixed",
             width: 1,
             height: 1
+        })
+    }
+    set_flex_style_column() {
+        this.set_style({
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center"
         })
     }
     show() {

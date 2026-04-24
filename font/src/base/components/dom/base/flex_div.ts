@@ -13,7 +13,8 @@ export class FlexDiv extends Div {
             flexDirection: this.get_direction() == Constant.VERTICAL ? "row" : "column",
             display: "flex",
             justifyContent: "space-between",
-            // alignContent: "center",
+            alignContent: "center",
+            alignItems: "center",
             overflow: "auto",
             // minHeight: 0
         })

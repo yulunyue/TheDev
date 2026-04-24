@@ -25,6 +25,8 @@ class Constant:
     TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
     VIEW_STATE_CAN_EDIT = 1 << 0
     VIEW_SATTE_MAX = (1 << 8) - 1
+    LAYOUT_ROW = "ROW"
+    LAYOUT_COLUMN = "COLUMN"
 
 
 class CT:

@@ -9,6 +9,8 @@ export class Data {
                     type: Constant.DOM_TYPE_INPUT, key: Constant.username,
                     title: Constant.username
                 }]
+            }).set_btns({
+                login: "登录"
             }).on_submit((type: string, data: any) => {
                 web_dom.set_local(Constant.username, data.username)
                 call(data.username)

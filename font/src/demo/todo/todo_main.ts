@@ -22,9 +22,13 @@ export class TodoMain extends Row {
             padding: "20px",
             minWidth: "300px"
         })
+        this.score_span.set_size(1)
         this.category_select.set_style({ margin: "4px" })
         this.done_select.set_style({ margin: "4px" })
-        this.header.set_style({ padding: "12px", justifyContent: "space-between", alignItems: "center" })
+        this.header.set_style({
+            padding: "12px",
+            justifyContent: "space-between", alignItems: "center", width: 1
+        })
         super.init_style()
     }
     init_node(): void {
@@ -69,9 +73,11 @@ export class TodoMain extends Row {
     }
     on_to_do_change(method: string, f: any, t: any) {
         if (method == Constant.METHOD_INSERT) {
-            this.top_form.show_btns([Constant.METHOD_INSERT])
+            this.top_form.set_btns({ [Constant.METHOD_INSERT]: "新增" })
+            this.top_form.child_map.title.show()
         } else {
-            this.top_form.show_btns([Constant.METHOD_EDIT, Constant.METHOD_DELETE])
+            this.top_form.child_map.title.hide()
+            this.top_form.set_btns({ [Constant.METHOD_EDIT]: "保存", [Constant.METHOD_DELETE]: "删除" })
         }
         this.top_form.set_value(t)
         dialog.open(this.top_form)
@@ -85,12 +91,7 @@ export class TodoMain extends Row {
             url: "/app/todo",
         })
         this.category_select.set_option({
-            childs: [
-                { title: "学习", value: "study" },
-                { title: "娱乐", value: "entertainment" },
-                { title: "运动", value: "sport" },
-                { title: "生活", value: "life" }
-            ],
+            url: "/app/todo/category",
             value: "study"
         })
         this.done_select.set_option({

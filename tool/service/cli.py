@@ -16,6 +16,7 @@ class Cli(ToolBase):
             targets=["font/dist", "common", "app/tool"],
             ignores=[".*__pycache__"],
         )
+        logger.info("package")
 
     def install(self, ip_port):
         api = Api().set_endpoint(f"http://{ip_port}")

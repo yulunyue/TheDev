@@ -11,7 +11,8 @@ export class TodoContainer extends Div {
         this.set_style({
             flex: "1",
             overflow: "auto",
-            padding: "8px"
+            margin: "8px",
+            width: "100%"
         })
         super.init_style()
     }

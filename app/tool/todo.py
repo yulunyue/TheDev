@@ -12,15 +12,20 @@ from common.util.export import Node, C, Type, List, time
 
 
 class TodoModel(FileConfig):
-    title = StrModel().not_null()
-    content = StrModel()
-    category = SelectModel().set_options(
-        study="学习",
-        entertainment="娱乐",
-        sport="运动",
-        life="生活",
+    title = StrModel().not_null().set_title("项目")
+    content = StrModel().set_title("备注")
+    category = (
+        SelectModel()
+        .set_title("类型")
+        .set_options(
+            study="学习",
+            entertainment="娱乐",
+            sport="运动",
+            life="生活",
+        )
+        .set_layout(C.LAYOUT_COLUMN)
     )
-    done = BoolModel(default_value=False)
+    done = BoolModel(default_value=False).set_title("状态").set_layout(C.LAYOUT_COLUMN)
     create_time = DateModel()
     update_time = DateModel()
 
@@ -53,7 +58,7 @@ class Todo(FormBase):
             if v.category == category and v.done == done:
                 todos.append(v)
             if v.done.get_value():
-                score += score_map[category]
+                score += score_map[v.category.get_value()]
         return Node(childs=todos, value=score)
 
     def hander(self, key, type, value: dict):
@@ -69,10 +74,3 @@ class Todo(FormBase):
         elif type != C.METHOD_DELETE:
             raise Exception(type)
         return value
-
-    def to_form_row_view(self):
-        return (
-            super()
-            .to_form_row_view()
-            .set_btns(C.METHOD_EDIT, C.METHOD_INSERT, C.METHOD_DELETE)
-        )

@@ -33,11 +33,18 @@ export class FormContainer extends Div {
         return super.set_option(option)
     }
     render_option(): this {
+        if (this.option.data && this.option.data.layout) {
+            this.set_flex_style_column()
+        }
         this.container.set_option(this.option)
         return this
     }
     set_value(value: any): this {
         this.container.main.set_value(value)
+        return this
+    }
+    disable(state: boolean) {
+        this.container.main.disable(state)
         return this
     }
     on_change(call: any) {

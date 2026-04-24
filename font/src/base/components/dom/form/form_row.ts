@@ -6,7 +6,6 @@ import Constant from "../../../web/constant"
 import { FormContainer } from "./container";
 import { Button } from "./button";
 import F from "../../../tool/fun";
-import { url } from "inspector";
 export class FormRow extends Div {
     header: Div
     body: Div
@@ -36,6 +35,7 @@ export class FormRow extends Div {
         this.header = new Div()
         this.body = new Div()
         this.footer = new Column()
+        this.foot_btns = {}
         this.add_childs([
             this.header,
             this.body,
@@ -55,7 +55,7 @@ export class FormRow extends Div {
         }
         return r
     }
-    render_childs(childs: Node[], data: any) {
+    render_childs(childs: Node[]) {
         for (var i = 0; i < childs.length; i++) {
             let o = childs[i]
             if (o.type == Constant.DOM_TYPE_SEARCH && !o.url) {
@@ -72,32 +72,32 @@ export class FormRow extends Div {
         if (this.option.id) {
             web_dom.get_local(this.option.id, this.set_value.bind(this))
         }
-        this.render_footer(data)
     }
     render_option(): void {
         if (this.option.url) {
             web_dom.post(this.option.url + this.get_form_view_url(), {}, (v: any) => {
-                this.render_childs(v.childs, v.data)
+                this.render_childs(v.childs)
             })
         } else {
-            this.render_childs(this.option.childs, this.option.data)
+            this.render_childs(this.option.childs)
         }
 
     }
-    render_footer(data: any) {
-        let btns = data.btns || { submit: "提交" }
-        this.foot_btns = {}
-        this.footer.clear()
+    render_footer(btns: any) {
         for (var key in btns) {
+            if (this.foot_btns[key]) {
+                continue
+            }
             let btn = new Button().set_html(btns[key])
             btn.on_click(F.register_call((tp: string) => this.submit_hander(tp), key))
             this.foot_btns[key] = btn
             this.footer.add_child(btn)
         }
     }
-    show_btns(btns: any) {
+    set_btns(btns: any) {
+        this.render_footer(btns)
         for (var key in this.foot_btns) {
-            if (btns.indexOf(key) != -1) {
+            if (btns[key]) {
                 this.foot_btns[key].show()
             } else {
                 this.foot_btns[key].hide()
