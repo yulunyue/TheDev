@@ -1,4 +1,4 @@
-from common.util.export import TestBase, Node, ApiBase, json_dumps
+from common.util.export import TestBase, Node, ApiBase, json_dumps, asset_exception
 from common.tool.export import FormBase, ConfigBase, StrModel, NumberModel, FileConfig
 import pytest
 
@@ -30,8 +30,7 @@ class TestFormBase:
 
     def test_get(self):
         test_form = TestForm()
-        model = test_form.get("test_key")
-        assert hasattr(model, "_id")
+        asset_exception(test_form.get, "test_key", msg="test_key")
 
     def test_to_form_row_view(self):
         test_form = TestForm()

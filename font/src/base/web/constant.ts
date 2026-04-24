@@ -48,6 +48,7 @@ class Constant {
 
     EVENT_CHANGE = "event_change"
     EVENT_SUBMIT = "event_submit"
+    EVENT_MOCK_GET_VALUE = "EVENT_mock_get_value"
     EVENT_MOVE = "event_move"
     EVENT_CLICK = "event_click"
     DOM_TYPE_SELECT = "select"
@@ -75,6 +76,10 @@ class Constant {
     DOM_TYPE_BUTTON = "button"
     the_dev_user = "the_dev_user"
     username = "username"
+    METHOD_DELETE = "DELETE"
+    METHOD_EDIT = "EDIT"
+    METHOD_FINISH = "FINISH"
+    METHOD_INSERT = "INSERT"
     METHOD_LOGIN = "login"
     METHOD_SEND_TO = "send_to"
     METHOD_SUB = "sub"

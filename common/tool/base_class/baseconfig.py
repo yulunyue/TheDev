@@ -1,4 +1,14 @@
-from common.util.export import logger, File, json, List, Dict, hash_any_str, time, Self
+from common.util.export import (
+    logger,
+    File,
+    json,
+    C,
+    List,
+    Dict,
+    hash_any_str,
+    time,
+    Self,
+)
 from .base_model.model import BaseModel
 
 
@@ -18,8 +28,18 @@ class ConfigBase:
         return self
 
     @classmethod
+    def get_id_any(cls, **kw):
+        if not kw:
+            return time.time()
+        return cls.get_id_by_param(**kw)
+
+    @classmethod
+    def get_id_by_param(cls, **kw):
+        raise NotImplemented
+
+    @classmethod
     def insert(cls, idx, **kw) -> "Self":
-        cls.instance_map[idx] = cls().load(idx).update(**kw)
+        cls.instance_map[idx] = cls.new(idx).update(**kw)
         return cls.instance_map[idx]
 
     @classmethod
@@ -36,7 +56,7 @@ class ConfigBase:
         return self._params_cls_map
 
     @classmethod
-    def all(cls):
+    def all(cls) -> List[Self]:
         raise NotImplementedError
 
     @classmethod
@@ -47,10 +67,18 @@ class ConfigBase:
         return ret
 
     @classmethod
+    def query(cls, key) -> Self:
+        return cls.instance_map[key]
+
+    @classmethod
     def get(cls, key) -> Self:
         if key in cls.instance_map:
             return cls.instance_map[key]
         return cls.insert(key)
+
+    @classmethod
+    def new(cls, key) -> Self:
+        return cls().load(key)
 
     @classmethod
     def update_param_value(self, param, value):
@@ -91,12 +119,18 @@ class ConfigBase:
         raise NotImplementedError
 
     @classmethod
-    def save(cls):
-        cls.save_to_local()
+    def save(self):
+        self.save_to_local()
+
+    def delete(self):
+        self.instance_map.pop(self._id)
+        return self
 
     @classmethod
-    def get_font_columns(cls):
-        return cls.get_params().values()
+    def get_form_columns(cls):
+        return [
+            v for v in cls.get_params().values() if v.view_state & C.VIEW_STATE_CAN_EDIT
+        ]
 
     @classmethod
     def set_resource(cls, path):
@@ -110,7 +144,7 @@ class ConfigBase:
         raise NotImplementedError
 
     @classmethod
-    def query(cls, key):
+    def filter(cls, key):
         ret: List[ConfigBase] = []
         for k, v in cls.instance_map.items():
             if key in str(k):

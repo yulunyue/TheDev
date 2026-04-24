@@ -29,6 +29,8 @@ from .tool import (
     url_parse,
     is_base64_code,
     asset_exception,
+    time_strptime,
+    time_format,
 )
 from .test import TestBase, logger
 from .fp import File

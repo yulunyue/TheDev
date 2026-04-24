@@ -37,6 +37,9 @@ export class Input extends Div {
     }
     set_value(value: any) {
         // console.log("set_value", value)
+        if (value == null || value == undefined) {
+            value = ""
+        }
         this.el.value = value
         return this
     }

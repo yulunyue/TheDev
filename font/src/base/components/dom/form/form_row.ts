@@ -1,4 +1,5 @@
 import { Div } from "../div";
+import { Column } from "../base/column";
 import web_dom from "../../../web/web_dom"
 import { not_null, Node } from "../../../web/cls"
 import Constant from "../../../web/constant"
@@ -9,15 +10,20 @@ import { url } from "inspector";
 export class FormRow extends Div {
     header: Div
     body: Div
-    footer: Div
+    footer: Column
     _submit_call_back: any
     input_width: number
     child_map: any
+    foot_btns: any
     set_input_width(width: number) {
         this.input_width = width
         return this
     }
     on_submit(call: any) {
+        this.event_hander[Constant.EVENT_SUBMIT] = call
+        return this
+    }
+    on_mock_get_value(call: any) {
         this.event_hander[Constant.EVENT_SUBMIT] = call
         return this
     }
@@ -29,7 +35,7 @@ export class FormRow extends Div {
     init_node(): void {
         this.header = new Div()
         this.body = new Div()
-        this.footer = new Div()
+        this.footer = new Column()
         this.add_childs([
             this.header,
             this.body,
@@ -49,7 +55,7 @@ export class FormRow extends Div {
         }
         return r
     }
-    render_childs(childs: Node[]) {
+    render_childs(childs: Node[], data: any) {
         for (var i = 0; i < childs.length; i++) {
             let o = childs[i]
             if (o.type == Constant.DOM_TYPE_SEARCH && !o.url) {
@@ -66,25 +72,39 @@ export class FormRow extends Div {
         if (this.option.id) {
             web_dom.get_local(this.option.id, this.set_value.bind(this))
         }
+        this.render_footer(data)
     }
     render_option(): void {
         if (this.option.url) {
             web_dom.post(this.option.url + this.get_form_view_url(), {}, (v: any) => {
-                this.render_childs(v.childs)
+                this.render_childs(v.childs, v.data)
             })
         } else {
-            this.render_childs(this.option.childs)
+            this.render_childs(this.option.childs, this.option.data)
         }
-        this.render_footer()
+
     }
-    render_footer() {
-        let btns = this.option.data.btns || { submit: "提交" }
+    render_footer(data: any) {
+        let btns = data.btns || { submit: "提交" }
+        this.foot_btns = {}
         this.footer.clear()
         for (var key in btns) {
             let btn = new Button().set_html(btns[key])
             btn.on_click(F.register_call((tp: string) => this.submit_hander(tp), key))
+            btn.hide()
+            this.foot_btns[key] = btn
             this.footer.add_child(btn)
         }
+    }
+    show_btns(btns: any) {
+        for (var key in this.foot_btns) {
+            if (btns.indexOf(key) != -1) {
+                this.foot_btns[key].show()
+            } else {
+                this.foot_btns[key].hide()
+            }
+        }
+        return this
     }
     submit_hander(type: string) {
         if (this.option.url) {
@@ -109,6 +129,9 @@ export class FormRow extends Div {
         for (var key in this.child_map) {
             let value = this.child_map[key].get_value()
             ret[key] = value
+        }
+        if (this.event_hander[Constant.EVENT_MOCK_GET_VALUE]) {
+            this.event_hander[Constant.EVENT_MOCK_GET_VALUE](ret)
         }
         return ret
     }

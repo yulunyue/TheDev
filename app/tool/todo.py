@@ -8,80 +8,59 @@ from common.tool.export import (
     DateModel,
     FormBase,
 )
-from common.util.export import Node
+from common.util.export import Node, C, Type, List, time
 
 
 class TodoModel(FileConfig):
-    title = StrModel()
+    title = StrModel().not_null()
     content = StrModel()
     category = SelectModel().set_options("study", "entertainment")
     done = BoolModel(default_value=False)
-    priority = NumberModel(default_value=0)
-    create_time = DateModel().set_visible(False)
-    update_time = DateModel().set_visible(False)
+    create_time = DateModel().disable_view_state(C.VIEW_STATE_CAN_EDIT)
+    update_time = DateModel().disable_view_state(C.VIEW_STATE_CAN_EDIT)
 
     @classmethod
-    def get_font_columns(cls):
-        return [v for v in cls.get_params().values() if v.visible]
+    def get_id_by_param(cls, title, **kw):
+        return title
 
 
 TodoModel.set_resource("config/setting/todo.json")
 
 
 class Todo(FormBase):
-    model = TodoModel
+    model: Type[TodoModel] = TodoModel
 
-    def web_search(self, key, name, **kw):
-        return Node(
-            childs=[dict(title=v._id, value=v) for v in self.__class__.model.all()]
+    def web_search(self, category, done, **kw):
+        todos = []
+        models: List[TodoModel] = sorted(
+            self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
         )
-
-    def get_score(self, **kw):
+        score_map = dict(study=1, entertainment=-1)
         score = 0
-        for todo in self.__class__.model.all():
-            if todo.done.get_value():
-                if todo.category.get_value() == "study":
-                    score += 1
-                elif todo.category.get_value() == "entertainment":
-                    score -= 1
-        return Node(value=score)
+        for v in models:
+            if v.category == category and v.done == done:
+                todos.append(v)
+            if v.done.get_value():
+                score += score_map[category]
+        return Node(childs=todos, value=score)
 
-    def get_stats(self, **kw):
-        study_done = []
-        study_pending = []
-        entertainment_done = []
-        entertainment_pending = []
-        for todo in self.__class__.model.all():
-            category = todo.category.get_value()
-            is_done = todo.done.get_value()
-            if category == "study":
-                if is_done:
-                    study_done.append(todo)
-                else:
-                    study_pending.append(todo)
-            else:
-                if is_done:
-                    entertainment_done.append(todo)
-                else:
-                    entertainment_pending.append(todo)
-        return Node(
-            childs=[
-                dict(
-                    title="学习已完成",
-                    childs=[dict(title=v._id, value=v) for v in study_done],
-                ),
-                dict(
-                    title="学习未完成",
-                    childs=[dict(title=v._id, value=v) for v in study_pending],
-                ),
-                dict(
-                    title="娱乐已完成",
-                    childs=[dict(title=v._id, value=v) for v in entertainment_done],
-                ),
-                dict(
-                    title="娱乐未完成",
-                    childs=[dict(title=v._id, value=v) for v in entertainment_pending],
-                ),
-            ],
-            value=self.get_score().value,
+    def hander(self, key, type, value: dict):
+        category = value.get("category")
+        if category not in TodoModel.category.options:
+            raise Exception(
+                f"category {category} not in {list(TodoModel.category.options.keys())} "
+            )
+        if type == C.METHOD_INSERT:
+            value.update(create_time=time.time(), update_time=time.time())
+        elif type == C.METHOD_EDIT:
+            value.update(update_time=time.time())
+        elif type != C.METHOD_DELETE:
+            raise Exception(type)
+        return value
+
+    def to_form_row_view(self):
+        return (
+            super()
+            .to_form_row_view()
+            .set_btns(C.METHOD_EDIT, C.METHOD_INSERT, C.METHOD_DELETE)
         )
