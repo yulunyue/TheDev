@@ -1,4 +1,4 @@
-from common.tool.export import OsUtil, System, ToolBase
+from common.tool.export import OsUtil, System, ToolBase, GC
 from common.third_util.io.api import Api
 from common.util.export import File, logger
 
@@ -7,7 +7,7 @@ class Cli(ToolBase):
 
     def npm_build(self):
         File("font/dist").remove()
-        OsUtil("npm.cmd").set_env("font").run("run", "build")
+        OsUtil(GC.npm_path.get_value()).set_env("font").run("run", "build")
 
     def package(self):
         f = File("./")
