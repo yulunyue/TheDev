@@ -16,12 +16,16 @@ class TodoModel(FileConfig):
     content = StrModel()
     category = SelectModel().set_options("study", "entertainment")
     done = BoolModel(default_value=False)
-    create_time = DateModel().disable_view_state(C.VIEW_STATE_CAN_EDIT)
-    update_time = DateModel().disable_view_state(C.VIEW_STATE_CAN_EDIT)
+    create_time = DateModel()
+    update_time = DateModel()
 
     @classmethod
     def get_id_by_param(cls, title, **kw):
         return title
+
+    @classmethod
+    def get_form_columns(cls):
+        return [cls.title, cls.content, cls.category, cls.done]
 
 
 TodoModel.set_resource("config/setting/todo.json")
