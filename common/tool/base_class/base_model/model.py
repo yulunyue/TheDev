@@ -1,10 +1,11 @@
-from common.util.export import List, TypeVar
-
-T = TypeVar("T", bound="BaseModel")
+from common.util.export import List, TypeVar, Self, C, functools
 
 
 class BaseModel:
     value = None
+    view_state = C.VIEW_SATTE_MAX
+    can_is_null = True
+    layout = None
 
     def __init__(self, default_value=None, key=None, data_source=None) -> None:
         self.default_value = default_value
@@ -15,10 +16,27 @@ class BaseModel:
         self.ops = []
         self.title = key
         self.key = key
-        self.model: T = None
+
+    def set_layout(self, layout):
+        self.layout = layout
+        return self
+
+    def set_title(self, title):
+        self.title = title
+        return self
+
+    def not_null(self):
+        self.can_is_null = False
+        return self
+
+    def disable_view_state(self, *states):
+        for d in states:
+            if self.view_state ^ d:
+                self.view_state ^= d
+        return self
 
     def set_model(self, model):
-        self.model: T = model
+        self.model: Self = model
         return self
 
     def get_title(self):
@@ -52,6 +70,8 @@ class BaseModel:
         return value
 
     def set_value(self, value):
+        if (value == "" or value is None) and not self.model.can_is_null:
+            raise Exception(f"{self.key} can not be null {value}")
         return self.data_source.update_param_value(self, value)
 
     def set_value_if_none(self, value):
@@ -64,6 +84,7 @@ class BaseModel:
             key=self.key,
             value=v,
             title=self.get_title(),
+            data=dict(layout=self.layout),
         )
         ret.update(kw)
         return ret
@@ -95,4 +116,10 @@ class BaseModel:
         return self.__add__(value)
 
     def __repr__(self) -> str:
-        return f"{self.key}"
+        return f"{self.key}:{self.get_value()}"
+
+    def __eq__(self, __value: object) -> bool:
+        return str(self.get_value()).lower() == str(__value).lower()
+
+    def __str__(self) -> str:
+        return str(self.get_value())

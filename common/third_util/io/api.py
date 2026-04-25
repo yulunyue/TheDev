@@ -273,6 +273,8 @@ class Api:
                 ret = res.content
         else:
             ret = res.content
+        if res.status_code > 300:
+            raise Exception(res.status_code, res.url, res.text)
         self.log(res, method, data or param, headers, cookies, ret)
         return res, ret
 

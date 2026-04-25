@@ -1,23 +1,28 @@
 import { Div } from "../div";
+import { Column } from "../base/column";
 import web_dom from "../../../web/web_dom"
 import { not_null, Node } from "../../../web/cls"
 import Constant from "../../../web/constant"
 import { FormContainer } from "./container";
 import { Button } from "./button";
 import F from "../../../tool/fun";
-import { url } from "inspector";
 export class FormRow extends Div {
     header: Div
     body: Div
-    footer: Div
+    footer: Column
     _submit_call_back: any
     input_width: number
     child_map: any
+    foot_btns: any
     set_input_width(width: number) {
         this.input_width = width
         return this
     }
     on_submit(call: any) {
+        this.event_hander[Constant.EVENT_SUBMIT] = call
+        return this
+    }
+    on_mock_get_value(call: any) {
         this.event_hander[Constant.EVENT_SUBMIT] = call
         return this
     }
@@ -29,7 +34,8 @@ export class FormRow extends Div {
     init_node(): void {
         this.header = new Div()
         this.body = new Div()
-        this.footer = new Div()
+        this.footer = new Column()
+        this.foot_btns = {}
         this.add_childs([
             this.header,
             this.body,
@@ -75,16 +81,29 @@ export class FormRow extends Div {
         } else {
             this.render_childs(this.option.childs)
         }
-        this.render_footer()
+
     }
-    render_footer() {
-        let btns = this.option.data.btns || { submit: "提交" }
-        this.footer.clear()
+    render_footer(btns: any) {
         for (var key in btns) {
+            if (this.foot_btns[key]) {
+                continue
+            }
             let btn = new Button().set_html(btns[key])
             btn.on_click(F.register_call((tp: string) => this.submit_hander(tp), key))
+            this.foot_btns[key] = btn
             this.footer.add_child(btn)
         }
+    }
+    set_btns(btns: any) {
+        this.render_footer(btns)
+        for (var key in this.foot_btns) {
+            if (btns[key]) {
+                this.foot_btns[key].show()
+            } else {
+                this.foot_btns[key].hide()
+            }
+        }
+        return this
     }
     submit_hander(type: string) {
         if (this.option.url) {
@@ -109,6 +128,9 @@ export class FormRow extends Div {
         for (var key in this.child_map) {
             let value = this.child_map[key].get_value()
             ret[key] = value
+        }
+        if (this.event_hander[Constant.EVENT_MOCK_GET_VALUE]) {
+            this.event_hander[Constant.EVENT_MOCK_GET_VALUE](ret)
         }
         return ret
     }

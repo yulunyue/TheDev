@@ -1,12 +1,13 @@
-from common.tool.export import OsUtil, System, ToolBase
+from common.tool.export import OsUtil, System, ToolBase, GC
 from common.third_util.io.api import Api
-from common.util.export import File
+from common.util.export import File, logger
 
 
 class Cli(ToolBase):
 
     def npm_build(self):
-        OsUtil("npm").set_env("font").run("run", "build")
+        File("font/dist").remove()
+        OsUtil(GC.npm_path.get_value()).set_env("font").run("run", "build")
 
     def package(self):
         f = File("./")
@@ -15,15 +16,18 @@ class Cli(ToolBase):
             targets=["font/dist", "common", "app/tool"],
             ignores=[".*__pycache__"],
         )
+        logger.info("package")
 
     def install(self, ip_port):
         api = Api().set_endpoint(f"http://{ip_port}")
-        api.post_files(f"/app/manage/post_file", "data/the_dev.zip")
-        api.post(f"/app/manage/unzip", data=dict(path="data/upload/the_dev.zip"))
+        res = api.post_files(f"/app/manage/post_file", "data/the_dev.zip")
+        res1 = api.post(f"/app/manage/unzip", data=dict(path="data/upload/the_dev.zip"))
+        logger.map(res=res, res1=res1)
 
     def restart(self, ip_port, config):
         api = Api().set_endpoint(f"http://{ip_port}")
-        api.post(f"/app/manage/restart", data=dict(config=config))
+        res = api.post(f"/app/manage/restart", data=dict(config=config))
+        logger.map(res=res)
 
 
 if __name__ == "__main__":

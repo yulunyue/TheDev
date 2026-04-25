@@ -212,8 +212,8 @@ class File:
                 ret.append(f)
         return ret
 
-    def list_tree_file(self, with_dir=False):
-        return self.list_dir(-1, with_dir=with_dir)
+    def list_tree_file(self, with_dir=False, ignores=None):
+        return self.list_dir(-1, with_dir=with_dir, ignores=ignores)
 
     def is_dir(self):
         return os.path.isdir(self.path)
@@ -277,7 +277,7 @@ class File:
                     local_path, arc_name = c.path, os.path.relpath(c.path, self.path)
                     f.write(local_path, arcname=arc_name)
                 else:
-                    for d in c.list_dir(ignores=ignores):
+                    for d in c.list_tree_file(ignores=ignores):
                         local_path, arc_name = d.path, os.path.relpath(
                             d.path, self.path
                         )

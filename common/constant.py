@@ -17,8 +17,16 @@ class Constant:
     METHOD_LOGIN_OUT = "login_out"
     METHOD_LOGIN_OK = "login_ok"
     METHOD_SUB = "sub"
+    METHOD_DELETE = "DELETE"
+    METHOD_EDIT = "EDIT"
+    METHOD_FINISH = "FINISH"
+    METHOD_INSERT = "INSERT"
     TOPIC_TASK_UPDATE_MSG = "TOPIC_TASK_UPDATE_MSG"
     TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
+    VIEW_STATE_CAN_EDIT = 1 << 0
+    VIEW_SATTE_MAX = (1 << 8) - 1
+    LAYOUT_ROW = "ROW"
+    LAYOUT_COLUMN = "COLUMN"
 
 
 class CT:

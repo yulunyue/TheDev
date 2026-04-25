@@ -10,10 +10,15 @@ import time
 from collections.abc import ValuesView
 
 
-def time_format(timestamp):
+def time_format(timestamp, fmt="%Y-%m-%d %H:%M:%S"):
     time_struct = time.localtime(timestamp)
-    format_date = time.strftime("%Y-%m-%d %H:%M:%S", time_struct)
+    format_date = time.strftime(fmt, time_struct)
     return format_date
+
+
+def time_strptime(s: str, fmt="%Y-%m-%d %H:%M:%S"):
+    timeArray = time.strptime(s, fmt)
+    return time.mktime(timeArray)
 
 
 UK_MAP = dict()
@@ -157,7 +162,10 @@ def json_dumps(oj, indent=None):
         return str(v)
 
     return json.dumps(
-        oj, indent=indent, default=util, ensure_ascii=False, sort_keys=True
+        oj,
+        indent=indent,
+        default=util,
+        ensure_ascii=False,
     )
 
 
@@ -193,7 +201,7 @@ def asset_exception(fun, *args, msg="", **kw):
         fun(*args, **kw)
     except Exception as e:
         s = str(e)
-    assert s, msg
+    assert msg in s, s
 
 
 def json_get(data, keys: str, default_value=None):

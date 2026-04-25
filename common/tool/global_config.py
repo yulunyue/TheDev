@@ -5,19 +5,19 @@ from .base_class.base_model import (
     ListModel,
     BoolModel,
 )
+from .base_class.storege.json_config import JsonConfig
 
 
-class GloablConfg(ConfigBase):
-    resource_path = "config/setting/gloabl_setting.json"
+class GloablConfg(JsonConfig):
     chrome_driver_path = StrModel("/thedev/data/chrome_driver")
     chrome_driver_uri = StrModel(
-        "https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chromedriver-win64.zip"
+        default_value="https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chromedriver-win64.zip"
     )
     chrome_bin_uri = StrModel(
-        "https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chrome-win64.zip"
+        default_value="https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chrome-win64.zip"
     )
     chrome_bin_path = StrModel(
-        "/thedev/data/chrome_bin"
+        default_value="/thedev/data/chrome_bin"
     )  # https://googlechromelabs.github.io/chrome-for-testing/
     git_proxy_prefix = StrModel("")  # https://ghproxy.link/
     BROWSER_USE_API_KEY = StrModel()
@@ -25,6 +25,8 @@ class GloablConfg(ConfigBase):
     pip_trusted_host = StrModel()
     zb_docker_env = StrModel()
     github_token = StrModel()
+    npm_path = StrModel(default_value="npm.cmd")
 
 
+GloablConfg.set_resource("config/setting/gloabl_setting.json")
 GC = GloablConfg

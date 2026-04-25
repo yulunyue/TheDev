@@ -12,7 +12,7 @@ class SelectModel(BaseModel):
     def to_json(self):
         return super().to_json(
             type="select",
-            childs=[dict(title=o, value=o) for o in self.options],
+            childs=[dict(title=v, value=key) for key, v in self.options.items()],
         )
 
     def get_data(self):

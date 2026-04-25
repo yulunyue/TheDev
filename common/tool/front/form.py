@@ -13,9 +13,11 @@ class Form(FontBase):
 
     def __init__(self):
         self.body = []
-        self.btns = dict(submit="提交")
+        self.btns = dict()
 
-    def set_btns(self, **kw):
+    def set_btns(self, *args, **kw):
+        for k in args:
+            self.btns[k] = k
         self.btns.update(kw)
         return self
 

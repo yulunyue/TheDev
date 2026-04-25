@@ -62,7 +62,10 @@ export class Select extends Div {
                 return this.option.childs[i].value
             }
         }
-        return this.option.childs[0].value
+        if (this.option.childs[0]) {
+            return this.option.childs[0].value
+        }
+        return this.option.value
     }
     get_int() {
         return parseInt(this.get_value())

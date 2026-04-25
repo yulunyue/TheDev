@@ -1,26 +1,38 @@
-from common.tool.export import FrontTable, Form, ConfigBase
+from common.tool.export import FrontTable, Form, ConfigBase, FileConfig
 
-from common.util.export import Node, C, ApiBase
+from common.util.export import Node, C, ApiBase, Type
 
 
 class FormBase(ApiBase):
-    model: ConfigBase = ConfigBase
+    model: Type[FileConfig]
 
     def get(self, key, **kw):
         return self.__class__.model.get(key)
 
     def to_form_row_view(self):
-        return Form().set_row().set_body(*self.__class__.model.get_font_columns())
+        return Form().set_row().set_body(*self.__class__.model.get_form_columns())
 
     def to_form_column_view(self):
-        return Form().set_column().set_body(*self.__class__.model.get_font_columns())
+        return Form().set_column().set_body(*self.__class__.model.get_form_columns())
 
-    def web_submit(self, type, value: dict, **kw):
-        _id = value.get("_id") or value.get("title") or str(len(self.__class__.model.instance_map) + 1)
-        value.pop("_id", None)
-        s = self.__class__.model.insert(_id, **value)
+    def web_submit(self, type, value: dict):
+        _id = self.__class__.model.get_id_any(**value)
+        value = self.hander(_id, type, value)
+        if value is None:
+            return Node()
+        if type == C.METHOD_INSERT:
+            s = self.model.insert(_id, **value)
+        elif type == C.METHOD_DELETE:
+            s = self.model.query(_id).delete()
+        elif type == C.METHOD_EDIT:
+            s = self.model.query(_id).update(**value)
+        else:
+            raise Exception(type, value)
         s.save()
-        return Node(value=s)
+        return Node()
+
+    def hander(self, key, type, value):
+        return value
 
     def web_search(self, key, name, **kw):
         return Node(

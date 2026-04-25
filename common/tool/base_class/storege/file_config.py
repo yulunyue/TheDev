@@ -20,19 +20,23 @@ class FileConfig(ConfigBase):
     @classmethod
     def init_resource(cls):
         cls.fp = File(cls.resource_path)
-        cls._config = dict()
         cls.load_data_from_file()
         return cls.instance_map
 
     @classmethod
     def load_data_from_file(cls):
-        has_update, config = cls.fp.read_fast_file()
+        has_update, cls._config = cls.fp.read_fast_file()
+        if cls._config is None:
+            cls._config = dict()
         if not has_update:
             return
-        cls._config.update(config)
+        cls.instance_map = dict()
         items = list(cls._config.items())
         for k, v in items:
-            cls.insert(k, **v)
+            try:
+                cls.insert(k, **v)
+            except Exception as e:
+                logger.error(e, stack_info=True)
 
     @classmethod
     def save_to_local(cls):
