@@ -19,6 +19,7 @@ class TodoModel(FileConfig):
         .set_title("类型")
         .set_options(
             study="学习",
+            work="工作",
             entertainment="娱乐",
             sport="运动",
             life="生活",
@@ -52,7 +53,7 @@ class Todo(FormBase):
         models: List[TodoModel] = sorted(
             self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
         )
-        score_map = dict(study=1, entertainment=-1, life=2, sport=3)
+        score_map = dict(study=1,work=2, entertainment=-1, life=2, sport=3)
         score = 0
         for v in models:
             if v.category == category and v.done == done:
