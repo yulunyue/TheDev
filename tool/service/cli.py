@@ -6,7 +6,7 @@ from common.util.export import File
 class Cli(ToolBase):
 
     def npm_build(self):
-        OsUtil("npm.cmd").set_env("font").run("run", "build")
+        OsUtil("npm").set_env("font").run("run", "build")
 
     def package(self):
         f = File("./")

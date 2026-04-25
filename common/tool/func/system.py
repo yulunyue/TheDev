@@ -1,6 +1,6 @@
 from ..os_util import OsUtil
 from common.util.export import List, os, re, logger
-import psutil
+#import psutil
 
 
 def print_process_info(proc):
