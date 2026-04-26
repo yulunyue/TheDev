@@ -1,7 +1,7 @@
 import {
     Column, Row, Div, Constant, Node, web_dom,
     Button, FormRow, Search, web_socket, Ct, dialog, Select,
-    Span,
+    Span, Input,
     Data
 } from "../../base/components/export";
 import { TodoContainer } from "./todo_container";
@@ -9,7 +9,8 @@ import { TodoContainer } from "./todo_container";
 export class TodoMain extends Row {
     top_form: FormRow
     todo_list: TodoContainer
-    search_input: Search
+    search_input: Input
+    user_search: Search
     add_btn: Button
     category_select: Select
     done_select: Select
@@ -17,7 +18,9 @@ export class TodoMain extends Row {
     header: Column
     init_style(): void {
         this.full()
-        this.search_input.set_style({ flex: "1" })
+        this.search_input.set_style({
+            width: 60
+        })
         this.top_form.set_style({
             padding: "20px",
             minWidth: "300px"
@@ -26,13 +29,12 @@ export class TodoMain extends Row {
         this.category_select.set_style({ margin: "4px" })
         this.done_select.set_style({ margin: "4px" })
         this.header.set_style({
-            padding: "12px",
             justifyContent: "space-between", alignItems: "center", width: 1
         })
         super.init_style()
     }
     init_node(): void {
-        this.search_input = new Search()
+        this.search_input = new Input()
         this.add_btn = new Button().set_html("新增")
         this.category_select = new Select()
         this.done_select = new Select()
@@ -52,7 +54,7 @@ export class TodoMain extends Row {
         ])
     }
     init_event(): void {
-        this.search_input.on_change(() => this.load_todos())
+        this.search_input.on_change(() => this.todo_list.filter(this.search_input.get_value()))
         this.add_btn.on_click(() => {
             this.on_to_do_change(Constant.METHOD_INSERT, null, { category_select: this.category_select.get_value() })
         })
@@ -73,20 +75,18 @@ export class TodoMain extends Row {
     }
     on_to_do_change(method: string, f: any, t: any) {
         if (method == Constant.METHOD_INSERT) {
-            this.top_form.set_btns({ [Constant.METHOD_INSERT]: "新增" })
+            this.top_form.set_btns({ [Constant.METHOD_INSERT]: "提交" })
             this.top_form.child_map.title.show()
+            this.top_form.child_map.user_id.show()
         } else {
             this.top_form.child_map.title.hide()
+            this.top_form.child_map.user_id.hide()
             this.top_form.set_btns({ [Constant.METHOD_EDIT]: "保存", [Constant.METHOD_DELETE]: "删除" })
         }
         this.top_form.set_value(t)
         dialog.open(this.top_form)
     }
     render(): void {
-        this.search_input.set_option({
-            url: "/app/todo/web_search",
-            title: "Search Todo"
-        })
         this.top_form.set_option({
             url: "/app/todo",
         })

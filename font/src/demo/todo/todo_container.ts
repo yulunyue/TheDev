@@ -1,6 +1,6 @@
 import {
     Column, Row, Div, Constant, Node, web_dom,
-    Button, web_socket, Ct
+    Button, web_socket, Ct, Util
 } from "../../base/components/export";
 import { TodoRow } from "./todo_row";
 
@@ -11,7 +11,6 @@ export class TodoContainer extends Div {
         this.set_style({
             flex: "1",
             overflow: "auto",
-            margin: "8px",
             width: "100%"
         })
         super.init_style()
@@ -32,5 +31,16 @@ export class TodoContainer extends Div {
         this.todo_rows.push(row)
         return row
     }
+    filter(key: string) {
+        for (var i = 0; i < this.todo_rows.length; i++) {
+            var todo = this.todo_rows[i]
+            var s = todo.todo_data.title + todo.todo_data.content
+            if (Util.str_match(s, key)) {
+                todo.show()
+            } else {
+                todo.hide()
+            }
 
+        }
+    }
 }

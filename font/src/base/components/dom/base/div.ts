@@ -114,10 +114,10 @@ export class Div {
         })
     }
     show() {
-        return this.set_div_style({ display: "" })
+        return this.set_style({ display: "" })
     }
     hide() {
-        return this.set_div_style({ display: "none" })
+        return this.set_style({ display: "none" })
     }
     get_a_x() {
         return (this.el as HTMLElement).getBoundingClientRect().x;
@@ -141,7 +141,12 @@ export class Div {
     get_value(): any {
         return this._value
     }
-
+    get_abs_x() {
+        return this.el.offsetLeft
+    }
+    get_abs_y() {
+        return this.el.offsetTop
+    }
     get_x() {
         return this.el.clientLeft
     }

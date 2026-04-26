@@ -13,6 +13,20 @@ export class UtilCls {
         }
         return ret
     }
+    str_match(s: string, key: string) {
+        return s.indexOf(key) != -1
+    }
+    url_parse(s: string) {
+        let idx = s.indexOf("?")
+        if (idx == -1) {
+            return { path: s, param: {} }
+        }
+        let path = s.slice(0, idx + 1)
+        return {
+            path: path,
+            param: this.url_to_json(s.slice(idx + 1,))
+        }
+    }
     filter_json_array(src: any[], s: string) {
         if (!s) {
             return src

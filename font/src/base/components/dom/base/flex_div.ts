@@ -3,11 +3,12 @@ import Constant from "../../../web/constant"
 import { Row } from "./row";
 import { DivFactory } from "./div_factory";
 export class FlexDiv extends Div {
-
+    show(): this {
+        return this.set_style({ display: "flex" })
+    }
     get_direction() {
         return -1
     }
-
     init_style() {
         this.set_div_style({
             flexDirection: this.get_direction() == Constant.VERTICAL ? "row" : "column",
@@ -18,6 +19,12 @@ export class FlexDiv extends Div {
             overflow: "auto",
             // minHeight: 0
         })
+    }
+    set_align_left() {
+        this.set_style({
+            "alignItems": "flex-start"
+        })
+        return this
     }
     set_align_space_around() {
         this.set_style({

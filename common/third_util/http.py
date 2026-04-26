@@ -111,7 +111,7 @@ class MainHander(RequestHandler):
 
         super().__init__(application, request, **kwargs)
 
-    def get(self, *args):
+    async def get(self, *args):
         path = self.path[1:].split("?")[0]
         ret = f"404 not find {path}"
         if os.path.isfile(path):

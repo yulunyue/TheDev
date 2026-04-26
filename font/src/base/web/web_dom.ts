@@ -87,15 +87,15 @@ class WebDom {
     prefix: string
     init_href() {
         this.url_param = {}
-        var location_href2 = this.get_location().split('?')
-        var hrefs = location_href2[0].split('/')
+        var data = Ut.url_parse(location.href)
+        var hrefs = data.path.split('/')
         var ip_ports = hrefs[2].split(':')
         this.web_host = ip_ports[0]
         this.web_port = parseInt(ip_ports[1])
         if (this.web_port == 8080) {
             this.web_port = 9999
         }
-        Ut.extend(this.url_param, Ut.url_to_json(location_href2[1]))
+        Ut.extend(this.url_param, data.param)
         let bk_host = this.web_host
         this.prefix = 'http://' + bk_host + ":" + this.web_port
     }
@@ -111,8 +111,8 @@ class WebDom {
     }
     headers = {}
     xml_http_request(method: string, path: string, data: any, call_back: any, call_back_finiish: any) {
-
-        let url = this.url(path)
+        let d = Ut.url_parse(path)
+        let url = this.url(d.path)
         // dlg.open_loading()
         let req = new XMLHttpRequest()
         if (method == this.HTTP_GET_METHOD) {
@@ -130,6 +130,7 @@ class WebDom {
             }
             try {
                 let dt = JSON.stringify(data)
+                dt = Ut.extend(dt, d.param)
                 req.send(dt)
             } catch (e: any) {
                 alert('post:' + path + data)
@@ -168,6 +169,7 @@ class WebDom {
     }
     post_file(path: string, formData: FormData, call_back: any) {
         const xhr = new XMLHttpRequest();
+
         let url = this.url(path)
         xhr.open('POST', url, true);
         xhr.upload.addEventListener('progress', (e) => {

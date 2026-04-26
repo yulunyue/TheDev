@@ -81,8 +81,8 @@ export class Search extends Div {
     show_search_dialog() {
         // console.log(this.get_rect(), this.el)
         this.dialog.set_style({
-            left: this.get_a_x(),
-            top: this.get_a_y() + this.get_height(),
+            left: this.input.get_abs_x(),
+            top: this.input.get_abs_y() + this.input.get_height(),
             width: this.input.get_width(),
             maxHeight: 300,
             overflowY: "auto",

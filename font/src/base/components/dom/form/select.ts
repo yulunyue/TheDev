@@ -8,6 +8,7 @@ export class SeOption extends Div {
         super("option")
     }
     render_option(): void {
+        this.set_attr("value", this.option.value)
         this.set_html(this.option.title)
     }
     select(v: any) {
@@ -58,7 +59,7 @@ export class Select extends Div {
     }
     get_value() {
         for (var i = 0; i < this.option.childs.length; i++) {
-            if (this.option.childs[i].title == this.el.value) {
+            if (this.option.childs[i].value == this.el.value) {
                 return this.option.childs[i].value
             }
         }
@@ -66,6 +67,11 @@ export class Select extends Div {
             return this.option.childs[0].value
         }
         return this.option.value
+    }
+    set_value(value: any): this {
+        console.log(this.option.childs, value)
+        this.el.value = value
+        return this
     }
     get_int() {
         return parseInt(this.get_value())

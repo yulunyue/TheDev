@@ -29,6 +29,7 @@ class TodoModel(FileConfig):
     done = BoolModel(default_value=False).set_title("状态").set_layout(C.LAYOUT_COLUMN)
     create_time = DateModel()
     update_time = DateModel()
+    user_id = SearchModel().set_url("/app/user/web_search").set_title("用户")
 
     @classmethod
     def get_id_by_param(cls, title, **kw):
@@ -36,7 +37,7 @@ class TodoModel(FileConfig):
 
     @classmethod
     def get_form_columns(cls):
-        return [cls.category, cls.title, cls.content, cls.done]
+        return [cls.user_id, cls.category, cls.title, cls.content, cls.done]
 
 
 TodoModel.set_resource("config/setting/todo.json")
@@ -53,12 +54,12 @@ class Todo(FormBase):
         models: List[TodoModel] = sorted(
             self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
         )
-        score_map = dict(study=1,work=2, entertainment=-1, life=2, sport=3)
+        score_map = dict(study=1, work=2, entertainment=-1, life=2, sport=3)
         score = 0
         for v in models:
             if v.category == category and v.done == done:
                 todos.append(v)
-            if v.done.get_value():
+            if v.done.get_value() and v.user_id == self.username:
                 score += score_map[v.category.get_value()]
         return Node(childs=todos, value=score)
 
@@ -69,9 +70,14 @@ class Todo(FormBase):
                 f"category {category} not in {list(TodoModel.category.options.keys())} "
             )
         if type == C.METHOD_INSERT:
+            if TodoModel.exist(key):
+                raise Exception(f"{key} exist")
             value.update(create_time=time.time(), update_time=time.time())
         elif type == C.METHOD_EDIT:
-            value.update(update_time=time.time())
+            user_id = TodoModel.query(key).user_id.get_value()
+            if user_id and self.username != user_id:
+                raise Exception(f"{self.username} {user_id}")
+            value.update(update_time=time.time(), user_id=self.username)
         elif type != C.METHOD_DELETE:
             raise Exception(type)
         return value

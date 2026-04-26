@@ -6,6 +6,9 @@ from common.util.export import Node, C, ApiBase, Type
 class FormBase(ApiBase):
     model: Type[FileConfig]
 
+    def get_model(self, key):
+        return getattr(self, key)
+
     def get(self, key, **kw):
         return self.__class__.model.get(key)
 
@@ -28,13 +31,14 @@ class FormBase(ApiBase):
             s = self.model.query(_id).update(**value)
         else:
             raise Exception(type, value)
+
         s.save()
         return Node()
 
     def hander(self, key, type, value):
         return value
 
-    def web_search(self, key, name, **kw):
+    def web_search(self, key=None, name=None, **kw):
         return Node(
             childs=[
                 dict(

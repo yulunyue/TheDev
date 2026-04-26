@@ -77,6 +77,10 @@ class ConfigBase:
         return cls.insert(key)
 
     @classmethod
+    def exist(cls, key):
+        return key in cls.instance_map
+
+    @classmethod
     def new(cls, key) -> Self:
         return cls().load(key)
 
