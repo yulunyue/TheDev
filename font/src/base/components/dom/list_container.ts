@@ -1,4 +1,4 @@
-import { Row } from "./base/row"
+import { FlexColumn } from "./base/row"
 import { Div } from "./base/div"
 import { DivFactory } from "./base/div_factory"
 import { Constant, web_socket } from "../export"

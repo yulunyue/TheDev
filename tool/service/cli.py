@@ -31,4 +31,5 @@ class Cli(ToolBase):
 
 
 if __name__ == "__main__":
+    Api.enable_globel_log()
     Cli().run()

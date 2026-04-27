@@ -1,10 +1,10 @@
 import { Input } from "./input";
 import { Button } from "./button";
-import { Row } from "../base/row";
+import { FlexColumn } from "../base/row";
 import web_dom from "../../../web/web_dom"
 import { Node } from "../../../web/cls"
-import { Column } from "../base/column";
-export class FileInput extends Column {
+import { FlexRow } from "../base/column";
+export class FileInput extends FlexRow {
     inp: Input
     btn: Button
     path: any

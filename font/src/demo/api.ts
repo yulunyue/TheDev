@@ -16,18 +16,18 @@ export class Api extends Column {
     head_title_left: Div
     right_head: Column
     right_main: Row
-    left_main: Div
+    left_main: Row
     running_url: string
     log_container: ListContainer
     init_node(): void {
-        this.input = new FormRow()
+        this.input = new FormRow().set_btns({ [Constant.METHOD_RUN]: "执行" })
         this.uri = new Search().set_option({
             url: "/app/api/query_all_apis",
             id: URIKEYID,
             title: "APIKEY"
         })
         this.result = new Container()
-        this.left_main = new Div().add_childs([
+        this.left_main = new Row().add_childs([
             this.uri,
             this.input
         ])
@@ -57,6 +57,7 @@ export class Api extends Column {
         this.log_container.set_style({
             height: 200
         })
+        this.head_title_left.set_size(1)
         this.set_style({
             height: 1
         })

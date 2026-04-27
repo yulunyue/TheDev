@@ -6,7 +6,7 @@ import { Text, text } from "../text";
 import { Node } from "../../../web/cls";
 import { SvgNode } from "../svg";
 import { Div } from "../../dom/div";
-import { Column } from "../../dom/base/column";
+import { FlexRow } from "../../dom/base/column";
 import Constant from "../../../web/constant";
 import { Button } from "../../dom/form/button";
 import { Input } from "../../dom/form/input";
@@ -31,7 +31,7 @@ class ProgrePoint extends GNode {
     }
 }
 
-export class Progress extends Column {
+export class Progress extends FlexRow {
     main_line: Line
     min_g: GNode
     // points: ProgrePoint[]

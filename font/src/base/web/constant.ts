@@ -80,6 +80,7 @@ class Constant {
     METHOD_EDIT = "EDIT"
     METHOD_FINISH = "FINISH"
     METHOD_INSERT = "INSERT"
+    METHOD_RUN = "RUN"
     METHOD_LOGIN = "login"
     METHOD_SEND_TO = "send_to"
     METHOD_SUB = "sub"

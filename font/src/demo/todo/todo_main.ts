@@ -56,7 +56,10 @@ export class TodoMain extends Row {
     init_event(): void {
         this.search_input.on_change(() => this.todo_list.filter(this.search_input.get_value()))
         this.add_btn.on_click(() => {
-            this.on_to_do_change(Constant.METHOD_INSERT, null, { category_select: this.category_select.get_value() })
+            this.on_to_do_change(Constant.METHOD_INSERT, null, {
+                category: this.category_select.get_value(),
+                done: this.done_select.get_value()
+            })
         })
         this.top_form.on_submit((type: string, value: any) => {
             this.load_todos()

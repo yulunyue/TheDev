@@ -1,6 +1,6 @@
 import { FlexDiv } from "./flex_div";
 import Constant from "../../../web/constant"
-export class Row extends FlexDiv {
+export class FlexColumn extends FlexDiv {
     get_direction() {
         return Constant.HORIZONTAL
     }
