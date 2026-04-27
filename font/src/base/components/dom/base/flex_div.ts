@@ -1,6 +1,6 @@
 import { Div } from "./div";
 import Constant from "../../../web/constant"
-import { Row } from "./row";
+import { FlexColumn } from "./row";
 import { DivFactory } from "./div_factory";
 export class FlexDiv extends Div {
     show(): this {
@@ -13,14 +13,14 @@ export class FlexDiv extends Div {
         this.set_div_style({
             flexDirection: this.get_direction() == Constant.VERTICAL ? "row" : "column",
             display: "flex",
-            justifyContent: "space-between",
+            // justifyContent: "space-between",
             alignContent: "center",
-            alignItems: "center",
+            //alignItems: "center",
             overflow: "auto",
             // minHeight: 0
         })
     }
-    set_align_left() {
+    set_align_start() {
         this.set_style({
             "alignItems": "flex-start"
         })

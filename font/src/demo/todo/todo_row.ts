@@ -30,7 +30,7 @@ export class TodoRow extends Column {
             new Row().add_childs([
                 this.title_div,
                 this.content_div,
-            ]).set_size(1).set_align_left(),
+            ]).set_size(1).set_align_start(),
             new Row().add_childs([
                 this.create_time,
                 this.update_time,

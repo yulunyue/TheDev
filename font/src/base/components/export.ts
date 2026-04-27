@@ -9,8 +9,8 @@ import { SvgNode } from "./svg/svg"
 import { Button } from "./dom/form/button"
 import { Div, DivFactory, Container } from "./dom/div"
 import { ListContainer } from "./dom/list_container"
-import { Row } from "./dom/base/row"
-import { Column } from "./dom/base/column"
+import { FlexColumn } from "./dom/base/row"
+import { FlexRow } from "./dom/base/column"
 import { GNode } from "./svg/gnode"
 import { Progress } from "./svg/comb/progress"
 import { tree } from "./svg/comb/tree"
@@ -53,8 +53,8 @@ function init_div_factory() {
     DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
     DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
     DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())
-    DivFactory.register(Ct.DOM_TYPE_ROW, () => new Row())
-    DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new Column())
+    DivFactory.register(Ct.DOM_TYPE_ROW, () => new FlexColumn())
+    DivFactory.register(Ct.DOM_TYPE_COLUMN, () => new FlexRow())
     DivFactory.register(Ct.DOM_TYPE_BUTTON, () => new Button())
     DivFactory.register(Ct.DOM_TYPE_FORM_COLUMN, () => new FormColumn())
     DivFactory.register(Ct.DOM_TYPE_FORM_ROW, () => new FormRow())
@@ -69,6 +69,6 @@ export {
     Div, SvgNode as Svg, Progress, Input, DateInput, Checkbox, web_dom, dialog, DivFactory,
     Constant, Node, Line, GNode, tree, node, FormRow, FormColumn,
     to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich, Title, Span,
-    Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, Row, Column,
+    Container, Label, oj_to_node, Chart, Axies, Mock, FileInput, FlexColumn as Row, FlexRow as Column,
     ListContainer
 }

@@ -197,14 +197,26 @@ class Api:
     def get_timeout(self):
         return API_CONFIG.get(self.name).timeout.get_value()
 
-    def log(self, res: requests.Response, method, params, headers, cookies, content):
+    def log(
+        self,
+        uri,
+        res: requests.Response,
+        method,
+        params,
+        headers,
+        cookies,
+        content,
+        proxies,
+    ):
         if not self.log_enable:
             return
         logger.info(
-            f"---begin uri:{res.url} method:{method} status:{res.status_code}---"
+            f"---begin uri:{uri} res_url:{res.url} method:{method} status:{res.status_code}---"
         )
         if params:
             logger.info(f"req_body:{json_dumps(params,indent=2)}")
+        if proxies:
+            logger.info(f"proxies: {proxies}")
         if headers:
             logger.info(f"req_headers: {json_dumps(dict(headers),indent=2)}")
         if cookies:
@@ -275,7 +287,7 @@ class Api:
             ret = res.content
         if res.status_code > 300:
             raise Exception(res.status_code, res.url, res.text)
-        self.log(res, method, data or param, headers, cookies, ret)
+        self.log(uri, res, method, data or param, headers, cookies, ret, proxies)
         return res, ret
 
     def hander_stream(self, res: requests.Response, stream=False, writer=None):

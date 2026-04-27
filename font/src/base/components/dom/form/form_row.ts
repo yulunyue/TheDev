@@ -1,5 +1,5 @@
 import { Div } from "../div";
-import { Column } from "../base/column";
+import { FlexRow } from "../base/column";
 import web_dom from "../../../web/web_dom"
 import { not_null, Node } from "../../../web/cls"
 import Constant from "../../../web/constant"
@@ -9,7 +9,7 @@ import F from "../../../tool/fun";
 export class FormRow extends Div {
     header: Div
     body: Div
-    footer: Column
+    footer: FlexRow
     _submit_call_back: any
     input_width: number
     child_map: any
@@ -34,7 +34,7 @@ export class FormRow extends Div {
     init_node(): void {
         this.header = new Div()
         this.body = new Div()
-        this.footer = new Column()
+        this.footer = new FlexRow()
         this.foot_btns = {}
         this.add_childs([
             this.header,
