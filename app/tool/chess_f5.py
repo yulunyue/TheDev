@@ -14,9 +14,21 @@ class ChessF5(FormBase, ApiBase):
     def search_name(self, *args, **kw):
         return FontSearch().add_node(FontBd.instance_map.keys())
 
-    def search_algo(self, *args):
+    def to_form_column_view(self):
+        return (
+            super()
+            .to_form_column_view()
+            .set_btns(
+                **{
+                    C.METHOD_ROLL_BACK: "悔棋",
+                    C.METHOD_DELETE: "模拟",
+                }
+            )
+        )
+
+    def search_algo(self, *args, **kw):
         return FontSearch.add_node(
-            list(AI_PLAYER) + IO_MANAGE.get_users_by_topic(C.TOPIC_F5_CHESS)
+            list(AI_PLAYER) + list(IO_MANAGE.get_users_by_topic(C.TOPIC_F5_CHESS))
         )
 
     def web_submit(self, type, value, **kw):

@@ -72,7 +72,6 @@ export class Select extends Div {
         return this.option.value
     }
     set_value(value: any): this {
-        console.log(this.option.childs, value)
         this.el.value = value
         return this
     }

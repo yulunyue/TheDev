@@ -31,7 +31,13 @@ class Bd(FileConfig):
 
     @classmethod
     def get_form_columns(cls):
-        return [cls.name, cls.size, cls.p0, cls.p1]
+        return [cls.size, cls.p0, cls.p1]
+
+    def to_json(self):
+        ret = super().to_json()
+        state = self.get_state()
+        ret.update(width=state.env.width, height=state.env.height)
+        return ret
 
 
 Bd.set_resource("data/game/chess.json")

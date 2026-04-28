@@ -17,6 +17,7 @@ export class TodoRow extends Column {
             borderBottom: "1px solid #eee",
             width: "100%",
         })
+        this.user_name.set_style({ textAlign: "center" })
         super.init_style()
     }
     init_node(): void {

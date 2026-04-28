@@ -48,8 +48,13 @@ TodoModel.set_resource("config/setting/todo.json")
 class Todo(FormBase):
     model: Type[TodoModel] = TodoModel
 
-    def category(self):
-        return TodoModel.category
+    def schema(self):
+        return Node(
+            data=dict(
+                top_form=self.to_form_column_view(),
+                category=TodoModel.category,
+            )
+        )
 
     def web_search(self, category, done, **kw):
         todos = []
@@ -66,7 +71,8 @@ class Todo(FormBase):
                 todos.append(v)
             if v.done.get_value() and v.user_id == self.username:
                 score += score_map.get(v.category.get_value(), 0)
-        return Node(childs=todos, value=dict(score=score, money=money))
+        money = "".join(list(str(int(money)))[::-1])
+        return Node(childs=todos, title=f"分数: {score}.{money}")
 
     def hander(self, key, type, value: dict):
         category = value.get("category")

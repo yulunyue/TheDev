@@ -34,7 +34,8 @@ class BoardC5:
         self.line_state = []
         self.line_center = []
         in_row = self.in_row - 1
-        self.line_state_ct = [0] * (1 << (2 * in_row + 2))
+        max_state = 1 << (2 * self.in_row)
+        self.line_state_ct = defaultdict(int)
         for i in range(self.size):
             for k, (dy, dx) in enumerate(self.DR):
                 iy, ix = self.get_yx(i)

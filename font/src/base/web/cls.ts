@@ -48,12 +48,12 @@ export interface Style {
     borderTop?: string
     borderRight?: string
     borderBottom?: string
-    flexDirection?: "row" | "column"
+    flexDirection?: string
     userSelect?: "none" | "all"
     position?: "absolute" | "relative" | "fixed" | "sticky"
     textAnchor?: 'middle' | 'start' | 'end'
     textOverflow?: 'ellipsis'
-    textAlign?: "center" | "left"
+    textAlign?: "center" | "left" | "right"
     fontFamily?: string
     dominantBaseline?: 'middle' | 'text-before-edge'
     cursor?: "pointer"

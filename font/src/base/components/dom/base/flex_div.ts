@@ -7,11 +7,11 @@ export class FlexDiv extends Div {
         return this.set_style({ display: "flex" })
     }
     get_direction() {
-        return -1
+        return ""
     }
     init_style() {
         this.set_div_style({
-            flexDirection: this.get_direction() == Constant.VERTICAL ? "row" : "column",
+            flexDirection: this.get_direction(),
             display: "flex",
             // justifyContent: "space-between",
             alignContent: "center",

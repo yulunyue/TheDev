@@ -32,7 +32,7 @@ export class Div {
         this.event_hander[Constant.EVENT_CHANGE]?.(key, src, dst)
         return this
     }
-    on_change(call: Fn3Void<string, Node, Node>) {
+    on_change(call: Fn3Void<string, any, any>) {
         this.event_hander[Constant.EVENT_CHANGE] = call
         return this
     }
@@ -338,7 +338,7 @@ export class Div {
         return this
     }
     set_uri(s: string) {
-        web_dom.post(s, (data: Node) => {
+        web_dom.post(s, {}, (data: Node) => {
             this.set_option(data)
         })
         return this
