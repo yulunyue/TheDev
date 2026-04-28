@@ -4,7 +4,7 @@ from typing import List, Dict
 import zipfile
 import shutil
 import io
-from .tool import time_format, json_dumps
+from .tool import time_format, json_dumps, base64_encode
 from .str_util import StrUtil
 
 
@@ -103,6 +103,9 @@ class File:
     def read_data(self):
         with open(self.path, "rb") as f:
             return f.read()
+
+    def read_b64_data(self):
+        return base64_encode(self.read_data())
 
     def read_line(self):
         return self.read_data().decode("utf-8").replace("\r\n", "\n").split("\n")
@@ -259,9 +262,9 @@ class File:
         self.WITHE_FILE_HANDER[self.path] = open(self.path, mode)
         return self.WITHE_FILE_HANDER[self.path]
 
-    def get_bin_writer(self) -> io.TextIOWrapper:
+    def get_bin_writer(self, model="wb") -> io.TextIOWrapper:
         self.make_dir_if_not_exist()
-        return open(self.path, "wb")
+        return open(self.path, mode=model)
 
     def zip(self, dst=None, targets=None, ignores=None):
         if dst is None:

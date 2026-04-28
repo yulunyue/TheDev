@@ -11,7 +11,7 @@ from common.util.export import (
 logger = get_dev_log("api")
 from common.tool.export import NumberModel, StrModel, ConfigBase, FileConfig, DictModel
 
-USER_AGENT_DEFAULT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+USER_AGENT_DEFAULT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
 
 
 class ApiConfig(FileConfig):
@@ -88,8 +88,8 @@ class Api:
     APPLICATION_JSON = "application/json"
     LOG_ENABLE_DEFAULT = False
 
-    def __init__(self, log_enable=False):
-        self._name = self.__class__.__name__
+    def __init__(self, name="", log_enable=False):
+        self._name = name or self.__class__.__name__
         self.log_enable = log_enable or Api.LOG_ENABLE_DEFAULT
         self.cache = None
 
@@ -286,7 +286,7 @@ class Api:
         else:
             ret = res.content
         if res.status_code > 300:
-            raise Exception(res.status_code, res.url, res.text)
+            raise Exception(res.status_code, res.url, res.text[:128])
         self.log(uri, res, method, data or param, headers, cookies, ret, proxies)
         return res, ret
 

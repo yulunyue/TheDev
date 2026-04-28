@@ -122,9 +122,8 @@ class ConfigBase:
     def save_to_local(cls):
         raise NotImplementedError
 
-    @classmethod
     def save(self):
-        self.save_to_local()
+        self.__class__.save_to_local()
 
     def delete(self):
         self.instance_map.pop(self._id)
@@ -132,9 +131,7 @@ class ConfigBase:
 
     @classmethod
     def get_form_columns(cls):
-        return [
-            v for v in cls.get_params().values() if v.view_state & C.VIEW_STATE_CAN_EDIT
-        ]
+        return [v for v in cls.get_params().values()]
 
     @classmethod
     def set_resource(cls, path):

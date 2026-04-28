@@ -1,9 +1,16 @@
 from common.tool.export import OsUtil, System, ToolBase, GC
 from common.third_util.io.api import Api
-from common.util.export import File, logger
+from common.util.export import File, logger, time, md5
+import random
+
+THE_DEV_ZIP_PATH = "data/the_dev.zip"
+UPLOAD_ZIP_PATH = "data/upload/the_dev.zip"
 
 
 class Cli(ToolBase):
+    def load(self, name="Api", ip_port="", b64_pkg_num=8192 * 4):
+        self.api = Api(name).set_endpoint(f"http://{ip_port}")
+        self.b64_pkg_num = b64_pkg_num
 
     def npm_build(self):
         File("font/dist").remove()
@@ -12,21 +19,40 @@ class Cli(ToolBase):
     def package(self):
         f = File("./")
         f.zip(
-            "data/the_dev.zip",
+            THE_DEV_ZIP_PATH,
             targets=["font/dist", "common", "app/tool"],
             ignores=[".*__pycache__"],
         )
         logger.info("package")
 
-    def install(self, ip_port):
-        api = Api().set_endpoint(f"http://{ip_port}")
-        res = api.post_files(f"/app/manage/post_file", "data/the_dev.zip")
-        res1 = api.post(f"/app/manage/unzip", data=dict(path="data/upload/the_dev.zip"))
-        logger.map(res=res, res1=res1)
+    def upload(self):
+        self.api.post_files(f"/app/manage/post_file", THE_DEV_ZIP_PATH)
 
-    def restart(self, ip_port, config):
-        api = Api().set_endpoint(f"http://{ip_port}")
-        res = api.post(f"/app/manage/restart", data=dict(config=config))
+    def upload_base_64(self):
+        data = File(THE_DEV_ZIP_PATH).read_b64_data()
+        all_num = len(data) // self.b64_pkg_num
+        for idx in range(0, all_num + 1):
+            res = self.api.post(
+                f"/app/manage/post_files_base64",
+                dict(
+                    path=UPLOAD_ZIP_PATH,
+                    data=data[idx * self.b64_pkg_num : (idx + 1) * self.b64_pkg_num],
+                    cur_idx=idx,
+                    last_idx=all_num,
+                ),
+            )
+            logger.map(idx=idx, res=str(res)[:200], all_num=all_num)
+            if isinstance(res, bytes) and res.startswith(b"<!doctype ht"):
+                raise Exception(idx, res[:100], len(data))
+            # time.sleep(random.randint(2, 7))
+        logger.map(all_size=len(data), md5_check=md5(data))
+
+    def install(self):
+        res = self.api.post(f"/app/manage/unzip", data=dict(path=UPLOAD_ZIP_PATH))
+        logger.map(res=res)
+
+    def restart(self, config):
+        res = self.api.post(f"/app/manage/restart", data=dict(config=config))
         logger.map(res=res)
 
 

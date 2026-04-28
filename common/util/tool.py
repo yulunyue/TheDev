@@ -45,7 +45,9 @@ def base64_decode(s: str):
 
 
 def base64_encode(s: str):
-    return base64.b64encode(s.encode()).decode()
+    if isinstance(s, str):
+        s = s.encode()
+    return base64.b64encode(s).decode()
 
 
 def b64_code(s: str):

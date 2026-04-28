@@ -11,6 +11,7 @@ class CState664(AbState):
     h = 6
     in_row = 4
     STATE_STORE = dict()
+    name = "C664"
 
     @classmethod
     def set_board(cls, state=0) -> "Self":

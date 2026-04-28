@@ -386,6 +386,16 @@ class TestFileClassMethods(unittest.TestCase):
         file4 = File.new(self.test_file)
         self.assertIs(file3, file4)
 
+    def test_file_wb(self):
+        a = File("data/tmp/a.txt")
+        f = a.get_bin_writer("wb+")
+        f.write(b"123")
+        f.flush()
+        self.assertEqual(a.read_data(), b"123")
+        f.write(b"4")
+        f.flush()
+        self.assertEqual(a.read_data(), b"1234")
+
 
 if __name__ == "__main__":
     unittest.main()

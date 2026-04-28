@@ -2,7 +2,7 @@ import {
     Column, Row, Div, Constant, Node, web_dom,
     Button, FormRow, Search, web_socket, Ct, dialog, Select,
     Span, Input,
-    Data
+    Data, Util,
 } from "../../base/components/export";
 import { TodoContainer } from "./todo_container";
 
@@ -64,6 +64,10 @@ export class TodoMain extends Row {
         this.top_form.on_submit((type: string, value: any) => {
             this.load_todos()
             dialog.close()
+        }).on_mock_get_value((a: any) => {
+            return Util.extend(a, {
+                category: this.category_select.get_value()
+            })
         })
         this.category_select.on_change(() => this.load_todos())
         this.done_select.on_change(() => this.load_todos())
@@ -80,10 +84,8 @@ export class TodoMain extends Row {
         if (method == Constant.METHOD_INSERT) {
             this.top_form.set_btns({ [Constant.METHOD_INSERT]: "提交" })
             this.top_form.child_map.title.show()
-            this.top_form.child_map.user_id.show()
         } else {
             this.top_form.child_map.title.hide()
-            this.top_form.child_map.user_id.hide()
             this.top_form.set_btns({ [Constant.METHOD_EDIT]: "保存", [Constant.METHOD_DELETE]: "删除" })
         }
         this.top_form.set_value(t)
