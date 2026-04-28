@@ -27,3 +27,7 @@ install ip_port=1.14.97.154:10001
 ```bolun_restart
 restart production ip_port=1.14.97.154:10001
 ```
+```bolun_cicd
+cicd production ip_port=1.14.97.154:10001
+```
+

@@ -60,10 +60,10 @@ class Todo(FormBase):
         score_map = dict(study=1, entertainment=-1, life=2, sport=3, project=2)
         score = 0
         for v in models:
+            if v.category == "money":
+                money -= float(v.content.get_value())
             if v.category == category and v.done == done:
                 todos.append(v)
-            elif v.category == "money":
-                money += float(v.content.get_value())
             if v.done.get_value() and v.user_id == self.username:
                 score += score_map.get(v.category.get_value(), 0)
         return Node(childs=todos, value=dict(score=score, money=money))

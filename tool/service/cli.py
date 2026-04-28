@@ -55,6 +55,13 @@ class Cli(ToolBase):
         res = self.api.post(f"/app/manage/restart", data=dict(config=config))
         logger.map(res=res)
 
+    def cicd(self, config):
+        self.npm_build()
+        self.package()
+        self.upload_base_64()
+        self.install()
+        self.restart(config)
+
 
 if __name__ == "__main__":
     Api.enable_globel_log()

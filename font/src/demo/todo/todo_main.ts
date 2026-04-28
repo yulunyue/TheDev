@@ -60,6 +60,7 @@ export class TodoMain extends Row {
                 category: this.category_select.get_value(),
                 done: this.done_select.get_value()
             })
+
         })
         this.top_form.on_submit((type: string, value: any) => {
             this.load_todos()
@@ -73,12 +74,14 @@ export class TodoMain extends Row {
         this.done_select.on_change(() => this.load_todos())
     }
     load_todos(): void {
-        let category = this.category_select.get_value()
-        let done = this.done_select.get_value() === "true"
-        web_dom.post("/app/todo/web_search", { category: category, done: done }, (data: Node) => {
-            this.score_span.set_html(`分数:${data.value.score} 资产:${parseInt(data.value.money)}`)
-            this.todo_list.set_todos(data, this.on_to_do_change.bind(this))
-        })
+        web_dom.set_time_out(() => {
+            let category = this.category_select.get_value()
+            let done = this.done_select.get_value() === "true"
+            web_dom.post("/app/todo/web_search", { category: category, done: done }, (data: Node) => {
+                this.score_span.set_html(`分数:${data.value.score} 资产:${parseInt(data.value.money)}`)
+                this.todo_list.set_todos(data, this.on_to_do_change.bind(this))
+            })
+        }, 1000)
     }
     on_to_do_change(method: string, f: any, t: any) {
         if (method == Constant.METHOD_INSERT) {
@@ -97,7 +100,6 @@ export class TodoMain extends Row {
         })
         this.category_select.set_option({
             url: "/app/todo/category",
-            value: "study",
             id: "todo_category"
         })
         this.done_select.set_option({
@@ -106,7 +108,6 @@ export class TodoMain extends Row {
                 { title: "未完成", value: "false" }
             ],
             id: "todo_done",
-            value: "false"
         })
 
         Data.get_user_name((user_name: any) => {
