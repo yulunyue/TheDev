@@ -21,6 +21,7 @@ class TodoModel(FileConfig):
             study="学习",
             work="工作",
             project="项目",
+            money="账本",
             entertainment="娱乐",
             sport="运动",
             life="生活",
@@ -71,6 +72,8 @@ class Todo(FormBase):
                 f"category {category} not in {list(TodoModel.category.options.keys())} "
             )
         if type == C.METHOD_INSERT:
+            if category=="money":
+                value.update(content=float)
             if TodoModel.exist(key):
                 raise Exception(f"{key} exist")
             value.update(create_time=time.time(), update_time=time.time())
