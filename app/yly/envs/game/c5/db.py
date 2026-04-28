@@ -29,5 +29,9 @@ class Bd(FileConfig):
         cls = CHESS_MAP_CLS_FUNC[self.size.get_value()]
         return cls.set_board(self.records.get_value())
 
+    @classmethod
+    def get_form_columns(cls):
+        return [cls.name, cls.size, cls.p0, cls.p1]
+
 
 Bd.set_resource("data/game/chess.json")
