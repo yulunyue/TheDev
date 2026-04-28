@@ -18,12 +18,12 @@ package
 ```
 
 ```bolun_upload
-upload_base_64 ip=1.14.97.154:10001
+upload_base_64 ip_port=1.14.97.154:10001
 ```
 
 ```bolun_install
 install ip_port=1.14.97.154:10001
 ```
 ```bolun_restart
-restart ip_port=1.14.97.154:10001 config=production
+restart production ip_port=1.14.97.154:10001
 ```
