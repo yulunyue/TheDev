@@ -14,17 +14,17 @@ import {
 let COLORS = [Constant.COLOR_BALCK2, Constant.COLOR_WHITE2]
 export class Chess extends Column {
     g: Grid
-    pro: Progress
     top_form: FormColumn
     chess_width: number
     pre: Pre
     title: Title
     right_div: Div
+    mid_main: Row
     init_style(): void {
         super.init_style()
         this.full().set_center()
         this.chess_width = 400
-        this.top_form.set_input_width(60)
+        this.top_form.set_input_width(72)
         // this.middle.set_width(this.chess_width)
         this.g.set_style({
             width: this.chess_width,
@@ -36,17 +36,16 @@ export class Chess extends Column {
     init_node(): void {
         this.g = new Grid()
         this.top_form = new FormColumn()
-        this.pro = new Progress()
         this.pre = new Pre()
         this.right_div = new Row()
         this.title = new Title()
+        this.mid_main = new Row().add_childs([
+            this.top_form,
+            this.g
+        ])
         this.add_childs([
             new Div().set_size(1),
-            new Row().add_childs([
-                this.top_form,
-                this.g,
-                this.pro,
-            ]),
+            this.mid_main,
             this.right_div
         ])
     }
@@ -55,8 +54,8 @@ export class Chess extends Column {
         web_dom.post("/game/f5chess/play", {
             name: top_value.name,
             y: i, x: j,
-        }, () => {
-
+        }, (data) => {
+            this.show_data(data)
         })
 
     }
@@ -102,9 +101,14 @@ export class Chess extends Column {
     render(): void {
         this.top_form.set_option({
             url: "/game/f5chess",
-            id: "game_chess"
+            id: "game_chess_form"
+        }).on_change((key: string) => {
+            if (key == "name") {
+                this.draw()
+            }
         })
         this.title.set_html("info")
+        setTimeout(() => this.draw(), 500)
 
     }
 

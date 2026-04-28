@@ -3,7 +3,6 @@ from common.util.export import List, TypeVar, Self, C, functools
 
 class BaseModel:
     value = None
-    view_state = C.VIEW_SATTE_MAX
     can_is_null = True
     layout = None
 
@@ -27,12 +26,6 @@ class BaseModel:
 
     def not_null(self):
         self.can_is_null = False
-        return self
-
-    def disable_view_state(self, *states):
-        for d in states:
-            if self.view_state ^ d:
-                self.view_state ^= d
         return self
 
     def set_model(self, model):

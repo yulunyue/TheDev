@@ -23,7 +23,7 @@ export class FormRow extends Div {
         return this
     }
     on_mock_get_value(call: any) {
-        this.event_hander[Constant.EVENT_SUBMIT] = call
+        this.event_hander[Constant.EVENT_MOCK_GET_VALUE] = call
         return this
     }
     init_style(): void {
@@ -56,12 +56,6 @@ export class FormRow extends Div {
         return r
     }
     render_childs(childs: Node[]) {
-        for (var i = 0; i < childs.length; i++) {
-            let o = childs[i]
-            if (o.type == Constant.DOM_TYPE_SEARCH && !o.url) {
-                o.url = this.option.url + "/web_search"
-            }
-        }
         this.body.set_childs(childs, this.get_row.bind(this))
         this.child_map = {}
         for (var i = 0; i < childs.length; i++) {
@@ -130,7 +124,7 @@ export class FormRow extends Div {
             ret[key] = value
         }
         if (this.event_hander[Constant.EVENT_MOCK_GET_VALUE]) {
-            this.event_hander[Constant.EVENT_MOCK_GET_VALUE](ret)
+            return this.event_hander[Constant.EVENT_MOCK_GET_VALUE](ret)
         }
         return ret
     }

@@ -32,5 +32,8 @@ class Manage:
     def get_all_users(self):
         return list(self.io_map.keys())
 
+    def get_users_by_topic(self, topic_name):
+        return self.topics.get(topic_name, set())
+
 
 IO_MANAGE = Manage()

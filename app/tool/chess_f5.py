@@ -1,0 +1,57 @@
+from ..yly.envs.game.c5.db import Bd, ROUTE_PATH
+from ..yly.envs.game.c5.player.al import Al
+from common.tool.export import FontSearch, FormBase
+from common.util.export import IO_MANAGE, ApiBase, Node, C
+
+
+class FontBd(Bd):
+    @classmethod
+    def get_form_columns(cls):
+        return [cls.name, cls.size, cls.p0, cls.p1]
+
+
+AI_PLAYER = {"ad3", "mc100"}
+
+
+class ChessF5(FormBase, ApiBase):
+    model = FontBd
+    ROUTE_PATH = ROUTE_PATH
+
+    def search_name(self, *args, **kw):
+        return FontSearch().add_node(FontBd.instance_map.keys())
+
+    def search_algo(self, *args):
+        return FontSearch.add_node(
+            list(AI_PLAYER) + IO_MANAGE.get_users_by_topic(C.TOPIC_F5_CHESS)
+        )
+
+    def web_submit(self, type, value, **kw):
+        c = Bd.insert(**value)
+        childs = []
+        if type == "save":
+            pass
+        elif type == "simulation":
+            if c.p0.get_value() not in AI_PLAYER or c.p1.get_value() not in AI_PLAYER:
+                raise Exception(f"只有玩家{AI_PLAYER}可以模拟")
+            s = c.get_state()
+            al = Al().set_state(s)
+            al.actor([c.p0.get_value(), c.p1.get_value()])
+            childs = [a.action for a in al.record_actions]
+        return Node(childs=childs)
+
+    def play(self, name, y, x, **kw):
+        c: Bd = Bd.get(name)
+        board = c.get_state()
+        idx = board.env.yx_to_idx(y, x)
+        if idx not in board.can_moves:
+            raise Exception(f"位置({y}, {x})不可用")
+        records = c.records.get_value()
+        records.append(idx)
+        c.records.set_value(records)
+        c.save()
+        return dict(
+            player_0=c.p0.get_value(),
+            player_1=c.p1.get_value(),
+            records=records,
+            size=board.env.width,
+        )

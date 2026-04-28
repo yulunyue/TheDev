@@ -20,6 +20,7 @@ class TodoModel(FileConfig):
         .set_options(
             study="学习",
             work="工作",
+            project="项目",
             entertainment="娱乐",
             sport="运动",
             life="生活",
@@ -37,7 +38,7 @@ class TodoModel(FileConfig):
 
     @classmethod
     def get_form_columns(cls):
-        return [cls.user_id, cls.category, cls.title, cls.content, cls.done]
+        return [cls.title, cls.content, cls.done]
 
 
 TodoModel.set_resource("config/setting/todo.json")
@@ -54,13 +55,13 @@ class Todo(FormBase):
         models: List[TodoModel] = sorted(
             self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
         )
-        score_map = dict(study=1, work=2, entertainment=-1, life=2, sport=3)
+        score_map = dict(study=1, entertainment=-1, life=2, sport=3, project=2)
         score = 0
         for v in models:
             if v.category == category and v.done == done:
                 todos.append(v)
             if v.done.get_value() and v.user_id == self.username:
-                score += score_map[v.category.get_value()]
+                score += score_map.get(v.category.get_value(), 0)
         return Node(childs=todos, value=score)
 
     def hander(self, key, type, value: dict):
@@ -74,9 +75,6 @@ class Todo(FormBase):
                 raise Exception(f"{key} exist")
             value.update(create_time=time.time(), update_time=time.time())
         elif type == C.METHOD_EDIT:
-            user_id = TodoModel.query(key).user_id.get_value()
-            if user_id and self.username != user_id:
-                raise Exception(f"{self.username} {user_id}")
             value.update(update_time=time.time(), user_id=self.username)
         elif type != C.METHOD_DELETE:
             raise Exception(type)

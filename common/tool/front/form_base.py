@@ -38,17 +38,6 @@ class FormBase(ApiBase):
     def hander(self, key, type, value):
         return value
 
-    def web_search(self, key=None, name=None, **kw):
-        return Node(
-            childs=[
-                dict(
-                    title=v._id,
-                    value=v,
-                )
-                for v in self.__class__.model.all()
-            ]
-        )
-
     def to_table_view(self):
         cls = self.__class__.model
         return FrontTable().set_header(*cls.get_params().values()).set_body(cls.all())
