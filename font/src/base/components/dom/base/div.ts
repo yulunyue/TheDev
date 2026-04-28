@@ -280,6 +280,9 @@ export class Div {
             this.childs[idx].hide()
             idx += 1
         }
+        if (this.option.id) {
+            web_dom.get_loacl_str(this.option.id, (v: any) => this.set_value(v))
+        }
         return this
 
     }

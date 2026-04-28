@@ -53,6 +53,7 @@ class Todo(FormBase):
 
     def web_search(self, category, done, **kw):
         todos = []
+        money = 342700
         models: List[TodoModel] = sorted(
             self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
         )
@@ -61,9 +62,11 @@ class Todo(FormBase):
         for v in models:
             if v.category == category and v.done == done:
                 todos.append(v)
+            elif v.category == "money":
+                money += float(v.content.get_value())
             if v.done.get_value() and v.user_id == self.username:
                 score += score_map.get(v.category.get_value(), 0)
-        return Node(childs=todos, value=score)
+        return Node(childs=todos, value=dict(score=score, money=money))
 
     def hander(self, key, type, value: dict):
         category = value.get("category")
@@ -71,9 +74,9 @@ class Todo(FormBase):
             raise Exception(
                 f"category {category} not in {list(TodoModel.category.options.keys())} "
             )
+        if category == "money":
+            value.update(content=float(value["content"]))
         if type == C.METHOD_INSERT:
-            if category=="money":
-                value.update(content=float)
             if TodoModel.exist(key):
                 raise Exception(f"{key} exist")
             value.update(create_time=time.time(), update_time=time.time())

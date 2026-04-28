@@ -76,7 +76,7 @@ export class TodoMain extends Row {
         let category = this.category_select.get_value()
         let done = this.done_select.get_value() === "true"
         web_dom.post("/app/todo/web_search", { category: category, done: done }, (data: Node) => {
-            this.score_span.set_html("分数: " + data.value)
+            this.score_span.set_html(`分数:${data.value.score} 资产:${parseInt(data.value.money)}`)
             this.todo_list.set_todos(data, this.on_to_do_change.bind(this))
         })
     }
@@ -97,13 +97,15 @@ export class TodoMain extends Row {
         })
         this.category_select.set_option({
             url: "/app/todo/category",
-            value: "study"
+            value: "study",
+            id: "todo_category"
         })
         this.done_select.set_option({
             childs: [
                 { title: "已完成", value: "true" },
                 { title: "未完成", value: "false" }
             ],
+            id: "todo_done",
             value: "false"
         })
 

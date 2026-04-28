@@ -21,7 +21,7 @@ export class Checkbox extends Div {
         this.set_value(this.option.value)
     }
     set_value(value: any) {
-        this.el.checked = Boolean(value)
+        this.el.checked = (value + "") == "true"
         return this
     }
     get_value() {

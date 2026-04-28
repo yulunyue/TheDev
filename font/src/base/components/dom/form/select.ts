@@ -1,6 +1,6 @@
 import { Div } from "../div";
 import { Constant } from "../../export";
-import web from "../../../web/web_dom"
+import web_dom from "../../../web/web_dom"
 import { Node, to_node } from "../../../web/cls";
 export class SeOption extends Div {
     el: HTMLOptionElement
@@ -25,7 +25,6 @@ export class Select extends Div {
 
     }
     init_style(): void {
-
         this.set_style({
             minWidth: Constant.INPUT_STRING_MIN_WIDTH,
             margin: Constant.DEFAULT_MARGIN,
@@ -36,8 +35,12 @@ export class Select extends Div {
         })
     }
     init_event(): void {
-        web.bind_change(this.el, () => {
-            this.do_change(this.option.key, null, this.get_value())
+        web_dom.bind_change(this.el, () => {
+            let value = this.get_value()
+            if (this.option.id) {
+                web_dom.set_local(this.option.id, value)
+            }
+            this.do_change(this.option.key, null, value)
         })
     }
 
@@ -78,7 +81,7 @@ export class Select extends Div {
     }
     render_option(): void {
         if (this.option.url) {
-            web.post(this.option.url, {}, (node: Node) => {
+            web_dom.post(this.option.url, {}, (node: Node) => {
                 this.option.childs = to_node(node).childs
                 this.set_childs(this.option.childs, (v: any) => new SeOption().set_option(v))
             })
