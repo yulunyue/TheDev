@@ -9,7 +9,8 @@ import {
     Pre,
     Column,
     Title,
-    Data
+    Data,
+    web_socket
 } from "../../base/components/export";
 let COLORS = [Constant.COLOR_BALCK2, Constant.COLOR_WHITE2]
 export class Chess extends Column {
@@ -27,14 +28,13 @@ export class Chess extends Column {
         super.init_style()
         this.full().set_center()
         this.chess_width = 400
-        this.bottom_form.set_input_width(72)
+        this.bottom_form.set_input_width(80)
         this.g.set_style({
             width: this.chess_width,
             height: this.chess_width,
             // border: "1px solid #000"
         })
-        this.name_search.set_width(80)
-        this.head_column
+        this.name_search.set_width(96)
         this.title.set_size(1).set_style({ textAlign: "right" })
         this.right_div.set_size(1)
         this.left_div.set_size(1)
@@ -63,9 +63,8 @@ export class Chess extends Column {
         ])
     }
     hander_on_click(y: number, x: number, i: number, j: number) {
-        let top_value = this.bottom_form.get_value()
         web_dom.post("/game/f5chess/play", {
-            name: top_value.name,
+            name: this.name_search.get_value(),
             y: i, x: j,
         }, (data) => {
             this.show_data(data)
@@ -115,13 +114,15 @@ export class Chess extends Column {
         console.log(key, op)
     }
     render(): void {
-
-        this.bottom_form.set_uri("/game/f5chess/to_form_column_view")
+        this.bottom_form.set_uri("/game/f5chess/to_form_column_view", () => {
+            this.bottom_form.child_map.size.set_flex(1)
+        })
         this.name_search.set_option({
             url: "/game/f5chess/search_name",
             id: "game_chess_form_search"
         })
         this.title.set_html("info")
+        web_socket.sub()
 
 
     }

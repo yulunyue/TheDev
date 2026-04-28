@@ -107,10 +107,17 @@ export class Div {
         })
     }
     set_flex_style_column() {
-        this.set_style({
+        return this.set_style({
             display: "flex",
             flexDirection: "row",
             alignItems: "center"
+        })
+    }
+    set_flex_style_row() {
+        return this.set_style({
+            display: "flex",
+            flexDirection: "column",
+            // alignItems: "center"
         })
     }
     show() {
@@ -337,9 +344,10 @@ export class Div {
         this.el.innerHTML = text
         return this
     }
-    set_uri(s: string) {
+    set_uri(s: string, call?: any) {
         web_dom.post(s, {}, (data: Node) => {
             this.set_option(data)
+            call?.()
         })
         return this
     }

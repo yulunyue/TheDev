@@ -1,6 +1,7 @@
 import { FormContainer } from "./container";
 import { FormColumn } from "./form_column";
 import { not_null, Node } from "../../../web/cls"
+import { Div } from "../div";
 export class FormRow extends FormColumn {
     init_style(): void {
         this.set_style({ display: "flex", flexDirection: "column" })
@@ -14,5 +15,8 @@ export class FormRow extends FormColumn {
         return super.get_row(o).set_style({
             display: "flex", flexDirection: "column",
         })
+    }
+    render_chilld(d: Div) {
+        return d.set_flex_style_row()
     }
 }

@@ -27,7 +27,7 @@ class ChessF5(FormBase, ApiBase):
         )
 
     def search_algo(self, *args, **kw):
-        return FontSearch.add_node(
+        return FontSearch().add_node(
             list(AI_PLAYER) + list(IO_MANAGE.get_users_by_topic(C.TOPIC_F5_CHESS))
         )
 

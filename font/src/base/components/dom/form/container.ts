@@ -33,9 +33,6 @@ export class FormContainer extends Div {
         return super.set_option(option)
     }
     render_option(): this {
-        if (this.option.data && this.option.data.layout) {
-            this.set_flex_style_column()
-        }
         this.container.set_option(this.option)
         return this
     }

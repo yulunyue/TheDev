@@ -9,7 +9,7 @@ import F from "../../../tool/fun";
 import { FlexColumn } from "../base/row";
 export class FormColumn extends FlexRow {
     header: Div
-    body: Div
+    body: FlexRow
     footer: FlexRow
     _submit_call_back: any
     input_width: number
@@ -27,10 +27,11 @@ export class FormColumn extends FlexRow {
         this.set_style({
             // textAlign: "center"
         })
+        super.init_style()
     }
     init_node(): void {
         this.header = new Div()
-        this.body = new Div()
+        this.body = new FlexRow()
         this.footer = new FlexRow()
         this.foot_btns = {}
         this.add_childs([
@@ -52,13 +53,16 @@ export class FormColumn extends FlexRow {
         }
         return r
     }
+    render_chilld(d: Div) {
+        return d.set_flex_style_column()
+    }
     render_childs(childs: Node[]) {
         this.body.set_childs(childs, this.get_row.bind(this))
         this.child_map = {}
         for (var i = 0; i < childs.length; i++) {
             let o = childs[i]
             this.body.childs[i].set_option(o).on_change(this.do_change.bind(this))
-            this.child_map[o.key] = this.body.childs[i]
+            this.child_map[o.key] = this.render_chilld(this.body.childs[i])
         }
         if (this.option.id) {
             web_dom.get_local(this.option.id, this.set_value.bind(this))

@@ -14,7 +14,7 @@ ROUTE_PATH = "/game/f5chess"
 
 class Bd(FileConfig):
     name = SearchModel(default_value="default").set_url(f"{ROUTE_PATH}/search_name")
-    size = SelectModel(default_value=CState333.__name__).set_options(
+    size = SelectModel(default_value=CState333.name).set_options(
         *CHESS_MAP_CLS_FUNC.keys()
     )
     records = ListModel()

@@ -4,8 +4,8 @@ import util from "../tool/util"
 
 
 class Constant {
-    DEFAULT_MARGIN = 4
-    DEFAULT_PADDING = 3
+    DEFAULT_MARGIN = 2
+    DEFAULT_PADDING = 2
     DEFAULT_LINE_HEIGHT = 40
 
     MOCK_KEY = "MOCK_KEY"

@@ -1,4 +1,5 @@
 
+import data from "src/base/tool/data";
 import {
     Div, Search, Button, TextAreaRich,
     Table, Util, dialog,
@@ -32,7 +33,11 @@ let DEV_FUNC = {
                         value: "b"
                     }]
                 }
-            ]
+            ], data: {
+                btns: {
+                    submit: "提交"
+                }
+            }
         }
         let pre = new Pre().set_html("pre")
         function fm_init(fm: FormRow, ops: Node) {
@@ -45,6 +50,7 @@ let DEV_FUNC = {
                 }
                 pre.set_value({ key: key, value: value, data: data })
             })
+            fm.set_style({ border: "1px solid #000" })
             ops && fm.set_option(ops)
             return fm
         }
@@ -54,9 +60,9 @@ let DEV_FUNC = {
             new Column().add_childs([
                 fm_init(new FormRow(), op),
                 pre.set_size(1),
-                fm_init(new FormRow().set_uri("/app/user"), null)
+                fm_init(new FormRow().set_uri("/app/user/to_form_row_view"), null)
             ]),
-
+            fm_init(new FormColumn().set_uri("/app/user/to_form_column_view"), null)
         ])
     },
     layout() {
