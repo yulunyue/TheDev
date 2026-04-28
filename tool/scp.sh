@@ -7,10 +7,10 @@ REMOTE_DIR="/root/TheDev"
 
 if [ -d "$LOCAL_PATH" ]; then
     echo "$LOCAL_PATH 是目录"
-    scp -r "$LOCAL_PATH" "$REMOTE:$REMOTE_DIR/"
+    scp -r "$LOCAL_PATH" "$REMOTE:$REMOTE_DIR/$LOCAL_PATH"
 elif [ -f "$LOCAL_PATH" ]; then
     echo "$LOCAL_PATH 是普通文件"
-    scp "$LOCAL_PATH" "$REMOTE:$REMOTE_DIR/"
+    scp "$LOCAL_PATH" "$REMOTE:$REMOTE_DIR/$LOCAL_PATH"
 else
     echo "$LOCAL_PATH 不存在或不是文件/目录"
     exit 1
