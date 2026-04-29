@@ -10,7 +10,6 @@ from common.util.export import (
     time,
     Type,
 )
-
 from .task_config import TaskConfig
 
 

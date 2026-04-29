@@ -3,7 +3,7 @@ from ..base_class.storege.file_config import (
 )
 from ..base_class.base_model import StrModel, NumberModel, DictModel
 from ..os_util import OsUtil
-from common.util.export import time, File, Module, traceback, C
+from common.util.export import time, File, Module, traceback, C, logger
 
 
 class TaskConfig(FileConfig):
@@ -13,6 +13,10 @@ class TaskConfig(FileConfig):
     run_model = DictModel()
     run_num = NumberModel(default_value=0)
     result = DictModel()
+
+    @classmethod
+    def set_resource(cls, path):
+        return super().set_resource(path)
 
     def __init__(self) -> None:
         super().__init__()
@@ -42,13 +46,15 @@ class TaskConfig(FileConfig):
         return ret
 
     def exec(self):
-        if self.can_run():
+        if not self.can_run():
             return
         code = C.CODE_200
         try:
             last_begin_t = time.time()
             args = self.args.get_value().split(",")
-            value = self.get_call()(*args)
+            f = self.get_call()
+            logger.map(args=args, f=f)
+            value = f(*args)
         except Exception as e:
             code = C.CODE_500
             value = traceback.format_exc().split("\n")

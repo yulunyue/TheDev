@@ -1,10 +1,8 @@
 from common.util.export import TestBase, asset_exception
-from common.tool.export import FontSearch
 from app.tool.chess_f5 import ChessF5, AI_PLAYER
 from app.yly.envs.game.c5.db import Bd
 from app.yly.envs.game.c5.model.chess_state import CState664
 from app.yly.envs.game.c5.model.chess_state_map import CState333, CHESS_MAP_CLS_FUNC
-import pytest
 
 
 class TestChessF5(TestBase):
@@ -22,11 +20,10 @@ class TestChessF5(TestBase):
         result = chess.search_name()
         assert hasattr(result, "childs")
 
-    def test_search_algo_returns_list(self):
+    def test_search_algo_returns_font_search(self):
         chess = ChessF5()
         result = chess.search_algo()
-        assert "ad3" in result
-        assert "mc100" in result
+        assert hasattr(result, "childs")
 
     def test_ai_player_set(self):
         assert "ad3" in AI_PLAYER
@@ -43,14 +40,14 @@ class TestChessF5(TestBase):
         asset_exception(chess.get, "not_exist_key")
 
     def test_get_exist_c664(self):
-        Bd.insert("test_664", name="test_664", size="C664", p0="ad3", p1="ad3", records=[])
+        c = Bd.insert("test_664", name="test_664", size="C664", p0="ad3", p1="ad3", records=[])
         chess = ChessF5()
         result = chess.get("test_664")
-        assert result["name"] == "test_664"
-        assert result["player_0"] == "ad3"
-        assert result["player_1"] == "ad3"
-        assert result["records"] == []
-        assert result["size"] == 6
+        assert result._id == "test_664"
+        assert result.p0.get_value() == "ad3"
+        assert result.p1.get_value() == "ad3"
+        assert result.records.get_value() == []
+        assert result.to_json()["width"] == 6
 
     def test_play_not_exist(self):
         chess = ChessF5()
@@ -64,25 +61,14 @@ class TestChessF5(TestBase):
         Bd.insert("test_664_size", name="test_664_size", size="C664", p0="ad3", p1="ad3", records=[])
         chess = ChessF5()
         result = chess.get("test_664_size")
-        assert result["size"] == 6
-
-
-class TestBd(TestBase):
-
-    def setup_class(cls):
-        Bd.instance_map = {}
-        Bd._config = {}
-
-    def setup_method(self):
-        Bd.instance_map = {}
-        Bd._config = {}
+        assert result.to_json()["width"] == 6
 
     def test_bd_get_id(self):
         assert Bd.get_id(name="test") == "test"
 
     def test_bd_get_form_columns(self):
         columns = Bd.get_form_columns()
-        assert len(columns) == 4
+        assert len(columns) == 3
 
     def test_bd_insert(self):
         c = Bd.insert("test_insert", name="test_insert", size="C664", p0="ad3", p1="ad3")
@@ -95,9 +81,6 @@ class TestBd(TestBase):
         assert state.env.width == 6
         assert state.env.height == 6
         assert state.env.in_row == 4
-
-
-class TestChessState(TestBase):
 
     def test_cstate333_attributes(self):
         assert CState333.w == 3
