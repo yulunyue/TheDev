@@ -59,9 +59,12 @@ class ChessF5(FormBase, ApiBase):
         records.append(idx)
         c.records.set_value(records)
         c.save()
-        return dict(
-            player_0=c.p0.get_value(),
-            player_1=c.p1.get_value(),
-            records=records,
-            size=board.env.width,
+        IO_MANAGE.send(
+            "TOPIC_GAME_F5_CHESS",
+            dict(
+                player_0=c.p0.get_value(),
+                player_1=c.p1.get_value(),
+                records=records,
+                size=board.env.width,
+            ),
         )

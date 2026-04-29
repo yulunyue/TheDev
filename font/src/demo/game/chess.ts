@@ -122,9 +122,9 @@ export class Chess extends Column {
             id: "game_chess_form_search"
         })
         this.title.set_html("info")
-        // web_socket.sub()
+        web_socket.sub(Constant.TOPIC_TASK_UPDATE_MSG, () => {
 
-
+        })
     }
 
 }

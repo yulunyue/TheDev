@@ -86,6 +86,7 @@ class Constant {
     METHOD_SEND_TO = "send_to"
     METHOD_SUB = "sub"
     TOPIC_TASK_UPDATE_MSG = "TOPIC_TASK_UPDATE_MSG"
+    TOPIC_GAME_F5_CHESS = "TOPIC_GAME_F5_CHESS"
     TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
 }
 export default new Constant()
