@@ -4,7 +4,7 @@ import util from "../tool/util"
 
 
 class Constant {
-    DEFAULT_MARGIN = 2
+    DEFAULT_MARGIN = 4
     DEFAULT_PADDING = 2
     DEFAULT_LINE_HEIGHT = 40
 
@@ -78,6 +78,7 @@ class Constant {
     username = "username"
     METHOD_DELETE = "DELETE"
     METHOD_EDIT = "EDIT"
+    METHOD_CLONE = "CLONE"
     METHOD_FINISH = "FINISH"
     METHOD_INSERT = "INSERT"
     METHOD_RUN = "RUN"

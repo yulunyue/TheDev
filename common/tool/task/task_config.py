@@ -53,7 +53,6 @@ class TaskConfig(FileConfig):
             last_begin_t = time.time()
             args = self.args.get_value().split(",")
             f = self.get_call()
-            logger.map(args=args, f=f)
             value = f(*args)
         except Exception as e:
             code = C.CODE_500

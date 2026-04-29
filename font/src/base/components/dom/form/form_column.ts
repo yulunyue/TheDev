@@ -27,6 +27,7 @@ export class FormColumn extends FlexRow {
         this.set_style({
             // textAlign: "center"
         })
+
         super.init_style()
     }
     init_node(): void {

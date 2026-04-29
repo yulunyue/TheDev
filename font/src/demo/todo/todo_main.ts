@@ -91,7 +91,11 @@ export class TodoMain extends Row {
             this.top_form.child_map.title.show()
         } else {
             this.top_form.child_map.title.hide()
-            this.top_form.set_btns({ [Constant.METHOD_EDIT]: "保存", [Constant.METHOD_DELETE]: "删除" })
+            this.top_form.set_btns({
+                [Constant.METHOD_EDIT]: "保存",
+                [Constant.METHOD_CLONE]: "复制",
+                [Constant.METHOD_DELETE]: "删除"
+            })
         }
         this.top_form.set_value(t)
         dialog.open(this.top_form)

@@ -76,18 +76,30 @@ class Todo(FormBase):
 
     def hander(self, key, type, value: dict):
         category = value.get("category")
-        if category not in TodoModel.category.options:
+        now_time = time.time()
+        if category not in self.model.category.options:
             raise Exception(
                 f"category {category} not in {list(TodoModel.category.options.keys())} "
             )
         if category == "money":
             value.update(content=float(value["content"]))
         if type == C.METHOD_INSERT:
-            if TodoModel.exist(key):
+            if self.model.exist(key):
                 raise Exception(f"{key} exist")
-            value.update(create_time=time.time(), update_time=time.time())
+            value.update(create_time=now_time)
         elif type == C.METHOD_EDIT:
-            value.update(update_time=time.time(), user_id=self.username)
+            value.update(update_time=now_time, user_id=self.username)
+        elif type == C.METHOD_CLONE:
+            content = value["content"]
+            if not content or self.model.exist(content):
+                raise Exception(f"contnet is error {content}")
+            self.model.query(value["title"]).update(
+                done=True, content=f"NEXT:{content}", update_time=now_time
+            )
+            self.model.insert(
+                content, title=content, category=category, create_time=now_time
+            )
+            self.model.save_to_local()
         elif type != C.METHOD_DELETE:
             raise Exception(type)
         return value

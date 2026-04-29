@@ -25,14 +25,13 @@ class FormBase(ApiBase):
             return Node()
         if type == C.METHOD_INSERT:
             s = self.model.insert(_id, **value)
+            s.save()
         elif type == C.METHOD_DELETE:
             s = self.model.query(_id).delete()
+            s.save()
         elif type == C.METHOD_EDIT:
             s = self.model.query(_id).update(**value)
-        else:
-            raise Exception(type, value)
-
-        s.save()
+            s.save()
         return Node()
 
     def hander(self, key, type, value):

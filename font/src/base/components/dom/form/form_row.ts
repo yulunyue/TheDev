@@ -10,6 +10,7 @@ export class FormRow extends FormColumn {
             justifyContent: "space-between",
             // borderBottom: "1px solid #000"
         }).set_size(1)
+        this.footer.set_style({ justifyContent: "space-between" })
     }
     get_row(o: Node): FormContainer {
         return super.get_row(o).set_style({
