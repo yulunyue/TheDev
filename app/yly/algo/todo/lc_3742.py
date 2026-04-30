@@ -1,30 +1,40 @@
-from common.util.export import List, MockCf
+from common.util.export import List, MockCf, defaultdict, CT
 
 
 class Solution(MockCf):
     def get_cases(self):
-        return dict(case0=dict(grid=[[0, 1], [2, 0]], k=1, expected=2))
+        return dict(
+            case0=dict(
+                grid=[
+                    [0, 1],
+                    [2, 0],
+                ],
+                k=1,
+                expected=2,
+            ),
+            case1=dict(grid=[[0, 1], [1, 2]], k=1, expected=-1),
+        )
 
     def maxPathScore(self, grid: List[List[int]], k: int) -> int:
         n, m = len(grid), len(grid[0])
-        q = [[0, 0, {0: grid[0][0]}]]
-        while q:
-            q, h = [], q
-            for y, x, a in h:
-                if y == n - 1 and x == m - 1:
-                    return max(a.values())
-                uv = grid[y][x]
-                for dy, dx in [[0, 1], [1, 0]]:
-                    ny, nx = y + dy, x + dx
-                    if ny >= n or nx >= m or nx < 0 or ny < 0:
-                        continue
-                    u = {}
-                    uk = 1 if uv else 0
-                    for ck, cv in a.items():
-                        if uk + ck <= k:
-                            u[uk + ck]
-                    if u:
-                        q.append([ny, nx, u])
-        return -1
+        dt = defaultdict(lambda: -CT.inf)
+        dt[0, 0, 0] = 0
+        for i in range(n):
+            for j in range(m):
+                v = grid[i][j]
+                for k1 in range(1, k + 1):
+                    k2 = k1 - 1 if v else k1
+                    if i == 0 and j == 0:
+                        dt[i, j, k1] = 0
+                    elif i == 0:
+                        dt[i, j, k1] = dt[i, j - 1, k2] + v
+                    elif j == 0:
+                        dt[i, j, k1] = dt[i - 1, j, k2] + v
+                    else:
+                        dt[i, j, k1] = max(dt[i - 1, j, k2], dt[i, j - 1, k2]) + v
+
+        # self.log(dt=dict(dt))
+        ans = dt[n - 1, m - 1, k]
+        return -1 if ans == -CT.inf else ans
 
     execute = maxPathScore
