@@ -86,9 +86,13 @@ class Todo(FormBase):
         if type == C.METHOD_INSERT:
             if self.model.exist(key):
                 raise Exception(f"{key} exist")
-            value.update(create_time=now_time)
+            value.update(create_time=now_time,user_id=self.username)
         elif type == C.METHOD_EDIT:
-            value.update(update_time=now_time, user_id=self.username)
+            d=self.model.query(value["title"])
+            user_id=d.user_id.get_value()
+            if user_id and user_id!=self.username:
+                raise Exception("not allow")
+            value.update(update_time=now_time,user_id=self.username)
         elif type == C.METHOD_CLONE:
             content = value["content"]
             if not content or self.model.exist(content):
@@ -97,7 +101,7 @@ class Todo(FormBase):
                 done=True, content=f"NEXT:{content}", update_time=now_time
             )
             self.model.insert(
-                content, title=content, category=category, create_time=now_time
+                content, title=content, category=category, create_time=now_time,user_id=self.username
             )
             self.model.save_to_local()
         elif type != C.METHOD_DELETE:
