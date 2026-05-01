@@ -6,7 +6,7 @@ import time
 class DateModel(BaseModel):
     def set_value(self, value: str):
         if value is None or not value:
-            value = time.time()
+            value = ""
         if not isinstance(value, str):
             value = time_format(value)
         return super().set_value(value)
