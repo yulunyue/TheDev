@@ -14,6 +14,17 @@ class Solution:
               lv=v//2
               ct+=1
           nums[i]=[lv,ct]
-          
+      ans=[]
+      for l,r,k in queries:
+          lv,_=nums[l]
+          rv,rt=nums[r]:
+          if k<lv:
+              d=k*2
+          elif k>rv:
+              d=(k+rt-nums[l-1][1])*2
+          else:
+              for i in range(l,r+1):
+        
+
 
 
