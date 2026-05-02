@@ -11,7 +11,8 @@ export class Data {
                 }]
             }).set_btns({
                 login: "登录"
-            }).on_submit((type: string, data: any) => {
+            }).on_submit((type: string) => {
+                let data = t.get_value()
                 web_dom.set_local(Constant.username, data.username)
                 call(data.username)
                 dialog.close()
