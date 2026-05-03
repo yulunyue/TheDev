@@ -3,7 +3,10 @@ from common.util.export import List, MockCf
 
 class Solution(MockCf):
     """
-    给定一个长度为n的数组nums，和一个querys么（l，r，k）数组，对于每一个nums[l，r+1]
+    给定一个长度为n的数组nums
+    一个querys么（l，r，k）数组，
+    对于每一个q=nums[l，r+1]
+    我们需要找到第大的偶数，这个偶数不在q中
     """
 
     def get_cases(self):
@@ -29,15 +32,19 @@ class Solution(MockCf):
         ans = []
         for l, r, k in queries:
             lv, _ = nums[l]
+            lt=0 if l==0 else nums[l-1][1]
             rv, rt = nums[r]
             if k < lv:
-                d = k * 2
+                d = k
             elif k > rv:
-                d = (k + rt - nums[l - 1][1]) * 2
+                d = k + rt -lt
             else:
+                d=0
                 for i in range(l, r + 1):
-                    pass
-            ans.append(d)
+                    cv,ct=nums[i]
+                    if ct-lt==k-lv:
+                        d=ct-lt
+            ans.append(d*2)
         return ans
 
     execute = kthRemainingInteger
