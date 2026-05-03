@@ -21,4 +21,4 @@ RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r re
 EXPOSE 5000
 
 # 7. 默认启动命令
-CMD ["python", "main.py", "dev"]
+CMD ["base", "run.sh"]
