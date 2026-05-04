@@ -21,29 +21,25 @@ class Solution(MockCf):
     def kthRemainingInteger(
         self, nums: list[int], queries: list[list[int]]
     ) -> list[int]:
-        n = len(nums)
-        lv = 0
-        ct = 0
+        ct = []
         for i, v in enumerate(nums):
             if v % 2 == 0:
                 lv = v // 2
-                ct += 1
-            nums[i] = [lv, ct]
+                ct.append(lv)
+            nums[i] = len(ct)-1
         ans = []
         for l, r, k in queries:
-            lv, _ = nums[l]
-            lt=0 if l==0 else nums[l-1][1]
-            rv, rt = nums[r]
-            if k < lv:
+            li,ri = nums[l],nums[r]
+            if k < ct[li]:
                 d = k
-            elif k > rv:
-                d = k + rt -lt
+            elif k > ct[ri]:
+                d = k + ri -li+1
             else:
                 d=0
-                for i in range(l, r + 1):
-                    cv,ct=nums[i]
-                    if ct-lt==k-lv:
-                        d=ct-lt
+                for i in range(li, ri + 1):
+                    c = ct[i]-ct[li]-(ri-li)
+                    if c+nums[li]>=k:
+                        break
             ans.append(d*2)
         return ans
 
