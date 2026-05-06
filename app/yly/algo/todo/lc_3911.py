@@ -1,4 +1,9 @@
 from common.util.export import List, MockCf, CT, bisect
+from common.algo.base.tree.segtree import SegTreeNode
+
+
+class T(SegTreeNode):
+    pass
 
 
 class Solution(MockCf):
@@ -30,6 +35,7 @@ class Solution(MockCf):
         idx = [[None, None] for _ in range(n)]
         lv, rv = 0, CT.inf
         ct = [0]
+        self.queries = queries
         for i in range(n):
             j = n - 1 - i
             iv, jv = nums[i], nums[j]
@@ -39,7 +45,16 @@ class Solution(MockCf):
                 rv = jv // 2
             idx[i][0], idx[j][1] = lv, rv
             ct.append(ct[-1] + (iv % 2 == 0))
+        return self.h2()
 
+    def h2(self, queries):
+        ans = [0] * len(self.queries)
+        t = T()
+        for i, (l, r, k) in enumerate(self.queries):
+            pass
+        return ans
+
+    def h1(self):
         ans = [0] * len(queries)
         # self.log(nums=[0 if v % 2 else v // 2 for v in nums], idx=idx, ct=ct)
         for i, (l, r, k) in enumerate(queries):
