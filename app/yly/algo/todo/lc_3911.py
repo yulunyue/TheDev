@@ -31,12 +31,12 @@ class Solution(MockCf):
     def kthRemainingInteger(
         self, nums: list[int], queries: list[list[int]]
     ) -> list[int]:
-        n = len(nums)
-        self.idx = [[None, None] for _ in range(n)]
+        self.n = len(nums)
+        self.idx = [[None, None] for _ in range(self.n)]
         lv, rv = 0, CT.inf
         self.ct = [0]
         self.queries = queries
-        for i in range(n):
+        for i in range(self.n):
             j = n - 1 - i
             iv, jv = nums[i], nums[j]
             if iv % 2 == 0:
@@ -49,14 +49,14 @@ class Solution(MockCf):
 
     def h2(self):
         ans = [0] * len(self.queries)
-        t = T()
+        t = T(self.n-1)
         for i, (l, r, k) in enumerate(self.queries):
             _, lr = self.idx[l]
             d = lr - 1
             if d >= k:
                 ans[i] = k * 2
                 continue
-            t.query()
+            t.query_first()
 
         return ans
 
