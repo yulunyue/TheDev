@@ -3,7 +3,35 @@ from common.algo.base.tree.segtree import SegTreeNode
 
 
 class T(SegTreeNode):
-    pass
+    def load(self, pres):
+        self.pres = pres
+        self.value = [None] * self.size
+
+    def do(self, i, L, R, *v):
+        self.value[i] = self.pres[R + 1] - self.pres
+
+
+from bisect import bisect_left
+
+
+class Solution:
+    def kthRemainingInteger(
+        self, nums: list[int], queries: list[list[int]]
+    ) -> list[int]:
+        N = len(nums)
+        count = [0] * (N + 1)
+        for i, v in enumerate(nums):
+            count[i + 1] = count[i] + (v % 2 == 0)
+        result = []
+        values = [v // 2 - count[i + 1] for i, v in enumerate(nums)]
+        for l, r, k in queries:
+            # find last r2
+            # (k + count[r2 + 1] - count[l]) * 2 > nums[r2]
+            # (k - count[l]) * 2 > nums[r2] - 2 * count[r2 + 1]
+            # k - count[l] > nums[r2] // 2 - count[r2 + 1]
+            r2 = bisect_left(values, k - count[l], l, r + 1) - 1
+            result.append((k + count[r2 + 1] - count[l]) * 2)
+        return result
 
 
 class Solution(MockCf):
@@ -37,7 +65,7 @@ class Solution(MockCf):
         self.ct = [0]
         self.queries = queries
         for i in range(self.n):
-            j = n - 1 - i
+            j = self.n - 1 - i
             iv, jv = nums[i], nums[j]
             if iv % 2 == 0:
                 lv = iv // 2
@@ -56,7 +84,6 @@ class Solution(MockCf):
             if d >= k:
                 ans[i] = k * 2
                 continue
-            t.query_first(
             j = t.find(l, r, k - d)
             if j is None:
                 j = r

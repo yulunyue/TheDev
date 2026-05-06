@@ -18,6 +18,7 @@ class SegTreeNode:
         self.n = n
         self.size = 4 * n
         self.todo = [None] * self.size
+
         self.load(*args)
 
     def build(self, node, l, r):
