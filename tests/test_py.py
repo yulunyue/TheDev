@@ -1,4 +1,4 @@
-from common.util.export import TestBase, math
+from common.util.export import TestBase, math, bisect
 
 
 class TestPy:
@@ -12,3 +12,7 @@ class TestPy:
         assert math.log(2, 2) == 1
         assert math.log(1, 2) == 0
         assert math.log(8, 2) == 3
+
+    def test_bisect(self):
+        assert bisect.bisect_left([2, 3, 4], 3) == 1
+        assert bisect.bisect_left([2, 3, 4], True, key=lambda v: v == 3) == 1
