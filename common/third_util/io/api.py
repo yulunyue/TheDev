@@ -18,6 +18,7 @@ class ApiConfig(FileConfig):
     endpoint = StrModel()
     cookie = DictModel()
     proxy = DictModel()
+    headers = DictModel()
     timeout = NumberModel(default_value=10)
     user_name = StrModel()
     pass_word = StrModel()
@@ -182,8 +183,7 @@ class Api:
         return self.http("PUT", url, data, header)
 
     def get_headers(self):
-        ret = dict()
-        return ret
+        return API_CONFIG.get(self.name).headers.get_value()
 
     def get_proxy(self):
         return API_CONFIG.get(self.name).proxy.get_value()

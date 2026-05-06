@@ -1,4 +1,4 @@
-from common.util.export import MockCf, List
+from common.util.export import MockCf, List, functools
 
 
 class Solution(MockCf):
@@ -27,4 +27,10 @@ class Solution(MockCf):
         )
 
     def maximumScore(self, grid: List[List[int]]) -> int:
-        pass
+        self.n, self.m = len(grid), len(grid[0])
+
+        @functools.lru_cache(None)
+        def dfs(i, j):
+            pass
+
+    execute = maximumScore

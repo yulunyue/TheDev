@@ -1,4 +1,4 @@
-from common.third_util.io.apiapi import Api
+from common.third_util.io.api import Api
 
 
 class LeetCode(Api):
@@ -10,10 +10,15 @@ class LeetCode(Api):
 
     def submit(
         self,
-        name="total-characters-in-string-after-transformations-i",
+        name="k-th-smallest-remaining-even-integer-in-subarray-queries",
         code="import sys",
     ):
         return self.post(
             f"/problems/{name}/submit",
-            dict(lang="python3", question_id="3629", code=code),
+            dict(lang="python3", question_id="4287", typed_code=code),
         )
+
+
+if __name__ == "__main__":
+    Api.enable_globel_log()
+    print(LeetCode().submit())
