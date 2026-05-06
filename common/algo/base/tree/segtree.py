@@ -54,6 +54,9 @@ class SegTreeNode:
     def query(self, l, r):
         return self.query_array(1, l, r, 0, self.n)
 
+    def query_first(self, k):
+        pass
+
     def load(self, *args):
         raise NotImplementedError
 

@@ -56,6 +56,7 @@ class Solution(MockCf):
             if d >= k:
                 ans[i] = k * 2
                 continue
+            t.query()
 
         return ans
 
