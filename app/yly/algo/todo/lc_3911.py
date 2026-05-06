@@ -49,15 +49,17 @@ class Solution(MockCf):
 
     def h2(self):
         ans = [0] * len(self.queries)
-        t = T()
+        t = T(self.n - 1)
         for i, (l, r, k) in enumerate(self.queries):
             _, lr = self.idx[l]
             d = lr - 1
             if d >= k:
                 ans[i] = k * 2
                 continue
-            t.query()
-
+            j = t.find(l, r, k - d)
+            if j is None:
+                j = r
+            ans[i] = k + (self.ct[j + 1] - self.ct[l]) * 2
         return ans
 
     def h1(self):
