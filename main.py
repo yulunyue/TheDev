@@ -12,7 +12,12 @@ def start():
     HTTP_CONF_FiLE = File(f"config/setting/{sys.argv[1]}.json").write_if_not_exists(
         dict(
             py_modules=[
-                {"path": "./", "modules": {"/app/manage": "app.tool.manage::Manage"}}
+                dict(path= "./", modules= {
+                    "/app/manage": "app.tool.manage::Manage",
+                    "/app/user":"app.tool.user::User",
+                    "/app/todo":"app.tool.todo::Todo",
+                    "/app/api":"app.tool.api::ApiGlobal"
+                })
             ],
             port=10001,
         )

@@ -62,5 +62,4 @@ class FileConfig(ConfigBase):
 
     @classmethod
     def all(cls) -> List[Self]:
-        cls.load_data_from_file()
         return cls.instance_map.values()

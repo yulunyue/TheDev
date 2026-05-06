@@ -6,7 +6,7 @@ app.yly.algo.todo.lc_3911::Solution::run
 app.yly.algo.lc_3885::Solution::run
 ```
 ```debug
-app.yly.algo.todo.lc_3742::Solution::run case0
+app.yly.algo.todo.lc_3911::Solution::run case1
 ```
 
 
