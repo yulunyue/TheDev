@@ -12,15 +12,12 @@ WORKDIR /app
 
 # 5. 安装 Python 依赖
 # 注意：如果仓库里有 requirements.txt，直接安装；如果没有，需手动安装常用库
-RUN echo python --version
 COPY requirements.txt /app/requirements.txt
 RUN python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir -r requirements.txt
-RUN node --version
 COPY font/package.json /app/font/package.json
 RUN cd /app/font && npm install
 COPY ./ /app
 RUN cd /app/font && npm run build
-RUN echo $pwd
 EXPOSE 10001
 # 7. 默认启动命令
 CMD ["base", "run.sh"]
