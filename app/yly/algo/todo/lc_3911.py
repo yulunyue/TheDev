@@ -32,9 +32,9 @@ class Solution(MockCf):
         self, nums: list[int], queries: list[list[int]]
     ) -> list[int]:
         n = len(nums)
-        idx = [[None, None] for _ in range(n)]
+        self.idx = [[None, None] for _ in range(n)]
         lv, rv = 0, CT.inf
-        ct = [0]
+        self.ct = [0]
         self.queries = queries
         for i in range(n):
             j = n - 1 - i
@@ -43,15 +43,20 @@ class Solution(MockCf):
                 lv = iv // 2
             if jv % 2 == 0:
                 rv = jv // 2
-            idx[i][0], idx[j][1] = lv, rv
-            ct.append(ct[-1] + (iv % 2 == 0))
+            self.idx[i][0], self.idx[j][1] = lv, rv
+            self.ct.append(self.ct[-1] + (iv % 2 == 0))
         return self.h2()
 
-    def h2(self, queries):
+    def h2(self):
         ans = [0] * len(self.queries)
         t = T()
         for i, (l, r, k) in enumerate(self.queries):
-            pass
+            _, lr = self.idx[l]
+            d = lr - 1
+            if d >= k:
+                ans[i] = k * 2
+                continue
+
         return ans
 
     def h1(self):
