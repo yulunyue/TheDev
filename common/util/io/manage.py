@@ -14,6 +14,8 @@ class Manage:
         self.io_map[io.username] = io
         if msg.type == C.METHOD_SUB:
             self.sub(msg.value, io.username)
+        elif msg.type == C.METHOD_UN_SUB:
+            self.un_sub(msg.value, io.username)
         return self
 
     def sub(self, topic_name, user_name):
@@ -23,6 +25,10 @@ class Manage:
         logger.map(
             topic_name=topic_name, user_name=user_name, topics=self.topics[topic_name]
         )
+
+    def un_sub(self, topic_name, user_name):
+        if topic_name in self.topics:
+            self.topics[topic_name].discard(user_name)
 
     def send(self, topic_name, data):
         for k in self.topics.get(topic_name, []):

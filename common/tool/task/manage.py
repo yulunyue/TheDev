@@ -23,7 +23,6 @@ class Task:
     def loop(self):
         for t in self.model.all():
             t.exec()
-        self.model.save_to_local()
         return self
 
     def run(self):

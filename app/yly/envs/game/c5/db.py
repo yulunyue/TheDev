@@ -36,7 +36,7 @@ class Bd(FileConfig):
     def to_json(self):
         ret = super().to_json()
         state = self.get_state()
-        ret.update(width=state.env.width, height=state.env.height)
+        ret.update(width=state.env.width, height=state.env.height, done=state.done)
         return ret
 
 

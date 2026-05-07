@@ -85,8 +85,11 @@ class Constant {
     METHOD_LOGIN = "login"
     METHOD_SEND_TO = "send_to"
     METHOD_SUB = "sub"
+    METHOD_UN_SUB = "un_sub"
     TOPIC_TASK_UPDATE_MSG = "TOPIC_TASK_UPDATE_MSG"
     TOPIC_GAME_F5_CHESS = "TOPIC_GAME_F5_CHESS"
     TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
+    CODE_200 = 200
+    CODE_500 = 500
 }
 export default new Constant()

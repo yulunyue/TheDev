@@ -1,6 +1,6 @@
 from common.util.export import ToolBase, logger, Module, List, log
 from common.algo.export import random_seed, ALgoManage, Algo
-from common.third_service.export import CodingGame, uu
+from common.third_service.get_service import CodingGame, uu
 from app.yly.envs.cg.cf4.export import (
     F4StateDev as F4State,
     CgMuiltCf4,

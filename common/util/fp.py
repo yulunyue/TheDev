@@ -4,7 +4,7 @@ from typing import List, Dict
 import zipfile
 import shutil
 import io
-from .tool import time_format, json_dumps, base64_encode
+from .tool import time_format, json_dumps, base64_encode, json_get, json_set
 from .str_util import StrUtil
 
 
@@ -78,7 +78,7 @@ class File:
 
     def write_file(self, data: str, encoding="utf-8"):
         if isinstance(data, dict) or isinstance(data, list):
-            data = json_dumps(data, indent=2)
+            data = json_dumps(data, indent=4)
         self.make_dir_if_not_exist()
         if isinstance(data, bytes):
             with open(self.path, "wb") as f:
@@ -168,12 +168,13 @@ class File:
         return self._config
 
     def get(self, *keys, default_value=None):
-        tmp = self.get_config()
-        for k in keys:
-            if k not in tmp:
-                return default_value
-            tmp = tmp[k]
-        return tmp
+        return json_get(self.get_config(), keys, default_value=default_value)
+
+    def set(self, *keys, value=None):
+        cfg = self.get_config()
+        if json_set(cfg, keys, value):
+            self.write_file(cfg)
+        return json_get(cfg, keys)
 
     def read_fast_file(self):
         if not self.exists():

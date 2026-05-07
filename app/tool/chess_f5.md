@@ -232,4 +232,23 @@ Column (Chess)
 
 ### 已完成项
 
-(记录已完成的修改)
+#### 2024-05-07: WebSocket 观战订阅机制
+**前端修改 (用户)**:
+- `chess.ts`: 切换棋局时订阅 `{TOPIC_TASK_UPDATE_MSG}.{棋局名}` 主题
+- `show_data()`: 开始时调用 `bottom_form.set_value(dst)` 同步表单
+
+**后端适配**:
+- `common/constant.py`: 添加 `METHOD_UN_SUB = "un_sub"`
+- `common/util/io/manage.py`: `Manage.un_sub()` 方法取消订阅
+- `app/tool/chess_f5.py`: `play()` 推送到 `{TOPIC_TASK_UPDATE_MSG}.{name}` 主题，数据为完整棋局 `result`
+
+#### 2024-05-07: 胜负判定提示功能
+**后端修改**:
+- `app/yly/envs/game/c5/db.py`: `Bd.to_json()` 添加 `done` 字段返回
+- `app/tool/chess_f5.py`: `play()` 方法返回包含 `done` 状态的 `Node`
+
+**前端修改**:
+- `font/src/demo/game/chess.ts`: `show_data()` 根据 `done` 显示:
+  - `done == null`: 显示回合和执棋方
+  - `done == "NO_WIN"`: 显示平局
+  - `done == "1"` 或 `"2"`: 显示获胜玩家

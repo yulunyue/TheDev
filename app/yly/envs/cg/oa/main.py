@@ -1,5 +1,5 @@
 from common.util.export import TestBase, logger, Module, ii
-from common.third_service.export import CodingGame, uu, CGFrames
+from common.third_service.get_service import CodingGame, uu, CGFrames
 from common.algo.export import AlphaBateSearch, ALgoManage, Algo, FIGHT_TYPE
 from app.yly.envs.cg.oa.export import CgOa, Rooms, C, PM, OaTfModule
 

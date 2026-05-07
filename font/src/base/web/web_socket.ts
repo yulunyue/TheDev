@@ -78,5 +78,10 @@ export class NetKakfa {
         this.sub_call_back[method] = call_back
         return this
     }
+    un_sub(method: string) {
+        this.send_data(Constant.METHOD_UN_SUB, method)
+        this.sub_call_back[method] = null
+        return this
+    }
 }
 export default new NetKakfa()

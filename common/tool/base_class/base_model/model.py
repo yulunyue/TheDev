@@ -63,7 +63,7 @@ class BaseModel:
         return value
 
     def set_value(self, value):
-        if (value == "" or value is None) and not self.model.can_is_null:
+        if (value == "" or value is None) and not self.can_is_null:
             raise Exception(f"{self.key} can not be null {value}")
         return self.data_source.update_param_value(self, value)
 

@@ -22,9 +22,12 @@ class Solution(MockCf):
                     [5, 0, 0, 3, 0],
                     [0, 0, 0, 0, 2],
                 ],
-                result=11,
+                expected=11,
             )
         )
+
+    def calc(self, j, cur, pre):
+        return self.g[pre][j] - self.g[cur][j] if pre > cur else 0
 
     def maximumScore(self, grid: List[List[int]]) -> int:
         self.n, self.m = len(grid), len(grid[0])
@@ -34,11 +37,15 @@ class Solution(MockCf):
                 self.g[i + 1][j] = self.g[i][j] + grid[i][j]
 
         @functools.lru_cache(None)
-        def dfs(j, i0, i1):
-            ans = -CT.inf
-            for i in range(self.n):
-                dfs(j + 1, i1, i)
+        def dfs(j, cur, pre):
+            if j == 0:
+                return self.calc(j, cur, pre)
+            ans = 0
+            for nxt in range(self.n + 1):
+                d = self.calc(j, cur, max(nxt, pre))
+                ans = max(ans, d + dfs(j - 1, nxt, cur))
+            return ans
 
-        return dfs(0, self.n - 1, i)
+        return max(dfs(self.m - 1, i, 0) for i in range(self.n + 1))
 
     execute = maximumScore

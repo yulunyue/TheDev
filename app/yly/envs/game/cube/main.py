@@ -24,7 +24,3 @@ class Solution(ToolBase):
 
     def dev(self):
         self.view_all()
-
-
-if __name__ == "__main__":
-    Solution().run()

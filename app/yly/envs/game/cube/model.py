@@ -32,9 +32,8 @@ class CubeState(State):
             for j in range(C.n):
                 for a in C.MOVE_ACTION:
                     mask = C.get_converts(self.state, i, j, a, self.grid)
-                    action = CubeAction(
-                        self, (i, j, a), CubeState.new(mask, depth=self.depth + 1)
-                    )
+                    new_state = CubeState(mask, depth=self.depth + 1)
+                    action = CubeAction(self, (i, j, a), new_state)
                     ret.append(action)
         return ret
 

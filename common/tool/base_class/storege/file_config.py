@@ -34,13 +34,15 @@ class FileConfig(ConfigBase):
         items = list(cls._config.items())
         for k, v in items:
             try:
+                if k not in cls._config:
+                    cls._config[k] = dict()
                 cls.insert(k, **v)
             except Exception as e:
                 logger.error(e, stack_info=True)
 
     @classmethod
     def save_to_local(cls):
-        cls.fp.write_file(cls.instance_map)
+        cls.fp.write_file(cls._config)
         return cls
 
     def update_param_value(self, ins: BaseModel, value, if_none=False):

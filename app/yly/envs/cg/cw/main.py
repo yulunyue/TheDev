@@ -2,8 +2,8 @@ from .cg import CgCw, World
 from .model.state import CwState, ENV
 from .model.constant import CASES, C
 from .shape.b_line_help import BlineHelp, BM
-from common.util.export import ToolBase,log, logger, Module
-from common.third_service.export import CodingGame, uu
+from common.util.export import ToolBase, log, logger, Module
+from common.third_service.get_service import CodingGame, uu
 from common.algo.export import ALgoManage
 
 

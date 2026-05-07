@@ -74,18 +74,27 @@ export class Chess extends Column {
     init_event(): void {
         this.g.on_click(this.hander_on_click.bind(this))
         this.name_search.on_change((key: string, src: any, dst: any) => {
-            web_dom.post("/game/f5chess/get", { key: dst }, (value: any) => {
-                this.bottom_form.set_value(value)
-                this.show_data(value)
-            })
+            web_socket.un_sub(Constant.TOPIC_TASK_UPDATE_MSG + "." + src).sub(
+                Constant.TOPIC_TASK_UPDATE_MSG + "." + dst,
+                this.show_data.bind(this)
+            )
         })
     }
 
     show_data(dst: any) {
+        this.bottom_form.set_value(dst)
         let players = [dst.p0, dst.p1]
         let colors = ["黑", "白"]
-        let idx = dst.records.length % 2
-        this.title.set_html(`回合[${dst.records.length}] [${players[idx]}执${colors[idx]}] `)
+        let done = dst.done
+        if (done == null) {
+            let idx = dst.records.length % 2
+            this.title.set_html(`回合[${dst.records.length}] [${players[idx]}执${colors[idx]}]`)
+        } else if (done == "NO_WIN") {
+            this.title.set_html(`游戏结束 - 平局`)
+        } else {
+            let winner_idx = parseInt(done) - 1
+            this.title.set_html(`游戏结束 - ${players[winner_idx]}(${colors[winner_idx]})获胜`)
+        }
         let childs = []
         for (var i = 0; i < dst.records.length; i++) {
             let v = dst.records[i]
@@ -105,7 +114,7 @@ export class Chess extends Column {
     draw() {
         web_dom.post("/game/f5chess/get", {
             key: this.bottom_form.get_value().name
-        }, (data) => {
+        }, (data: any) => {
             this.show_data(data)
         })
     }
@@ -122,9 +131,7 @@ export class Chess extends Column {
             id: "game_chess_form_search"
         })
         this.title.set_html("info")
-        web_socket.sub(Constant.TOPIC_TASK_UPDATE_MSG, () => {
 
-        })
     }
 
 }

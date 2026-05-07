@@ -1,4 +1,4 @@
-from common.third_service.export import CodingGame
+from common.third_service.get_service import CodingGame
 from common.util.export import ToolBase
 from .cg import Cgl9
 from .api import L9Api, ApiAlgo

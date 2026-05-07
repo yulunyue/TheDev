@@ -222,16 +222,22 @@ def json_get(data, keys: str, default_value=None):
 
 
 def json_set(data, keys: str, value):
-    ks = keys.split(".")
+
+    if isinstance(keys, str):
+        ks = keys.split(".")
+    else:
+        ks = keys
     r = data
     for i, key in enumerate(ks):
         if key not in r:
             if i == len(ks) - 1:
+                if callable(value):
+                    value = value()
                 r[key] = value
                 return True
             r[key] = dict()
         elif i == len(ks) - 1:
-            if r[key] != value:
+            if r[key] != value and not callable(value):
                 r[key] = value
                 return True
         r = r[key]

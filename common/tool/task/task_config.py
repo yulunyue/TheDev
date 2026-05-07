@@ -7,16 +7,20 @@ from common.util.export import time, File, Module, traceback, C, logger
 
 
 class TaskConfig(FileConfig):
-    name = StrModel()
-    fun_path = StrModel()
-    args = StrModel()
-    run_model = DictModel()
-    run_num = NumberModel(default_value=0)
-    result = DictModel()
+    name = StrModel().not_null().set_title("任务名称")
+    fun_path = StrModel().set_title("函数路径")
+    args = StrModel().set_title("参数")
+    run_model = DictModel().set_title("运行模式")
+    run_num = NumberModel(default_value=0).set_title("运行次数")
+    result = DictModel().set_title("执行结果")
 
     @classmethod
     def set_resource(cls, path):
         return super().set_resource(path)
+
+    @classmethod
+    def get_form_columns(cls):
+        return [cls.name, cls.fun_path, cls.args]
 
     def __init__(self) -> None:
         super().__init__()
@@ -27,11 +31,18 @@ class TaskConfig(FileConfig):
     def get_call(self):
         if self.fun:
             return self.fun
-        fun_paths = self.fun_path.get_value().split("/")
-        fun_path = fun_paths.pop()
+        fun_path = self.fun_path.get_value()
+        parts = fun_path.split("::")
+        if len(parts) >= 2:
+            module_path = parts[0]
+            func_name = parts[-1]
+        else:
+            parts = fun_path.split("/")
+            module_path = "/".join(parts[:-1])
+            func_name = parts[-1]
         self.fun = Module().load_module_object(
-            fun_path,
-            "/".join(fun_path),
+            func_name,
+            module_path,
         )
         return self.fun
 

@@ -55,16 +55,14 @@ class ChessF5(FormBase, ApiBase):
         idx = board.env.yx_to_idx(y, x)
         if idx not in board.can_moves:
             raise Exception(f"位置({y}, {x})不可用")
+        action = board.get_action(idx)
         records = c.records.get_value()
         records.append(idx)
         c.records.set_value(records)
         c.save()
+        result = c.to_json()
         IO_MANAGE.send(
-            "TOPIC_GAME_F5_CHESS",
-            dict(
-                player_0=c.p0.get_value(),
-                player_1=c.p1.get_value(),
-                records=records,
-                size=board.env.width,
-            ),
+            f"{C.TOPIC_TASK_UPDATE_MSG}.{name}",
+            result,
         )
+        return Node(value=result)
