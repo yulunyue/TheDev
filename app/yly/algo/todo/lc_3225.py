@@ -1,4 +1,4 @@
-from common.util.export import MockCf, List, functools
+from common.util.export import MockCf, List, functools, CT
 
 
 class Solution(MockCf):
@@ -28,9 +28,17 @@ class Solution(MockCf):
 
     def maximumScore(self, grid: List[List[int]]) -> int:
         self.n, self.m = len(grid), len(grid[0])
+        self.g = [[0] * self.m for _ in range(self.n + 1)]
+        for j in range(self.m):
+            for i in range(self.n):
+                self.g[i + 1][j] = self.g[i][j] + grid[i][j]
 
         @functools.lru_cache(None)
-        def dfs(i, j):
-            pass
+        def dfs(j, i0, i1):
+            ans = -CT.inf
+            for i in range(self.n):
+                dfs(j + 1, i1, i)
+
+        return dfs(0, self.n - 1, i)
 
     execute = maximumScore

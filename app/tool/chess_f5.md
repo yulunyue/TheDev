@@ -1,52 +1,210 @@
-# 五子棋功能开发记录
+# chess_f5 前后端架构文档
 
-## 已有功能
+> 此文档用于指导代码修改，修改此文档后可让 AI 理解变更需求
 
-### 后端 (app/tool/chess_f5.py)
-- 棋局管理：创建/保存棋局（name, size, p0, p1）
-- AI对战模拟：`simulation`功能让两个AI玩家自动对弈
-- 落子接口：`play(name, y, x)` 处理玩家落子
-- 搜索接口：`search_name` 搜索棋局名称，`search_algo` 搜索AI算法/玩家
+## 目录结构
 
-### 前端 (font/src/demo/game/chess.ts)
-- 棋盘显示：Grid组件渲染棋盘，黑白棋子显示
-- 表单操作：支持选择棋局名称、棋盘规格、玩家
-- 回合显示：显示当前回合数和执棋方
-- 落子交互：点击棋盘触发落子请求并更新棋盘
+```
+app/
+├── tool/
+│   ├── chess_f5.py          # API 入口层
+│   └── chess_f5_test.py     # API 测试
+└── yly/envs/game/c5/
+    ├── db.py                 # 数据模型 (Bd)
+    ├── board/base.py         # 棋盘逻辑 (BoardC5)
+    ├── model/
+    │   ├── chess_state.py    # 游戏状态 (CState664, CState333)
+    │   ├── chess_state_map.py # 状态映射 (CHESS_MAP_CLS_FUNC)
+    │   └── chess_action.py   # 动作定义 (ChessACtion)
+    └── player/
+        ├── al.py             # AI 算法管理器 (Al)
+        ├── ql.py             # Q-Learning 玩家 (Ql)
+        └── gm_player.py      # AlphaZero Gomoku 玩家 (GmuMo)
 
-### 核心引擎 (app/yly/envs/game/c5/)
-- 棋盘状态：位运算高效存储棋局状态
-- 支持规格：3x3(3连)、6x6(4连)等可配置
-- 胜负判定：`in_row`连子判定，`done`状态标识
-- AI算法：gomo885, gomo664, ql等
+font/src/
+└── demo/game/
+    └── chess.ts              # 前端 UI (Chess)
+```
 
 ---
 
-## 本次修改记录
+## 后端架构
 
-### 1. 后端重构 (game.py -> chess_f5.py)
-- 文件重命名：`app/tool/game.py` -> `app/tool/chess_f5.py`
-- 新增`FontBd`类：定制表单列显示
-- 新增`ROUTE_PATH`：统一路由路径 `/app/chess_f5`
-- 新增`search_name`：搜索棋局名称
-- 新增`search_algo`：搜索AI算法和玩家（支持`IO_MANAGE.get_users_by_topic`）
-- `play`方法：调用`c.save()`保存落子记录
+### API 层: `app/tool/chess_f5.py`
 
-### 2. 数据模型重构 (app/yly/envs/game/c5/db.py)
-- 新增`ROUTE_PATH = "/app/chess_f5"`
-- `SearchModel`设置`url`：关联搜索接口
-  - `name.set_url(f"{ROUTE_PATH}/search_name")`
-  - `p0/p1.set_url(f"{ROUTE_PATH}/search_algo")`
+**路由**: `/game/f5chess`
 
-### 3. 前端优化 (font/src/demo/game/chess.ts)
-- 移除`pro: Progress`组件
-- 移除`right_div: Div`组件（改为底部）
-- 简化布局：表单 + 棋盘
-- `top_form.set_input_width(80)`
-- `top_form.set_option({url: "/game/f5chess"})` 简化配置
+**继承**: `FormBase` + `ApiBase`
 
-### 4. Bug修复
-- `SearchModel.__init__`添加`self.url = ""`默认值，避免`to_json`报错
+**类**: `ChessF5`
+
+**方法**:
+| 方法 | 功能 | 请求示例 |
+|------|------|----------|
+| `search_name` | 搜索棋局名称列表 | POST `/game/f5chess/search_name` |
+| `search_algo` | 搜索 AI 玩家列表 | POST `/game/f5chess/search_algo` |
+| `get` | 获取棋局数据 | POST `/game/f5chess/get` `{key: "棋局名"}` |
+| `play` | 下棋操作 | POST `/game/f5chess/play` `{name, y, x}` |
+| `web_submit` | 提交棋局 | POST `/game/f5chess/web_submit` `{type: "save"|"simulation", value}` |
+| `to_form_column_view` | 返回表单视图配置 | POST `/game/f5chess/to_form_column_view` |
+
+**关键变量**:
+- `AI_PLAYER = {"ad3", "mc100"}` - 只有这两个玩家可执行模拟
+- `ROUTE_PATH = "/game/f5chess"` - 路由路径
+
+---
+
+### 数据模型: `app/yly/envs/game/c5/db.py`
+
+**类**: `Bd` 继承 `FileConfig`
+
+**字段定义**:
+| 字段 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `name` | SearchModel | "default" | 棋局名称，搜索 URL: `/game/f5chess/search_name` |
+| `size` | SelectModel | "C333" | 棋盘尺寸，选项: `C333`, `C664` |
+| `records` | ListModel | [] | 落子记录 (idx 列表) |
+| `p0` | SearchModel | "ad3" | 玩家0，搜索 URL: `/game/f5chess/search_algo` |
+| `p1` | SearchModel | "ad3" | 玩家1，搜索 URL: `/game/f5chess/search_algo` |
+
+**方法**:
+- `get_id(name)` → 返回 `str(name)`
+- `get_state()` → 根据 `size` 和 `records` 生成棋盘状态对象
+- `get_form_columns()` → 返回 `[size, p0, p1]`
+- `to_json()` → 返回 `{name, size, records, p0, p1, width, height}`
+
+**存储位置**: `data/game/chess.json`
+
+---
+
+### 棋盘逻辑: `app/yly/envs/game/c5/board/base.py`
+
+**类**: `BoardC5`
+
+**核心方法**:
+| 方法 | 功能 |
+|------|------|
+| `load(width, height, in_row)` | 初始化棋盘参数 |
+| `yx_to_idx(y, x)` | 坐标转索引: `x * height + y` |
+| `get_yx(idx)` | 索引转坐标: `idx % height`, `idx // height` |
+| `set_state(state)` | 设置状态 (位运算) |
+| `get_state()` | 获取状态值 |
+| `put_chess(idx, player_id)` | 在位置落子 (player_id: 1=黑, 2=白) |
+| `load_records(records)` | 从落子记录加载棋盘 |
+| `get_can_moves()` | 获取可落子位置 |
+| `to_str()` | 打印棋盘字符串 |
+
+**位运算说明**:
+- `state_pos`: 位置掩码 (哪些位置有棋子)
+- `state_statu`: 状态掩码 (区分黑白)
+- `state = (state_pos << size) | state_statu`
+
+---
+
+### 游戏状态: `app/yly/envs/game/c5/model/chess_state.py`
+
+**类**: `CState664` 继承 `AbState`
+
+**属性**:
+| 属性 | 值 | 说明 |
+|------|-----|------|
+| `w` | 6 | 宽度 |
+| `h` | 6 | 高度 |
+| `in_row` | 4 | 连子获胜数 |
+| `name` | "C664" | 标识名 |
+
+**类**: `CState333` 继承 `CState664`
+
+**属性**:
+| 属性 | 值 | 说明 |
+|------|-----|------|
+| `w` | 3 | 宽度 |
+| `h` | 3 | 高度 |
+| `in_row` | 3 | 连子获胜数 |
+| `name` | "C333" | 标识名 |
+
+**状态映射**: `CHESS_MAP_CLS_FUNC = {"C664": CState664, "C333": CState333}`
+
+---
+
+### AI 玩家: `app/yly/envs/game/c5/player/al.py`
+
+**类**: `Al` 继承 `ALgoManage`
+
+**可用玩家**:
+| 方法 | 玩家名 | 说明 |
+|------|--------|------|
+| `gomo885()` | "gomo885" | 8x8x5 模型 |
+| `gomo664()` | "gomo664" | 6x6x4 模型 |
+| `gomo664_1500()` | "gomo664_1500" | 训练模型 |
+| `ql()` | "ql" | Q-Learning 玩家 |
+
+---
+
+## 前端架构
+
+### UI 组件: `font/src/demo/game/chess.ts`
+
+**类**: `Chess` 继承 `Column`
+
+**组件结构**:
+```
+Column (Chess)
+├── Div (left_div)
+├── Row (mid_main)
+│   ├── Column (head_column)
+│   │   ├── Search (name_search) - 搜索棋局名称
+│   │   └── Title (title) - 显示回合信息
+│   ├── Grid (g) - 棋盘网格 (SVG)
+│   └── FormColumn (bottom_form) - 底部表单
+└── Div (right_div)
+```
+
+**交互事件**:
+| 事件 | 触发 | 请求 |
+|------|------|------|
+| `name_search.on_change` | 选择棋局名称 | POST `/game/f5chess/get` `{key: name}` |
+| `g.on_click` | 点击棋盘格子 | POST `/game/f5chess/play` `{name, y, x}` |
+| `bottom_form.render` | 加载表单 | POST `/game/f5chess/to_form_column_view` |
+
+---
+
+## 数据流
+
+```
+前端                              后端
+────────────────────────────────────────────────────
+选择棋局名称
+  ↓ web_dom.post("/game/f5chess/get", {key})
+                          ↓ ChessF5.get(key)
+                          ↓ Bd.get(key).to_json()
+  ↓ show_data(dst)        ↑ {p0, p1, records, width, height}
+  ↓ Grid.set_option()     ↑ 绘制棋盘
+
+点击棋盘格子
+  ↓ web_dom.post("/game/f5chess/play", {name, y, x})
+                          ↓ ChessF5.play()
+                          ↓ BoardC5.yx_to_idx(y, x)
+                          ↓ 验证 idx in can_moves
+                          ↓ records.append(idx)
+                          ↓ Bd.save()
+                          ↓ IO_MANAGE.send() (WebSocket广播)
+  ↓ show_data(data)       ↑ 更新棋盘显示
+```
+
+---
+
+## 测试要点
+
+**文件**: `app/tool/chess_f5_test.py`
+
+**关键测试**:
+- `test_route_path`: 验证路由 `/game/f5chess`
+- `test_ai_player_set`: 验证 `AI_PLAYER = {"ad3", "mc100"}`
+- `test_cstate664_attributes`: 验证 `w=6, h=6, in_row=4`
+- `test_cstate333_attributes`: 验证 `w=3, h=3, in_row=3`
+- `test_get_can_moves_empty`: 空 6x6 棋盘有 36 个可落子位置
+- `test_web_submit_simulation_non_ai`: 非AI玩家不可模拟
 
 ---
 
@@ -61,3 +219,17 @@
 | **中** | 新建棋局 | 前端创建新棋局入口 |
 | **低** | 观战模式 | WebSocket实时推送棋局变化 |
 | **低** | 复盘功能 | 回放历史棋局 |
+
+---
+
+## 变更记录
+
+> 在此记录需要修改的内容，AI 将根据此部分修改代码
+
+### 待修改项
+
+(在此添加修改需求)
+
+### 已完成项
+
+(记录已完成的修改)

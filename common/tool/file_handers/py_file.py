@@ -1,4 +1,4 @@
-from common.util.export import File, Dict, logger, StrUtil, ReUtil,Tuple
+from common.util.export import File, Dict, logger, StrUtil, ReUtil, Tuple
 
 
 class PyFile:
@@ -56,10 +56,11 @@ class PyFile:
                 self.lines.append(ln2)
         return self
 
+    def read_py_line(self):
+        return "\n".join(self.read_lines())
+
     def compile_to_one_file(self):
         temp_py_file = File(self.RUN_TMP_PATH)
         PyFile.TMP_VT = {self.fp.path}
-        logger.map(
-            src=self.fp, dst=temp_py_file.write_file("\n".join(self.read_lines()))
-        )
+        logger.map(src=self.fp, dst=temp_py_file.write_file(self.read_py_line()))
         return self

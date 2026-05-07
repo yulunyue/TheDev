@@ -8,14 +8,10 @@ class LeetCode(Api):
     def get_endpoint(self):
         return "https://leetcode.cn"
 
-    def submit(
-        self,
-        name="k-th-smallest-remaining-even-integer-in-subarray-queries",
-        code="import sys",
-    ):
+    def submit(self, name, question_id, code):
         return self.post(
             f"/problems/{name}/submit",
-            dict(lang="python3", question_id="4287", typed_code=code),
+            dict(lang="python3", question_id=question_id, typed_code=code),
         )
 
 

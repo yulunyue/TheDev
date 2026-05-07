@@ -108,6 +108,7 @@ def oj_run(ins: "MockCf", case_name=None, with_thread=False):
         cases = [[case_name, cases[case_name]]]
     else:
         cases = cases.items()
+    flag = True
     for case_name, c in cases:
         exp = c.pop("expected")
         ins.logger = get_dev_log(case_name)
@@ -122,12 +123,18 @@ def oj_run(ins: "MockCf", case_name=None, with_thread=False):
             res = ins.execute(**c)
         if res != exp:
             logger.info(f"FAILED {case_name} {exp}!={res}")
+            flag = False
         else:
             logger.info(f"PASS {case_name} {exp}=={res}")
+
     src_file = ins.src_file
     if src_file is None:
         src_file = get_file_path_by_cls(ins.__class__)
-    PyFile(src_file).compile_to_one_file()
+    p = PyFile(src_file).compile_to_one_file()
+    # if flag:
+    #     from common.third_service.lc_util import LeetCode
+
+    #     LeetCode().submit(p.read_lines())
 
 
 def execute_by_thread(ins: MockCf, case: dict):
