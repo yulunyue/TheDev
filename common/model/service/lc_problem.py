@@ -1,9 +1,7 @@
 from ..base import BaseModel
 from common.third_service.get_service import get_lc_service
-from common.util.export import File, C, logger
-
-LOCAL_STORGE = File("data/leetcode/storge.json").write_if_not_exists({})
-logger.info(LOCAL_STORGE)
+from common.util.export import File, C, logger, Tuple
+import time
 
 
 class LcProblem(BaseModel):
@@ -13,14 +11,26 @@ class LcProblem(BaseModel):
         return self
 
     def submit(self, code):
-        check = LOCAL_STORGE.set(
-            self.questionFrontendId,
-            C.CHECK,
-            value=lambda: get_lc_service().submit(self.titleSlug, self.id, code),
+        s = get_lc_service()
+        check = s.submit(self.titleSlug, self.id, code)
+        state = s.check(check)
+        logger.map(
+            title=self.titleSlug,
+            check=check,
+            outputDetail=state.outputDetail,
+            passedTestCaseCnt=state.passedTestCaseCnt,
+            totalTestCaseCnt=state.totalTestCaseCnt,
         )
-        statu = LOCAL_STORGE.set(
-            self.questionFrontendId,
-            C.STATE,
-            value=lambda: get_lc_service().check(check),
+        return state.totalTestCaseCnt
+
+    def get_code(self) -> Tuple[str, str]:
+        question = get_lc_service().query_detail(self.titleSlug)["data"]["question"]
+        codeSnippets, sampleTestCase, content = (
+            question["codeSnippets"],
+            question["sampleTestCase"],
+            question["content"],
         )
-        logger.map(check=check, statu=statu)
+        for code in codeSnippets:
+            if code["lang"] == "Python3":
+                return code["code"], sampleTestCase
+        return "", ""

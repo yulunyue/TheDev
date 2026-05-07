@@ -1,21 +1,26 @@
 import {
     Column, Row, Div, Constant, Node, web_dom,
-    Button, FormRow, FormColumn, Search, dialog, Span,
-    Data, Util, Container, ListContainer,
+    Button, FormRow, FormColumn, Search, dialog, Span, Pre,
+    Data, Container, web_socket, Ct,
 } from "../../base/components/export";
-import { TaskContainer } from "./task_container";
 
 export class TaskMain extends Row {
     top_form: FormColumn
-    task_list: TaskContainer
     search_input: Search
     add_btn: Button
     header: Column
     status_span: Span
+    result_div: Pre
+    exec_btn: Button
     init_style(): void {
         this.full()
+        this.set_style({
+            height: "100vh",
+            overflow: "hidden"
+        })
         this.search_input.set_style({
-            width: 200
+            width: 200,
+            minWidth: 200
         })
         this.top_form.set_style({
             padding: "20px",
@@ -23,44 +28,77 @@ export class TaskMain extends Row {
         })
         this.status_span.set_size(1)
         this.header.set_style({
-            justifyContent: "space-between", alignItems: "center", width: 1
+            justifyContent: "flex-start",
+            alignItems: "center",
+            width: 1,
+            flex: "none"
+        })
+        this.result_div.set_style({
+            flex: 1,
+            overflow: "auto"
         })
         super.init_style()
     }
     init_node(): void {
         this.search_input = new Search()
         this.add_btn = new Button().set_html("新增任务")
+        this.exec_btn = new Button().set_html("执行")
         this.top_form = new FormColumn()
         this.status_span = new Span()
-        this.task_list = new TaskContainer()
+        this.result_div = new Pre()
         this.header = new Column().add_childs([
-            this.status_span,
             this.search_input,
-            this.add_btn
+            this.status_span,
+            this.add_btn,
+            this.exec_btn
         ])
         this.add_childs([
             this.header,
-            this.task_list
+            this.result_div
         ])
     }
     init_event(): void {
-        this.search_input.on_change(() => this.task_list.filter(this.search_input.get_value()))
+        this.search_input.on_change(() => this.load_task())
         this.add_btn.on_click(() => {
             this.on_task_change(Constant.METHOD_INSERT, null, {})
         })
+        this.exec_btn.on_click(() => {
+            let name = this.search_input.get_value()
+            if (name) {
+                web_dom.post("/app/task/exec_task", { name }, (data: any) => {
+                    this.result_div.set_html(JSON.stringify(data, null, 2))
+                })
+            }
+        })
         this.top_form.on_submit(this.submit.bind(this))
+        web_socket.sub(Constant.TOPIC_TASK_UPDATE_MSG, (data: any) => {
+            this.on_task_update(data)
+        })
+    }
+    on_task_update(data: any) {
+        let name = this.search_input.get_value()
+        if (name && data.name === name) {
+            this.result_div.set_html(JSON.stringify(data, null, 2))
+            this.status_span.set_html(`任务: ${name} (已更新)`)
+        }
     }
     submit(type: string) {
         let value = this.top_form.get_value()
         web_dom.post("/app/task/web_submit", { type, value }, () => {
-            this.load_tasks()
+            this.load_task()
             dialog.close()
         })
     }
-    load_tasks(): void {
-        web_dom.post("/app/task/web_search", {}, (data: Node) => {
-            this.status_span.set_html(data.title)
-            this.task_list.set_tasks(data, this.on_task_change.bind(this))
+    load_task(): void {
+        let name = this.search_input.get_value()
+        if (!name) {
+            this.result_div.set_html("")
+            this.status_span.set_html("")
+            return
+        }
+        web_dom.post("/app/task/get", { key: name }, (data: Node) => {
+            this.status_span.set_html(`任务: ${name}`)
+            this.result_div.set_html(JSON.stringify(data, null, 2))
         })
     }
     on_task_change(method: string, f: any, t: any) {
@@ -78,8 +116,12 @@ export class TaskMain extends Row {
     render(): void {
         web_dom.post("/app/task/schema", {}, (v: Node) => {
             this.top_form.set_option(v.data.top_form)
+            this.search_input.set_option({
+                url: "/app/task/web_search",
+                id: "task_search",
+                title: "任务名称"
+            })
             Data.get_user_name((user_name: any) => {
-                this.load_tasks()
             })
         })
     }

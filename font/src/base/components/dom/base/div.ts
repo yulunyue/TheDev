@@ -126,6 +126,9 @@ export class Div {
     hide() {
         return this.set_style({ display: "none" })
     }
+    is_visible() {
+        return this.el.style.display !== "none"
+    }
     get_a_x() {
         return (this.el as HTMLElement).getBoundingClientRect().x;
     }

@@ -2,8 +2,10 @@ class Constant:
     APP_NAME = "TheDev"
     CODE_500 = 500
     CODE_200 = 200
+    NA = "N/A"
     TYPE = "type"
     KEY = "key"
+    TITLE = "title"
     DATA = "data"
     VALUE = "value"
     STATE = "STATE"

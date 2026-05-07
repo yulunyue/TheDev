@@ -61,6 +61,11 @@ export class Input extends Div {
         return this
     }
 
+    on_key_down(call: any): this {
+        this.el.onkeydown = call
+        return this
+    }
+
 }
 
 

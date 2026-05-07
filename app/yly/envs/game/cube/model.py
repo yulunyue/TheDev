@@ -1,6 +1,6 @@
 from common.algo.export import State, encode_data, decode_data, Action
 from common.third_util.ml.np_util import np
-from common.util.export import logger
+from common.util.export import logger, List
 from .constant import C
 
 
@@ -26,7 +26,7 @@ class CubeState(State):
     def game_over(self):
         return self.state == C.init_mask
 
-    def make_actions(self):
+    def make_actions(self) -> List[CubeAction]:
         ret = []
         for i in range(C.AXIS_NUM):
             for j in range(C.n):
@@ -52,3 +52,20 @@ class CubeState(State):
             # ans[ii][jj] = f"{i}{self.grid[u]}"
             ans[ii][jj] = C.COLORS[self.grid[u]]
         return ["".join(v) for v in ans]
+
+    def to_json(self) -> dict:
+        return {
+            "state": self.state,
+            "grid": self.grid,
+            "depth": self.depth,
+            "n": C.n,
+            "game_over": self.game_over(),
+        }
+
+    def load_from_json(self, data: dict):
+        if "n" in data:
+            C.load(data["n"])
+        self.state = data["state"]
+        self.depth = data.get("depth", 0)
+        self.grid = data["grid"]
+        return self

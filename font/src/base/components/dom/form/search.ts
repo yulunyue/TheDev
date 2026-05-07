@@ -10,6 +10,7 @@ export class Search extends Div {
     dialog: Div
     listui: ListUi
     input: Input
+    selected_index: number = 0
     init_node(): void {
         this.input = this.add_child(new Input())
         this.dialog = this.add_child(new Div())
@@ -25,12 +26,46 @@ export class Search extends Div {
         if (this.listui.option.data.size == 0) {
             this.dialog.hide()
         } else {
+            this.selected_index = 0
+            this.update_selection()
             this.dialog.show()
+        }
+    }
+    update_selection() {
+        let childs = this.listui.childs
+        for (let i = 0; i < childs.length; i++) {
+            if (i === this.selected_index) {
+                childs[i].set_style({ backgroundColor: "#ddd" })
+            } else {
+                childs[i].set_style({ backgroundColor: "white" })
+            }
+        }
+    }
+    select_current() {
+        let childs = this.listui.childs
+        if (childs.length > 0 && this.selected_index < childs.length) {
+            childs[this.selected_index].el.click()
         }
     }
     init_event(): void {
         this.input.on_click(() => this.emit_search(this.open_dialog.bind(this)))
         this.input.on_input(this.filter.bind(this))
+        this.input.on_key_down((e: KeyboardEvent) => {
+            let childs = this.listui.childs
+            if (!this.dialog.is_visible() || childs.length === 0) return
+            if (e.key === "ArrowDown") {
+                e.preventDefault()
+                this.selected_index = Math.min(this.selected_index + 1, childs.length - 1)
+                this.update_selection()
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault()
+                this.selected_index = Math.max(this.selected_index - 1, 0)
+                this.update_selection()
+            } else if (e.key === "Enter") {
+                e.preventDefault()
+                this.select_current()
+            }
+        })
         this.listui.on_change((key: string, src: any, dst: Node) => {
             this.input.set_value(dst.title)
             if (this.option.id) {
@@ -56,6 +91,8 @@ export class Search extends Div {
     }
     open_dialog() {
         if (this.listui.option.data.size) {
+            this.selected_index = 0
+            this.update_selection()
             this.show_search_dialog()
         } else {
             this.dialog.hide()
@@ -83,7 +120,6 @@ export class Search extends Div {
         }
     }
     show_search_dialog() {
-        // console.log(this.get_rect(), this.el)
         this.dialog.set_style({
             left: this.input.get_abs_x(),
             top: this.input.get_abs_y() + this.input.get_height(),

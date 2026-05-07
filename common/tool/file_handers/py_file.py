@@ -16,7 +16,9 @@ class PyFile:
         if ReUtil("common.*export").findall(model_name):
             model_name = "common.mock"
             need_read = True
-        elif model_name.startswith("common.third_util"):
+        elif model_name.startswith("common.third_util") or model_name.startswith(
+            "common.third_service"
+        ):
             need_read = False
         elif model_name.startswith("common"):
             need_read = True
@@ -57,10 +59,11 @@ class PyFile:
         return self
 
     def read_py_line(self):
-        return "\n".join(self.read_lines())
+        return
 
     def compile_to_one_file(self):
         temp_py_file = File(self.RUN_TMP_PATH)
         PyFile.TMP_VT = {self.fp.path}
-        logger.map(src=self.fp, dst=temp_py_file.write_file(self.read_py_line()))
-        return self
+        py_lines = "\n".join(self.read_lines())
+        logger.map(src=self.fp, dst=temp_py_file.write_file(py_lines))
+        return py_lines

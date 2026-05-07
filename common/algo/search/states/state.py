@@ -1,4 +1,5 @@
 import random
+import json
 from common.util.export import (
     logger,
     File,
@@ -131,6 +132,23 @@ class State:
 
     def to_str(self, algo=None):
         return []
+
+    def to_json(self) -> dict:
+        raise NotImplementedError("Subclasses must implement to_json()")
+
+    def load_from_json(self, data: dict):
+        raise NotImplementedError("Subclasses must implement load_from_json()")
+
+    def save_to_file(self, filepath: str):
+        data = self.to_json()
+        File(filepath).make_dir_if_not_exist().write_file(json.dumps(data, indent=2))
+        return self
+
+    def load_from_file(self, filepath: str):
+        content = File(filepath).read_file()
+        data = json.loads(content) if isinstance(content, str) else content
+        self.load_from_json(data)
+        return self
 
     def bfs(self, max_depth=15) -> Dict[str, Tuple[List[Action], "State"]]:
         ret = {self.state: [[], self]}

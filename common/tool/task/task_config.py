@@ -3,7 +3,8 @@ from ..base_class.storege.file_config import (
 )
 from ..base_class.base_model import StrModel, NumberModel, DictModel
 from ..os_util import OsUtil
-from common.util.export import time, File, Module, traceback, C, logger
+from common.util.export import time, File, Module, traceback, C, logger, json
+from common.third_util.http import WEB_SOCKET_CLIENTS
 
 
 class TaskConfig(FileConfig):
@@ -56,6 +57,17 @@ class TaskConfig(FileConfig):
         ret = File(f"data/log/task/{self.name.get_value()}.log")
         return ret
 
+    def notify_update(self):
+        msg = json.dumps({
+            "type": C.TOPIC_TASK_UPDATE_MSG,
+            "value": self.to_json()
+        })
+        for client in WEB_SOCKET_CLIENTS.values():
+            try:
+                client.write_message(msg)
+            except Exception as e:
+                logger.error(f"send task update error: {e}")
+
     def exec(self):
         if not self.can_run():
             return
@@ -77,4 +89,5 @@ class TaskConfig(FileConfig):
             last_begin_t=last_begin_t,
             last_finish_t=last_finish_t,
         )
+        self.notify_update()
         return

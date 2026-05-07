@@ -91,7 +91,7 @@ class Api:
 
     def __init__(self, name="", log_enable=False):
         self._name = name or self.__class__.__name__
-        self.log_enable = log_enable or Api.LOG_ENABLE_DEFAULT
+        self.log_enable = log_enable or self.__class__.LOG_ENABLE_DEFAULT
         self.cache = None
 
     @classmethod

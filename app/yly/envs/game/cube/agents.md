@@ -195,4 +195,20 @@ assert s.game_over()
   - test_solve_multiple_steps: 测试多步求解
   - test_state_depth: 测试状态深度
   - test_all_colors_present: 测试所有颜色存在
+  - test_random_scramble_15_steps: 测试随机生成15步走法并序列化到 data/cube/test.json
+  - test_solve_and_visualize: 测试求解魔方并可视化显示还原过程
 - 修复 model.py:make_actions() - 修正 depth 参数传递问题
+- State基类增加序列化方法：
+  - save_to_file(filepath): 保存状态到文件
+  - load_from_file(filepath): 从文件加载状态
+  - to_json(): 子类实现，返回JSON字典
+  - load_from_json(data): 子类实现，从JSON字典加载
+- CubeState实现to_json()和load_from_json()
+  - 序列化：state、grid、depth、n、game_over
+  - 支持从JSON恢复完整状态
+- 增加求解可视化测试：
+  - 随机打乱3步魔方
+  - 输出打乱后的魔方状态（使用to_str可视化）
+  - 搜索求解步骤并输出每步动作和状态变化
+  - 验证最终状态完成（game_over为True）
+  - 保存结果到 data/cube/solve_result.json

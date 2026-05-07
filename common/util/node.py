@@ -60,10 +60,9 @@ class Node:
             self.data[k] = v
         return self
 
-    def add_child(self, **kw):
-        ret = self.__class__(**kw)
-        self.childs.append(ret)
-        return ret
+    def add_child(self, data):
+        self.childs.append(data)
+        return data
 
     def get_type(self):
         return self.type
@@ -72,7 +71,7 @@ class Node:
         if len(args) == 1:
             args = args[0]
         for a in args:
-            self.add_child(value=a)
+            self.add_child(a)
         return self
 
     def get_value(self):
