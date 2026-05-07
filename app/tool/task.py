@@ -26,8 +26,5 @@ class TaskManage(FormBase, Task):
         self.model.save_to_local()
         return task.to_json()
 
-    def hello(self):
-        return "hello world"
-
 
 TASK_MANAGE.set_resource("config/setting/task.json").start()

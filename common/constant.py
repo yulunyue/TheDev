@@ -10,6 +10,8 @@ class Constant:
     VALUE = "value"
     STATE = "STATE"
     CHECK = "CHECK"
+    doing = "doing"
+    wait = "wait"
     STATE_FAILED = "STATE_FAILED"
     STATE_SUCCESS = "STATE_SUCCESS"
     STATE_RUNING = "STATE_RUNING"

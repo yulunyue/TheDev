@@ -4,6 +4,12 @@ from common.util.export import File, C, logger, Tuple
 import time
 
 
+def parse_case(case: str):
+    if case.startswith('"'):
+        case = case[1:-1]
+    return [case, ""]
+
+
 class LcProblem(BaseModel):
     def load(self, titleSlug, id, translatedTitle, questionFrontendId, **kw):
         self.titleSlug, self.id, self.translatedTitle = titleSlug, id, translatedTitle
@@ -32,5 +38,5 @@ class LcProblem(BaseModel):
         )
         for code in codeSnippets:
             if code["lang"] == "Python3":
-                return code["code"], sampleTestCase
+                return code["code"], parse_case(sampleTestCase)
         return "", ""

@@ -10,7 +10,9 @@ import time
 from collections.abc import ValuesView
 
 
-def time_format(timestamp, fmt="%Y-%m-%d %H:%M:%S"):
+def time_format(timestamp=None, fmt="%Y-%m-%d %H:%M:%S"):
+    if timestamp is None:
+        timestamp = time.time()
     time_struct = time.localtime(timestamp)
     format_date = time.strftime(fmt, time_struct)
     return format_date

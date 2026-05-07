@@ -67,15 +67,17 @@ query getQuestionDetail($titleSlug: String!) {
             t = self.query_num(number)
             code, case = t.get_code()
             f.write_file(
-                f"from common.util.export import List, Dict, functools, CT\n{code}"
+                f"from common.util.export import List, Dict, functools, CT\n{code}        return"
             )
-            LOCAL_STORGE.set(number, "cases", value=dict(case0=[case]))
+            fun_name = code.split("def ").pop().split("(")[0]
+            LOCAL_STORGE.set(number, "cases", value=dict(case0=case))
+            LOCAL_STORGE.set(number, "fun_name", value=fun_name)
         cases = LOCAL_STORGE.get(number, "cases")
-        fun_name = code.split("def ").pop().split("(")[0]
+        fun_name = LOCAL_STORGE.get(number, "fun_name")
         fun = Module().load_module_object(
             f"app.yly.algo.todo.lc_{number}::Solution::{fun_name}"
         )
-        for case in cases:
+        for key, case in cases.items():
             exp = case[-1]
             result = fun(*case[:-1])
             if exp != result:

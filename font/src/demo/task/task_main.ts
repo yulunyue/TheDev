@@ -12,6 +12,7 @@ export class TaskMain extends Row {
     status_span: Span
     result_div: Pre
     exec_btn: Button
+    current_task: string = ""
     init_style(): void {
         this.full()
         this.set_style({
@@ -71,16 +72,19 @@ export class TaskMain extends Row {
             }
         })
         this.top_form.on_submit(this.submit.bind(this))
-        web_socket.sub(Constant.TOPIC_TASK_UPDATE_MSG, (data: any) => {
+    }
+    on_task_update(data: any) {
+        this.result_div.set_html(JSON.stringify(data, null, 2))
+        let stateText = data.state === "doing" ? "(执行中)" : "(已完成)"
+        this.status_span.set_html(`任务: ${data.name || this.search_input.get_value()} ${stateText}`)
+    }
+    subscribe_task(name: string) {
+        web_socket.sub(`${Constant.TOPIC_TASK_UPDATE_MSG}.${name}`, (data: any) => {
             this.on_task_update(data)
         })
     }
-    on_task_update(data: any) {
-        let name = this.search_input.get_value()
-        if (name && data.name === name) {
-            this.result_div.set_html(JSON.stringify(data, null, 2))
-            this.status_span.set_html(`任务: ${name} (已更新)`)
-        }
+    unsubscribe_task(name: string) {
+        web_socket.un_sub(`${Constant.TOPIC_TASK_UPDATE_MSG}.${name}`)
     }
     submit(type: string) {
         let value = this.top_form.get_value()

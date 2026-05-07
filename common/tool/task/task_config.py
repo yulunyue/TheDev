@@ -3,8 +3,17 @@ from ..base_class.storege.file_config import (
 )
 from ..base_class.base_model import StrModel, NumberModel, DictModel
 from ..os_util import OsUtil
-from common.util.export import time, File, Module, traceback, C, logger, json
-from common.third_util.http import WEB_SOCKET_CLIENTS
+from common.util.export import (
+    time,
+    File,
+    Module,
+    traceback,
+    C,
+    logger,
+    json,
+    IO_MANAGE,
+    time_format,
+)
 
 
 class TaskConfig(FileConfig):
@@ -12,8 +21,6 @@ class TaskConfig(FileConfig):
     fun_path = StrModel().set_title("函数路径")
     args = StrModel().set_title("参数")
     run_model = DictModel().set_title("运行模式")
-    run_num = NumberModel(default_value=0).set_title("运行次数")
-    result = DictModel().set_title("执行结果")
 
     @classmethod
     def set_resource(cls, path):
@@ -26,8 +33,11 @@ class TaskConfig(FileConfig):
     def __init__(self) -> None:
         super().__init__()
         self.fun = None
-        self.last_begin_t = None
-        self.last_finish_t = None
+        self.run_num = 0
+        self.last_begin_t = ""
+        self.last_finish_t = ""
+        self.state = ""
+        self.error_msg = ""
 
     def get_call(self):
         if self.fun:
@@ -58,36 +68,40 @@ class TaskConfig(FileConfig):
         return ret
 
     def notify_update(self):
-        msg = json.dumps({
-            "type": C.TOPIC_TASK_UPDATE_MSG,
-            "value": self.to_json()
-        })
-        for client in WEB_SOCKET_CLIENTS.values():
-            try:
-                client.write_message(msg)
-            except Exception as e:
-                logger.error(f"send task update error: {e}")
+        IO_MANAGE.send(
+            f"{C.TOPIC_TASK_UPDATE_MSG}.{self.name.get_value()}",
+            dict(
+                code=self.code,
+                run_num=self.run_num,
+                last_begin_t=self.last_begin_t,
+                last_finish_t=self.last_finish_t,
+                state=self.state,
+                error_msg=self.error_msg,
+            ),
+        )
 
     def exec(self):
         if not self.can_run():
             return
-        code = C.CODE_200
+
         try:
-            last_begin_t = time.time()
+            self.last_begin_t = time_format()
+            self.last_finish_t = ""
             args = self.args.get_value().split(",")
+            self.state = C.doing
+            self.notify_update()
             f = self.get_call()
-            value = f(*args)
+            self.error_msg = ""
+            self.value = f(*args)
         except Exception as e:
-            code = C.CODE_500
-            value = traceback.format_exc().split("\n")
+            self.code = C.CODE_500
+            self.error_msg = traceback.format_exc().split("\n")
+            self.notify_update()
         finally:
-            last_finish_t = time.time()
-        self.run_num.set_value(self.run_num.get_value() + 1)
-        self.result.update(
-            code=code,
-            value=value,
-            last_begin_t=last_begin_t,
-            last_finish_t=last_finish_t,
-        )
-        self.notify_update()
+            self.code = C.CODE_200
+            self.state = C.wait
+            self.last_finish_t = time_format()
+            self.notify_update()
+        self.run_num += 1
+
         return
