@@ -2,63 +2,43 @@ from collections import defaultdict
 import heapq
 from typing import List, Dict
 
-from common.algo.base.nodes.node import Node
 
+class Graph:
 
-class Graph(Node):
-    nodes: Dict[str, "Node"] = Node
-    edges = dict()
+    def __init__(self, *args):
+        self.load(*args)
 
-    def __init__(self, key=None):
-        self.key = key
-
-    def load(self):
-        self.in_deg = 0
-        self.out_deg = 0
-        self.childs: Dict[str, Graph] = dict()
+    def load(self, *args):
+        self.in_deg = defaultdict(int)
+        self.out_deg = defaultdict(int)
         return self
 
-    def reset(self):
-        self.edges.clear()
-        Graph.nodes = {}
-        return self
-
-    def add_node(self, kid):
-        if kid not in self.nodes:
-            self.nodes[kid] = Graph(kid).load()
-        return self.nodes[kid]
-
-    def add_edge(self, f, t, *args):
-        fn: Graph = self.add_node(f)
-        tn: Graph = self.add_node(t)
-        self.edges[f, t] = args
-        fn.out_deg += 1
-        tn.in_deg += 1
-        fn.childs[t] = tn
-        return fn, tn
-
-    def load_from_edges(self, edges):
-        for i, edge in enumerate(edges):
-            self.add_edge(i, *edge)
-        return self
-
-    def get_value(self, idx, weight=None, cost=None):
+    def get_value(self, f, t, cost=0):
         raise Exception("gg")
 
-    def dijkstra(self, start):
-        self.value = dict()
-        self.value[start] = self.get_value(start)
-        q = [(self.value[start], start)]
+    def get_nexts(self, u):
+        return self.g[u]
+
+    def set_edges(self, g):
+        self.g = g
+        return self
+
+    def dijkstra(self, start, target=None):
+        value = dict()
+        value[start] = self.get_value(start, start)
+        q = [(value[start], start)]
         while q:
             cost, u = heapq.heappop(q)
-            if cost > self.value[u]:
+            if cost > value[u]:
                 continue
-            for v, idx, weight, *args in self.g[u]:
-                target = self.get_value(v, weight, cost)
-                if v not in self.value or target < self.value[v]:
-                    self.value[v] = target
-                    heapq.heappush(q, (self.value[v], v))
-        return self.value
+            if u == target:
+                break
+            for v in self.get_nexts(u):
+                cost2 = self.get_value(u, v, cost=cost)
+                if v not in value or cost2 < value[v]:
+                    value[v] = cost2
+                    heapq.heappush(q, (value[v], v))
+        return value
 
     def tupu(self, indeg_aim=0):
         q: List[Graph] = [v for v in self.nodes.values() if v.in_deg == indeg_aim]

@@ -6,7 +6,7 @@ from .constant import C
 
 class CubeAction(Action):
     def show(self, msg=None):
-        c, d, r = self.action
+        c, d, r, *args = self.action
         if r == -1:
             r = 3
 
@@ -35,7 +35,7 @@ class CubeState(State):
                 for a in C.MOVE_ACTION:
                     mask = C.get_converts(self.state, i, j, a, self.grid)
                     new_state = CubeState(mask, depth=self.depth + 1)
-                    action = CubeAction(self, (i, j, a), new_state)
+                    action = CubeAction(self, (i, j, a, len(ret)), new_state)
                     ret.append(action)
         return ret
 

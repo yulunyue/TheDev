@@ -4,7 +4,7 @@ from .log import (
     TheDevLoger,
     log,
     get_dev_log,
-    log1,
+    log1 as LOG,
     log2,
     logger,
     LOGER_PREFIX,

@@ -27,6 +27,9 @@ class logger:
     log_grid = get_log
 
 
+LOG = logger
+
+
 class CT:
     MOD = (10**9) + 7
     inf = float("inf")

@@ -6,8 +6,6 @@ from common.util.export import (
     defaultdict,
     get_log,
     deque,
-    log,
-    log1,
     List,
     Dict,
 )

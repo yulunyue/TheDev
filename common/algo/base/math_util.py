@@ -2,7 +2,7 @@ import math
 import itertools
 from functools import lru_cache
 from collections import defaultdict, deque, Counter
-from common.util.export import CT
+from common.util.export import CT, List
 
 
 @lru_cache(None)
@@ -53,16 +53,26 @@ def cos(v):
     return math.cos(pi_float(v))
 
 
-def prime_gcds(max_value):
-    ret = defaultdict(set)
-    ret[1] = {1}
+def prime_gcds(max_value) -> List[set]:
+    ret = [None] * max_value
     for i in range(2, max_value):
-        if len(ret[i]):
+        if ret[i] is not None:
             continue
-        j = i
+        j = i * 2
         while j < max_value:
+            if ret[j] is None:
+                ret[j] = set()
             ret[j].add(i)
             j += i
+    return ret
+
+
+def gcd_primes(max_value) -> List[List[int]]:
+    ret = [[] for _ in range(max_value)]
+    for i in range(2, max_value):
+        if not ret[i]:
+            for j in range(i, max_value, i):
+                ret[j].append(i)
     return ret
 
 

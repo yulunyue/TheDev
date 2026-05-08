@@ -17,16 +17,6 @@ class CubeTool(ToolBase):
             log.debug(a.get_dst().show())
         return s
 
-    def view_all(self):
-        s = CubeState.new_shape(C.SHAPE2)
-        self.dev_log.debug(s.show())
-        for a in s.get_sort_actions():
-            self.dev_log.debug(a.show())
-            self.dev_log.debug(a.get_dst().show())
-
-    def dev(self):
-        self.view_all()
-
 
 if __name__ == "__main__":
     CubeTool().run()

@@ -223,6 +223,19 @@ def json_get(data, keys: str, default_value=None):
     return r
 
 
+def json_has(data, keys: str):
+    if isinstance(keys, str):
+        ks = keys.split(".")
+    else:
+        ks = keys
+    r = data
+    for key in ks:
+        if key not in r:
+            return False
+        r = r[key]
+    return True
+
+
 def json_set(data, keys: str, value):
 
     if isinstance(keys, str):

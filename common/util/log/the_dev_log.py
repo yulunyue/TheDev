@@ -29,6 +29,12 @@ class TheDevLoger:
         w.write(msg + b"\n")
         w.flush()
 
+    def clear(self):
+        w = self.fp.get_writer()
+        w.truncate()
+        w.flush()
+        return self
+
     def info(self, msg):
         self.write(msg)
 

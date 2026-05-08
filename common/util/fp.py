@@ -4,7 +4,7 @@ from typing import List, Dict
 import zipfile
 import shutil
 import io
-from .tool import time_format, json_dumps, base64_encode, json_get, json_set
+from .tool import time_format, json_dumps, base64_encode, json_get, json_set, json_has
 from .str_util import StrUtil
 
 
@@ -169,6 +169,9 @@ class File:
 
     def get(self, *keys, default_value=None):
         return json_get(self.get_config(), keys, default_value=default_value)
+
+    def has(self, *keys):
+        return json_has(self.get_config(), keys)
 
     def set(self, *keys, value=None):
         cfg = self.get_config()

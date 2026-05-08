@@ -1,4 +1,4 @@
-from common.util.export import TestBase, log as logger, File
+from common.util.export import TestBase, log2 as logger, File
 from app.yly.envs.game.cube.model import CubeState, CubeAction
 from app.yly.envs.game.cube.constant import C
 from app.yly.envs.game.cube.algo import Al
@@ -102,3 +102,88 @@ class TestCube(TestBase):
         s = CubeState.new_shape(C.SHAPE2)
         colors = set(s.grid)
         self.expect(len(colors), C.SIZE)
+
+    def test_actions_data_analysis(self):
+        max_index = C.SIZE * C.n * C.n - 1
+        logger.info(f"二阶魔方最大索引: {max_index}")
+
+        for (axis, layer), action_groups in C.ACTIONS[C.SHAPE2].items():
+            logger.info(f"\n分析动作 (axis={axis}, layer={layer}):")
+
+            all_indices = set()
+            for group_idx, group in enumerate(action_groups):
+                logger.info(f"  组{group_idx}: {group}")
+
+                for idx in group:
+                    self.expect(0 <= idx <= max_index, True)
+                    all_indices.add(idx)
+
+                self.expect(len(group), 4)
+
+            logger.info(f"  总共影响 {len(all_indices)} 个不同的小块")
+            total_blocks = len(all_indices)
+            logger.info(f"  唯一小块数: {total_blocks}")
+
+        face_rotation = C.ACTIONS[C.SHAPE2][(0, 0)][0]
+        self.expect(face_rotation, [0, 1, 3, 2])
+
+        side_blocks = C.ACTIONS[C.SHAPE2][(0, 0)][1]
+        logger.info(f"axis=0, layer=0 周边块: {side_blocks}")
+
+        for face in range(6):
+            face_indices = [face * 4 + i for i in range(4)]
+            logger.info(f"面{face}索引: {face_indices}")
+
+    def test_rotation_correctness(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        original_grid = s.grid.copy()
+
+        for axis in range(C.AXIS_NUM):
+            for layer in range(C.n):
+                logger.info(f"\n测试 axis={axis}, layer={layer}")
+
+                actions = s.make_actions()
+                action_1 = None
+                action_2 = None
+                action_neg1 = None
+
+                for a in actions:
+                    if a.action == (axis, layer, 1):
+                        action_1 = a
+                    elif a.action == (axis, layer, 2):
+                        action_2 = a
+                    elif a.action == (axis, layer, -1):
+                        action_neg1 = a
+
+                s1 = action_1.get_dst()
+                self.expect(s1.grid != original_grid, True)
+
+                actions_reverse = s1.make_actions()
+                for a in actions_reverse:
+                    if a.action == (axis, layer, -1):
+                        s_recovered = a.get_dst()
+                        self.expect(s_recovered.grid, original_grid)
+                        break
+
+                s2 = action_2.get_dst()
+                actions_2 = s2.make_actions()
+                for a in actions_2:
+                    if a.action == (axis, layer, 2):
+                        s_recovered_2 = a.get_dst()
+                        self.expect(s_recovered_2.grid, original_grid)
+                        break
+
+    def test_all_actions_coverage(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        actions = s.make_actions()
+
+        expected_count = C.AXIS_NUM * C.n * len(C.MOVE_ACTION)
+        self.expect(len(actions), expected_count)
+
+        action_tuples = [a.action for a in actions]
+        unique_actions = set(action_tuples)
+        self.expect(len(unique_actions), expected_count)
+
+    def test_to_str(self):
+        s = CubeState.new_shape(C.SHAPE2).get_action(4).get_dst()
+        assert s.to_str() == ""

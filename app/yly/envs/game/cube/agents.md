@@ -195,6 +195,9 @@ assert s.game_over()
   - test_solve_multiple_steps: 测试多步求解
   - test_state_depth: 测试状态深度
   - test_all_colors_present: 测试所有颜色存在
+  - test_actions_data_analysis: 分析验证 ACTIONS 数据结构
+  - test_rotation_correctness: 验证旋转操作的正确性（正向、反向、180度）
+  - test_all_actions_coverage: 验证动作覆盖完整性
   - test_random_scramble_15_steps: 测试随机生成15步走法并序列化到 data/cube/test.json
   - test_solve_and_visualize: 测试求解魔方并可视化显示还原过程
 - 修复 model.py:make_actions() - 修正 depth 参数传递问题
@@ -212,3 +215,41 @@ assert s.game_over()
   - 搜索求解步骤并输出每步动作和状态变化
   - 验证最终状态完成（game_over为True）
   - 保存结果到 data/cube/solve_result.json
+
+### ACTIONS 数据结构分析
+
+**ACTIONS[C.SHAPE2] 结构**：
+```
+{
+    (axis, layer): [
+        [面内旋转的4个索引],    # 组0: 当前面内块的旋转
+        [周边旋转的4个索引],    # 组1: 周边面的块旋转
+        [周边旋转的4个索引]     # 组2: 其他周边面的块旋转
+    ]
+}
+```
+
+**分析结果**：
+- 二阶魔方：6面 × 4块 = 24个小块（索引0-23）
+- 每个旋转操作影响：面内4块 + 周边8块 = 12个唯一小块
+- 共6个动作组合：3轴 × 2层
+- 每个动作组合包含3组，每组4个索引形成循环置换
+
+**验证结果**：
+- ✓ 所有索引在有效范围(0-23)内
+- ✓ 每组正确包含4个元素
+- ✓ 每个旋转影响12个唯一小块
+- ✓ 正向旋转改变状态
+- ✓ 反向旋转恢复原状态
+- ✓ 两次180度旋转恢复原状态
+- ✓ 所有18个动作唯一覆盖完整
+
+**面索引分布**：
+- 面0(上): [0, 1, 2, 3]
+- 面1(前): [4, 5, 6, 7]
+- 面2(右): [8, 9, 10, 11]
+- 面3(后): [12, 13, 14, 15]
+- 面4(左): [16, 17, 18, 19]
+- 面5(下): [20, 21, 22, 23]
+
+**结论**: ACTIONS数据正确，无需修复
