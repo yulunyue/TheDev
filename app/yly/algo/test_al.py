@@ -1,5 +1,6 @@
 import pytest
 from common.util.export import Module
+from tool.service.lc import Lc
 
 
 class TestAl:
@@ -29,3 +30,6 @@ class TestAl:
             expected = case.pop("expected")
             result = ins.execute(**case)
             assert result == expected
+
+    def test_lc(self):
+        Lc().submit("1234", "723613184")

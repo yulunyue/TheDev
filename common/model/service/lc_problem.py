@@ -35,7 +35,7 @@ class LcProblem(BaseModel):
             )
             if state.statusDisplay in {} or error_msg:
                 raise Exception(state.statusDisplay, error_msg)
-            if state.statusDisplay in {"Wrong Answer"}:
+            if state.statusDisplay in {"Wrong Answer", "Accepted"}:
                 break
             time.sleep(1)
         storge.set(
@@ -61,7 +61,8 @@ class LcProblem(BaseModel):
         lc = get_lc_service()
         t = lc.query_num(number)
         code = t.get_code()
-        t.f.write_file(
+
+        t.f.write_if_not_exists(
             f"from common.util.export import List, Dict, functools, CT\n{code}return"
         )
         t.fun_name = code.split("def ").pop().split("(")[0]
