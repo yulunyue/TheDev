@@ -14,7 +14,7 @@ class TheDevLoger:
             from ..log import logger
 
             self._fp = File(name_to_path(self.name)).write_file("")
-            logger.info(self.fp, stacklevel=4)
+            logger.info(self.fp, stacklevel=3)
         return self._fp
 
     def get_writer(self):

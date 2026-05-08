@@ -1,12 +1,14 @@
-from common.util.export import ToolBase, logger, Module, log
-from .model import CubeState, C
-from .algo import Al
+from common.util.export import logger, Module, log
+from common.tool.export import ToolBase
+from common.algo.export import random_seed
+from app.yly.envs.game.cube.model import CubeState, C
+from app.yly.envs.game.cube.algo import Al
 
 
-class Solution(ToolBase):
-    name = "cube"
+class CubeTool(ToolBase):
 
     def random(self, step=10):
+        random_seed()
         s = CubeState.new_shape(C.SHAPE2)
         log.debug(s.show())
         for _ in range(step):
@@ -24,3 +26,7 @@ class Solution(ToolBase):
 
     def dev(self):
         self.view_all()
+
+
+if __name__ == "__main__":
+    CubeTool().run()

@@ -1,6 +1,6 @@
 from common.algo.export import State, encode_data, decode_data, Action
 from common.third_util.ml.np_util import np
-from common.util.export import logger, List
+from common.util.export import logger, List, Dict
 from .constant import C
 
 
@@ -17,6 +17,8 @@ class CubeState(State):
     def __init__(self, state, depth=0):
         super().__init__(state, depth=depth)
         self.grid = decode_data(state, [C.BIT_SIZE] * (C.SIZE * C.n * C.n))
+
+    STATE_STORE: Dict[str, "CubeState"] = dict()
 
     @classmethod
     def new_shape(cls, n) -> "CubeState":
@@ -37,7 +39,7 @@ class CubeState(State):
                     ret.append(action)
         return ret
 
-    def to_str(self):
+    def to_str(self, *args, **kw):
         ans = [["  "] * (C.n * 4) for _ in range(C.n * 3)]
         for u in range(len(self.grid)):
             i, k = u // (C.n * C.n), u % (C.n * C.n)
@@ -56,7 +58,6 @@ class CubeState(State):
     def to_json(self) -> dict:
         return {
             "state": self.state,
-            "grid": self.grid,
             "depth": self.depth,
             "n": C.n,
             "game_over": self.game_over(),
@@ -67,5 +68,4 @@ class CubeState(State):
             C.load(data["n"])
         self.state = data["state"]
         self.depth = data.get("depth", 0)
-        self.grid = data["grid"]
         return self
