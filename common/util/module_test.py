@@ -14,10 +14,15 @@ class Cls1:
 
 
 def fun_call(self, a, b, d=1, f=2, **kw):
-    pass
+    return 1
 
 
 class TestModule(TestBase):
+    def test_module(self):
+        Module().load_module_object("common.util.module_test::fun_call")
+        f = Module().load_module_object("app.tool.task::test")
+        assert f() == dict(value=1)
+
     def test_get_function_info(self):
         f = get_function_info(Cls1().fun)
         self.expect(

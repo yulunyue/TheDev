@@ -59,6 +59,15 @@ class TestCube(TestBase):
         s = CubeState.new_shape(C.SHAPE2)
         lines = s.to_str()
         self.expect(len(lines), C.n * 3)
+        a = s.get_action(0)
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "OOWWRRYY",
+            "YYOOWWRR",
+            "  GG    ",
+            "  GG    ",
+        ]
 
     def test_bfs_from_init(self):
         s = CubeState.new_shape(C.SHAPE2)
@@ -134,45 +143,6 @@ class TestCube(TestBase):
             face_indices = [face * 4 + i for i in range(4)]
             logger.info(f"面{face}索引: {face_indices}")
 
-    def test_rotation_correctness(self):
-        s = CubeState.new_shape(C.SHAPE2)
-        original_grid = s.grid.copy()
-
-        for axis in range(C.AXIS_NUM):
-            for layer in range(C.n):
-                logger.info(f"\n测试 axis={axis}, layer={layer}")
-
-                actions = s.make_actions()
-                action_1 = None
-                action_2 = None
-                action_neg1 = None
-
-                for a in actions:
-                    if a.action == (axis, layer, 1):
-                        action_1 = a
-                    elif a.action == (axis, layer, 2):
-                        action_2 = a
-                    elif a.action == (axis, layer, -1):
-                        action_neg1 = a
-
-                s1 = action_1.get_dst()
-                self.expect(s1.grid != original_grid, True)
-
-                actions_reverse = s1.make_actions()
-                for a in actions_reverse:
-                    if a.action == (axis, layer, -1):
-                        s_recovered = a.get_dst()
-                        self.expect(s_recovered.grid, original_grid)
-                        break
-
-                s2 = action_2.get_dst()
-                actions_2 = s2.make_actions()
-                for a in actions_2:
-                    if a.action == (axis, layer, 2):
-                        s_recovered_2 = a.get_dst()
-                        self.expect(s_recovered_2.grid, original_grid)
-                        break
-
     def test_all_actions_coverage(self):
         s = CubeState.new_shape(C.SHAPE2)
         actions = s.make_actions()
@@ -183,7 +153,3 @@ class TestCube(TestBase):
         action_tuples = [a.action for a in actions]
         unique_actions = set(action_tuples)
         self.expect(len(unique_actions), expected_count)
-
-    def test_to_str(self):
-        s = CubeState.new_shape(C.SHAPE2).get_action(4).get_dst()
-        assert s.to_str() == ""

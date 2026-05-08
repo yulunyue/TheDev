@@ -11,27 +11,28 @@ class Manage:
         self.topics: Dict[str, set] = dict()
 
     def hander_msg(self, io: Io, msg: Node):
+        if not io.username:
+            raise Exception(msg)
         self.io_map[io.username] = io
         if msg.type == C.METHOD_SUB:
             self.sub(msg.value, io.username)
         elif msg.type == C.METHOD_UN_SUB:
             self.un_sub(msg.value, io.username)
+        logger.info(f"msg={msg.to_json()} user={io.username}")
         return self
 
     def sub(self, topic_name, user_name):
         if topic_name not in self.topics:
             self.topics[topic_name] = set()
         self.topics[topic_name].add(user_name)
-        logger.map(
-            topic_name=topic_name, user_name=user_name, topics=self.topics[topic_name]
-        )
 
     def un_sub(self, topic_name, user_name):
         if topic_name in self.topics:
             self.topics[topic_name].discard(user_name)
 
     def send(self, topic_name, data):
-        for k in self.topics.get(topic_name, []):
+        users = self.topics.get(topic_name, [])
+        for k in users:
             send_data = dict(type=topic_name, value=data)
             self.io_map[k].send_data(send_data)
 

@@ -2,6 +2,10 @@ from common.tool.export import FormBase, TaskConfig, Task, TASK_MANAGE, FontSear
 from common.util.export import C, Node, Type
 
 
+def test(*args):
+    return dict(value=1)
+
+
 class TaskManage(FormBase, Task):
     model: Type[TaskConfig] = TaskConfig
 
@@ -25,6 +29,3 @@ class TaskManage(FormBase, Task):
         task.exec()
         self.model.save_to_local()
         return task.to_json()
-
-
-TASK_MANAGE.set_resource("config/setting/task.json").start()

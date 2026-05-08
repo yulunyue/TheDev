@@ -154,3 +154,10 @@ class Module:
         elif len(names) == 2:
             return getattr(getattr(md, names[0])(), names[1])
         raise Exception(src)
+
+    def load_fun_call(self, path: str):
+        if "?" in path:
+            root_path, module_path = path.split("?")
+        else:
+            root_path, module_path = None, path
+        return self.load_module_object(module_path, root_path)

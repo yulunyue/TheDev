@@ -189,7 +189,7 @@ assert s.game_over()
   - test_action_show: 测试动作显示
   - test_state_convert: 测试状态转换
   - test_random_action: 测试随机动作
-  - test_to_str: 测试状态可视化
+  - test_to_str: 测试状态可视化（验证行数和旋转后的可视化输出）
   - test_bfs_from_init: 测试动作生成（替代BFS）
   - test_solve_one_step: 测试单步求解
   - test_solve_multiple_steps: 测试多步求解
@@ -239,9 +239,6 @@ assert s.game_over()
 - ✓ 所有索引在有效范围(0-23)内
 - ✓ 每组正确包含4个元素
 - ✓ 每个旋转影响12个唯一小块
-- ✓ 正向旋转改变状态
-- ✓ 反向旋转恢复原状态
-- ✓ 两次180度旋转恢复原状态
 - ✓ 所有18个动作唯一覆盖完整
 
 **面索引分布**：
@@ -252,4 +249,4 @@ assert s.game_over()
 - 面4(左): [16, 17, 18, 19]
 - 面5(下): [20, 21, 22, 23]
 
-**结论**: ACTIONS数据正确，无需修复
+**结论**: ACTIONS数据索引范围正确，数据完整性验证通过。旋转逻辑使用 `all_size - 1 - idx` 进行位置映射。

@@ -4,9 +4,15 @@ from common.util.export import json, log, time, logger, LOG
 
 
 def parse_case(case: str):
-    if case.startswith('"'):
-        case = case[1:-1]
-    return [json.loads(case)]
+    try:
+        if case.startswith('"') or case.startswith("'"):
+            case = case[1:-1]
+        try:
+            return [json.loads(case)]
+        except Exception as e:
+            return [case]
+    except Exception as e:
+        raise Exception(case, e)
 
 
 class Lc(ToolBase):

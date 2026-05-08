@@ -43,18 +43,7 @@ class TaskConfig(FileConfig):
         if self.fun:
             return self.fun
         fun_path = self.fun_path.get_value()
-        parts = fun_path.split("::")
-        if len(parts) >= 2:
-            module_path = parts[0]
-            func_name = parts[-1]
-        else:
-            parts = fun_path.split("/")
-            module_path = "/".join(parts[:-1])
-            func_name = parts[-1]
-        self.fun = Module().load_module_object(
-            func_name,
-            module_path,
-        )
+        self.fun = Module().load_fun_call(fun_path)
         return self.fun
 
     def can_run(self):
@@ -89,6 +78,7 @@ class TaskConfig(FileConfig):
             self.last_finish_t = ""
             args = self.args.get_value().split(",")
             self.state = C.doing
+            self.code = C.CODE_200
             self.notify_update()
             f = self.get_call()
             self.error_msg = ""

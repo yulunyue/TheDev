@@ -7,7 +7,8 @@ class Ct:
     SHAPE2 = 2
     AXIS_NUM = 3
     BIT_SIZE = 3
-    COLORS = ["红", "黄", "蓝", "绿", "橙", "白"]
+    COLOR_RED = 0
+    COLORS = ["B", "O", "W", "R", "Y", "G"]
     ACTIONS = {
         SHAPE2: {
             (0, 0): [[0, 1, 3, 2], [19, 4, 23, 21], [13, 17, 6, 12]],
@@ -39,7 +40,6 @@ class Ct:
             for ii, a in enumerate(a2):
                 b = self.all_size - 1 - a2[(ii + tp) % len(a2)]
                 mask = set_mask(mask, b * self.BIT_SIZE, self.BIT_SIZE, grid[a])
-                # logger.map(k=(i, j), a=a, b=b, v=grid[a])
         return mask
 
 

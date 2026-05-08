@@ -38,6 +38,8 @@ HTML_CONTENT_TYPE = dict(
     js="application/x-javascript",
 )
 
+MAIN_IOLOOP = IOLoop.current()
+
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
     hander_msg = None
@@ -54,11 +56,9 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         # )
         if msg.type == C.METHOD_LOGIN:
             self.username = msg.value
-            logger.info(message)
             self.write_message(dict(type=C.METHOD_LOGIN_OK))
         elif not self.username:
             # logger.info(f"{self.request} {message}")
-            logger.info(message)
             self.write_message(dict(type=C.METHOD_LOGIN))
         elif TornadaWebSocketConnectHandler.hander_msg:
             TornadaWebSocketConnectHandler.hander_msg(self, msg)
@@ -73,11 +73,18 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         return True
 
     def send_message(self, data):
+        # logger.info(f"send_message {self.username} {data}")
+        MAIN_IOLOOP.add_callback(self._safe_write_message, data)
+
+    def _safe_write_message(self, data):
         if self.ws_connection and not self.ws_connection.is_closing():
             try:
+                # logger.info(f"write_msg {self.username} {data}")
                 self.write_message(data)
             except Exception as e:
-                print(f"Failed to send message: {e}")
+                logger.info(f"Failed to write message: {e}")
+        else:
+            logger.map(c=self.ws_connection, data=data)
 
     def send_data(self, data):
         self.send_message(data)
@@ -161,11 +168,11 @@ def run(gs: Dict[str, str], port):
     )
     logger.info(f"listen:{port} pid:{os.getpid()}")
     app.listen(port, "0.0.0.0")
-    IOLoop.instance().start()
+    MAIN_IOLOOP.start()
 
 
 def stop():
-    IOLoop.instance().stop()
+    MAIN_IOLOOP.stop()
 
 
 if __name__ == "__main__":

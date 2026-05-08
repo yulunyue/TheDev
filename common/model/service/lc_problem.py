@@ -33,9 +33,9 @@ class LcProblem(BaseModel):
             error_msg = (
                 state.outputDetail["compileError"] + state.outputDetail["runtimeError"]
             )
-            if state.statusDisplay in {""} or error_msg:
+            if state.statusDisplay in {} or error_msg:
                 raise Exception(state.statusDisplay, error_msg)
-            if state.statusDisplay in {""}:
+            if state.statusDisplay in {"Wrong Answer"}:
                 break
             time.sleep(1)
         storge.set(

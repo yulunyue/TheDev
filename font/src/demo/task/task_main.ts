@@ -5,7 +5,7 @@ import {
 } from "../../base/components/export";
 
 export class TaskMain extends Row {
-    top_form: FormColumn
+    top_form: FormRow
     search_input: Search
     add_btn: Button
     header: Column
@@ -44,7 +44,7 @@ export class TaskMain extends Row {
         this.search_input = new Search()
         this.add_btn = new Button().set_html("新增任务")
         this.exec_btn = new Button().set_html("执行")
-        this.top_form = new FormColumn()
+        this.top_form = new FormRow()
         this.status_span = new Span()
         this.result_div = new Pre()
         this.header = new Column().add_childs([
@@ -124,15 +124,15 @@ export class TaskMain extends Row {
         dialog.open(this.top_form)
     }
     render(): void {
+        this.search_input.set_option({
+            url: "/app/task/web_search",
+            id: "task_search",
+            title: "任务名称"
+        })
         web_dom.post("/app/task/schema", {}, (v: Node) => {
             this.top_form.set_option(v.data.top_form)
-            this.search_input.set_option({
-                url: "/app/task/web_search",
-                id: "task_search",
-                title: "任务名称"
-            })
-            Data.get_user_name((user_name: any) => {
-            })
+        })
+        Data.get_user_name((user_name: any) => {
         })
     }
 }
