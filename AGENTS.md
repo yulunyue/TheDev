@@ -1,65 +1,50 @@
-# OpenCode Agent Instructions
+# TheDev Agent Instructions
 
-## Essential Commands
+Personal experimental project (Python + Tornado + TypeScript + Rust + C++).
 
-### Running the Application
-- `python main.py dev` - Start Tornado web server (default env: dev)
-- `python main.py test` - Start with test environment config
+## Commands
+
+### Server
+- `python main.py dev` — Tornado web server on port 10001 (default env: dev)
+- `python main.py test` — same with test env config
+- Config auto-created at `config/setting/{env}.json` if missing
 - Server writes PID to `data/proc/{env}.pid`
-- Config file auto-created at `config/setting/{env}.json` if missing
 
 ### Testing
-- `python -m pytest tests/` - Run all tests
-- `python tool/pytest.py test <module_name>` - Run specific test module (searches `tests/`, then `app/` and `common/`)
-- `python tool/pytest.py test <module_name> <function_name>` - Run specific test function
-- `python tool/pytest.py cover` - Run tests with coverage (sources: `common`, `app`)
-- Coverage output: `data/coverage/pytest_report.html`
+- `python -m pytest tests/` — all tests
+- `python tool/pytest.py test <module>` — run test by name (searches `tests/`, then `app/`, then `common/`)
+- `python tool/pytest.py test <module> <func>` — specific test function (supports `Class::method`)
+- `python tool/pytest.py exec <module> <Class>::<method>` — direct execution without pytest
+- `python tool/pytest.py cover` — coverage for `common/` + `app/`, output to `data/coverage/`
 
-### Frontend Development
-- `cd font && npm start` - Start webpack dev server (port 8080)
-- `cd font && npm run build` - Build frontend for production
+### Frontend
+- `cd font && npm start` — webpack dev server on port 8080
+- `cd font && npm run build` — production build
 
-### Rust Development
-- `cd rust/the_dev && cargo build` - Build Rust component
-- `cd rust/the_dev && cargo run` - Run Rust component
+### Rust / C++
+- `cd rust/the_dev && cargo build` / `cargo run`
+- C++ in `cpp/` (no formal build commands in repo)
+
+### CLI Tools
+- `python tool/<name>.py <method>` — auto-discovers methods via `ToolBase`
+- Docs auto-generated at `doc/tool/<name>.md`
 
 ## Architecture
 
-### Core Components
-- **main.py** - Entry point; loads config and starts Tornado server
-- **common/util/export.py** - Central exports (File, logger, Module, ApiBase, TestBase)
-- **common/third_util/http.py** - Tornado server, WebSocket handler, MainHandler with POST_API
-- **common/mock.py** - MockCf base class for competitive programming tests
-- **common/tool/toolbase.py** - Base class for CLI tools with auto-discovery
-- **common/tool/export.py** - Tool utilities (ToolBase, PyUtil, System, FrontTable, etc.)
-- **app/tool/** - API endpoint handlers (api.py, user.py, algo.py, manage.py, etc.)
+- **Entrypoint**: `main.py` → `common/third_util/http.py` (Tornado `Application`)
+- **API handlers** in `app/tool/`: inherit `ApiBase`; all public methods auto-register as `/{route}/{method_name}`
+- **Module loading**: dynamic via `Module.load_module()` with cache invalidation; config defines `py_modules` with `path` + `modules` dict
+- **WebSocket** at `/ws` (`TornadaWebSocketConnectHandler`); pub/sub via `IO_MANAGE` (topics in `C` constants)
+- **API dispatch**: `MainHandler.POST_API.call(path, params, envs)`, user context from header `the_dev_user`
+- **Task runner**: `TASK_MANAGE` reads `config/setting/task.json`, started in `main.py`
+- **Config/business data**: JSON files in `config/setting/` (`user.json`, `task.json`) — gitignored, created on first run
 
-### Module Loading
-- Modules load dynamically from config `py_modules` sections
-- Local modules: `./` (relative to project root)
-- External modules: `/huawei/secmaster/csb-hcso-hcsu` (absolute path, if configured)
-- API registration: `MainHandler.POST_API.call(path, params, envs)` routes to registered handlers
-- WebSocket: `/ws` endpoint for real-time communication
-- User context: `envs[C.THE_DEV_USER]` from request header
+## Testing Conventions
 
-### API Development
-- API handlers inherit from `ApiBase` in `common/util/api/apibase.py`
-- All public methods auto-registered via `ApiCall.load_module()` as `/{route}/{method_name}`
-- Optional: set `API_ROUTE` class attribute or `front_apis` list to customize registration
-- Request params parsed as JSON for `application/json` content-type
-
-### Testing Conventions
-- Test discovery: `tests/` first, then `app/` and `common/`
-- Test classes inherit from `TestBase` or use pytest directly
-- Setup with `@classmethod setup_class()` method
-- Use `assert_dict` from `common.util.export` for deep comparison
-- Mock system: `MockCf` in `common/mock.py` with `oj_run` for competitive programming
-
-### Tool Development
-- Extend `ToolBase` for CLI tools
-- Use `ToolBase.run()` for command parsing
-- Methods are auto-discovered and callable via `python tool/<name>.py <method>`
-- Tool docs generated at `doc/tool/<name>.md`
+- Test classes can inherit `TestBase` (provides `expect()`, `expect_raise_error()`, `run_all_test()`) or use plain pytest
+- `@classmethod setup_class()` for class-level setup
+- Use `assert_dict` from `common.util.export` for deep dict comparison
+- `MockCf` in `common/mock.py` for competitive programming tests with `oj_run()`
 
 ## Key Imports
 
@@ -74,17 +59,11 @@ from common.tool.export import (
 )
 ```
 
-## Platform-Specific Notes
+## Gotchas
 
-### Windows
-- Gunicorn tests skipped on Windows
-- Path separators: Always use `os.path` to handle `/` vs `\`
-
-## Data Directories
-- `data/proc/` - Process ID files (`{env}.pid`)
-- `data/coverage/` - Test coverage reports
-- `data/log/` - Application logs
-- `data/log/diff/` - Test diff output
-- `data/tool/` - Tool temp files
-- `data/cases/` - Test case data
-- `data/upload/` - Uploaded files
+- All public methods on `ApiBase` subclasses become API endpoints — be deliberate about what's exposed
+- Test discovery order is `tests/` → `app/` → `common/`; first match wins
+- Gunicorn tests (`test_gunicorn.py`) skipped on Windows
+- The `File` utility normalizes paths (`\` → `/`) and caches instances by path
+- `common/util/export.py` is the hub — almost everything is re-exported from there
+- No linter/formatter/typechecker config in repo
