@@ -95,11 +95,17 @@ export class TaskMain extends Row {
     }
     load_task(): void {
         let name = this.search_input.get_value()
+        if (this.current_task && this.current_task !== name) {
+            this.unsubscribe_task(this.current_task)
+        }
         if (!name) {
             this.result_div.set_html("")
             this.status_span.set_html("")
+            this.current_task = ""
             return
         }
+        this.current_task = name
+        this.subscribe_task(name)
         web_dom.post("/app/task/get", { key: name }, (data: Node) => {
             this.status_span.set_html(`任务: ${name}`)
             this.result_div.set_html(JSON.stringify(data, null, 2))
