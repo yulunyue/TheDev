@@ -62,7 +62,7 @@ class Todo(FormBase):
         models: List[TodoModel] = sorted(
             self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
         )
-        score_map = dict(study=1, entertainment=-1, life=2, sport=3, project=2)
+        score_map = dict(study=1, entertainment=-2, life=2, sport=3, project=2)
         score = 0
         for v in models:
             if v.category == "money":
