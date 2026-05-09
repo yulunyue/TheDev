@@ -6,3 +6,4 @@ from .bool_model import BoolModel
 from .list_model import ListModel
 from .search_model import SearchModel
 from .enc_model import EncroyModel
+from .select_model import SelectModel

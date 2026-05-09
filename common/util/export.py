@@ -31,6 +31,7 @@ from .tool import (
     asset_exception,
     time_strptime,
     time_format,
+    time_change,
 )
 from .test import TestBase, logger
 from .fp import File

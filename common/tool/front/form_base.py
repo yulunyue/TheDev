@@ -10,7 +10,7 @@ class FormBase(ApiBase):
         return getattr(self, key)
 
     def get(self, key, **kw):
-        return self.__class__.model.get(key)
+        return Node(value=self.__class__.model.get(key))
 
     def to_form_row_view(self):
         return Form().set_row().set_body(*self.__class__.model.get_form_columns())

@@ -42,16 +42,17 @@ export class TaskMain extends Row {
     }
     init_node(): void {
         this.search_input = new Search()
-        this.add_btn = new Button().set_html("新增任务")
-        this.exec_btn = new Button().set_html("执行")
+        this.add_btn = new Button().set_html("新增")
+        this.exec_btn = new Button().set_html("编辑")
         this.top_form = new FormRow()
         this.status_span = new Span()
         this.result_div = new Pre()
         this.header = new Column().add_childs([
             this.search_input,
+            this.exec_btn,
             this.status_span,
             this.add_btn,
-            this.exec_btn
+
         ])
         this.add_childs([
             this.header,
@@ -65,11 +66,13 @@ export class TaskMain extends Row {
         })
         this.exec_btn.on_click(() => {
             let name = this.search_input.get_value()
-            if (name) {
-                web_dom.post("/app/task/exec_task", { name }, (data: any) => {
-                    this.result_div.set_html(JSON.stringify(data, null, 2))
-                })
+            if (!name) {
+                return
             }
+            web_dom.post("/app/task/get", { key: name }, (data: Node) => {
+                this.on_task_change(Constant.METHOD_EDIT, null, data.value)
+            })
+
         })
         this.top_form.on_submit(this.submit.bind(this))
     }
@@ -106,10 +109,7 @@ export class TaskMain extends Row {
         }
         this.current_task = name
         this.subscribe_task(name)
-        web_dom.post("/app/task/get", { key: name }, (data: Node) => {
-            this.status_span.set_html(`任务: ${name}`)
-            this.result_div.set_html(JSON.stringify(data, null, 2))
-        })
+
     }
     on_task_change(method: string, f: any, t: any) {
         if (method == Constant.METHOD_INSERT) {

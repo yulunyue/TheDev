@@ -38,6 +38,11 @@ class Constant:
     VIEW_SATTE_MAX = (1 << 8) - 1
     LAYOUT_ROW = "ROW"
     LAYOUT_COLUMN = "COLUMN"
+    SECOND1 = "SECOND1"
+    SECOND30 = "SECOND30"
+    MINUTE1 = "MINUTE1"
+    MINUTE30 = "MINUTE30"
+    EVERY_DAY_BEGIN = "EVERY_DAT_BEGIN"
 
 
 class CT:
