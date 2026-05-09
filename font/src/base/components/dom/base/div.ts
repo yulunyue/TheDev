@@ -347,13 +347,6 @@ export class Div {
         this.el.innerHTML = text
         return this
     }
-    set_uri(s: string, call?: any) {
-        web_dom.post(s, {}, (data: Node) => {
-            this.set_option(data)
-            call?.()
-        })
-        return this
-    }
     set_value(value: any) {
         // console.trace(value)
         return this

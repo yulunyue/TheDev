@@ -94,14 +94,14 @@ class CubeApi(ApiBase):
 
     def to_form_column_view(self, **kw):
         return Form().set_column().set_body(
-            Node(value={"key": "axis", "type": "select", "label": "旋转轴", 
-                      "options": ["X轴(垂直)", "Y轴(水平)", "Z轴(前后)"]}),
-            Node(value={"key": "layer", "type": "select", "label": "层号",
-                      "options": ["0", "1"]}),
-            Node(value={"key": "rotate", "type": "select", "label": "旋转方向",
-                      "options": ["-1(逆时针)", "1(顺时针)", "2(180度)"]}),
-            Node(value={"key": "steps", "type": "input", "label": "打乱步数", "default": "10"}),
-        )
+            {"key": "axis", "type": "select", "label": "旋转轴", 
+             "options": ["X轴(垂直)", "Y轴(水平)", "Z轴(前后)"]},
+            {"key": "layer", "type": "select", "label": "层号",
+             "options": ["0", "1"]},
+            {"key": "rotate", "type": "select", "label": "旋转方向",
+             "options": ["-1(逆时针)", "1(顺时针)", "2(180度)"]},
+            {"key": "steps", "type": "input", "label": "打乱步数", "default": "10"},
+        ).to_json()
 
     def _state_to_node(self, s: CubeState) -> Node:
         return Node(value={
