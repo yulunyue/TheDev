@@ -51,16 +51,14 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
 
     def on_message(self, message):
         msg = Node(**json.loads(message))
-        # logger.info(
-        #     f"{self} {self.request} {self.ws_connection} {self.username} {message}"
-        # )
+
         if msg.type == C.METHOD_LOGIN:
             self.username = msg.value
             self.write_message(dict(type=C.METHOD_LOGIN_OK))
         elif not self.username:
             # logger.info(f"{self.request} {message}")
             self.write_message(dict(type=C.METHOD_LOGIN))
-        elif TornadaWebSocketConnectHandler.hander_msg:
+        if TornadaWebSocketConnectHandler.hander_msg:
             TornadaWebSocketConnectHandler.hander_msg(self, msg)
 
     def on_close(self):

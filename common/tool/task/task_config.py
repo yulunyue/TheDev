@@ -41,6 +41,7 @@ class TaskConfig(FileConfig):
         self.last_begin_t = ""
         self.last_finish_t = ""
         self.state = ""
+        self.value = None
         self.error_msg = ""
 
     def get_call(self):
@@ -69,6 +70,7 @@ class TaskConfig(FileConfig):
                 last_begin_t=self.last_begin_t,
                 last_finish_t=self.last_finish_t,
                 state=self.state,
+                value=self.value,
                 error_msg=self.error_msg,
             ),
         )

@@ -27,17 +27,16 @@ class LcProblem(BaseModel):
             logger.map(
                 passedTestCaseCnt=state.passedTestCaseCnt,
                 totalTestCaseCnt=state.totalTestCaseCnt,
-                case=state.outputDetail,
                 status=state.statusDisplay,
             )
             error_msg = (
                 state.outputDetail["compileError"] + state.outputDetail["runtimeError"]
             )
-            if state.statusDisplay in {} or error_msg:
+            if state.statusDisplay in {"Time Limit Exceeded"} or error_msg:
                 raise Exception(state.statusDisplay, error_msg)
             if state.statusDisplay in {"Wrong Answer", "Accepted"}:
                 break
-            time.sleep(1)
+            time.sleep(3)
         storge.set(
             self.questionFrontendId, "cases", submissionId, value=state.outputDetail
         )

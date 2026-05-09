@@ -59,6 +59,3 @@ class Manage:
                 logger.info(e)
         OsUtil("python").system("main.py", config, "2>&1", "&")
         return Node()
-
-    def get_ios(self):
-        return FontSearch().add_node(*IO_MANAGE.keys())

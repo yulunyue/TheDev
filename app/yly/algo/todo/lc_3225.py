@@ -1,7 +1,7 @@
-from common.util.export import MockCf, List, functools, CT
+from common.util.export import MockCf, List, functools, CT, LOG
 
 
-class Solution(MockCf):
+class Solution:
     """
     给定一个m行n列的矩阵g，矩阵中的元素都>0，我们需要尽可能的选择其中的一些元素，使得和最大。
     选择的规则是，如果选择(i，j)，则对于两个集合
@@ -11,20 +11,6 @@ class Solution(MockCf):
     可以使用动态规划
     f[i,j]=max(f[i-1,j],g[i,j]+f[i,j-1])
     """
-
-    def get_cases(self):
-        return dict(
-            case0=dict(
-                grid=[
-                    [0, 0, 0, 0, 0],
-                    [0, 0, 3, 0, 0],
-                    [0, 1, 0, 0, 0],
-                    [5, 0, 0, 3, 0],
-                    [0, 0, 0, 0, 2],
-                ],
-                expected=11,
-            )
-        )
 
     def calc(self, j, cur, pre):
         return self.g[pre][j] - self.g[cur][j] if pre > cur else 0

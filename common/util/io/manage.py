@@ -18,9 +18,10 @@ class Manage:
         elif msg.type == C.METHOD_UN_SUB:
             self.un_sub(msg.value, io.username)
         elif msg.type == C.METHOD_LOGIN_OUT:
-            self.io_map.pop(io.username)
+            if io.username in self.io_map:
+                self.io_map.pop(io.username)
         elif msg.type == C.METHOD_LOGIN:
-            self.io_map[io.username] = self
+            self.io_map[io.username] = io
         logger.info(f"msg={msg.to_json()} user={io.username}")
         return self
 
@@ -35,9 +36,12 @@ class Manage:
 
     def send(self, topic_name, data):
         users = self.topics.get(topic_name, [])
-        for k in users:
+        for k in list(users):
             send_data = dict(type=topic_name, value=data)
-            self.io_map[k].send_data(send_data)
+            if k in self.io_map:
+                self.io_map[k].send_data(send_data)
+            else:
+                users.remove(k)
 
     def get_all_users(self):
         return list(self.io_map.keys())
