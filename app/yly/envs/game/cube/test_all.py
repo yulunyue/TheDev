@@ -79,16 +79,9 @@ class TestCube(TestBase):
             ["  BB    ", "  BB    ", "OOWWRRYY", "WWRRYYOO", "  GG    ", "  GG    "],
             ["  BB    ", "  BB    ", "OOWWRRYY", "RRYYOOWW", "  GG    ", "  GG    "],
             # axis=0, layer=1
-            ["  BB    ", "  OO    ", "OOWWRRYY", "WWRRBBYY", "  GG    ", "  GG    "],
-            [
-                "  BB    ",
-                "  RR    ",
-                "OOWWRRYY",
-                "BBOOWWYY",
-                "  GG    ",
-                "  GG    ",
-            ],
-            ["  BB    ", "  WW    ", "OOWWRRYY", "RRBBOOYY", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "YYOOWWRR", "OOWWRRYY", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "WWRRYYOO", "OOWWRRYY", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "RRYYOOWW", "OOWWRRYY", "  GG    ", "  GG    "],
             # axis=1 (Orange/Red), layer=0
             ["  BY    ", "  BY    ", "OOGWRRWW", "OOGWRRYY", "  GG    ", "  BB    "],
             ["  BG    ", "  BG    ", "OOYWRRBB", "OOYWRRYY", "  GG    ", "  WW    "],
@@ -98,13 +91,13 @@ class TestCube(TestBase):
             ["  YB    ", "  YB    ", "OOWGRRYY", "OOWGRRWW", "  BB    ", "  GG    "],
             ["  WB    ", "  WB    ", "OOWBRRYY", "OOWBRRGG", "  YY    ", "  GG    "],
             # axis=2 (White/Yellow), layer=0
-            ["  BB    ", "  BB    ", "OYWWGRRY", "OYWWGRRY", "  OG    ", "  OG    "],
-            ["  BB    ", "  BB    ", "OGWWYROY", "OGWWYROY", "  RG    ", "  RG    "],
-            ["  BB    ", "  BB    ", "ORWWORGY", "ORWWORGY", "  YG    ", "  YG    "],
+            ["  BB    ", "  RR    ", "OBWWGRYY", "OBWWGRYY", "  OO    ", "  GG    "],
+            ["  BB    ", "  OO    ", "OGWWBRYY", "OGWWBRYY", "  RR    ", "  GG    "],
+            ["  BB    ", "  GG    ", "ORWWORYY", "ORWWORYY", "  BB    ", "  GG    "],
             # axis=2, layer=1
-            ["  RR    ", "  BB    ", "BBOOWWYY", "OOWWRRYY", "  GG    ", "  GG    "],
-            ["  OO    ", "  BB    ", "WWRRBBYY", "OOWWRRYY", "  GG    ", "  GG    "],
-            ["  WW    ", "  BB    ", "RRBBOOYY", "OOWWRRYY", "  GG    ", "  GG    "],
+            ["  RR    ", "  BB    ", "BOWWRGYY", "BOWWRGYY", "  GG    ", "  OO    "],
+            ["  OO    ", "  BB    ", "GOWWRBYY", "GOWWRBYY", "  GG    ", "  RR    "],
+            ["  GG    ", "  BB    ", "ROWWROYY", "ROWWROYY", "  GG    ", "  BB    "],
         ]
         for i, action in enumerate(actions):
             assert (
