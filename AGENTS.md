@@ -1,5 +1,6 @@
 # TheDev Agent Instructions
 
+Language: 中文（所有回复默认使用中文）
 Personal experimental project (Python + Tornado + TypeScript + Rust + C++).
 
 ## Commands
