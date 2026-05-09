@@ -69,6 +69,41 @@ class TestCube(TestBase):
             "  GG    ",
         ]
 
+    def test_all_actions_to_str(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        actions = s.make_actions()
+        self.expect(len(actions), C.AXIS_NUM * C.n * len(C.MOVE_ACTION))
+        expected = [
+            # axis=0 (Blue/Green), layer=0
+            ["  BB    ", "  BB    ", "OOWWRRYY", "YYOOWWRR", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "OOWWRRYY", "WWRRYYOO", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "OOWWRRYY", "RRYYOOWW", "  GG    ", "  GG    "],
+            # axis=0, layer=1
+            ["  BB    ", "  OO    ", "OOWWRRYY", "WWRRBBYY", "  GG    ", "  GG    "],
+            ["  BB    ", "  RR    ", "OOWWRRYY", "BBOOWWYY", "  GG    ", "  GG    "],
+            ["  BB    ", "  WW    ", "OOWWRRYY", "RRBBOOYY", "  GG    ", "  GG    "],
+            # axis=1 (Orange/Red), layer=0
+            ["  BY    ", "  BY    ", "OOGWRRWW", "OOGWRRYY", "  GG    ", "  BB    "],
+            ["  BG    ", "  BG    ", "OOYWRRBB", "OOYWRRYY", "  GG    ", "  WW    "],
+            ["  BW    ", "  BW    ", "OOBWRRGG", "OOBWRRYY", "  GG    ", "  YY    "],
+            # axis=1, layer=1
+            ["  GB    ", "  GB    ", "OOWYRRYY", "OOWYRRBB", "  WW    ", "  GG    "],
+            ["  YB    ", "  YB    ", "OOWGRRYY", "OOWGRRWW", "  BB    ", "  GG    "],
+            ["  WB    ", "  WB    ", "OOWBRRYY", "OOWBRRGG", "  YY    ", "  GG    "],
+            # axis=2 (White/Yellow), layer=0
+            ["  BB    ", "  BB    ", "OYWWGRRY", "OYWWGRRY", "  OG    ", "  OG    "],
+            ["  BB    ", "  BB    ", "OGWWYROY", "OGWWYROY", "  RG    ", "  RG    "],
+            ["  BB    ", "  BB    ", "ORWWORGY", "ORWWORGY", "  YG    ", "  YG    "],
+            # axis=2, layer=1
+            ["  RR    ", "  BB    ", "BBOOWWYY", "OOWWRRYY", "  GG    ", "  GG    "],
+            ["  OO    ", "  BB    ", "WWRRBBYY", "OOWWRRYY", "  GG    ", "  GG    "],
+            ["  WW    ", "  BB    ", "RRBBOOYY", "OOWWRRYY", "  GG    ", "  GG    "],
+        ]
+        for i, action in enumerate(actions):
+            assert action.get_dst().to_str() == expected[i], (
+                f"action {i} mismatch: {action.get_dst().to_str()} != {expected[i]}"
+            )
+
     def test_bfs_from_init(self):
         s = CubeState.new_shape(C.SHAPE2)
         actions = s.make_actions()
