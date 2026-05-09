@@ -9,6 +9,7 @@ from common.tool.export import TASK_MANAGE
 
 
 def start():
+
     TornadaWebSocketConnectHandler.hander_msg = IO_MANAGE.hander_msg
     HTTP_CONF_FiLE = File(f"config/setting/{sys.argv[1]}.json").write_if_not_exists(
         dict(
@@ -23,14 +24,16 @@ def start():
                     },
                 )
             ],
-            port=10001,
+            port=9999,
         )
     )
+
     logger.info(HTTP_CONF_FiLE)
     conf = HTTP_CONF_FiLE.read_file()
     File(f"data/proc/{sys.argv[1]}.pid").write_file(str(os.getpid()))
     TASK_MANAGE.set_resource("config/setting/task.json").start()
-    run(conf["py_modules"], port=conf.get("port", 9999))
+    port = SYS_KW.get("port", conf["port"])
+    run(conf["py_modules"], port=port)
 
 
 if __name__ == "__main__":

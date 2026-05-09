@@ -196,7 +196,6 @@ assert s.game_over()
   - test_state_depth: 测试状态深度
   - test_all_colors_present: 测试所有颜色存在
   - test_actions_data_analysis: 分析验证 ACTIONS 数据结构
-  - test_rotation_correctness: 验证旋转操作的正确性（正向、反向、180度）
   - test_all_actions_coverage: 验证动作覆盖完整性
   - test_random_scramble_15_steps: 测试随机生成15步走法并序列化到 data/cube/test.json
   - test_solve_and_visualize: 测试求解魔方并可视化显示还原过程
@@ -215,6 +214,26 @@ assert s.game_over()
   - 搜索求解步骤并输出每步动作和状态变化
   - 验证最终状态完成（game_over为True）
   - 保存结果到 data/cube/solve_result.json
+
+### 2026-05-09
+- 实现魔方2D可视化前后端
+  - 后端：app/tool/cube.py
+    - 路由：/cube
+    - API接口：new, random, rotate, solve, get_state, to_form_column_view
+    - 支持随机打乱（返回动作序列）、单步旋转、BFS求解
+    - 修复：移除 FormBase 继承，改为直接继承 ApiBase
+    - 修复：使用 Form().set_column() 构建表单视图
+  - 前端：font/src/demo/cube/
+    - cube_grid.ts: 2D展开视图组件
+    - cube_main.ts: 主组件（控制面板+动画演示）
+    - 注册路由到 font/src/app.ts
+  - 测试：app/tool/cube_test.py（6个测试全部通过）
+  - 功能特性：
+    - 完全下拉选择旋转（轴/层/方向）
+    - 打乱动画展示每一步
+    - 求解动画自动演示
+    - 经典颜色方案
+  - 配置更新：config/setting/dev.json 添加 /cube 路由
 
 ### ACTIONS 数据结构分析
 

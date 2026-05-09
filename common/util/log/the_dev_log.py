@@ -31,6 +31,7 @@ class TheDevLoger:
 
     def clear(self):
         w = self.fp.get_writer()
+        w.seek(0)
         w.truncate()
         w.flush()
         return self

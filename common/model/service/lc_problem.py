@@ -36,7 +36,7 @@ class LcProblem(BaseModel):
                 raise Exception(state.statusDisplay, error_msg)
             if state.statusDisplay in {"Wrong Answer", "Accepted"}:
                 break
-            time.sleep(3)
+            time.sleep(4)
         storge.set(
             self.questionFrontendId, "cases", submissionId, value=state.outputDetail
         )
