@@ -23,7 +23,7 @@ class TieNode:
         return self
 
     def update_pos(self, idx):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def add(self, s, idx=None) -> "TieNode":
         tmp = self
@@ -76,7 +76,7 @@ class TieNode:
         return "\n".join(ret + ["----"])
 
     def get_next_child(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def query(self, s):
         root = self

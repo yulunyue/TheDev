@@ -23,6 +23,10 @@ class TaskConfig(FileConfig):
     run_model = DictModel().set_title("运行模式")
 
     @classmethod
+    def get_id_by_param(cls, name, **kw):
+        return name
+
+    @classmethod
     def set_resource(cls, path):
         return super().set_resource(path)
 

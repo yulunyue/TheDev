@@ -51,7 +51,7 @@ class Io:
         self.send(data)
 
     def send(self, data):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def send_data(self, data):
         self.write(data)

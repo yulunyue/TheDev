@@ -84,7 +84,10 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
             except Exception as e:
                 logger.info(f"Failed to write message: {e}")
         else:
-            logger.map(c=self.ws_connection, data=data)
+            logger.map(user_name=self.username, c=self.ws_connection, data=data)
+            TornadaWebSocketConnectHandler.hander_msg(
+                self, Node(type=C.METHOD_LOGIN_OUT)
+            )
 
     def send_data(self, data):
         self.send_message(data)

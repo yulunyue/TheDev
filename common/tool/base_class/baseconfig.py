@@ -35,7 +35,7 @@ class ConfigBase:
 
     @classmethod
     def get_id_by_param(cls, **kw):
-        raise NotImplemented
+        raise NotImplementedError()
 
     @classmethod
     def insert(cls, idx, **kw) -> "Self":
@@ -57,7 +57,7 @@ class ConfigBase:
 
     @classmethod
     def all(cls) -> List[Self]:
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @classmethod
     def get_default_conifg(cls):
@@ -86,11 +86,11 @@ class ConfigBase:
 
     @classmethod
     def update_param_value(self, param, value):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @classmethod
     def get_param_value(self, param):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def update(self, **kw) -> "Self":
         for k, v in kw.items():
@@ -120,7 +120,7 @@ class ConfigBase:
 
     @classmethod
     def save_to_local(cls):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def save(self):
         self.__class__.save_to_local()
@@ -142,7 +142,7 @@ class ConfigBase:
 
     @classmethod
     def init_resource(cls):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @classmethod
     def filter(cls, key):

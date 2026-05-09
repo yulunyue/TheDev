@@ -31,13 +31,13 @@ class SegTreeNode:
         self.up(node)
 
     def do(self, i, L, R, *v):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def up(self, i):
         self.value[i] = self.merge(self.value[i * 2], self.value[i * 2 + 1])
 
     def merge(self, lv, rv):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def query_array(self, i, l, r, L, R):
         if l <= L and R <= r:
@@ -59,7 +59,7 @@ class SegTreeNode:
         pass
 
     def load(self, *args):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def update_area(self, i, l, r, L, R, *v):
         if l <= L and R <= r:

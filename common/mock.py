@@ -77,7 +77,7 @@ class MockCf:
         self._o.write(f"{s}\n")
 
     def exec(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def run(self, case_name=""):
         oj_run(self, case_name)
@@ -85,13 +85,13 @@ class MockCf:
     cls_agent = None
 
     def main(self):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def execute(self, inps: str):
         return self.set_inputs(inps).main()
 
     def init(self, **kw):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def log(self, **kw):
         if self.logger is None:

@@ -4,15 +4,17 @@ from common.util.export import json, log, time, logger, LOG, sys
 
 
 def parse_case(case: str):
-    try:
-        if case.startswith('"') or case.startswith("'"):
-            case = case[1:-1]
+
+    if case.startswith('"') or case.startswith("'"):
+        case = case[1:-1]
+    case = case.split("\n")
+    cases = []
+    for c in case:
         try:
-            return [json.loads(case)]
+            cases.append(json.loads(c))
         except Exception as e:
-            return [case]
-    except Exception as e:
-        raise Exception(case, e)
+            cases.append(c)
+    return cases
 
 
 class Lc:
@@ -29,7 +31,7 @@ class Lc:
             LOG.clear()
             LOG.info(f"-------\ncase:{key}; inputs:{case['input']}")
             result = fun(*parse_case(case["input"]))
-            expectedOutput = case["expectedOutput"]
+            expectedOutput = parse_case(case["expectedOutput"])[0]
             LOG.info(f"result:{result};  expectedOutput:{expectedOutput}")
             if str(expectedOutput) != str(result):
                 raise Exception(f"result:{result};  expectedOutput:{expectedOutput}")

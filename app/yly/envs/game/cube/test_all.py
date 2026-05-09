@@ -80,7 +80,14 @@ class TestCube(TestBase):
             ["  BB    ", "  BB    ", "OOWWRRYY", "RRYYOOWW", "  GG    ", "  GG    "],
             # axis=0, layer=1
             ["  BB    ", "  OO    ", "OOWWRRYY", "WWRRBBYY", "  GG    ", "  GG    "],
-            ["  BB    ", "  RR    ", "OOWWRRYY", "BBOOWWYY", "  GG    ", "  GG    "],
+            [
+                "  BB    ",
+                "  RR    ",
+                "OOWWRRYY",
+                "BBOOWWYY",
+                "  GG    ",
+                "  GG    ",
+            ],
             ["  BB    ", "  WW    ", "OOWWRRYY", "RRBBOOYY", "  GG    ", "  GG    "],
             # axis=1 (Orange/Red), layer=0
             ["  BY    ", "  BY    ", "OOGWRRWW", "OOGWRRYY", "  GG    ", "  BB    "],
@@ -100,9 +107,9 @@ class TestCube(TestBase):
             ["  WW    ", "  BB    ", "RRBBOOYY", "OOWWRRYY", "  GG    ", "  GG    "],
         ]
         for i, action in enumerate(actions):
-            assert action.get_dst().to_str() == expected[i], (
-                f"action {i} mismatch: {action.get_dst().to_str()} != {expected[i]}"
-            )
+            assert (
+                action.get_dst().to_str() == expected[i]
+            ), f"action {i} mismatch: {action.get_dst().to_str()} != {expected[i]}"
 
     def test_bfs_from_init(self):
         s = CubeState.new_shape(C.SHAPE2)

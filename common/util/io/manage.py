@@ -13,11 +13,14 @@ class Manage:
     def hander_msg(self, io: Io, msg: Node):
         if not io.username:
             raise Exception(msg)
-        self.io_map[io.username] = io
         if msg.type == C.METHOD_SUB:
             self.sub(msg.value, io.username)
         elif msg.type == C.METHOD_UN_SUB:
             self.un_sub(msg.value, io.username)
+        elif msg.type == C.METHOD_LOGIN_OUT:
+            self.io_map.pop(io.username)
+        elif msg.type == C.METHOD_LOGIN:
+            self.io_map[io.username] = self
         logger.info(f"msg={msg.to_json()} user={io.username}")
         return self
 

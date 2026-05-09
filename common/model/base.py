@@ -38,7 +38,7 @@ class BaseModel:
 
     @classmethod
     def make(cls):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def to_json(self):
-        raise NotImplementedError
+        raise NotImplementedError()

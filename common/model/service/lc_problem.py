@@ -63,7 +63,7 @@ class LcProblem(BaseModel):
         code = t.get_code()
 
         t.f.write_if_not_exists(
-            f"from common.util.export import List, Dict, functools, CT\n{code}return"
+            f"from common.util.export import List, Dict, functools, CT, LOG\n\n\n{code}return"
         )
         t.fun_name = code.split("def ").pop().split("(")[0]
         return t.to_json()

@@ -135,8 +135,8 @@ class TestMockCf(unittest.TestCase):
             self.fail(f"output method raised {e}")
 
     def test_exec_method(self):
-        """测试 exec 方法（应该抛出 NotImplementedError）"""
-        with self.assertRaises(NotImplementedError):
+        """测试 exec 方法（应该抛出 NotImplementedError()）"""
+        with self.assertRaises(NotImplementedError()):
             self.mock_cf.exec()
 
     def test_run_method(self):
@@ -144,8 +144,8 @@ class TestMockCf(unittest.TestCase):
         self.mock_cf.run()
 
     def test_init_method(self):
-        """测试 init 方法（应该抛出 NotImplementedError）"""
-        with self.assertRaises(NotImplementedError):
+        """测试 init 方法（应该抛出 NotImplementedError()）"""
+        with self.assertRaises(NotImplementedError()):
             self.mock_cf.init()
 
     def test_log_method(self):
