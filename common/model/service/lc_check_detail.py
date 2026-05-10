@@ -9,7 +9,7 @@ class LcSubmissionDetail(BaseModel):
         code,
         passedTestCaseCnt,
         totalTestCaseCnt,
-        **kw
+        **kw,
     ):
         self.code = code
         self.passedTestCaseCnt = passedTestCaseCnt

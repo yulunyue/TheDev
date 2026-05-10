@@ -7,7 +7,7 @@ from common.algo.search.alphabate_search import AlphaBateSearch, Algo
 
 class CgOa(MockCg):
     game_id = "7180187268449801570b2e5cd61f1efefe076e42"
-    agentsIds = [-1,5077834]
+    agentsIds = [-1, 5077834]
     name = "oa"
     uri = "https://www.codingame.com/ide/puzzle/oware-abapa"
 
@@ -20,8 +20,8 @@ class CgOa(MockCg):
         i = 0
         while True:
             boards = self.ii()
-            if i==0 and any([v!=4 for v in boards]):
-                i=1
+            if i == 0 and any([v != 4 for v in boards]):
+                i = 1
             s = StateBase.new(C.encode_data(i, reward, boards))
             a = self.get_action(s)
             reward += a.get_reward()

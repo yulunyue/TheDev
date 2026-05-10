@@ -67,9 +67,7 @@ class Node:
     def get_type(self):
         return self.type
 
-    def add_node(self, *args):
-        if len(args) == 1:
-            args = args[0]
+    def add_childs(self, *args):
         for a in args:
             self.add_child(a)
         return self

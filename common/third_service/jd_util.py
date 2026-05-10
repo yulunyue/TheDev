@@ -1,4 +1,4 @@
-up='18428330472/yulunyue'
+up = "18428330472/yulunyue"
 
 # -*- coding:utf-8  -*-
 # Time  : 2021/5/31 下午4:14

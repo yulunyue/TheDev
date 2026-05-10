@@ -11,8 +11,6 @@ export class CubeMain extends Row {
     control_form: FormColumn
     button_row: Column
     new_btn: Button
-    scramble_btn: Button
-    rotate_btn: Button
     solve_btn: Button
     title: Title
     action_pre: Pre
@@ -29,14 +27,10 @@ export class CubeMain extends Row {
 
         this.title = new Title()
         this.title.set_html("魔方可视化")
-
         this.cube_grid = new CubeGrid()
         this.control_form = new FormColumn()
+        this.random_step_from = new For
         this.button_row = new Column()
-        this.new_btn = new Button().set_html("新建魔方")
-        this.scramble_btn = new Button().set_html("随机打乱")
-        this.rotate_btn = new Button().set_html("执行旋转")
-        this.solve_btn = new Button().set_html("求解魔方")
         this.button_row.add_childs([this.new_btn, this.scramble_btn, this.rotate_btn, this.solve_btn])
         this.action_pre = new Pre()
 
@@ -46,13 +40,10 @@ export class CubeMain extends Row {
             this.button_row,
             this.action_pre
         ])
-
         this.left_panel = new Row()
         this.left_panel.add_child(this.cube_grid)
-
         this.main_body = new Column()
         this.main_body.add_childs([this.left_panel, this.right_panel])
-
         this.add_childs([this.title, this.main_body])
     }
 
@@ -130,13 +121,7 @@ export class CubeMain extends Row {
     }
 
     render(): void {
-        this.control_form.set_uri("/cube/to_form_column_view", () => {
-            this.control_form.child_map.axis.set_label("旋转轴")
-            this.control_form.child_map.layer.set_label("层号")
-            this.control_form.child_map.rotate.set_label("旋转方向")
-            this.control_form.child_map.steps.set_label("打乱步数")
-            this.control_form.child_map.steps.set_value("10")
-        })
+        this.control_form.set_uri("/cube/scheme_rotate")
         this.handle_new()
     }
 

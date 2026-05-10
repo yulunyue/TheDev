@@ -35,14 +35,14 @@ class TestFileConfig:
     def test_init_resource_new_file(self):
         assert not os.path.exists(self.test_file)
         TestFileConfigModel.set_resource(self.test_file)
-        assert hasattr(TestFileConfigModel, 'fp')
-        assert hasattr(TestFileConfigModel, '_config')
+        assert hasattr(TestFileConfigModel, "fp")
+        assert hasattr(TestFileConfigModel, "_config")
         assert TestFileConfigModel._config == {}
 
     def test_init_resource_existing_file(self):
-        File(self.test_file).write_file({
-            "test1": {"name": "Alice", "age": 25, "email": "alice@example.com"}
-        })
+        File(self.test_file).write_file(
+            {"test1": {"name": "Alice", "age": 25, "email": "alice@example.com"}}
+        )
         TestFileConfigModel.set_resource(self.test_file)
         assert "test1" in TestFileConfigModel.instance_map
         assert TestFileConfigModel.instance_map["test1"].name.get_value() == "Alice"
@@ -109,14 +109,16 @@ class TestFileConfig:
         model.update_param_value(model.age, 25)
         model.update_param_value(model.email, "updated@example.com")
         TestFileConfigModel.save()
-        
+
         content = File(self.test_file).read_file()
         assert content["multi_update"]["name"] == "Updated1"
         assert content["multi_update"]["age"] == 25
         assert content["multi_update"]["email"] == "updated@example.com"
 
     def test_dict_model(self):
-        model = TestFileConfigModel.insert("dict_test", metadata={"key1": "value1", "key2": "value2"})
+        model = TestFileConfigModel.insert(
+            "dict_test", metadata={"key1": "value1", "key2": "value2"}
+        )
         assert model.metadata.get_value() == {"key1": "value1", "key2": "value2"}
         TestFileConfigModel.save()
         content = File(self.test_file).read_file()
@@ -154,12 +156,14 @@ class TestFileConfig:
     def test_raise_assertion_no_resource_path(self):
         class NoResourceModel(FileConfig):
             name = StrModel()
-        
+
         with pytest.raises(AssertionError):
             NoResourceModel.init_resource()
 
     def test_config_dict_structure(self):
-        TestFileConfigModel.insert("struct_test", name="StructTest", age=50, metadata={"test": "data"})
+        TestFileConfigModel.insert(
+            "struct_test", name="StructTest", age=50, metadata={"test": "data"}
+        )
         TestFileConfigModel.save()
         content = File(self.test_file).read_file()
         assert isinstance(content, dict)
@@ -175,5 +179,5 @@ class TestFileConfig:
 
     def test_file_handle_attribute(self):
         TestFileConfigModel.set_resource(self.test_file)
-        assert hasattr(TestFileConfigModel, 'fp')
+        assert hasattr(TestFileConfigModel, "fp")
         assert isinstance(TestFileConfigModel.fp, File)

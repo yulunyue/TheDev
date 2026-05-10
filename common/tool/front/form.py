@@ -15,9 +15,7 @@ class Form(FontBase):
         self.body = []
         self.btns = dict()
 
-    def set_btns(self, *args, **kw):
-        for k in args:
-            self.btns[k] = k
+    def set_btns(self, kw):
         self.btns.update(kw)
         return self
 

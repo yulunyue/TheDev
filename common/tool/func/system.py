@@ -1,6 +1,7 @@
 from ..os_util import OsUtil
 from common.util.export import List, os, re, logger
-#import psutil
+
+# import psutil
 
 
 def print_process_info(proc):
@@ -13,7 +14,7 @@ def print_process_info(proc):
             f"Memory(MB): {info['memory_info'].rss / 1024 / 1024:>7.2f} | "
             f"Status: {info['status']}"
         )
-    except (psutil.NoSuchProcess, psutil.AccessDenied):
+    except psutil.NoSuchProcess, psutil.AccessDenied:
         pass
 
 
@@ -29,7 +30,7 @@ def list_all_processes():
     for proc in procs:
         try:
             proc.cpu_percent(interval=0.0)
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
+        except psutil.NoSuchProcess, psutil.AccessDenied:
             pass
     # 等待一小段时间让 CPU 使用率计算生效（可选）
     import time
@@ -41,7 +42,7 @@ def list_all_processes():
             proc.cpu_percent(interval=0.0)  # 获取实际值
             info = proc.info
             print_process_info(proc)
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
+        except psutil.NoSuchProcess, psutil.AccessDenied:
             pass
 
 

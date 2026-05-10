@@ -40,7 +40,9 @@ class TestChessF5(TestBase):
         asset_exception(chess.get, "not_exist_key")
 
     def test_get_exist_c664(self):
-        c = Bd.insert("test_664", name="test_664", size="C664", p0="ad3", p1="ad3", records=[])
+        c = Bd.insert(
+            "test_664", name="test_664", size="C664", p0="ad3", p1="ad3", records=[]
+        )
         chess = ChessF5()
         result = chess.get("test_664")
         assert result._id == "test_664"
@@ -55,10 +57,21 @@ class TestChessF5(TestBase):
 
     def test_web_submit_simulation_non_ai(self):
         chess = ChessF5()
-        asset_exception(chess.web_submit, "simulation", {"name": "sim_test", "size": "C664", "p0": "human", "p1": "human"})
+        asset_exception(
+            chess.web_submit,
+            "simulation",
+            {"name": "sim_test", "size": "C664", "p0": "human", "p1": "human"},
+        )
 
     def test_get_returns_correct_size_for_c664(self):
-        Bd.insert("test_664_size", name="test_664_size", size="C664", p0="ad3", p1="ad3", records=[])
+        Bd.insert(
+            "test_664_size",
+            name="test_664_size",
+            size="C664",
+            p0="ad3",
+            p1="ad3",
+            records=[],
+        )
         chess = ChessF5()
         result = chess.get("test_664_size")
         assert result.to_json()["width"] == 6
@@ -71,12 +84,16 @@ class TestChessF5(TestBase):
         assert len(columns) == 3
 
     def test_bd_insert(self):
-        c = Bd.insert("test_insert", name="test_insert", size="C664", p0="ad3", p1="ad3")
+        c = Bd.insert(
+            "test_insert", name="test_insert", size="C664", p0="ad3", p1="ad3"
+        )
         assert c._id == "test_insert"
         assert c.name.get_value() == "test_insert"
 
     def test_bd_get_state_c664(self):
-        c = Bd.insert("state_664", name="state_664", size="C664", p0="ad3", p1="ad3", records=[])
+        c = Bd.insert(
+            "state_664", name="state_664", size="C664", p0="ad3", p1="ad3", records=[]
+        )
         state = c.get_state()
         assert state.env.width == 6
         assert state.env.height == 6

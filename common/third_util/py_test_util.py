@@ -2,7 +2,6 @@ import pytest
 from common.util.export import logger, File
 import urllib3
 
-
 urllib3.disable_warnings()
 
 

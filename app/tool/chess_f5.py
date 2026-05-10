@@ -3,7 +3,6 @@ from ..yly.envs.game.c5.player.al import Al
 from common.tool.export import FontSearch, FormBase
 from common.util.export import IO_MANAGE, ApiBase, Node, C
 
-
 AI_PLAYER = {"ad3", "mc100"}
 
 

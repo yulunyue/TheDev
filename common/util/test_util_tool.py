@@ -2,6 +2,7 @@
 """
 Test script for common.util.tool module
 """
+
 import sys
 import os
 import random

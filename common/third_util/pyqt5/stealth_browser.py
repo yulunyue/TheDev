@@ -68,8 +68,7 @@ class StealthBrowser(QMainWindow):
         self.setWindowOpacity(self.opacity)
 
         # 设置样式
-        self.setStyleSheet(
-            """
+        self.setStyleSheet("""
             QMainWindow {
                 background-color: #2c3e50;
             }
@@ -107,8 +106,7 @@ class StealthBrowser(QMainWindow):
                 margin: -4px 0;
                 border-radius: 6px;
             }
-        """
-        )
+        """)
 
         # 安装事件过滤器
         self.installEventFilter(self)
@@ -153,16 +151,14 @@ class StealthBrowser(QMainWindow):
         close_btn = QPushButton("×")
         close_btn.setFixedWidth(30)
         close_btn.clicked.connect(self.close)
-        close_btn.setStyleSheet(
-            """
+        close_btn.setStyleSheet("""
             QPushButton {
                 background-color: rgba(231, 76, 60, 180);
             }
             QPushButton:hover {
                 background-color: rgba(192, 57, 43, 200);
             }
-        """
-        )
+        """)
         self.control_layout.addWidget(close_btn)
 
         # 隐藏按钮
