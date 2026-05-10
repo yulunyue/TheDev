@@ -28,6 +28,7 @@ class Task:
         return self
 
     def run(self):
+        time.sleep(3)
         while True:
             self.loop()
             time.sleep(1)

@@ -66,6 +66,7 @@ class TaskConfig(FileConfig):
         if self.fun:
             return self.fun
         fun_path = self.fun_path.get_value()
+        logger.map(self.name.get_value(), fun_path=fun_path)
         self.fun = Module().load_fun_call(fun_path)
         return self.fun
 

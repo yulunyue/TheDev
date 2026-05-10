@@ -28,6 +28,6 @@ class TaskManage(FormBase, Task):
         )
 
     def exec_task(self, key: str, **kw):
-        task = self.model.get(key)
+        task = TaskConfig.get(key)
         task.run()
         return Node(value="ok")

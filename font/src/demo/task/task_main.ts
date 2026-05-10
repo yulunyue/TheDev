@@ -79,10 +79,10 @@ export class TaskMain extends Row {
             if (method == "get") {
                 this.on_task_change(Constant.METHOD_EDIT, null, data.value)
             }
-            this.view_task()
+            this.view_task(name)
         })
     }
-    view_task() {
+    view_task(name: string) {
         web_dom.post("/app/task/view", { key: name }, (data: Node) => {
             this.on_task_update(data)
         })
@@ -110,13 +110,14 @@ export class TaskMain extends Row {
         if (this.current_task && this.current_task !== name) {
             this.unsubscribe_task(this.current_task)
         }
-        this.view_task()
+
         if (!name) {
             this.result_div.set_html("")
             this.status_span.set_html("")
             this.current_task = ""
             return
         }
+        this.view_task(name)
         this.current_task = name
         this.subscribe_task(name)
 

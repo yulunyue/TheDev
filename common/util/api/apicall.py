@@ -28,7 +28,7 @@ class ApiCall:
                 ins._set_env(**env)
             ret = self.fun_map[path](**params)
         except Exception as e:
-            logger.exception(e, stack_info=True)
+            logger.exception([e, path, params, env], stack_info=True)
 
             ret = dict(code=500, title=str(e) + traceback.format_exc())
         return json_dumps(ret)
