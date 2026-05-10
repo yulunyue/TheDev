@@ -15,6 +15,11 @@ class DictModel(BaseModel):
             raise Exception(name, list(ret.keys()))
         return ret.get(name, default_value)
 
+    def set_value(self, value):
+        if not isinstance(value, dict):
+            raise Exception(self.key, value, value.__class__)
+        return super().set_value(value)
+
     def get_value(self) -> dict:
         return super().get_value()
 
@@ -28,3 +33,9 @@ class DictModel(BaseModel):
     @classmethod
     def get_type(cls):
         return "pre"
+
+
+class JsonDictModel(DictModel):
+    @classmethod
+    def get_type(cls):
+        return "json"

@@ -1,70 +1,125 @@
 import {
-    Div, Constant, Node, web_dom, FormColumn, Row, Column,
-    Button, Pre, Title, Select, Input, ListUi
+    web_dom, FormColumn, Row, Column,
+    Button, Pre, Title
 } from "../../base/components/export";
 import { CubeGrid } from "./cube_grid";
 
 const DELAY_TIME = 300;
 
-export class CubeMain extends Column {
+export class CubeMain extends Row {
     cube_grid: CubeGrid
     control_form: FormColumn
-    button_row: Row
+    button_row: Column
     new_btn: Button
     scramble_btn: Button
     rotate_btn: Button
     solve_btn: Button
     title: Title
     action_pre: Pre
-    history_list: ListUi
+    right_panel: Row
+    left_panel: Row
+    main_body: Column
     current_state: number = 0
     current_grid: number[] = []
     current_n: number = 2
-    action_history: any[] = []
+    action_history: string[] = []
 
     init_node(): void {
         super.init_node()
-        this.full().set_center()
+
+        this.title = new Title()
+        this.title.set_html("魔方可视化")
 
         this.cube_grid = new CubeGrid()
         this.control_form = new FormColumn()
-        this.button_row = new Row()
+        this.button_row = new Column()
         this.new_btn = new Button().set_html("新建魔方")
         this.scramble_btn = new Button().set_html("随机打乱")
         this.rotate_btn = new Button().set_html("执行旋转")
         this.solve_btn = new Button().set_html("求解魔方")
-        this.title = new Title()
-        this.action_pre = new Pre()
-        this.history_list = new ListUi()
-
         this.button_row.add_childs([this.new_btn, this.scramble_btn, this.rotate_btn, this.solve_btn])
+        this.action_pre = new Pre()
 
-        this.add_childs([
-            this.title,
-            this.cube_grid,
+        this.right_panel = new Row()
+        this.right_panel.add_childs([
             this.control_form,
             this.button_row,
             this.action_pre
         ])
+
+        this.left_panel = new Row()
+        this.left_panel.add_child(this.cube_grid)
+
+        this.main_body = new Column()
+        this.main_body.add_childs([this.left_panel, this.right_panel])
+
+        this.add_childs([this.title, this.main_body])
     }
 
     init_style(): void {
         super.init_style()
-        this.cube_grid.set_style({ margin: '10px' })
-        this.title.set_size(2).set_style({ textAlign: 'center' })
-        this.action_pre.set_style({
-            backgroundColor: '#f0f0f0',
-            padding: '10px',
-            borderRadius: '5px',
-            maxHeight: '200px',
-            overflow: 'auto'
+        this.set_style({
+            overflow: 'hidden',
+            backgroundColor: '#e8ecf1'
         })
+        this.set_style({ width: 1, height: 1 })
+
+        this.title.set_style({
+            textAlign: 'center',
+            padding: '8px 0',
+            backgroundColor: '#fff',
+            borderBottom: '1px solid #ddd',
+            margin: 0,
+            flexShrink: 0,
+            fontSize: '16px'
+        })
+
+        this.cube_grid.set_style({ margin: '10px' })
+
+        this.action_pre.set_style({
+            backgroundColor: '#fafafa',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #e0e0e0',
+            maxHeight: '300px',
+            overflow: 'auto',
+            fontFamily: 'monospace',
+            fontSize: '13px',
+            lineHeight: '1.6'
+        })
+
         this.control_form.set_style({
             backgroundColor: '#fff',
-            padding: '15px',
+            padding: '16px',
             borderRadius: '8px',
-            border: '1px solid #ddd'
+            border: '1px solid #e0e0e0',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
         })
+
+        this.button_row.set_style({
+            gap: '8px'
+        })
+
+        this.right_panel.set_style({
+            width: '320px',
+            minWidth: '320px',
+            padding: '16px',
+            gap: '12px',
+            overflow: 'auto',
+            backgroundColor: '#f5f5f5',
+            borderLeft: '1px solid #ddd'
+        })
+
+        this.left_panel.set_flex(1)
+        this.left_panel.set_style({
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            minWidth: 0
+        })
+
+        this.main_body.set_flex(1)
+        this.main_body.set_style({ overflow: 'hidden' })
     }
 
     init_event(): void {
@@ -82,7 +137,6 @@ export class CubeMain extends Column {
             this.control_form.child_map.steps.set_label("打乱步数")
             this.control_form.child_map.steps.set_value("10")
         })
-        this.title.set_html("魔方可视化 - 点击按钮开始")
         this.handle_new()
     }
 
@@ -90,7 +144,7 @@ export class CubeMain extends Column {
         web_dom.post("/cube/new", { n: 2 }, (data: any) => {
             this.update_state(data.value)
             this.action_history = []
-            this.title.set_html("新建魔方完成 - 开始操作")
+            this.title.set_html("新建魔方完成")
             this.action_pre.set_html("魔方已初始化")
         })
     }

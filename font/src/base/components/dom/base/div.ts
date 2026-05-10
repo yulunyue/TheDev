@@ -351,5 +351,11 @@ export class Div {
         // console.trace(value)
         return this
     }
-
+    set_uri(uri: string, call_back?: any): this {
+        web_dom.post(uri, {}, (ret: any) => {
+            this.set_option(new Node().set_option(ret))
+            call_back?.()
+        })
+        return this
+    }
 }

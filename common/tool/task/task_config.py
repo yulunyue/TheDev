@@ -1,7 +1,13 @@
 from ..base_class.storege.file_config import (
     FileConfig,
 )
-from ..base_class.base_model import StrModel, NumberModel, DictModel, SelectModel
+from ..base_class.base_model import (
+    StrModel,
+    NumberModel,
+    DictModel,
+    JsonDictModel,
+    SelectModel,
+)
 from ..os_util import OsUtil
 from common.util.export import (
     time,
@@ -20,7 +26,7 @@ from common.util.export import (
 class TaskConfig(FileConfig):
     name = StrModel().not_null().set_title("任务名称")
     fun_path = StrModel().set_title("函数路径")
-    args = StrModel().set_title("参数")
+    kw = JsonDictModel().set_title("参数")
     run_model = (
         SelectModel(default_value=C.SECOND30)
         .set_title("运行模式")
@@ -43,7 +49,7 @@ class TaskConfig(FileConfig):
 
     @classmethod
     def get_form_columns(cls):
-        return [cls.name, cls.fun_path, cls.args, cls.run_model]
+        return [cls.name, cls.fun_path, cls.kw, cls.run_model]
 
     def __init__(self) -> None:
         super().__init__()
@@ -53,6 +59,7 @@ class TaskConfig(FileConfig):
         self.last_finish_t = 0
         self.state = ""
         self.value = None
+        self.code = C.CODE_200
         self.error_msg = ""
 
     def get_call(self):
@@ -79,31 +86,36 @@ class TaskConfig(FileConfig):
 
     def notify_update(self):
         IO_MANAGE.send(
-            f"{C.TOPIC_TASK_UPDATE_MSG}.{self.name.get_value()}",
-            dict(
+            f"{C.TOPIC_TASK_UPDATE_MSG}.{self.name.get_value()}", self.view()
+        )
+
+    def view(self):
+        return dict(
+            value=dict(
                 code=self.code,
                 run_num=self.run_num,
                 t=f"[{time_format(self.last_begin_t)}] -> [{time_format(self.last_finish_t)}] USER_TIME:[{self.last_finish_t-self.last_begin_t}]",
                 state=self.state,
                 value=self.value,
                 error_msg=self.error_msg,
-            ),
+            )
         )
 
     def exec(self):
         if not self.can_run():
             return
+        self.run()
 
+    def run(self):
         try:
             self.last_begin_t = time.time()
             self.last_finish_t = self.last_begin_t
-            args = self.args.get_value().split(",")
             self.state = C.doing
             self.code = C.CODE_200
             self.notify_update()
             f = self.get_call()
             self.error_msg = ""
-            self.value = f(*args)
+            self.value = f(**self.kw.get_value())
         except Exception as e:
             self.code = C.CODE_500
             self.error_msg = traceback.format_exc().split("\n")

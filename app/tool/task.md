@@ -28,8 +28,8 @@ python app/tool/task.py
 |------|------|------|
 | `name` | StrModel | 任务名称 |
 | `fun_path` | StrModel | 执行函数路径 (格式: `模块路径/函数名`) |
-| `args` | StrModel | 函数参数 (逗号分隔) |
-| `run_model` | DictModel | 运行模式配置 |
+| `kw` | JsonDictModel | 函数参数字典 (JSON 格式) |
+| `run_model` | SelectModel | 运行模式配置 |
 | `run_num` | NumberModel | 运行次数统计 |
 | `result` | DictModel | 执行结果 |
 
@@ -75,7 +75,7 @@ TaskManage
   "task1": {
     "name": "task1",
     "fun_path": "app/some_module/some_func",
-    "args": "arg1,arg2",
+    "kw": {"key1": "value1"},
     "run_model": {},
     "run_num": 0,
     "result": {}
@@ -84,6 +84,10 @@ TaskManage
 ```
 
 ## 修改记录
+
+### 2026-05-10
+- `args` 字段替换为 `kw` (JsonDictModel)，支持 JSON 参数
+- 新增 `JsonDictModel` 和 `JsonInput` 组件，前端可编辑 JSON
 
 ### 2026-05-07
 - 创建 `app/tool/task.md` 文档

@@ -9,6 +9,9 @@ def test(*args):
 class TaskManage(FormBase, Task):
     model: Type[TaskConfig] = TaskConfig
 
+    def view(self, key, **kw):
+        return TaskConfig.get(key).view()
+
     def schema(self):
         return Node(
             data=dict(
@@ -24,8 +27,7 @@ class TaskManage(FormBase, Task):
             ]
         )
 
-    def exec_task(self, name: str, **kw):
-        task = self.model.get(name)
-        task.exec()
-        self.model.save_to_local()
-        return task.to_json()
+    def exec_task(self, key: str, **kw):
+        task = self.model.get(key)
+        task.run()
+        return Node(value="ok")

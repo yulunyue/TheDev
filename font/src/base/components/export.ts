@@ -4,6 +4,7 @@ import { Checkbox } from "./dom/form/checkbox"
 import { TextArea } from "./dom/form/text_area"
 import { TextAreaRich } from "./dom/form/text_area_rich"
 import { FileInput } from "./dom/form/file"
+import { JsonInput } from "./dom/form/json_input"
 import { Search } from "./dom/form/search"
 import { SvgNode } from "./svg/svg"
 import { Button } from "./dom/form/button"
@@ -50,6 +51,7 @@ function init_div_factory() {
     DivFactory.register(Ct.DOM_TYPE_TITLE, () => new Title())
     DivFactory.register(Ct.DOM_TYPE_ENUM, () => new Select())
     DivFactory.register(Ct.DOM_TYPE_SEARCH, () => new Search())
+    DivFactory.register(Ct.DOM_TYPE_JSON, () => new JsonInput())
     DivFactory.register(Ct.DOM_TYPE_TABLE, () => new Table())
     DivFactory.register(Ct.DOM_TYPE_GRID, () => new Grid())
     DivFactory.register(Ct.DOM_TYPE_FILE, () => new FileInput())

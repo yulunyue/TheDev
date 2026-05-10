@@ -74,6 +74,7 @@ class Constant {
     DOM_TYPE_ROW = "row"
     DOM_TYPE_COLUMN = "column"
     DOM_TYPE_BUTTON = "button"
+    DOM_TYPE_JSON = "json"
     the_dev_user = "the_dev_user"
     username = "username"
     METHOD_DELETE = "DELETE"

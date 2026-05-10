@@ -167,6 +167,15 @@ class WebDom {
     post(url: string, data: any, call_back?: Fn1Void<Node>, call_back_error?: any) {
         this.xml_http_request(this.HTTP_POST_METHOD, url, data, call_back, call_back_error)
     }
+    post_wait(url: string, data: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.xml_http_request(this.HTTP_POST_METHOD, url, data, (v: any) => resolve(v), (data: any) => {
+                if (data && data.code > 300) {
+                    reject(data)
+                }
+            })
+        })
+    }
     post_file(path: string, formData: FormData, call_back: any) {
         const xhr = new XMLHttpRequest();
 
@@ -199,6 +208,11 @@ class WebDom {
     }
     get(url: string, data: any, call_back?: Fn1Void<Node>, call_back_finish?: any) {
         this.xml_http_request(this.HTTP_GET_METHOD, url, data, call_back, call_back_finish)
+    }
+    get_wait(url: string, data: any): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.xml_http_request(this.HTTP_GET_METHOD, url, data, resolve, reject)
+        })
     }
     bind_click(dom: Dom, call_back: any) {
         dom.onclick = (e) => {

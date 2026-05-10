@@ -5,6 +5,7 @@ from .base_class.baseconfig import ConfigBase
 from .base_class.base_model import (
     StrModel,
     DictModel,
+    JsonDictModel,
     ListModel,
     BoolModel,
     SearchModel,

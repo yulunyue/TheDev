@@ -9,7 +9,6 @@ from common.tool.export import TASK_MANAGE
 
 
 def start():
-
     TornadaWebSocketConnectHandler.hander_msg = IO_MANAGE.hander_msg
     HTTP_CONF_FiLE = File(f"config/setting/{sys.argv[1]}.json").write_if_not_exists(
         dict(

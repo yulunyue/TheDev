@@ -1,0 +1,19 @@
+## cube_main.ts 变动记录
+
+### 2026-05-10 布局重构
+
+- CubeMain 从 `extends Column` 改为 `extends Row`（垂直 flex），适配新布局
+- 布局改为**左右两栏**：左侧魔方网格（居中，flex:1）+ 右侧控制面板（320px 固定宽）
+- 右侧面板（Row）垂直排列：控制表单 → 按钮行 → 操作日志
+- 按钮行（Column 水平排列）：新建/打乱/旋转/求解
+- 增加整体背景色 `#e8ecf1`，右面板背景 `#f5f5f5`
+- 标题栏增加底部边框，白色背景
+- 控制表单增加 `boxShadow` 卡片化
+- 动作日志 `Pre` 增加圆角边框、等宽字体、滚动条
+- 清理未使用的 import
+
+### 2026-05-10 样式规范化
+
+- `init_node` 中移除所有 `set_style` 调用，全部集中到 `init_style`
+- `right_panel`、`left_panel`、`main_body` 改为类成员，以便在 `init_style` 中设置样式
+- 符合 AGENTS.md 规则：构造只放在 `init_node`，样式只放在 `init_style`

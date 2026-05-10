@@ -148,11 +148,14 @@ class Module:
         if module_name.endswith(".py"):
             module_name = module_name[:-3]
         module_name = module_name.replace("/", ".")
-        md = self.load_module(module_name, path=path)
-        if len(names) == 1:
-            return getattr(md, names[0])
-        elif len(names) == 2:
-            return getattr(getattr(md, names[0])(), names[1])
+        try:
+            md = self.load_module(module_name, path=path)
+            if len(names) == 1:
+                return getattr(md, names[0])
+            elif len(names) == 2:
+                return getattr(getattr(md, names[0])(), names[1])
+        except Exception as e:
+            raise Exception(e, src, path, module_name)
         raise Exception(src)
 
     def load_fun_call(self, path: str):

@@ -12,6 +12,7 @@ export class TaskMain extends Row {
     status_span: Span
     result_div: Pre
     exec_btn: Button
+    edit_btn: Button
     current_task: string = ""
     init_style(): void {
         this.full()
@@ -24,7 +25,6 @@ export class TaskMain extends Row {
             minWidth: 200
         })
         this.top_form.set_style({
-            padding: "20px",
             minWidth: "300px"
         })
         this.status_span.set_size(1)
@@ -43,12 +43,14 @@ export class TaskMain extends Row {
     init_node(): void {
         this.search_input = new Search()
         this.add_btn = new Button().set_html("新增")
-        this.exec_btn = new Button().set_html("编辑")
+        this.exec_btn = new Button().set_html("执行")
+        this.edit_btn = new Button().set_html("编辑")
         this.top_form = new FormRow()
         this.status_span = new Span()
         this.result_div = new Pre()
         this.header = new Column().add_childs([
             this.search_input,
+            this.edit_btn,
             this.exec_btn,
             this.status_span,
             this.add_btn,
@@ -64,22 +66,29 @@ export class TaskMain extends Row {
         this.add_btn.on_click(() => {
             this.on_task_change(Constant.METHOD_INSERT, null, {})
         })
-        this.exec_btn.on_click(() => {
-            let name = this.search_input.get_value()
-            if (!name) {
-                return
-            }
-            web_dom.post("/app/task/get", { key: name }, (data: Node) => {
-                this.on_task_change(Constant.METHOD_EDIT, null, data.value)
-            })
-
-        })
+        this.edit_btn.on_click(() => this.post("get"))
+        this.exec_btn.on_click(() => this.post("exec_task"))
         this.top_form.on_submit(this.submit.bind(this))
+    }
+    post(method: string) {
+        let name = this.search_input.get_value()
+        if (!name) {
+            return
+        }
+        web_dom.post("/app/task/" + method, { key: name }, (data: Node) => {
+            if (method == "get") {
+                this.on_task_change(Constant.METHOD_EDIT, null, data.value)
+            }
+            this.view_task()
+        })
+    }
+    view_task() {
+        web_dom.post("/app/task/view", { key: name }, (data: Node) => {
+            this.on_task_update(data)
+        })
     }
     on_task_update(data: any) {
         this.result_div.set_html(JSON.stringify(data, null, 2))
-        let stateText = data.state === "doing" ? "(执行中)" : "(已完成)"
-        this.status_span.set_html(`任务: ${data.name || this.search_input.get_value()} ${stateText}`)
     }
     subscribe_task(name: string) {
         web_socket.sub(`${Constant.TOPIC_TASK_UPDATE_MSG}.${name}`, (data: any) => {
@@ -101,6 +110,7 @@ export class TaskMain extends Row {
         if (this.current_task && this.current_task !== name) {
             this.unsubscribe_task(this.current_task)
         }
+        this.view_task()
         if (!name) {
             this.result_div.set_html("")
             this.status_span.set_html("")

@@ -2,14 +2,29 @@ import { Div } from "./div";
 import web_dom from "../../web/web_dom"
 
 import { Node } from "../../web/cls";
-import { Row, Container } from "../export";
+import { Row, Container, Span, Button, Column } from "../export";
 
-export class Dialog extends Row {
-    header: Div
+export class Dialog extends Div {
+    header: Column
+    title_span: Span
+    close_btn: Button
+    body: Row
     main: Div
     init_node() {
-        this.header = this.add_child(new Div())
-        this.main = this.add_child(new Div())
+        this.header = this.add_child(new Column())
+        this.title_span = new Span().set_html("title")
+        this.close_btn = new Button().set_html("✕")
+        this.header.add_childs([
+            this.title_span, this.close_btn
+        ])
+        this.main = new Div()
+        this.body = new Row().add_childs([
+            this.header,
+            this.main,
+        ])
+        this.add_childs([
+            this.body,
+        ])
     }
     init_style(): void {
         this.set_style_ab_full().set_style({
@@ -18,14 +33,37 @@ export class Dialog extends Row {
             left: 0,
             top: 0,
         })
-        this.main.set_style_center_by_position().set_style({
+        this.header.set_style({
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flex: "none",
+            backgroundColor: "#f5f5f5",
+            borderBottom: "1px solid #ddd",
+        })
+        this.close_btn.set_style({
+            cursor: "pointer",
+            border: "none",
+            background: "none",
+            fontSize: "18px",
+            fontWeight: "bold",
+            lineHeight: 1,
+            padding: "0 8px",
+        })
+        this.body.set_style_center_by_position().set_style({
             backgroundColor: "#fff",
         })
 
     }
     init_event(): void {
-        this.on_click(this.hide.bind(this))
+        this.header.on_click(() => { })
         this.main.on_click(() => { })
+        this.close_btn.on_click(() => this.hide())
+    }
+    set_title(title: string) {
+        this.title_span.set_html(title)
+        return this
     }
     open(o: Div) {
         this.main.clear().add_child(o)

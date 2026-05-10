@@ -28,6 +28,9 @@ class Io(ToolBase):
         p = PandasUtil().load(path)
         self.cli(p.hander)
 
+    def api(self, uri):
+        pass
+
 
 if __name__ == "__main__":
     Io().run()

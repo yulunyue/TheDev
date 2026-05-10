@@ -22,7 +22,6 @@ export class TodoMain extends Row {
             width: 60
         })
         this.top_form.set_style({
-            padding: "20px",
             minWidth: "300px"
         })
         this.score_span.set_size(1)

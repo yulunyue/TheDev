@@ -59,8 +59,8 @@ export class TodoRow extends Column {
         this.title_div.set_html(this.todo_data.title || "")
         this.user_name.set_html(this.todo_data.user_id || "")
         this.content_div.set_html(this.todo_data.content || "")
-        this.create_time.set_html("开始: " + this.todo_data.create_time.slice(5, 16))
-        this.update_time.set_html("完成: " + this.todo_data.update_time.slice(5, 16))
+        this.create_time.set_html("开始: " + (this.todo_data.create_time + "").slice(5, 16))
+        this.update_time.set_html("完成: " + (this.todo_data.update_time + "").slice(5, 16))
         if (this.todo_data.done) {
             this.title_div.set_style({ color: "#0c0" })
         } else {

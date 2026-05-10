@@ -42,6 +42,7 @@ export interface Style {
     whiteSpace?: "pre-line" | "nowrap" | "pre-wrap"
     wordWrap?: "break-word"
     border?: string
+    background?: string
     borderRadius?: number | string
     transform?: string
     borderLeft?: string
@@ -71,6 +72,10 @@ export interface Style {
     fontWeight?: number | string
     textDecoration?: string
     letterSpacing?: number | string
+    gap?: number | string
+    flexShrink?: number | string
+    flexBasis?: number | string
+    borderLeftColor?: string
 }
 export interface FnVoid {
     (): any

@@ -1,5 +1,5 @@
 from .str_model import StrModel
-from .dict_model import DictModel
+from .dict_model import DictModel, JsonDictModel
 from .model import BaseModel
 from .number_model import NumberModel
 from .bool_model import BoolModel
