@@ -6,10 +6,11 @@ from common.tool.export import (
     SelectModel,
     BoolModel,
     DateModel,
+    ConfigBase,
 )
 
 
-class CubeModel:
+class CubeModel(ConfigBase):
     axis = (
         SelectModel()
         .set_title("旋转轴")
@@ -22,3 +23,6 @@ class CubeModel:
         .set_options(l1="-1(逆时针)", r1="1(顺时针)", r2="2(180度)")
     )
     steps = NumberModel(default_value=1).set_title("步数")
+
+
+CubeModel.init_param()

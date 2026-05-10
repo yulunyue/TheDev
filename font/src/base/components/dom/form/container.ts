@@ -11,7 +11,8 @@ export class FormContainer extends Div {
     init_style(): void {
         this.set_style({ margin: Constant.DEFAULT_MARGIN })
         this.title.set_style({
-            margin: Constant.DEFAULT_MARGIN
+            margin: Constant.DEFAULT_MARGIN,
+            width: 80
         })
     }
     init_node(): void {

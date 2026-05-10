@@ -1,4 +1,4 @@
-from common.util.export import ApiBase, logger, Node, Dict, List
+from common.util.export import ApiBase, logger, Node, Dict, List, THE_DEV_CONSTANT
 from common.tool.export import Form
 from app.yly.envs.game.cube.model import CubeState, CubeAction
 from app.yly.envs.game.cube.constant import C
@@ -102,13 +102,21 @@ class CubeApi(ApiBase):
     def scheme_rotate(self, **kw):
         return (
             Form()
-            .set_column()
-            .add_childs(
+            .set_body(
                 CubeModel.axis,
                 CubeModel.layer,
                 CubeModel.rotate,
             )
-            .set_btns()
+            .set_btns({THE_DEV_CONSTANT.METHOD_RUN: "执行"})
+        )
+
+    def scheme_random(self, **kw):
+        return (
+            Form()
+            .set_body(
+                CubeModel.steps,
+            )
+            .set_btns({THE_DEV_CONSTANT.METHOD_RUN: "执行"})
         )
 
     def _state_to_node(self, s: CubeState) -> Node:

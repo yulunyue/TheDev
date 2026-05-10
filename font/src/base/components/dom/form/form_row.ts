@@ -2,6 +2,7 @@ import { FormContainer } from "./container";
 import { FormColumn } from "./form_column";
 import { not_null, Node } from "../../../web/cls"
 import { Div } from "../div";
+import { Constant } from "../../export";
 export class FormRow extends FormColumn {
     init_style(): void {
         this.set_style({ display: "flex", flexDirection: "column" })
@@ -12,12 +13,11 @@ export class FormRow extends FormColumn {
         }).set_size(1)
         this.footer.set_style({ justifyContent: "space-between" })
     }
-    get_row(o: Node): FormContainer {
-        return super.get_row(o).set_style({
-            display: "flex", flexDirection: "column",
-        })
-    }
-    render_chilld(d: Div) {
+
+    render_chilld(d: Div, o: Node) {
+        if (o.type == Constant.DOM_TYPE_SELECT || o.type == Constant.DOM_TYPE_BOOL) {
+            return d.set_flex_style_column()
+        }
         return d.set_flex_style_row()
     }
 }

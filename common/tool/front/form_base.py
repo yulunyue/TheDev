@@ -13,10 +13,10 @@ class FormBase(ApiBase):
         return Node(value=self.__class__.model.get(key))
 
     def to_form_row_view(self):
-        return Form().set_row().set_body(*self.__class__.model.get_form_columns())
+        return Form().set_body(*self.__class__.model.get_form_columns())
 
     def to_form_column_view(self):
-        return Form().set_column().set_body(*self.__class__.model.get_form_columns())
+        return Form().set_body(*self.__class__.model.get_form_columns())
 
     def web_submit(self, type, value: dict):
         _id = self.__class__.model.get_id_any(**value)

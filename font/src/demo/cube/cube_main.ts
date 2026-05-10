@@ -1,6 +1,6 @@
 import {
     web_dom, FormColumn, Row, Column,
-    Button, Pre, Title
+    Button, Pre, Title, FormRow
 } from "../../base/components/export";
 import { CubeGrid } from "./cube_grid";
 
@@ -8,7 +8,8 @@ const DELAY_TIME = 300;
 
 export class CubeMain extends Row {
     cube_grid: CubeGrid
-    control_form: FormColumn
+    control_form: FormRow
+    random_step_from: FormColumn
     button_row: Column
     new_btn: Button
     solve_btn: Button
@@ -28,16 +29,19 @@ export class CubeMain extends Row {
         this.title = new Title()
         this.title.set_html("魔方可视化")
         this.cube_grid = new CubeGrid()
-        this.control_form = new FormColumn()
-        this.random_step_from = new For
+        this.control_form = new FormRow()
+        this.random_step_from = new FormColumn()
         this.button_row = new Column()
-        this.button_row.add_childs([this.new_btn, this.scramble_btn, this.rotate_btn, this.solve_btn])
+        this.new_btn = new Button().set_html("重置")
+        this.solve_btn = new Button().set_html("求解")
+        this.button_row.add_childs([this.new_btn, this.solve_btn])
         this.action_pre = new Pre()
 
         this.right_panel = new Row()
         this.right_panel.add_childs([
-            this.control_form,
             this.button_row,
+            this.control_form,
+            this.random_step_from,
             this.action_pre
         ])
         this.left_panel = new Row()
@@ -86,14 +90,20 @@ export class CubeMain extends Row {
             border: '1px solid #e0e0e0',
             boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
         })
-
+        this.random_step_from.set_style({
+            backgroundColor: '#fff',
+            padding: '16px',
+            borderRadius: '8px',
+            border: '1px solid #e0e0e0',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+        })
         this.button_row.set_style({
             gap: '8px'
         })
 
         this.right_panel.set_style({
-            width: '320px',
-            minWidth: '320px',
+            width: '240px',
+            minWidth: '200px',
             padding: '16px',
             gap: '12px',
             overflow: 'auto',
@@ -115,13 +125,14 @@ export class CubeMain extends Row {
 
     init_event(): void {
         this.new_btn.on_click(() => this.handle_new())
-        this.scramble_btn.on_click(() => this.handle_scramble())
-        this.rotate_btn.on_click(() => this.handle_rotate())
         this.solve_btn.on_click(() => this.handle_solve())
+        this.control_form.on_submit(() => this.handle_rotate())
+        this.random_step_from.on_submit(() => this.handle_scramble())
     }
 
     render(): void {
         this.control_form.set_uri("/cube/scheme_rotate")
+        this.random_step_from.set_uri("/cube/scheme_random")
         this.handle_new()
     }
 
@@ -153,22 +164,17 @@ export class CubeMain extends Row {
     }
 
     handle_rotate(): void {
-        const axis = parseInt(this.control_form.child_map.axis.get_value())
-        const layer = parseInt(this.control_form.child_map.layer.get_value())
-        const rotate = parseInt(this.control_form.child_map.rotate.get_value())
-
-        web_dom.post("/cube/rotate", {
-            state: this.current_state,
-            axis,
-            layer,
-            rotate
-        }, (data: any) => {
-            this.update_state(data.value)
-            const action_desc = data.value.action?.description || "旋转完成"
-            this.action_history.push(action_desc)
-            this.title.set_html(action_desc)
-            this.action_pre.set_html(this.action_history.join('\n'))
-        })
+        let param = this.control_form.get_value()
+        param.state = this.current_state
+        web_dom.post("/cube/rotate", param,
+            (data: any) => {
+                this.update_state(data.value)
+                const action_desc = data.value.action?.description || "旋转完成"
+                this.action_history.push(action_desc)
+                this.title.set_html(action_desc)
+                this.action_pre.set_html(this.action_history.join('\n'))
+            }
+        )
     }
 
     async handle_solve(): Promise<void> {

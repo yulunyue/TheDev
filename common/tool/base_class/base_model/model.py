@@ -6,7 +6,7 @@ class BaseModel:
     can_is_null = True
     layout = None
 
-    def __init__(self, default_value=None, key=None, data_source=None) -> None:
+    def __init__(self, key=None, default_value=None, data_source=None) -> None:
         self.default_value = default_value
         from common.tool.base_class.baseconfig import ConfigBase
 

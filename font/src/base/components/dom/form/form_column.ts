@@ -54,7 +54,7 @@ export class FormColumn extends FlexRow {
         }
         return r
     }
-    render_chilld(d: Div) {
+    render_chilld(d: Div, o: Node) {
         return d.set_flex_style_column()
     }
     render_childs(childs: Node[]) {
@@ -63,7 +63,7 @@ export class FormColumn extends FlexRow {
         for (var i = 0; i < childs.length; i++) {
             let o = childs[i]
             this.body.childs[i].set_option(o).on_change(this.do_change.bind(this))
-            this.child_map[o.key] = this.render_chilld(this.body.childs[i])
+            this.child_map[o.key] = this.render_chilld(this.body.childs[i], childs[i])
         }
         if (this.option.id) {
             web_dom.get_local(this.option.id, this.set_value.bind(this))

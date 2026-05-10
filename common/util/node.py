@@ -31,7 +31,7 @@ class Node:
         if childs:
             for cd in childs:
                 if isinstance(cd, dict):
-                    self.add_child(**cd)
+                    self.add_child(cd)
                 else:
                     self.childs.append(cd)
         self.init()
