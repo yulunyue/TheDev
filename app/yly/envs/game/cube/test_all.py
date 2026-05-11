@@ -1,3 +1,4 @@
+from common.algo.export import decode_data
 from common.util.export import TestBase, log2 as logger, File
 from app.yly.envs.game.cube.model import CubeState, CubeAction
 from app.yly.envs.game.cube.constant import C
@@ -188,3 +189,132 @@ class TestCube(TestBase):
         action_tuples = [a.action for a in actions]
         unique_actions = set(action_tuples)
         self.expect(len(unique_actions), expected_count)
+
+    # ---------- CubeState 补充测试 ----------
+
+    def test_serialization_roundtrip(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        scrambled = s.random_step(5)
+        data = scrambled.to_json()
+        self.expect("state" in data, True)
+        self.expect("depth" in data, True)
+        self.expect("n" in data, True)
+        self.expect("game_over" in data, True)
+
+        restored = CubeState(0).load_from_json(data)
+        self.expect(restored.state, scrambled.state)
+        self.expect(restored.depth, scrambled.depth)
+        self.expect(restored.game_over(), scrambled.game_over())
+
+    def test_get_action_tuple_lookup(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        for axis in range(C.AXIS_NUM):
+            for layer in range(C.n):
+                for rotate in C.MOVE_ACTION:
+                    a = s.get_action((axis, layer, rotate))
+                    self.expect(isinstance(a, CubeAction), True)
+                    self.expect(a.action, (axis, layer, rotate))
+
+    def test_get_action_invalid_raises(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        def try_get(v):
+            try:
+                s.get_action(v)
+                return None
+            except Exception as e:
+                return str(e)
+        self.expect(try_get((99, 0, 1)) is not None, True)
+        self.expect(try_get((0, 99, 1)) is not None, True)
+        self.expect(try_get((0, 0, 99)) is not None, True)
+
+    def test_rotate_4_same_action(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        scrambled = s.random_step(4)
+        action_tuple = scrambled.get_sort_actions()[0].action
+        state = scrambled
+        for _ in range(4):
+            a = state.get_action(action_tuple)
+            state = a.get_dst()
+        self.expect(state.state, scrambled.state)
+
+    def test_rotate_4_layer1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        scrambled = s.random_step(4)
+        action_tuple = (1, 1, -1)
+        state = scrambled
+        for _ in range(4):
+            a = state.get_action(action_tuple)
+            state = a.get_dst()
+        self.expect(state.state, scrambled.state)
+
+    def test_rotate_cw_then_ccw(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        scrambled = s.random_step(4)
+        cw = scrambled.get_action((0, 0, 1))
+        ccw = cw.get_dst().get_action((0, 0, -1))
+        self.expect(ccw.get_dst().state, scrambled.state)
+
+    def test_make_actions_from_scrambled(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        scrambled = s.random_step(5)
+        actions = scrambled.make_actions()
+        expected_count = C.AXIS_NUM * C.n * len(C.MOVE_ACTION)
+        self.expect(len(actions), expected_count)
+        for a in actions:
+            self.expect(a.src.state, scrambled.state)
+            ns = a.get_dst()
+            self.expect(not ns.game_over(), True)
+
+    def test_grid_consistency(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        for _ in range(10):
+            a = s.get_random_action()
+            s = a.get_dst()
+            decoded = decode_data(s.state, [C.BIT_SIZE] * (C.SIZE * C.n * C.n))
+            self.expect(decoded, s.grid)
+
+    def test_random_step(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        scrambled = s.get_sort_actions()[0].get_dst()
+        self.expect(not scrambled.game_over(), True)
+        result = scrambled.random_step(7)
+        self.expect(isinstance(result, CubeState), True)
+        self.expect(result.depth, scrambled.depth + 7)
+
+    def test_bfs_finds_solution(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        scrambled = s.get_sort_actions()[0].get_dst()
+        states = scrambled.bfs(max_depth=3)
+        solved = states.get(C.init_mask)
+        self.expect(solved is not None, True)
+        for a in solved[0]:
+            scrambled = a.get_dst()
+        self.expect(scrambled.game_over(), True)
+
+    # ---------- CubeAction 补充测试 ----------
+
+    def test_action_attributes(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        for axis in range(C.AXIS_NUM):
+            for layer in range(C.n):
+                for rotate in C.MOVE_ACTION:
+                    a = s.get_action((axis, layer, rotate))
+                    self.expect(a.color, axis)
+                    self.expect(a.layer_id, layer)
+                    self.expect(a.rotate, rotate)
+                    self.expect(a.action, (axis, layer, rotate))
+
+    def test_action_dst_immutable(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((0, 0, 1))
+        dst1 = a.get_dst()
+        dst2 = a.get_dst()
+        self.expect(dst1.state, dst2.state)
+
+    def test_action_show_contains_rotation(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((0, 0, 1))
+        msg = a.show()
+        self.expect("层" in msg, True)
+        self.expect("色" in msg, True)
+        self.expect("旋转" in msg, True)
