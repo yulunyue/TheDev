@@ -1,6 +1,6 @@
 from common.tool.export import ToolBase, TaskConfig, TASK_MANAGE
 from common.third_util.io.api import Api
-from common.util.export import C, time_format
+from common.util.export import C, time_format, logger
 
 
 class TaskTool(ToolBase):
@@ -21,7 +21,7 @@ class TaskTool(ToolBase):
                 )
 
     def test_zx(self):
-        Api().set_endpoint("http://1.14.97.154:10000").get("/app")
+        logger.info(Api().set_endpoint("http://1.14.97.154:10000").post("/app"))
 
     def do_task(self, name):
         TaskConfig.set_resource("config/setting/task.json")
