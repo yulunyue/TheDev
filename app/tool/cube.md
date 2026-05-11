@@ -34,7 +34,7 @@ app/tool/cube.py  ←──  app/yly/envs/game/cube/
 
 ### 3. `rotate` — 旋转
 - **参数**: `state, axis, layer, rotate`
-- **逻辑**: 从当前状态枚举所有动作，匹配指定的 axis/layer/rotate 并执行
+- **逻辑**: 通过 `CubeState.get_action((axis, layer, rotate))` 字典查找动作，O(1)
 - **返回**: 新状态 + 动作描述
 - **异常**: 动作不存在时抛异常
 

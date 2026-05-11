@@ -88,17 +88,11 @@ class State:
     def reset_env(cls):
         pass
 
-    def get_action(self, actions) -> Action:
-        if not isinstance(actions, list):
-            actions = [actions]
-        s = self
-        for a in actions:
-            actions = {a.action: a for a in s.get_sort_actions()}
-            if a not in actions:
-                raise Exception(a, list(actions.keys()), self.state)
-            ret = actions[a]
-            s = ret.dst
-        return ret
+    def get_action(self, action) -> Action:
+        action_map = {a.action: a for a in self.get_sort_actions()}
+        if action not in action_map:
+            raise Exception(action, list(action_map.keys()), self.state)
+        return action_map[action]
 
     def get_best_actions(self) -> List["Action"]:
         p = self

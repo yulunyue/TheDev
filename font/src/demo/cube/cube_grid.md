@@ -14,3 +14,10 @@
 
 - 容器 `set_style` 从 `init_node` 移到 `init_style`
 - 符合 AGENTS.md 规则：所有 `set_style` 集中在 `init_style` 管理
+
+### 2026-05-11 新增 block_size 属性
+
+- 新增 `block_size` 属性，默认 50
+- 新增 `set_block_size(size)` 方法
+- `render_cube` 中 `blockSize` 改用 `this.block_size`
+- 便于手机端复用，缩小方块尺寸

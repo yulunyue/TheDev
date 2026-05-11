@@ -66,7 +66,13 @@ export class CubeMain extends Row {
             borderBottom: '1px solid #ddd',
             margin: 0,
             flexShrink: 0,
-            fontSize: '16px'
+            fontSize: '16px',
+            height: '36px',
+            lineHeight: '20px',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
         })
 
         this.cube_grid.set_style({ margin: '10px' })

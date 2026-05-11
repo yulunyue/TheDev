@@ -20,7 +20,7 @@ class Cli(ToolBase):
         f = File("./")
         f.zip(
             THE_DEV_ZIP_PATH,
-            targets=["font/dist", "common", "app/tool", "tool", "main.py"],
+            targets=["font/dist", "common", "app/tool", "tool", "main.py", "config/setting/production.json"],
             ignores=[".*__pycache__"],
         )
         logger.info("package")

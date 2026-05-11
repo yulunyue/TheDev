@@ -5,6 +5,7 @@ from .constant import C
 class CubeAction(Action):
     def set_view(self, c, d, r):
         self.color, self.layer_id, self.rotate = c, d, r
+        self.action = (c, d, r)
         return self
 
     def show(self, msg=None):

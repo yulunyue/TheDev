@@ -3,11 +3,16 @@ import {
 } from "../../base/components/export";
 
 const CUBE_COLORS = ['#3498db', '#e67e22', '#ecf0f1', '#e74c3c', '#f1c40f', '#2ecc71'];
-const FACE_LABELS = ['上', '左', '前', '右', '後', '下'];
 
 export class CubeGrid extends Div {
     grid_data: number[] = []
     n: number = 2
+    block_size: number = 50
+
+    set_block_size(size: number): this {
+        this.block_size = size
+        return this
+    }
 
     init_node(): void {
         super.init_node()
@@ -38,7 +43,7 @@ export class CubeGrid extends Div {
         this.clear()
 
         const faceSize = this.n * this.n
-        const blockSize = 50
+        const blockSize = this.block_size
 
         const faces = []
         for (let i = 0; i < 6; i++) {
@@ -72,52 +77,39 @@ export class CubeGrid extends Div {
             return col
         }
 
-        const createLabel = (text: string) => {
-            const lb = new Div()
-            lb.set_style({
-                fontSize: '12px',
-                color: '#666',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                margin: '2px 0'
-            })
-            lb.set_html(text)
-            return lb
-        }
-
-        const faceContainer = (faceIndex: number, labelPos: 'top' | 'bottom' | 'none' = 'none') => {
+        const faceContainer = (faceIndex: number) => {
             const col = new Row()
             col.set_style({ alignItems: 'center', margin: '0 6px' })
-            if (labelPos === 'top') {
-                const c = new Row()
-                c.add_child(createLabel(FACE_LABELS[faceIndex]))
-                c.add_child(createFace(faceIndex))
-                col.add_child(c)
-            } else {
-                col.add_child(createFace(faceIndex))
-                if (labelPos === 'bottom') {
-                    col.add_child(createLabel(FACE_LABELS[faceIndex]))
-                }
-            }
+            col.add_child(createFace(faceIndex))
             return col
         }
 
-        const topRow = new Column()
-        topRow.set_style({ justifyContent: 'center' })
-        topRow.add_child(faceContainer(0, 'top'))
+        const slotWidth = this.n * (this.block_size + 4) + 4
 
-        const midRow = new Column()
-        midRow.set_style({ justifyContent: 'center' })
-        const midFaces = [4, 1, 2, 3]
-        for (const fi of midFaces) {
-            midRow.add_child(faceContainer(fi, 'bottom'))
+        const faceRow = (faces_arr: (number | null)[]) => {
+            const row = new Column()
+            row.set_style({ justifyContent: 'center' })
+            for (const fi of faces_arr) {
+                if (fi === null) {
+                    const spacer = new Div()
+                    spacer.set_style({
+                        width: `${slotWidth}px`,
+                        height: '1px',
+                        margin: '0 6px'
+                    })
+                    row.add_child(spacer)
+                } else {
+                    row.add_child(faceContainer(fi))
+                }
+            }
+            return row
         }
 
-        const bottomRow = new Column()
-        bottomRow.set_style({ justifyContent: 'center' })
-        bottomRow.add_child(faceContainer(5, 'bottom'))
-
-        this.add_childs([topRow, midRow, bottomRow])
+        this.add_childs([
+            faceRow([null, null, 0, null]),
+            faceRow([4, 1, 2, 3]),
+            faceRow([null, null, 5, null]),
+        ])
     }
 }
 
