@@ -1,4 +1,4 @@
-from common.util.export import File, logger, SYS_ARGS, cmd_parse, Module, ReUtil
+from common.util.export import File, logger, SYS_ARGS, cmd_parse_json, Module, ReUtil
 
 
 class TodoFile:
@@ -26,7 +26,7 @@ class TodoFile:
         return [self.cmd(cmd) for cmd in cmds]
 
     def cmd(self, cmd):
-        args, kw = cmd_parse(cmd)
+        args = cmd_parse_json(cmd)
         call_name = args.pop(0)
         if "." in call_name:
             f = Module(use_cache=True).load_module_object(
@@ -34,4 +34,4 @@ class TodoFile:
             )  # get_file_path_by_cls 需要使用cache
         else:
             f = call_name
-        return f, args, kw
+        return f, args

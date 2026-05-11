@@ -25,6 +25,7 @@ from .tool import (
     assert_dict,
     SYS_KW,
     cmd_parse,
+    cmd_parse_json,
     b64_code,
     url_parse,
     is_base64_code,

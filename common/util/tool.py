@@ -108,6 +108,35 @@ def str_mid(s: str, size, fill="-"):
     return fill * l + s + fill * (l + y)
 
 
+def cmd_parse_json(s):
+    ret = []
+    i = 0
+    value = ""
+    json_lt = json_rt = 0
+    while i < len(s):
+        v = s[i]
+        if v == " " and json_lt == 0:
+            if value:
+                ret.append(value)
+            value = ""
+        elif v == "{":
+            json_lt += 1
+            value += v
+        elif v == "}":
+            json_rt += 1
+            value += v
+        else:
+            value += v
+        if json_lt == json_rt and json_lt:
+            try:
+                ret.append(json.loads(value))
+            except Exception as e:
+                raise Exception(e, value, json_lt)
+            value = ""
+        i += 1
+    return ret
+
+
 def cmd_parse(s: str):
     args, kw = [], dict()
     if isinstance(s, str):

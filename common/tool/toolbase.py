@@ -32,9 +32,6 @@ class ToolBase:
     def exit(self):
         pass
 
-    def load(self, **kw):
-        return self
-
     def run(self):
         self.msgs = []
         self.argvs, kw = SYS_ARGS.copy(), SYS_KW.copy()
@@ -42,7 +39,6 @@ class ToolBase:
             fun_name = self.argvs.pop()
         else:
             fun_name = ""
-
         md_file = make_md_file()
         todo = TodoFile(md_file)
         logger.info(md_file)
@@ -50,11 +46,14 @@ class ToolBase:
         if isinstance(funs, str):
             logger.info(f"NOT FIND {fun_name}\n{funs}")
             return
-        for ff, args, fkw in funs:
+
+        for ff, args in funs:
             if isinstance(ff, str):
                 ff = getattr(self, ff)
-            self.load(**fkw)
-            ff(*args)
+            if args and isinstance(args[0], dict):
+                ff(**args[0])
+            else:
+                ff(*args)
 
     def get_call_fun(self):
         ret = []
