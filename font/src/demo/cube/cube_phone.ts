@@ -3,26 +3,30 @@ import {
     Button, Pre, Title, Input, FormRow
 } from "../../base/components/export";
 import { CubeGrid } from "./cube_grid";
+import { Cube3D } from "./cube_3d";
 
 export class CubePhone extends Row {
     cube_grid: CubeGrid
+    cube_3d: Cube3D
     title: Title
     control_form: FormRow
     btn_scramble: Button
     btn_reset: Button
     btn_solve: Button
+    btn_toggle: Button
     steps_input: Input
     action_pre: Pre
-    current_state: number = 0
     current_grid: number[] = []
     current_n: number = 2
     action_history: string[] = []
+    is_3d: boolean = true
 
     init_node(): void {
         super.init_node()
 
         this.title = new Title().set_html("魔方")
         this.cube_grid = new CubeGrid().set_block_size(32)
+        this.cube_3d = new Cube3D()
         this.control_form = new FormRow()
 
         this.steps_input = new Input().set_value("3")
@@ -38,6 +42,7 @@ export class CubePhone extends Row {
         this.btn_scramble = new Button().set_html("打乱")
         this.btn_reset = new Button().set_html("重置")
         this.btn_solve = new Button().set_html("求解")
+        this.btn_toggle = new Button().set_html("2D")
 
         this.action_pre = new Pre()
 
@@ -47,9 +52,9 @@ export class CubePhone extends Row {
 
         const btn_row = new Column()
         btn_row.set_style({ gap: '8px', justifyContent: 'center' })
-        btn_row.add_childs([this.btn_scramble, this.btn_reset, this.btn_solve])
+        btn_row.add_childs([this.btn_scramble, this.btn_reset, this.btn_solve, this.btn_toggle])
 
-        this.add_childs([this.title, this.cube_grid, this.control_form, steps_row, btn_row, this.action_pre])
+        this.add_childs([this.title, this.cube_grid, this.cube_3d, this.control_form, steps_row, btn_row, this.action_pre])
     }
 
     init_style(): void {
@@ -79,6 +84,11 @@ export class CubePhone extends Row {
         })
 
         this.cube_grid.set_style({ margin: '4px' })
+        this.cube_3d.set_style({
+            width: '100%',
+            height: '320px',
+        })
+        this.cube_grid.hide()
 
         this.control_form.set_style({ width: '100%' })
 
@@ -109,6 +119,15 @@ export class CubePhone extends Row {
             color: '#fff',
             cursor: 'pointer'
         })
+        this.btn_toggle.set_style({
+            padding: '10px 20px',
+            fontSize: '14px',
+            borderRadius: '6px',
+            border: 'none',
+            backgroundColor: '#9b59b6',
+            color: '#fff',
+            cursor: 'pointer'
+        })
 
         this.action_pre.set_style({
             backgroundColor: '#fafafa',
@@ -128,7 +147,23 @@ export class CubePhone extends Row {
         this.btn_scramble.on_click(() => this.handle_scramble())
         this.btn_reset.on_click(() => this.handle_new())
         this.btn_solve.on_click(() => this.handle_solve())
+        this.btn_toggle.on_click(() => this.toggle_view())
         this.control_form.on_submit(() => this.handle_rotate())
+    }
+
+    toggle_view(): void {
+        this.is_3d = !this.is_3d
+        if (this.is_3d) {
+            this.cube_grid.hide()
+            this.cube_3d.show()
+            this.btn_toggle.set_html("2D")
+            this.cube_3d.set_cube_data(this.current_grid, this.current_n)
+            this.cube_3d.resize()
+        } else {
+            this.cube_grid.show()
+            this.cube_3d.hide()
+            this.btn_toggle.set_html("3D")
+        }
     }
 
     render(): void {
@@ -152,9 +187,19 @@ export class CubePhone extends Row {
             const actions = data.childs || []
             for (const action_node of actions) {
                 const action = action_node.value
-                this.cube_grid.set_cube_data(action.grid, this.current_n)
-                this.title.set_html(action.description)
-                await this.delay(200)
+                if (this.is_3d) {
+                    await new Promise<void>(resolve => {
+                        this.cube_3d.animate_rotate(action.axis, action.layer, action.rotate, () => {
+                            this.cube_3d.set_cube_data(action.grid, this.current_n)
+                            this.title.set_html(action.description)
+                            resolve()
+                        })
+                    })
+                } else {
+                    this.cube_grid.set_cube_data(action.grid, this.current_n)
+                    this.title.set_html(action.description)
+                    await this.delay(200)
+                }
             }
             this.update_state(data.value)
             this.title.set_html(`打乱 ${steps} 步`)
@@ -164,7 +209,7 @@ export class CubePhone extends Row {
 
     handle_rotate(): void {
         let param = this.control_form.get_value()
-        param.state = this.current_state
+        param.grid = this.current_grid
         web_dom.post("/cube/rotate", param,
             (data: any) => {
                 this.update_state(data.value)
@@ -172,12 +217,16 @@ export class CubePhone extends Row {
                 this.action_history.push(desc)
                 this.title.set_html(desc)
                 this.action_pre.set_html(this.action_history.join('\n'))
+                if (this.is_3d) {
+                    const a = data.value.action
+                    this.cube_3d.animate_rotate(a.axis, a.layer, a.rotate)
+                }
             }
         )
     }
 
     async handle_solve(): Promise<void> {
-        web_dom.post("/cube/solve", { state: this.current_state }, async (data: any) => {
+        web_dom.post("/cube/solve", { grid: this.current_grid }, async (data: any) => {
             if (data.value.solved) {
                 this.title.set_html("已完成!")
                 this.action_pre.set_html("魔方已完成")
@@ -186,9 +235,19 @@ export class CubePhone extends Row {
             this.title.set_html(`求解中...`)
             const actions = data.value.actions
             for (const action of actions) {
-                this.cube_grid.set_cube_data(action.grid, this.current_n)
-                this.title.set_html(action.description)
-                await this.delay(200)
+                if (this.is_3d) {
+                    await new Promise<void>(resolve => {
+                        this.cube_3d.animate_rotate(action.axis, action.layer, action.rotate, () => {
+                            this.cube_3d.set_cube_data(action.grid, this.current_n)
+                            this.title.set_html(action.description)
+                            resolve()
+                        })
+                    })
+                } else {
+                    this.cube_grid.set_cube_data(action.grid, this.current_n)
+                    this.title.set_html(action.description)
+                    await this.delay(200)
+                }
             }
             this.title.set_html(`求解完成 ${data.value.steps} 步`)
             this.action_pre.set_html(actions.map(a => a.description).join('\n'))
@@ -196,10 +255,14 @@ export class CubePhone extends Row {
     }
 
     update_state(data: any): void {
-        this.current_state = data.state
         this.current_grid = data.grid
         this.current_n = data.n
         this.cube_grid.set_cube_data(data.grid, data.n)
+        this.cube_3d.set_cube_data(data.grid, data.n)
+        if (this.is_3d) {
+            this.cube_3d.show()
+            this.cube_3d.resize()
+        }
         if (data.game_over) {
             this.title.set_html("已完成!")
         }

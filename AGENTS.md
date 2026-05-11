@@ -36,7 +36,7 @@
 ### CI/CD 发布（Bolun 现网）
 - `python -m tool.service.cli bolun_cicd` — **一键发布现网**，依次执行：
   1. `npm_build` — 前端构建
-  2. `package` — 打包（`font/dist` + `common` + `app/tool`）
+  2. `package` — 打包（`font/dist` + `common` + `app/tool` + `app/yly` + `tool` + `main.py` + `config/setting/production.json`）
   3. `upload_base_64` — 分片上传到 `1.14.97.154:10001`
   4. `install` — 远端解压安装
   5. `restart production` — 远端以 `production` 配置重启

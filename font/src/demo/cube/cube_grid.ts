@@ -2,7 +2,7 @@ import {
     Div, Row, Column
 } from "../../base/components/export";
 
-const CUBE_COLORS = ['#3498db', '#e67e22', '#ecf0f1', '#e74c3c', '#f1c40f', '#2ecc71'];
+const CUBE_COLORS = ['#3498db', '#ff9800', '#ecf0f1', '#d32f2f', '#1a1a1a', '#2ecc71'];
 
 export class CubeGrid extends Div {
     grid_data: number[] = []
@@ -53,21 +53,18 @@ export class CubeGrid extends Div {
         const createBlock = (colorIndex: number) => {
             const block = new Div()
             block.set_style({
-                width: `${blockSize}px`,
-                height: `${blockSize}px`,
+                width: `${blockSize - 2}px`,
+                height: `${blockSize - 2}px`,
                 backgroundColor: CUBE_COLORS[colorIndex],
-                borderRadius: '6px',
-                margin: '2px',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.2)'
+                border: '1px solid #444',
             })
             return block
         }
 
         const createFace = (faceIndex: number) => {
-            const col = new Column()
-            col.set_style({ margin: '0 2px' })
+            const col = new Row()
             for (let j = 0; j < this.n; j++) {
-                const row = new Row()
+                const row = new Column()
                 for (let k = 0; k < this.n; k++) {
                     const colorIndex = faces[faceIndex][j * this.n + k]
                     row.add_child(createBlock(colorIndex))
@@ -79,12 +76,11 @@ export class CubeGrid extends Div {
 
         const faceContainer = (faceIndex: number) => {
             const col = new Row()
-            col.set_style({ alignItems: 'center', margin: '0 6px' })
             col.add_child(createFace(faceIndex))
             return col
         }
 
-        const slotWidth = this.n * (this.block_size + 4) + 4
+        const slotWidth = this.n * this.block_size
 
         const faceRow = (faces_arr: (number | null)[]) => {
             const row = new Column()
@@ -95,7 +91,6 @@ export class CubeGrid extends Div {
                     spacer.set_style({
                         width: `${slotWidth}px`,
                         height: '1px',
-                        margin: '0 6px'
                     })
                     row.add_child(spacer)
                 } else {

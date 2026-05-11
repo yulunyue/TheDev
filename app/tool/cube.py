@@ -1,3 +1,4 @@
+from common.algo.export import encode_data
 from common.util.export import ApiBase, logger, Node, Dict, List, THE_DEV_CONSTANT
 from common.tool.export import Form
 from app.yly.envs.game.cube.model import CubeState, CubeAction
@@ -29,7 +30,6 @@ class CubeApi(ApiBase):
                     "layer": action.layer_id,
                     "rotate": action.rotate,
                     "description": action.show(),
-                    "state": action.dst.state,
                     "grid": action.dst.grid,
                 }
             )
@@ -40,9 +40,9 @@ class CubeApi(ApiBase):
             result.childs = [Node(value=a) for a in actions_data]
         return result
 
-    def rotate(self, state, axis, layer, rotate, **kw):
+    def rotate(self, grid, axis, layer, rotate, **kw):
         axis, layer, rotate = int(axis), int(layer), int(rotate)
-        temp_state = CubeState(state)
+        temp_state = CubeState(encode_data(grid, C.BIT_SIZE))
         target_action = temp_state.get_action((axis, layer, rotate))
 
         new_state = target_action.dst
@@ -55,8 +55,8 @@ class CubeApi(ApiBase):
         }
         return node
 
-    def solve(self, state, **kw):
-        s = CubeState(state)
+    def solve(self, grid, **kw):
+        s = CubeState(encode_data(grid, C.BIT_SIZE))
         if s.game_over():
             return Node(value={"solved": True, "actions": [], "message": "魔方已完成"})
 
@@ -72,7 +72,6 @@ class CubeApi(ApiBase):
                     "layer": a.layer_id,
                     "rotate": a.rotate,
                     "description": a.show(),
-                    "state": a.dst.state,
                     "grid": a.dst.grid,
                 }
             )
@@ -87,8 +86,8 @@ class CubeApi(ApiBase):
             }
         )
 
-    def get_state(self, state, **kw):
-        s = CubeState(state)
+    def get_state(self, grid, **kw):
+        s = CubeState(encode_data(grid, C.BIT_SIZE))
         return self._state_to_node(s)
 
     def scheme_rotate(self, **kw):
@@ -114,7 +113,6 @@ class CubeApi(ApiBase):
     def _state_to_node(self, s: CubeState) -> Node:
         return Node(
             value={
-                "state": s.state,
                 "grid": s.grid,
                 "n": C.n,
                 "depth": s.depth,

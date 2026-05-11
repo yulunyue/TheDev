@@ -17,3 +17,13 @@
 - `init_node` 中移除所有 `set_style` 调用，全部集中到 `init_style`
 - `right_panel`、`left_panel`、`main_body` 改为类成员，以便在 `init_style` 中设置样式
 - 符合 AGENTS.md 规则：构造只放在 `init_node`，样式只放在 `init_style`
+
+### 2026-05-11 2D/3D 切换
+
+- 新增 `Cube3D` 导入
+- 新增 `cube_3d`、`toggle_btn`、`is_3d` 成员
+- 按钮行增加"3D"切换按钮
+- `toggle_view()`：`hide()`/`show()` 切换 CubeGrid / Cube3D
+- `handle_rotate`：3D 模式下额外调用 `cube_3d.animate_rotate`
+- `animate_step`：3D 模式下用 `animate_rotate` 做旋转动画（300ms），2D 模式沿用瞬切
+- `update_state`：同时更新 cube_grid 和 cube_3d

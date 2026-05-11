@@ -3,25 +3,28 @@ import {
     Button, Pre, Title, FormRow
 } from "../../base/components/export";
 import { CubeGrid } from "./cube_grid";
+import { Cube3D } from "./cube_3d";
 
 const DELAY_TIME = 300;
 
 export class CubeMain extends Row {
     cube_grid: CubeGrid
+    cube_3d: Cube3D
     control_form: FormRow
     random_step_from: FormColumn
     button_row: Column
     new_btn: Button
     solve_btn: Button
+    toggle_btn: Button
     title: Title
     action_pre: Pre
     right_panel: Row
     left_panel: Row
     main_body: Column
-    current_state: number = 0
     current_grid: number[] = []
     current_n: number = 2
     action_history: string[] = []
+    is_3d: boolean = true
 
     init_node(): void {
         super.init_node()
@@ -29,12 +32,14 @@ export class CubeMain extends Row {
         this.title = new Title()
         this.title.set_html("魔方可视化")
         this.cube_grid = new CubeGrid()
+        this.cube_3d = new Cube3D()
         this.control_form = new FormRow()
         this.random_step_from = new FormColumn()
         this.button_row = new Column()
         this.new_btn = new Button().set_html("重置")
         this.solve_btn = new Button().set_html("求解")
-        this.button_row.add_childs([this.new_btn, this.solve_btn])
+        this.toggle_btn = new Button().set_html("2D")
+        this.button_row.add_childs([this.new_btn, this.solve_btn, this.toggle_btn])
         this.action_pre = new Pre()
 
         this.right_panel = new Row()
@@ -45,7 +50,7 @@ export class CubeMain extends Row {
             this.action_pre
         ])
         this.left_panel = new Row()
-        this.left_panel.add_child(this.cube_grid)
+        this.left_panel.add_childs([this.cube_grid, this.cube_3d])
         this.main_body = new Column()
         this.main_body.add_childs([this.left_panel, this.right_panel])
         this.add_childs([this.title, this.main_body])
@@ -76,6 +81,11 @@ export class CubeMain extends Row {
         })
 
         this.cube_grid.set_style({ margin: '10px' })
+        this.cube_3d.set_style({
+            width: '400px',
+            height: '400px',
+        })
+        this.cube_grid.hide()
 
         this.action_pre.set_style({
             backgroundColor: '#fafafa',
@@ -132,8 +142,24 @@ export class CubeMain extends Row {
     init_event(): void {
         this.new_btn.on_click(() => this.handle_new())
         this.solve_btn.on_click(() => this.handle_solve())
+        this.toggle_btn.on_click(() => this.toggle_view())
         this.control_form.on_submit(() => this.handle_rotate())
         this.random_step_from.on_submit(() => this.handle_scramble())
+    }
+
+    toggle_view(): void {
+        this.is_3d = !this.is_3d
+        if (this.is_3d) {
+            this.cube_grid.hide()
+            this.cube_3d.show()
+            this.toggle_btn.set_html("2D")
+            this.cube_3d.set_cube_data(this.current_grid, this.current_n)
+            this.cube_3d.resize()
+        } else {
+            this.cube_grid.show()
+            this.cube_3d.hide()
+            this.toggle_btn.set_html("3D")
+        }
     }
 
     render(): void {
@@ -171,7 +197,7 @@ export class CubeMain extends Row {
 
     handle_rotate(): void {
         let param = this.control_form.get_value()
-        param.state = this.current_state
+        param.grid = this.current_grid
         web_dom.post("/cube/rotate", param,
             (data: any) => {
                 this.update_state(data.value)
@@ -179,12 +205,16 @@ export class CubeMain extends Row {
                 this.action_history.push(action_desc)
                 this.title.set_html(action_desc)
                 this.action_pre.set_html(this.action_history.join('\n'))
+                if (this.is_3d) {
+                    const a = data.value.action
+                    this.cube_3d.animate_rotate(a.axis, a.layer, a.rotate)
+                }
             }
         )
     }
 
     async handle_solve(): Promise<void> {
-        web_dom.post("/cube/solve", { state: this.current_state }, async (data: any) => {
+        web_dom.post("/cube/solve", { grid: this.current_grid }, async (data: any) => {
             if (data.value.solved) {
                 this.title.set_html("魔方已完成!")
                 this.action_pre.set_html("魔方已经处于完成状态")
@@ -205,10 +235,14 @@ export class CubeMain extends Row {
     }
 
     update_state(data: any): void {
-        this.current_state = data.state
         this.current_grid = data.grid
         this.current_n = data.n
         this.cube_grid.set_cube_data(data.grid, data.n)
+        this.cube_3d.set_cube_data(data.grid, data.n)
+        if (this.is_3d) {
+            this.cube_3d.show()
+            this.cube_3d.resize()
+        }
 
         if (data.game_over) {
             this.title.set_html("魔方已完成!")
@@ -217,9 +251,17 @@ export class CubeMain extends Row {
 
     animate_step(action: any): Promise<void> {
         return new Promise((resolve) => {
-            this.cube_grid.set_cube_data(action.grid, this.current_n)
-            this.title.set_html(action.description)
-            resolve()
+            if (this.is_3d) {
+                this.cube_3d.animate_rotate(action.axis, action.layer, action.rotate, () => {
+                    this.cube_3d.set_cube_data(action.grid, this.current_n)
+                    this.title.set_html(action.description)
+                    resolve()
+                })
+            } else {
+                this.cube_grid.set_cube_data(action.grid, this.current_n)
+                this.title.set_html(action.description)
+                resolve()
+            }
         })
     }
 
