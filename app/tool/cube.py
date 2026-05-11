@@ -41,17 +41,9 @@ class CubeApi(ApiBase):
         return result
 
     def rotate(self, state, axis, layer, rotate, **kw):
+        axis, layer, rotate = int(axis), int(layer), int(rotate)
         temp_state = CubeState(state)
-        actions = temp_state.make_actions()
-
-        target_action = None
-        for a in actions:
-            if a.color == axis and a.layer_id == layer and a.rotate == rotate:
-                target_action = a
-                break
-
-        if not target_action:
-            raise Exception(f"动作不存在: axis={axis}, layer={layer}, rotate={rotate}")
+        target_action = temp_state.get_action((axis, layer, rotate))
 
         new_state = target_action.dst
         node = self._state_to_node(new_state)

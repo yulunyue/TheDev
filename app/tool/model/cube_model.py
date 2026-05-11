@@ -14,13 +14,13 @@ class CubeModel(ConfigBase):
     axis = (
         SelectModel()
         .set_title("旋转轴")
-        .set_options(x="X轴(垂直)", y="Y轴(水平)", z="Z轴(前后)")
+        .set_options(**{"0": "X轴(垂直)", "1": "Y轴(水平)", "2": "Z轴(前后)"})
     )
-    layer = SelectModel().set_title("层号").set_options(zero=0, one=1, two=2)
+    layer = SelectModel().set_title("层号").set_options(**{"0": "层0", "1": "层1"})
     rotate = (
         SelectModel()
         .set_title("旋转方向")
-        .set_options(l1="-1(逆时针)", r1="1(顺时针)", r2="2(180度)")
+        .set_options(**{"-1": "逆时针", "1": "顺时针", "2": "180度"})
     )
     steps = NumberModel(default_value=1).set_title("步数")
 

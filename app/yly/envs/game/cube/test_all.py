@@ -59,7 +59,7 @@ class TestCube(TestBase):
         s = CubeState.new_shape(C.SHAPE2)
         lines = s.to_str()
         self.expect(len(lines), C.n * 3)
-        a = s.get_action(0)
+        a = s.get_action((0, 0, -1))
         assert a.get_dst().to_str() == [
             "  BB    ",
             "  BB    ",

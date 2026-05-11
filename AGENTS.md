@@ -11,7 +11,7 @@
 - 配置文件自动创建在 `config/setting/{env}.json`（若不存在）
 - 服务器将 PID 写入 `data/proc/{env}.pid`
 - 重启服务需先 `kill` 旧进程，然后用 `nohup python main.py dev > /dev/null 2>&1 &` 启动（避免 shell 超时后被杀死）
-- 前端 `npm start` 需用 `setsid sh -c 'cd font && npm start > /tmp/frontend.log 2>&1 &'` 启动（`nohup` 对 npm 不可靠）
+- 前端 `npm start` 需用 `setsid sh -c 'cd font && npm start > data/tmp/frontend.log 2>&1 &'` 启动（`nohup` 对 npm 不可靠）
 - 重启前后端后需用 `lsof -i :<port>` 确认端口已监听
 
 ### 测试
@@ -100,6 +100,11 @@ from common.tool.export import (
 - 类名与文件名保持一致（如 `class WebDom` 放在 `web_dom.ts`）
 - **每个 `.py` / `.ts` 代码文件的变动都要记录到同目录、同名的 `.md` 文件**（如 `web_dom.ts` 的变动记录在 `web_dom.md`）
 - **Python 代码统一使用 Black 格式化**（配置见 `pyproject.toml`），行长度 88
+
+## 全局规则
+
+- **临时文件统一使用 `data/tmp/`**（在项目工作区内，无需额外授权），禁止使用 `/tmp/`
+- 所有 shell 命令的输出重定向、临时缓存等均写入 `data/tmp/` 下
 
 ## 注意事项
 
