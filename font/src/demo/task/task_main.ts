@@ -66,7 +66,7 @@ export class TaskMain extends Row {
         this.add_btn.on_click(() => {
             this.on_task_change(Constant.METHOD_INSERT, null, {})
         })
-        this.edit_btn.on_click(() => this.post("get"))
+        this.edit_btn.on_click(() => this.post("get_font"))
         this.exec_btn.on_click(() => this.post("exec_task"))
         this.top_form.on_submit(this.submit.bind(this))
     }
@@ -76,7 +76,7 @@ export class TaskMain extends Row {
             return
         }
         web_dom.post("/app/task/" + method, { key: name }, (data: Node) => {
-            if (method == "get") {
+            if (method.includes("get")) {
                 this.on_task_change(Constant.METHOD_EDIT, null, data.value)
             }
             this.view_task(name)
