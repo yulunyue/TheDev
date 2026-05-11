@@ -28,7 +28,8 @@ class Cli(ToolBase):
     def upload(self):
         self.api.post_files(f"/app/manage/post_file", THE_DEV_ZIP_PATH)
 
-    def upload_base_64(self):
+    def upload_base_64(self, name="Api", ip_port="", b64_pkg_num=8192 * 4):
+        self.load(name, ip_port, b64_pkg_num)
         data = File(THE_DEV_ZIP_PATH).read_b64_data()
         all_num = len(data) // self.b64_pkg_num
         for idx in range(0, all_num + 1):
@@ -44,23 +45,25 @@ class Cli(ToolBase):
             logger.map(idx=idx, res=str(res)[:200], all_num=all_num)
             if isinstance(res, bytes) and res.startswith(b"<!doctype ht"):
                 raise Exception(idx, res[:100], len(data))
-            # time.sleep(random.randint(2, 7))
         logger.map(all_size=len(data), md5_check=md5(data))
 
-    def install(self):
+    def install(self, name="Api", ip_port=""):
+        self.load(name, ip_port)
         res = self.api.post(f"/app/manage/unzip", data=dict(path=UPLOAD_ZIP_PATH))
         logger.map(res=res)
 
-    def restart(self, config):
+    def restart(self, config, name="Api", ip_port=""):
+        self.load(name, ip_port)
         res = self.api.post(f"/app/manage/restart", data=dict(config=config))
         logger.map(res=res)
 
-    def cicd(self, config):
+    def cicd(self, config, name="Api", ip_port=""):
+        self.load(name, ip_port)
         self.npm_build()
         self.package()
-        self.upload_base_64()
-        self.install()
-        self.restart(config)
+        self.upload_base_64(name, ip_port)
+        self.install(name, ip_port)
+        self.restart(config, name, ip_port)
 
 
 if __name__ == "__main__":
