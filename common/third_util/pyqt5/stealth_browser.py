@@ -3,35 +3,86 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+from common.util.export import File
 
 
 class StealthBrowser(QMainWindow):
+    CONFIG_PATH = "config/setting/qt.json"
+    instance = None
+
     def __init__(self):
         self.app = QApplication(sys.argv)
         super().__init__()
+        StealthBrowser.instance = self
+        f = File(self.CONFIG_PATH)
+        self.config_mtime = f.get_m_time() if f.exists() else 0
 
-        # 无边框窗口
+        self.config = self.load_config()
+        self.opacity = self.config.get("opacity", 0.9)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-
-        # 窗口初始位置和大小
-        screen_geometry = QApplication.desktop().availableGeometry()
-        self.setGeometry(
-            screen_geometry.width() - 600,  # 右侧
-            screen_geometry.height() - 400,  # 底部
-            580,  # 宽度
-            350,  # 高度
-        )
-        # 初始化透明度
-        self.opacity = 0.9
-        # 初始化窗口
+        self.init_geometry()
         self.init_ui()
-
-        # 窗口拖动相关变量
         self.dragging = False
         self.drag_position = QPoint()
-
-        # 隐藏控制面板
         self.controls_visible = False
+        self.resizing = False
+        self.resize_edge = None
+        self.resize_margin = 8
+        self.watch_timer = QTimer()
+        self.watch_timer.timeout.connect(self.check_config_change)
+        self.watch_timer.start(1000)
+
+    def load_config(self):
+        f = File(self.CONFIG_PATH)
+        if f.exists():
+            return f.read_file()
+        return {
+            "x": None,
+            "y": None,
+            "width": 580,
+            "height": 350,
+            "url": "https://www.google.com",
+            "opacity": 0.9,
+        }
+
+    def save_config(self):
+        File(self.CONFIG_PATH).write_file(self.config)
+
+    def reload_config(self):
+        self.config = self.load_config()
+        opacity = self.config.get("opacity", 0.9)
+        self.opacity = opacity
+        self.setWindowOpacity(opacity)
+        self.opacity_slider.setValue(int(opacity * 100))
+        url = self.config.get("url", "https://www.google.com")
+        self.browser.setUrl(QUrl(url))
+        x = self.config.get("x")
+        y = self.config.get("y")
+        width = self.config.get("width", 580)
+        height = self.config.get("height", 350)
+        if x and y:
+            self.setGeometry(x, y, width, height)
+
+    def check_config_change(self):
+        f = File(self.CONFIG_PATH)
+        if f.exists():
+            m_time = f.get_m_time()
+            if m_time != self.config_mtime:
+                self.config_mtime = m_time
+                self.reload_config()
+
+    def init_geometry(self):
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        x = self.config.get("x")
+        y = self.config.get("y")
+        width = self.config.get("width", 580)
+        height = self.config.get("height", 350)
+        if x is None:
+            x = screen_geometry.width() - width - 20
+        if y is None:
+            y = screen_geometry.height() - height - 40
+        self.setGeometry(x, y, width, height)
 
     def init_ui(self):
         """初始化用户界面"""
@@ -50,12 +101,9 @@ class StealthBrowser(QMainWindow):
         self.control_layout = QHBoxLayout(self.control_panel)
         self.control_layout.setContentsMargins(5, 5, 5, 5)
         self.browser = QWebEngineView()
-        # 创建控制按钮
         self.create_control_buttons()
-
-        # 浏览器视图
-
-        self.browser.setUrl(QUrl("https://www.google.com"))
+        url = self.config.get("url", "https://www.google.com")
+        self.browser.setUrl(QUrl(url))
 
         # 添加到主布局
         main_layout.addWidget(self.control_panel)
@@ -168,34 +216,108 @@ class StealthBrowser(QMainWindow):
         self.control_layout.addWidget(hide_btn)
 
     def navigate_to_url(self):
-        """导航到输入的URL"""
         url = self.url_bar.text().strip()
         if url:
             if not url.startswith("http://") and not url.startswith("https://"):
                 url = "http://" + url
             self.browser.setUrl(QUrl(url))
+            self.config["url"] = url
+            self.save_config()
 
     def update_url_bar(self, q):
-        """更新地址栏显示当前URL"""
         self.url_bar.setText(q.toString())
         self.url_bar.setCursorPosition(0)
+        self.config["url"] = q.toString()
+        self.save_config()
 
     def change_opacity(self, value):
-        """改变窗口透明度"""
         self.opacity = value / 100
         self.setWindowOpacity(self.opacity)
+        self.config["opacity"] = self.opacity
+        self.save_config()
 
     def hide_window(self):
-        """隐藏窗口"""
         self.hide()
-        # 5秒后自动显示（可选）
-        # QTimer.singleShot(5000, self.show)
 
-    # 鼠标事件处理 - 实现窗口拖动
+    def get_edge(self, pos):
+        geo = self.rect()
+        x, y = pos.x(), pos.y()
+        margin = self.resize_margin
+        edge = 0
+        if x <= margin:
+            edge |= 1
+        elif x >= geo.width() - margin:
+            edge |= 2
+        if y <= margin:
+            edge |= 4
+        elif y >= geo.height() - margin:
+            edge |= 8
+        return edge if edge else None
+
+    def get_cursor_for_edge(self, edge):
+        cursors = {
+            1: Qt.SizeHorCursor,
+            2: Qt.SizeHorCursor,
+            4: Qt.SizeVerCursor,
+            8: Qt.SizeVerCursor,
+            5: Qt.SizeFDiagCursor,
+            6: Qt.SizeBDiagCursor,
+            9: Qt.SizeBDiagCursor,
+            10: Qt.SizeFDiagCursor,
+        }
+        return cursors.get(edge, Qt.ArrowCursor)
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.dragging = True
-            self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
+            edge = self.get_edge(event.pos())
+            if edge:
+                self.resizing = True
+                self.resize_edge = edge
+                self.resize_start_pos = event.globalPos()
+                self.resize_start_geo = self.geometry()
+            else:
+                self.dragging = True
+                self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if self.resizing and event.buttons() & Qt.LeftButton:
+            delta = event.globalPos() - self.resize_start_pos
+            geo = self.resize_start_geo
+            x, y, w, h = geo.x(), geo.y(), geo.width(), geo.height()
+            edge = self.resize_edge
+            min_w, min_h = 200, 150
+            if edge & 1:
+                new_w = w - delta.x()
+                if new_w >= min_w:
+                    x += delta.x()
+                    w = new_w
+            if edge & 2:
+                w = max(min_w, w + delta.x())
+            if edge & 4:
+                new_h = h - delta.y()
+                if new_h >= min_h:
+                    y += delta.y()
+                    h = new_h
+            if edge & 8:
+                h = max(min_h, h + delta.y())
+            self.setGeometry(x, y, w, h)
+            event.accept()
+        elif self.dragging and event.buttons() & Qt.LeftButton:
+            self.move(event.globalPos() - self.drag_position)
+            event.accept()
+        else:
+            edge = self.get_edge(event.pos())
+            if edge:
+                self.setCursor(self.get_cursor_for_edge(edge))
+            else:
+                self.setCursor(Qt.ArrowCursor)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.dragging = False
+            self.resizing = False
+            self.resize_edge = None
             event.accept()
 
     def mouseMoveEvent(self, event):
@@ -298,13 +420,21 @@ class StealthBrowser(QMainWindow):
         menu.exec_(event.globalPos())
 
     def toggle_controls(self):
-        """切换控制面板显示"""
         if self.controls_visible:
             self.control_panel.hide()
             self.controls_visible = False
         else:
             self.control_panel.show()
             self.controls_visible = True
+
+    def closeEvent(self, event):
+        geo = self.geometry()
+        self.config["x"] = geo.x()
+        self.config["y"] = geo.y()
+        self.config["width"] = geo.width()
+        self.config["height"] = geo.height()
+        self.save_config()
+        event.accept()
 
     def exec(self):
         self.app.setStyle("Fusion")

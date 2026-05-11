@@ -108,7 +108,7 @@ export class CubeGrid extends Div {
 
         const midRow = new Column()
         midRow.set_style({ justifyContent: 'center' })
-        const midFaces = [4, 1, 2, 3]
+        const midFaces = [1, 2, 3, 4]
         for (const fi of midFaces) {
             midRow.add_child(faceContainer(fi, 'bottom'))
         }

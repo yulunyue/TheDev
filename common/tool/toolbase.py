@@ -20,6 +20,8 @@ def make_md_file(file_path=None):
             .replace("/tool/", "/doc/tool/")
             .replace(".py", ".md")
         )
+        if not file_path.startswith("doc/"):
+            file_path = file_path.replace("tool/", "doc/tool/", 1)
     return file_path
 
 

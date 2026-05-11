@@ -188,3 +188,43 @@ class TestCube(TestBase):
         action_tuples = [a.action for a in actions]
         unique_actions = set(action_tuples)
         self.expect(len(unique_actions), expected_count)
+
+    def test_action_rotate_four_times_restore(self):
+        """
+        测试每个action旋转4次是否都能还原
+        - rotate=1: 顺时针旋转1圈，旋转4次应还原（4*90°=360°）
+        - rotate=-1: 逆时针旋转1圈，旋转4次应还原（4*(-90°)=(-360°)）
+        - rotate=2: 旋转180度，旋转2次应还原（2*180°=360°），旋转4次也还原
+        """
+        s = CubeState.new_shape(C.SHAPE2)
+        original_grid = s.grid.copy()
+        original_state = s.state
+        
+        actions = s.make_actions()
+        
+        for i, action in enumerate(actions):
+            axis = action.color
+            layer = action.layer_id
+            rotate = action.rotate
+            
+            current = s
+            rotate_times = 4 if rotate in [1, -1] else 2
+            
+            for step in range(rotate_times):
+                current_actions = current.make_actions()
+                target_action = None
+                for a in current_actions:
+                    if a.color == axis and a.layer_id == layer and a.rotate == rotate:
+                        target_action = a
+                        break
+                
+                if not target_action:
+                    logger.error(f"动作不存在: axis={axis}, layer={layer}, rotate={rotate}")
+                    self.expect(False, True, f"动作不存在于步骤{step}")
+                    continue
+                
+                current = target_action.get_dst()
+            
+            restored = current.grid == original_grid and current.state == original_state
+            logger.info(f"动作{i}: axis={axis}, layer={layer}, rotate={rotate}, 旋转{rotate_times}次, 还原={restored}")
+            self.expect(restored, True, f"动作{i} (axis={axis}, layer={layer}, rotate={rotate}) 旋转{rotate_times}次未还原")

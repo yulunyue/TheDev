@@ -8,11 +8,12 @@ import chess from "./demo/game/chess";
 import todo from "./demo/todo/todo_main";
 import task from "./demo/task/task_main";
 import cube from "./demo/cube/cube_main";
+import qt from "./demo/qt";
 import { Data } from "./base/components/export";
 import "./app.css"
 constant.init()
 let route = {
-    algo, api, dev, chess, talk, todo, task, cube
+    algo, api, dev, chess, talk, todo, task, cube, qt
 }[constant.get_route('main')]
 route().mount(web_dom.get_body()).render()
 // constant.init_body(route.div_el)
