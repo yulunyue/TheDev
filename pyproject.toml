@@ -1,4 +1,0 @@
-[tool.black]
-line-length = 88
-target-version = ["py314"]
-extend-exclude = "app/yly/algo/todo/lc_3910.py"

@@ -20,6 +20,9 @@ class TaskTool(ToolBase):
                     headers={C.THE_DEV_USER: name},
                 )
 
+    def test_zx(self):
+        Api().set_endpoint("http://1.14.97.154:10000").get("/app")
+
     def do_task(self, name):
         TaskConfig.set_resource("config/setting/task.json")
         TaskConfig.get(name).run()
