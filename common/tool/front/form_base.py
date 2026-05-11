@@ -12,6 +12,9 @@ class FormBase(ApiBase):
     def get(self, key, **kw):
         return Node(value=self.__class__.model.get(key))
 
+    def get_font(self, key, **kw):
+        return Node(value=self.__class__.model.get(key))
+
     def to_form_row_view(self):
         return Form().set_body(*self.__class__.model.get_form_columns())
 

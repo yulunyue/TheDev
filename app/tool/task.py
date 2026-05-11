@@ -20,8 +20,8 @@ class TaskManage(FormBase, Task):
         )
 
     def web_search(self, key: str = "", **kw):
-        return FontSearch().add_node(
-            [
+        return FontSearch(
+            childs=[
                 {C.TITLE: d.name.get_value(), C.VALUE: d.name.get_value()}
                 for d in self.model.all()
             ]

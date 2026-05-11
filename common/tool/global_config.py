@@ -25,7 +25,7 @@ class GloablConfg(JsonConfig):
     pip_trusted_host = StrModel()
     zb_docker_env = StrModel()
     github_token = StrModel()
-    npm_path = StrModel(default_value="npm.cmd")
+    npm_path = StrModel(default_value="npm")
 
 
 GloablConfg.set_resource("config/setting/gloabl_setting.json")
