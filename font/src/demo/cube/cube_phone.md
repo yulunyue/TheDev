@@ -19,3 +19,9 @@
 - `cube_3d` 尺寸 `100%` × `320px`（移动端适配）
 - `handle_scramble`/`handle_solve`/`handle_rotate`：3D 模式下用 `animate_rotate` 做旋转动画
 - `update_state`：同时更新 cube_grid 和 cube_3d
+
+### 2026-05-12 Grid API 适配
+
+- `current_state` 字段移除，改用 `current_grid`
+- 所有 API 请求传参 `state` → `grid`
+- `update_state` 从 `data.grid` 读取

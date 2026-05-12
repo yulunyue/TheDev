@@ -27,3 +27,10 @@
 - `handle_rotate`：3D 模式下额外调用 `cube_3d.animate_rotate`
 - `animate_step`：3D 模式下用 `animate_rotate` 做旋转动画（300ms），2D 模式沿用瞬切
 - `update_state`：同时更新 cube_grid 和 cube_3d
+
+### 2026-05-12 Grid API 适配
+
+- `current_state` 字段移除，改用 `current_grid` 数组
+- `handle_rotate` 传参 `state` → `grid`
+- `handle_solve` 传参 `state` → `grid`
+- `update_state` 从 `data.grid` 读取，不再读取 `data.state`

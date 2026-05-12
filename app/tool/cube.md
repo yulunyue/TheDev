@@ -33,18 +33,18 @@ app/tool/cube.py  ←──  app/yly/envs/game/cube/
 - **返回**: 打乱后的状态 + 过程数组（每步的 axis/layer/rotate/grid）
 
 ### 3. `rotate` — 旋转
-- **参数**: `state, axis, layer, rotate`
-- **逻辑**: 通过 `CubeState.get_action((axis, layer, rotate))` 字典查找动作，O(1)
+- **参数**: `grid, axis, layer, rotate`
+- **逻辑**: 通过 `CubeState(encode_data(grid, BIT_SIZE)).get_action((axis, layer, rotate))` 字典查找动作，O(1)
 - **返回**: 新状态 + 动作描述
 - **异常**: 动作不存在时抛异常
 
 ### 4. `solve` — 求解
-- **参数**: `state`
+- **参数**: `grid`
 - **逻辑**: 使用 `Al.search_main()` 执行 BFS，从当前状态搜索回初始状态
 - **返回**: `solved`、`steps`、`actions`（动作序列）
 
 ### 5. `get_state` — 获取状态
-- **参数**: `state`
+- **参数**: `grid`
 - **返回**: 状态信息
 
 ### 6. `to_form_column_view` — 表单定义
@@ -56,8 +56,7 @@ app/tool/cube.py  ←──  app/yly/envs/game/cube/
 将 `CubeState` 转为 API 返回的 `Node` 结构：
 ```python
 {
-    "state": s.state,       # 整数编码状态
-    "grid": s.grid,         # 每个格子的颜色索引
+    "grid": s.grid,         # 每个格子的颜色索引（前端主数据）
     "n": C.n,               # 阶数
     "depth": s.depth,       # 深度
     "game_over": bool,      # 是否已还原
@@ -71,7 +70,7 @@ app/tool/cube.py  ←──  app/yly/envs/game/cube/
 用户请求 → POST_API.call() → CubeApi.xxx() → CubeState/Action → Node → JSON 响应
 ```
 
-状态以整数 `state` 在前后端之间传递，后端通过 `encode_data`/`decode_data` 与 `grid` 数组互转。
+前端传递 `grid` 数组（24 个小整数，无 JSON 精度损失），后端通过 `encode_data(grid, BIT_SIZE)` 编码为整数 `state` 进行运算。
 
 ## 关键模型
 
@@ -91,6 +90,16 @@ app/tool/cube.py  ←──  app/yly/envs/game/cube/
 
 ### Al 算法（algo.py）
 - `search_main(s)` — 从 s 状态 BFS 到初始状态，返回动作路径
+
+## 变更记录
+
+### 2026-05-12 Grid API 重构
+
+- `rotate`/`solve`/`get_state` 参数从 `state`（整数）改为 `grid`（数组）
+- `random` 过程数据移除 `state` 字段，改为 `grid`
+- `_state_to_node` 返回中移除 `state` 字段
+- 后端收到 `grid` 后用 `encode_data(grid, BIT_SIZE)` 编码为 `state` 进行运算
+- 解决 JSON 精度丢失问题（`state` 约 1.6e17 > 2^53）
 
 ## 当前限制
 
