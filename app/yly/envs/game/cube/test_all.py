@@ -70,6 +70,26 @@ class TestCube(TestBase):
             "  GG    ",
         ]
 
+    def test_to_str2(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        assert s.to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "OOWWRRYY",
+            "OOWWRRYY",
+            "  GG    ",
+            "  GG    ",
+        ]
+        a = s.get_action((1, 0, 2))  # axis=1 (Orange/Red), layer=0
+        assert a.get_dst().to_str() == [
+            "  BG    ",
+            "  BG    ",
+            "OOWYRRYW",
+            "OOWYRRYW",
+            "  GB    ",
+            "  GB    ",
+        ]
+
     def test_all_actions_to_str(self):
         s = CubeState.new_shape(C.SHAPE2)
         actions = s.make_actions()

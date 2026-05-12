@@ -1,9 +1,13 @@
 import sys
+import os
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage, QWebEngineSettings
 from common.util.export import File
+
+
+os.environ["QTWEBENGINE_REMOTE_DEBUGGING"] = "9222"
 
 
 class StealthBrowser(QMainWindow):
@@ -19,7 +23,7 @@ class StealthBrowser(QMainWindow):
 
         self.config = self.load_config()
         self.opacity = self.config.get("opacity", 0.9)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(self.get_window_flags())
         self.init_geometry()
         self.init_ui()
         self.dragging = False
@@ -28,6 +32,7 @@ class StealthBrowser(QMainWindow):
         self.resizing = False
         self.resize_edge = None
         self.resize_margin = 8
+        self.dev_tools_window = None
         self.watch_timer = QTimer()
         self.watch_timer.timeout.connect(self.check_config_change)
         self.watch_timer.start(1000)
@@ -43,7 +48,17 @@ class StealthBrowser(QMainWindow):
             "height": 350,
             "url": "https://www.google.com",
             "opacity": 0.9,
+            "frameless": True,
+            "stay_on_top": True,
         }
+
+    def get_window_flags(self):
+        flags = Qt.Window
+        if self.config.get("frameless", True):
+            flags |= Qt.FramelessWindowHint
+        if self.config.get("stay_on_top", True):
+            flags |= Qt.WindowStaysOnTopHint
+        return flags
 
     def save_config(self):
         File(self.CONFIG_PATH).write_file(self.config)
@@ -62,6 +77,8 @@ class StealthBrowser(QMainWindow):
         height = self.config.get("height", 350)
         if x and y:
             self.setGeometry(x, y, width, height)
+        self.setWindowFlags(self.get_window_flags())
+        self.show()
 
     def check_config_change(self):
         f = File(self.CONFIG_PATH)
@@ -101,6 +118,11 @@ class StealthBrowser(QMainWindow):
         self.control_layout = QHBoxLayout(self.control_panel)
         self.control_layout.setContentsMargins(5, 5, 5, 5)
         self.browser = QWebEngineView()
+        settings = self.browser.page().settings()
+        settings.setAttribute(QWebEngineSettings.JavascriptEnabled, True)
+        settings.setAttribute(QWebEngineSettings.AllowRunningInsecureContent, True)
+        settings.setAttribute(QWebEngineSettings.LocalContentCanAccessRemoteUrls, True)
+        settings.setAttribute(QWebEngineSettings.PluginsEnabled, True)
         self.create_control_buttons()
         url = self.config.get("url", "https://www.google.com")
         self.browser.setUrl(QUrl(url))
@@ -365,11 +387,25 @@ class StealthBrowser(QMainWindow):
 
         # F11 切换窗口置顶
         elif event.key() == Qt.Key_F11:
-            if self.windowFlags() & Qt.WindowStaysOnTopHint:
-                self.setWindowFlags(Qt.FramelessWindowHint)
-            else:
-                self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+            stay_on_top = self.config.get("stay_on_top", True)
+            self.config["stay_on_top"] = not stay_on_top
+            self.save_config()
+            self.setWindowFlags(self.get_window_flags())
             self.show()
+
+        # F12 打开调试工具
+        elif event.key() == Qt.Key_F12:
+            self.open_dev_tools()
+
+    def open_dev_tools(self):
+        if self.dev_tools_window is None:
+            self.dev_tools_window = QMainWindow()
+            self.dev_tools_window.setWindowTitle("DevTools")
+            self.dev_tools_window.resize(800, 600)
+            dev_view = QWebEngineView()
+            self.dev_tools_window.setCentralWidget(dev_view)
+            self.browser.page().setDevToolsPage(dev_view.page())
+        self.dev_tools_window.show()
 
     # 双击切换控制面板
     def mouseDoubleClickEvent(self, event):
@@ -412,6 +448,16 @@ class StealthBrowser(QMainWindow):
         toggle_controls = menu.addAction("显示/隐藏控制栏")
         toggle_controls.triggered.connect(self.toggle_controls)
 
+        toggle_stay_on_top = menu.addAction(
+            "置顶" if not self.config.get("stay_on_top", True) else "取消置顶"
+        )
+        toggle_stay_on_top.triggered.connect(self.toggle_stay_on_top)
+
+        toggle_frame = menu.addAction(
+            "显示边框" if self.config.get("frameless", True) else "隐藏边框"
+        )
+        toggle_frame.triggered.connect(self.toggle_frame)
+
         menu.addSeparator()
 
         quit_action = menu.addAction("退出")
@@ -426,6 +472,20 @@ class StealthBrowser(QMainWindow):
         else:
             self.control_panel.show()
             self.controls_visible = True
+
+    def toggle_stay_on_top(self):
+        stay_on_top = self.config.get("stay_on_top", True)
+        self.config["stay_on_top"] = not stay_on_top
+        self.save_config()
+        self.setWindowFlags(self.get_window_flags())
+        self.show()
+
+    def toggle_frame(self):
+        frameless = self.config.get("frameless", True)
+        self.config["frameless"] = not frameless
+        self.save_config()
+        self.setWindowFlags(self.get_window_flags())
+        self.show()
 
     def closeEvent(self, event):
         geo = self.geometry()
