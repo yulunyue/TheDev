@@ -14,7 +14,7 @@ import { Data } from "./base/components/export";
 import "./app.css"
 constant.init()
 let route = {
-    algo, api, dev, chess, talk, todo, task, cube, cube_phone
+    algo, api, dev, chess, talk, todo, task, cube, cube_phone, qt
 }[constant.get_route('main')]
 route().mount(web_dom.get_body()).render()
 // constant.init_body(route.div_el)

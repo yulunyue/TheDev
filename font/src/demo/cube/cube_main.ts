@@ -178,7 +178,7 @@ export class CubeMain extends Row {
     }
 
     async handle_scramble(): Promise<void> {
-        const steps = parseInt(this.control_form.child_map.steps.get_value()) || 10
+        const steps = parseInt(this.random_step_from.get("steps", "10"))
         web_dom.post("/cube/random", { steps, show_process: true }, async (data: any) => {
             this.title.set_html(`正在打乱 ${steps} 步...`)
             const actions = data.childs || []

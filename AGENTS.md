@@ -105,10 +105,11 @@ from common.tool.export import (
 
 - **临时文件统一使用 `data/tmp/`**（在项目工作区内，无需额外授权），禁止使用 `/tmp/`
 - 所有 shell 命令的输出重定向、临时缓存等均写入 `data/tmp/` 下
-- **前后端启动使用文件锁控制**：`tool/start.py` 脚本通过 `data/proc/backend.lock` 和 `data/proc/frontend.lock` 文件锁确保前后端进程唯一
-  - 启动命令：`python tool/start.py` 或 `python tool/start.py backend` / `python tool/start.py frontend`
-  - 锁文件记录进程 PID，启动前检查并终止旧进程
-  - 重启前后端统一使用此脚本，禁止直接运行 `python main.py` 或 `npm start`
+- **进程管理使用 `ProcessLock` 类**（`common/tool/func/process_lock.py`）：
+  - 所有进程启动前必须检查并关闭同名的旧进程（使用 `ProcessLock(name).start_unique()`）
+  - PID 文件存放在 `data/proc/{name}.pid`
+  - **执行关闭进程操作前必须手动确认**，避免误杀其他进程（如 opencode 自身）
+  - 导入方式：`from common.tool.export import ProcessLock`
 
 ## 注意事项
 

@@ -1,10 +1,9 @@
-from common.util.export import Node, md5, b64_code, File, logger, base64_decode
+from common.util.export import Node, md5, b64_code, File, logger, base64_decode, subprocess, os
 from common.tool.export import (
     DomFile,
     FrontTable,
-    OsUtil,
-    System,
     FontSearch,
+    ProcessLock,
 )
 
 
@@ -51,11 +50,12 @@ class Manage:
         return Node()
 
     def restart(self, config: str):
-        pid_file = File(f"data/proc/{config}.pid")
-        if pid_file.exists():
-            try:
-                OsUtil("kill").run("-9", pid_file.read_file())
-            except Exception as e:
-                logger.info(e)
-        OsUtil("python").system("main.py", config, "2>&1", "&")
+        lock = ProcessLock(config)
+        lock.kill_old()
+        subprocess.Popen(
+            ["python", "main.py", config],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True
+        )
         return Node()

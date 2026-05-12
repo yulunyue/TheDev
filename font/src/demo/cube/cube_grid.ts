@@ -114,7 +114,7 @@ export class CubeGrid extends Div {
 
         this.add_childs([
             faceRow([null, null, 0, null]),
-            faceRow([4, 1, 2, 3]),
+            faceRow([1, 2, 3, 4]),
             faceRow([null, null, 5, null]),
         ])
     }

@@ -2,9 +2,7 @@ from .model import BaseModel
 
 
 class SearchModel(BaseModel):
-    def __init__(self, default_value=None, key=None, data_source=None) -> None:
-        super().__init__(default_value, key, data_source)
-        self.url = ""
+    url = ""
 
     @classmethod
     def get_type(cls):
