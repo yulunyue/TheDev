@@ -3,11 +3,10 @@ from .constant import C
 
 
 class CubeAction(Action):
-    def set_view(self, c, d, r):
-        self.axis, self.layer_id, self.rotate = c, d, r
-        self.action = (c, d, r)
-        return self
-
+    def __init__(self, src, action, dst=None):
+        super().__init__(src, action, dst)
+        self.axis, self.layer_id, self.rotate = self.action
+        
     def show(self, msg=None):
         axis_names = ["y", "x", "z"]
         rotate_names = {-1: "逆时针90°", 1: "顺时针90°", 2: "180°"}

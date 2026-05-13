@@ -90,178 +90,221 @@ class TestCube(TestBase):
             "  GB    ",
         ]
 
-    def test_all_actions_to_str(self):
+    def test_action_0_axis0_layer0_rotate1(self):
         s = CubeState.new_shape(C.SHAPE2)
-        actions = s.make_actions()
-        self.expect(len(actions), C.AXIS_NUM * C.n * len(C.MOVE_ACTION))
-        expected = [
-            # action 0: axis=0 (y轴), layer=0, rotate=1
-            [
-                "  BB    ",
-                "  BB    ",
-                "WWRRYYOO",
-                "OOWWRRYY",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 1: axis=0, layer=0, rotate=-1
-            [
-                "  BB    ",
-                "  BB    ",
-                "YYOOWWRR",
-                "OOWWRRYY",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 2: axis=0, layer=0, rotate=2
-            [
-                "  BB    ",
-                "  BB    ",
-                "RRYYOOWW",
-                "OOWWRRYY",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 3: axis=0, layer=1, rotate=1
-            [
-                "  BB    ",
-                "  BB    ",
-                "OOWWRRYY",
-                "WWRRYYOO",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 4: axis=0, layer=1, rotate=-1
-            [
-                "  BB    ",
-                "  BB    ",
-                "OOWWRRYY",
-                "YYOOWWRR",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 5: axis=0, layer=1, rotate=2
-            [
-                "  BB    ",
-                "  BB    ",
-                "OOWWRRYY",
-                "RRYYOOWW",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 6: axis=1 (x轴), layer=0, rotate=1
-            [
-                "  BW    ",
-                "  BW    ",
-                "OOWGRRBY",
-                "OOWGRRBY",
-                "  GY    ",
-                "  GY    ",
-            ],
-            # action 7: axis=1, layer=0, rotate=-1
-            [
-                "  BY    ",
-                "  BY    ",
-                "OOWBRRGY",
-                "OOWBRRGY",
-                "  GW    ",
-                "  GW    ",
-            ],
-            # action 8: axis=1, layer=0, rotate=2
-            [
-                "  BG    ",
-                "  BG    ",
-                "OOWYRRWY",
-                "OOWYRRWY",
-                "  GB    ",
-                "  GB    ",
-            ],
-            # action 9: axis=1, layer=1, rotate=1
-            [
-                "  WB    ",
-                "  WB    ",
-                "OOGWRRYB",
-                "OOGWRRYB",
-                "  YG    ",
-                "  YG    ",
-            ],
-            # action 10: axis=1, layer=1, rotate=-1
-            [
-                "  YB    ",
-                "  YB    ",
-                "OOBWRRYG",
-                "OOBWRRYG",
-                "  WG    ",
-                "  WG    ",
-            ],
-            # action 11: axis=1, layer=1, rotate=2
-            [
-                "  GB    ",
-                "  GB    ",
-                "OOYWRRYW",
-                "OOYWRRYW",
-                "  BG    ",
-                "  BG    ",
-            ],
-            # action 12: axis=2 (z轴), layer=0, rotate=1
-            [
-                "  OO    ",
-                "  BB    ",
-                "GOWWRBYY",
-                "GOWWRBYY",
-                "  GG    ",
-                "  RR    ",
-            ],
-            # action 13: axis=2, layer=0, rotate=-1
-            [
-                "  RR    ",
-                "  BB    ",
-                "BOWWRGYY",
-                "BOWWRGYY",
-                "  GG    ",
-                "  OO    ",
-            ],
-            # action 14: axis=2, layer=0, rotate=2
-            [
-                "  GG    ",
-                "  BB    ",
-                "ROWWROYY",
-                "ROWWROYY",
-                "  GG    ",
-                "  BB    ",
-            ],
-            # action 15: axis=2, layer=1, rotate=1
-            [
-                "  BB    ",
-                "  OO    ",
-                "OGWWBRYY",
-                "OGWWBRYY",
-                "  RR    ",
-                "  GG    ",
-            ],
-            # action 16: axis=2, layer=1, rotate=-1
-            [
-                "  BB    ",
-                "  RR    ",
-                "OBWWGRYY",
-                "OBWWGRYY",
-                "  OO    ",
-                "  GG    ",
-            ],
-            # action 17: axis=2, layer=1, rotate=2
-            [
-                "  BB    ",
-                "  GG    ",
-                "ORWWORYY",
-                "ORWWORYY",
-                "  BB    ",
-                "  GG    ",
-            ],
+        a = s.get_action((0, 0, 1))
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "WWRRYYOO",
+            "OOWWRRYY",
+            "  GG    ",
+            "  GG    ",
         ]
-        for i, action in enumerate(actions):
-            assert (
-                action.get_dst().to_str() == expected[i]
-            ), f"action {i} mismatch: {action.get_dst().to_str()} != {expected[i]}"
+
+    def test_action_1_axis0_layer0_rotate_neg1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((0, 0, -1))
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "YYOOWWRR",
+            "OOWWRRYY",
+            "  GG    ",
+            "  GG    ",
+        ]
+
+    def test_action_2_axis0_layer0_rotate2(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((0, 0, 2))
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "RRYYOOWW",
+            "OOWWRRYY",
+            "  GG    ",
+            "  GG    ",
+        ]
+
+    def test_action_3_axis0_layer1_rotate1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((0, 1, 1))
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "OOWWRRYY",
+            "WWRRYYOO",
+            "  GG    ",
+            "  GG    ",
+        ]
+
+    def test_action_4_axis0_layer1_rotate_neg1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((0, 1, -1))
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "OOWWRRYY",
+            "YYOOWWRR",
+            "  GG    ",
+            "  GG    ",
+        ]
+
+    def test_action_5_axis0_layer1_rotate2(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((0, 1, 2))
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  BB    ",
+            "OOWWRRYY",
+            "RRYYOOWW",
+            "  GG    ",
+            "  GG    ",
+        ]
+
+    def test_action_6_axis1_layer0_rotate1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((1, 0, 1))
+        assert a.get_dst().to_str() == [
+            "  BW    ",
+            "  BW    ",
+            "OOWGRRBY",
+            "OOWGRRBY",
+            "  GY    ",
+            "  GY    ",
+        ]
+
+    def test_action_7_axis1_layer0_rotate_neg1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((1, 0, -1))
+        assert a.get_dst().to_str() == [
+            "  BY    ",
+            "  BY    ",
+            "OOWBRRGY",
+            "OOWBRRGY",
+            "  GW    ",
+            "  GW    ",
+        ]
+
+    def test_action_8_axis1_layer0_rotate2(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((1, 0, 2))
+        assert a.get_dst().to_str() == [
+            "  BG    ",
+            "  BG    ",
+            "OOWYRRWY",
+            "OOWYRRWY",
+            "  GB    ",
+            "  GB    ",
+        ]
+
+    def test_action_9_axis1_layer1_rotate1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((1, 1, 1))
+        assert a.get_dst().to_str() == [
+            "  WB    ",
+            "  WB    ",
+            "OOGWRRYB",
+            "OOGWRRYB",
+            "  YG    ",
+            "  YG    ",
+        ]
+
+    def test_action_10_axis1_layer1_rotate_neg1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((1, 1, -1))
+        assert a.get_dst().to_str() == [
+            "  YB    ",
+            "  YB    ",
+            "OOBWRRYG",
+            "OOBWRRYG",
+            "  WG    ",
+            "  WG    ",
+        ]
+
+    def test_action_11_axis1_layer1_rotate2(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((1, 1, 2))
+        assert a.get_dst().to_str() == [
+            "  GB    ",
+            "  GB    ",
+            "OOYWRRYW",
+            "OOYWRRYW",
+            "  BG    ",
+            "  BG    ",
+        ]
+
+    def test_action_12_axis2_layer0_rotate1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((2, 0, 1))
+        assert a.get_dst().to_str() == [
+            "  OO    ",
+            "  BB    ",
+            "GOWWRBYY",
+            "GOWWRBYY",
+            "  GG    ",
+            "  RR    ",
+        ]
+
+    def test_action_13_axis2_layer0_rotate_neg1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((2, 0, -1))
+        assert a.get_dst().to_str() == [
+            "  RR    ",
+            "  BB    ",
+            "BOWWRGYY",
+            "BOWWRGYY",
+            "  GG    ",
+            "  OO    ",
+        ]
+
+    def test_action_14_axis2_layer0_rotate2(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((2, 0, 2))
+        assert a.get_dst().to_str() == [
+            "  GG    ",
+            "  BB    ",
+            "ROWWROYY",
+            "ROWWROYY",
+            "  GG    ",
+            "  BB    ",
+        ]
+
+    def test_action_15_axis2_layer1_rotate1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.get_action((2, 1, 1))
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  OO    ",
+            "OGWWBRYY",
+            "OGWWBRYY",
+            "  RR    ",
+            "  GG    ",
+        ]
+
+    def test_action_16_axis2_layer1_rotate_neg1(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.make_action(2, 1, -1)
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  RR    ",
+            "OBWWGRYY",
+            "OBWWGRYY",
+            "  OO    ",
+            "  GG    ",
+        ]
+
+    def test_action_17_axis2_layer1_rotate2(self):
+        s = CubeState.new_shape(C.SHAPE2)
+        a = s.make_action(2, 1, 2)
+        assert a.get_dst().to_str() == [
+            "  BB    ",
+            "  GG    ",
+            "ORWWORYY",
+            "ORWWORYY",
+            "  BB    ",
+            "  GG    ",
+        ]
 
     def test_bfs_from_init(self):
         s = CubeState.new_shape(C.SHAPE2)
