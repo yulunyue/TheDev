@@ -1,45 +1,17 @@
-import { Div, web_dom, Row } from "../base/components/export"
-
-export class QtDragBar extends Div {
-    init_style(): void {
-        this.set_style({
-            height: 30,
-            backgroundColor: "#2c3e50",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-            fontSize: 12,
-            userSelect: "none",
-        })
-    }
-    init_event(): void {
-        this.el.addEventListener("mousedown", (e: MouseEvent) => {
-            e.preventDefault()
-            let startX = e.screenX
-            let startY = e.screenY
-            let windowX = window.screenX
-            let windowY = window.screenY
-            let onMove = (ev: MouseEvent) => {
-                let dx = ev.screenX - startX
-                let dy = ev.screenY - startY
-                window.moveTo(windowX + dx, windowY + dy)
-            }
-            let onUp = () => {
-                window.removeEventListener("mousemove", onMove)
-                window.removeEventListener("mouseup", onUp)
-            }
-            window.addEventListener("mousemove", onMove)
-            window.addEventListener("mouseup", onUp)
-        })
-    }
-    render(): void {
-        this.set_html("拖动窗口")
-    }
-}
+import { Div, web_dom, Constant } from "../base/components/export"
+import web_socket from "../base/web/web_socket"
+import QtDragBar from "./qt_drag_bar"
+import QtMessageList from "./qt_message_list"
 
 export class QtMain extends Div {
+    message_list: QtMessageList
+
+    init_node(): void {
+        this.add_child(new QtDragBar())
+        this.message_list = new QtMessageList()
+        this.add_child(this.message_list)
+    }
+
     init_style(): void {
         this.set_style({
             width: 1,
@@ -48,16 +20,19 @@ export class QtMain extends Div {
             flexDirection: "column",
         })
     }
-    render(): void {
-        this.add_child(new QtDragBar())
-        this.add_child(new Div().set_style({
-            flex: 1,
-            backgroundColor: "#34495e",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-        }).set_html("Qt Browser Control"))
+
+    init_event(): void {
+        web_socket.sub(Constant.TOPIC_QT_CONFIG_UPDATE, (config: any) => {
+            this.message_list.set_config(config)
+        })
+
+        web_socket.sub(Constant.TOPIC_MSG_QT, (msg: any) => {
+            this.message_list.add_message(msg)
+        })
+
+        web_dom.post("/app/manage/get_qt_show_config", {}, (data: any) => {
+            this.message_list.set_config(data.value)
+        })
     }
 }
 
