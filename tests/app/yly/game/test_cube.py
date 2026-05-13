@@ -151,12 +151,12 @@ class TestCube(TestBase):
             ],
             # action 6: axis=1 (x轴), layer=0, rotate=1
             [
-                "  BB    ",
-                "  BG    ",
-                "OOWWRRYY",
-                "OOWYRRYW",
-                "  GB    ",
-                "  GG    ",
+                "  BW    ",
+                "  BW    ",
+                "OOWGRRBY",
+                "OOWGRRBY",
+                "  GY    ",
+                "  GY    ",
             ],
             # action 7: axis=1, layer=0, rotate=-1
             [

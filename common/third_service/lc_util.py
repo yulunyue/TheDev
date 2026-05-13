@@ -81,17 +81,37 @@ query questionOfToday {
     def _parse_input_params(self, input_str):
         params = []
         input_str = input_str.strip()
-        lines = input_str.split("\n")
-        for line in lines:
-            line = line.strip()
-            if "=" in line:
-                name, value = line.split("=", 1)
-                value = value.strip()
-                try:
-                    parsed = json.loads(value)
-                    params.append(parsed)
-                except:
-                    params.append(value)
+        in_json = False
+        json_start = 0
+        current = ""
+        for i, c in enumerate(input_str):
+            if c in "[{":
+                if not in_json:
+                    in_json = True
+                    json_start = i
+            elif c in "]}":
+                if in_json:
+                    in_json = False
+            elif c == "," and not in_json:
+                param = current.strip()
+                if "=" in param:
+                    _, value = param.split("=", 1)
+                    value = value.strip()
+                    try:
+                        params.append(json.loads(value))
+                    except:
+                        params.append(value)
+                current = ""
+                continue
+            current += c
+        param = current.strip()
+        if "=" in param:
+            _, value = param.split("=", 1)
+            value = value.strip()
+            try:
+                params.append(json.loads(value))
+            except:
+                params.append(value)
         return params
 
     def _parse_output(self, output_str):

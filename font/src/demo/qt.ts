@@ -3,6 +3,8 @@ import web_socket from "../base/web/web_socket"
 import QtDragBar from "./qt_drag_bar"
 import QtMessageList from "./qt_message_list"
 
+const QT_USER_NAME = "yly_opencode"
+
 export class QtMain extends Div {
     message_list: QtMessageList
 
@@ -22,6 +24,8 @@ export class QtMain extends Div {
     }
 
     init_event(): void {
+        web_dom.set_local(Constant.username, QT_USER_NAME)
+
         web_socket.sub(Constant.TOPIC_QT_CONFIG_UPDATE, (config: any) => {
             this.message_list.set_config(config)
         })
