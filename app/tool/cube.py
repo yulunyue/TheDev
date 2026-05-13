@@ -26,7 +26,7 @@ class CubeApi(ApiBase):
             actions_data.append(
                 {
                     "step": i + 1,
-                    "axis": action.color,
+                    "axis": action.axis,
                     "layer": action.layer_id,
                     "rotate": action.rotate,
                     "description": action.show(),
@@ -68,7 +68,7 @@ class CubeApi(ApiBase):
         for a in actions:
             actions_data.append(
                 {
-                    "axis": a.color,
+                    "axis": a.axis,
                     "layer": a.layer_id,
                     "rotate": a.rotate,
                     "description": a.show(),

@@ -269,3 +269,20 @@ assert s.game_over()
 - 面5(下): [20, 21, 22, 23]
 
 **结论**: ACTIONS数据索引范围正确，数据完整性验证通过。旋转逻辑使用 `all_size - 1 - idx` 进行位置映射。
+
+### 2026-05-13
+- **修复所有6个 ACTIONS 几何错误**：每个 action 现在精确旋转同一层的 4 个 cubie（之前 face cycle 和 side cycles 使用不同层，导致混层旋转 7-8 个 cubie）。
+  - (0,0) y+层：face Face0 + side y+行（之前用了 y-行）
+  - (0,1) y-层：face Face5 + side y-行
+  - (1,0) x+层：face Face3 + side x+列（之前用了 Face1 x-层）
+  - (1,1) x-层：face Face1 + side x-列
+  - (2,0) z+层：face Face2 + side z+行
+  - (2,1) z-层：face Face4 + side z-行
+- **CubeAction.show()**: 改为 `"{xyz}轴 第{n}层 {顺/逆时针90°/180°}旋转"` 格式
+- **测试修复**：
+  - `color` → `axis`（set_view 存的是 axis 而非 color）
+  - test_to_str、test_all_actions_to_str 期望值随 ACTIONS 更新
+  - `色` → `轴`（show 用 xyz 轴命名）
+  - test_random_step 放宽 depth 断言（随机性）
+- **webpack.config.js**：ts-loader 加 `transpileOnly: true`，规避已有 TS2612 strict 错误
+- CICD 部署成功至 Bolun 现网

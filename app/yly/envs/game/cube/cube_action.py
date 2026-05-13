@@ -9,4 +9,6 @@ class CubeAction(Action):
         return self
 
     def show(self, msg=None):
-        return ""
+        axis_names = ["y", "x", "z"]
+        rotate_names = {-1: "逆时针90°", 1: "顺时针90°", 2: "180°"}
+        return f"{axis_names[self.axis]}轴 第{self.layer_id}层 {rotate_names[self.rotate]}旋转"

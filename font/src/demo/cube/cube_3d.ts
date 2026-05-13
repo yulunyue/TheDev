@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Div } from "../../base/components/export";
 
-const CUBE_COLORS = ['#3498db', '#ff9800', '#ecf0f1', '#d32f2f', '#1a1a1a', '#2ecc71'];
+const CUBE_COLORS = ['#3498db', '#ff9800', '#ecf0f1', '#d32f2f', '#f1c40f', '#2ecc71'];
 
 interface StickerInfo {
     x: number; y: number; z: number;
@@ -10,10 +10,10 @@ interface StickerInfo {
 }
 const GRID_MAP: StickerInfo[] = [
     { x: 0, y: 1, z: 0, face: '+Y' }, { x: 1, y: 1, z: 0, face: '+Y' }, { x: 0, y: 1, z: 1, face: '+Y' }, { x: 1, y: 1, z: 1, face: '+Y' },
+    { x: 0, y: 1, z: 0, face: '-X' }, { x: 0, y: 1, z: 1, face: '-X' }, { x: 0, y: 0, z: 0, face: '-X' }, { x: 0, y: 0, z: 1, face: '-X' },
     { x: 0, y: 1, z: 1, face: '+Z' }, { x: 1, y: 1, z: 1, face: '+Z' }, { x: 0, y: 0, z: 1, face: '+Z' }, { x: 1, y: 0, z: 1, face: '+Z' },
     { x: 1, y: 1, z: 1, face: '+X' }, { x: 1, y: 1, z: 0, face: '+X' }, { x: 1, y: 0, z: 1, face: '+X' }, { x: 1, y: 0, z: 0, face: '+X' },
     { x: 1, y: 1, z: 0, face: '-Z' }, { x: 0, y: 1, z: 0, face: '-Z' }, { x: 1, y: 0, z: 0, face: '-Z' }, { x: 0, y: 0, z: 0, face: '-Z' },
-    { x: 0, y: 1, z: 0, face: '-X' }, { x: 0, y: 1, z: 1, face: '-X' }, { x: 0, y: 0, z: 0, face: '-X' }, { x: 0, y: 0, z: 1, face: '-X' },
     { x: 0, y: 0, z: 1, face: '-Y' }, { x: 1, y: 0, z: 1, face: '-Y' }, { x: 0, y: 0, z: 0, face: '-Y' }, { x: 1, y: 0, z: 0, face: '-Y' },
 ];
 
@@ -203,7 +203,7 @@ export class Cube3D extends Div {
         if (this.animating || this.cubies.length === 0) return;
         this.animating = true;
 
-        const coord = ['x', 'y', 'z'][axis];
+        const coord = ['y', 'x', 'z'][axis];
         const layerCubies = this.cubies.filter(c => c[coord] === layer);
 
         let angle: number;
@@ -222,8 +222,8 @@ export class Cube3D extends Div {
         }
 
         const rotAxis = new THREE.Vector3(
-            axis === 0 ? 1 : 0,
             axis === 1 ? 1 : 0,
+            axis === 0 ? 1 : 0,
             axis === 2 ? 1 : 0,
         );
 

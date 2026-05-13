@@ -19,7 +19,8 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": false,
-        "jsx": "preserve"
+        "jsx": "preserve",
+        "useDefineForClassFields": false
     },
     "include": [
         "src"
