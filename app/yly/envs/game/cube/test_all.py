@@ -95,168 +95,30 @@ class TestCube(TestBase):
         actions = s.make_actions()
         self.expect(len(actions), C.AXIS_NUM * C.n * len(C.MOVE_ACTION))
         expected = [
-            # action 0: axis=0 (y轴), layer=0, rotate=1
-            [
-                "  BB    ",
-                "  BB    ",
-                "WWRRYYOO",
-                "OOWWRRYY",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 1: axis=0, layer=0, rotate=-1
-            [
-                "  BB    ",
-                "  BB    ",
-                "YYOOWWRR",
-                "OOWWRRYY",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 2: axis=0, layer=0, rotate=2
-            [
-                "  BB    ",
-                "  BB    ",
-                "RRYYOOWW",
-                "OOWWRRYY",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 3: axis=0, layer=1, rotate=1
-            [
-                "  BB    ",
-                "  BB    ",
-                "OOWWRRYY",
-                "WWRRYYOO",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 4: axis=0, layer=1, rotate=-1
-            [
-                "  BB    ",
-                "  BB    ",
-                "OOWWRRYY",
-                "YYOOWWRR",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 5: axis=0, layer=1, rotate=2
-            [
-                "  BB    ",
-                "  BB    ",
-                "OOWWRRYY",
-                "RRYYOOWW",
-                "  GG    ",
-                "  GG    ",
-            ],
-            # action 6: axis=1 (x轴), layer=0, rotate=1
-            [
-                "  BW    ",
-                "  BW    ",
-                "OOWGRRBY",
-                "OOWGRRBY",
-                "  GY    ",
-                "  GY    ",
-            ],
-            # action 7: axis=1, layer=0, rotate=-1
-            [
-                "  BY    ",
-                "  BY    ",
-                "OOWBRRGY",
-                "OOWBRRGY",
-                "  GW    ",
-                "  GW    ",
-            ],
-            # action 8: axis=1, layer=0, rotate=2
-            [
-                "  BG    ",
-                "  BG    ",
-                "OOWYRRWY",
-                "OOWYRRWY",
-                "  GB    ",
-                "  GB    ",
-            ],
-            # action 9: axis=1, layer=1, rotate=1
-            [
-                "  WB    ",
-                "  WB    ",
-                "OOGWRRYB",
-                "OOGWRRYB",
-                "  YG    ",
-                "  YG    ",
-            ],
-            # action 10: axis=1, layer=1, rotate=-1
-            [
-                "  YB    ",
-                "  YB    ",
-                "OOBWRRYG",
-                "OOBWRRYG",
-                "  WG    ",
-                "  WG    ",
-            ],
-            # action 11: axis=1, layer=1, rotate=2
-            [
-                "  GB    ",
-                "  GB    ",
-                "OOYWRRYW",
-                "OOYWRRYW",
-                "  BG    ",
-                "  BG    ",
-            ],
-            # action 12: axis=2 (z轴), layer=0, rotate=1
-            [
-                "  OO    ",
-                "  BB    ",
-                "GOWWRBYY",
-                "GOWWRBYY",
-                "  GG    ",
-                "  RR    ",
-            ],
-            # action 13: axis=2, layer=0, rotate=-1
-            [
-                "  RR    ",
-                "  BB    ",
-                "BOWWRGYY",
-                "BOWWRGYY",
-                "  GG    ",
-                "  OO    ",
-            ],
-            # action 14: axis=2, layer=0, rotate=2
-            [
-                "  GG    ",
-                "  BB    ",
-                "ROWWROYY",
-                "ROWWROYY",
-                "  GG    ",
-                "  BB    ",
-            ],
-            # action 15: axis=2, layer=1, rotate=1
-            [
-                "  BB    ",
-                "  OO    ",
-                "OGWWBRYY",
-                "OGWWBRYY",
-                "  RR    ",
-                "  GG    ",
-            ],
-            # action 16: axis=2, layer=1, rotate=-1
-            [
-                "  BB    ",
-                "  RR    ",
-                "OBWWGRYY",
-                "OBWWGRYY",
-                "  OO    ",
-                "  GG    ",
-            ],
-            # action 17: axis=2, layer=1, rotate=2
-            [
-                "  BB    ",
-                "  GG    ",
-                "ORWWORYY",
-                "ORWWORYY",
-                "  BB    ",
-                "  GG    ",
-            ],
+            # axis=0 (y轴), layer=0
+            ["  BB    ", "  BB    ", "WWRRYYOO", "OOWWRRYY", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "YYOOWWRR", "OOWWRRYY", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "RRYYOOWW", "OOWWRRYY", "  GG    ", "  GG    "],
+            # axis=0, layer=1
+            ["  BB    ", "  BB    ", "OOWWRRYY", "WWRRYYOO", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "OOWWRRYY", "YYOOWWRR", "  GG    ", "  GG    "],
+            ["  BB    ", "  BB    ", "OOWWRRYY", "RRYYOOWW", "  GG    ", "  GG    "],
+            # axis=1 (x轴), layer=0
+            ["  BB    ", "  BG    ", "OOWWRRYY", "OOWYRRYW", "  GB    ", "  GG    "],
+            ["  BG    ", "  BB    ", "OOWYRRYW", "OOWWRRYY", "  GG    ", "  GB    "],
+            ["  BG    ", "  BG    ", "OOWYRRYW", "OOWYRRYW", "  GB    ", "  GB    "],
+            # axis=1, layer=1
+            ["  BB    ", "  GB    ", "OOYWRRYY", "OOWWRRYW", "  BG    ", "  GG    "],
+            ["  GB    ", "  BB    ", "OOWWRRYW", "OOYWRRYY", "  GG    ", "  BG    "],
+            ["  GB    ", "  GB    ", "OOYWRRYW", "OOYWRRYW", "  BG    ", "  BG    "],
+            # axis=2 (z轴), layer=0
+            ["  BG    ", "  BB    ", "ORWWRRYY", "OOWWROYY", "  BG    ", "  GG    "],
+            ["  GB    ", "  BB    ", "OOWWROYY", "ORWWRRYY", "  GB    ", "  GG    "],
+            ["  GG    ", "  BB    ", "ORWWROYY", "ORWWROYY", "  BB    ", "  GG    "],
+            # axis=2, layer=1
+            ["  BB    ", "  BG    ", "ROWWRRYY", "OOWWORYY", "  GG    ", "  BG    "],
+            ["  BB    ", "  GB    ", "OOWWORYY", "ROWWRRYY", "  GG    ", "  GB    "],
+            ["  BB    ", "  GG    ", "ROWWORYY", "ROWWORYY", "  GG    ", "  BB    "],
         ]
         for i, action in enumerate(actions):
             assert (

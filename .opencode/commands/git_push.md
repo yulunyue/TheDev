@@ -23,4 +23,7 @@ description: 提交代码并推送到 git 远端（默认 origin + github）
 - 不要修改 git config
 - 禁止使用 `--no-verify`、`--force` 等危险参数
 - 不 amend 已推送的 commit
-- 如果 rebase 有冲突，停止并提示用户手动处理
+- 如果 rebase 有冲突：
+  1. 执行 `git rebase --abort` 放弃 rebase
+  2. 创建新分支：`git checkout -b <current_branch>_push_<timestamp>`（timestamp 格式 `YYYYMMDD_HHMMSS`）
+  3. 在新分支上执行 `git commit` 和推送
