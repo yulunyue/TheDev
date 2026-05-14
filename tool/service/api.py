@@ -18,27 +18,6 @@ class ApiTool(ToolBase):
         Api.enable_globel_log()
         return super().prepare(*args)
 
-    def qt_status(self, key: str, status: str, user: str):
-        """
-        发送 opencode session 状态消息
-        
-        :param key: session ID
-        :param status: 状态英文
-        :param user: 用户名
-        """
-        title = STATUS_TITLE_MAP.get(status, status)
-        value = {
-            "key": key,
-            "title": title,
-            "status": status,
-            "user": user,
-        }
-        requests.post(
-            "http://localhost:9999/app/manage/send_msg",
-            json={"topic": "TOPIC_MSG_QT", "value": value},
-        )
-        return value
-
 
 if __name__ == "__main__":
     ApiTool().run()

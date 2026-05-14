@@ -76,10 +76,15 @@ class ProcessLock:
             logger.error(f"ProcessLock[{self.name}] kill failed: {e}")
             return False
 
-    def start_unique(self) -> bool:
+    def start_unique(self, pid: int = None) -> bool:
         if self.is_running():
-            return self.kill_old()
-        self.clear()
+            if not self.kill_old():
+                return False
+        else:
+            self.clear()
+        if pid is None:
+            pid = os.getpid()
+        self.set_pid(pid)
         return True
 
     def clear(self):
@@ -99,5 +104,4 @@ class ProcessLock:
         if os.name == "nt":
             kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
         proc = subprocess.Popen(cmd, **kwargs)
-        self.set_pid(proc.pid)
         return proc.pid

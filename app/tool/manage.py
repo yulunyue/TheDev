@@ -1,6 +1,13 @@
-from common.util.export import Node, md5, b64_code, File, logger, base64_decode, IO_MANAGE, C
-import subprocess
-import os
+from common.util.export import (
+    Node,
+    md5,
+    b64_code,
+    File,
+    logger,
+    base64_decode,
+    IO_MANAGE,
+    C,
+)
 from common.tool.export import (
     DomFile,
     FrontTable,
@@ -52,40 +59,42 @@ class Manage:
         return Node()
 
     def restart(self, config: str):
-        lock = ProcessLock(config)
-        lock.kill_old()
-        subprocess.Popen(
-            ["python", "main.py", config],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            start_new_session=True
+        ProcessLock(config).start_process(
+            ["python", "main.py", config], log_file="data/tmp/restart.log"
         )
         return Node()
 
     def send_msg(self, topic: str, value: dict, **kw):
         """
         透传消息到指定 topic
-        
+
         :param topic: 目标 topic 名称
         :param value: 消息内容
         """
         IO_MANAGE.send(topic, value)
         return Node(value=value)
 
-    def get_qt_show_config(self, **kw):
+    def get_json(self, path, **kw):
         """
         获取 Qt 显示配置
         """
         f = File("config/setting/qt_show.json")
         if f.exists():
-            return Node(value=f.read_file())
+            return f.read_file()
         return Node(value={"show_keys": []})
 
-    def update_qt_show_config(self, **kw):
+    def get_io_users(self, **kw):
         """
-        更新 Qt 显示配置并推送
+        获取 WebSocket 用户列表
         """
-        f = File("config/setting/qt_show.json")
-        config = f.read_file() if f.exists() else {"show_keys": []}
-        IO_MANAGE.send(C.TOPIC_QT_CONFIG_UPDATE, config)
-        return Node(value=config)
+        return Node(
+            value={
+                "users": IO_MANAGE.get_all_users(),
+                "topics": {
+                    "TOPIC_MSG_QT": list(IO_MANAGE.get_users_by_topic(C.TOPIC_MSG_QT)),
+                    "TOPIC_QT_CONFIG_UPDATE": list(
+                        IO_MANAGE.get_users_by_topic(C.TOPIC_QT_CONFIG_UPDATE)
+                    ),
+                },
+            }
+        )

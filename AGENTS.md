@@ -98,7 +98,6 @@ from common.tool.export import (
 
 - **一个文件最好只有一个类**（前后端均适用）
 - 类名与文件名保持一致（如 `class WebDom` 放在 `web_dom.ts`）
-- **每个 `.py` / `.ts` 代码文件的变动都要记录到同目录、同名的 `.md` 文件**（如 `web_dom.ts` 的变动记录在 `web_dom.md`）
 - **Python 代码统一使用 Black 格式化**（配置见 `pyproject.toml`），行长度 88
 
 ## 全局规则

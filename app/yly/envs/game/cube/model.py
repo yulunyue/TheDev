@@ -20,18 +20,18 @@ class CubeState(State):
     def game_over(self):
         return self.state == C.init_mask
 
-    def make_action(self,i,j,a)->CubeAction:
-        mask = C.get_converts(self.state, i, j, a, self.grid)
+    def make_action(self, axis, layer_id, rotate ) -> CubeAction:
+        mask = C.get_converts(self.state, axis, layer_id, rotate, self.grid)
         new_state = CubeState(mask, depth=self.depth + 1)
-        action = CubeAction(self, (i, j, a),new_state)
+        action = CubeAction(self, (axis, layer_id, rotate), new_state)
         return action
-        
+
     def make_actions(self) -> List[CubeAction]:
         ret = []
-        for i in range(C.AXIS_NUM):
-            for j in range(C.n):
-                for a in C.MOVE_ACTION:
-                    action = self.make_action(i,j,a)
+        for axis in range(C.AXIS_NUM):
+            for layer_id in range(C.n):
+                for rotate in C.MOVE_ACTION:
+                    action = self.make_action(axis, layer_id, rotate)
                     ret.append(action)
         return ret
 

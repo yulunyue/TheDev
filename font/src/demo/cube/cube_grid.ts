@@ -61,15 +61,7 @@ export class CubeGrid extends Div {
             return block
         }
 
-        const reorderIdx = (faceIndex: number, j: number, k: number): number => {
-            if (faceIndex === 3 || faceIndex === 4) {
-                // 水平镜像：左右互换，用于背面(-Z)和左面(-X)
-                return j * this.n + (this.n - 1 - k)
-            }
-            if (faceIndex === 5) {
-                // 90° 顺时针旋转，用于底面(-Y)
-                return (this.n - 1 - k) * this.n + j
-            }
+        const getIdx = (j: number, k: number): number => {
             return j * this.n + k
         }
 
@@ -78,7 +70,7 @@ export class CubeGrid extends Div {
             for (let j = 0; j < this.n; j++) {
                 const row = new Column()
                 for (let k = 0; k < this.n; k++) {
-                    const colorIndex = faces[faceIndex][reorderIdx(faceIndex, j, k)]
+                    const colorIndex = faces[faceIndex][getIdx(j, k)]
                     row.add_child(createBlock(colorIndex))
                 }
                 col.add_child(row)

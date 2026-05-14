@@ -1,4 +1,4 @@
-import { Div } from "../base/components/export"
+import { Div } from "../../base/components/export"
 
 export class QtDragBar extends Div {
     init_style(): void {
