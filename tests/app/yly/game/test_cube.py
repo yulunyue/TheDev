@@ -296,14 +296,14 @@ class TestCube(TestBase):
 
     def test_action_17_axis2_layer1_rotate2(self):
         s = CubeState.new_shape(C.SHAPE2)
-        a = s.make_action(2, 1, 2)
+        a = s.get_action((2, 1, 2))
         assert a.get_dst().to_str() == [
             "  BB    ",
             "  GG    ",
-            "ORWWORYY",
-            "ORWWORYY",
-            "  BB    ",
+            "ROWWORYY",
+            "ROWWORYY",
             "  GG    ",
+            "  BB    ",
         ]
 
     def test_bfs_from_init(self):

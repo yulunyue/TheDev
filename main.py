@@ -11,8 +11,11 @@ from common.tool.export import TASK_MANAGE, ProcessLock
 def start():
     env = sys.argv[1] if len(sys.argv) > 1 else "dev"
     lock = ProcessLock(env)
-    lock.start_unique()
-    lock.set_pid(os.getpid())
+    current_pid = os.getpid()
+    old_pid = lock.get_pid()
+    if old_pid and old_pid != current_pid:
+        lock.kill_old()
+    lock.set_pid(current_pid)
 
     TornadaWebSocketConnectHandler.hander_msg = IO_MANAGE.hander_msg
     HTTP_CONF_FiLE = File(f"config/setting/{env}.json").write_if_not_exists(
