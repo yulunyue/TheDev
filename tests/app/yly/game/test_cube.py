@@ -80,12 +80,12 @@ class TestCube(TestBase):
             "  GG    ",
             "  GG    ",
         ]
-        a = s.get_action((1, 0, 2))  # axis=1 (Orange/Red), layer=0
+        a = s.get_action((1, 0, 2))  # axis=1 (x轴), layer=0, rotate=180°
         assert a.get_dst().to_str() == [
             "  BG    ",
             "  BG    ",
-            "OOWYRRYW",
-            "OOWYRRYW",
+            "OOWYRRWY",
+            "OOWYRRWY",
             "  GB    ",
             "  GB    ",
         ]
@@ -569,3 +569,115 @@ class TestCube(TestBase):
         self.expect("层" in msg, True)
         self.expect("轴" in msg, True)
         self.expect("旋转" in msg, True)
+
+    # ---------- get_converts 单元测试 ----------
+
+    def test_get_converts_unit(self):
+        """
+        直接测试 C.get_converts(mask, i, j, tp, grid) 的旋转逻辑。
+
+        分析: get_converts 从原始 grid 读取颜色值,写入 mask 的新位偏移中。
+        对于转环 a2=[p0,p1,p2,p3] 中的每个源位置 a(ii),其颜色 grid[a]
+        被写入目标位置 a2[(ii+tp)%4]。
+        all_size-1-x 的镜像是因为 encode_data 是 MSB-first 打包,
+        而 set_mask 从 LSB 计数。
+
+        以 axis=0, layer=0, tp=1 为例:
+          环 [16,4,8,12]: 16→4(Yellow→Orange面), 4→8(Orange→White面),
+                          8→12(White→Red面), 12→16(Red→Yellow面)
+          环 [17,5,9,13]: 对应的 deeper strip 同理
+          环 [0,1,2,3]: 顶面旋转,但因为初始全蓝色(0),无可见变化
+        """
+        s = CubeState.new_shape(C.SHAPE2)
+        n = C.n
+        BIT_SIZE = C.BIT_SIZE
+        all_size = C.SIZE * n * n  # 24
+
+        original_grid = s.grid.copy()
+        original_mask = s.state
+
+        # ---- axis=0, layer=0, tp=1 (y轴顺时针,顶层) ----
+        r1 = C.get_converts(original_mask, 0, 0, 1, original_grid)
+        g1 = decode_data(r1, [BIT_SIZE] * all_size)
+
+        # 受影响的环: [0,1,3,2], [16,4,8,12], [17,5,9,13]
+        rings_0_0 = {0, 1, 2, 3, 4, 5, 8, 9, 12, 13, 16, 17}
+        unchanged = set(range(all_size)) - rings_0_0
+
+        # 验证: 不在环中的位置保持不变
+        for pos in unchanged:
+            self.expect(g1[pos], original_grid[pos], f"pos {pos} unchanged")
+
+        # 环 [16,4,8,12]: 每个位置的颜色顺移到下一个
+        # grid[16]=4→pos4, grid[4]=1→pos8, grid[8]=2→pos12, grid[12]=3→pos16
+        self.expect(g1[4], 4, "pos4: Yellow from pos16")
+        self.expect(g1[8], 1, "pos8: Orange from pos4")
+        self.expect(g1[12], 2, "pos12: White from pos8")
+        self.expect(g1[16], 3, "pos16: Red from pos12")
+
+        # 环 [17,5,9,13]: 同理
+        self.expect(g1[5], 4, "pos5: Yellow from pos17")
+        self.expect(g1[9], 1, "pos9: Orange from pos5")
+        self.expect(g1[13], 2, "pos13: White from pos9")
+        self.expect(g1[17], 3, "pos17: Red from pos13")
+
+        # ---- axis=0, layer=0, tp=-1 (y轴逆时针,顶层) ----
+        rm1 = C.get_converts(original_mask, 0, 0, -1, original_grid)
+        gm1 = decode_data(rm1, [BIT_SIZE] * all_size)
+
+        # tp=-1 是顺时针反向: 源位置 a2[ii]→目标 a2[(ii-1)%4] = a2[(ii+3)%4]
+        self.expect(gm1[12], 4, "pos12: Yellow from pos16 (ccw)")
+        self.expect(gm1[16], 1, "pos16: Orange from pos4 (ccw)")
+        self.expect(gm1[4], 2, "pos4: White from pos8 (ccw)")
+        self.expect(gm1[8], 3, "pos8: Red from pos12 (ccw)")
+
+        # ---- axis=0, layer=0, tp=2 (180°) ----
+        r2 = C.get_converts(original_mask, 0, 0, 2, original_grid)
+        g2 = decode_data(r2, [BIT_SIZE] * all_size)
+
+        # tp=2: 位置互换, 对角线映射 a2[ii]→a2[(ii+2)%4]
+        self.expect(g2[8], 4, "pos8: Yellow from pos16 (180)")
+        self.expect(g2[12], 1, "pos12: Orange from pos4 (180)")
+        self.expect(g2[16], 2, "pos16: White from pos8 (180)")
+        self.expect(g2[4], 3, "pos4: Red from pos12 (180)")
+
+        # ---- 逆操作验证: tp=1 后 tp=-1 应还原 ----
+        r_apply = C.get_converts(original_mask, 0, 0, 1, original_grid)
+        g_apply = decode_data(r_apply, [BIT_SIZE] * all_size)
+        r_revert = C.get_converts(r_apply, 0, 0, -1, g_apply)
+        g_revert = decode_data(r_revert, [BIT_SIZE] * all_size)
+        self.expect(g_revert, original_grid, "tp=1 then tp=-1 restores")
+
+        # ---- 180° 两次还原 ----
+        once = C.get_converts(original_mask, 0, 0, 2, original_grid)
+        g_once = decode_data(once, [BIT_SIZE] * all_size)
+        twice = C.get_converts(once, 0, 0, 2, g_once)
+        g_twice = decode_data(twice, [BIT_SIZE] * all_size)
+        self.expect(g_twice, original_grid, "tp=2 twice restores")
+
+        # ---- 层隔离: axis=0 layer=0 不影响 layer=1 的环 ----
+        # layer=1 的环: [20,21,23,22], [10,14,18,6], [11,15,19,7]
+        layer1_ring = {20, 21, 23, 22, 10, 14, 18, 6, 11, 15, 19, 7}
+        for pos in layer1_ring:
+            self.expect(g1[pos], original_grid[pos], f"layer1 pos {pos} unchanged by layer0")
+
+        # ---- axis=1 (x轴), layer=0, tp=1 验证环映射 + 非环位不变 ----
+        r_x = C.get_converts(original_mask, 1, 0, 1, original_grid)
+        g_x = decode_data(r_x, [BIT_SIZE] * all_size)
+
+        # (1,0) 的环: [12,13,15,14], [1,16,21,9], [3,18,23,11]
+        # 环 [1,16,21,9]: pos1→16(Top→Back), pos16→21(Back→Bottom), pos21→9(Bottom→Front), pos9→1(Front→Top)
+        self.expect(g_x[16], 0, "pos16: Blue from pos1 (top→back)")
+        self.expect(g_x[21], 4, "pos21: Yellow from pos16 (back→bottom)")
+        self.expect(g_x[9], 5, "pos9: Green from pos21 (bottom→front)")
+        self.expect(g_x[1], 2, "pos1: White from pos9 (front→top)")
+        # 环 [3,18,23,11]: pos3→18, pos18→23, pos23→11, pos11→3
+        self.expect(g_x[18], 0, "pos18: Blue from pos3")
+        self.expect(g_x[23], 4, "pos23: Yellow from pos18")
+        self.expect(g_x[11], 5, "pos11: Green from pos23")
+        self.expect(g_x[3], 2, "pos3: White from pos11")
+
+        x_ring = {12, 13, 15, 14, 1, 16, 21, 9, 3, 18, 23, 11}
+        x_unchanged = set(range(all_size)) - x_ring
+        for pos in x_unchanged:
+            self.expect(g_x[pos], original_grid[pos], f"x-axis unchanged pos {pos}")
