@@ -1,6 +1,12 @@
-anfrom common.util.export import List
+from common.util.export import List, functools
 
 
 class Solution:
     def minMoves(self, nums: List[int], limit: int) -> int:
-        return 1
+        n = len(nums)
+
+        @functools.lru_cache(None)
+        def dfs():
+            pass
+
+        return dfs(n - 1)
