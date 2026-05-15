@@ -1,14 +1,14 @@
 import {
-    Column, Row, Div, Constant, Node, web_dom,
+    FlexRow, FlexColumn, Div, Constant, Node, web_dom,
     Button, FormRow, FormColumn, Search, dialog, Span, Pre,
     Data, Container, web_socket, Ct,
 } from "../../base/components/export";
 
-export class TaskMain extends Row {
+export class TaskMain extends FlexColumn {
     top_form: FormRow
     search_input: Search
     add_btn: Button
-    header: Column
+    header: FlexRow
     status_span: Span
     result_div: Pre
     exec_btn: Button
@@ -48,7 +48,7 @@ export class TaskMain extends Row {
         this.top_form = new FormRow()
         this.status_span = new Span()
         this.result_div = new Pre()
-        this.header = new Column().add_childs([
+        this.header = new FlexRow().add_childs([
             this.search_input,
             this.edit_btn,
             this.exec_btn,

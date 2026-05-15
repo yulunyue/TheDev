@@ -73,5 +73,6 @@ export {
     to_node, Grid, ListUi, Table, Ct, Search, TextAreaRich, Title, Span,
     Container, Label, oj_to_node, Chart, Axies, Mock, FileInput,
     ListContainer,
-    FlexColumn as Row, FlexRow as Column
+    FlexColumn,
+    FlexRow
 }

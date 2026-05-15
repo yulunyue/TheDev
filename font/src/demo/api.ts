@@ -1,6 +1,6 @@
 
 import {
-    Column, Row, Div, Constant, Node, web_dom, oj_to_node, to_node, Search, Container,
+    FlexRow, FlexColumn, Div, Constant, Node, web_dom, oj_to_node, to_node, Search, Container,
     Button,
     FormRow,
     ListContainer
@@ -8,15 +8,15 @@ import {
 import { U } from "../base/tool/export"
 const URIKEYID = "api_key"
 const INPUT_ID = "ID_API_INPUT"
-export class Api extends Column {
+export class Api extends FlexRow {
     uri: Search
     input: FormRow
     result: Container
     head_title_right: Div
     head_title_left: Div
-    right_head: Column
-    right_main: Row
-    left_main: Row
+    right_head: FlexRow
+    right_main: FlexColumn
+    left_main: FlexColumn
     running_url: string
     log_container: ListContainer
     init_node(): void {
@@ -27,18 +27,18 @@ export class Api extends Column {
             title: "APIKEY"
         })
         this.result = new Container()
-        this.left_main = new Row().add_childs([
+        this.left_main = new FlexColumn().add_childs([
             this.uri,
             this.input
         ])
         this.head_title_left = new Div().set_html("left")
         this.head_title_right = new Div().set_html("right")
-        this.right_head = new Column().add_childs([
+        this.right_head = new FlexRow().add_childs([
             this.head_title_left,
             this.head_title_right
         ])
         this.log_container = new ListContainer()
-        this.right_main = new Row().add_childs([
+        this.right_main = new FlexColumn().add_childs([
             this.right_head,
             this.result,
             this.log_container

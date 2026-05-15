@@ -1,0 +1,6 @@
+{
+    "url": "http://localhost:9999/app/manage/send_msg",
+    "topic": "TOPIC_MSG_QT",
+    "enable": true,
+    "user": "yly_opencode"
+}

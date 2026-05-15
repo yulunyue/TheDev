@@ -2,23 +2,23 @@ import { Div } from "./div";
 import web_dom from "../../web/web_dom"
 
 import { Node } from "../../web/cls";
-import { Row, Container, Span, Button, Column } from "../export";
+import { FlexColumn, Container, Span, Button, FlexRow } from "../export";
 
 export class Dialog extends Div {
-    header: Column
+    header: FlexRow
     title_span: Span
     close_btn: Button
-    body: Row
+    body: FlexColumn
     main: Div
     init_node() {
-        this.header = this.add_child(new Column())
+        this.header = this.add_child(new FlexRow())
         this.title_span = new Span().set_html("title")
         this.close_btn = new Button().set_html("✕")
         this.header.add_childs([
             this.title_span, this.close_btn
         ])
         this.main = new Div()
-        this.body = new Row().add_childs([
+        this.body = new FlexColumn().add_childs([
             this.header,
             this.main,
         ])

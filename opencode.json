@@ -1,14 +1,6 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": [
-    [
-      "./.opencode/plugins/session-status-notifier",
-      {
-        "url": "http://localhost:9999/app/manage/send_msg",
-        "topic": "TOPIC_MSG_QT",
-        "enable": true,
-        "user": "yly_opencode"
-      }
+    "$schema": "https://opencode.ai/config.json",
+    "plugin": [
+        "./.opencode/plugins/session-status-notifier",
     ]
-  ]
 }

@@ -1,20 +1,20 @@
 
 import {
-    Div, Svg, Constant, Node, web_dom, tree, dialog, Row, to_node, Select, Pre,
+    Div, Svg, Constant, Node, web_dom, tree, dialog, FlexColumn, to_node, Select, Pre,
     GNode, Button, Input, Progress, DivFactory, Search, Container,
     TextArea,
-    Column,
+    FlexRow,
     FormRow
 } from "../base/components/export";
 
 let URIKEYID = "ALGO_SEARCH"
-class Algo extends Row {
+class Algo extends FlexColumn {
     container: Container
     pro: Progress
     dialog_div: FormRow
     code_select: Search
     head_msg: Div
-    head_container: Column
+    head_container: FlexRow
     head_run_btn: Button
     head_edit_btn: Button
     records: any
@@ -37,7 +37,7 @@ class Algo extends Row {
         this.head_msg = new Div()
         this.head_edit_btn = new Button().set_html("EDIT")
         this.head_run_btn = new Button().set_html("RUN")
-        this.head_container = new Column().add_childs([
+        this.head_container = new FlexRow().add_childs([
             this.head_msg,
             this.code_select,
             this.head_edit_btn,

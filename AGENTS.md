@@ -92,7 +92,8 @@ from common.tool.export import (
 - 渲染更新统一放在 `render_option()` 方法中，从 `this.option` 读取数据更新 DOM
 - `set_option` 返回 `this` 以支持链式调用
 - 取值/设值使用 `get_value()` / `set_value()`，变化通知使用 `on_change(cb)` / `do_change(key, src, dst)`
-- `Row`（`FlexColumn`）实际是垂直方向（`column`），`Column`（`FlexRow`）实际是水平方向（`row`）— flex 属性与名称相反
+- `FlexColumn` 是垂直方向布局（`flexDirection: column`），`FlexRow` 是水平方向布局（`flexDirection: row`）
+- **已删除 `Row` 和 `Column` 别名**，代码中直接使用原名避免命名混淆
 
 ## 代码规范
 

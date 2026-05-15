@@ -7,19 +7,19 @@ import { Button } from "../form/button";
 import { Label } from "../base/label"
 import { Pagination } from "../../combo/pagination";
 import Util from "../../../tool/util"
-import { Constant, Row } from "../../export";
+import { Constant, FlexColumn } from "../../export";
 import { TrHead } from "./trhead";
 import { TrBody } from "./trbody";
 import { TBody } from "./tbody";
 import { Thead } from "./thead";
-import { Column } from "../../export";
+import { FlexRow } from "../../export";
 import { Title } from "../form/title";
-export class Table extends Row {
+export class Table extends FlexColumn {
     header_tr: TrHead
     body_div: TBody
-    head_div: Column
+    head_div: FlexRow
     head_title: Title
-    tail_div: Column
+    tail_div: FlexRow
     table_container: Div
     pagination: Pagination
     search_input: Input
@@ -55,7 +55,7 @@ export class Table extends Row {
         this.search_input = new Input().set_placeholder("关键字搜索")
         this.search_btn = new Button().set_html("搜索")
         this.head_title = new Title()
-        this.head_div = new Column().add_childs([
+        this.head_div = new FlexRow().add_childs([
             this.head_title,
             this.search_input,
             this.search_btn,
@@ -73,7 +73,7 @@ export class Table extends Row {
         ])
         this.pagination = new Pagination()
         this.tail_left = new Title()
-        this.tail_div = new Column().add_childs([
+        this.tail_div = new FlexRow().add_childs([
             this.tail_left,
             this.pagination
         ])

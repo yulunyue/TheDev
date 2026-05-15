@@ -1,5 +1,5 @@
 import {
-    Column, Row, Div, Constant, Node, web_dom, oj_to_node,
+    FlexRow, FlexColumn, Div, Constant, Node, web_dom, oj_to_node,
     to_node, Search, Container,
     Button,
     Input,
@@ -9,7 +9,7 @@ import {
     Ct,
     Pre,
 } from "../base/components/export";
-export class Talk extends Row {
+export class Talk extends FlexColumn {
     msgs: Div
     send_msg: Input
     send_btn: Button
@@ -24,7 +24,7 @@ export class Talk extends Row {
         this.send_btn = new Button().set_html("发送")
         this.add_childs([
             this.msgs,
-            new Column().add_childs([
+            new FlexRow().add_childs([
                 this.send_msg,
                 this.send_btn
             ])

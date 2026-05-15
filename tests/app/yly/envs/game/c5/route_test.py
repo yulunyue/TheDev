@@ -1,5 +1,5 @@
 from common.util.export import TestBase, asset_exception
-from app.tool.chess_f5 import ChessF5, AI_PLAYER
+from app.yly.envs.game.c5.route import ChessF5, AI_PLAYER
 from app.yly.envs.game.c5.db import Bd
 from app.yly.envs.game.c5.model.chess_state import CState664
 from app.yly.envs.game.c5.model.chess_state_map import CState333, CHESS_MAP_CLS_FUNC

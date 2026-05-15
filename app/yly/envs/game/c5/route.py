@@ -1,5 +1,5 @@
-from ..yly.envs.game.c5.db import Bd as FontBd, ROUTE_PATH
-from ..yly.envs.game.c5.player.al import Al
+from .db import Bd as FontBd, ROUTE_PATH
+from .player.al import Al
 from common.tool.export import FontSearch, FormBase
 from common.util.export import IO_MANAGE, ApiBase, Node, C
 

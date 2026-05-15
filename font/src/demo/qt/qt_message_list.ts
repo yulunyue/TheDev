@@ -20,8 +20,8 @@ export class QtMessageList extends Div {
     render_option(): void {
         this.set_childs(this.option.childs, this.add_displayed_item.bind(this))
     }
-    add_displayed_item() {
-        return new QtMessageItem()
+    add_displayed_item(data: any) {
+        return new QtMessageItem().set_option(data)
     }
 
     add_message(msg: any): void {
