@@ -1,4 +1,4 @@
-from common.util.export import List
+anfrom common.util.export import List
 
 
 class Solution:

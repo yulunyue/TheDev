@@ -59,7 +59,7 @@
 - 使用 `@classmethod setup_class()` 进行类级别初始化
 - 使用 `common.util.export` 中的 `assert_dict` 进行深度字典比较
 - `common/mock.py` 中的 `MockCf` 用于竞赛编程测试，配合 `oj_run()` 使用
-- 测试文件以 `_test` 结尾，与源码同目录（如 `foo.py` 的测试写在 `foo_test.py`）
+- 测试文件以 `test_` 开头，统一放在 `tests/` 目录下（如 `foo.py` 的测试写在 `tests/test_foo.py` 或 `tests/foo_test.py`）
 
 ## 关键导入
 
