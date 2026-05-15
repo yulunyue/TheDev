@@ -47,7 +47,7 @@ export class NetKakfa {
         }
 
         this._client.onmessage = (evt) => {
-            this.hander_msg(evt.data)
+            this.handler_msg(evt.data)
         }
     }
 
@@ -76,7 +76,7 @@ export class NetKakfa {
         })
     }
 
-    hander_msg(data: any) {
+    handler_msg(data: any) {
         let obj = JSON.parse(data)
         if (obj.type in this.sub_call_back) {
             this.sub_call_back[obj.type](obj.value, obj.from)

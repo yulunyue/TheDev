@@ -11,8 +11,8 @@ def start():
     env = sys.argv[1] if len(sys.argv) > 1 else "dev"
     ProcessLock(env).start_unique()
 
-    TornadaWebSocketConnectHandler.hander_msg = IO_MANAGE.hander_msg
-    HTTP_CONF_FiLE = File(f"config/setting/{env}.json").write_if_not_exists(
+    TornadaWebSocketConnectHandler.handler_msg = IO_MANAGE.handler_msg
+    HTTP_CONF_FILE = File(f"config/setting/{env}.json").write_if_not_exists(
         dict(
             py_modules=[
                 dict(
@@ -29,8 +29,8 @@ def start():
         )
     )
 
-    logger.info(HTTP_CONF_FiLE)
-    conf = HTTP_CONF_FiLE.read_file()
+    logger.info(HTTP_CONF_FILE)
+    conf = HTTP_CONF_FILE.read_file()
     TASK_MANAGE.set_resource("config/setting/task.json").start()
     port = SYS_KW.get("port", conf["port"])
     run(conf["py_modules"], port=port)

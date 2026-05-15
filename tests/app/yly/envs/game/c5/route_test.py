@@ -43,8 +43,7 @@ class TestChessF5(TestBase):
         c = Bd.insert(
             "test_664", name="test_664", size="C664", p0="ad3", p1="ad3", records=[]
         )
-        chess = ChessF5()
-        result = chess.get("test_664")
+        result = c.get("test_664")
         assert result._id == "test_664"
         assert result.p0.get_value() == "ad3"
         assert result.p1.get_value() == "ad3"
@@ -74,7 +73,7 @@ class TestChessF5(TestBase):
         )
         chess = ChessF5()
         result = chess.get("test_664_size")
-        assert result.to_json()["width"] == 6
+        assert result.value.to_json()["width"] == 6
 
     def test_bd_get_id(self):
         assert Bd.get_id(name="test") == "test"

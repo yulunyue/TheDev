@@ -6,6 +6,7 @@ from typing import List, Dict
 from importlib import import_module, invalidate_caches
 from .str_util import StrUtil
 import traceback
+from common.exception import ModuleLoadError
 
 
 class FunInfo:
@@ -46,7 +47,7 @@ def check_func_arg_kw(v):
         elif param.kind == param.POSITIONAL_OR_KEYWORD:
             p_or_k_ct += 1
         else:
-            raise Exception(param)
+            raise ModuleLoadError("Unknown parameter kind", context={"param": param.kind})
 
     return p_or_k_ct, p_ct, k_ct, has_args, has_kw
 
@@ -103,7 +104,7 @@ def get_function_info(v):
             else:
                 kw[kgs[i]] = a_help(kgs[i], None, False)
     except Exception as e:
-        raise Exception(kw, kgs, df, e)
+        raise ModuleLoadError("Failed to process function arguments", context={"kw": kw, "kgs": kgs, "defaults": df, "error": e})
     p_or_k_ct, p_ct, k_ct, has_args, has_kw = check_func_arg_kw(v)
     return FunInfo().load(v.__name__, v.__doc__, ag, kw, has_args, has_kw, has_self)
 
@@ -155,8 +156,8 @@ class Module:
             elif len(names) == 2:
                 return getattr(getattr(md, names[0])(), names[1])
         except Exception as e:
-            raise Exception(e, src, path, module_name)
-        raise Exception(src)
+            raise ModuleLoadError("Failed to load module object", context={"error": e, "src": src, "path": path, "module": module_name})
+        raise ModuleLoadError("Invalid module path format", context={"src": src})
 
     def load_fun_call(self, path: str):
         if "?" in path:

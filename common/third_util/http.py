@@ -41,7 +41,7 @@ MAIN_IOLOOP = IOLoop.current()
 
 
 class TornadaWebSocketConnectHandler(WebSocketHandler):
-    hander_msg = None
+    handler_msg = None
     username: str = ""
 
     def open(self, *args: str, **kwargs: str):
@@ -57,12 +57,12 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         elif not self.username:
             # logger.info(f"{self.request} {message}")
             self.write_message(dict(type=C.METHOD_LOGIN))
-        if TornadaWebSocketConnectHandler.hander_msg:
-            TornadaWebSocketConnectHandler.hander_msg(self, msg)
+        if TornadaWebSocketConnectHandler.handler_msg:
+            TornadaWebSocketConnectHandler.handler_msg(self, msg)
 
     def on_close(self):
         logger.info(f"WebSocket closed {self}")
-        TornadaWebSocketConnectHandler.hander_msg(
+        TornadaWebSocketConnectHandler.handler_msg(
             self, Node(type=C.METHOD_LOGIN, value=self.username)
         )
 
@@ -82,7 +82,7 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
                 logger.info(f"Failed to write message: {e}")
         else:
             logger.map(user_name=self.username, c=self.ws_connection, data=data)
-            TornadaWebSocketConnectHandler.hander_msg(
+            TornadaWebSocketConnectHandler.handler_msg(
                 self, Node(type=C.METHOD_LOGIN_OUT)
             )
 
@@ -97,7 +97,7 @@ def send_clients_mag(user, data):
     WEB_SOCKET_CLIENTS[user].write_message(data)
 
 
-class MainHander(RequestHandler):
+class MainHandler(RequestHandler):
     GET_API = ApiCall()
     POST_API = ApiCall()
 
@@ -162,9 +162,9 @@ class MainHander(RequestHandler):
 
 
 def run(gs: Dict[str, str], port):
-    MainHander.POST_API.load_modules(gs)
+    MainHandler.POST_API.load_modules(gs)
     app = Application(
-        [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHander)]
+        [(r"/ws", TornadaWebSocketConnectHandler), (r"/(.*)", MainHandler)]
     )
     logger.info(f"listen:{port} pid:{os.getpid()}")
     app.listen(port, "0.0.0.0")

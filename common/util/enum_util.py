@@ -1,5 +1,7 @@
 GLOBAL_ADD = 0
 
+from common.exception import ValidationError
+
 
 class EnumCls:
     def __init__(self):
@@ -15,7 +17,7 @@ class EnumCls:
         try:
             return self._format[v]
         except Exception as e:
-            raise Exception(self._format, v)
+            raise ValidationError("Invalid enum value", context={"format": self._format, "value": v})
 
 
 def auto(v=None):

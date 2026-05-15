@@ -119,3 +119,4 @@ from common.tool.export import (
 - `File` 工具类会规范化路径（`\` → `/`）并按路径缓存实例
 - `common/util/export.py` 是枢纽模块 — 几乎所有内容都从这里重新导出
 - Python 格式化：`black .`（配置在 `pyproject.toml`）
+- **读题只读题**：用户要求"读题"时，只返回题目原文，不附加任何分析、思路或代码建议

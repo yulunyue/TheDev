@@ -37,7 +37,7 @@
   - 记录注册日志
 
 **模块加载**:
-- `load_module(moudule_name_key, cls: ApiBase)`: 加载 API 模块
+- `load_module(module_name_key, cls: ApiBase)`: 加载 API 模块
   - 自动发现类中的 API 方法
   - 支持自定义 API 路由
   - 处理 front_apis 属性

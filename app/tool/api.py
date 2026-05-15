@@ -1,5 +1,5 @@
 from typing import Dict
-from common.third_util.http import MainHander
+from common.third_util.http import MainHandler
 from common.tool.export import FrontTable, DomFile, FontSearch
 from common.util.export import (
     File,
@@ -19,10 +19,10 @@ class ApiGlobal(ApiBase):
     idx = 0
 
     def query_all_apis(self, **kw):
-        return FontSearch().add_childs(*MainHander.POST_API.fun_map.keys())
+        return FontSearch().add_childs(*MainHandler.POST_API.fun_map.keys())
 
     def get_api_call_info(self, key: str, **kw):
-        return get_function_info(MainHander.POST_API.fun_map[key])
+        return get_function_info(MainHandler.POST_API.fun_map[key])
 
     def test(
         self,

@@ -6,9 +6,6 @@ from common.util.export import Node, C, ApiBase, Type
 class FormBase(ApiBase):
     model: Type[FileConfig]
 
-    def get_model(self, key):
-        return getattr(self, key)
-
     def get(self, key, **kw):
         return Node(value=self.__class__.model.get(key))
 

@@ -3,6 +3,7 @@ import time
 from .fp import File
 from .log import get_log, get_dev_log, logger
 from .tool import url_to_json, md5, SYS_ARGS, SYS_KW, uid
+from common.exception import ValidationError
 from .module import Module, call_func_auto
 from .difftool import Diff
 from typing import Dict, List
@@ -55,4 +56,4 @@ class TestBase:
         except Exception as e:
             self.expect(str(e), error)
         else:
-            raise Exception("no error")
+            raise ValidationError("Expected error was not raised")

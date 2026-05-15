@@ -8,6 +8,7 @@ import hashlib
 import base64
 import time
 from collections.abc import ValuesView
+from common.exception import ValidationError, NotFoundError
 
 
 def time_format(timestamp=None, fmt="%Y-%m-%d %H:%M:%S"):
@@ -131,7 +132,7 @@ def cmd_parse_json(s):
             try:
                 ret.append(json.loads(value))
             except Exception as e:
-                raise Exception(e, value, json_lt)
+                raise ValidationError("JSON parsing failed", context={"error": e, "value": value, "json": json_lt})
             value = ""
         i += 1
     return ret
@@ -256,7 +257,7 @@ def json_get(data, keys: str, default_value=None):
     for key in ks:
         if key not in r:
             if default_value is None:
-                raise Exception(data, keys)
+                raise NotFoundError("Key not found in data", context={"data": data, "keys": keys})
             return default_value
         r = r[key]
     return r
