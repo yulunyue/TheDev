@@ -3,9 +3,9 @@ import { GNode } from "../../export"
 import { Div } from "./div"
 
 export class DivFactory {
-    static fac_map: object
-    static fac_svg_map: object
-    static instance: object
+    static fac_map: { [key: string]: any }
+    static fac_svg_map: { [key: string]: any }
+    static instance: { [key: string]: any }
     static set(key: string, value: any) {
         DivFactory.instance[key] = value
         return value

@@ -1,8 +1,7 @@
 from common.util.export import TestBase, File, logger
 from common.tool.export import StrModel, NumberModel, DictModel
 from common.tool.base_class.baseconfig import ConfigBase
-from common.tool.base_class.storege.file_config import FileConfig
-import pytest
+from common.tool.base_class.storage.file_config import FileConfig
 import os
 import tempfile
 
@@ -49,7 +48,7 @@ class TestFileConfig:
 
     def test_save(self):
         model = TestFileConfigModel.insert("save_test", name="Bob", age=30)
-        TestFileConfigModel.save()
+        model.save()
         assert os.path.exists(self.test_file)
         content = File(self.test_file).read_file()
         assert "save_test" in content
@@ -96,7 +95,7 @@ class TestFileConfig:
 
     def test_instance_persistence(self):
         model1 = TestFileConfigModel.insert("persist_test", name="Persist")
-        TestFileConfigModel.save()
+        model1.save()
         TestFileConfigModel.instance_map.clear()
         TestFileConfigModel.init_resource()
         assert "persist_test" in TestFileConfigModel.instance_map
@@ -108,7 +107,7 @@ class TestFileConfig:
         model.update_param_value(model.name, "Updated1")
         model.update_param_value(model.age, 25)
         model.update_param_value(model.email, "updated@example.com")
-        TestFileConfigModel.save()
+        model.save()
 
         content = File(self.test_file).read_file()
         assert content["multi_update"]["name"] == "Updated1"
@@ -120,7 +119,7 @@ class TestFileConfig:
             "dict_test", metadata={"key1": "value1", "key2": "value2"}
         )
         assert model.metadata.get_value() == {"key1": "value1", "key2": "value2"}
-        TestFileConfigModel.save()
+        model.save()
         content = File(self.test_file).read_file()
         assert content["dict_test"]["metadata"] == {"key1": "value1", "key2": "value2"}
 
@@ -139,7 +138,7 @@ class TestFileConfig:
         TestFileConfigModel.insert("query1", name="QueryTest1")
         TestFileConfigModel.insert("query2", name="QueryTest2")
         TestFileConfigModel.insert("other", name="Other")
-        results = TestFileConfigModel.query("query")
+        results = TestFileConfigModel.filter("query")
         assert len(results) == 2
         names = [m.name.get_value() for m in results]
         assert "QueryTest1" in names
@@ -157,14 +156,18 @@ class TestFileConfig:
         class NoResourceModel(FileConfig):
             name = StrModel()
 
-        with pytest.raises(AssertionError):
+        raised = False
+        try:
             NoResourceModel.init_resource()
+        except (AssertionError, AttributeError):
+            raised = True
+        assert raised
 
     def test_config_dict_structure(self):
-        TestFileConfigModel.insert(
+        model = TestFileConfigModel.insert(
             "struct_test", name="StructTest", age=50, metadata={"test": "data"}
         )
-        TestFileConfigModel.save()
+        model.save()
         content = File(self.test_file).read_file()
         assert isinstance(content, dict)
         assert "struct_test" in content

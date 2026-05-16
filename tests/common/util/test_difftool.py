@@ -176,8 +176,8 @@ class TestDiff(unittest.TestCase):
     def test_custom_key_join_char(self):
         """测试自定义键连接符"""
         diff = Diff({"a": 1}, key_join_char=".")
-        diff.diff(["key"], 1, 2)
-        self.assertIn("update.key.1.2", diff.diff_result[0])
+        diff.diff(["p", "q"], 1, 2)
+        self.assertIn("update[p.q][1][2]", diff.diff_result[0])
 
     def test_multiple_operations(self):
         """测试多种操作的组合"""

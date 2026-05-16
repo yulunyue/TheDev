@@ -35,7 +35,7 @@ export class Pagination extends Div {
         this.left_btn = new Button().set_html("<<")
         this.right_btn = new Button().set_html(">>")
         this.go_btn = new Button().set_html("go")
-        this.add_childs([
+        this.add_children([
             this.page_size_select,
             this.left_btn,
             this.cur_page,
@@ -75,7 +75,7 @@ export class Pagination extends Div {
     }
     render_page_size() {
         this.page_size_select.set_option(
-            new Node().set_childs([10, 20, 50, 100].map((i: number) => {
+            new Node().set_children([10, 20, 50, 100].map((i: number) => {
                 return new Node().set_option({
                     value: i,
                     title: i

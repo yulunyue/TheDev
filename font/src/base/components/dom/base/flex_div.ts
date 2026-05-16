@@ -1,6 +1,6 @@
 import { Div } from "./div";
 import Constant from "../../../web/constant"
-import { FlexColumn } from "./row";
+import { FlexRow } from "./row";
 import { DivFactory } from "./div_factory";
 export class FlexDiv extends Div {
     show(): this {
@@ -39,14 +39,14 @@ export class FlexDiv extends Div {
     }
 
     render_option(): void {
-        if (this.option.childs && this.option.childs.length) {
+        if (this.option.children && this.option.children.length) {
             this.clear()
-            let childs = []
-            for (var i = 0; i < this.option.childs.length; i++) {
-                let o = this.option.childs[i]
-                childs.push(DivFactory.new_div(o.type, o.key).set_option(o))
+            let children = []
+            for (var i = 0; i < this.option.children.length; i++) {
+                let o = this.option.children[i]
+                children.push(DivFactory.new_div(o.type, o.key).set_option(o))
             }
-            this.add_childs(childs)
+            this.add_children(children)
         }
 
     }

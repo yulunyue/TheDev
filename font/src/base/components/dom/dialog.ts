@@ -14,15 +14,15 @@ export class Dialog extends Div {
         this.header = this.add_child(new FlexRow())
         this.title_span = new Span().set_html("title")
         this.close_btn = new Button().set_html("✕")
-        this.header.add_childs([
+        this.header.add_children([
             this.title_span, this.close_btn
         ])
         this.main = new Div()
-        this.body = new FlexColumn().add_childs([
+        this.body = new FlexColumn().add_children([
             this.header,
             this.main,
         ])
-        this.add_childs([
+        this.add_children([
             this.body,
         ])
     }

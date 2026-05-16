@@ -32,30 +32,30 @@ export class Search extends Div {
         }
     }
     update_selection() {
-        let childs = this.listui.childs
-        for (let i = 0; i < childs.length; i++) {
+        let children = this.listui.children
+        for (let i = 0; i < children.length; i++) {
             if (i === this.selected_index) {
-                childs[i].set_style({ backgroundColor: "#ddd" })
+                children[i].set_style({ backgroundColor: "#ddd" })
             } else {
-                childs[i].set_style({ backgroundColor: "white" })
+                children[i].set_style({ backgroundColor: "white" })
             }
         }
     }
     select_current() {
-        let childs = this.listui.childs
-        if (childs.length > 0 && this.selected_index < childs.length) {
-            childs[this.selected_index].el.click()
+        let children = this.listui.children
+        if (children.length > 0 && this.selected_index < children.length) {
+            children[this.selected_index].el.click()
         }
     }
     init_event(): void {
         this.input.on_click(() => this.emit_search(this.open_dialog.bind(this)))
         this.input.on_input(this.filter.bind(this))
         this.input.on_key_down((e: KeyboardEvent) => {
-            let childs = this.listui.childs
-            if (!this.dialog.is_visible() || childs.length === 0) return
+            let children = this.listui.children
+            if (!this.dialog.is_visible() || children.length === 0) return
             if (e.key === "ArrowDown") {
                 e.preventDefault()
-                this.selected_index = Math.min(this.selected_index + 1, childs.length - 1)
+                this.selected_index = Math.min(this.selected_index + 1, children.length - 1)
                 this.update_selection()
             } else if (e.key === "ArrowUp") {
                 e.preventDefault()
@@ -112,7 +112,7 @@ export class Search extends Div {
     }
     render_option(): void {
         if (this.option.id) {
-            web_dom.get_loacl_str(this.option.id, (v: any) => {
+            web_dom.get_local_str(this.option.id, (v: any) => {
 
                 this.do_change(this.option.key, this.get_value(), v)
                 this.set_value(v)

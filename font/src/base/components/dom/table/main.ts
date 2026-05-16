@@ -55,29 +55,29 @@ export class Table extends FlexColumn {
         this.search_input = new Input().set_placeholder("关键字搜索")
         this.search_btn = new Button().set_html("搜索")
         this.head_title = new Title()
-        this.head_div = new FlexRow().add_childs([
+        this.head_div = new FlexRow().add_children([
             this.head_title,
             this.search_input,
             this.search_btn,
         ])
         this.body_div = new TBody()
         this.header_tr = new TrHead()
-        this.table = new Div("table").add_childs([
-            new Thead().add_childs([
+        this.table = new Div("table").add_children([
+            new Thead().add_children([
                 this.header_tr
             ]),
             this.body_div
         ])
-        this.table_container = new Div().add_childs([
+        this.table_container = new Div().add_children([
             this.table
         ])
         this.pagination = new Pagination()
         this.tail_left = new Title()
-        this.tail_div = new FlexRow().add_childs([
+        this.tail_div = new FlexRow().add_children([
             this.tail_left,
             this.pagination
         ])
-        this.add_childs([
+        this.add_children([
             this.head_div,
             this.table_container,
             this.tail_div
@@ -86,7 +86,7 @@ export class Table extends FlexColumn {
 
 
     set_header(items: Node[]) {
-        this.header_tr.set_option({ childs: items })
+        this.header_tr.set_option({ children: items })
         return this
     }
     filter() {
@@ -113,7 +113,7 @@ export class Table extends FlexColumn {
         }
     }
     draw(o: Node) {
-        this.set_header(o.childs)
+        this.set_header(o.children)
         this.set_body(o.value)
         return this
     }

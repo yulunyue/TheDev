@@ -5,7 +5,7 @@ export class Rect extends GNode {
         super("rect")
     }
     init_style(): void {
-        this.set_color(Constant.COLOR_BALCK)
+        this.set_color(Constant.COLOR_BLACK)
     }
     set_wh(w: number, h: number) {
         return this.set_width(w).set_height(h)

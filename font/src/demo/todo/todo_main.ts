@@ -40,14 +40,14 @@ export class TodoMain extends FlexColumn {
         this.top_form = new FormRow()
         this.score_span = new Span()
         this.todo_list = new TodoContainer()
-        this.header = new FlexRow().add_childs([
+        this.header = new FlexRow().add_children([
             this.score_span,
             this.category_select,
             this.done_select,
             this.search_input,
             this.add_btn
         ])
-        this.add_childs([
+        this.add_children([
             this.header,
             this.todo_list
         ])
@@ -101,7 +101,7 @@ export class TodoMain extends FlexColumn {
     }
     render(): void {
         this.done_select.set_option({
-            childs: [
+            children: [
                 { title: "已完成", value: "true" },
                 { title: "未完成", value: "false" }
             ],

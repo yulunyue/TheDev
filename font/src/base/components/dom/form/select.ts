@@ -48,8 +48,8 @@ export class Select extends Div {
         if (key == null || key == undefined) {
             return this
         }
-        for (var i = 0; i < this.childs.length; i++) {
-            let so = this.childs[i]
+        for (var i = 0; i < this.children.length; i++) {
+            let so = this.children[i]
             if (so.option.key == key) {
                 so.do_select(true)
                 // this.do_change()
@@ -61,13 +61,13 @@ export class Select extends Div {
 
     }
     get_value() {
-        for (var i = 0; i < this.option.childs.length; i++) {
-            if (this.option.childs[i].value == this.el.value) {
-                return this.option.childs[i].value
+        for (var i = 0; i < this.option.children.length; i++) {
+            if (this.option.children[i].value == this.el.value) {
+                return this.option.children[i].value
             }
         }
-        if (this.option.childs[0]) {
-            return this.option.childs[0].value
+        if (this.option.children[0]) {
+            return this.option.children[0].value
         }
         return this.option.value
     }
@@ -81,11 +81,11 @@ export class Select extends Div {
     render_option(): void {
         if (this.option.url) {
             web_dom.post(this.option.url, {}, (node: Node) => {
-                this.option.childs = to_node(node).childs
-                this.set_childs(this.option.childs, (v: any) => new SeOption().set_option(v))
+                this.option.children = to_node(node).children
+                this.set_children(this.option.children, (v: any) => new SeOption().set_option(v))
             })
-        } else if (this.option.childs) {
-            this.set_childs(this.option.childs, (v: any) => new SeOption().set_option(v))
+        } else if (this.option.children) {
+            this.set_children(this.option.children, (v: any) => new SeOption().set_option(v))
         }
     }
 }

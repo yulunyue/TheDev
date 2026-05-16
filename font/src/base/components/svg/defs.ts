@@ -33,8 +33,8 @@ export class Marker extends GNode {
     update_node() {
         if (this.key == ARROW_KEY) {
             let l = new Line().set_style({
-                stroke: Constant.COLOR_BALCK,
-                fill: Constant.COLOR_BALCK
+                stroke: Constant.COLOR_BLACK,
+                fill: Constant.COLOR_BLACK
             })
             if (this.arg1 == ARROW_START) {
                 l.set_d("M-20,5 L0,0 L-10,10 Z")

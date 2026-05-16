@@ -2,8 +2,8 @@ import { Div } from "../div";
 import web from "../../../web/web_dom"
 import { Constant, Node } from "../../export";
 export class Label extends Div {
-    text: string = null
-    change_color: string = null
+    text: string | null = null
+    change_color: string | null = null
     constructor() {
         super("p")
     }

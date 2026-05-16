@@ -5,7 +5,7 @@ import { Div } from "../dom/div"
 export class GNode extends Div {
     el: any
     parent: any
-    childs: any[]
+    children: any[]
     x: number
     y: number
     option: Node
@@ -14,7 +14,7 @@ export class GNode extends Div {
         super(name)
         this.el = this.create_element(name)
         this.parent = null
-        this.childs = []
+        this.children = []
         this.x = 0
         this.y = 0
         this.option = new Node()

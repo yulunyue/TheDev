@@ -1,8 +1,7 @@
-from common.util.export import TheDevLoger
-
+from common.util.export import TheDevLogger
 
 class LogHelp:
-    logger: TheDevLoger = None
+    logger: TheDevLogger = None
 
     def set_mp(self, mp):
         self.mp = mp

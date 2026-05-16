@@ -22,9 +22,9 @@ export class Talk extends FlexColumn {
         this.msgs = new Div()
         this.send_msg = new Input().set_value("test")
         this.send_btn = new Button().set_html("发送")
-        this.add_childs([
+        this.add_children([
             this.msgs,
-            new FlexRow().add_childs([
+            new FlexRow().add_children([
                 this.send_msg,
                 this.send_btn
             ])

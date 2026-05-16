@@ -40,9 +40,11 @@ class BaseModel:
         return cls.__name__
 
     def clone(self):
-        return self.__class__(key=self.key, default_value=self.default_value).set_model(
+        c = self.__class__(key=self.key, default_value=self.default_value).set_model(
             self
         )
+        c.can_is_null = self.can_is_null
+        return c
 
     def set_datasource(self, data_source):
         self.data_source = data_source

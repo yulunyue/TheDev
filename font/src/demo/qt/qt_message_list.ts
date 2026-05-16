@@ -18,15 +18,15 @@ export class QtMessageList extends Div {
     }
 
     render_option(): void {
-        this.set_childs(this.option.childs, this.add_displayed_item.bind(this))
+        this.set_children(this.option.children, this.add_displayed_item.bind(this))
     }
     add_displayed_item(data: any) {
         return new QtMessageItem().set_option(data)
     }
 
     add_message(msg: any): void {
-        if (this.childs_map[msg.key]) {
-            this.childs_map[msg.key].set_option(msg)
+        if (this.children_map[msg.key]) {
+            this.children_map[msg.key].set_option(msg)
         }
     }
 }

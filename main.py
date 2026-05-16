@@ -1,7 +1,7 @@
 import sys
-from common.util.tool import SYS_KW, THE_DEV_LOGER_PREFIX
+from common.util.tool import SYS_KW, THE_DEV_LOGGER_PREFIX
 
-SYS_KW[THE_DEV_LOGER_PREFIX] = sys.argv[1] if len(sys.argv) > 1 else "dev"
+SYS_KW[THE_DEV_LOGGER_PREFIX] = sys.argv[1] if len(sys.argv) > 1 else "dev"
 from common.third_util.http import run, TornadaWebSocketConnectHandler
 from common.util.export import File, logger, IO_MANAGE
 from common.tool.export import TASK_MANAGE, ProcessLock

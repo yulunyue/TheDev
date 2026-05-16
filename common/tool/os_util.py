@@ -1,7 +1,7 @@
 import subprocess
 from common.util.export import (
     File,
-    TheDevLoger,
+    TheDevLogger,
     get_dev_log,
     logger,
     Thread,
@@ -20,12 +20,12 @@ class OsUtil:
         self.root_path = "./"
         self.and_cmds = []
 
-    _logger: TheDevLoger = None
+    _logger: TheDevLogger = None
 
     @property
     def logger(self):
         if self._logger is None:
-            self._logger: TheDevLoger = get_dev_log(
+            self._logger: TheDevLogger = get_dev_log(
                 f"data/log/os/{self.fun_name.split('/').pop()}"
             )  # 用TheDev 主要是方便writer 重定向
         return self._logger
@@ -91,7 +91,7 @@ class OsUtil:
     def set_logger(self, logger):
         if isinstance(logger, str):
             logger = get_dev_log(logger)
-        self._logger: TheDevLoger = logger
+        self._logger: TheDevLogger = logger
         return self
 
     def set_env(self, root):

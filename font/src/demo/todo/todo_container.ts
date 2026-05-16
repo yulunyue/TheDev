@@ -1,5 +1,5 @@
 import {
-    Column, Row, Div, Constant, Node, web_dom,
+    Div, Constant, Node, web_dom,
     Button, web_socket, Ct, Util
 } from "../../base/components/export";
 import { TodoRow } from "./todo_row";
@@ -20,7 +20,7 @@ export class TodoContainer extends Div {
     set_todos(data: Node, on_change: any): this {
         this.clear()
         this.todo_rows = []
-        for (let todo of data.childs) {
+        for (let todo of data.children) {
             this.add_todo_row(todo).on_change(on_change)
         }
         return this

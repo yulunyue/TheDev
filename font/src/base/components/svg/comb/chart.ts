@@ -7,7 +7,7 @@ export class Chart extends GNode {
     init_node(): void {
         this.x_axies = new Axies()
         this.y_axies = new Axies()
-        this.add_childs([
+        this.add_children([
             this.x_axies,
             this.y_axies
         ])

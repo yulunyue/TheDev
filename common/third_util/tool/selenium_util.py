@@ -109,21 +109,47 @@ class SeleniumUtil:
     def response_interceptor(self, request: Request, response: Response):
         logger.map(uri=request.url, method=request.method, headers=request.headers)
 
+    def _get_platform(self):
+        if sys.platform.startswith("win"):
+            return "win64", "chrome.exe", "chromedriver.exe"
+        elif sys.platform.startswith("linux"):
+            return "linux64", "chrome", "chromedriver"
+        elif sys.platform.startswith("darwin"):
+            return "mac-arm64", "chrome", "chromedriver"
+        return "linux64", "chrome", "chromedriver"
+
     def load(self):
+        import sys
+
         user_data_dir = File("data/chrome").make_dir_if_not_exist(True)
         chrome_exe = File(GC.chrome_bin_path.get_value())
         chrome_driver = File(GC.chrome_driver_path.get_value())
+        platform_name, chrome_name, driver_name = self._get_platform()
+
+        def ensure_platform_url(uri):
+            parts = uri.split("/")
+            for i, p in enumerate(parts):
+                if p.endswith("-win64"):
+                    parts[i] = p.replace("-win64", f"-{platform_name}")
+                elif p.endswith("-mac-arm64") or p.endswith("-linux64"):
+                    pass
+            return "/".join(parts)
+
         from common.third_util.io.api import Api
 
         if not chrome_exe.exists():
-            Api().download(GC.chrome_bin_uri.get_value()).unzip(chrome_exe.path)
+            Api().download(
+                ensure_platform_url(GC.chrome_bin_uri.get_value())
+            ).unzip(chrome_exe.path)
         if not chrome_driver.exists():
-            Api().download(GC.chrome_driver_uri.get_value()).unzip(chrome_driver.path)
+            Api().download(
+                ensure_platform_url(GC.chrome_driver_uri.get_value())
+            ).unzip(chrome_driver.path)
         if not chrome_exe.exists() or not chrome_driver.exists():
             raise Exception(
                 f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"
             )
-        chrome_exe_file = chrome_exe.child("chrome-win64/chrome.exe")
+        chrome_exe_file = chrome_exe.child(f"chrome-{platform_name}/{chrome_name}")
         if isinstance(self.dev_port, int):
             info = System.get_pid_by_port(self.dev_port)
             if not info:
@@ -141,7 +167,7 @@ class SeleniumUtil:
             self.options = Options()
             service = Service(
                 chrome_driver.child(
-                    "chromedriver-win64/chromedriver.exe"
+                    f"chromedriver-{platform_name}/{driver_name}"
                 ).get_abs_path(),
                 service_args=["--verbose", "--log-path=data/log/chromedriver.log"],
             )

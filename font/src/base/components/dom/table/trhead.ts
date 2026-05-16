@@ -23,7 +23,7 @@ export class TrHead extends Div {
         })
     }
     render_option() {
-        this.clear().add_childs(this.option.childs.map(v => {
+        this.clear().add_children(this.option.children.map(v => {
             return new Th().set_option(v)
         }))
         return this

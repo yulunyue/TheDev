@@ -27,23 +27,23 @@ export class Api extends FlexRow {
             title: "APIKEY"
         })
         this.result = new Container()
-        this.left_main = new FlexColumn().add_childs([
+        this.left_main = new FlexColumn().add_children([
             this.uri,
             this.input
         ])
         this.head_title_left = new Div().set_html("left")
         this.head_title_right = new Div().set_html("right")
-        this.right_head = new FlexRow().add_childs([
+        this.right_head = new FlexRow().add_children([
             this.head_title_left,
             this.head_title_right
         ])
         this.log_container = new ListContainer()
-        this.right_main = new FlexColumn().add_childs([
+        this.right_main = new FlexColumn().add_children([
             this.right_head,
             this.result,
             this.log_container
         ])
-        this.add_childs([
+        this.add_children([
             this.left_main,
             this.right_main
         ])

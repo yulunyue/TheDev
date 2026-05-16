@@ -5,7 +5,7 @@ export class Data {
         let user_name = web_dom.get_local_data(Constant.username)
         if (!user_name) {
             let t = new FormRow().set_option({
-                childs: [{
+                children: [{
                     type: Constant.DOM_TYPE_INPUT, key: Constant.username,
                     title: Constant.username
                 }]

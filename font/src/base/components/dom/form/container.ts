@@ -18,7 +18,7 @@ export class FormContainer extends Div {
     init_node(): void {
         this.title = new Div()
         this.container = new Container()
-        this.add_childs([
+        this.add_children([
             this.title,
             this.container
         ])

@@ -39,7 +39,7 @@ export class TreeNode extends GNode {
 export class Tree extends SvgNode {
     max_xy: any
     g: GNode
-    add_dfs_childs(nodes: any, depth: any) {
+    add_dfs_children(nodes: any, depth: any) {
         console.log(nodes, depth)
     }
     init_node(): void {
@@ -73,14 +73,14 @@ export class Tree extends SvgNode {
             if (p) {
                 this.g.add_child(p.data.node.add_node(node.data.node))
             }
-            for (var i = 0; i < node.childs.length; i++) {
-                dfs(node.childs[i], node)
+            for (var i = 0; i < node.children.length; i++) {
+                dfs(node.children[i], node)
             }
         }
         if (this.option.title) {
             dfs(this.option, null)
         } else {
-            this.option.childs.map((v => {
+            this.option.children.map((v => {
                 dfs(v, null)
             }))
         }

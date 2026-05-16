@@ -9,7 +9,7 @@ export class Grid extends SvgNode {
     g: GNode
     init_node(): void {
         this.g = new GNode()
-        this.add_childs([
+        this.add_children([
             this.g
         ])
     }
@@ -17,8 +17,8 @@ export class Grid extends SvgNode {
         this.g.clear()
         this.texts = new Map()
         this.arrows = new Map()
-        for (var i = 0; i < this.option.childs.length; i++) {
-            let o = this.option.childs[i]
+        for (var i = 0; i < this.option.children.length; i++) {
+            let o = this.option.children[i]
             this.texts[o.key] = new Text().set_option(o)
             this.g.add_child(this.texts[o.type])
         }
@@ -26,7 +26,7 @@ export class Grid extends SvgNode {
         for (var i = 0; i < arrows.length; i++) {
             let o = arrows[i]
             this.arrows[o.key] = new Line().set_option(o)
-            this.g.add_childs(this.arrows[o.key])
+            this.g.add_children(this.arrows[o.key])
         }
     }
 }

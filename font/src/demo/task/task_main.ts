@@ -48,7 +48,7 @@ export class TaskMain extends FlexColumn {
         this.top_form = new FormRow()
         this.status_span = new Span()
         this.result_div = new Pre()
-        this.header = new FlexRow().add_childs([
+        this.header = new FlexRow().add_children([
             this.search_input,
             this.edit_btn,
             this.exec_btn,
@@ -56,7 +56,7 @@ export class TaskMain extends FlexColumn {
             this.add_btn,
 
         ])
-        this.add_childs([
+        this.add_children([
             this.header,
             this.result_div
         ])

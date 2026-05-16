@@ -3,11 +3,13 @@ import { Node } from "./cls"
 import Data from "../tool/data"
 import { Constant } from "../components/export"
 
-export class NetKakfa {
+export class NetKafka {
     _client: WebSocket
     sub_call_back: any
     connect_state: string
     pending_calls: any[]
+    send_hock?: (tp: string, value: any) => void
+    recv_hock?: (data: any) => void
 
     constructor() {
         this.sub_call_back = {}
@@ -106,4 +108,4 @@ export class NetKakfa {
     }
 }
 
-export default new NetKakfa()
+export default new NetKafka()

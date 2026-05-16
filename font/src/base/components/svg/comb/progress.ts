@@ -6,7 +6,7 @@ import { Text, text } from "../text";
 import { Node } from "../../../web/cls";
 import { SvgNode } from "../svg";
 import { Div } from "../../dom/div";
-import { FlexRow } from "../../dom/base/column";
+import { FlexRow } from "../../dom/base/row";
 import Constant from "../../../web/constant";
 import { Button } from "../../dom/form/button";
 import { Input } from "../../dom/form/input";
@@ -19,7 +19,7 @@ class ProgrePoint extends GNode {
     start_y: number
     init_node(): void {
         this.rect = this.add_child(new Rect())
-        this.rect.set_wh(7, 14).set_color(Constant.COLOR_BALCK).set_y(-10)
+        this.rect.set_wh(7, 14).set_color(Constant.COLOR_BLACK).set_y(-10)
         this.text = this.add_child(text())
         this.text.set_y(14).set_x(4)
     }
@@ -55,8 +55,8 @@ export class Progress extends FlexRow {
         this.value = this.min_g.add_child(new ProgrePoint())
         this.max_value = this.min_g.add_child(new ProgrePoint())
         this.input_line = new Input().set_width(Constant.INPUT_NUMBER_WIDTH)
-        this.g = new SvgNode().add_childs([this.min_g])
-        this.add_childs([
+        this.g = new SvgNode().add_children([this.min_g])
+        this.add_children([
             this.g,
             new Button().set_html("<<").on_click(() => this.set_value(this.value.value - 1)),
             this.input_line,
@@ -114,7 +114,7 @@ export class Progress extends FlexRow {
                 this.set_value(Math.floor(pos * this.max_value.value / this.width), pos)
                 // console.log(this.value.get_x())
             } else {
-                // this.cur_point.set_color(Constant.COLOR_BALCK)
+                // this.cur_point.set_color(Constant.COLOR_BLACK)
             }
         })
 

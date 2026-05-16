@@ -9,7 +9,7 @@ export class Circle extends GNode {
     init_style(): void {
         this.set_style({
             fill: Constant.COLOR_TANS,
-            stroke: Constant.COLOR_BALCK
+            stroke: Constant.COLOR_BLACK
         })
     }
     set_r(radius: number) {

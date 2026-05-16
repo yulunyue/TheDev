@@ -7,14 +7,14 @@ import { DivFactory } from "./div_factory"
 export class Div {
     el: HTMLElement
     node_type: string
-    childs: Div[]
-    childs_map: Map<string, Div>
-    parent: Div
+    children: Div[]
+    children_map: any
+    parent: Div | null
     option: Node
     index: number
     size: number = 0
     _value: any = null
-    event_hander: any
+    event_hander: { [key: string]: any }
     disable(state: boolean) {
         if (state) {
             this.set_attr("disabled", "disabled")
@@ -64,11 +64,11 @@ export class Div {
 
     }
     get_child(idx: number, call: any) {
-        if (this.childs[idx]) {
-            return this.childs[idx]
+        if (this.children[idx]) {
+            return this.children[idx]
         }
-        this.childs[idx] = this.add_child(call())
-        return this.childs[idx]
+        this.children[idx] = this.add_child(call())
+        return this.children[idx]
     }
     full() {
         return this.set_style({
@@ -82,8 +82,8 @@ export class Div {
         return this.set_div_style({ border: "1px solid #ccc" })
     }
     constructor(node_type: string = 'div') {
-        this.childs = []
-        this.childs_map = {}
+        this.children = []
+        this.children_map = {}
         this.event_hander = {}
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
@@ -147,7 +147,7 @@ export class Div {
     }
     clear() {
         this.set_html("")
-        this.childs = []
+        this.children = []
         return this
     }
     get_value(): any {
@@ -251,8 +251,8 @@ export class Div {
         return this
     }
     emit_mount() {
-        for (var i = 0; i < this.childs.length; i++) {
-            this.childs[i].emit_mount()
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i].emit_mount()
         }
         this.on_render()
         return this
@@ -266,8 +266,8 @@ export class Div {
     add_child(c: any) {
         c.mount(this.el)
         c.set_parent(this)
-        c.index = this.childs.length
-        this.childs.push(c)
+        c.index = this.children.length
+        this.children.push(c)
         return c
     }
     set_parent(p: any) {
@@ -277,24 +277,24 @@ export class Div {
     parse_child_option(o: Node) {  //原地修改子类的option
 
     }
-    set_childs(childs: any, cls: any) {
+    set_children(children: any, cls: any) {
         let idx = 0
-        while (idx < childs.length) {
-            this.parse_child_option(childs[idx])
-            if (this.childs[idx]) {
-                this.childs[idx].set_option(childs[idx]).show()
+        while (idx < children.length) {
+            this.parse_child_option(children[idx])
+            if (this.children[idx]) {
+                this.children[idx].set_option(children[idx]).show()
             } else {
-                this.add_child(cls(childs[idx]))
+                this.add_child(cls(children[idx]))
             }
-            this.childs_map[childs[idx].key] = this.childs[idx]
+            this.children_map[children[idx].key] = this.children[idx]
             idx += 1
         }
-        while (idx < this.childs.length) {
-            this.childs[idx].hide()
+        while (idx < this.children.length) {
+            this.children[idx].hide()
             idx += 1
         }
         if (this.option.id) {
-            web_dom.get_loacl_str(this.option.id, (v: any) => this.set_value(v))
+            web_dom.get_local_str(this.option.id, (v: any) => this.set_value(v))
         }
         return this
 
@@ -302,7 +302,7 @@ export class Div {
     get_tree_infos() {
         let p: Div = this
         let info = []
-        while (p) {
+        while (p != null) {
             info.push({ index: p.index, type: this.node_type })
             p = p.parent
         }
@@ -312,7 +312,7 @@ export class Div {
     set_title(s: string) {
         return this
     }
-    set_option(option: Node) {
+    set_option(option: any) {
         this.option.set_option(option)
         this.render_option()
         if (this.option.title) {
@@ -336,9 +336,9 @@ export class Div {
     render_option() {
 
     }
-    add_childs(childs: any[]) {
-        for (var i = 0; i < childs.length; i++) {
-            this.add_child(childs[i])
+    add_children(children: any[]) {
+        for (var i = 0; i < children.length; i++) {
+            this.add_child(children[i])
         }
         return this
     }

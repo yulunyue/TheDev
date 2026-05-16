@@ -27,11 +27,11 @@ class TestApi:
                 "title": "get_api_call_info",
                 "childs": [
                     {
-                        "default_value": None,
-                        "is_pos": True,
                         "title": "key",
-                        "key": "key",
+                        "default_value": None,
                         "type": "str",
+                        "is_pos": True,
+                        "key": "key",
                     }
                 ],
             },

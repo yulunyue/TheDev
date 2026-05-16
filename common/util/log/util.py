@@ -1,18 +1,17 @@
 from ..fp import File
-from ..tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX, dict_to_str
+from ..tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGGER_PREFIX, dict_to_str
 import sys
 
-LOG_PREFIX = ""
 LOG_DIR = "data/log"
-JSON_TMP_FILE = File(f"{LOG_DIR}/tmp.json")
-if THE_DEV_LOGER_PREFIX in SYS_KW:
-    LOG_DIR += f"/{SYS_KW.pop(THE_DEV_LOGER_PREFIX)}"
+
+if THE_DEV_LOGGER_PREFIX in SYS_KW:
+    LOG_DIR += f"/{SYS_KW.pop(THE_DEV_LOGGER_PREFIX)}"
 LOG_MAP = dict()
 LOGGER_MODE = "LOGGER_MODE"
 
 
-def LOGER_PREFIX(name):
-    return f"{THE_DEV_LOGER_PREFIX}={name}"
+def LOGGER_PREFIX(name):
+    return f"{THE_DEV_LOGGER_PREFIX}={name}"
 
 
 def name_to_path(name: str):

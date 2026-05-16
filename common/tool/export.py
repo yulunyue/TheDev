@@ -1,6 +1,6 @@
 from .task.manage import Task, TaskConfig, TASK_MANAGE
 from .os_util import OsUtil
-from .base_class.storege.file_config import FileConfig
+from .base_class.storage.file_config import FileConfig
 from .base_class.baseconfig import ConfigBase
 from .base_class.base_model import (
     StrModel,
@@ -9,7 +9,7 @@ from .base_class.base_model import (
     ListModel,
     BoolModel,
     SearchModel,
-    EncroyModel,
+    EncryptModel,
 )
 from .base_class.base_model.select_model import SelectModel
 from .base_class.base_model.number_model import NumberModel
@@ -22,7 +22,7 @@ from .func.py_util import PyUtil
 from .func.system import System
 from .func.process_lock import ProcessLock
 from .toolbase import ToolBase
-from .file_handers.py_file import PyFile
+from .file_handlers.py_file import PyFile
 from .front.table import FrontTable
 from .front.domfile import DomFile
 from .front.util import FontBase, to_web_view

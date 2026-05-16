@@ -24,7 +24,7 @@
 | `name` | SearchModel | 用户名，可搜索 |
 | `title` | StrModel | 用户标题 |
 | `visite_num` | NumberModel | 访问次数，默认值 0 |
-| `password` | EncroyModel | 密码，加密存储 |
+| `password` | EncryptModel | 密码，加密存储 |
 | `user_type` | SelectModel | 用户类型，可选值: 0, 1, 2 |
 
 ## Usage Examples
@@ -72,6 +72,6 @@ FormBase (ApiBase)
 ## Related Files
 
 - `common/tool/front/form_base.py` - FormBase 基类
-- `common/tool/base_class/storege/file_config.py` - FileConfig 文件存储基类
+- `common/tool/base_class/storage/file_config.py` - FileConfig 文件存储基类
 - `common/tool/base_class/baseconfig.py` - ConfigBase 配置基类
 - `common/tool/base_class/base_model/` - 字段类型定义

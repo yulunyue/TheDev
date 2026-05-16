@@ -25,7 +25,7 @@ export class ListView extends SvgNode {
 
     }
     draw() {
-        this.g.clear().add_childs(
+        this.g.clear().add_children(
             this.option.data.map(
                 (v: Node, i: number) => new ListNode().set_option(v)
             )

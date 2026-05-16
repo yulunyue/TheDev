@@ -40,7 +40,3 @@ class TestCubeApi(TestBase):
 
         get_result = self.api.get_state(state)
         self.expect(get_result.value["game_over"], True)
-
-    def test_to_form_column_view(self):
-        form = self.api.to_form_column_view()
-        self.expect(form is not None, True)

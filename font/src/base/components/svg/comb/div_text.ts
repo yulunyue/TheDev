@@ -17,7 +17,7 @@ export class Text extends GNode {
             padding: Constant.DEFAULT_PADDING,
             textAlign: "center"
         })
-        this.foreign_object = this.add_child(new GNode("foreignObject").add_childs([this.contain]))
+        this.foreign_object = this.add_child(new GNode("foreignObject").add_children([this.contain]))
 
     }
 

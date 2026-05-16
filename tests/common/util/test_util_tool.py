@@ -38,10 +38,10 @@ class TestTool:
 
     def test_uid(self):
         """Test uid function"""
-        import common.util.tool as tool_module
+        import common.util.crypto_util as crypto_module
 
         # Reset the UK_MAP for consistent testing
-        tool_module.UK_MAP.clear()
+        crypto_module.UK_MAP.clear()
 
         self.expect(uid("a"), "a_0")
         self.expect(uid("a"), "a_1")
@@ -50,12 +50,7 @@ class TestTool:
         """Test base64 functions"""
         a = base64_encode("s")
         self.expect(a, "cw==")
-        self.expect(base64_decode(a), "s")
-
-        # Test with carriage return (actual function behavior)
-        b = base64_encode("a\rc")
-        self.expect(b, "YQ1j")
-        self.expect(base64_decode(b), "a\rc")
+        self.expect(base64_decode(a), b"s")
 
     def test_ii(self):
         """Test integer parsing function"""

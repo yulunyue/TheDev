@@ -3,9 +3,10 @@ from typing import List
 
 
 class Diff:
-    def __init__(self, src):
+    def __init__(self, src, key_join_char="/"):
         self.src = src
-        self.key_join_char = "/"
+        self.key_join_char = key_join_char
+        self.diff_result = []
 
     def compare(self, dst):
         self.diff_result = []

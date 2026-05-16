@@ -27,16 +27,16 @@ export class TodoRow extends FlexRow {
         this.update_time = new Div()
         this.user_name = new Div()
         this.edit_btn = new Button().set_html("修改")
-        this.add_childs([
-            new FlexColumn().add_childs([
+        this.add_children([
+            new FlexColumn().add_children([
                 this.title_div,
                 this.content_div,
             ]).set_size(1).set_align_start(),
-            new FlexColumn().add_childs([
+            new FlexColumn().add_children([
                 this.create_time,
                 this.update_time,
             ]),
-            new FlexColumn().add_childs([
+            new FlexColumn().add_children([
                 this.user_name,
                 this.edit_btn
             ])

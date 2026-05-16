@@ -4,8 +4,12 @@ from common.util.export import TestBase
 
 class RcCls(ThreadRecord):
     def init(self):
+        self.ins = self
         self.a = 0
         self.b = 0
+        self._layout_keys = ["a", "b"]
+        self._last_state = {"a": 0, "b": 0}
+        self.records = []
 
     def exec_main(self):
         for _ in range(3):
@@ -27,10 +31,12 @@ class TestThread(TestBase):
         self.expect(
             s.records,
             [
-                {"a": 0, "b": 0},
-                {"a": 1, "b": 0},
-                {"a": 2, "b": 1},
-                {"a": 3, "b": 2},
+                {"key": "a", "value": 1},
+                {"key": "b", "value": 1},
+                {"key": "a", "value": 2},
+                {"key": "b", "value": 2},
+                {"key": "a", "value": 3},
+                {"key": "b", "value": 3},
             ],
         )
 

@@ -1,9 +1,9 @@
 import { Input } from "./input";
 import { Button } from "./button";
-import { FlexColumn } from "../base/row";
+import { FlexRow } from "../base/row";
 import web_dom from "../../../web/web_dom"
 import { Node } from "../../../web/cls"
-import { FlexRow } from "../base/column";
+import { FlexColumn } from "../base/column";
 export class FileInput extends FlexRow {
     inp: Input
     btn: Button
@@ -11,7 +11,7 @@ export class FileInput extends FlexRow {
     init_node() {
         this.inp = new Input().set_attr("type", "file")
         this.btn = new Button().set_html("upload")
-        this.add_childs([this.inp, this.btn])
+        this.add_children([this.inp, this.btn])
     }
     init_event(): void {
         this.inp.el.onchange = ((v: any) => {

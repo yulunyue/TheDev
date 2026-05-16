@@ -19,7 +19,7 @@ def fun_call(self, a, b, d=1, f=2, **kw):
 
 class TestModule(TestBase):
     def test_module(self):
-        Module().load_module_object("common.util.module_test::fun_call")
+        Module().load_module_object("common.util.tool::uid")
         f = Module().load_module_object("app.tool.task::test")
         assert f() == dict(value=1)
 

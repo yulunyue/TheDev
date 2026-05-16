@@ -1,5 +1,5 @@
 
-import { AnyMxRecord } from "dns";
+
 import {
     Div, Constant, Node, web_dom, oj_to_node, FormColumn, to_node, Search, Container,
     Button, Progress,
@@ -12,7 +12,7 @@ import {
     Data,
     web_socket
 } from "../../base/components/export";
-let COLORS = [Constant.COLOR_BALCK2, Constant.COLOR_WHITE2]
+let COLORS = [Constant.COLOR_BLACK2, Constant.COLOR_WHITE2]
 export class Chess extends FlexRow {
     g: Grid
     bottom_form: FormColumn
@@ -47,16 +47,16 @@ export class Chess extends FlexRow {
         this.right_div = new FlexColumn()
         this.title = new Title()
         this.name_search = new Search()
-        this.head_column = new FlexRow().add_childs([
+        this.head_column = new FlexRow().add_children([
             this.name_search,
             this.title,
         ])
-        this.mid_main = new FlexColumn().add_childs([
+        this.mid_main = new FlexColumn().add_children([
             this.head_column,
             this.g,
             this.bottom_form,
         ])
-        this.add_childs([
+        this.add_children([
             this.left_div,
             this.mid_main,
             this.right_div
@@ -95,10 +95,10 @@ export class Chess extends FlexRow {
             let winner_idx = parseInt(done) - 1
             this.title.set_html(`游戏结束 - ${players[winner_idx]}(${colors[winner_idx]})获胜`)
         }
-        let childs = []
+        let children = []
         for (var i = 0; i < dst.records.length; i++) {
             let v = dst.records[i]
-            childs.push({
+            children.push({
                 y: Math.floor(v / dst.width),
                 x: v % dst.width,
                 type: Constant.SVG_TYPE_CIRCLE,
@@ -108,7 +108,7 @@ export class Chess extends FlexRow {
         this.g.set_option({
             x: dst.width,
             y: dst.height,
-            childs: childs
+            children: children
         })
     }
     draw() {

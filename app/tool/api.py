@@ -19,10 +19,12 @@ class ApiGlobal(ApiBase):
     idx = 0
 
     def query_all_apis(self, **kw):
-        return FontSearch().add_childs(*MainHandler.POST_API.fun_map.keys())
+        return FontSearch().add_childs(
+            *[Node(value=k) for k in MainHandler.POST_API.fun_map.keys()]
+        )
 
     def get_api_call_info(self, key: str, **kw):
-        return get_function_info(MainHandler.POST_API.fun_map[key])
+        return get_function_info(MainHandler.POST_API.fun_map[key]).to_json()
 
     def test(
         self,

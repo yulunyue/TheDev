@@ -5,10 +5,10 @@ from .base_class.base_model import (
     ListModel,
     BoolModel,
 )
-from .base_class.storege.json_config import JsonConfig
+from .base_class.storage.json_config import JsonConfig
 
 
-class GloablConfg(JsonConfig):
+class GlobalConfig(JsonConfig):
     chrome_driver_path = StrModel("/thedev/data/chrome_driver")
     chrome_driver_uri = StrModel(
         default_value="https://storage.googleapis.com/chrome-for-testing-public/143.0.7499.42/win64/chromedriver-win64.zip"
@@ -28,5 +28,5 @@ class GloablConfg(JsonConfig):
     npm_path = StrModel(default_value="npm")
 
 
-GloablConfg.set_resource("config/setting/gloabl_setting.json")
-GC = GloablConfg
+GlobalConfig.set_resource("config/setting/gloabl_setting.json")
+GC = GlobalConfig

@@ -24,5 +24,5 @@ class MctsState(AbState):
     def show_titles(self):
         ret = self.to_json()
         if self.has_visited:
-            ret.update(n=self.n_visits, u=self.u, q=self.q)
+            ret.update(n=self.n_visits, q=self.q, u=self.u)
         return dict_to_str(**ret)

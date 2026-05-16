@@ -9,9 +9,9 @@
 该模块统一导出了以下子系统的核心功能：
 
 **日志系统**:
-- `get_log, Logger, TheDevLoger` - 日志记录器
+- `get_log, Logger, TheDevLogger` - 日志记录器
 - `log, get_dev_log, log1, log2` - 日志函数
-- `logger, LOGER_PREFIX` - 全局日志对象
+- `logger, LOGGER_PREFIX` - 全局日志对象
 
 **模块系统**:
 - `Module, get_function_info, get_file_path_by_cls` - 模块管理

@@ -1,7 +1,7 @@
 from common.tool.export import (
     FileConfig,
     StrModel,
-    EncroyModel,
+    EncryptModel,
     SearchModel,
     NumberModel,
     SelectModel,
@@ -14,7 +14,7 @@ class UserModel(FileConfig):
     name = SearchModel().set_url("/app/user/web_search")
     title = StrModel()
     visite_num = NumberModel(default_value=0)
-    password = EncroyModel()
+    password = EncryptModel()
     user_type = SelectModel().set_options(0, 1, 2)
 
 

@@ -26,17 +26,17 @@ export class ListUi extends Div {
     render_option(): void {
         this.option.data.size = 0
         this.data = {}
-        if (this.option.childs.length) {
-            let childs = []
-            for (var i = 0; i < this.option.childs.length; i += 1) {
-                let v = this.option.childs[i]
+        if (this.option.children.length) {
+            let children = []
+            for (var i = 0; i < this.option.children.length; i += 1) {
+                let v = this.option.children[i]
                 if (v.title.indexOf(this.option.filter_key) != -1) {
-                    childs.push(v)
+                    children.push(v)
                 }
                 this.data[v.title] = v.value
             }
-            this.option.data.size = childs.length
-            this.set_childs(childs, this.get_row.bind(this))
+            this.option.data.size = children.length
+            this.set_children(children, this.get_row.bind(this))
 
         }
     }

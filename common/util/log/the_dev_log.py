@@ -3,7 +3,7 @@ from .util import name_to_path, LOG_MAP, dict_to_str
 from typing import List, Dict
 
 
-class TheDevLoger:
+class TheDevLogger:
     def __init__(self, name, *args, **kw):
         self.name = name
         self._fp = None
@@ -64,7 +64,6 @@ class TheDevLoger:
         self.info(dict_to_str(**kw, indent=indent))
 
 
-def get_dev_log(name) -> TheDevLoger:
-    if name not in LOG_MAP:
-        LOG_MAP[name] = TheDevLoger(name)
+def get_dev_log(name) -> TheDevLogger:
+    LOG_MAP[name] = TheDevLogger(name)
     return LOG_MAP[name]

@@ -39,7 +39,7 @@ export class Grid extends SvgNode {
     init_node(): void {
         this.g = new GNode()
         this.bg = new Rect()
-        this.add_childs([
+        this.add_children([
             this.bg,
             this.g
         ])
@@ -56,7 +56,7 @@ export class Grid extends SvgNode {
         o.data.height = o.data.height || this.cell_height
         this.grids[o.y][o.x].set_option(o)
     }
-    draw_childs() {
+    draw_children() {
         this.grids = []
         for (var i = 0; i < this.option.y; i++) {
             let tmp = []
@@ -68,8 +68,8 @@ export class Grid extends SvgNode {
             }
             this.grids.push(tmp)
         }
-        for (var i = 0; i < this.option.childs.length; i += 1) {
-            let op = this.option.childs[i]
+        for (var i = 0; i < this.option.children.length; i += 1) {
+            let op = this.option.children[i]
             this.draw_child(op)
         }
     }
@@ -106,7 +106,7 @@ export class Grid extends SvgNode {
         this.g.clear()
         this.draw_background()
         this.draw_lines()
-        this.draw_childs()
+        this.draw_children()
     }
 
     render_option(): void {

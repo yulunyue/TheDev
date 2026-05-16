@@ -23,9 +23,6 @@ class TestExport(unittest.TestCase):
                 ThreadRecord,
                 ApiCall,
                 inf,
-                null,
-                true,
-                false,
             )
 
             self.assertTrue(True)
@@ -44,12 +41,9 @@ class TestExport(unittest.TestCase):
 
     def test_constants_import(self):
         """测试常量的导入"""
-        from common.util.export import inf, null, true, false
+        from common.util.export import inf
 
         self.assertEqual(inf, float("inf"))
-        self.assertEqual(null, None)
-        self.assertEqual(true, True)
-        self.assertEqual(false, False)
 
     @patch("common.util.export.get_log")
     def test_get_log_function(self, mock_get_log):
@@ -84,7 +78,7 @@ class TestExport(unittest.TestCase):
         self.assertEqual(result1, "test_0")
         self.assertEqual(result2, "test_1")
 
-    @patch("common.util.export.ThreadPoolExecutor")
+    @patch("common.util.thread.thread_poll.ThreadPoolExecutor")
     def test_thread_manage_import(self, mock_executor):
         """测试 ThreadManage 的导入"""
         from common.util.export import ThreadManage
@@ -131,9 +125,6 @@ class TestExport(unittest.TestCase):
             "ThreadRecord",
             "ApiCall",
             "inf",
-            "null",
-            "true",
-            "false",
         ]
 
         for attr in expected_attrs:
@@ -160,12 +151,9 @@ class TestExportFunctionality(unittest.TestCase):
 
     def test_constants_values(self):
         """测试常量的值"""
-        from common.util.export import inf, null, true, false
+        from common.util.export import inf
 
-        self.assertTrue(inf > 1000000)  # 无穷大应该很大
-        self.assertIsNone(null)
-        self.assertTrue(true)
-        self.assertFalse(false)
+        self.assertTrue(inf > 1000000)
 
     @patch("common.util.export.logger")
     def test_logger_functionality(self, mock_logger):

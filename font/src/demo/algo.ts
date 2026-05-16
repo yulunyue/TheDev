@@ -37,13 +37,13 @@ class Algo extends FlexColumn {
         this.head_msg = new Div()
         this.head_edit_btn = new Button().set_html("EDIT")
         this.head_run_btn = new Button().set_html("RUN")
-        this.head_container = new FlexRow().add_childs([
+        this.head_container = new FlexRow().add_children([
             this.head_msg,
             this.code_select,
             this.head_edit_btn,
             this.head_run_btn
         ])
-        this.add_childs([
+        this.add_children([
             this.head_container,
             this.container,
             this.pro,

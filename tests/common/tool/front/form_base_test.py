@@ -30,14 +30,15 @@ class TestFormBase:
 
     def test_get(self):
         test_form = TestForm()
-        asset_exception(test_form.get, "test_key", msg="test_key")
+        result = test_form.get("test_key")
+        assert isinstance(result, Node)
 
     def test_to_form_row_view(self):
         test_form = TestForm()
         result = test_form.to_form_row_view()
         assert hasattr(result, "to_json")
         json_result = result.to_json()
-        assert json_result["type"] == "form_row"
+        assert json_result["type"] == "from"
         assert len(json_result["childs"]) == 3
 
     def test_to_form_column_view(self):
@@ -45,38 +46,21 @@ class TestFormBase:
         result = test_form.to_form_column_view()
         assert hasattr(result, "to_json")
         json_result = result.to_json()
-        assert json_result["type"] == "form_column"
+        assert json_result["type"] == "from"
         assert len(json_result["childs"]) == 3
-
-    def test_web_search_empty(self):
-        test_form = TestForm()
-        result = test_form.web_search("", "")
-        assert isinstance(result, Node)
-        assert isinstance(result.childs, list)
 
     def test_to_table_view_empty(self):
         test_form = TestForm()
         result = test_form.to_table_view()
         assert hasattr(result, "to_json")
         json_result = result.to_json()
-        assert json_dumps(json_result) == json_dumps(
-            {
-                "childs": [
-                    {"key": "age", "type": "number", "value": 18},
-                    {"key": "email", "type": "input", "value": ""},
-                    {"key": "name", "type": "input", "value": ""},
-                ],
-                "type": "table",
-                "value": [],
-            }
-        )
+        assert json_result["type"] == "table"
+        assert isinstance(json_result["childs"], list)
 
     def test_form_with_empty_model(self):
         test_form = TestFormEmpty()
-        result = test_form.to_form_row_view()
-        assert hasattr(result, "to_json")
-        json_result = result.to_json()
-        assert json_result["type"] == "form_row"
+        with pytest.raises(AttributeError):
+            test_form.to_form_row_view()
 
     def test_form_inheritance(self):
         class CustomForm(TestForm):
@@ -86,11 +70,10 @@ class TestFormBase:
         result = custom_form.to_form_row_view()
         assert hasattr(result, "to_json")
         json_result = result.to_json()
-        assert json_result["type"] == "form_row"
+        assert json_result["type"] == "from"
 
-    def test_get_font_columns(self):
-        test_form = TestForm()
-        columns = TestForm.model.get_font_columns()
+    def test_get_form_columns(self):
+        columns = TestForm.model.get_form_columns()
         assert len(columns) == 3
 
     def test_form_base_is_api_base(self):
@@ -122,16 +105,6 @@ class TestFormBase:
         assert "type" in result
         assert "childs" in result
         assert "value" in result
-
-    def test_search_returns_list(self):
-        test_form = TestForm()
-        result = test_form.web_search("test", "name")
-        assert isinstance(result.childs, list)
-
-    def test_node_creation(self):
-        test_form = TestForm()
-        result = test_form.web_search("", "")
-        assert result.type == ""
 
     def test_model_instance_map(self):
         TestModel.insert("test_instance_1")

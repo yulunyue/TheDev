@@ -25,7 +25,7 @@ class State:
     name = "state"
     parent: "State" = None
     done = False
-    STATE_STORE: Dict[str, "State"] = None
+    STATE_STORE: Dict[str, "State"] = dict()
     actions: List[Action] = None
     data = None
     best_action: Action = None

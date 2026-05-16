@@ -1,4 +1,4 @@
-from ..base_class.storege.file_config import (
+from ..base_class.storage.file_config import (
     FileConfig,
 )
 from ..base_class.base_model import (

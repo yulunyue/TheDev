@@ -13,17 +13,17 @@
 - `LOGGER_MODE = "LOGGER_MODE"` - 日志模式环境变量名
 
 ### 动态目录配置
-如果命令行参数中包含 `THE_DEV_LOGER_PREFIX`，日志目录会动态扩展：
+如果命令行参数中包含 `THE_DEV_LOGGER_PREFIX`，日志目录会动态扩展：
 ```python
-if THE_DEV_LOGER_PREFIX in SYS_KW:
-    LOG_DIR += f"/{SYS_KW.pop(THE_DEV_LOGER_PREFIX)}"
+if THE_DEV_LOGGER_PREFIX in SYS_KW:
+    LOG_DIR += f"/{SYS_KW.pop(THE_DEV_LOGGER_PREFIX)}"
 ```
 
 ### 工具函数
 
 **路径管理**:
-- `LOGER_PREFIX(name)`: 生成日志前缀参数
-  - 返回: `f"{THE_DEV_LOGER_PREFIX}={name}"`
+- `LOGGER_PREFIX(name)`: 生成日志前缀参数
+  - 返回: `f"{THE_DEV_LOGGER_PREFIX}={name}"`
 - `name_to_path(name: str)`: 将日志名称转换为文件路径
   - 替换 ":" 为 "_" 避免 Windows 文件名问题
   - 如果不包含 "/"，添加到默认日志目录
@@ -43,11 +43,11 @@ if THE_DEV_LOGER_PREFIX in SYS_KW:
 ## 使用示例
 
 ```python
-from common.util.log.util import std_mock, name_to_path, LOGER_PREFIX
+from common.util.log.util import std_mock, name_to_path, LOGGER_PREFIX
 
 # 生成日志前缀参数
-prefix_param = LOGER_PREFIX("my_app")
-print(prefix_param)  # "THE_DEV_LOGER_PREFIX=my_app"
+prefix_param = LOGGER_PREFIX("my_app")
+print(prefix_param)  # "THE_DEV_LOGGER_PREFIX=my_app"
 
 # 转换日志名称到文件路径
 log_path = name_to_path("test")
@@ -59,7 +59,7 @@ with std_mock(with_trace=True):
     print("包含调用栈信息")
 
 # 使用命令行参数动态设置日志目录
-# python script.py THE_DEV_LOGER_PREFIX=my_app
+# python script.py THE_DEV_LOGGER_PREFIX=my_app
 # 日志目录会变成: data/log/my_app
 ```
 
@@ -89,7 +89,7 @@ with std_mock(with_trace=True):
 
 ## 依赖关系
 - `..fp.File` - 文件操作
-- `..tool.SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGER_PREFIX, dict_to_str` - 工具函数
+- `..tool.SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGGER_PREFIX, dict_to_str` - 工具函数
 - `sys` - 系统接口
 - `traceback` - 调用栈跟踪
 

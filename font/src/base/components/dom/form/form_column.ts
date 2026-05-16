@@ -1,12 +1,12 @@
 import { Div } from "../div";
-import { FlexRow } from "../base/column";
+import { FlexColumn } from "../base/column";
 import web_dom from "../../../web/web_dom"
 import { not_null, Node } from "../../../web/cls"
 import Constant from "../../../web/constant"
 import { FormContainer } from "./container";
 import { Button } from "./button";
 import F from "../../../tool/fun";
-import { FlexColumn } from "../base/row";
+import { FlexRow } from "../base/row";
 export class FormColumn extends FlexRow {
     header: Div
     body: FlexRow
@@ -35,7 +35,7 @@ export class FormColumn extends FlexRow {
         this.body = new FlexRow()
         this.footer = new FlexRow()
         this.foot_btns = {}
-        this.add_childs([
+        this.add_children([
             this.header,
             this.body,
             this.footer
@@ -57,20 +57,20 @@ export class FormColumn extends FlexRow {
     render_chilld(d: Div, o: Node) {
         return d.set_flex_style_column()
     }
-    render_childs(childs: Node[]) {
-        this.body.set_childs(childs, this.get_row.bind(this))
+    render_children(children: Node[]) {
+        this.body.set_children(children, this.get_row.bind(this))
         this.child_map = {}
-        for (var i = 0; i < childs.length; i++) {
-            let o = childs[i]
-            this.body.childs[i].set_option(o).on_change(this.do_change.bind(this))
-            this.child_map[o.key] = this.render_chilld(this.body.childs[i], childs[i])
+        for (var i = 0; i < children.length; i++) {
+            let o = children[i]
+            this.body.children[i].set_option(o).on_change(this.do_change.bind(this))
+            this.child_map[o.key] = this.render_chilld(this.body.children[i], children[i])
         }
         if (this.option.id) {
             web_dom.get_local(this.option.id, this.set_value.bind(this))
         }
     }
     render_main(v: Node): void {
-        this.render_childs(v.childs)
+        this.render_children(v.children)
         if (v.data.btns) {
             this.render_footer(v.data.btns)
         }

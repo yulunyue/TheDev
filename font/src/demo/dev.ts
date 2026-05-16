@@ -21,11 +21,11 @@ import { D3DagreUtil } from "../third/d3_dagre_util"
 let DEV_FUNC = {
     form() {
         let op = {
-            childs: [
+            children: [
                 { type: Constant.DOM_TYPE_INPUT, title: "a", key: "a" },
                 { type: Constant.DOM_TYPE_FILE, title: "b", key: "b" },
                 {
-                    type: Constant.DOM_TYPE_SELECT, title: "c", key: "c", childs: [{
+                    type: Constant.DOM_TYPE_SELECT, title: "c", key: "c", children: [{
                         title: "a",
                         value: "a"
                     }, {
@@ -55,9 +55,9 @@ let DEV_FUNC = {
             return fm
         }
 
-        return new FlexColumn().add_childs([
+        return new FlexColumn().add_children([
             fm_init(new FormColumn(), op),
-            new FlexRow().add_childs([
+            new FlexRow().add_children([
                 fm_init(new FormRow(), op),
                 pre.set_size(1),
                 fm_init(new FormRow().set_uri("/app/user/to_form_row_view"), null)
@@ -67,10 +67,10 @@ let DEV_FUNC = {
     },
     layout() {
         return new FlexRow().set_option({
-            childs: [
+            children: [
                 {
                     type: Constant.DOM_TYPE_ROW,
-                    childs: [{
+                    children: [{
                         type: Constant.DOM_TYPE_STRING,
                         value: "12",
                     }, {
@@ -89,7 +89,7 @@ let DEV_FUNC = {
     },
     table() {
         let table = new Table().set_option({
-            childs: [{
+            children: [{
                 key: "a",
                 value: "a",
                 type: Constant.DOM_TYPE_STRING
@@ -126,7 +126,7 @@ let DEV_FUNC = {
         })
         return table
     },
-    default_color: Constant.COLOR_BALCK2,
+    default_color: Constant.COLOR_BLACK2,
     grid() {
         let p1 = new Pre().set_html("p1")
         let p2 = new Pre().set_html("p2")
@@ -136,10 +136,10 @@ let DEV_FUNC = {
             margin: 40
         }).set_option({
             x: 6, y: 6,
-            childs: [{
+            children: [{
                 x: 0, y: 0, type: Constant.SVG_TYPE_CIRCLE, color: Constant.COLOR_WHITE2,
             }, {
-                x: 0, y: 1, type: Constant.SVG_TYPE_CIRCLE, color: Constant.COLOR_BALCK2,
+                x: 0, y: 1, type: Constant.SVG_TYPE_CIRCLE, color: Constant.COLOR_BLACK2,
             }]
         }).on_move((y: number, x: number, i: number, j: number) => {
             p1.set_value({ x, y, i, j })
@@ -150,11 +150,11 @@ let DEV_FUNC = {
                 y: i, x: j, type: Constant.SVG_TYPE_CIRCLE,
                 color: DEV_FUNC.default_color
             })
-            DEV_FUNC.default_color = DEV_FUNC.default_color == Constant.COLOR_BALCK2 ? Constant.COLOR_WHITE2 : Constant.COLOR_BALCK2
+            DEV_FUNC.default_color = DEV_FUNC.default_color == Constant.COLOR_BLACK2 ? Constant.COLOR_WHITE2 : Constant.COLOR_BLACK2
         })
-        return new FlexRow().add_childs([
+        return new FlexRow().add_children([
             g,
-            new FlexColumn().add_childs([
+            new FlexColumn().add_children([
                 p1,
                 p2
             ])
@@ -168,7 +168,7 @@ let DEV_FUNC = {
         Data.get_user_name((s: string) => {
             d1.set_html(s)
         })
-        return new Div().add_childs([
+        return new Div().add_children([
             d, d1
         ])
     },
@@ -180,7 +180,7 @@ let DEV_FUNC = {
         web_dom.next_frame(() => {
             dagre.set_option({})
         })
-        return new Div().add_childs([
+        return new Div().add_children([
             dagre
         ])
     },
@@ -188,7 +188,7 @@ let DEV_FUNC = {
         let s = new Search().set_option({
 
         })
-        return new FlexRow().add_childs([
+        return new FlexRow().add_children([
 
         ])
     }
@@ -200,7 +200,7 @@ export class Dev extends Div {
     }
     render(): void {
         let method = web_dom.get_param("method")
-        this.add_childs([DEV_FUNC[method]().full()])
+        this.add_children([DEV_FUNC[method]().full()])
     }
 
 }

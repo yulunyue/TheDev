@@ -195,9 +195,7 @@ class BoardC5:
 
     def states_all_format(self):
         return {
-            self.foramt_line_state(i): v
-            for i, v in enumerate(self.line_state_ct)
-            if v > 0
+            self.foramt_line_state(k): v for k, v in self.line_state_ct.items() if v > 0
         }
 
     def show(self, state=None):

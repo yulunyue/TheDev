@@ -66,7 +66,7 @@
   - 验证是否抛出预期的异常
 
 ### 全局变量
-- `THE_DEV_LOGER_PREFIX = "THE_DEV_LOGER_PREFIX"`
+- `THE_DEV_LOGGER_PREFIX = "THE_DEV_LOGGER_PREFIX"`
 - `SYS_ARGS, SYS_KW = cmd_parse(sys.argv[1:])`: 命令行参数解析
 
 ## 使用示例

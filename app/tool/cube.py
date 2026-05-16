@@ -118,5 +118,6 @@ class CubeApi(ApiBase):
                 "depth": s.depth,
                 "game_over": s.game_over(),
                 "colors": C.COLORS,
+                "state": s.grid,
             }
         )

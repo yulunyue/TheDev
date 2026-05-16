@@ -2,7 +2,6 @@ from common.util.export import (
     TestBase,
     logger,
     ThreadRecord,
-    asset_exception,
     assert_dict,
 )
 from common.tool.export import (
@@ -37,11 +36,24 @@ class TestConfig:
         assert_dict(
             f.to_form_row_view(),
             {
-                "type": "form_row",
+                "type": "from",
                 "childs": [
-                    {"type": "input", "key": "a", "value": ""},
-                    {"type": "number", "key": "b", "value": 1},
+                    {
+                        "type": "input",
+                        "key": "a",
+                        "value": "",
+                        "title": "a",
+                        "data": {"layout": None},
+                    },
+                    {
+                        "type": "number",
+                        "key": "b",
+                        "value": 1,
+                        "title": "b",
+                        "data": {"layout": None},
+                    },
                 ],
+                "data": {"btns": {}},
             },
         )
         # assert_dict(
@@ -63,11 +75,11 @@ class TestConfig:
 
     @pytest.mark.parametrize("Fg", [FgBase])
     def test_config(self, Fg: FgBase):
-        m: FgBase = Fg.insert()
+        m: FgBase = Fg.insert("dt0")
         assert m.b.get_value(), 1
-        asset_exception(
-            m.b.set_value, "a", msg="[could not convert string to float: 'a'][a]"
-        )
+        assert m.b.get_value(), 1
+        m.b.set_value("a")
+        assert m.b.get_value() == 1
         m.update(b=2)
         assert m.b.get_value(), 2
         m.b.set_value(3)

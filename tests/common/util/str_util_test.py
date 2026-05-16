@@ -150,31 +150,28 @@ class TestStrUtilAdvanced(unittest.TestCase):
 
     def test_format_g_tree_simple(self):
         """测试简单图的树形格式化"""
-        # 简单的图结构
-        graph = [[1], [2], []]
-        result = self.str_util.format_g_tree(graph, lambda x: str(x))
+        graph = [(0, 1), (1, 2)]
+        result = self.str_util.format_g_tree(graph, lambda x, d: str(x))
         self.assertIsInstance(result, str, "format_g_tree 应该返回字符串")
 
     def test_format_g_tree_complex(self):
         """测试复杂图的树形格式化"""
-        # 复杂的图结构
-        graph = [[1, 2], [3], [3], []]
-        result = self.str_util.format_g_tree(graph, lambda x: str(x))
+        graph = [(0, 1), (0, 2), (1, 3)]
+        result = self.str_util.format_g_tree(graph, lambda x, d: str(x))
         self.assertIsInstance(result, str, "format_g_tree 应该返回字符串")
 
     def test_format_g_tree_empty(self):
         """测试空图的树形格式化"""
-        graph = [[]]
-        result = self.str_util.format_g_tree(graph, lambda x: str(x))
+        graph = [(0, 1)]
+        result = self.str_util.format_g_tree(graph, lambda x, d: str(x))
         self.assertIsInstance(result, str, "format_g_tree 应该返回字符串")
 
     def test_format_grid_2x2(self):
         """测试 2x2 网格格式化"""
 
-        def grid_func(i, j):
-            return i * j
+        grid = {(0, 0): 0, (0, 1): 0, (1, 0): 0, (1, 1): 1}
 
-        result = self.str_util.format_grid(2, 2, grid_func)
+        result = self.str_util.format_grid(2, 2, grid)
         self.assertIsInstance(result, str, "format_grid 应该返回字符串")
         self.assertIn("0 0", result, "结果应该包含 '0 0'")
         self.assertIn("0 1", result, "结果应该包含 '0 1'")
@@ -182,10 +179,19 @@ class TestStrUtilAdvanced(unittest.TestCase):
     def test_format_grid_3x3(self):
         """测试 3x3 网格格式化"""
 
-        def grid_func(i, j):
-            return i + j
+        grid = {
+            (0, 0): 0,
+            (0, 1): 1,
+            (0, 2): 2,
+            (1, 0): 1,
+            (1, 1): 2,
+            (1, 2): 3,
+            (2, 0): 2,
+            (2, 1): 3,
+            (2, 2): 4,
+        }
 
-        result = self.str_util.format_grid(3, 3, grid_func)
+        result = self.str_util.format_grid(3, 3, grid)
         self.assertIsInstance(result, str, "format_grid 应该返回字符串")
         self.assertIn("0", result, "结果应该包含 0")
         self.assertIn("1", result, "结果应该包含 1")
@@ -196,20 +202,18 @@ class TestStrUtilAdvanced(unittest.TestCase):
     def test_format_grid_1x1(self):
         """测试 1x1 网格格式化"""
 
-        def grid_func(i, j):
-            return 42
+        grid = {(0, 0): 42}
 
-        result = self.str_util.format_grid(1, 1, grid_func)
+        result = self.str_util.format_grid(1, 1, grid)
         self.assertIsInstance(result, str, "format_grid 应该返回字符串")
         self.assertIn("42", result, "结果应该包含 42")
 
     def test_format_grid_zero_size(self):
         """测试零大小网格格式化"""
 
-        def grid_func(i, j):
-            return i * j
+        grid = {}
 
-        result = self.str_util.format_grid(0, 0, grid_func)
+        result = self.str_util.format_grid(0, 0, grid)
         self.assertIsInstance(result, str, "format_grid 应该返回字符串")
 
 

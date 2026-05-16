@@ -1,11 +1,11 @@
 # TheDevLogger 模块文档
 
 ## 文件概述
-`the_dev_log.py` 提供了一个专门的项目日志记录器 `TheDevLoger`，支持文件写入、数据结构日志记录和可视化输出功能，专为 TheDev 项目设计。
+`the_dev_log.py` 提供了一个专门的项目日志记录器 `TheDevLogger`，支持文件写入、数据结构日志记录和可视化输出功能，专为 TheDev 项目设计。
 
 ## 主要功能
 
-### TheDevLoger 类
+### TheDevLogger 类
 **用途**: 项目专用日志记录器，支持多种数据类型的日志记录
 
 **属性**:
