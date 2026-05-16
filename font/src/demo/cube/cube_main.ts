@@ -1,5 +1,5 @@
 import {
-    web_dom, FormColumn, Row, Column,
+    web_dom, FormColumn, FlexColumn, FlexRow,
     Button, Pre, Title, FormRow
 } from "../../base/components/export";
 import { CubeGrid } from "./cube_grid";
@@ -7,7 +7,7 @@ import { Cube3D } from "./cube_3d";
 
 const DELAY_TIME = 300;
 
-export class CubeMain extends Row {
+export class CubeMain extends FlexColumn {
     cube_grid: CubeGrid
     cube_3d: Cube3D
     control_form: FormRow
@@ -35,23 +35,23 @@ export class CubeMain extends Row {
         this.cube_3d = new Cube3D()
         this.control_form = new FormRow()
         this.random_step_from = new FormColumn()
-        this.button_row = new Column()
+        this.button_row = new FlexRow()
         this.new_btn = new Button().set_html("重置")
         this.solve_btn = new Button().set_html("求解")
         this.toggle_btn = new Button().set_html("2D")
         this.button_row.add_childs([this.new_btn, this.solve_btn, this.toggle_btn])
         this.action_pre = new Pre()
 
-        this.right_panel = new Row()
+        this.right_panel = new FlexColumn()
         this.right_panel.add_childs([
             this.button_row,
             this.control_form,
             this.random_step_from,
             this.action_pre
         ])
-        this.left_panel = new Row()
+        this.left_panel = new FlexColumn()
         this.left_panel.add_childs([this.cube_grid, this.cube_3d])
-        this.main_body = new Column()
+        this.main_body = new FlexRow()
         this.main_body.add_childs([this.left_panel, this.right_panel])
         this.add_childs([this.title, this.main_body])
     }

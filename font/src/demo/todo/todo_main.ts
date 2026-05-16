@@ -1,12 +1,12 @@
 import {
-    Column, Row, Div, Constant, Node, web_dom,
+    FlexRow, FlexColumn, Div, Constant, Node, web_dom,
     Button, FormRow, FormColumn, Search, web_socket, Ct, dialog, Select,
     Span, Input,
     Data, Util,
 } from "../../base/components/export";
 import { TodoContainer } from "./todo_container";
 
-export class TodoMain extends Row {
+export class TodoMain extends FlexColumn {
     top_form: FormColumn
     todo_list: TodoContainer
     search_input: Input
@@ -15,7 +15,7 @@ export class TodoMain extends Row {
     category_select: Select
     done_select: Select
     score_span: Span
-    header: Column
+    header: FlexRow
     init_style(): void {
         this.full()
         this.search_input.set_style({
@@ -40,7 +40,7 @@ export class TodoMain extends Row {
         this.top_form = new FormRow()
         this.score_span = new Span()
         this.todo_list = new TodoContainer()
-        this.header = new Column().add_childs([
+        this.header = new FlexRow().add_childs([
             this.score_span,
             this.category_select,
             this.done_select,

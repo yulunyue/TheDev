@@ -1,11 +1,11 @@
 import {
-    web_dom, Row, Column,
+    web_dom, FlexColumn, FlexRow,
     Button, Pre, Title, Input, FormRow
 } from "../../base/components/export";
 import { CubeGrid } from "./cube_grid";
 import { Cube3D } from "./cube_3d";
 
-export class CubePhone extends Row {
+export class CubePhone extends FlexColumn {
     cube_grid: CubeGrid
     cube_3d: Cube3D
     title: Title
@@ -46,11 +46,11 @@ export class CubePhone extends Row {
 
         this.action_pre = new Pre()
 
-        const steps_row = new Row()
+        const steps_row = new FlexColumn()
         steps_row.set_style({ alignItems: 'center', gap: '6px' })
         steps_row.add_childs([new Title().set_html("步数:"), this.steps_input])
 
-        const btn_row = new Column()
+        const btn_row = new FlexRow()
         btn_row.set_style({ gap: '8px', justifyContent: 'center' })
         btn_row.add_childs([this.btn_scramble, this.btn_reset, this.btn_solve, this.btn_toggle])
 

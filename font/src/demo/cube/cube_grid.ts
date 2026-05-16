@@ -1,5 +1,5 @@
 import {
-    Div, Row, Column
+    Div, FlexColumn, FlexRow
 } from "../../base/components/export";
 
 const CUBE_COLORS = ['#3498db', '#ff9800', '#ecf0f1', '#d32f2f', '#1a1a1a', '#2ecc71'];
@@ -61,24 +61,16 @@ export class CubeGrid extends Div {
             return block
         }
 
-        const reorderIdx = (faceIndex: number, j: number, k: number): number => {
-            if (faceIndex === 3 || faceIndex === 4) {
-                // 水平镜像：左右互换，用于背面(-Z)和左面(-X)
-                return j * this.n + (this.n - 1 - k)
-            }
-            if (faceIndex === 5) {
-                // 90° 顺时针旋转，用于底面(-Y)
-                return (this.n - 1 - k) * this.n + j
-            }
+        const getIdx = (j: number, k: number): number => {
             return j * this.n + k
         }
 
         const createFace = (faceIndex: number) => {
-            const col = new Row()
+            const col = new FlexColumn()
             for (let j = 0; j < this.n; j++) {
-                const row = new Column()
+                const row = new FlexRow()
                 for (let k = 0; k < this.n; k++) {
-                    const colorIndex = faces[faceIndex][reorderIdx(faceIndex, j, k)]
+                    const colorIndex = faces[faceIndex][getIdx(j, k)]
                     row.add_child(createBlock(colorIndex))
                 }
                 col.add_child(row)
@@ -87,7 +79,7 @@ export class CubeGrid extends Div {
         }
 
         const faceContainer = (faceIndex: number) => {
-            const col = new Row()
+            const col = new FlexColumn()
             col.add_child(createFace(faceIndex))
             return col
         }
@@ -95,7 +87,7 @@ export class CubeGrid extends Div {
         const slotWidth = this.n * this.block_size
 
         const faceRow = (faces_arr: (number | null)[]) => {
-            const row = new Column()
+            const row = new FlexRow()
             row.set_style({ justifyContent: 'center' })
             for (const fi of faces_arr) {
                 if (fi === null) {

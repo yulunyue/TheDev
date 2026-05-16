@@ -45,17 +45,17 @@ class ApiCall:
         self.fun_map[key] = fun
         logger.info(f"register {key} {fun.__name__}")
 
-    def load_module(self, moudule_name_key, cls: ApiBase):
+    def load_module(self, module_name_key, cls: ApiBase):
         m = cls()
         if getattr(cls, "API_ROUTE", None):
-            moudule_name_key = cls.API_ROUTE
+            module_name_key = cls.API_ROUTE
         if hasattr(cls, "front_apis"):
             apis = cls.front_apis
         else:
             apis = [v for v in dir(m) if not v.startswith("_")]
         for fun_name in apis:
             f = getattr(m, fun_name)
-            fun_key = f"{moudule_name_key}/{fun_name}"
+            fun_key = f"{module_name_key}/{fun_name}"
             if callable(f):
                 self.register(fun_key, f)
 

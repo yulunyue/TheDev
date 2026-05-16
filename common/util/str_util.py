@@ -1,6 +1,7 @@
 from typing import List
 import re
 from .re_util import ReUtil
+from common.exception import NotFoundError
 
 
 class StrUtil:
@@ -55,9 +56,9 @@ class StrUtil:
     def get_mid_str(self, s: str, pre, end):
         pre_idx = s.find(pre)
         if pre_idx == -1:
-            raise Exception(s, f"not find {pre}")
+            raise NotFoundError("Prefix not found in string", context={"string": s, "prefix": pre})
         s = s[pre_idx + len(pre) :]
         end_idx = s.find(end)
         if end_idx == -1:
-            raise Exception(s, f"not find {end}")
+            raise NotFoundError("Suffix not found in string", context={"string": s, "suffix": end})
         return s[:end_idx]

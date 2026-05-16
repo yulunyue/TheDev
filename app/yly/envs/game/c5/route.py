@@ -1,5 +1,5 @@
-from ..yly.envs.game.c5.db import Bd as FontBd, ROUTE_PATH
-from ..yly.envs.game.c5.player.al import Al
+from .db import Bd as FontBd, ROUTE_PATH
+from .player.al import Al
 from common.tool.export import FontSearch, FormBase
 from common.util.export import IO_MANAGE, ApiBase, Node, C
 
@@ -11,7 +11,7 @@ class ChessF5(FormBase, ApiBase):
     ROUTE_PATH = ROUTE_PATH
 
     def search_name(self, *args, **kw):
-        return FontSearch().add_node(FontBd.instance_map.keys())
+        return FontSearch().add_childs(*FontBd.instance_map.keys())
 
     def to_form_column_view(self):
         return (
@@ -26,8 +26,8 @@ class ChessF5(FormBase, ApiBase):
         )
 
     def search_algo(self, *args, **kw):
-        return FontSearch().add_node(
-            list(AI_PLAYER) + list(IO_MANAGE.get_users_by_topic(C.TOPIC_F5_CHESS))
+        return FontSearch().add_childs(
+            *(list(AI_PLAYER) + list(IO_MANAGE.get_users_by_topic(C.TOPIC_F5_CHESS)))
         )
 
     def web_submit(self, type, value, **kw):

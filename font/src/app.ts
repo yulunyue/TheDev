@@ -8,7 +8,7 @@ import chess from "./demo/game/chess";
 import todo from "./demo/todo/todo_main";
 import task from "./demo/task/task_main";
 import cube from "./demo/cube/cube_main";
-import qt from "./demo/qt";
+import { qt } from "./demo/qt/index";
 import cube_phone from "./demo/cube/cube_phone";
 import { Data } from "./base/components/export";
 import "./app.css"

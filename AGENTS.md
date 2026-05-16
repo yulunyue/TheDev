@@ -59,7 +59,7 @@
 - 使用 `@classmethod setup_class()` 进行类级别初始化
 - 使用 `common.util.export` 中的 `assert_dict` 进行深度字典比较
 - `common/mock.py` 中的 `MockCf` 用于竞赛编程测试，配合 `oj_run()` 使用
-- 测试文件以 `_test` 结尾，与源码同目录（如 `foo.py` 的测试写在 `foo_test.py`）
+- 测试文件以 `test_` 开头，统一放在 `tests/` 目录下（如 `foo.py` 的测试写在 `tests/test_foo.py` 或 `tests/foo_test.py`）
 
 ## 关键导入
 
@@ -92,13 +92,13 @@ from common.tool.export import (
 - 渲染更新统一放在 `render_option()` 方法中，从 `this.option` 读取数据更新 DOM
 - `set_option` 返回 `this` 以支持链式调用
 - 取值/设值使用 `get_value()` / `set_value()`，变化通知使用 `on_change(cb)` / `do_change(key, src, dst)`
-- `Row`（`FlexColumn`）实际是垂直方向（`column`），`Column`（`FlexRow`）实际是水平方向（`row`）— flex 属性与名称相反
+- `FlexColumn` 是垂直方向布局（`flexDirection: column`），`FlexRow` 是水平方向布局（`flexDirection: row`）
+- **已删除 `Row` 和 `Column` 别名**，代码中直接使用原名避免命名混淆
 
 ## 代码规范
 
 - **一个文件最好只有一个类**（前后端均适用）
 - 类名与文件名保持一致（如 `class WebDom` 放在 `web_dom.ts`）
-- **每个 `.py` / `.ts` 代码文件的变动都要记录到同目录、同名的 `.md` 文件**（如 `web_dom.ts` 的变动记录在 `web_dom.md`）
 - **Python 代码统一使用 Black 格式化**（配置见 `pyproject.toml`），行长度 88
 
 ## 全局规则
@@ -119,3 +119,4 @@ from common.tool.export import (
 - `File` 工具类会规范化路径（`\` → `/`）并按路径缓存实例
 - `common/util/export.py` 是枢纽模块 — 几乎所有内容都从这里重新导出
 - Python 格式化：`black .`（配置在 `pyproject.toml`）
+- **读题只读题**：用户要求"读题"时，只返回题目原文，不附加任何分析、思路或代码建议

@@ -1,4 +1,5 @@
 from .tool import json_get
+from common.exception import ConfigError
 
 
 def value_parse(s: str):
@@ -50,7 +51,7 @@ class Yml:
     def get(self, keys, defalut_value=None):
         ret = json_get(self.data, keys, {VALUE_KEY: defalut_value})
         if ret[VALUE_KEY] is None:
-            raise Exception(self.data, keys)
+            raise ConfigError("Key not found in configuration", context={"data": self.data, "keys": keys})
         return ret[VALUE_KEY]
 
     def dfs(self, keys, value: dict, func):

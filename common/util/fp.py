@@ -6,12 +6,13 @@ import shutil
 import io
 from .tool import time_format, json_dumps, base64_encode, json_get, json_set, json_has
 from .str_util import StrUtil
+from common.exception import FileError
 
 
 class File:
     def __init__(self, path: str) -> None:
         if not isinstance(path, str):
-            raise Exception(path)
+            raise FileError("Path must be a string", context={"path": path})
         self.path = path.replace("\\", "/")
         self.dirs = self.path.split("/")
         self.name = self.file_name = self.dirs.pop()
@@ -120,7 +121,7 @@ class File:
         elif self.is_dir():
             shutil.copy(self.path, dst.path)
         else:
-            raise Exception(self)
+            raise FileError("Cannot copy unsupported file type", context={"file": self.path})
         return dst
 
     def move_to(self, dst):
@@ -134,7 +135,7 @@ class File:
             try:
                 return json.loads(data.decode(encoding))
             except Exception as e:
-                raise Exception(self, e)
+                raise FileError("JSON parsing failed", context={"file": self.path, "error": e})
         elif self.file_name.endswith(".cfg") or self.file_name.endswith(".ini"):
             from configparser import ConfigParser
 
@@ -257,14 +258,14 @@ class File:
         if self.type.startswith("xls"):
             return self.dump_excel()
 
-    WITHE_FILE_HANDER = dict()
+    WHITE_FILE_HANDLER = dict()
 
     def get_writer(self, mode="wb") -> io.TextIOWrapper:
-        if self.path in self.WITHE_FILE_HANDER:
-            return self.WITHE_FILE_HANDER[self.path]
+        if self.path in self.WHITE_FILE_HANDLER:
+            return self.WHITE_FILE_HANDLER[self.path]
         self.make_dir_if_not_exist()
-        self.WITHE_FILE_HANDER[self.path] = open(self.path, mode)
-        return self.WITHE_FILE_HANDER[self.path]
+        self.WHITE_FILE_HANDLER[self.path] = open(self.path, mode)
+        return self.WHITE_FILE_HANDLER[self.path]
 
     def get_bin_writer(self, model="wb") -> io.TextIOWrapper:
         self.make_dir_if_not_exist()

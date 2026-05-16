@@ -1,9 +1,9 @@
 import {
-    Column, Row, Div, Constant, Node, web_dom,
+    FlexRow, FlexColumn, Div, Constant, Node, web_dom,
     Button, Label, web_socket, Ct, Span
 } from "../../base/components/export";
 
-export class TodoRow extends Column {
+export class TodoRow extends FlexRow {
     todo_data: any
     title_div: Div
     content_div: Div
@@ -28,15 +28,15 @@ export class TodoRow extends Column {
         this.user_name = new Div()
         this.edit_btn = new Button().set_html("修改")
         this.add_childs([
-            new Row().add_childs([
+            new FlexColumn().add_childs([
                 this.title_div,
                 this.content_div,
             ]).set_size(1).set_align_start(),
-            new Row().add_childs([
+            new FlexColumn().add_childs([
                 this.create_time,
                 this.update_time,
             ]),
-            new Row().add_childs([
+            new FlexColumn().add_childs([
                 this.user_name,
                 this.edit_btn
             ])

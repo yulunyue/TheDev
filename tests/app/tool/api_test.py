@@ -1,11 +1,11 @@
 from common.util.export import assert_dict
-from app.tool.api import ApiGlobal, MainHander
+from app.tool.api import ApiGlobal, MainHandler
 
 
 class TestApi:
     @classmethod
     def setup_class(self):
-        MainHander.POST_API.load_module("/app/api", ApiGlobal)
+        MainHandler.POST_API.load_module("/app/api", ApiGlobal)
         self.api: ApiGlobal = ApiGlobal()
 
     def test_api(self):

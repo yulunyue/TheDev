@@ -7,7 +7,7 @@ import {
     Svg,
     Grid,
     web_dom,
-    Row, Column,
+    FlexColumn, FlexRow,
     FileInput,
     FormColumn, FormRow,
     Constant,
@@ -55,9 +55,9 @@ let DEV_FUNC = {
             return fm
         }
 
-        return new Row().add_childs([
+        return new FlexColumn().add_childs([
             fm_init(new FormColumn(), op),
-            new Column().add_childs([
+            new FlexRow().add_childs([
                 fm_init(new FormRow(), op),
                 pre.set_size(1),
                 fm_init(new FormRow().set_uri("/app/user/to_form_row_view"), null)
@@ -66,7 +66,7 @@ let DEV_FUNC = {
         ])
     },
     layout() {
-        return new Column().set_option({
+        return new FlexRow().set_option({
             childs: [
                 {
                     type: Constant.DOM_TYPE_ROW,
@@ -152,9 +152,9 @@ let DEV_FUNC = {
             })
             DEV_FUNC.default_color = DEV_FUNC.default_color == Constant.COLOR_BALCK2 ? Constant.COLOR_WHITE2 : Constant.COLOR_BALCK2
         })
-        return new Column().add_childs([
+        return new FlexRow().add_childs([
             g,
-            new Row().add_childs([
+            new FlexColumn().add_childs([
                 p1,
                 p2
             ])
@@ -188,7 +188,7 @@ let DEV_FUNC = {
         let s = new Search().set_option({
 
         })
-        return new Column().add_childs([
+        return new FlexRow().add_childs([
 
         ])
     }

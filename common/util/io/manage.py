@@ -10,7 +10,7 @@ class Manage:
         self.io_map: Dict[str, Io] = dict()
         self.topics: Dict[str, set] = dict()
 
-    def hander_msg(self, io: Io, msg: Node):
+    def handler_msg(self, io: Io, msg: Node):
         if not io.username:
             raise Exception(msg)
         if msg.type == C.METHOD_SUB:

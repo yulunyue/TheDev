@@ -8,6 +8,7 @@ export class Div {
     el: HTMLElement
     node_type: string
     childs: Div[]
+    childs_map: Map<string, Div>
     parent: Div
     option: Node
     index: number
@@ -82,6 +83,7 @@ export class Div {
     }
     constructor(node_type: string = 'div') {
         this.childs = []
+        this.childs_map = {}
         this.event_hander = {}
         this.node_type = node_type || 'div'
         this.el = this.create_element(this.node_type)
@@ -284,6 +286,7 @@ export class Div {
             } else {
                 this.add_child(cls(childs[idx]))
             }
+            this.childs_map[childs[idx].key] = this.childs[idx]
             idx += 1
         }
         while (idx < this.childs.length) {

@@ -213,52 +213,6 @@ class TestStrUtilAdvanced(unittest.TestCase):
         self.assertIsInstance(result, str, "format_grid 应该返回字符串")
 
 
-# Pytest 兼容的测试函数
-def test_str_util_creation():
-    """测试 StrUtil 创建 (pytest 版本)"""
-    str_util = StrUtil()
-    assert str_util is not None
-
-
-def test_match_with_ignore_patterns():
-    """测试带忽略模式的匹配 (pytest 版本)"""
-    str_util = StrUtil()
-    str_util.set_ignores(["test", "ignore"])
-
-    # 应该被忽略的模式
-    result = str_util.match("this is a test")
-    assert result is False, "应该忽略包含 'test' 的字符串"
-
-    # 不应该被忽略的模式
-    result = str_util.match("this is valid")
-    assert result is True, "不应该忽略不包含模式的字符串"
-
-
-def test_format_pre0_bin():
-    """测试二进制格式化 (pytest 版本)"""
-    str_util = StrUtil()
-
-    test_cases = [
-        (5, 4, "0101"),  # 5 in 4-bit binary
-        (10, 8, "00001010"),  # 10 in 8-bit binary
-        (255, 8, "11111111"),  # 255 in 8-bit binary
-        (0, 4, "0000"),  # 0 in 4-bit binary
-    ]
-
-    for num, width, expected in test_cases:
-        result = str_util.format_pre0_bin(num, width)
-        assert result == expected, f"Failed for {num} with width {width}"
-
-
-def test_format_basic():
-    """测试基本格式化 (pytest 版本)"""
-    str_util = StrUtil()
-    template = "Hello %{name}, you are %{age} years old"
-    result = str_util.format(template, name="Alice", age="25")
-    expected = "Hello Alice, you are 25 years old"
-    assert result == expected, "基本格式化测试失败"
-
-
 if __name__ == "__main__":
     # 可以直接运行 unittest
     unittest.main()

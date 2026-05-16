@@ -14,7 +14,7 @@
 **主要方法**:
 - `__init__()`: 初始化管理器
   - 创建空的 IO 映射表
-- `hander_msg(self, io: Io, msg: Node)`: 处理消息
+- `handler_msg(self, io: Io, msg: Node)`: 处理消息
   - `io`: 发送消息的 IO 对象
   - `msg`: 消息内容（Node 类型）
   - 将 IO 对象按用户名存储到映射表中
@@ -43,8 +43,8 @@ io2.username = "user2"
 msg = Node(type="message", value="Hello World")
 
 # 通过全局管理器处理消息
-IO_MANAGE.hander_msg(io1, msg)
-IO_MANAGE.hander_msg(io2, msg)
+IO_MANAGE.handler_msg(io1, msg)
+IO_MANAGE.handler_msg(io2, msg)
 
 # 访问管理的 IO 对象
 user1_io = IO_MANAGE.io_map.get("user1")
@@ -70,5 +70,5 @@ user2_io = IO_MANAGE.io_map.get("user2")
 2. 消息处理逻辑可以根据需求扩展
 3. 全局管理器 `IO_MANAGE` 可以在任何地方直接使用
 4. IO 对象需要设置 `username` 属性才能正确管理
-5. 建议在连接建立时调用 `hander_msg` 方法进行注册
+5. 建议在连接建立时调用 `handler_msg` 方法进行注册
 6. 可以扩展管理器添加连接状态监控、断线重连等功能

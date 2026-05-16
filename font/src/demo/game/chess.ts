@@ -5,25 +5,25 @@ import {
     Button, Progress,
     Svg,
     Grid,
-    Row,
+    FlexColumn,
     Pre,
-    Column,
+    FlexRow,
     Title,
     Data,
     web_socket
 } from "../../base/components/export";
 let COLORS = [Constant.COLOR_BALCK2, Constant.COLOR_WHITE2]
-export class Chess extends Column {
+export class Chess extends FlexRow {
     g: Grid
     bottom_form: FormColumn
     chess_width: number
     name_search: Search
-    head_column: Column
+    head_column: FlexRow
     pre: Pre
     title: Title
     right_div: Div
     left_div: Div
-    mid_main: Row
+    mid_main: FlexColumn
     init_style(): void {
         super.init_style()
         this.full().set_center()
@@ -44,14 +44,14 @@ export class Chess extends Column {
         this.bottom_form = new FormColumn()
         this.pre = new Pre()
         this.left_div = new Div()
-        this.right_div = new Row()
+        this.right_div = new FlexColumn()
         this.title = new Title()
         this.name_search = new Search()
-        this.head_column = new Column().add_childs([
+        this.head_column = new FlexRow().add_childs([
             this.name_search,
             this.title,
         ])
-        this.mid_main = new Row().add_childs([
+        this.mid_main = new FlexColumn().add_childs([
             this.head_column,
             this.g,
             this.bottom_form,

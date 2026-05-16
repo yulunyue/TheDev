@@ -1,5 +1,5 @@
 from common.util.export import TestBase, asset_exception
-from app.tool.chess_f5 import ChessF5, AI_PLAYER
+from app.yly.envs.game.c5.route import ChessF5, AI_PLAYER
 from app.yly.envs.game.c5.db import Bd
 from app.yly.envs.game.c5.model.chess_state import CState664
 from app.yly.envs.game.c5.model.chess_state_map import CState333, CHESS_MAP_CLS_FUNC
@@ -43,8 +43,7 @@ class TestChessF5(TestBase):
         c = Bd.insert(
             "test_664", name="test_664", size="C664", p0="ad3", p1="ad3", records=[]
         )
-        chess = ChessF5()
-        result = chess.get("test_664")
+        result = c.get("test_664")
         assert result._id == "test_664"
         assert result.p0.get_value() == "ad3"
         assert result.p1.get_value() == "ad3"
@@ -74,7 +73,7 @@ class TestChessF5(TestBase):
         )
         chess = ChessF5()
         result = chess.get("test_664_size")
-        assert result.to_json()["width"] == 6
+        assert result.value.to_json()["width"] == 6
 
     def test_bd_get_id(self):
         assert Bd.get_id(name="test") == "test"
