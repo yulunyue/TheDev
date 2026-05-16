@@ -4,9 +4,6 @@
     "edit": "ask"
   },
   "plugin": [
-    ["./.opencode/plugins/session-status-notifier", {
-      "url": "http://localhost:9999/app/manage/send_msg",
-      "topic": "TOPIC_OPENCODE_SESSION_STATUS"
-    }]
+    "./.opencode/plugins/session-status-notifier"
   ]
 }
