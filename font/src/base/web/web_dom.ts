@@ -38,7 +38,7 @@ class WebDom extends HttpService {
         }
     }
 
-    loop_task = {}
+    loop_task: { [key: string]: any } = {}
     loop_state = "stop"
     loop_count = 0
     run_all_task() {

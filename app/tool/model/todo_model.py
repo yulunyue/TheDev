@@ -8,10 +8,13 @@ from common.tool.export import (
     DateModel,
 )
 
-from common.util.export import Node, C
+from common.util.export import Node, C, Type, List
 
 
 class TodoModel(FileConfig):
+    CATEGORY_SCORE = dict(study=1, entertainment=-3, life=2, sport=3, project=2)
+    INITIAL_MONEY = 342700
+
     title = StrModel().not_null().set_title("项目")
     content = StrModel().set_title("备注")
     category = (
@@ -40,6 +43,32 @@ class TodoModel(FileConfig):
     @classmethod
     def get_form_columns(cls):
         return [cls.title, cls.content, cls.done]
+
+    @classmethod
+    def calc_score(cls, user_id: str) -> int:
+        score = 0
+        for v in cls.all():
+            if v.done.get_value() and v.user_id == user_id:
+                score += cls.CATEGORY_SCORE.get(v.category.get_value(), 0)
+        return score
+
+    @classmethod
+    def search(
+        cls, category: str, done: bool, user_id: str
+    ) -> "tuple[int, int, List[TodoModel]]":
+        models = sorted(
+            cls.all(), key=lambda v: v.create_time.get_value(), reverse=True
+        )
+        todos = []
+        money = cls.INITIAL_MONEY
+        for v in models:
+            if v.category == category and v.done == done:
+                todos.append(v)
+            if v.category == "money":
+                money -= float(v.content.get_value())
+                v.content = f"{v.content} {money}"
+        score = cls.calc_score(user_id)
+        return score, money, todos
 
 
 TodoModel.set_resource("config/setting/todo.json")

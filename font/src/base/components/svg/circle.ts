@@ -16,17 +16,19 @@ export class Circle extends GNode {
         this.set_attr("r", radius + "")
         return this
     }
-    set_x(x: number) {
-        return this.set_attr("cx", x)
+    set_x(x: number): this {
+        this.set_attr("cx", x)
+        return this
     }
-    set_y(y: number) {
-        return this.set_attr("cy", y)
+    set_y(y: number): this {
+        this.set_attr("cy", y)
+        return this
     }
     get_x() {
-        return parseFloat(this.get_attr("cx"))
+        return parseFloat(this.get_attr("cx") || "0")
     }
     get_y() {
-        return parseFloat(this.get_attr("cy"))
+        return parseFloat(this.get_attr("cy") || "0")
     }
     render_option(): void {
         let r = this.option.data.width / 2

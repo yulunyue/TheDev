@@ -1,16 +1,17 @@
 import {
-    FlexRow, FlexColumn, Div, Constant, Node, web_dom,
-    Button, FormRow, FormColumn, Search, web_socket, Ct, dialog, Select,
+    FlexRow, FlexColumn, Constant, web_dom,
+    Button, dialog, Select,
     Span, Input,
     Data, Util,
 } from "../../base/components/export";
 import { TodoContainer } from "./todo_container";
+import { TodoForm } from "./todo_form";
+import { TodoData, TODO_API } from "./todo_types";
 
 export class TodoMain extends FlexColumn {
-    top_form: FormColumn
+    todo_form: TodoForm
     todo_list: TodoContainer
     search_input: Input
-    user_search: Search
     add_btn: Button
     category_select: Select
     done_select: Select
@@ -18,12 +19,8 @@ export class TodoMain extends FlexColumn {
     header: FlexRow
     init_style(): void {
         this.full()
-        this.search_input.set_style({
-            width: 60
-        })
-        this.top_form.set_style({
-            minWidth: "300px"
-        })
+        this.search_input.set_style({ width: 60 })
+        this.todo_form.set_style({ minWidth: "300px" })
         this.score_span.set_size(1)
         this.category_select.set_style({ margin: "4px" })
         this.done_select.set_style({ margin: "4px" })
@@ -37,7 +34,7 @@ export class TodoMain extends FlexColumn {
         this.add_btn = new Button().set_html("新增")
         this.category_select = new Select()
         this.done_select = new Select()
-        this.top_form = new FormRow()
+        this.todo_form = new TodoForm()
         this.score_span = new Span()
         this.todo_list = new TodoContainer()
         this.header = new FlexRow().add_children([
@@ -51,53 +48,37 @@ export class TodoMain extends FlexColumn {
             this.header,
             this.todo_list
         ])
+        this.todo_form.set_on_submit((type: string) => {
+            let value = this.todo_form.get_value()
+            Util.extend(value, {
+                category: this.category_select.get_value()
+            })
+            web_dom.post(TODO_API.SUBMIT, { type, value }, () => {
+                this.load_todos()
+                dialog.close()
+            })
+        })
     }
     init_event(): void {
         this.search_input.on_change(() => this.todo_list.filter(this.search_input.get_value()))
         this.add_btn.on_click(() => {
-            this.on_to_do_change(Constant.METHOD_INSERT, null, {
+            this.todo_form.open(Constant.METHOD_INSERT, {
                 category: this.category_select.get_value(),
                 done: this.done_select.get_value()
             })
-
         })
-        this.top_form.on_submit(this.submit.bind(this))
-
         this.category_select.on_change(() => this.load_todos())
         this.done_select.on_change(() => this.load_todos())
-    }
-    submit(type: string) {
-        let value = this.top_form.get_value()
-        Util.extend(value, {
-            category: this.category_select.get_value()
-        })
-        web_dom.post("/app/todo/web_submit", { type, value }, () => {
-            this.load_todos()
-            dialog.close()
-        })
     }
     load_todos(): void {
         let category = this.category_select.get_value()
         let done = this.done_select.get_value() === "true"
-        web_dom.post("/app/todo/web_search", { category: category, done: done }, (data: Node) => {
+        web_dom.post(TODO_API.SEARCH, { category, done }, (data: any) => {
             this.score_span.set_html(data.title)
-            this.todo_list.set_todos(data, this.on_to_do_change.bind(this))
-        })
-    }
-    on_to_do_change(method: string, f: any, t: any) {
-        if (method == Constant.METHOD_INSERT) {
-            this.top_form.set_btns({ [Constant.METHOD_INSERT]: "提交" })
-            this.top_form.child_map.title.show()
-        } else {
-            this.top_form.child_map.title.hide()
-            this.top_form.set_btns({
-                [Constant.METHOD_EDIT]: "保存",
-                [Constant.METHOD_CLONE]: "复制",
-                [Constant.METHOD_DELETE]: "删除"
+            this.todo_list.set_todos(data as any, (method: string, f: any, t: Partial<TodoData>) => {
+                this.todo_form.open(method, t)
             })
-        }
-        this.top_form.set_value(t)
-        dialog.open(this.top_form)
+        })
     }
     render(): void {
         this.done_select.set_option({
@@ -107,15 +88,14 @@ export class TodoMain extends FlexColumn {
             ],
             id: "todo_done",
         })
-        web_dom.post("/app/todo/schema", {}, (v: Node) => {
-            this.top_form.set_option(v.data.top_form)
+        web_dom.post(TODO_API.SCHEMA, {}, (v: any) => {
+            this.todo_form.set_schema(v.data.top_form)
             v.data.category.id = "todo_category"
             this.category_select.set_option(v.data.category)
-            Data.get_user_name((user_name: any) => {
+            Data.get_user_name(() => {
                 this.load_todos()
             })
         })
-
     }
 }
 

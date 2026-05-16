@@ -88,7 +88,7 @@ export class NetKafka {
     }
 
     sub(key: string, fun: any) {
-        let param = {}
+        let param: { [key: string]: any } = {}
         param[key] = fun
         this.sub_topics(param)
     }
@@ -98,7 +98,7 @@ export class NetKafka {
             this.sub_call_back[method] = topics[method]
             methods.push(method)
         }
-        this.send_data(Constant.METHOD_SUB, method)
+        this.send_data(Constant.METHOD_SUB, method!)
         return this
     }
     un_sub(method: string) {

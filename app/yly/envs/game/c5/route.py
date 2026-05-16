@@ -46,7 +46,7 @@ class ChessF5(FormBase, ApiBase):
             c.records.set_value(records)
             FontBd.save()
             childs = records
-        return Node(childs=childs)
+        return Node(children=childs)
 
     def play(self, name, y, x, **kw):
         c: FontBd = FontBd.get(name)

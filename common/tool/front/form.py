@@ -16,5 +16,5 @@ class Form(FontBase):
         return self
 
     def to_json(self):
-        ret = dict(type="from", childs=self.childs, data=dict(btns=self.btns))
+        ret = dict(type="from", children=self.childs, data=dict(btns=self.btns))
         return ret

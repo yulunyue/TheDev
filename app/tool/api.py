@@ -37,6 +37,6 @@ class ApiGlobal(ApiBase):
         ApiGlobal.idx += 3
         for i in range(10):
             logger.info(f"{ApiGlobal.idx}{i}xx", extra=C.TOPIC_WEB_LOG)
-        return Node(childs=[dict(key=i) for i in range(ApiGlobal.idx)]).set_value(
+        return Node(children=[dict(key=i) for i in range(ApiGlobal.idx)]).set_value(
             dict(a=a, b=b, c=c, d=d)
         )

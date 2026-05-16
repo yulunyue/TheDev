@@ -24,6 +24,9 @@
 ### 前端
 - `cd font && npm start` — webpack 开发服务器，端口 8080
 - `cd font && npm run build` — 生产构建
+- `cd font && npm test` — Vitest 运行测试（`vitest run`）
+- `cd font && npm run test:watch` — Vitest 监听模式
+- 测试文件以 `.test.ts` / `.spec.ts` 结尾，放在 `src/` 下与被测文件同目录
 
 ### Rust / C++
 - `cd rust/the_dev && cargo build` / `cargo run`

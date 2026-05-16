@@ -20,7 +20,7 @@ class FormBase(ApiBase):
 
     def web_submit(self, type, value: dict):
         _id = self.__class__.model.get_id_any(**value)
-        value = self.hander(_id, type, value)
+        value = self.handler(_id, type, value)
         if value is None:
             return Node()
         if type == C.METHOD_INSERT:
@@ -34,7 +34,7 @@ class FormBase(ApiBase):
             s.save()
         return Node()
 
-    def hander(self, key, type, value):
+    def handler(self, key, type, value):
         return value
 
     def to_table_view(self):

@@ -23,7 +23,7 @@ class ProgrePoint extends GNode {
         this.text = this.add_child(text())
         this.text.set_y(14).set_x(4)
     }
-    set_value(value: number, x?: number) {
+    set_value(value: number, x: number = 0) {
         this.value = value
         this.text.set_html(value + "")
         this.set_x(x)
@@ -136,7 +136,7 @@ export class Progress extends FlexRow {
     on_mount(): void {
         web_dom.next_frame(() => this.draw())
     }
-    set_option(option: Node): this {
+    set_option(option: any): this {
         this.set_max_value(option.data.max_length)
         this.set_value(option.value)
         return super.set_option(option)

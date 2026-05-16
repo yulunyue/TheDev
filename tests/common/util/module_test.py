@@ -30,7 +30,7 @@ class TestModule(TestBase):
             {
                 "key": "fun",
                 "title": "fun",
-                "childs": [
+                "children": [
                     {
                         "title": "key",
                         "default_value": "",
@@ -60,13 +60,13 @@ class TestModule(TestBase):
             {
                 "key": "fun_call2",
                 "title": "fun_call2",
-                "childs": [
+                "children": [
                     {
                         "title": "a",
                         "default_value": None,
                         "type": "enum",
                         "is_pos": True,
-                        "childs": ["22"],
+                        "children": ["22"],
                         "key": "a",
                     }
                 ],

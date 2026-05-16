@@ -1,9 +1,40 @@
 import web_dom from "../../../web/web_dom"
-import { Style, Node, Fn1, Fn3Void, to_node, not_null, node } from "../../../web/cls"
-import { Dom } from "../../../web/cls"
+import { Style, Node, Fn1, Fn3Void, to_node, not_null, node, Dom } from "../../../web/cls"
 import Util from "../../../tool/util"
 import Constant from "../../../web/constant"
 import { DivFactory } from "./div_factory"
+import { DivStyle } from "./div_style"
+
+export interface DivStyleMethods {
+    set_style(style: Style): this
+    set_div_style(style: Style): this
+    set_style_ab_full(): this
+    set_style_center_by_position(): this
+    set_style_text_center(): void
+    set_flex_style_column(): this
+    set_flex_style_row(): this
+    set_border(): this
+    get_x(): number
+    get_y(): number
+    get_width(): number
+    get_height(): number
+    get_abs_x(): number
+    get_abs_y(): number
+    get_a_x(): number
+    get_a_y(): number
+    get_rect(): { left: number; top: number; width: number; height: number }
+    set_pos(x: number, y: number): this
+    set_size(size: number): this
+    set_flex(size: number): this
+    set_height(h: number): this
+    set_width(w: number): this
+    set_attr(key: string, value: any): this
+    get_attr(key: string): string | null
+    set_class(name: string): this
+    set_color(s: string): void
+    full(): this
+}
+
 export class Div {
     el: HTMLElement
     node_type: string
@@ -15,72 +46,7 @@ export class Div {
     size: number = 0
     _value: any = null
     event_hander: { [key: string]: any }
-    disable(state: boolean) {
-        if (state) {
-            this.set_attr("disabled", "disabled")
-        } else {
-            this.set_attr("disabled", "enabled")
-        }
-        return this
-    }
-    init_table_style(): void {
 
-    }
-    do_change(key: string, src?: any, dst?: any) {
-        if (src == null && dst == null) {
-            return this
-        }
-        this.event_hander[Constant.EVENT_CHANGE]?.(key, src, dst)
-        return this
-    }
-    on_change(call: Fn3Void<string, any, any>) {
-        this.event_hander[Constant.EVENT_CHANGE] = call
-        return this
-    }
-    on_move(call: any) {
-        this.event_hander[Constant.EVENT_MOVE] = call
-        return this
-    }
-    on_click(call_back: any) {
-        web_dom.bind_click(this.el, call_back)
-        return this
-    }
-    do_select(arg: any) {
-        this.event_hander[Constant.EVENT_CHANGE]?.(this._value, arg)
-        this._value = arg
-        return this
-    }
-    on_select(call: any) {
-        this.event_hander[Constant.EVENT_CHANGE] = call
-        return this
-    }
-    set_class(name: string) {
-        return this.set_attr("class", name)
-    }
-    set_color(s: string) {
-        this.set_style({
-            backgroundColor: s
-        })
-
-    }
-    get_child(idx: number, call: any) {
-        if (this.children[idx]) {
-            return this.children[idx]
-        }
-        this.children[idx] = this.add_child(call())
-        return this.children[idx]
-    }
-    full() {
-        return this.set_style({
-            width: 1,
-            height: 1,
-            // position: "absolute"
-        })
-    }
-
-    set_border() {
-        return this.set_div_style({ border: "1px solid #ccc" })
-    }
     constructor(node_type: string = 'div') {
         this.children = []
         this.children_map = {}
@@ -94,6 +60,60 @@ export class Div {
         this.init_style()
         this.init_event()
     }
+
+    disable(state: boolean) {
+        if (state) {
+            this.set_attr("disabled", "disabled")
+        } else {
+            this.set_attr("disabled", "enabled")
+        }
+        return this
+    }
+
+    init_table_style(): void {}
+
+    do_change(key: string, src?: any, dst?: any) {
+        if (src == null && dst == null) {
+            return this
+        }
+        this.event_hander[Constant.EVENT_CHANGE]?.(key, src, dst)
+        return this
+    }
+
+    on_change(call: Fn3Void<string, any, any>) {
+        this.event_hander[Constant.EVENT_CHANGE] = call
+        return this
+    }
+
+    on_move(call: any) {
+        this.event_hander[Constant.EVENT_MOVE] = call
+        return this
+    }
+
+    on_click(call_back: any) {
+        web_dom.bind_click(this.el, call_back)
+        return this
+    }
+
+    do_select(arg: any) {
+        this.event_hander[Constant.EVENT_CHANGE]?.(this._value, arg)
+        this._value = arg
+        return this
+    }
+
+    on_select(call: any) {
+        this.event_hander[Constant.EVENT_CHANGE] = call
+        return this
+    }
+
+    get_child(idx: number, call: any) {
+        if (this.children[idx]) {
+            return this.children[idx]
+        }
+        this.children[idx] = this.add_child(call())
+        return this.children[idx]
+    }
+
     dump() {
         return {
             node_type: this.node_type,
@@ -101,155 +121,57 @@ export class Div {
             rect: this.get_rect()
         }
     }
-    set_style_ab_full() {
-        return this.set_div_style({
-            position: "fixed",
-            width: 1,
-            height: 1
-        })
-    }
-    set_flex_style_column() {
-        return this.set_style({
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center"
-        })
-    }
-    set_flex_style_row() {
-        return this.set_style({
-            display: "flex",
-            flexDirection: "column",
-            // alignItems: "center"
-        })
-    }
+
     show() {
         return this.set_style({ display: "" })
     }
+
     hide() {
         return this.set_style({ display: "none" })
     }
+
     is_visible() {
         return this.el.style.display !== "none"
     }
-    get_a_x() {
-        return (this.el as HTMLElement).getBoundingClientRect().x;
-    }
-    get_a_y() {
-        return (this.el as HTMLElement).getBoundingClientRect().y
-    }
-    get_rect() {
-        return {
-            left: this.get_x(),
-            top: this.get_y(),
-            width: this.get_width(),
-            height: this.get_height()
-        }
-    }
+
     clear() {
         this.set_html("")
         this.children = []
         return this
     }
+
     get_value(): any {
         return this._value
     }
-    get_abs_x() {
-        return this.el.offsetLeft
-    }
-    get_abs_y() {
-        return this.el.offsetTop
-    }
-    get_x() {
-        return this.el.clientLeft
-    }
-    get_y() {
-        return this.el.clientTop
-    }
-    get_width() {
-        return this.el.clientWidth
-    }
-    get_height() {
-        return this.el.clientHeight
-    }
-    render() {
 
-    }
+    render() {}
+
     init_default_div_style() {
         this.set_div_style({
-            // width: 1,
-            // height: 1,
-            // position: "absolute",
             border: "1px splid #000"
         })
     }
-    set_attr(key: string, value: any) {
-        this.el.setAttribute?.(key, value)
-        return this
-    }
-    get_attr(key: string) {
-        return this.el.getAttribute(key)
-    }
-    set_size(size: number) {
-        // 尽可能的压缩
-        this.size = size
-        this.set_style({ flex: size + "" })
-        return this
-    }
+
     scroll_to_bottom() {
         this.el.scrollTo(0, this.el.scrollHeight)
     }
-    set_flex(size: number) {
-        // 尽量不压缩
-        this.size = size
-        this.set_style({ flexGrow: size + "" })
-        return this
-    }
-    set_height(h: number) {
-        return this.set_div_style({ height: h })
-    }
-    set_width(h: number) {
-        return this.set_div_style({ width: h })
-    }
-    set_pos(x: number, y: number) {
-        return this
-    }
-    set_div_style(style: Style) {
-        web_dom.set_el_style(this.el, style)
-        return this
-    }
-    set_style(style: Style) {
-        web_dom.set_el_style(this.el, style)
-        return this
-    }
-    set_style_center_by_position() {
-        return this.set_style({
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%,-50%)"
-        })
-    }
 
-    init_style() {
+    init_style() {}
 
-    }
-    init_event() {
+    init_event() {}
 
-    }
-    set_style_text_center() {
-        this.set_style({ textAlign: "center" })
-    }
     create_element(name: string): any {
         return web_dom.createElement(name)
     }
-    init_node() {
 
-    }
+    init_node() {}
+
     mount(el: Dom) {
         el.appendChild(this.el)
         this.on_mount()
         return this
     }
+
     emit_mount() {
         for (var i = 0; i < this.children.length; i++) {
             this.children[i].emit_mount()
@@ -257,12 +179,11 @@ export class Div {
         this.on_render()
         return this
     }
-    on_render() {
 
-    }
-    on_mount() {
+    on_render() {}
 
-    }
+    on_mount() {}
+
     add_child(c: any) {
         c.mount(this.el)
         c.set_parent(this)
@@ -270,13 +191,14 @@ export class Div {
         this.children.push(c)
         return c
     }
+
     set_parent(p: any) {
         this.parent = p
         return this
     }
-    parse_child_option(o: Node) {  //原地修改子类的option
 
-    }
+    parse_child_option(o: Node) {}
+
     set_children(children: any, cls: any) {
         let idx = 0
         while (idx < children.length) {
@@ -297,11 +219,11 @@ export class Div {
             web_dom.get_local_str(this.option.id, (v: any) => this.set_value(v))
         }
         return this
-
     }
+
     get_tree_infos() {
-        let p: Div = this
-        let info = []
+        let p: Div | null = this
+        let info: any[] = []
         while (p != null) {
             info.push({ index: p.index, type: this.node_type })
             p = p.parent
@@ -309,9 +231,11 @@ export class Div {
         info.reverse()
         return info
     }
+
     set_title(s: string) {
         return this
     }
+
     set_option(option: any) {
         this.option.set_option(option)
         this.render_option()
@@ -330,18 +254,17 @@ export class Div {
         return this
     }
 
-    remove(i: number) {
+    remove(i: number) {}
 
-    }
-    render_option() {
+    render_option() {}
 
-    }
     add_children(children: any[]) {
         for (var i = 0; i < children.length; i++) {
             this.add_child(children[i])
         }
         return this
     }
+
     set_html(text: string | Fn1<any, string>) {
         if (typeof text == 'function') {
             text(this.el)
@@ -350,10 +273,11 @@ export class Div {
         this.el.innerHTML = text
         return this
     }
+
     set_value(value: any) {
-        // console.trace(value)
         return this
     }
+
     set_uri(uri: string, call_back?: any): this {
         web_dom.post(uri, {}, (ret: any) => {
             this.set_option(new Node().set_option(ret))
@@ -362,3 +286,13 @@ export class Div {
         return this
     }
 }
+
+export interface Div extends DivStyleMethods {}
+
+const divProto = Div.prototype as any
+const styleProto = DivStyle.prototype as any
+Object.getOwnPropertyNames(styleProto).forEach(name => {
+    if (name !== 'constructor') {
+        divProto[name] = styleProto[name]
+    }
+})

@@ -1,14 +1,12 @@
 
 import data from "src/base/tool/data";
 import {
-    Div, Search, Button, TextAreaRich,
-    Table, Util, dialog,
-    Ct, Node, to_node, Chart,
-    Svg,
+    Div, Search,
+    Table, Util,
+    Node,
     Grid,
     web_dom,
     FlexColumn, FlexRow,
-    FileInput,
     FormColumn, FormRow,
     Constant,
     Pre,
@@ -18,7 +16,7 @@ import {
 } from "../base/components/export";
 import { D3DagreUtil } from "../third/d3_dagre_util"
 
-let DEV_FUNC = {
+let DEV_FUNC: { [key: string]: any } = {
     form() {
         let op = {
             children: [
@@ -40,7 +38,7 @@ let DEV_FUNC = {
             }
         }
         let pre = new Pre().set_html("pre")
-        function fm_init(fm: FormRow, ops: Node) {
+        function fm_init(fm: FormRow, ops: any) {
             fm.on_submit((type: string, value: any) => {
                 pre.set_value({ type: type, value: fm.get_value(), d: value })
             })
@@ -146,7 +144,7 @@ let DEV_FUNC = {
         })
         g.on_click((y: number, x: number, i: number, j: number) => {
             p2.set_value({ x, y, i, j })
-            g.draw_child({
+            ;(g as any).draw_child({
                 y: i, x: j, type: Constant.SVG_TYPE_CIRCLE,
                 color: DEV_FUNC.default_color
             })
@@ -194,12 +192,11 @@ let DEV_FUNC = {
     }
 }
 export class Dev extends Div {
-    svg: Svg
     init_style(): void {
         this.full()
     }
     render(): void {
-        let method = web_dom.get_param("method")
+        let method = web_dom.get_param("method") as string
         this.add_children([DEV_FUNC[method]().full()])
     }
 

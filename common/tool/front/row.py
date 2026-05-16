@@ -14,5 +14,5 @@ class Row:
     def to_json(self):
         return dict(
             type=self.type,
-            childs=self.get_childs(),
+            children=self.get_childs(),
         )

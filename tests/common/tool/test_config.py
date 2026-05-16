@@ -37,7 +37,7 @@ class TestConfig:
             f.to_form_row_view(),
             {
                 "type": "from",
-                "childs": [
+                "children": [
                     {
                         "type": "input",
                         "key": "a",

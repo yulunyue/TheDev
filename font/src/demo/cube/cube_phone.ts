@@ -171,7 +171,7 @@ export class CubePhone extends CubeBase {
             }
             this.update_state(data.value)
             this.title.set_html(`打乱 ${steps} 步`)
-            this.action_pre.set_html(actions.map(a => a.value.description).join('\n'))
+            this.action_pre.set_html(actions.map((a: any) => a.value.description).join('\n'))
         })
     }
 
@@ -200,7 +200,7 @@ export class CubePhone extends CubeBase {
                 }
             }
             this.title.set_html(`求解完成 ${data.value.steps} 步`)
-            this.action_pre.set_html(actions.map(a => a.description).join('\n'))
+            this.action_pre.set_html(actions.map((a: any) => a.description).join('\n'))
         })
     }
 }

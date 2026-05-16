@@ -73,7 +73,7 @@ export class MeraGraph extends Div {
         const svgElement = container.querySelector("svg");
 
         // Initialize Panzoom
-        const panzoomInstance = createPanZoom(svgElement, {
+        const panzoomInstance = createPanZoom(svgElement!, {
             //maxScale: 5,
             // minScale: 0.5,
             // step: 0.1,

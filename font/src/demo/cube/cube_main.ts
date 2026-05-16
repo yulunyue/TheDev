@@ -160,7 +160,7 @@ export class CubeMain extends CubeBase {
 
             this.update_state(data.value)
             this.title.set_html(`打乱完成 - 共 ${steps} 步`)
-            this.action_pre.set_html(`打乱步骤:\n${actions.map(a => a.value.description).join('\n')}`)
+            this.action_pre.set_html(`打乱步骤:\n${actions.map((a: any) => a.value.description).join('\n')}`)
         })
     }
 
@@ -181,7 +181,7 @@ export class CubeMain extends CubeBase {
             }
 
             this.title.set_html(`求解完成 - 共 ${data.value.steps} 步`)
-            this.action_pre.set_html(`求解步骤:\n${actions.map(a => a.description).join('\n')}`)
+            this.action_pre.set_html(`求解步骤:\n${actions.map((a: any) => a.description).join('\n')}`)
         })
     }
 

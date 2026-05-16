@@ -3,7 +3,7 @@ import web_dom from "../web/web_dom"
 import { Node } from "../web/cls"
 export class UtilCls {
     url_to_json(s: string) {
-        var ret = {}
+        var ret: { [key: string]: any } = {}
         var s1 = s.split('&')
         for (var i = 0; i < s1.length; i++) {
             var s2 = s1[i].split('=')

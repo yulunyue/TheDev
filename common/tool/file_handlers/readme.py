@@ -37,14 +37,14 @@ class ReadmeGraph(ReadmeField):
     def set_data(self, data):
         self.titles = []
         self.graph_line = []
-        if not data["childs"]:
+        if not data["children"]:
             self.graph_line.append(data["title"] + ";")
             return self
 
         def dfs(node):
             if node["value"]:
                 self.titles.append(f'### {node["value"]}')
-            for cd in node["childs"]:
+            for cd in node["children"]:
                 self.graph_line.append(f'{node["title"]}-->{cd["title"]};')
                 dfs(cd)
 

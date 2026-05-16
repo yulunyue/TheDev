@@ -21,7 +21,7 @@ export class FileInput extends FlexRow {
     }
     upload() {
         let formData = new FormData()
-        formData.append('file', this.inp.el.files[0]);
+        formData.append('file', (this.inp.el as any).files[0]);
         web_dom.post_file("/app/manage/post_file", formData, (v: Node) => {
             this.path = v.value
         })

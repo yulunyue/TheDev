@@ -37,7 +37,7 @@ class Algo(ApiBase):
                         value=dict(path=f.path, case=value, code=f.read_file()),
                     )
                 )
-        return Node(childs=nodes)
+        return Node(children=nodes)
 
     def run(self, code, **kw):
         v: dict = code[C.K_VALUE]

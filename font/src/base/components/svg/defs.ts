@@ -72,8 +72,8 @@ export class Marker extends GNode {
 
 export class Defs extends GNode {
     node_uk: any
-    static svgs: any[]
-    static markers: object
+    static svgs: any[] = []
+    static markers: { [key: string]: any } = {}
     constructor() {
         super("defs")
         this.node_uk = {}
@@ -110,5 +110,3 @@ export class Defs extends GNode {
         return 'url(#' + k + ')'
     }
 }
-Defs.svgs = []
-Defs.markers = {}

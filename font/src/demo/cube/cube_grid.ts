@@ -45,7 +45,7 @@ export class CubeGrid extends Div {
         const faceSize = this.n * this.n
         const blockSize = this.block_size
 
-        const faces = []
+        const faces: number[][] = []
         for (let i = 0; i < 6; i++) {
             faces.push(this.grid_data.slice(i * faceSize, (i + 1) * faceSize))
         }

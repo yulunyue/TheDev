@@ -10,11 +10,13 @@ export class Rect extends GNode {
     set_wh(w: number, h: number) {
         return this.set_width(w).set_height(h)
     }
-    set_width(x: number) {
-        return this.set_attr("width", x)
+    set_width(x: number): this {
+        this.set_attr("width", x)
+        return this
     }
-    set_height(y: number) {
-        return this.set_attr("height", y)
+    set_height(y: number): this {
+        this.set_attr("height", y)
+        return this
     }
 }
 export class Polygon extends GNode {

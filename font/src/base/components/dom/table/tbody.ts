@@ -21,7 +21,7 @@ export class TBody extends Div {
     render_option() {
         this.clear().add_children(this.option.children.map(v => {
             let tr = new TrHead().set_option(v)
-            return tr.on_change(null)
+            return tr.on_change(null as any)
         }))
         return this
     }

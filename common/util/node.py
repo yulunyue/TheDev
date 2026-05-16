@@ -16,7 +16,7 @@ class Node:
         size=None,
         value=None,
         data=None,
-        childs=None,
+        children=None,
     ) -> None:
         self.code = code
         if type:
@@ -28,8 +28,8 @@ class Node:
         self.data = data or dict()
         self.parent = None
         self.childs: List[Node] = []
-        if childs:
-            for cd in childs:
+        if children:
+            for cd in children:
                 if isinstance(cd, dict):
                     self.add_child(cd)
                 else:
@@ -81,7 +81,7 @@ class Node:
             key=self.key or self.get_title(),
             title=self.get_title(),
             value=self.get_value(),
-            childs=self.childs,
+            children=self.childs,
             data=self.get_data(),
         )
         ret.update(kw)
@@ -105,7 +105,7 @@ def cls_util(tp, **kw):
 
 
 def enum_cls(*enums) -> Type[Node]:
-    return cls_util("enum", childs=list(enums))
+    return cls_util("enum", children=list(enums))
 
 
 def search_cls(url):

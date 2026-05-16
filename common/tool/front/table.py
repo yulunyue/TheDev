@@ -30,6 +30,6 @@ class FrontTable(FontBase):
     def to_json(self):
         return dict(
             type="table",
-            childs=self.get_header(),
+            children=self.get_header(),
             value=self.get_body(),
         )

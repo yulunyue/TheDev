@@ -5,6 +5,7 @@ export class Point {
 }
 
 export interface Style {
+    [key: string]: any
     color?: string
     backgroundSize?: "cover"
     left?: number | string

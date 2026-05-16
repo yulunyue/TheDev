@@ -48,18 +48,20 @@ export class GNode extends Div {
     set_pos(y: number, x: number): this {
         return this.set_x(x).set_y(y)
     }
-    set_width(w: number) {
-        return this.set_attr("width", w)
+    set_width(w: number): this {
+        this.set_attr("width", w)
+        return this
     }
-    set_height(w: number) {
-        return this.set_attr("height", w)
+    set_height(w: number): this {
+        this.set_attr("height", w)
+        return this
     }
     update_pos() {
         return this.set_style({ transform: `translate(${Math.floor(this.x)}px, ${Math.floor(this.y)}px)` })
     }
-    set_attr(key: string, value: any) {
+    set_attr(key: string, value: any): this {
         if (value == undefined || value == null) {
-            return
+            return this
         }
         this.el.setAttribute(key, value)
         return this

@@ -81,7 +81,7 @@ export class HttpService {
         return { width: window.innerWidth, height: window.innerHeight }
     }
 
-    headers = {}
+    headers: { [key: string]: any } = {}
     xml_http_request(method: string, path: string, data: any, call_back: any, callback_finish: any) {
         let d = Ut.url_parse(path)
         let url = this.url(d.path)

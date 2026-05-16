@@ -21,13 +21,13 @@ class FunInfo:
         return self
 
     def to_json(self):
-        childs = []  # 前端需要这样的childs 数组
+        childs = []  # 前端需要这样的children 数组
 
         for key in sorted(self.kw.keys()):
             v: dict = self.kw[key]
             v.update(key=key)
             childs.append(v)
-        return dict(key=self.name, title=self.name, childs=childs)
+        return dict(key=self.name, title=self.name, children=childs)
 
 
 def check_func_arg_kw(v):

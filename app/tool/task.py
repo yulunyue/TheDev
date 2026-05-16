@@ -21,7 +21,7 @@ class TaskManage(FormBase, Task):
 
     def web_search(self, key: str = "", **kw):
         return FontSearch(
-            childs=[
+            children=[
                 {C.TITLE: d.name.get_value(), C.VALUE: d.name.get_value()}
                 for d in self.model.all()
             ]

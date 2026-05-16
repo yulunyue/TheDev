@@ -9,7 +9,7 @@ import Util from "../../../tool/util"
 import { Constant } from "../../export";
 import { BodyTd } from "./td";
 export class TrBody extends Div {
-    field_map: object
+    field_map: { [key: string]: any }
     constructor() {
         super("tr")
     }

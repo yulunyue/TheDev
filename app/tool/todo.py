@@ -24,24 +24,11 @@ class Todo(FormBase):
         )
 
     def web_search(self, category, done, **kw):
-        todos = []
-        money = 342700
-        models: List[TodoModel] = sorted(
-            self.model.all(), key=lambda v: v.create_time.get_value(), reverse=True
-        )
-        score_map = dict(study=1, entertainment=-3, life=2, sport=3, project=2)
-        score = 0
-        for v in models:
-            if v.category == "money":
-                money -= float(v.content.get_value())
-            if v.category == category and v.done == done:
-                todos.append(v)
-            if v.done.get_value() and v.user_id == self.username:
-                score += score_map.get(v.category.get_value(), 0)
-        money = "".join(list(str(int(money)))[::-1])
-        return Node(childs=todos, title=f"分数: {score}.{money}")
+        score, money, todos = TodoModel.search(category, done, self.username)
+        money_str = "".join(list(str(money))[::-1])
+        return Node(children=todos, title=f"分数: {score}.{money_str}")
 
-    def hander(self, key, type, value: dict):
+    def handler(self, key, type, value: dict):
         category = value.get("category")
         now_time = time.time()
         if category not in self.model.category.options:

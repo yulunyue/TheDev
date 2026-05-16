@@ -5,26 +5,27 @@
   "scripts": {
     "build": "webpack build --config webpack.config.js",
     "start": "webpack serve --config webpack.config.js --mode development",
-    "test": "webpack"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@types/dagre-d3": "^0.6.6",
     "css-loader": "7.1.2",
-    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
+    "jsdom": "^29.1.1",
     "source-map-loader": "5.0.0",
     "style-loader": "4.0.0",
     "ts-loader": "^9.2.6",
     "typescript": "5.9.2",
+    "vitest": "^4.1.6",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
-    "@types/three": "^0.184.1",
+    "@types/three": "^0.160.0",
     "dagre-d3": "^0.6.4",
     "mermaid": "^11.4.1",
-    "node": "^24.7.0",
     "panzoom": "^9.4.3",
     "three": "^0.160.0"
   }

@@ -4,17 +4,15 @@ import { Text, text } from "../comb/div_text";
 import { GNode } from "../gnode";
 import { SvgNode } from "../svg";
 export class TreeNode extends GNode {
-    line: Line
-    text: Text
-    parent: TreeNode
-    height1: number
-    height2: number
-    nodes: TreeNode[]
+    line!: Line
+    text!: Text
+    parent: TreeNode | null = null
+    height1: number = 0
+    height2: number = 0
+    nodes: TreeNode[] = []
     init_node(): void {
-        this.nodes = []
         this.line = new Line().with_arrow()
         this.text = this.add_child(text().on_change(() => this.on_text_change()))
-        this.parent = null
     }
     on_text_change() {
         let h = this.text.get_height()
@@ -65,7 +63,7 @@ export class Tree extends SvgNode {
             return
         }
         this.g.clear()
-        var dfs = (node: Node, p: Node) => {
+        var dfs = (node: Node, p: Node | null) => {
             node.data.node = new TreeNode()
             node.set_data(this.calc_pos(node.x, node.y))
             node.data.node.set_option(node)

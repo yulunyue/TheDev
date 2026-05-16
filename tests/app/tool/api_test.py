@@ -25,7 +25,7 @@ class TestApi:
             {
                 "key": "get_api_call_info",
                 "title": "get_api_call_info",
-                "childs": [
+                "children": [
                     {
                         "title": "key",
                         "default_value": None,
@@ -43,7 +43,7 @@ class TestApi:
             {
                 "key": "test",
                 "title": "test",
-                "childs": [
+                "children": [
                     {
                         "title": "a",
                         "default_value": "1",
@@ -56,7 +56,7 @@ class TestApi:
                         "default_value": None,
                         "type": "enum",
                         "is_pos": False,
-                        "childs": ["a", "b"],
+                        "children": ["a", "b"],
                         "key": "b",
                     },
                     {

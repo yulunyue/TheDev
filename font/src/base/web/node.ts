@@ -105,7 +105,7 @@ export class Node {
     init_tree_layout() {
         let ret = { y: this.title ? 0 : -1, x: 0 }
         this.x = 0
-        function dfs(node: Node, p: Node) {
+        function dfs(node: Node, p: Node | null) {
             if (node.children.length == 0) {
                 node.x = ret.x
                 ret.x += 1
@@ -130,7 +130,7 @@ export class Node {
         this.type = type
         return this
     }
-    toJSON() {
+    toJSON(): any {
         return {
             type: this.type,
             key: this.key,
@@ -139,7 +139,7 @@ export class Node {
             children: this.children.map(v => v.toJSON())
         }
     }
-    get_title() {
+    get_title(): string {
         return this.title
     }
 }

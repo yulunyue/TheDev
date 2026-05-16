@@ -39,7 +39,7 @@ class TestFormBase:
         assert hasattr(result, "to_json")
         json_result = result.to_json()
         assert json_result["type"] == "from"
-        assert len(json_result["childs"]) == 3
+        assert len(json_result["children"]) == 3
 
     def test_to_form_column_view(self):
         test_form = TestForm()
@@ -47,7 +47,7 @@ class TestFormBase:
         assert hasattr(result, "to_json")
         json_result = result.to_json()
         assert json_result["type"] == "from"
-        assert len(json_result["childs"]) == 3
+        assert len(json_result["children"]) == 3
 
     def test_to_table_view_empty(self):
         test_form = TestForm()
@@ -55,7 +55,7 @@ class TestFormBase:
         assert hasattr(result, "to_json")
         json_result = result.to_json()
         assert json_result["type"] == "table"
-        assert isinstance(json_result["childs"], list)
+        assert isinstance(json_result["children"], list)
 
     def test_form_with_empty_model(self):
         test_form = TestFormEmpty()
@@ -89,21 +89,21 @@ class TestFormBase:
     def test_form_row_structure(self):
         test_form = TestForm()
         result = test_form.to_form_row_view().to_json()
-        assert "childs" in result
+        assert "children" in result
         assert "data" in result
         assert "btns" in result["data"]
 
     def test_form_column_structure(self):
         test_form = TestForm()
         result = test_form.to_form_column_view().to_json()
-        assert "childs" in result
+        assert "children" in result
         assert "data" in result
 
     def test_table_structure(self):
         test_form = TestForm()
         result = test_form.to_table_view().to_json()
         assert "type" in result
-        assert "childs" in result
+        assert "children" in result
         assert "value" in result
 
     def test_model_instance_map(self):

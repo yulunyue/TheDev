@@ -105,7 +105,7 @@ export class FormColumn extends FlexRow {
     }
 
     get_value(): any {
-        let ret = {}
+        let ret: { [key: string]: any } = {}
         for (var key in this.child_map) {
             let value = this.child_map[key].get_value()
             ret[key] = value

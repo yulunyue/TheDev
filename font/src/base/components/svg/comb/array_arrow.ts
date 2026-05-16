@@ -4,8 +4,8 @@ import { GNode } from "../gnode";
 import { Rect } from "../rect";
 import { Line } from "../line";
 export class Grid extends SvgNode {
-    texts: Map<string, Text>
-    arrows: Map<string, Line>
+    texts: any = {}
+    arrows: any = {}
     g: GNode
     init_node(): void {
         this.g = new GNode()
@@ -15,8 +15,8 @@ export class Grid extends SvgNode {
     }
     render_option(): void {
         this.g.clear()
-        this.texts = new Map()
-        this.arrows = new Map()
+        this.texts = {}
+        this.arrows = {}
         for (var i = 0; i < this.option.children.length; i++) {
             let o = this.option.children[i]
             this.texts[o.key] = new Text().set_option(o)
@@ -26,7 +26,7 @@ export class Grid extends SvgNode {
         for (var i = 0; i < arrows.length; i++) {
             let o = arrows[i]
             this.arrows[o.key] = new Line().set_option(o)
-            this.g.add_children(this.arrows[o.key])
+            this.g.add_child(this.arrows[o.key])
         }
     }
 }

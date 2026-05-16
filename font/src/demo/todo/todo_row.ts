@@ -2,9 +2,10 @@ import {
     FlexRow, FlexColumn, Div, Constant, Node, web_dom,
     Button, Label, web_socket, Ct, Span
 } from "../../base/components/export";
+import { TodoData } from "./todo_types";
 
 export class TodoRow extends FlexRow {
-    todo_data: any
+    todo_data!: TodoData
     title_div: Div
     content_div: Div
     edit_btn: Button
@@ -13,7 +14,6 @@ export class TodoRow extends FlexRow {
     update_time: Div
     init_style(): void {
         this.set_style({
-            // padding: "0 12px",
             borderBottom: "1px solid #eee",
             width: "100%",
         })
@@ -39,18 +39,15 @@ export class TodoRow extends FlexRow {
             new FlexColumn().add_children([
                 this.user_name,
                 this.edit_btn
-            ])
-
-
+            ]),
         ])
     }
     init_event(): void {
         this.edit_btn.on_click(
             () => this.event_hander[Constant.EVENT_CHANGE](Constant.METHOD_EDIT, null, this.todo_data)
         )
-
     }
-    set_todo(data: any): this {
+    set_todo(data: TodoData): this {
         this.todo_data = data
         this.render_option()
         return this
