@@ -100,7 +100,7 @@ export class TaskMain extends FlexColumn {
     }
     submit(type: string) {
         let value = this.top_form.get_value()
-        web_dom.post("/app/task/web_submit", { type, value }, () => {
+        web_dom.post(`/app/task/web_${type.toLowerCase()}`, value, () => {
             this.load_task()
             dialog.close()
         })

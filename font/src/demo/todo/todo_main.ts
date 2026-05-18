@@ -6,7 +6,7 @@ import {
 } from "../../base/components/export";
 import { TodoContainer } from "./todo_container";
 import { TodoForm } from "./todo_form";
-import { TodoData, TODO_API } from "./todo_types";
+import { TodoData } from "./todo_types";
 
 export class TodoMain extends FlexColumn {
     todo_form: TodoForm
@@ -53,7 +53,7 @@ export class TodoMain extends FlexColumn {
             Util.extend(value, {
                 category: this.category_select.get_value()
             })
-            web_dom.post(TODO_API.SUBMIT, { type, value }, () => {
+            web_dom.post(`/app/todo/web_${type.toLowerCase()}`, value, () => {
                 this.load_todos()
                 dialog.close()
             })
@@ -73,7 +73,7 @@ export class TodoMain extends FlexColumn {
     load_todos(): void {
         let category = this.category_select.get_value()
         let done = this.done_select.get_value() === "true"
-        web_dom.post(TODO_API.SEARCH, { category, done }, (data: any) => {
+        web_dom.post('/app/todo/web_search', { category, done }, (data: any) => {
             this.score_span.set_html(data.title)
             this.todo_list.set_todos(data as any, (method: string, f: any, t: Partial<TodoData>) => {
                 this.todo_form.open(method, t)
@@ -88,7 +88,7 @@ export class TodoMain extends FlexColumn {
             ],
             id: "todo_done",
         })
-        web_dom.post(TODO_API.SCHEMA, {}, (v: any) => {
+        web_dom.post('/app/todo/schema', {}, (v: any) => {
             this.todo_form.set_schema(v.data.top_form)
             v.data.category.id = "todo_category"
             this.category_select.set_option(v.data.category)

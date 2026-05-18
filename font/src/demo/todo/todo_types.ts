@@ -1,5 +1,3 @@
-import { Node } from "../../base/web/cls"
-
 export interface TodoData {
     title: string
     content: string
@@ -8,6 +6,8 @@ export interface TodoData {
     create_time: number
     update_time: number
     user_id: string
+    money: number
+    score: number
 }
 
 export interface TodoSearchResponse {
@@ -15,17 +15,4 @@ export interface TodoSearchResponse {
     children: TodoData[]
 }
 
-export interface TodoSchemaResponse {
-    data: {
-        top_form: Node
-        category: any
-    }
-}
-
 export type TodoChangeCallback = (method: string, before: any, after: Partial<TodoData>) => void
-
-export const TODO_API = {
-    SCHEMA: '/app/todo/schema',
-    SEARCH: '/app/todo/web_search',
-    SUBMIT: '/app/todo/web_submit',
-} as const

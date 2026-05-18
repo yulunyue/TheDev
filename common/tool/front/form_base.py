@@ -18,25 +18,39 @@ class FormBase(ApiBase):
     def to_form_column_view(self):
         return Form().set_body(*self.__class__.model.get_form_columns())
 
-    def web_submit(self, type, value: dict):
-        _id = self.__class__.model.get_id_any(**value)
-        value = self.handler(_id, type, value)
+    def web_insert(self, **value):
+        _id = self.model.get_id_any(**value)
+        value = self._handler_insert(_id, value)
         if value is None:
-            return Node()
-        if type == C.METHOD_INSERT:
-            s = self.model.insert(_id, **value)
-            s.save()
-        elif type == C.METHOD_DELETE:
-            s = self.model.query(_id).delete()
-            s.save()
-        elif type == C.METHOD_EDIT:
-            s = self.model.query(_id).update(**value)
-            s.save()
-        return Node()
+            return Node(value=False)
+        self.model.insert(_id, **value).save()
+        return Node(value=True)
 
-    def handler(self, key, type, value):
+    def web_delete(self, **value):
+        _id = self.model.get_id_any(**value)
+        value = self._handler_delete(_id, value)
+        if value is None:
+            return Node(value=False)
+        self.model.query(_id).delete().save()
+        return Node(value=True)
+
+    def web_edit(self, **value):
+        _id = self.model.get_id_any(**value)
+        value = self._handler_edit(_id, value)
+        if value is None:
+            return Node(value=False)
+        self.model.query(_id).update(**value).save()
+        return Node(value=True)
+
+    def _handler_insert(self, _id, value):
+        return value
+
+    def _handler_edit(self, _id, value):
+        return value
+
+    def _handler_delete(self, _id, value):
         return value
 
     def to_table_view(self):
-        cls = self.__class__.model
+        cls = self.model
         return FrontTable().set_header(*cls.get_params().values()).set_body(cls.all())

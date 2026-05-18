@@ -17,7 +17,7 @@ class TaskTool(ToolBase):
                     ),
                 )
                 res = api.post(
-                    "/app/todo/web_submit",
+                    "/app/todo/web_insert",
                     param,
                     headers={C.THE_DEV_USER: name},
                 )

@@ -34,6 +34,8 @@ class TodoModel(FileConfig):
     done = BoolModel(default_value=False).set_title("状态").set_layout(C.LAYOUT_COLUMN)
     create_time = DateModel()
     update_time = DateModel()
+    money = NumberModel(default_value=0).set_title("金额")
+    score = NumberModel(default_value=0).set_title("分数")
     user_id = SearchModel().set_url("/app/user/web_search").set_title("用户")
 
     @classmethod
@@ -42,19 +44,20 @@ class TodoModel(FileConfig):
 
     @classmethod
     def get_form_columns(cls):
-        return [cls.title, cls.content, cls.done]
+        return [cls.title, cls.content, cls.money, cls.score, cls.done]
 
     @classmethod
-    def calc_score(cls, user_id: str) -> int:
-        score = 0
+    def calc_score(cls) -> int:
+        total = 0
         for v in cls.all():
-            if v.done.get_value() and v.user_id == user_id:
-                score += cls.CATEGORY_SCORE.get(v.category.get_value(), 0)
-        return score
+            if v.done.get_value():
+                total += cls.CATEGORY_SCORE.get(v.category.get_value(), 0)
+                total += v.score.get_value()
+        return int(total)
 
     @classmethod
     def search(
-        cls, category: str, done: bool, user_id: str
+        cls, category: str, done: bool
     ) -> "tuple[int, int, List[TodoModel]]":
         models = sorted(
             cls.all(), key=lambda v: v.create_time.get_value(), reverse=True
@@ -65,10 +68,9 @@ class TodoModel(FileConfig):
             if v.category == category and v.done == done:
                 todos.append(v)
             if v.category == "money":
-                money -= float(v.content.get_value())
-                v.content = f"{v.content} {money}"
-        score = cls.calc_score(user_id)
-        return score, money, todos
+                money -= v.money.get_value()
+        score = cls.calc_score()
+        return int(score), int(money), todos
 
 
 TodoModel.set_resource("config/setting/todo.json")
