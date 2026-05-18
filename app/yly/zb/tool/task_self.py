@@ -1,5 +1,6 @@
 from .task_base import ZbTask, File, OsUtil, Module, logger, CS
-from common.third_service.git_tool.git_util import GitUtil, Patch
+from common.third_service.git_tool.git_util import GitUtil
+from common.model.git.patch import Patch
 
 
 class SelfTask(ZbTask):

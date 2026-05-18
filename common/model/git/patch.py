@@ -1,5 +1,5 @@
 from common.util.export import File, List, logger
-from .file_change_model import FileChange
+from .file_change import FileChange
 
 
 class Patch:

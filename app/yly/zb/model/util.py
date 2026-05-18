@@ -9,7 +9,8 @@ from common.tool.export import (
     BoolModel,
 )
 from ..template.run_verification import CS, get_result
-from common.third_service.git_tool.git_util import GitUtil, Patch
+from common.third_service.git_tool.git_util import GitUtil
+from common.model.git.patch import Patch
 
 TARGETS = [
     CS.CODE_PATCH,

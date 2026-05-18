@@ -15,24 +15,7 @@ export class QtDragBar extends Div {
         })
     }
     init_event(): void {
-        this.el.addEventListener("mousedown", (e: MouseEvent) => {
-            e.preventDefault()
-            let startX = e.screenX
-            let startY = e.screenY
-            let windowX = window.screenX
-            let windowY = window.screenY
-            let onMove = (ev: MouseEvent) => {
-                let dx = ev.screenX - startX
-                let dy = ev.screenY - startY
-                window.moveTo(windowX + dx, windowY + dy)
-            }
-            let onUp = () => {
-                window.removeEventListener("mousemove", onMove)
-                window.removeEventListener("mouseup", onUp)
-            }
-            window.addEventListener("mousemove", onMove)
-            window.addEventListener("mouseup", onUp)
-        })
+
     }
     render(): void {
         this.set_html("拖动窗口")

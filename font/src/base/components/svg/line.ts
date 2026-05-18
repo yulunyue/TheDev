@@ -1,5 +1,6 @@
 import { GNode } from "./gnode"
-import { Defs, ARROW_KEY, ARROW_START, ARROW_END } from "./defs"
+import { Defs, } from "./defs"
+import { ARROW_KEY, ARROW_START, ARROW_END } from "./marker"
 export class Line extends GNode {
     pts: any[]
     src_y: number

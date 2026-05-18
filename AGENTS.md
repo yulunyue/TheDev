@@ -34,7 +34,6 @@
 
 ### CLI 工具
 - `python tool/<name>.py <method>` — 通过 `ToolBase` 自动发现方法
-- 文档自动生成在 `doc/tool/<name>.md`
 
 ### CI/CD 发布（Bolun 现网）
 - `python -m tool.service.cli bolun_cicd` — **一键发布现网**，依次执行：

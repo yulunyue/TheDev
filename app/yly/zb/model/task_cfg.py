@@ -15,7 +15,8 @@ from .util import (
 from .repo_cg import RepoCg
 from common.util.export import List, Dict, File, logger
 from common.tool.export import StrUtil
-from common.third_service.git_tool.git_util import GitUtil, Patch
+from common.third_service.git_tool.git_util import GitUtil
+from common.model.git.patch import Patch
 from common.third_util.io.apiapi import Api
 
 

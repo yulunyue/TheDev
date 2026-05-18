@@ -1,8 +1,8 @@
 from common.tool.export import OsUtil, GC
 from common.util.export import logger, List, File
 
-from .patch import Patch
-from .pr_info import PrInfo
+from common.model.git.patch import Patch
+from common.model.git.pr_info import PrInfo
 
 
 class GitUtil(OsUtil):

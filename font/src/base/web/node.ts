@@ -73,7 +73,7 @@ export class Node {
     }
     set_option(data: any) {
         for (var k in data) {
-            if (k == 'children') {
+            if (k == 'children' || k == 'childs') {
                 this.set_children(data[k])
             }
             else {

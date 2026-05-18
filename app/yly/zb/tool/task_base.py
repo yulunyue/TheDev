@@ -9,7 +9,8 @@ from common.util.export import (
     json_dumps,
 )
 from common.tool.export import OsUtil, GC, StrUtil
-from common.third_service.git_tool.git_util import GitUtil, Patch
+from common.third_service.git_tool.git_util import GitUtil
+from common.model.git.patch import Patch
 from ..model.export import (
     INPUTS_DIR,
     REPO_BASE,

@@ -14,10 +14,6 @@ export class CubeGrid extends Div {
         return this
     }
 
-    init_node(): void {
-        super.init_node()
-    }
-
     init_style(): void {
         super.init_style()
         this.set_style({
@@ -50,7 +46,7 @@ export class CubeGrid extends Div {
             faces.push(this.grid_data.slice(i * faceSize, (i + 1) * faceSize))
         }
 
-        const createBlock = (colorIndex: number) => {
+        const createBlock = (colorIndex: number): Div => {
             const block = new Div()
             block.set_style({
                 width: `${blockSize - 2}px`,
@@ -61,36 +57,27 @@ export class CubeGrid extends Div {
             return block
         }
 
-        const getIdx = (j: number, k: number): number => {
-            return j * this.n + k
-        }
-
-        const createFace = (faceIndex: number) => {
-            const col = new FlexColumn()
+        const createFace = (faceIndex: number): FlexColumn => {
+            const faceColumn = new FlexColumn()
             for (let j = 0; j < this.n; j++) {
-                const row = new FlexRow()
+                const faceRow = new FlexRow()
                 for (let k = 0; k < this.n; k++) {
-                    const colorIndex = faces[faceIndex][getIdx(j, k)]
-                    row.add_child(createBlock(colorIndex))
+                    const idx = j * this.n + k
+                    const colorIndex = faces[faceIndex][idx]
+                    faceRow.add_child(createBlock(colorIndex))
                 }
-                col.add_child(row)
+                faceColumn.add_child(faceRow)
             }
-            return col
-        }
-
-        const faceContainer = (faceIndex: number) => {
-            const col = new FlexColumn()
-            col.add_child(createFace(faceIndex))
-            return col
+            return faceColumn
         }
 
         const slotWidth = this.n * this.block_size
 
-        const faceRow = (faces_arr: (number | null)[]) => {
+        const createFaceRow = (faceIndices: (number | null)[]): FlexRow => {
             const row = new FlexRow()
             row.set_style({ justifyContent: 'center' })
-            for (const fi of faces_arr) {
-                if (fi === null) {
+            for (const faceIndex of faceIndices) {
+                if (faceIndex === null) {
                     const spacer = new Div()
                     spacer.set_style({
                         width: `${slotWidth}px`,
@@ -98,16 +85,16 @@ export class CubeGrid extends Div {
                     })
                     row.add_child(spacer)
                 } else {
-                    row.add_child(faceContainer(fi))
+                    row.add_child(createFace(faceIndex))
                 }
             }
             return row
         }
 
-        this.add_children([
-            faceRow([null, null, 0, null]),
-            faceRow([1, 2, 3, 4]),
-            faceRow([null, null, 5, null]),
+        this.add_childs([
+            createFaceRow([null, null, 0, null]),
+            createFaceRow([1, 2, 3, 4]),
+            createFaceRow([null, null, 5, null]),
         ])
     }
 }

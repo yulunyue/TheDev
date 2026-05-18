@@ -18,9 +18,9 @@ def parse_case(case: str):
 
 
 class Lc:
-    def submit(self, number, case_name=None):
+    def check(self, number, case_name=None):
         t = LcProblem.new(number)
-        code = PyFile(t.f.path).compile_to_one_file()
+
         cases = LcProblem.get_storge().get(number, "cases", default_value=dict())
         fun = Module().load_module_object(
             f"app.yly.algo.todo.lc_{number}::Solution::{t.fun_name}"
@@ -34,7 +34,13 @@ class Lc:
             expectedOutput = parse_case(case["expectedOutput"])[0]
             LOG.info(f"result:{result};  expectedOutput:{expectedOutput}")
             if str(expectedOutput) != str(result):
-                raise Exception(f"result:{result};  expectedOutput:{expectedOutput}")
+                LOG.info(f"result:{result};  expectedOutput:{expectedOutput}")
+                return False
+        return True
+
+    def submit(self, number):
+        t = LcProblem.new(number)
+        code = PyFile(t.f.path).compile_to_one_file()
         t.submit(code)
 
 

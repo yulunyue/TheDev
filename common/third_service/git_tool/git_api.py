@@ -56,3 +56,26 @@ class GitHubApi(Api):
         return data["data"]["repository"]["pullRequest"]["closingIssuesReferences"][
             "nodes"
         ]
+
+    def get_pr_diff(self, pull_number) -> str:
+        """
+        获取 PR 的 diff 内容（patch 格式）
+        """
+        headers = {
+            "Accept": "application/vnd.github.v3.patch",
+            "Authorization": f"Bearer {GC.github_token.get_value()}",
+        }
+        res, content = self.http(
+            "GET",
+            f"/repos/{self.owner}/{self.repo}/pulls/{pull_number}",
+            headers=headers,
+        )
+        if isinstance(content, bytes):
+            content = content.decode("utf-8")
+        return content
+
+    def get_issue(self, issue_number) -> dict:
+        """
+        获取 Issue 详情
+        """
+        return self.get(f"/repos/{self.owner}/{self.repo}/issues/{issue_number}")
