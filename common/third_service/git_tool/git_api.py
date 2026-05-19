@@ -8,9 +8,6 @@ class GitHubApi(Api):
         self.repo = repo
         return self
 
-    def get_endpoint(self):
-        return "https://api.github.com"
-
     def get_pr(self, pull_number, path=""):
         uri = f"/repos/{self.owner}/{self.repo}/pulls/{pull_number}"
         if path:
@@ -25,7 +22,7 @@ class GitHubApi(Api):
         return self.get_pr(pull_number, "/files?per_page=100")
 
     def graphql(self, query):
-        headers = {"Authorization": f"Bearer {GC.github_token.get_value()}"}
+        headers = {"Authorization": f"Bearer {self.get_config('Authorization')}"}
         data = self.post("graphql", dict(query=query), headers=headers)
         return data
 

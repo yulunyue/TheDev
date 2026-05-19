@@ -1,6 +1,7 @@
 import logging
 import logging.handlers
-from .util import name_to_path, File, LOGGER_MODE, dict_to_str, LOG_MAP
+from .util import name_to_path, LOGGER_MODE, dict_to_str, LOG_MAP
+from ..fp import File
 import os
 from ...constant import C
 

@@ -10,14 +10,14 @@ const COLOR_MAP: any = {
 }
 
 export class QtMessageItem extends Div {
-    left_div: Div
-    right_div: Div
+    key_div: Div
+    title_div: Div
 
     init_node(): void {
-        this.left_div = new Div()
-        this.add_child(this.left_div)
-        this.right_div = new Div()
-        this.add_child(this.right_div)
+        this.key_div = new Div()
+        this.add_child(this.key_div)
+        this.title_div = new Div()
+        this.add_child(this.title_div)
     }
 
     init_style(): void {
@@ -30,26 +30,34 @@ export class QtMessageItem extends Div {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
+            gap: 8,
         })
-        this.left_div.set_style({
+        this.key_div.set_style({
+            minWidth: 50,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            color: "#fff",
+        })
+        this.title_div.set_style({
             flex: 1,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
             color: "#fff",
-        })
-        this.right_div.set_style({
-            padding: "2px 8px",
-            borderRadius: 4,
-            backgroundColor: "rgba(255,255,255,0.2)",
-            color: "#fff",
+            textAlign: "right",
         })
     }
 
     render_option(): this {
         console.log(this.option)
-        let key = this.option.key
-        let title = this.option.title
-        let status = this.option.data.status
-        this.left_div.set_html(`${key} ${title}`)
-        this.right_div.set_html(status)
+        let key = this.option.key || ""
+        let title = this.option.title || ""
+        let status = this.option.data?.status || ""
+        
+        this.key_div.set_html(key)
+        this.title_div.set_html(title)
+        
         let bgStyle = COLOR_MAP[status] || {
             backgroundColor: "#2c3e50", color: "#fff"
         }

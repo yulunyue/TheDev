@@ -1,4 +1,4 @@
-from .logger import get_log, Logger
+from .base import get_log, Logger
 from .the_dev_log import get_dev_log, TheDevLogger
 from .util import LOGGER_PREFIX
 

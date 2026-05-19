@@ -6,6 +6,7 @@ import io
 from .tool import time_format, json_dumps, base64_encode, json_get, json_set, json_has
 from .str_util import StrUtil
 from .file_zip import FileZipMixin
+
 from common.exception import FileError
 
 
@@ -30,9 +31,7 @@ class File(FileZipMixin):
     def new(cls, path):
         if path not in File.FILES:
             File.FILES[path] = File(path)
-            from .log import logger
 
-            # logger.info(File.FILES[path])
         return File.FILES[path]
 
     def get_size(self):
@@ -121,7 +120,9 @@ class File(FileZipMixin):
         elif self.is_dir():
             shutil.copy(self.path, dst.path)
         else:
-            raise FileError("Cannot copy unsupported file type", context={"file": self.path})
+            raise FileError(
+                "Cannot copy unsupported file type", context={"file": self.path}
+            )
         return dst
 
     def move_to(self, dst):
@@ -135,7 +136,9 @@ class File(FileZipMixin):
             try:
                 return json.loads(data.decode(encoding))
             except Exception as e:
-                raise FileError("JSON parsing failed", context={"file": self.path, "error": e})
+                raise FileError(
+                    "JSON parsing failed", context={"file": self.path, "error": e}
+                )
         elif self.file_name.endswith(".cfg") or self.file_name.endswith(".ini"):
             from configparser import ConfigParser
 
@@ -158,15 +161,11 @@ class File(FileZipMixin):
                 return toml.load(self.path)
         return data.decode(encoding, errors="replace")
 
-    _config = None
-
     def get_config(self):
-        if self._config is None:
-            self._config = dict()
-            if self.exists():
-                data = self.read_file()
-                self._config.update(data)
-        return self._config
+        exist, ret = self.read_fast_file()
+        if not exist:
+            ret = dict()
+        return ret
 
     def get(self, *keys, default_value=None):
         return json_get(self.get_config(), keys, default_value=default_value)

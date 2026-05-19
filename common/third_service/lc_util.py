@@ -19,12 +19,27 @@ class LeetCode(Api):
     CACHE_DIR = CACHE_DIR
     CODE_DIR = CODE_DIR
 
-    def get_endpoint(self) -> str:
-        return "https://leetcode.cn"
+    def _refresh_auth(self):
+        """
+        401 时自动重新登录获取新的 session
+        """
+        try:
+            session = self.login()
+            from common.third_util.io.api import API_CONFIG
+
+            config = API_CONFIG.get(self.name)
+            config.cookie.set_value(dict(LEETCODE_SESSION=session))
+            config.save_to_local()
+            return session
+        except LcError as e:
+            raise LcError(f"自动登录失败: {e}")
 
     def login(self) -> str:
         import requests
+        import urllib3
         from common.third_util.io.api import API_CONFIG, USER_AGENT_DEFAULT
+
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
         username = self.get_username()
         password = self.get_password()
@@ -33,7 +48,7 @@ class LeetCode(Api):
 
         sess = requests.Session()
         sess.headers.update({"User-Agent": USER_AGENT_DEFAULT})
-        sess.get(f"{self.get_endpoint()}/accounts/login/")
+        sess.get(f"{self.get_endpoint()}/accounts/login/", verify=False)
         csrf = sess.cookies.get("csrftoken", "")
         res = sess.post(
             f"{self.get_endpoint()}/accounts/login/",
@@ -42,6 +57,7 @@ class LeetCode(Api):
                 "Referer": f"{self.get_endpoint()}/accounts/login/",
                 "X-CSRFToken": csrf,
             },
+            verify=False,
         )
         session = res.cookies.get("LEETCODE_SESSION") or sess.cookies.get(
             "LEETCODE_SESSION"
@@ -107,9 +123,7 @@ class LeetCode(Api):
                     session = c["value"]
                     break
             else:
-                raise LcError(
-                    "Login succeeded but no LEETCODE_SESSION cookie found"
-                )
+                raise LcError("Login succeeded but no LEETCODE_SESSION cookie found")
         finally:
             driver.quit()
 

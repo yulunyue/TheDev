@@ -12,7 +12,6 @@ from common.util.export import Node, C, Type, List
 
 
 class TodoModel(FileConfig):
-    CATEGORY_SCORE = dict(study=1, entertainment=-3, life=2, sport=3, project=2)
     INITIAL_MONEY = 342700
 
     title = StrModel().not_null().set_title("项目")
@@ -20,15 +19,7 @@ class TodoModel(FileConfig):
     category = (
         SelectModel()
         .set_title("类型")
-        .set_options(
-            study="学习",
-            work="工作",
-            project="项目",
-            money="账本",
-            entertainment="娱乐",
-            sport="运动",
-            life="生活",
-        )
+        .set_conf_file("config/setting/todo_category.json")
         .set_layout(C.LAYOUT_COLUMN)
     )
     done = BoolModel(default_value=False).set_title("状态").set_layout(C.LAYOUT_COLUMN)
@@ -51,7 +42,8 @@ class TodoModel(FileConfig):
         total = 0
         for v in cls.all():
             if v.done.get_value():
-                total += cls.CATEGORY_SCORE.get(v.category.get_value(), 0)
+                cat_data = v.category.get_data()
+                total += cat_data.get("score", 0)
                 total += v.score.get_value()
         return int(total)
 

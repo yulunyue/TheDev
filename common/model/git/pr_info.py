@@ -2,12 +2,26 @@ from common.util.export import List, File, logger
 from .file_change import FileChange
 from .patch import Patch
 from common.third_service.git_tool.git_api import GitHubApi
-from common.third_util.llm.opencode import OpencodeClient
+from common.third_util.llm.export import MaasClient
 import json
 
 
 class PrInfo:
     title = None
+    _maas_client = None
+    _maas_client_config_path = None
+
+    def get_maas_client(self):
+        if self._maas_client is None:
+            if self._maas_client_config_path:
+                self._maas_client = MaasClient(config_path=self._maas_client_config_path)
+            else:
+                self._maas_client = MaasClient()
+        return self._maas_client
+    
+    def set_llm_config_path(self, config_path):
+        self._maas_client_config_path = config_path
+        return self
 
     def set_owner(self, owner):
         self.owner = owner
@@ -160,21 +174,14 @@ class PrInfo:
 
             prompt = self._build_review_prompt(diff_content, issue_info)
 
-            client = OpencodeClient()
-            if self._session_id is None:
-                session = client.create_session()
-                if session:
-                    self._session_id = session.id
-                else:
-                    return {"error": "Failed to create session"}
-
-            response = client.execute_task(self._session_id, prompt)
+            maas_client = self.get_maas_client()
+            response = maas_client.simple_chat(prompt)
 
             suggestions = []
             summary = ""
             raw_response = response
 
-            if response and not response.startswith("execute_task error"):
+            if response:
                 try:
                     json_str = response
                     if "```json" in json_str:

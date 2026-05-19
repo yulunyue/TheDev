@@ -1,5 +1,7 @@
+import time
 from .http_util import requests
 from common.util.export import get_dev_log, File, get_cache, hash_any_str, json_dumps
+from common.exception import ApiError
 from .api_config import API_CONFIG, USER_AGENT_DEFAULT
 
 logger = get_dev_log("api")
@@ -150,7 +152,7 @@ class Api:
         logger.info(f"res_cookies: {json_dumps(dict(res.cookies.copy()),indent=2)}")
         logger.info(f"---end---")
 
-    def http(
+    def http_try(
         self,
         method,
         path,
@@ -208,8 +210,83 @@ class Api:
             ret = res.content
         if res.status_code > 300:
             raise Exception(res.status_code, res.url, res.text[:128])
+        if isinstance(ret, dict) and "errors" in ret:
+            error_msg = ret["errors"][0].get("message", "") if ret["errors"] else ""
+            if "请先注册/登录" in error_msg or "请先登录" in error_msg:
+                raise Exception(401, uri, error_msg)
+            raise Exception(res.status_code, uri, error_msg[:128])
         self.log(uri, res, method, data or param, headers, cookies, ret, proxies)
         return res, ret
+
+    def http(
+        self,
+        method,
+        path,
+        data=None,
+        headers=None,
+        cookies=None,
+        files=None,
+        param=None,
+        timeout=None,
+        stream=None,
+        max_retry=None,
+        retry_interval=None,
+    ):
+        retry_config = self.get_retry_config()
+        max_retry = max_retry or retry_config.get("max_retry", 3)
+        retry_interval = retry_interval or retry_config.get("retry_interval", 1)
+        for attempt in range(max_retry):
+            try:
+                return self.http_try(
+                    method,
+                    path,
+                    data,
+                    headers,
+                    cookies,
+                    files,
+                    param,
+                    timeout,
+                    stream,
+                )
+            except Exception as e:
+                status_code = self._extract_status_code(e)
+                if status_code == 401:
+                    self._handle_401(path)
+                    if attempt < max_retry - 1:
+                        continue
+                if self._should_retry(e) and attempt < max_retry - 1:
+                    logger.warning(f"Retry {attempt + 1}/{max_retry}: {e}")
+                    time.sleep(retry_interval)
+                    continue
+                raise
+
+    def get_retry_config(self):
+        return self.get_config("retry", default_value={})
+
+    def _extract_status_code(self, e: Exception):
+        if hasattr(e, "args") and e.args:
+            first_arg = e.args[0]
+            if isinstance(first_arg, int):
+                return first_arg
+        return None
+
+    def _should_retry(self, e: Exception) -> bool:
+        if isinstance(e, (requests.Timeout, requests.ConnectionError)):
+            return True
+        status_code = self._extract_status_code(e)
+        if status_code and 500 <= status_code < 600:
+            return True
+        if status_code in (401, 403, 404):
+            return False
+        return False
+
+    def _handle_401(self, path):
+        if hasattr(self, "_refresh_auth"):
+            self._refresh_auth()
+            return
+        raise ApiError(
+            f"认证失败(401)，请更新 {self.name} 的认证信息", context={"path": path}
+        )
 
     def hander_stream(self, res: requests.Response, stream=False, writer=None):
         res.raise_for_status()

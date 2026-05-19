@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 Chrome = webdriver.Chrome
 from common.util.export import File, logger, time, List, url_to_json, url_parse
 from selenium.webdriver.chrome.service import Service
-
+import sys
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -138,13 +138,13 @@ class SeleniumUtil:
         from common.third_util.io.api import Api
 
         if not chrome_exe.exists():
-            Api().download(
-                ensure_platform_url(GC.chrome_bin_uri.get_value())
-            ).unzip(chrome_exe.path)
+            Api().download(ensure_platform_url(GC.chrome_bin_uri.get_value())).unzip(
+                chrome_exe.path
+            )
         if not chrome_driver.exists():
-            Api().download(
-                ensure_platform_url(GC.chrome_driver_uri.get_value())
-            ).unzip(chrome_driver.path)
+            Api().download(ensure_platform_url(GC.chrome_driver_uri.get_value())).unzip(
+                chrome_driver.path
+            )
         if not chrome_exe.exists() or not chrome_driver.exists():
             raise Exception(
                 f"Chrome or ChromeDriver 下载失败,{chrome_exe.path} {chrome_driver.path}"

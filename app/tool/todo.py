@@ -29,9 +29,10 @@ class Todo(FormBase):
 
     def _handler_insert(self, _id, value):
         category = value.get("category")
-        if category not in self.model.category.options:
+        options = self.model.category.get_options()
+        if category not in options:
             raise Exception(
-                f"category {category} not in {list(TodoModel.category.options.keys())} "
+                f"category {category} not in {list(options.keys())} "
             )
         if self.model.exist(_id):
             raise Exception(f"{_id} exist")
@@ -40,9 +41,10 @@ class Todo(FormBase):
 
     def _handler_edit(self, _id, value):
         category = value.get("category")
-        if category not in self.model.category.options:
+        options = self.model.category.get_options()
+        if category not in options:
             raise Exception(
-                f"category {category} not in {list(TodoModel.category.options.keys())} "
+                f"category {category} not in {list(options.keys())} "
             )
         d = self.model.query(value["title"])
         user_id = d.user_id.get_value()
@@ -56,9 +58,10 @@ class Todo(FormBase):
 
     def web_clone(self, **value):
         category = value.get("category")
-        if category not in self.model.category.options:
+        options = self.model.category.get_options()
+        if category not in options:
             raise Exception(
-                f"category {category} not in {list(TodoModel.category.options.keys())} "
+                f"category {category} not in {list(options.keys())} "
             )
         now_time = time.time()
         content = value["content"]

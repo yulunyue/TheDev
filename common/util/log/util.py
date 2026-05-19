@@ -1,4 +1,3 @@
-from ..fp import File
 from ..tool import SYS_ARGS, SYS_KW, json_dumps, THE_DEV_LOGGER_PREFIX, dict_to_str
 import sys
 
