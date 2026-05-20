@@ -5,7 +5,6 @@ import fnmatch
 
 
 class GitUtil(OsUtil):
-    uri = "https://github.com/"
 
     def __init__(self, error_exit_flag=True, workdir: str = None):
         super().__init__("git", error_exit_flag)
@@ -218,28 +217,33 @@ class GitUtil(OsUtil):
         self,
         base_branch: str,
         target_branch: str,
+        commit_msg: str,
         extract_lines: int = 1800,
         new_branch_name: str = None,
-        commit_message: str = None,
         file_patterns: List[str] = None,
         threshold_ratio: float = 0.8,
+        push: bool = False,
+        push_remote: str = "origin",
     ) -> Dict:
         """
-        提取分支 diff 到新分支（checkout + copy 方式）
+        提取分支 diff 到新分支（checkout + copy 方式），可选推送
 
         流程：
         1. 从 base_branch checkout 新分支
         2. 从 target_branch 复制指定文件
         3. add + commit
+        4. 可选：push 到远程
 
         参数：
         - base_branch: 基础分支（如 origin/release）
         - target_branch: 目标分支（如 release_edkm）
+        - commit_msg: **必选** 提交信息（需符合仓库 hook 规范，如 [BUG123...]）
         - extract_lines: 要提取的目标行数（默认 1800）
         - new_branch_name: 新分支名（自动生成则不填）
-        - commit_message: 提交信息
         - file_patterns: 文件过滤（如 ["*.py"]）
         - threshold_ratio: 行数阈值比例（0.8 表示达到 80% 即可）
+        - push: 是否推送（默认 False）
+        - push_remote: 推送目标 remote（默认 origin）
 
         返回：
         {
@@ -247,7 +251,12 @@ class GitUtil(OsUtil):
             "new_branch": str,
             "commit_files": List[str],
             "extracted_lines": int,
-            "diff_summary": dict,
+            "commit_hash": str,
+            "push_success": bool,
+            "push_remote": str,
+            "total_files": int,
+            "total_add": int,
+            "total_del": int,
             "error": str
         }
         """
@@ -258,7 +267,10 @@ class GitUtil(OsUtil):
             diff_files = self.get_diff_numstat(base_branch, target_branch)
 
             if not diff_files:
-                return {"success": False, "error": f"分支 {base_branch} 和 {target_branch} 无差异"}
+                return {
+                    "success": False,
+                    "error": f"分支 {base_branch} 和 {target_branch} 无差异",
+                }
 
             if file_patterns:
                 diff_files = self.filter_by_patterns(diff_files, file_patterns)
@@ -283,21 +295,34 @@ class GitUtil(OsUtil):
             for file in selected_files:
                 self.run_git_output("checkout", target_branch, "--", file)
 
-            message = commit_message or f"阶段提交: 提取 {extracted_lines} 行变更"
             self.run("add", ".")
-            self.run("commit", "-m", message)
+            self.run("commit", "-m", commit_msg)
 
-            full_diff_summary = self.get_diff_summary(base_branch, target_branch)
+            commit_hash = self.get_commit_hash()
+
+            if push:
+                push_result = self.push_branch(new_branch, push_remote)
+                if not push_result["success"]:
+                    return {
+                        "success": False,
+                        "error": f"push 失败: {push_result['error']}",
+                        "new_branch": new_branch,
+                        "commit_hash": commit_hash,
+                        "commit_files": selected_files,
+                        "extracted_lines": extracted_lines,
+                    }
 
             return {
                 "success": True,
                 "new_branch": new_branch,
                 "commit_files": selected_files,
                 "extracted_lines": extracted_lines,
+                "commit_hash": commit_hash,
+                "push_success": push,
+                "push_remote": push_remote if push else None,
                 "total_files": len(diff_files),
                 "total_add": sum(f["add"] for f in diff_files),
                 "total_del": sum(f["del"] for f in diff_files),
-                "full_diff_summary": full_diff_summary,
             }
 
         except Exception as e:
@@ -329,3 +354,31 @@ class GitUtil(OsUtil):
         """
         output = self.run_git_output("diff", f"{base}..{target}", "--name-only")
         return [f.strip() for f in output.split("\n") if f.strip()]
+
+    def push_branch(self, branch: str, remote: str = "origin") -> Dict:
+        """
+        推送分支到远程
+
+        返回: {"success": bool, "remote": str, "branch": str, "error": str}
+        """
+        import subprocess
+
+        try:
+            result = subprocess.run(
+                ["git", "push", remote, branch],
+                cwd=self.root_path,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode != 0:
+                return {"success": False, "error": result.stderr.strip()}
+            return {"success": True, "remote": remote, "branch": branch}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def get_commit_hash(self, ref: str = "HEAD") -> str:
+        """
+        获取提交 hash（短格式）
+        """
+        return self.run_git_output("rev-parse", "--short", ref)
