@@ -12,7 +12,7 @@ description: 提交代码并推送到 git 远端（默认 origin + github）
 1. 运行 `git status` 确认当前变更
 2. 运行 `git diff --stat` 和 `git diff` 查看具体变更
 3. **先执行 `git pull --rebase origin <current_branch>` 拉取最新代码**
-4. 如已存在 staged 变更则跳过 add，否则**逐个确认后用 `git add <file>` 添加文件**
+4. 如已存在 staged 变更则跳过 add，否则用 `git add .` 添加文件
 5. 用 `$1` 或自动生成的 message 执行 `git commit -m "<message>"`
 6. **推送**：
    - 无 `$2`：依次推送到 `origin` 和 `github`

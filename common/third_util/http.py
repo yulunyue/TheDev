@@ -114,18 +114,45 @@ class MainHandler(RequestHandler):
             else:
                 self.params = dict()
         else:
-            self.params = request.query_arguments
+            query_params = {}
+            for k, v in request.query_arguments.items():
+                for single_v in v:
+                    vv = single_v.decode("utf-8") if isinstance(single_v, bytes) else single_v
+                    if k in query_params:
+                        if not isinstance(query_params[k], list):
+                            query_params[k] = [query_params[k]]
+                        query_params[k].append(vv)
+                    else:
+                        query_params[k] = vv
+            self.params = query_params
+
+            if request.body and self.req_content_type.startswith(
+                "application/x-www-form-urlencoded"
+            ):
+                import urllib.parse
+
+                body_params = urllib.parse.parse_qs(request.body.decode("utf-8"))
+                for k, v in body_params.items():
+                    if k in self.params:
+                        if not isinstance(self.params[k], list):
+                            self.params[k] = [self.params[k]]
+                        self.params[k].extend(v)
+                    else:
+                        self.params[k] = v[0] if len(v) == 1 else v
 
         super().__init__(application, request, **kwargs)
 
     async def get(self, *args):
         path = self.path[1:].split("?")[0]
-        ret = f"404 not find {path}"
         if os.path.isfile(path):
             with open(path, "rb") as f:
                 ret = f.read()
-        logger.info(f"{list(args)}:{len(ret)}")
-        self.out(ret, self.params)
+            logger.info(f"{list(args)}:{len(ret)}")
+            self.out(ret, self.params)
+        else:
+            ret = self.POST_API.call(self.path, self.params, self.envs)
+            logger.info(f"[{self.path}]")
+            self.out(ret, self.params)
 
     async def post(self, *args):
         if self.req_content_type.startswith("multipart/form-data"):

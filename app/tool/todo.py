@@ -8,8 +8,10 @@ from common.tool.export import (
     DateModel,
     FormBase,
 )
-from common.util.export import Node, Type, time
+from common.util.export import Node, Type, time, get_log
 from .model.todo_model import TodoModel
+
+logger = get_log("todo")
 
 
 class Todo(FormBase):
@@ -78,4 +80,8 @@ class Todo(FormBase):
             user_id=self.username,
         )
         self.model.save_to_local()
+        return Node(value=True)
+
+    def upload_msg(self, **params):
+        logger.info(f"upload_msg params: {params}")
         return Node(value=True)
