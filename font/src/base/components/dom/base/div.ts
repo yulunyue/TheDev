@@ -70,7 +70,7 @@ export class Div {
         return this
     }
 
-    init_table_style(): void {}
+    init_table_style(): void { }
 
     do_change(key: string, src?: any, dst?: any) {
         if (src == null && dst == null) {
@@ -144,7 +144,7 @@ export class Div {
         return this._value
     }
 
-    render() {}
+    render() { }
 
     init_default_div_style() {
         this.set_div_style({
@@ -156,15 +156,15 @@ export class Div {
         this.el.scrollTo(0, this.el.scrollHeight)
     }
 
-    init_style() {}
+    init_style() { }
 
-    init_event() {}
+    init_event() { }
 
     create_element(name: string): any {
         return web_dom.createElement(name)
     }
 
-    init_node() {}
+    init_node() { }
 
     mount(el: Dom) {
         el.appendChild(this.el)
@@ -180,9 +180,9 @@ export class Div {
         return this
     }
 
-    on_render() {}
+    on_render() { }
 
-    on_mount() {}
+    on_mount() { }
 
     add_child(c: any) {
         c.mount(this.el)
@@ -197,26 +197,30 @@ export class Div {
         return this
     }
 
-    parse_child_option(o: Node) {}
+    parse_child_option(o: Node) { }
 
     set_children(children: any, cls: any) {
-        let idx = 0
-        while (idx < children.length) {
-            this.parse_child_option(children[idx])
-            if (this.children[idx]) {
-                this.children[idx].set_option(children[idx]).show()
-            } else {
-                this.add_child(cls(children[idx]))
+        this.children_map = {}
+        let old_children = this.children
+        this.children = []
+        for (let i = 0; i < children.length; i++) {
+            this.parse_child_option(children[i])
+            let child = old_children.find(c => c.option?.key === children[i].key)
+            if (!child) {
+                child = cls(children[i])
+                child.set_parent(this)
             }
-            this.children_map[children[idx].key] = this.children[idx]
-            idx += 1
+            child.set_option(children[i]).show()
+            child.index = i
+            this.children_map[children[i].key] = child
+            this.children.push(child)
+            let refNode = this.el.childNodes[i]
+            if (child.el !== refNode) {
+                this.el.insertBefore(child.el, refNode || null)
+            }
         }
-        while (idx < this.children.length) {
-            this.children[idx].hide()
-            idx += 1
-        }
-        if (this.option.id) {
-            web_dom.get_local_str(this.option.id, (v: any) => this.set_value(v))
+        for (let i = children.length; i < old_children.length; i++) {
+            old_children[i].hide()
         }
         return this
     }
@@ -254,9 +258,9 @@ export class Div {
         return this
     }
 
-    remove(i: number) {}
+    remove(i: number) { }
 
-    render_option() {}
+    render_option() { }
 
     add_children(children: any[]) {
         for (var i = 0; i < children.length; i++) {
@@ -287,7 +291,7 @@ export class Div {
     }
 }
 
-export interface Div extends DivStyleMethods {}
+export interface Div extends DivStyleMethods { }
 
 const divProto = Div.prototype as any
 const styleProto = DivStyle.prototype as any

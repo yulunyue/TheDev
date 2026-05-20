@@ -9,10 +9,29 @@ export class FormContainer extends Div {
     body: Div
     container: Container
     init_style(): void {
-        this.set_style({ margin: Constant.DEFAULT_MARGIN })
+        this.set_style_column()
+    }
+    set_style_column(): void {
+        this.set_style({ 
+            margin: Constant.DEFAULT_MARGIN,
+            display: "flex",
+            flexDirection: "column"
+        })
         this.title.set_style({
             margin: Constant.DEFAULT_MARGIN,
             width: 80
+        })
+    }
+    set_style_row(): void {
+        this.set_style({ 
+            margin: Constant.DEFAULT_MARGIN,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center"
+        })
+        this.title.set_style({
+            margin: Constant.DEFAULT_MARGIN,
+            width: 45
         })
     }
     init_node(): void {

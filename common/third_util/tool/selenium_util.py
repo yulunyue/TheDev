@@ -21,9 +21,10 @@ from .selenium_script import wart_until_doc_ready
 class SeleniumUtil:
     driver: WebDriver = None
 
-    def __init__(self, dev_port=9527, default_time_out=6):
+    def __init__(self, dev_port=9527, default_time_out=6, bypass_proxy=False):
         self.dev_port = dev_port
         self.default_time_out = default_time_out
+        self._bypass_proxy = bypass_proxy
 
     @property
     def logger(self):
@@ -176,6 +177,9 @@ class SeleniumUtil:
             self.options.add_argument("--disable-extensions")  # 禁用扩展
             self.options.add_argument("--no-first-run")  # 跳过首次运行提示
             self.options.add_argument("--ignore-certificate-errors")
+            if self._bypass_proxy:
+                self.options.add_argument("--proxy-server='direct://'")
+                self.options.add_argument("--proxy-bypass-list=*")
             if isinstance(self.dev_port, int):
                 self.options.debugger_address = f"127.0.0.1:{self.dev_port}"
                 self.options.add_argument("--start-maximized")

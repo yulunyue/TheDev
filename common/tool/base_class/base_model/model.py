@@ -15,9 +15,14 @@ class BaseModel:
         self.ops = []
         self.title = key
         self.key = key
+        self.width = None
 
     def set_layout(self, layout):
         self.layout = layout
+        return self
+
+    def set_width(self, width):
+        self.width = width
         return self
 
     def set_title(self, title):
@@ -79,7 +84,7 @@ class BaseModel:
             key=self.key,
             value=v,
             title=self.get_title(),
-            data=dict(layout=self.layout),
+            data=dict(layout=self.layout, width=self.width),
         )
         ret.update(kw)
         return ret

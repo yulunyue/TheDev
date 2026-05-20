@@ -40,7 +40,7 @@ export class QtMessageItem extends Div {
             color: "#fff",
         })
         this.title_div.set_style({
-            flex: 1,
+            flex: "1",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",

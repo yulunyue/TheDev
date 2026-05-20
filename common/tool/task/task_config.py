@@ -32,6 +32,7 @@ class TaskConfig(FileConfig):
         .set_title("运行模式")
         .set_options(
             **{
+                C.NEVER: "永不执行",
                 C.SECOND1: "间隔1秒执行",
                 C.SECOND30: "间隔30秒执行",
                 C.EVERY_DAY_BEGIN: "每天0点执行",
@@ -72,6 +73,8 @@ class TaskConfig(FileConfig):
 
     def can_run(self):
         run_model = self.run_model.get_value()
+        if run_model == C.NEVER:
+            return False
         t = time.time()
         if run_model == C.SECOND1:
             return t > self.last_finish_t + 1

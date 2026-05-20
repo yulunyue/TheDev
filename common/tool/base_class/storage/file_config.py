@@ -62,6 +62,11 @@ class FileConfig(ConfigBase):
             return c[ins.key]
         return ins.default_value
 
+    def delete(self):
+        self.instance_map.pop(self._id)
+        self._config.pop(self._id)
+        return self
+
     @classmethod
     def all(cls) -> List[Self]:
         return cls.instance_map.values()

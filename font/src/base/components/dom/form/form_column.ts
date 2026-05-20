@@ -52,18 +52,34 @@ export class FormColumn extends FlexRow {
         if (this.input_width) {
             r.container.set_width(this.input_width)
         }
+        if (o.data?.width) {
+            r.container.set_width(o.data.width)
+        }
         return r
     }
     render_chilld(d: Div, o: Node) {
         return d.set_flex_style_column()
     }
     render_children(children: Node[]) {
-        this.body.set_children(children, this.get_row.bind(this))
         this.child_map = {}
-        for (var i = 0; i < children.length; i++) {
-            let o = children[i]
-            this.body.children[i].set_option(o).on_change(this.do_change.bind(this))
-            this.child_map[o.key] = this.render_chilld(this.body.children[i], children[i])
+        this.body.clear()
+        for (let o of children) {
+            if (o.type === "form_row") {
+                let rowContainer = new FlexRow()
+                for (let child of o.children) {
+                    let container = this.get_row(child)
+                    container.set_style_row()
+                    container.set_option(child).on_change(this.do_change.bind(this))
+                    rowContainer.add_child(container)
+                    this.child_map[child.key] = container
+                }
+                this.body.add_child(rowContainer)
+            } else {
+                let container = this.get_row(o)
+                container.set_option(o).on_change(this.do_change.bind(this))
+                this.body.add_child(container)
+                this.child_map[o.key] = this.render_chilld(container, o)
+            }
         }
         if (this.option.id) {
             web_dom.get_local(this.option.id, this.set_value.bind(this))

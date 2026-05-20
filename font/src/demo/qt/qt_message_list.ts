@@ -2,13 +2,11 @@ import { Div } from "../../base/components/export"
 import QtMessageItem from "./qt_message_item"
 
 export class QtMessageList extends Div {
-    show_keys: string[] = []
-
-
+    child_items: any[] = []
 
     init_style(): void {
         this.set_style({
-            flex: 1,
+            flex: "1",
             backgroundColor: "#34495e",
             overflow: "auto",
             padding: 10,
@@ -17,17 +15,13 @@ export class QtMessageList extends Div {
         })
     }
 
-    render_option(): void {
-        this.set_children(this.option.children, this.add_displayed_item.bind(this))
-    }
-    add_displayed_item(data: any) {
-        return new QtMessageItem().set_option(data)
-    }
-
     add_message(msg: any): void {
-        if (this.children_map[msg.key]) {
-            this.children_map[msg.key].set_option(msg)
+        let idx = this.child_items.findIndex(c => c.key === msg.key)
+        if (idx >= 0) {
+            this.child_items.splice(idx, 1)
         }
+        this.child_items.unshift(msg)
+        this.set_children(this.child_items, (data: any) => new QtMessageItem().set_option(data))
     }
 }
 

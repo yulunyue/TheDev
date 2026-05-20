@@ -20,6 +20,8 @@ class FormBase(ApiBase):
 
     def web_insert(self, **value):
         _id = self.model.get_id_any(**value)
+        if self.model.exist(_id):
+            return Node(value=False)
         value = self._handler_insert(_id, value)
         if value is None:
             return Node(value=False)
@@ -28,6 +30,8 @@ class FormBase(ApiBase):
 
     def web_delete(self, **value):
         _id = self.model.get_id_any(**value)
+        if not self.model.exist(_id):
+            return Node(value=False)
         value = self._handler_delete(_id, value)
         if value is None:
             return Node(value=False)
@@ -36,6 +40,8 @@ class FormBase(ApiBase):
 
     def web_edit(self, **value):
         _id = self.model.get_id_any(**value)
+        if not self.model.exist(_id):
+            return Node(value=False)
         value = self._handler_edit(_id, value)
         if value is None:
             return Node(value=False)

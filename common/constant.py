@@ -41,6 +41,7 @@ class Constant:
     VIEW_SATTE_MAX = (1 << 8) - 1
     LAYOUT_ROW = "ROW"
     LAYOUT_COLUMN = "COLUMN"
+    NEVER = "NEVER"
     SECOND1 = "SECOND1"
     SECOND30 = "SECOND30"
     MINUTE1 = "MINUTE1"

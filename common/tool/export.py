@@ -29,6 +29,6 @@ from .front.util import FontBase, to_web_view
 from .front.row import Row
 from .front.column import Column
 from .front.search import FontSearch
-from .front.form import Form
+from .front.form import Form, FormRow
 from .front.form_base import FormBase
 from .front.array_arrow import ArrayWithArrow

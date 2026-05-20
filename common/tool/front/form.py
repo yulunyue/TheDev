@@ -18,3 +18,13 @@ class Form(FontBase):
     def to_json(self):
         ret = dict(type="from", children=self.childs, data=dict(btns=self.btns))
         return ret
+
+
+class FormRow(FontBase):
+
+    def set_body(self, *body: list):
+        self.childs = [to_web_view(d) for d in body]
+        return self
+
+    def to_json(self):
+        return dict(type="form_row", children=self.childs)

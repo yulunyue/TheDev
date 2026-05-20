@@ -30,56 +30,24 @@ class Todo(FormBase):
         return Node(children=todos, title=f"分数: {score}.{money}")
 
     def _handler_insert(self, _id, value):
-        category = value.get("category")
-        options = self.model.category.get_options()
-        if category not in options:
-            raise Exception(
-                f"category {category} not in {list(options.keys())} "
-            )
-        if self.model.exist(_id):
-            raise Exception(f"{_id} exist")
         value.update(create_time=time.time(), user_id=self.username)
         return value
 
     def _handler_edit(self, _id, value):
-        category = value.get("category")
-        options = self.model.category.get_options()
-        if category not in options:
-            raise Exception(
-                f"category {category} not in {list(options.keys())} "
-            )
-        d = self.model.query(value["title"])
-        user_id = d.user_id.get_value()
-        if user_id and user_id != self.username:
-            raise Exception("not allow")
-        value.update(update_time=time.time(), user_id=self.username)
-        return value
-
-    def _handler_delete(self, _id, value):
+        value.update(update_time=time.time())
         return value
 
     def web_clone(self, **value):
         category = value.get("category")
-        options = self.model.category.get_options()
-        if category not in options:
-            raise Exception(
-                f"category {category} not in {list(options.keys())} "
-            )
-        now_time = time.time()
         content = value["content"]
         if not content or self.model.exist(content):
             raise Exception(f"contnet is error {content}")
-        self.model.query(value["title"]).update(
-            done=True, content=f"NEXT:{content}", update_time=now_time
-        )
-        self.model.insert(
-            content,
+        self.web_edit(title=value["title"], done=True, content=f"NEXT:{content}")
+        self.web_insert(
             title=content,
             category=category,
-            create_time=now_time,
             user_id=self.username,
         )
-        self.model.save_to_local()
         return Node(value=True)
 
     def upload_msg(self, **params):
