@@ -72,9 +72,18 @@ from common.util.export import (
     assert_dict, Node, C
 )
 from common.tool.export import (
-    ToolBase, PyUtil, System, FrontTable
+    ToolBase, PyUtil, System, FrontTable, GC, ProcessLock
 )
 ```
+
+## 两个 export 的分工
+
+| 文件 | 作用域 | 典型导出 |
+|---|---|---|
+| `common/util/export.py` | **util 层内部**（底层工具） | `File`, `logger`, `Node`, `ApiBase`, `C`, `TestBase`, `Module` 等 |
+| `common/tool/export.py` | **tool 层内部**（上层工具） | `GC`, `OsUtil`, `ToolBase`, `System`, `ProcessLock`, `PyUtil`, `FrontTable` 等 |
+
+`util/export.py` 不导出 `tool` 层的类（如 `GC`），反之亦然。需要哪个层的类就从对应的 `export` 导入。
 
 ## 前端规范
 
@@ -119,6 +128,5 @@ from common.tool.export import (
 - 测试查找顺序为 `tests/` → `app/` → `common/`；优先匹配第一个找到的
 - Gunicorn 测试（`test_gunicorn.py`）在 Windows 上跳过
 - `File` 工具类会规范化路径（`\` → `/`）并按路径缓存实例
-- `common/util/export.py` 是枢纽模块 — 几乎所有内容都从这里重新导出
+- `common/util/export.py` 是 **util 层内部**的枢纽模块，`common/tool/export.py` 是 **tool 层内部**的枢纽模块，互不交叉
 - Python 格式化：`black .`（配置在 `pyproject.toml`）
-- **读题只读题**：用户要求"读题"时，只返回题目原文，不附加任何分析、思路或代码建议

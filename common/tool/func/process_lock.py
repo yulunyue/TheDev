@@ -10,7 +10,7 @@ class ProcessLock:
         self.pid_file = File(f"{self.PID_DIR}/{name}.pid")
         self.pid_file.parent().make_dir_if_not_exist(True)
 
-    def get_pid(self) -> int | None:
+    def get_pid(self) -> int:
         if self.pid_file.exists():
             try:
                 content = self.pid_file.read_file()
@@ -36,7 +36,10 @@ class ProcessLock:
 
     def start_unique(self, pid: int = None) -> bool:
         if self.is_running():
-            System.kill(self.get_pid())
+            try:
+                System.kill(self.get_pid())
+            except ProcessLookupError:
+                self.clear()
         else:
             self.clear()
         if pid is None:

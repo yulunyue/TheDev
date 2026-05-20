@@ -1,3 +1,4 @@
+import os
 from common.util.export import (
     Node,
     md5,
@@ -13,6 +14,7 @@ from common.tool.export import (
     FrontTable,
     FontSearch,
     ProcessLock,
+    System,
 )
 
 
@@ -59,10 +61,9 @@ class Manage:
         return Node()
 
     def restart(self, config: str):
-        ProcessLock(config).start_process(
-            ["python", "main.py", config], log_file="data/tmp/restart.log"
-        )
-        return Node()
+        cmd = f"nohup python main.py {config} > /dev/null 2>&1 &"
+        status = os.system(cmd)
+        return Node(value=cmd, data=dict(status=status))
 
     def send_msg(self, topic: str, value: dict, **kw):
         """

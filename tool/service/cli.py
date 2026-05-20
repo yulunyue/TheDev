@@ -1,16 +1,16 @@
-from common.tool.export import OsUtil, System, ToolBase, GC
+from common.tool.export import OsUtil, ToolBase, GC
 from common.third_util.io.api import Api
-from common.util.export import File, logger, time, md5
-import random
+from common.third_util.io.api_config import API_CONFIG
+from common.util.export import File, logger, md5
 
 THE_DEV_ZIP_PATH = "data/the_dev.zip"
 UPLOAD_ZIP_PATH = "data/upload/the_dev.zip"
 
 
 class Cli(ToolBase):
-    def load(self, name="Api", ip_port="", b64_pkg_num=8192 * 4):
-        self.api = Api(name).set_endpoint(f"http://{ip_port}")
-        self.b64_pkg_num = b64_pkg_num
+    def _load(self, server="bolun"):
+        cfg = API_CONFIG.get(server)
+        self.api = Api("Api").set_endpoint(f"http://{cfg.endpoint.get_value()}")
 
     def npm_build(self):
         File("font/dist").remove()
@@ -25,16 +25,18 @@ class Cli(ToolBase):
         )
         logger.info("package")
 
-    def upload(self):
+    def upload(self, server="bolun"):
+        self._load(server)
         self.api.post_files(f"/app/manage/post_file", THE_DEV_ZIP_PATH)
 
-    def upload_base_64(self, name="Api", ip_port="", b64_pkg_num=8192 * 4):
-        self.load(name, ip_port, b64_pkg_num)
+    def upload_base_64(self, server="bolun", b64_pkg_num=8192 * 4):
+        self._load(server)
+        self.b64_pkg_num = b64_pkg_num
         data = File(THE_DEV_ZIP_PATH).read_b64_data()
         all_num = len(data) // self.b64_pkg_num
         for idx in range(0, all_num + 1):
             res = self.api.post(
-                f"/app/manage/post_files_base64",
+                "/app/manage/post_files_base64",
                 dict(
                     path=UPLOAD_ZIP_PATH,
                     data=data[idx * self.b64_pkg_num : (idx + 1) * self.b64_pkg_num],
@@ -47,23 +49,27 @@ class Cli(ToolBase):
                 raise Exception(idx, res[:100], len(data))
         logger.map(all_size=len(data), md5_check=md5(data))
 
-    def install(self, name="Api", ip_port=""):
-        self.load(name, ip_port)
-        res = self.api.post(f"/app/manage/unzip", data=dict(path=UPLOAD_ZIP_PATH))
+    def _unzip(self, server="bolun"):
+        self._load(server)
+        res = self.api.post("/app/manage/unzip", data=dict(path=UPLOAD_ZIP_PATH))
         logger.map(res=res)
 
-    def restart(self, config, name="Api", ip_port=""):
-        self.load(name, ip_port)
-        res = self.api.post(f"/app/manage/restart", data=dict(config=config))
-        logger.map(res=res)
-
-    def cicd(self, config, name="Api", ip_port=""):
-        self.load(name, ip_port)
-        self.npm_build()
+    def install(self, server="bolun"):
         self.package()
-        self.upload_base_64(name, ip_port)
-        self.install(name, ip_port)
-        self.restart(config, name, ip_port)
+        self._load(server)
+        self.api.post_files(f"/app/manage/post_file", THE_DEV_ZIP_PATH)
+        res = self.api.post("/app/manage/unzip", data=dict(path=UPLOAD_ZIP_PATH))
+        logger.map(res=res)
+
+    def restart(self, config, server="bolun"):
+        self._load(server)
+        res = self.api.post("/app/manage/restart", data=dict(config=config))
+        logger.map(res=res)
+
+    def cicd(self, config, server="bolun"):
+        self.npm_build()
+        self.install(server)
+        self.restart(config, server)
 
 
 if __name__ == "__main__":

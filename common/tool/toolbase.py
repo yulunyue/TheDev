@@ -1,28 +1,11 @@
 from common.util.export import (
-    List,
-    os,
     File,
     SYS_ARGS,
     SYS_KW,
     logger,
-    sys,
     time,
     json_dumps,
 )
-from .file_handlers.todo import TodoFile
-
-
-def make_md_file(file_path=None):
-    if file_path is None:
-        file_path = (
-            sys.argv[0]
-            .replace("\\", "/")
-            .replace("/tool/", "/doc/tool/")
-            .replace(".py", ".md")
-        )
-        if not file_path.startswith("doc/") and "/doc/tool/" not in file_path:
-            file_path = file_path.replace("tool/", "doc/tool/", 1)
-    return file_path
 
 
 class ToolBase:
@@ -36,26 +19,10 @@ class ToolBase:
 
     def run(self):
         self.msgs = []
-        self.argvs, kw = SYS_ARGS.copy(), SYS_KW.copy()
-        if self.argvs:
-            fun_name = self.argvs.pop()
-        else:
-            fun_name = ""
-        md_file = make_md_file()
-        todo = TodoFile(md_file)
-        logger.info(md_file)
-        funs = todo.get_cmd(fun_name)
-        if isinstance(funs, str):
-            logger.info(f"NOT FIND {fun_name}\n{funs}")
-            return
-
-        for ff, args in funs:
-            if isinstance(ff, str):
-                ff = getattr(self, ff)
-            if args and isinstance(args[0], dict):
-                ff(**args[0])
-            else:
-                ff(*args)
+        args, kw = SYS_ARGS.copy(), SYS_KW.copy()
+        fun_name = args.pop(0)
+        funs = getattr(self,fun_name)
+        funs(*args,**kw)
 
     def get_call_fun(self):
         ret = []

@@ -39,6 +39,9 @@ class TheDevLogger:
     def info(self, msg):
         self.write(msg)
 
+    def warning(self, msg):
+        self.write(msg)
+
     def debug(self, msg):
         self.write(msg)
 

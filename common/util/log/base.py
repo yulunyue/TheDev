@@ -1,9 +1,12 @@
 import logging
 import logging.handlers
+import sys
 from .util import name_to_path, LOGGER_MODE, dict_to_str, LOG_MAP
 from ..fp import File
 import os
 from ...constant import C
+
+_STACKLEVEL_SUPPORT = sys.version_info >= (3, 8)
 
 DEFAULT_FMT = "".join(
     [
@@ -68,13 +71,13 @@ class Logger(logging.Logger):
     def debug(
         self, msg, *args, exc_info=None, stack_info=False, stacklevel=1, extra=None
     ):
+        if _STACKLEVEL_SUPPORT:
+            return super().debug(
+                msg, *args, exc_info=exc_info, stack_info=stack_info,
+                stacklevel=stacklevel + 1, extra=extra,
+            )
         return super().debug(
-            msg,
-            *args,
-            exc_info=exc_info,
-            stack_info=stack_info,
-            stacklevel=stacklevel + 1,
-            extra=extra,
+            msg, *args, exc_info=exc_info, stack_info=stack_info, extra=extra,
         )
 
     def info(self, msg, *args, stacklevel=1, extra=None):
@@ -82,11 +85,9 @@ class Logger(logging.Logger):
             from ..io.manage import IO_MANAGE
 
             IO_MANAGE.send(extra, msg)
-        return super().info(
-            msg,
-            *args,
-            stacklevel=stacklevel + 1,
-        )
+        if _STACKLEVEL_SUPPORT:
+            return super().info(msg, *args, stacklevel=stacklevel + 1)
+        return super().info(msg, *args)
 
     def add_hander(self, h: logging.Handler, level, fmt=None):
         if fmt is None:

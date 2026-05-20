@@ -85,21 +85,17 @@ class GitUtil(OsUtil):
         """
         执行 git 命令并返回输出内容（不抛异常）
         """
-        import subprocess
-
-        cmd = ["git"] + list(args)
+        old_flag = self.error_exit_flag
+        self.error_exit_flag = False
         try:
-            result = subprocess.run(
-                cmd,
-                cwd=self.root_path,
-                capture_output=True,
-                text=True,
-                timeout=60,
-            )
-            return result.stdout.strip()
+            _, stdout, _ = self.run(*args)
+            return stdout.strip()
         except Exception as e:
+            cmd = ["git"] + list(args)
             logger.error(f"git command failed: {cmd} -> {e}")
             return ""
+        finally:
+            self.error_exit_flag = old_flag
 
     def get_current_branch(self) -> str:
         """

@@ -10,19 +10,16 @@ class TaskTool(ToolBase):
         ret = []
         for type, values in mp.items():
             for v in values:
-                param = dict(
-                    type=C.METHOD_INSERT,
-                    value=dict(
-                        title=f"{date_str}_{v}", category=type, content="AUTO_GEN"
-                    ),
+                value = dict(
+                    title=f"{date_str}_{v}", category=type, content="AUTO_GEN"
                 )
                 res = api.post(
                     "/app/todo/web_insert",
-                    param,
+                    value,
                     headers={C.THE_DEV_USER: name},
                 )
                 ret.append(res)
-                logger.map(type=type, param=param, res=res)
+                logger.map(type=type, value=value, res=res)
         return ret
 
     def test_zx(self):

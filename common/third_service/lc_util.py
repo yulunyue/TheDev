@@ -1,9 +1,6 @@
 from common.third_util.io.api import Api
 from common.model.export import LcProblem, LcSubmissionDetail
 from common.util.export import File, Module, time
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-
 from .lc_cache import LcCache, CACHE_DIR
 from .lc_parser import LcContentParser
 from .lc_tester import LcLocalTester, CODE_DIR
@@ -80,70 +77,73 @@ class LeetCode(Api):
         config.save_to_local()
         return session
 
-    def login_with_browser_use(self) -> str:
+    def login_with_selenium(self) -> str:
         username = self.get_username()
         password = self.get_password()
         if not username or not password:
             raise LcError("LeetCode credentials not configured in api.json")
 
-        from browser_use import Agent
-        from langchain_openai import ChatOpenAI
+        from selenium.webdriver import Chrome
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        from selenium.webdriver.common.by import By
+        from webdriver_manager.chrome import ChromeDriverManager
+        from selenium.webdriver.chrome.service import Service
 
-        task = f"""
-        Go to https://leetcode.cn/accounts/login/
-        Fill in the login form:
-        - Username: {username}
-        - Password: {password}
-        Click the login button
-        After login, extract the LEETCODE_SESSION cookie value and return it
-        """
+        options = Options()
+        options.add_argument("--headless=new")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument(
+            "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
 
-        llm = ChatOpenAI(model="gpt-4o")
-        agent = Agent(task=task, llm=llm)
-        result = agent.run()
-        
-        session = result.final_result if hasattr(result, 'final_result') else str(result)
+        service = Service(ChromeDriverManager().install())
+        driver = Chrome(service=service, options=options)
+        driver.execute_cdp_cmd(
+            "Page.addScriptToEvaluateOnNewDocument",
+            {
+                "source": """
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+            """
+            },
+        )
 
-        from common.third_util.io.api import API_CONFIG
-
-        config = API_CONFIG.get(self.name)
-        config.cookie.set_value(dict(LEETCODE_SESSION=session))
-        config.save_to_local()
-        return session
-        
-        page = ChromiumPage(co)
-        
         try:
             login_url = f"{self.get_endpoint()}/accounts/login/"
-            page.get(login_url)
-            
-            time.sleep(5)
-            
-            screenshot_path = "data/tmp/leetcode_login.png"
-            page.get_screenshot(path=screenshot_path)
-            
-            if "502" in page.html or "Bad Gateway" in page.html:
-                raise LcError(f"502 Bad Gateway, screenshot: {screenshot_path}")
+            driver.get(login_url)
 
-            page.ele("css:input[name='login']").input(username)
-            page.ele("css:input[name='password']").input(password)
-            page.ele("css:button[type='submit']").click()
-            
-            time.sleep(3)
-            
-            wait.until(lambda: "/accounts/login/" not in page.url)
-            
-            cookies = page.cookies()
+            wait = WebDriverWait(driver, 15)
+
+            username_input = wait.until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "input[name='login']"))
+            )
+            password_input = driver.find_element(By.CSS_SELECTOR, "input[name='password']")
+            username_input.send_keys(username)
+            password_input.send_keys(password)
+
+            submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+            submit_btn.click()
+
+            wait.until(lambda d: "/accounts/login/" not in d.current_url)
+
+            cookies = driver.get_cookies()
             session = None
             for c in cookies:
                 if c.get("name") == "LEETCODE_SESSION":
                     session = c.get("value")
                     break
-            
+
             if not session:
                 raise LcError("Login succeeded but no LEETCODE_SESSION cookie found")
         finally:
-            page.quit()
+            driver.quit()
 
         from common.third_util.io.api import API_CONFIG
 

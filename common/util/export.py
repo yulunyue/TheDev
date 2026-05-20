@@ -66,16 +66,21 @@ from typing import (
     Dict,
     TypeVar,
     Generic,
-    get_origin,
-    get_args,
     Tuple,
     Optional,
     TYPE_CHECKING,
-    final,
     Any,
     Type,
     Callable,
 )
+try:
+    from typing import final
+except ImportError:
+    final = None
+try:
+    from typing import get_origin, get_args
+except ImportError:
+    get_origin = get_args = None
 
 try:
     from typing import Self

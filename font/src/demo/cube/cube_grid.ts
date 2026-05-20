@@ -1,13 +1,18 @@
 import {
     Div, FlexColumn, FlexRow
 } from "../../base/components/export";
-
-const CUBE_COLORS = ['#3498db', '#ff9800', '#ecf0f1', '#d32f2f', '#1a1a1a', '#2ecc71'];
+import { CUBE_COLORS } from "./cube_3d_data";
 
 export class CubeGrid extends Div {
     grid_data: number[] = []
     n: number = 2
     block_size: number = 50
+
+    private static readonly FACE_NET_LAYOUT: (number | null)[][] = [
+        [null, 0, null, null],
+        [1, 2, 3, 4],
+        [null, 5, null, null],
+    ]
 
     set_block_size(size: number): this {
         this.block_size = size
@@ -37,65 +42,64 @@ export class CubeGrid extends Div {
 
     render_cube(): void {
         this.clear()
+        this.add_children(this.build_net())
+    }
 
-        const faceSize = this.n * this.n
+    private build_net(): FlexRow[] {
         const blockSize = this.block_size
+        const slotWidth = this.n * blockSize
 
-        const faces: number[][] = []
-        for (let i = 0; i < 6; i++) {
-            faces.push(this.grid_data.slice(i * faceSize, (i + 1) * faceSize))
-        }
-
-        const createBlock = (colorIndex: number): Div => {
-            const block = new Div()
-            block.set_style({
-                width: `${blockSize - 2}px`,
-                height: `${blockSize - 2}px`,
-                backgroundColor: CUBE_COLORS[colorIndex],
-                border: '1px solid #444',
-            })
-            return block
-        }
-
-        const createFace = (faceIndex: number): FlexColumn => {
-            const faceColumn = new FlexColumn()
-            for (let j = 0; j < this.n; j++) {
-                const faceRow = new FlexRow()
-                for (let k = 0; k < this.n; k++) {
-                    const idx = j * this.n + k
-                    const colorIndex = faces[faceIndex][idx]
-                    faceRow.add_child(createBlock(colorIndex))
-                }
-                faceColumn.add_child(faceRow)
-            }
-            return faceColumn
-        }
-
-        const slotWidth = this.n * this.block_size
-
-        const createFaceRow = (faceIndices: (number | null)[]): FlexRow => {
+        return CubeGrid.FACE_NET_LAYOUT.map(rowIndices => {
             const row = new FlexRow()
             row.set_style({ justifyContent: 'center' })
-            for (const faceIndex of faceIndices) {
+            for (const faceIndex of rowIndices) {
                 if (faceIndex === null) {
-                    const spacer = new Div()
-                    spacer.set_style({
-                        width: `${slotWidth}px`,
-                        height: '1px',
-                    })
-                    row.add_child(spacer)
+                    row.add_child(this.create_spacer(slotWidth))
                 } else {
-                    row.add_child(createFace(faceIndex))
+                    row.add_child(this.build_face(faceIndex, blockSize))
                 }
             }
             return row
-        }
+        })
+    }
 
-        this.add_childs([
-            createFaceRow([null, null, 0, null]),
-            createFaceRow([1, 2, 3, 4]),
-            createFaceRow([null, null, 5, null]),
-        ])
+    private build_face(faceIndex: number, blockSize: number): FlexColumn {
+        const face = new FlexColumn()
+        const faceData = this.get_face_data(faceIndex)
+        for (let j = 0; j < this.n; j++) {
+            const row = new FlexRow()
+            for (let k = 0; k < this.n; k++) {
+                const colorIndex = faceData[j * this.n + k]
+                row.add_child(this.create_block(colorIndex, blockSize))
+            }
+            face.add_child(row)
+        }
+        return face
+    }
+
+    private get_face_data(faceIndex: number): number[] {
+        const faceSize = this.n * this.n
+        return this.grid_data.slice(faceIndex * faceSize, (faceIndex + 1) * faceSize)
+    }
+
+    private create_block(colorIndex: number, blockSize: number): Div {
+        const block = new Div()
+        block.set_style({
+            width: `${blockSize - 2}px`,
+            height: `${blockSize - 2}px`,
+            backgroundColor: CUBE_COLORS[colorIndex],
+            border: '1px solid #444',
+        })
+        return block
+    }
+
+    private create_spacer(slotWidth: number): Div {
+        const spacer = new Div()
+        spacer.set_style({
+            width: `${slotWidth}px`,
+            height: '1px',
+        })
+        return spacer
     }
 }
 

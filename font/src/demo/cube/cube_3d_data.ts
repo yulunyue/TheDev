@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-export const CUBE_COLORS = ['#3498db', '#ff9800', '#ecf0f1', '#d32f2f', '#f1c40f', '#2ecc71']
+export const CUBE_COLORS = ['#3498db', '#ff9800', '#ecf0f1', '#d32f2f', '#1a1a1a', '#2ecc71']
 
 export interface StickerInfo {
     x: number; y: number; z: number;

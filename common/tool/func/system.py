@@ -11,7 +11,7 @@ class System:
     """系统工具类（跨平台进程查询）"""
 
     @classmethod
-    def get_pid_by_port(cls, port: int) -> int | None:
+    def get_pid_by_port(cls, port: int) -> int:
         """根据端口查找监听进程的 PID"""
         if os.name == "nt":
             return cls._get_pid_by_port_windows(port)
@@ -26,7 +26,7 @@ class System:
         return os.kill(pid, mode)
 
     @classmethod
-    def _get_pid_by_port_windows(cls, port: int) -> int | None:
+    def _get_pid_by_port_windows(cls, port: int) -> int:
         """Windows: 使用 netstat -ano"""
         try:
             result = subprocess.run(
@@ -42,7 +42,7 @@ class System:
         return None
 
     @classmethod
-    def _get_pid_by_port_linux(cls, port: int) -> int | None:
+    def _get_pid_by_port_linux(cls, port: int) -> int:
         """Linux: 使用 netstat -nltp"""
         try:
             result = subprocess.run(
@@ -95,6 +95,7 @@ class System:
 
     @classmethod
     def popen(cls, cmd, **kw):
-        return subprocess.Popen(
-            cmd, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP, **kw
-        )
+        if os.name == "nt":
+            kw["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+        kw["start_new_session"] = True
+        return subprocess.Popen(cmd, **kw)

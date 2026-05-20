@@ -50,9 +50,6 @@ class OpencodeClient:
         return str(result)
 
     def run(self, prompt):
-        # # print(self.get_info())
-        # return self.client.config.get().model
-        print(self.client.config.get().model)
         s = self.create_session()
         return self.execute_task(s.id, prompt)
 

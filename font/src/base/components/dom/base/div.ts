@@ -205,7 +205,7 @@ export class Div {
         this.children = []
         for (let i = 0; i < children.length; i++) {
             this.parse_child_option(children[i])
-            let child = old_children.find(c => c.option?.key === children[i].key)
+            let child: Div = old_children.find(c => c.option?.key === children[i].key)
             if (!child) {
                 child = cls(children[i])
                 child.set_parent(this)
