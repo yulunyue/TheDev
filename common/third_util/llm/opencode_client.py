@@ -9,7 +9,7 @@ import sys
 
 class OpencodeClient:
 
-    def __init__(self, config_name):
+    def __init__(self, config_name="opencode"):
         self.config = LlmConfig.get(config_name)
         self._client = None
 
@@ -46,7 +46,7 @@ class OpencodeClient:
         if hasattr(result, "content"):
             return result.content
         if hasattr(result, "model_dump"):
-            return str(result.model_dump())
+            return result.model_dump()
         return str(result)
 
     def run(self, prompt):
