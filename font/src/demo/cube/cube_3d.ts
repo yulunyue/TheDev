@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Div } from "../../base/components/export";
-import { CUBE_COLORS, GRID_MAP, FACE_ORDER, CUBIE_KEYS, CUBIE_MAP, VISIBLE_FACES, CubieData } from "./cube_3d_data";
+import { CUBE_COLORS, GRID_MAP, FACE_ORDER, CUBIE_KEYS, CUBIE_MAP, VISIBLE_FACES, CubieData, calc_angle } from "./cube_3d_data";
 
 export class Cube3D extends Div {
     private scene: THREE.Scene;
@@ -90,6 +90,11 @@ export class Cube3D extends Div {
         loop();
     }
 
+    reset(n: number): void {
+        this.rebuild_cubies(n);
+        this.update_stickers();
+    }
+
     set_cube_data(grid: number[], n: number): void {
         this.grid = [...grid];
 
@@ -162,20 +167,7 @@ export class Cube3D extends Div {
         const coord = ['y', 'x', 'z'][axis];
         const layerCubies = this.cubies.filter(c => c[coord] === layer);
 
-        let angle: number;
-        if (rotate === 2) {
-            angle = Math.PI;
-        } else {
-            const dir = rotate === 1 ? 1 : -1;
-            let base: number;
-            switch (axis) {
-                case 0: base = layer === 0 ? Math.PI / 2 : -Math.PI / 2; break;
-                case 1: base = layer === 0 ? Math.PI / 2 : -Math.PI / 2; break;
-                case 2: base = layer === 0 ? -Math.PI / 2 : Math.PI / 2; break;
-                default: base = 0;
-            }
-            angle = base * dir;
-        }
+        const angle = calc_angle(axis, layer, rotate);
 
         const rotAxis = new THREE.Vector3(
             axis === 1 ? 1 : 0,

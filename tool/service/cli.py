@@ -61,15 +61,15 @@ class Cli(ToolBase):
         res = self.api.post("/app/manage/unzip", data=dict(path=UPLOAD_ZIP_PATH))
         logger.map(res=res)
 
-    def restart(self, config, server="bolun"):
+    def restart(self, server="bolun", config="production"):
         self._load(server)
         res = self.api.post("/app/manage/restart", data=dict(config=config))
         logger.map(res=res)
 
-    def cicd(self, config, server="bolun"):
+    def cicd(self, server="bolun", config="production"):
         self.npm_build()
         self.install(server)
-        self.restart(config, server)
+        self.restart(server, config)
 
 
 if __name__ == "__main__":

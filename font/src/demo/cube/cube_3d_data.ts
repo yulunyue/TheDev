@@ -39,6 +39,19 @@ for (const key of CUBIE_KEYS) {
     VISIBLE_FACES[key] = faces
 }
 
+export function calc_angle(axis: number, layer: number, rotate: number): number {
+    if (rotate === 2) return Math.PI;
+    const dir = rotate === 1 ? 1 : -1;
+    let base: number;
+    switch (axis) {
+        case 0: base = Math.PI / 2; break;
+        case 1: base = layer === 0 ? Math.PI / 2 : -Math.PI / 2; break;
+        case 2: base = layer === 0 ? Math.PI / 2 : -Math.PI / 2; break;
+        default: base = 0;
+    }
+    return base * dir;
+}
+
 export interface CubieData {
     x: number; y: number; z: number;
     mesh: THREE.Mesh;

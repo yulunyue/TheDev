@@ -34,6 +34,7 @@ export abstract class CubeBase extends FlexColumn {
     handle_new(): void {
         web_dom.post("/cube/new", { n: 2 }, (data: any) => {
             this.update_state(data.value)
+            this.cube_3d.reset(this.current_n)
             this.action_history = []
         })
     }
@@ -50,7 +51,9 @@ export abstract class CubeBase extends FlexColumn {
                 this.action_pre.set_html(this.action_history.join('\n'))
                 if (this.is_3d) {
                     const a = data.value.action
-                    this.cube_3d.animate_rotate(a.axis, a.layer, a.rotate)
+                    this.cube_3d.animate_rotate(a.axis, a.layer, a.rotate, () => {
+                        this.cube_3d.set_cube_data(this.current_grid, this.current_n)
+                    })
                 }
             }
         )
@@ -60,7 +63,6 @@ export abstract class CubeBase extends FlexColumn {
         this.current_grid = data.grid
         this.current_n = data.n
         this.cube_grid.set_cube_data(data.grid, data.n)
-        this.cube_3d.set_cube_data(data.grid, data.n)
         if (this.is_3d) {
             this.cube_3d.show()
             this.cube_3d.resize()
