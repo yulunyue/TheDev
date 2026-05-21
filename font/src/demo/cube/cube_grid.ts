@@ -8,12 +8,14 @@ export class CubeGrid extends Div {
     n: number = 2
     block_size: number = 50
 
-    private static readonly FACE_NET_LAYOUT: (number | null)[][] = [
-        [null, 0, null, null],
-        [1, 2, 3, 4],
-        [null, 5, null, null],
-    ]
-
+    private static FACE_NET_LAYOUT: (number | null)[][]
+    static init_cls() {
+        CubeGrid.FACE_NET_LAYOUT = [
+            [null, 0, null, null],
+            [1, 2, 3, 4],
+            [null, 5, null, null],
+        ]
+    }
     set_block_size(size: number): this {
         this.block_size = size
         return this
@@ -106,3 +108,4 @@ export class CubeGrid extends Div {
 export default function () {
     return new CubeGrid()
 }
+CubeGrid.init_cls()

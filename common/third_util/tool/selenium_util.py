@@ -184,13 +184,13 @@ class SeleniumUtil:
                 self.options.debugger_address = f"127.0.0.1:{self.dev_port}"
                 self.options.add_argument("--start-maximized")
             else:
-                if self.dev_port != "dev":
+                if self.dev_port == "headless":
                     self.options.add_argument("--headless")
                 self.options.binary_location = chrome_exe_file.get_abs_path()
                 self.options.add_argument("--no-sandbox")
                 self.options.add_argument("--window-size=1920,1080")
                 self.options.add_argument(
-                    f"--user-data-dir={chrome_driver.child('dev_user_data12').make_dir_if_not_exist(True).get_abs_path()}"
+                    f"--user-data-dir={chrome_driver.child(f'dev_user_data12_{self.dev_port}').make_dir_if_not_exist(True).get_abs_path()}"
                 )
             self.driver = Chrome(
                 options=self.options,

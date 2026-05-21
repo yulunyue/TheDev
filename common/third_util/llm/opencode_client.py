@@ -20,7 +20,7 @@ class OpencodeClient:
             self._client = Opencode(
                 base_url=self.config.base_url.get_value(),
                 http_client=http_client,
-                timeout=6,
+                timeout=1800,
             )
         return self._client
 

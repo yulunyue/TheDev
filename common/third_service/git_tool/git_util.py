@@ -21,6 +21,11 @@ class GitUtil(OsUtil):
     def reset(self, commid_id):
         return self.run("reset", "--hard", commid_id)
 
+    def set_env(self, path):
+        super().set_env(path)
+        self.run_git_output("fetch", "origin")
+        return self
+
     def clear(self):
         """
         fdx 全清理  fd清理跟踪的
@@ -228,13 +233,10 @@ class GitUtil(OsUtil):
         self,
         base_branch: str,
         target_branch: str,
-        commit_msg: str,
+        new_branch_name,
         extract_lines: int = 1800,
-        new_branch_name: str = None,
         file_patterns: List[str] = None,
         threshold_ratio: float = 0.8,
-        push: bool = False,
-        push_remote: str = "origin",
     ) -> Dict:
         """
         提取分支 diff 到新分支（checkout + copy 方式），可选推送
@@ -307,21 +309,8 @@ class GitUtil(OsUtil):
                 self.run_git_output("checkout", target_branch, "--", file)
 
             self.run("add", ".")
-            self.run("commit", "-m", commit_msg)
 
             commit_hash = self.get_commit_hash()
-
-            if push:
-                push_result = self.push_branch(new_branch, push_remote)
-                if not push_result["success"]:
-                    return {
-                        "success": False,
-                        "error": f"push 失败: {push_result['error']}",
-                        "new_branch": new_branch,
-                        "commit_hash": commit_hash,
-                        "commit_files": selected_files,
-                        "extracted_lines": extracted_lines,
-                    }
 
             return {
                 "success": True,
@@ -329,8 +318,6 @@ class GitUtil(OsUtil):
                 "commit_files": selected_files,
                 "extracted_lines": extracted_lines,
                 "commit_hash": commit_hash,
-                "push_success": push,
-                "push_remote": push_remote if push else None,
                 "total_files": len(diff_files),
                 "total_add": sum(f["add"] for f in diff_files),
                 "total_del": sum(f["del"] for f in diff_files),
@@ -431,10 +418,6 @@ class GitUtil(OsUtil):
         self,
         base_branch: str,
         target_branch: str,
-        commit_msg: str,
-        new_branch_name: str = None,
-        push: bool = False,
-        push_remote: str = "origin",
     ) -> Dict:
         """
         提取分支 diff 中删除的文件到新分支并提交
@@ -489,21 +472,7 @@ class GitUtil(OsUtil):
             for file in deleted_files:
                 self.run_git_output("rm", "--", file)
 
-            self.run("commit", "-m", commit_msg)
-
             commit_hash = self.get_commit_hash()
-
-            if push:
-                push_result = self.push_branch(new_branch, push_remote)
-                if not push_result["success"]:
-                    return {
-                        "success": False,
-                        "error": f"push 失败: {push_result['error']}",
-                        "new_branch": new_branch,
-                        "commit_hash": commit_hash,
-                        "deleted_files": deleted_files,
-                        "deleted_count": len(deleted_files),
-                    }
 
             return {
                 "success": True,
@@ -511,8 +480,6 @@ class GitUtil(OsUtil):
                 "deleted_files": deleted_files,
                 "deleted_count": len(deleted_files),
                 "commit_hash": commit_hash,
-                "push_success": push,
-                "push_remote": push_remote if push else None,
             }
 
         except Exception as e:
@@ -531,7 +498,7 @@ class GitUtil(OsUtil):
     def set_llm_config_path(self, config_name: str):
         """
         设置 LLM 配置名称（用于 OpencodeClient）
-        
+
         参数：
         - config_name: 配置名称（对应 llm.json 中的键）
         """
@@ -548,7 +515,7 @@ class GitUtil(OsUtil):
     def build_review_prompt(self, diff_content: str, context: dict = None) -> str:
         """
         构建 AI 分析 prompt
-        
+
         参数：
         - diff_content: diff 内容字符串
         - context: 可选上下文信息
@@ -557,11 +524,11 @@ class GitUtil(OsUtil):
           - repo: 仓库（如 owner/repo）
           - issue_info: Issue 信息字典
           - custom_instructions: 自定义指令
-        
+
         返回：prompt 字符串
         """
         context = context or {}
-        
+
         issue_section = ""
         issue_info = context.get("issue_info")
         if issue_info:
@@ -572,7 +539,7 @@ class GitUtil(OsUtil):
 - 内容：{issue_info.get("body", "")[:500] if issue_info.get("body") else "无描述"}
 - URL：{issue_info.get("url", "")}
 """
-        
+
         pr_info_section = ""
         if context.get("title"):
             pr_info_section = f"""
@@ -582,16 +549,16 @@ class GitUtil(OsUtil):
 """
             if context.get("branch_info"):
                 pr_info_section += f"- 分支：{context.get("branch_info")}\n"
-        
+
         custom_section = ""
         if context.get("custom_instructions"):
             custom_section = f"""
 ## 自定义指令
 {context.get("custom_instructions")}
 """
-        
+
         max_chars = context.get("max_diff_chars", 8000)
-        
+
         prompt = f"""
 请分析以下代码变更，给出结构化的代码整改建议。
 
@@ -619,7 +586,7 @@ class GitUtil(OsUtil):
     def parse_ai_json_response(self, response: str) -> dict:
         """
         解析 AI 返回的 JSON（处理 markdown 代码块）
-        
+
         返回：
         {
             "success": bool,
@@ -629,8 +596,13 @@ class GitUtil(OsUtil):
         }
         """
         if not response:
-            return {"success": False, "suggestions": [], "summary": "", "error": "Empty response"}
-        
+            return {
+                "success": False,
+                "suggestions": [],
+                "summary": "",
+                "error": "Empty response",
+            }
+
         try:
             json_str = response
             if "```json" in json_str:
@@ -666,13 +638,13 @@ class GitUtil(OsUtil):
     ) -> dict:
         """
         使用 AI 分析分支 diff，获取整改建议
-        
+
         参数：
         - base_branch: 基础分支
         - target_branch: 目标分支
         - context: 可选上下文（title, repo, issue_info 等）
         - max_diff_chars: diff 最大字符数
-        
+
         返回：
         {
             "success": bool,
@@ -685,42 +657,38 @@ class GitUtil(OsUtil):
             "error": str
         }
         """
-        try:
-            diff_content = self.get_diff_content(base_branch, target_branch)
-            
-            if not diff_content:
-                return {
-                    "success": False,
-                    "error": f"分支 {base_branch} 和 {target_branch} 无差异",
-                }
-            
-            context = context or {}
-            context["max_diff_chars"] = max_diff_chars
-            
-            prompt = self.build_review_prompt(diff_content, context)
-            
-            llm_client = self.get_llm_client()
-            response = llm_client.run(prompt)
-            
-            parsed = self.parse_ai_json_response(response)
-            
-            files = []
-            for line in diff_content.split("\n"):
-                if line.startswith("diff --git "):
-                    filename = line.split(" ")[-1][2:]
-                    files.append({"filename": filename, "change_type": "modified"})
-            
+
+        diff_content = self.get_diff_content(base_branch, target_branch)
+
+        if not diff_content:
             return {
-                "success": parsed["success"],
-                "base_branch": base_branch,
-                "target_branch": target_branch,
-                "suggestions": parsed["suggestions"],
-                "summary": parsed["summary"],
-                "files": files,
-                "raw_response": response,
-                "error": parsed.get("error", ""),
+                "success": False,
+                "error": f"分支 {base_branch} 和 {target_branch} 无差异",
             }
-        
-        except Exception as e:
-            logger.error(f"get_review_suggestion error: {e}")
-            return {"success": False, "error": str(e)}
+
+        context = context or {}
+        context["max_diff_chars"] = max_diff_chars
+
+        prompt = self.build_review_prompt(diff_content, context)
+
+        llm_client = self.get_llm_client()
+        response = llm_client.run(prompt)
+
+        parsed = self.parse_ai_json_response(response)
+
+        files = []
+        for line in diff_content.split("\n"):
+            if line.startswith("diff --git "):
+                filename = line.split(" ")[-1][2:]
+                files.append({"filename": filename, "change_type": "modified"})
+
+        return {
+            "success": parsed["success"],
+            "base_branch": base_branch,
+            "target_branch": target_branch,
+            "suggestions": parsed["suggestions"],
+            "summary": parsed["summary"],
+            "files": files,
+            "raw_response": response,
+            "error": parsed.get("error", ""),
+        }
