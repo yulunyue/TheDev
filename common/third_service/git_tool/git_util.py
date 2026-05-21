@@ -83,19 +83,27 @@ class GitUtil(OsUtil):
 
     def run_git_output(self, *args) -> str:
         """
-        执行 git 命令并返回输出内容（不抛异常）
+        执行 git 命令并返回输出内容（使用 subprocess 直接获取）
         """
-        old_flag = self.error_exit_flag
-        self.error_exit_flag = False
+        import subprocess
+
+        cmd = ["git"] + list(args)
         try:
-            _, stdout, _ = self.run(*args)
-            return stdout.strip()
+            result = subprocess.run(
+                cmd,
+                cwd=self.root_path,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+            else:
+                logger.error(f"git command failed: {cmd} -> {result.stderr.strip()}")
+                return ""
         except Exception as e:
-            cmd = ["git"] + list(args)
-            logger.error(f"git command failed: {cmd} -> {e}")
+            logger.error(f"git command error: {cmd} -> {e}")
             return ""
-        finally:
-            self.error_exit_flag = old_flag
 
     def get_current_branch(self) -> str:
         """
@@ -378,3 +386,126 @@ class GitUtil(OsUtil):
         获取提交 hash（短格式）
         """
         return self.run_git_output("rev-parse", "--short", ref)
+
+    def get_deleted_files(self, base: str, target: str) -> List[str]:
+        """
+        获取分支 diff 中被删除的文件列表
+        
+        返回在 target 分支中被删除（相对于 base）的文件名列表
+        """
+        output = self.run_git_output(
+            "diff", "--name-only", "--diff-filter=D", f"{base}..{target}"
+        )
+        return [f.strip() for f in output.split("\n") if f.strip()]
+
+    def get_added_files(self, base: str, target: str) -> List[str]:
+        """
+        获取分支 diff 中新增的文件列表
+        
+        返回在 target 分支中新增（相对于 base）的文件名列表
+        """
+        output = self.run_git_output(
+            "diff", "--name-only", "--diff-filter=A", f"{base}..{target}"
+        )
+        return [f.strip() for f in output.split("\n") if f.strip()]
+
+    def get_modified_files(self, base: str, target: str) -> List[str]:
+        """
+        获取分支 diff 中修改的文件列表
+        
+        返回在 target 分支中修改（相对于 base）的文件名列表
+        """
+        output = self.run_git_output(
+            "diff", "--name-only", "--diff-filter=M", f"{base}..{target}"
+        )
+        return [f.strip() for f in output.split("\n") if f.strip()]
+
+    def extract_deleted_files(
+        self,
+        base_branch: str,
+        target_branch: str,
+        commit_msg: str,
+        new_branch_name: str = None,
+        push: bool = False,
+        push_remote: str = "origin",
+    ) -> Dict:
+        """
+        提取分支 diff 中删除的文件到新分支并提交
+        
+        流程：
+        1. 从 base_branch checkout 新分支（base 中文件存在）
+        2. git rm 删除文件（模拟 target 分支的删除操作）
+        3. git commit
+        4. 可选 push
+        
+        参数：
+        - base_branch: 基础分支（包含文件的分支）
+        - target_branch: 目标分支（删除了文件的分支）
+        - commit_msg: **必选** 提交信息
+        - new_branch_name: 新分支名（自动生成格式: {target}_del_part_N）
+        - push: 是否推送（默认 False）
+        - push_remote: 推送目标（默认 origin）
+        
+        返回：
+        {
+            "success": bool,
+            "new_branch": str,
+            "deleted_files": List[str],
+            "deleted_count": int,
+            "commit_hash": str,
+            "push_success": bool,
+            "push_remote": str,
+            "error": str
+        }
+        """
+        try:
+            if not self.is_clean():
+                return {"success": False, "error": "工作区有未提交的变更，请先处理"}
+
+            deleted_files = self.get_deleted_files(base_branch, target_branch)
+
+            if not deleted_files:
+                return {
+                    "success": False,
+                    "error": f"分支 {base_branch} 和 {target_branch} 无删除文件",
+                }
+
+            branch_base = target_branch.replace("origin/", "").replace("/", "_")
+            new_branch = new_branch_name or self.generate_branch_name(branch_base + "_del")
+
+            self.run_git_output("checkout", base_branch)
+            self.run_git_output("checkout", "-b", new_branch)
+
+            # 使用 git rm 删除文件
+            for file in deleted_files:
+                self.run_git_output("rm", "--", file)
+
+            self.run("commit", "-m", commit_msg)
+
+            commit_hash = self.get_commit_hash()
+
+            if push:
+                push_result = self.push_branch(new_branch, push_remote)
+                if not push_result["success"]:
+                    return {
+                        "success": False,
+                        "error": f"push 失败: {push_result['error']}",
+                        "new_branch": new_branch,
+                        "commit_hash": commit_hash,
+                        "deleted_files": deleted_files,
+                        "deleted_count": len(deleted_files),
+                    }
+
+            return {
+                "success": True,
+                "new_branch": new_branch,
+                "deleted_files": deleted_files,
+                "deleted_count": len(deleted_files),
+                "commit_hash": commit_hash,
+                "push_success": push,
+                "push_remote": push_remote if push else None,
+            }
+
+        except Exception as e:
+            logger.error(f"extract_deleted_files error: {e}")
+            return {"success": False, "error": str(e)}
