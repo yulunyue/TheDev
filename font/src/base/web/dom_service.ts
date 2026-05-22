@@ -8,11 +8,7 @@ export class DomService {
         for (var key in style) {
             let v = style[key]
             if (typeof (v) == 'number') {
-                if (0 < v && v <= 1) {
-                    v = v * 100 + "%"
-                } else {
-                    v = v + "px"
-                }
+                v = v + "px"
             }
             el.style[key] = v
         }

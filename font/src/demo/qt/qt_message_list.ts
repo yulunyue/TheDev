@@ -6,7 +6,7 @@ export class QtMessageList extends Div {
 
     init_style(): void {
         this.set_style({
-            flex: "1",
+            height: "100%",
             backgroundColor: "#34495e",
             overflow: "auto",
             padding: 10,

@@ -104,19 +104,36 @@ class OsUtil:
             ret.extend([k, v])
         return ret
 
-    def popen(self, *args, env=None, **kw):
-        cmd = self.get_cmd(args, kw)
-        cmds = " ".join(cmd)
-        self.logger.info(f"{self.root_path}->{cmds}")
-        return subprocess.Popen(
-            cmd,
-            shell=False,
-            text=True,
-            cwd=self.root_path,
-            env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+    def popen_output(self, *args, timeout=60, env=None, **kw) -> str:
+        """
+        执行命令并返回 stdout 内容
+
+        参数：
+        - timeout: 超时时间（默认使用 self.time_out）
+        - env: 环境变量
+
+        返回：stdout 内容（失败返回空字符串，或根据 error_exit_flag 抛异常）
+        """
+        timeout = timeout or self.time_out
+        proc = self.popen(*args, env=env, **kw)
+        try:
+            stdout, stderr = proc.communicate(timeout=timeout)
+            if proc.returncode == 0:
+                return stdout.strip()
+            else:
+                cmds = " ".join(self.get_cmd(args, kw))
+                error_msg = stderr.strip() or stdout.strip()
+                self.error(cmds, error_msg)
+                return ""
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            cmds = " ".join(self.get_cmd(args, kw))
+            self.error(cmds, "timeout")
+            return ""
+        except Exception as e:
+            cmds = " ".join(self.get_cmd(args, kw))
+            self.error(cmds, str(e))
+            return ""
 
     def run(self, *args, env=None, **kw):
         return self.check_output(self.get_cmd(args, kw), env=env)

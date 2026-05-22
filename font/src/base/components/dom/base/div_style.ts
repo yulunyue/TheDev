@@ -15,8 +15,8 @@ export class DivStyle {
     set_style_ab_full() {
         return this.set_style({
             position: "fixed",
-            width: 1,
-            height: 1
+            width: "100%",
+            height: "100%"
         })
     }
     set_style_center_by_position() {
@@ -115,8 +115,8 @@ export class DivStyle {
     }
     full() {
         return this.set_style({
-            width: 1,
-            height: 1,
+            width: "100%",
+            height: "100%",
         })
     }
 

@@ -31,16 +31,16 @@ export class Table extends FlexColumn {
         this.table_container.set_style({
             textAlign: "left",
             overflow: "auto",
-            width: 1,
+            width: "100%",
         })
         this.table.set_style({
             overflow: "auto",
-            width: 1
+            width: "100%"
         })
         this.head_title.set_flex(1)
         this.tail_left.set_flex(1)
         this.head_div.set_style({
-            width: 1
+            width: "100%"
         })
         this.search_input.set_style({ width: Constant.WIDTH_TEXT })
         this.set_style({ overflow: "auto" })

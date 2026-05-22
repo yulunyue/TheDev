@@ -25,7 +25,7 @@ export class TodoMain extends FlexColumn {
         this.category_select.set_style({ margin: "4px" })
         this.done_select.set_style({ margin: "4px" })
         this.header.set_style({
-            justifyContent: "space-between", alignItems: "center", width: 1
+            justifyContent: "space-between", alignItems: "center", width: "100%"
         })
         super.init_style()
     }

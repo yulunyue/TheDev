@@ -59,7 +59,7 @@ export class Api extends FlexRow {
         })
         this.head_title_left.set_size(1)
         this.set_style({
-            height: 1
+            height: "100%"
         })
         super.init_style()
     }

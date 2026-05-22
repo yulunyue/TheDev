@@ -31,11 +31,11 @@ export class TaskMain extends FlexColumn {
         this.header.set_style({
             justifyContent: "flex-start",
             alignItems: "center",
-            width: 1,
+            width: "100%",
             flex: "none"
         })
         this.result_div.set_style({
-            flex: 1,
+            flex: "1",
             overflow: "auto"
         })
         super.init_style()

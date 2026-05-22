@@ -55,7 +55,7 @@ export class CubeMain extends CubeBase {
             overflow: 'hidden',
             backgroundColor: '#e8ecf1'
         })
-        this.set_style({ width: 1, height: 1 })
+        this.set_style({ width: "100%", height: "100%" })
 
         this.title.set_style({
             textAlign: 'center',

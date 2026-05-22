@@ -15,8 +15,8 @@ export class QtMain extends Div {
 
     init_style(): void {
         this.set_style({
-            width: 1,
-            height: 1,
+            width: "100%",
+            height: "100%",
             display: "flex",
             flexDirection: "column",
         })

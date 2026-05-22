@@ -152,6 +152,44 @@ class LeetCode(Api):
         config.save_to_local()
         return session
 
+    def login_with_browser_use(self) -> str:
+        username = self.get_username()
+        password = self.get_password()
+        if not username or not password:
+            raise LcError("LeetCode credentials not configured in api.json")
+
+        from browser_use import Agent
+        from langchain_openai import ChatOpenAI
+
+        llm = ChatOpenAI(
+            model="codeagent/MiniMax-M2.5",
+            base_url="http://10.159.226.57:31943/v1",
+            api_key="placeholder",
+        )
+
+        task = f"""
+Go to https://leetcode.cn/accounts/login/
+Wait for page to load
+Fill in the login form:
+- Find input field with name 'login' and enter: {username}
+- Find input field with name 'password' and enter: {password}
+Click the submit button to login
+Wait for login to complete (URL changes from /accounts/login/)
+Return the LEETCODE_SESSION cookie value
+"""
+
+        agent = Agent(task=task, llm=llm)
+        result = agent.run()
+
+        session = str(result)
+
+        from common.third_util.io.api import API_CONFIG
+
+        config = API_CONFIG.get(self.name)
+        config.cookie.set_value(dict(LEETCODE_SESSION=session))
+        config.save_to_local()
+        return session
+
     def get_daily(self) -> dict:
         query = """
 query questionOfToday {
