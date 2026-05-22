@@ -44,6 +44,12 @@ class OpencodeClient:
             parts=[text_part],
         )
 
+        if hasattr(result, "parts"):
+            for part in result.parts:
+                if isinstance(part, dict) and part.get("type") == "text":
+                    return part.get("text", "")
+            return ""
+
         if isinstance(result, dict) and "parts" in result:
             for part in result["parts"]:
                 if part.get("type") == "text":

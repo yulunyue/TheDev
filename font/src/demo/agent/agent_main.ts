@@ -8,10 +8,12 @@ export class AgentMain extends FlexColumn {
     agent_list: FlexColumn
     command_input: Input
     exec_btn: Button
+    clear_btn: Button
     output_panel: Pre
     status_bar: Span
     current_agent: string = ""
     current_cmd_id: string = ""
+    is_executing: boolean = false
 
     init_style(): void {
         this.full()
@@ -29,6 +31,12 @@ export class AgentMain extends FlexColumn {
             flex: 1,
             minWidth: 200
         })
+        this.exec_btn.set_style({
+            minWidth: 60
+        })
+        this.clear_btn.set_style({
+            minWidth: 60
+        })
         this.output_panel.set_style({
             flex: 1,
             overflow: "auto",
@@ -37,7 +45,8 @@ export class AgentMain extends FlexColumn {
             fontSize: "12px"
         })
         this.status_bar.set_style({
-            minWidth: 100
+            minWidth: 100,
+            flex: 1
         })
     }
 
@@ -45,12 +54,14 @@ export class AgentMain extends FlexColumn {
         this.agent_list = new FlexColumn()
         this.command_input = new Input().set_placeholder("输入命令")
         this.exec_btn = new Button().set_html("执行")
+        this.clear_btn = new Button().set_html("清空")
         this.output_panel = new Pre()
         this.status_bar = new Span()
         
         const header = new FlexRow().add_children([
             this.command_input,
             this.exec_btn,
+            this.clear_btn,
             this.status_bar,
         ])
         
@@ -74,17 +85,29 @@ export class AgentMain extends FlexColumn {
 
     init_event(): void {
         this.exec_btn.on_click(() => this.exec_command())
+        this.clear_btn.on_click(() => this.output_panel.set_html(""))
+        this.command_input.on_key_down((e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+                this.exec_command()
+            }
+        })
         this.load_agents()
     }
 
     load_agents(): void {
         web_dom.post("/agent/list", {}, (data: Node) => {
             this.render_agents(data.data.agents || [])
+        }, (err: any) => {
+            this.status_bar.set_html(`加载失败: ${err?.title || err}`)
         })
     }
 
     render_agents(agents: any[]): void {
         this.agent_list.clear_children()
+        if (agents.length === 0) {
+            this.agent_list.add_child(new Span().set_html("无在线 Agent"))
+            return
+        }
         for (const agent of agents) {
             const item = new Label()
                 .set_html(`${agent.agent_id} (${agent.platform || "unknown"})`)
@@ -111,7 +134,20 @@ export class AgentMain extends FlexColumn {
         item.set_style({ background: "#e0e0e0" })
     }
 
+    set_loading(loading: boolean): void {
+        this.is_executing = loading
+        if (loading) {
+            this.exec_btn.set_html("执行中...")
+            this.exec_btn.el.disabled = true
+        } else {
+            this.exec_btn.set_html("执行")
+            this.exec_btn.el.disabled = false
+        }
+    }
+
     exec_command(): void {
+        if (this.is_executing) return
+        
         if (!this.current_agent) {
             this.status_bar.set_html("请先选择 Agent")
             return
@@ -123,6 +159,7 @@ export class AgentMain extends FlexColumn {
         }
         
         this.output_panel.set_html("")
+        this.set_loading(true)
         web_dom.post("/agent/exec", {
             agent_id: this.current_agent,
             command: command,
@@ -131,6 +168,9 @@ export class AgentMain extends FlexColumn {
             this.current_cmd_id = data.data.cmd_id
             this.status_bar.set_html(`执行中: ${this.current_cmd_id}`)
             this.subscribe_output(this.current_cmd_id)
+        }, (err: any) => {
+            this.set_loading(false)
+            this.status_bar.set_html(`错误: ${err?.title || err}`)
         })
     }
 
@@ -151,6 +191,7 @@ export class AgentMain extends FlexColumn {
         } else if (msgType === Ct.MSG_EXEC_STDERR) {
             this.append_output(`[stderr] ${data}`)
         } else if (msgType === Ct.MSG_EXEC_DONE) {
+            this.set_loading(false)
             this.status_bar.set_html(`完成: exit_code=${exitCode}`)
             web_socket.un_sub(`${Ct.TOPIC_AGENT_OUTPUT}.${this.current_cmd_id}`)
         }
