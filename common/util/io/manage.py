@@ -4,6 +4,7 @@ from typing import Dict
 from ..node import Node
 from ...constant import C
 from ..log import logger
+from ..tool import uid
 
 
 class Manage:
@@ -11,6 +12,7 @@ class Manage:
         self.io_map: Dict[str, Io] = dict()
         self.topics: Dict[str, set] = dict()
         self.agents: Dict[str, dict] = dict()
+        self.agent_clients: Dict[str, Io] = dict()
 
     def handler_msg(self, io: Io, msg: Node):
         if not io.username:
@@ -51,12 +53,15 @@ class Manage:
     def get_users_by_topic(self, topic_name):
         return self.topics.get(topic_name, set())
 
-    def register_agent(self, agent_id, info: dict):
+    def register_agent(self, agent_id, info: dict, client=None):
         self.agents[agent_id] = info
+        if client:
+            self.agent_clients[agent_id] = client
         logger.info(f"agent registered: {agent_id} {info.get('platform')}")
 
     def unregister_agent(self, agent_id):
         self.agents.pop(agent_id, None)
+        self.agent_clients.pop(agent_id, None)
         logger.info(f"agent unregistered: {agent_id}")
 
     def heartbeat_agent(self, agent_id):
@@ -65,6 +70,39 @@ class Manage:
 
     def list_agents(self):
         return [{"agent_id": k, **v} for k, v in self.agents.items()]
+
+    def handler_agent_msg(self, client, msg):
+        t = msg.get("type")
+        agent_id = getattr(client, "agent_id", None)
+        if t == "register":
+            self.register_agent(
+                msg["agent_id"],
+                dict(
+                    platform=msg.get("platform"),
+                    hostname=msg.get("hostname"),
+                    ip=client.src_ip,
+                    port=client.src_port,
+                ),
+                client=client,
+            )
+            client.write(dict(type="register_ok"))
+        elif t == "heartbeat":
+            self.heartbeat_agent(agent_id)
+        elif t == "unregister":
+            self.unregister_agent(agent_id)
+        elif t in ("exec_stdout", "exec_stderr", "exec_done"):
+            self.store_agent_output(agent_id, msg)
+
+    def send_exec(self, agent_id, command, timeout=30):
+        client = self.agent_clients.get(agent_id)
+        if not client:
+            raise ValueError(f"agent not found: {agent_id}")
+        cmd_id = uid(16)
+        client.write(dict(type="exec", cmd_id=cmd_id, command=command, timeout=timeout))
+        return cmd_id
+
+    def store_agent_output(self, agent_id, msg):
+        logger.info(f"agent output: {agent_id} {msg.get('type')} {msg.get('cmd_id')}")
 
     def start_agent_server(self, host="0.0.0.0", port=20001):
         from .agent_server import AgentTcpServer

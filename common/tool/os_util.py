@@ -104,6 +104,20 @@ class OsUtil:
             ret.extend([k, v])
         return ret
 
+    def popen(self, *args, env=None, **kw):
+        cmd = self.get_cmd(args, kw)
+        cmds = " ".join(cmd)
+        self.logger.info(f"{self.root_path}->{cmds}")
+        return subprocess.Popen(
+            cmd,
+            shell=False,
+            text=True,
+            cwd=self.root_path,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
     def run(self, *args, env=None, **kw):
         return self.check_output(self.get_cmd(args, kw), env=env)
 

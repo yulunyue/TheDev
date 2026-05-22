@@ -5,6 +5,10 @@ from .base import socket
 
 
 class AgentTcpClient(Client):
+    def __init__(self):
+        super().__init__()
+        self.message_handler = None
+
     def send(self, data):
         if isinstance(data, str):
             data = data.encode("utf-8")
@@ -27,7 +31,10 @@ class AgentTcpClient(Client):
                     self.close()
                     break
                 msg = json.loads(body.decode("utf-8"))
-                self.server.receive_msg(self, msg)
+                if self.message_handler:
+                    self.message_handler(msg)
+                else:
+                    self.server.receive_msg(self, msg)
         except Exception:
             self.close()
 

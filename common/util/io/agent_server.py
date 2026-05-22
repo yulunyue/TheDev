@@ -10,20 +10,6 @@ class AgentTcpServer(TcpServer):
         self.manage = manage
 
     def receive_msg(self, client, msg):
-        t = msg.get("type")
-        if t == "register":
+        if msg.get("type") == "register":
             client.agent_id = msg["agent_id"]
-            self.manage.register_agent(
-                msg["agent_id"],
-                dict(
-                    platform=msg.get("platform"),
-                    hostname=msg.get("hostname"),
-                    ip=client.src_ip,
-                    port=client.src_port,
-                ),
-            )
-            client.write(dict(type="register_ok"))
-        elif t == "heartbeat":
-            self.manage.heartbeat_agent(msg["agent_id"])
-        elif t == "unregister":
-            self.manage.unregister_agent(msg["agent_id"])
+        self.manage.handler_agent_msg(client, msg)
