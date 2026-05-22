@@ -1,5 +1,5 @@
 from .base import Io
-from common.util.export import get_log
+from ..log import get_log
 
 
 class Client(Io):

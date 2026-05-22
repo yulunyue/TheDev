@@ -92,6 +92,10 @@ class Constant {
     TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
     TOPIC_MSG_QT = "TOPIC_MSG_QT"
     TOPIC_QT_CONFIG_UPDATE = "TOPIC_QT_CONFIG_UPDATE"
+    TOPIC_AGENT_OUTPUT = "TOPIC_AGENT_OUTPUT"
+    MSG_EXEC_STDOUT = "exec_stdout"
+    MSG_EXEC_STDERR = "exec_stderr"
+    MSG_EXEC_DONE = "exec_done"
     CODE_200 = 200
     CODE_500 = 500
 }

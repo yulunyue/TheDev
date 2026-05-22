@@ -109,12 +109,11 @@ class OsUtil:
         执行命令并返回 stdout 内容
 
         参数：
-        - timeout: 超时时间（默认使用 self.time_out）
+        - timeout: 超时时间（默认 60 秒）
         - env: 环境变量
 
         返回：stdout 内容（失败返回空字符串，或根据 error_exit_flag 抛异常）
         """
-        timeout = timeout or self.time_out
         proc = self.popen(*args, env=env, **kw)
         try:
             stdout, stderr = proc.communicate(timeout=timeout)

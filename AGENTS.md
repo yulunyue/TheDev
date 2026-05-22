@@ -6,7 +6,7 @@
 ## 命令
 
 ### 服务器
-- `python main.py dev` — Tornado Web 服务器，端口 10001（默认环境：dev）
+- `python main.py dev` — Tornado Web 服务器，端口由 `config/setting/{env}.json` 配置（dev 环境默认 9999）
 - `python main.py test` — 同上，使用 test 环境配置
 - 配置文件自动创建在 `config/setting/{env}.json`（若不存在）
 - 服务器将 PID 写入 `data/proc/{env}.pid`
@@ -109,15 +109,53 @@ from common.tool.export import (
 ### 前后端数据约定
 
 后端 API 返回值统一使用 `Node`，前端解析规则：
-- 列表 → `Node(children=[...])` → 前端 `this.childs`
+- 列表 → `Node(children=[...])` → 前端 `this.children`
 - 字典 → `Node(data={...})` → 前端 `.get_data()`
 - 标量 → `Node(value=...)` → 前端 `.get_value()`
+- 组件 → `Node(type="组件类型", children=[...])` → 前端根据 `type` 渲染对应组件
+
+**Node.type 使用规则**：
+- **WebSocket/Agent 消息协议**：必须设置 `type`，使用 `C.MSG_xxx` 常量（定义在 `common/constant.py`）
+- **API 返回组件数据**：必须设置 `type`，使用组件类型字符串（如 `"form_row"`、`"table"`）
+- **API 返回纯数据**：不设置 `type`，前端通过 `.get_value()` / `.get_data()` 获取数据
 
 ## 代码规范
 
 - **一个文件最好只有一个类**（前后端均适用）
 - 类名与文件名保持一致（如 `class WebDom` 放在 `web_dom.ts`）
 - **Python 代码统一使用 Black 格式化**（配置见 `pyproject.toml`），行长度 88
+
+## Node.type 字段使用指南
+
+`Node.type` 用于标识数据类型，指导前端如何处理数据：
+
+### 后端构造规则
+
+| 场景 | type 设置 | 示例 |
+|------|----------|------|
+| **消息协议** | 必须设置，用 `C.MSG_xxx` | `Node(type=C.MSG_REGISTER, value=agent_id)` |
+| **组件数据** | 必须设置，用组件类型字符串 | `Node(type="form_row", children=[...])` |
+| **纯数据返回** | 不设置 type | `Node(value=result)` 或 `Node(data={key: val})` |
+
+### 前端处理规则
+
+- **WebSocket 消息**：根据 `obj.type` 分发到对应回调函数
+- **组件渲染**：`DivFactory.new_div(option.type, option.key)` 创建对应组件
+- **纯数据**：`.get_value()` 获取标量，`.get_data()` 获取字典
+
+### 常见 type 值
+
+| 类别 | type 值 | 说明 |
+|------|--------|------|
+| 消息协议 | `C.MSG_REGISTER` / `C.MSG_EXEC` 等 | Agent/WebSocket 通信 |
+| 表单组件 | `"form"` / `"form_row"` / `"form_column"` | 表单布局 |
+| 数据组件 | `"table"` / `"input"` / `"select"` | 数据展示/输入 |
+| 布局组件 | `"row"` / `"column"` | Flex 布局容器 |
+
+### 常量定义文件
+
+- **Python 后端**：`common/constant.py` → `C = Constant()`
+- **TypeScript 前端**：`font/src/base/web/constant.ts` → `Constant`
 
 ## 全局规则
 

@@ -1,6 +1,8 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 from .base import Io, socket
-from .client import Client
+
+if TYPE_CHECKING:
+    from .client import Client
 
 
 class SocketMsg:
@@ -23,7 +25,6 @@ class Server(Io):
 
     def receive_msg(self, client: "Io", msg):
         self.msgs.append(SocketMsg(client, self, msg))
-        # self.logger.debug(f"{self} receive from {client} msg_len={len(msg)}")
 
     def run(self):
         self.create_socket()

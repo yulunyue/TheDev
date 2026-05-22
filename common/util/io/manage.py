@@ -1,20 +1,24 @@
 import time
 from .base import Io
-from typing import Dict
-from ..node import Node
-from ...constant import C
+from typing import Dict, TYPE_CHECKING
 from ..log import logger
 from ..tool import uid
+
+if TYPE_CHECKING:
+    from ..node import Node
+    from ...constant import C
+    from .agent_client import AgentTcpClient
 
 
 class Manage:
     def __init__(self):
         self.io_map: Dict[str, Io] = dict()
         self.topics: Dict[str, set] = dict()
-        self.agents: Dict[str, dict] = dict()
-        self.agent_clients: Dict[str, Io] = dict()
+        self.agent_clients: Dict[str, "AgentTcpClient"] = dict()
 
-    def handler_msg(self, io: Io, msg: Node):
+    def handler_msg(self, io: Io, msg: "Node"):
+        from ...constant import C
+        
         if not io.username:
             raise Exception(msg)
         if msg.type == C.METHOD_SUB:
@@ -53,56 +57,79 @@ class Manage:
     def get_users_by_topic(self, topic_name):
         return self.topics.get(topic_name, set())
 
-    def register_agent(self, agent_id, info: dict, client=None):
-        self.agents[agent_id] = info
-        if client:
-            self.agent_clients[agent_id] = client
+    def register_agent(self, agent_id, info: dict, client: "AgentTcpClient"):
+        client.agent_id = agent_id
+        client.platform = info.get("platform")
+        client.hostname = info.get("hostname")
+        client.ip = info.get("ip")
+        client.port = info.get("port")
+        client.last_heartbeat = time.time()
+        self.agent_clients[agent_id] = client
         logger.info(f"agent registered: {agent_id} {info.get('platform')}")
 
     def unregister_agent(self, agent_id):
-        self.agents.pop(agent_id, None)
         self.agent_clients.pop(agent_id, None)
         logger.info(f"agent unregistered: {agent_id}")
 
-    def heartbeat_agent(self, agent_id):
-        if agent_id in self.agents:
-            self.agents[agent_id]["last_heartbeat"] = time.time()
-
     def list_agents(self):
-        return [{"agent_id": k, **v} for k, v in self.agents.items()]
+        result = []
+        for agent_id, client in self.agent_clients.items():
+            result.append({
+                "agent_id": agent_id,
+                "platform": getattr(client, "platform", None),
+                "hostname": getattr(client, "hostname", None),
+                "ip": getattr(client, "ip", None),
+                "port": getattr(client, "port", None),
+                "last_heartbeat": getattr(client, "last_heartbeat", None),
+            })
+        return result
 
-    def handler_agent_msg(self, client, msg):
-        t = msg.get("type")
-        agent_id = getattr(client, "agent_id", None)
-        if t == "register":
+    def handler_agent_msg(self, client: "AgentTcpClient", msg: "Node"):
+        from ...constant import C
+        
+        t = msg.type
+        if t == C.MSG_REGISTER:
             self.register_agent(
-                msg["agent_id"],
+                msg.data.get("agent_id"),
                 dict(
-                    platform=msg.get("platform"),
-                    hostname=msg.get("hostname"),
+                    platform=msg.data.get("platform"),
+                    hostname=msg.data.get("hostname"),
                     ip=client.src_ip,
                     port=client.src_port,
                 ),
-                client=client,
+                client,
             )
-            client.write(dict(type="register_ok"))
-        elif t == "heartbeat":
-            self.heartbeat_agent(agent_id)
-        elif t == "unregister":
-            self.unregister_agent(agent_id)
-        elif t in ("exec_stdout", "exec_stderr", "exec_done"):
-            self.store_agent_output(agent_id, msg)
+            client.write_node(msg.__class__(type=C.MSG_REGISTER_OK))
+        elif t == C.MSG_HEARTBEAT:
+            client.last_heartbeat = time.time()
+        elif t == C.MSG_UNREGISTER:
+            self.unregister_agent(client.agent_id)
+        elif t in (C.MSG_EXEC_STDOUT, C.MSG_EXEC_STDERR, C.MSG_EXEC_DONE):
+            client.store_output(msg, self)
 
     def send_exec(self, agent_id, command, timeout=30):
+        from ..node import Node
+        from ...constant import C
+        
         client = self.agent_clients.get(agent_id)
         if not client:
             raise ValueError(f"agent not found: {agent_id}")
         cmd_id = uid(16)
-        client.write(dict(type="exec", cmd_id=cmd_id, command=command, timeout=timeout))
+        client.write_node(
+            Node(
+                type=C.MSG_EXEC,
+                key=cmd_id,
+                data={"command": command, "timeout": timeout},
+            )
+        )
         return cmd_id
 
-    def store_agent_output(self, agent_id, msg):
-        logger.info(f"agent output: {agent_id} {msg.get('type')} {msg.get('cmd_id')}")
+    def get_agent_output(self, cmd_id):
+        for client in self.agent_clients.values():
+            output = client.get_output(cmd_id)
+            if output:
+                return output
+        return None
 
     def start_agent_server(self, host="0.0.0.0", port=20001):
         from .agent_server import AgentTcpServer

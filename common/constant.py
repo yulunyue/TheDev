@@ -37,6 +37,15 @@ class Constant:
     TOPIC_WEB_LOG = "TOPIC_WEB_LOG"
     TOPIC_MSG_QT = "TOPIC_MSG_QT"
     TOPIC_QT_CONFIG_UPDATE = "TOPIC_QT_CONFIG_UPDATE"
+    TOPIC_AGENT_OUTPUT = "TOPIC_AGENT_OUTPUT"
+    MSG_REGISTER = "register"
+    MSG_REGISTER_OK = "register_ok"
+    MSG_HEARTBEAT = "heartbeat"
+    MSG_UNREGISTER = "unregister"
+    MSG_EXEC = "exec"
+    MSG_EXEC_STDOUT = "exec_stdout"
+    MSG_EXEC_STDERR = "exec_stderr"
+    MSG_EXEC_DONE = "exec_done"
     VIEW_STATE_CAN_EDIT = 1 << 0
     VIEW_SATTE_MAX = (1 << 8) - 1
     LAYOUT_ROW = "ROW"

@@ -32,8 +32,9 @@ def start():
 
     logger.info(HTTP_CONF_FILE)
     conf = HTTP_CONF_FILE.read_file()
-    TASK_MANAGE.set_resource("config/setting/task.json").start()
-    IO_MANAGE.start_agent_server()
+    if env == "dev" or env == "manager":
+        TASK_MANAGE.set_resource("config/setting/task.json").start()
+        IO_MANAGE.start_agent_server()
     port = SYS_KW.get("port", conf["port"])
     run(conf["py_modules"], port=port)
 

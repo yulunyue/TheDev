@@ -10,3 +10,9 @@ class Agent(ApiBase):
     def exec(self, agent_id, command, timeout=30, **kw):
         cmd_id = IO_MANAGE.send_exec(agent_id, command, timeout)
         return Node(data=dict(cmd_id=cmd_id))
+
+    def output(self, cmd_id, **kw):
+        output = IO_MANAGE.get_agent_output(cmd_id)
+        if not output:
+            return Node(data=dict(error="cmd_id not found"))
+        return Node(data=output)

@@ -1,13 +1,25 @@
 import struct
 import json
+from typing import Dict, TYPE_CHECKING
 from .client import Client
 from .base import socket
+
+if TYPE_CHECKING:
+    from ..node import Node
+    from ...constant import C
 
 
 class AgentTcpClient(Client):
     def __init__(self):
         super().__init__()
         self.message_handler = None
+        self.outputs: Dict[str, dict] = dict()
+        self.agent_id = ""
+        self.platform = None
+        self.hostname = None
+        self.ip = None
+        self.port = None
+        self.last_heartbeat = None
 
     def send(self, data):
         if isinstance(data, str):
@@ -19,6 +31,8 @@ class AgentTcpClient(Client):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def run(self):
+        from ..node import Node
+        
         try:
             while True:
                 data = self._recv_exact(4)
@@ -30,7 +44,7 @@ class AgentTcpClient(Client):
                 if not body:
                     self.close()
                     break
-                msg = json.loads(body.decode("utf-8"))
+                msg = Node.from_dict(json.loads(body.decode("utf-8")))
                 if self.message_handler:
                     self.message_handler(msg)
                 else:
@@ -39,7 +53,7 @@ class AgentTcpClient(Client):
             self.close()
 
     def close(self):
-        if hasattr(self, "agent_id"):
+        if self.agent_id:
             if hasattr(self, "server") and hasattr(self.server, "manage"):
                 self.server.manage.unregister_agent(self.agent_id)
         super().close()
@@ -52,3 +66,34 @@ class AgentTcpClient(Client):
                 return None
             data += chunk
         return data
+
+    def write_node(self, node: "Node"):
+        self.write(node.to_json_str())
+
+    def store_output(self, msg: "Node", manage):
+        from ...constant import C
+        
+        cmd_id = msg.key
+        if cmd_id not in self.outputs:
+            self.outputs[cmd_id] = {
+                "agent_id": self.agent_id,
+                "lines": [],
+                "exit_code": None,
+                "done": False,
+            }
+        output = self.outputs[cmd_id]
+        msg_type = msg.type
+        if msg_type == C.MSG_EXEC_STDOUT:
+            output["lines"].append(("stdout", msg.data.get("data")))
+        elif msg_type == C.MSG_EXEC_STDERR:
+            output["lines"].append(("stderr", msg.data.get("data")))
+        elif msg_type == C.MSG_EXEC_DONE:
+            output["exit_code"] = msg.data.get("exit_code")
+            output["done"] = True
+        manage.send(
+            f"{C.TOPIC_AGENT_OUTPUT}.{cmd_id}",
+            msg,
+        )
+
+    def get_output(self, cmd_id):
+        return self.outputs.get(cmd_id)

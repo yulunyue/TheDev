@@ -43,6 +43,13 @@ class OpencodeClient:
             provider_id="",
             parts=[text_part],
         )
+
+        if isinstance(result, dict) and "parts" in result:
+            for part in result["parts"]:
+                if part.get("type") == "text":
+                    return part.get("text", "")
+            return ""
+
         if hasattr(result, "content"):
             return result.content
         if hasattr(result, "model_dump"):

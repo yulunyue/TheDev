@@ -2,7 +2,7 @@ import time
 import sys
 import os as os_mod
 from threading import Thread
-from common.util.export import AgentTcpClient
+from common.util.export import AgentTcpClient, Node, C
 from common.tool.export import OsUtil
 
 
@@ -12,7 +12,7 @@ class AgentRunner:
         self.server_port = port
         self.agent_id = agent_id
         self.platform = platform or self._detect_platform()
-        self.hostname = hostname or os_mod.uname().nodename
+        self.hostname = hostname or self._get_hostname()
         self._running = False
         self.client = AgentTcpClient()
         self.client.message_handler = self._on_message
@@ -21,6 +21,11 @@ class AgentRunner:
         if os_mod.name == "nt":
             return "windows"
         return "linux"
+
+    def _get_hostname(self):
+        if os_mod.name == "nt":
+            return os_mod.environ.get("COMPUTERNAME", "unknown")
+        return os_mod.uname().nodename
 
     def _get_shell(self):
         return "cmd" if self.platform == "windows" else "bash"
@@ -44,12 +49,14 @@ class AgentRunner:
         self.client.set_addr(dst_ip=self.server_host, dst_port=self.server_port)
         self.client.connect()
 
-        self.client.write(
-            dict(
-                type="register",
-                agent_id=self.agent_id,
-                platform=self.platform,
-                hostname=self.hostname,
+        self.client.write_node(
+            Node(
+                type=C.MSG_REGISTER,
+                data={
+                    "agent_id": self.agent_id,
+                    "platform": self.platform,
+                    "hostname": self.hostname,
+                },
             )
         )
 
@@ -60,21 +67,18 @@ class AgentRunner:
         while self._running:
             time.sleep(15)
             try:
-                self.client.write(dict(type="heartbeat", agent_id=self.agent_id))
+                self.client.write_node(Node(type=C.MSG_HEARTBEAT, value=self.agent_id))
             except Exception:
                 break
 
-    def _on_message(self, msg):
-        t = msg.get("type")
-        if t == "exec":
+    def _on_message(self, msg: Node):
+        if msg.type == C.MSG_EXEC:
             Thread(target=self._exec_cmd, args=(msg,), daemon=True).start()
-        elif t == "exec_stop":
-            self._stop_cmd(msg.get("cmd_id"))
 
-    def _exec_cmd(self, msg):
-        cmd_id = msg["cmd_id"]
-        command = msg["command"]
-        timeout = msg.get("timeout", 30)
+    def _exec_cmd(self, msg: Node):
+        cmd_id = msg.key
+        command = msg.data.get("command")
+        timeout = msg.data.get("timeout", 30)
         shell = self._get_shell()
 
         try:
@@ -85,33 +89,29 @@ class AgentRunner:
                 proc = os.popen("-c", command)
 
             for line in iter(proc.stdout.readline, ""):
-                self.client.write(
-                    dict(
-                        type="exec_stdout",
-                        cmd_id=cmd_id,
-                        data=line,
+                self.client.write_node(
+                    Node(
+                        type=C.MSG_EXEC_STDOUT,
+                        key=cmd_id,
+                        data={"data": line},
                     )
                 )
             proc.wait(timeout=timeout)
-            self.client.write(
-                dict(
-                    type="exec_done",
-                    cmd_id=cmd_id,
-                    exit_code=proc.returncode,
+            self.client.write_node(
+                Node(
+                    type=C.MSG_EXEC_DONE,
+                    key=cmd_id,
+                    data={"exit_code": proc.returncode},
                 )
             )
         except Exception as e:
-            self.client.write(
-                dict(
-                    type="exec_done",
-                    cmd_id=cmd_id,
-                    exit_code=-1,
-                    error=str(e),
+            self.client.write_node(
+                Node(
+                    type=C.MSG_EXEC_DONE,
+                    key=cmd_id,
+                    data={"exit_code": -1, "error": str(e)},
                 )
             )
-
-    def _stop_cmd(self, cmd_id):
-        pass
 
 
 def main():

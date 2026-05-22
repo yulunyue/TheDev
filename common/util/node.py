@@ -96,6 +96,27 @@ class Node:
     def get_data(self):
         return self.data
 
+    def to_dict(self):
+        return self.to_json()
+
+    def to_json_str(self):
+        return json.dumps(self.to_dict(), ensure_ascii=False)
+
+    @classmethod
+    def from_dict(cls, d: dict):
+        return cls(
+            type=d.get("type", ""),
+            key=d.get("key", ""),
+            title=d.get("title", ""),
+            value=d.get("value"),
+            data=d.get("data"),
+            children=d.get("children"),
+        )
+
+    @classmethod
+    def from_json_str(cls, s: str):
+        return cls.from_dict(json.loads(s))
+
 
 def cls_util(tp, **kw):
     class T:
