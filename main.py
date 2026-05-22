@@ -18,6 +18,7 @@ def start():
                 dict(
                     path="./",
                     modules={
+                        "/app/agent": "app.tool.agent::Agent",
                         "/app/manage": "app.tool.manage::Manage",
                         "/app/user": "app.tool.user::User",
                         "/app/todo": "app.tool.todo::Todo",

@@ -106,6 +106,13 @@ from common.tool.export import (
 - `FlexColumn` 是垂直方向布局（`flexDirection: column`），`FlexRow` 是水平方向布局（`flexDirection: row`）
 - **已删除 `Row` 和 `Column` 别名**，代码中直接使用原名避免命名混淆
 
+### 前后端数据约定
+
+后端 API 返回值统一使用 `Node`，前端解析规则：
+- 列表 → `Node(children=[...])` → 前端 `this.childs`
+- 字典 → `Node(data={...})` → 前端 `.get_data()`
+- 标量 → `Node(value=...)` → 前端 `.get_value()`
+
 ## 代码规范
 
 - **一个文件最好只有一个类**（前后端均适用）
