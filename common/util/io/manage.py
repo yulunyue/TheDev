@@ -1,3 +1,4 @@
+import time
 from .base import Io
 from typing import Dict
 from ..node import Node
@@ -9,6 +10,7 @@ class Manage:
     def __init__(self):
         self.io_map: Dict[str, Io] = dict()
         self.topics: Dict[str, set] = dict()
+        self.agents: Dict[str, dict] = dict()
 
     def handler_msg(self, io: Io, msg: Node):
         if not io.username:
@@ -48,6 +50,27 @@ class Manage:
 
     def get_users_by_topic(self, topic_name):
         return self.topics.get(topic_name, set())
+
+    def register_agent(self, agent_id, info: dict):
+        self.agents[agent_id] = info
+        logger.info(f"agent registered: {agent_id} {info.get('platform')}")
+
+    def unregister_agent(self, agent_id):
+        self.agents.pop(agent_id, None)
+        logger.info(f"agent unregistered: {agent_id}")
+
+    def heartbeat_agent(self, agent_id):
+        if agent_id in self.agents:
+            self.agents[agent_id]["last_heartbeat"] = time.time()
+
+    def list_agents(self):
+        return [{"agent_id": k, **v} for k, v in self.agents.items()]
+
+    def start_agent_server(self, host="0.0.0.0", port=20001):
+        from .agent_server import AgentTcpServer
+
+        AgentTcpServer(self).set_addr(src_ip=host, src_port=port).start()
+        logger.info(f"agent server started on {host}:{port}")
 
 
 IO_MANAGE = Manage()

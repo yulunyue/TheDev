@@ -53,7 +53,7 @@ from .thread.thread_poll import ThreadManage, ThreadExec
 from .list_util import ListUtil
 from .node import Node, search_cls, enum_cls
 from .api.apicall import ApiCall, ApiBase
-from .io.export import TcpServer, TcpClient, TempFile
+from .io.export import TcpServer, TcpClient, AgentTcpServer, AgentTcpClient, TempFile
 from .io.manage import IO_MANAGE
 from .thread.thread_util import ThreadRecord
 from .re_util import ReUtil

@@ -3,6 +3,8 @@ from .tcp_client import TcpClient
 
 
 class TcpServer(Server):
+    CLIENT_CLASS = TcpClient
+
     def create_socket(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setblocking(True)
@@ -12,7 +14,7 @@ class TcpServer(Server):
         while True:
             client_sock, addr = self.sock.accept()
             t = (
-                TcpClient()
+                self.CLIENT_CLASS()
                 .set_addr(
                     src_ip=addr[0],
                     src_port=addr[1],
