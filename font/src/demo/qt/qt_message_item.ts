@@ -54,7 +54,7 @@ export class QtMessageItem extends FlexRow {
         let title = this.option.title || ""
         let status = this.option.data?.status || ""
 
-        this.key_div.set_html(key)
+        this.key_div.set_html(key + ":" + status)
         this.title_div.set_html(title)
 
         let bgStyle = COLOR_MAP[status] || {

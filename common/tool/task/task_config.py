@@ -123,12 +123,12 @@ class TaskConfig(FileConfig):
         except Exception as e:
             self.code = C.CODE_500
             self.error_msg = traceback.format_exc().split("\n")
+            self.run_model.set_value(C.NEVER)
+            self.save_to_local()
+            logger.error(f"任务 {self.name.get_value()} 执行失败，已自动暂停")
             self.notify_update()
         finally:
-            self.code = C.CODE_200
             self.state = C.wait
             self.last_finish_t = time.time()
             self.notify_update()
         self.run_num += 1
-
-        return
