@@ -1,4 +1,4 @@
-from common.tool.export import OsUtil, ToolBase, GC
+from common.tool.export import OsUtil, ToolBase, GC, ProcessLock, System
 from common.third_util.io.api import Api
 from common.third_util.io.api_config import API_CONFIG
 from common.util.export import File, logger, md5
@@ -20,7 +20,15 @@ class Cli(ToolBase):
         f = File("./")
         f.zip(
             THE_DEV_ZIP_PATH,
-            targets=["font/dist", "common", "app/tool", "app/yly", "tool", "main.py", "config/setting/production.json"],
+            targets=[
+                "font/dist",
+                "common",
+                "app/tool",
+                "app/yly",
+                "tool",
+                "main.py",
+                "config/setting/production.json",
+            ],
             ignores=[".*__pycache__"],
         )
         logger.info("package")
@@ -71,7 +79,9 @@ class Cli(ToolBase):
         self.install(server)
         self.restart(server, config)
 
+    def dev(self):
+        System.run(["python", "main.py", "dev"])
+
 
 if __name__ == "__main__":
-    Api.enable_globel_log()
     Cli().run()

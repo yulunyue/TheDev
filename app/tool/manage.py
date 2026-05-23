@@ -75,15 +75,6 @@ class Manage:
         IO_MANAGE.send(topic, value)
         return Node(value=value)
 
-    def get_json(self, path, **kw):
-        """
-        获取 Qt 显示配置
-        """
-        f = File("config/setting/qt_show.json")
-        if f.exists():
-            return f.read_file()
-        return Node(value={"show_keys": []})
-
     def get_io_users(self, **kw):
         """
         获取 WebSocket 用户列表

@@ -63,11 +63,8 @@ export class HttpService {
         var hrefs = data.path.split('/')
         var ip_ports = hrefs[2].split(':')
         this.web_host = ip_ports[0]
-        this.web_port = parseInt(ip_ports[1])
-        if (this.web_port == 8080) {
-            this.web_port = 9999
-        }
         Ut.extend(this.url_param, data.param)
+        this.web_port = this.url_param.remote_port || parseInt(ip_ports[1])
         let bk_host = this.web_host
         this.prefix = 'http://' + bk_host + ":" + this.web_port
     }

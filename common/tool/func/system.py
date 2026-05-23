@@ -94,8 +94,12 @@ class System:
         return ""
 
     @classmethod
-    def popen(cls, cmd, **kw):
+    def popen(cls, cmd, cwd=None, **kw):
         if os.name == "nt":
             kw["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
         kw["start_new_session"] = True
-        return subprocess.Popen(cmd, **kw)
+        return subprocess.Popen(cmd, cwd=cwd, **kw)
+
+    @classmethod
+    def run(cls, cmd, cwd=None):
+        System.popen(["nohup"] + cmd + [">", "/dev/null", "2>&1", "&"], cwd=cwd)

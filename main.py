@@ -9,7 +9,7 @@ from common.tool.export import TASK_MANAGE, ProcessLock
 
 def start():
     env = sys.argv[1] if len(sys.argv) > 1 else "dev"
-    ProcessLock(env).start_unique()
+    ProcessLock(env).start()
 
     TornadaWebSocketConnectHandler.handler_msg = IO_MANAGE.handler_msg
     HTTP_CONF_FILE = File(f"config/setting/{env}.json").write_if_not_exists(

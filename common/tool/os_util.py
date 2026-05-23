@@ -3,7 +3,6 @@ from common.util.export import (
     File,
     TheDevLogger,
     get_dev_log,
-    logger,
     Thread,
     List,
     os,
@@ -20,21 +19,18 @@ class OsUtil:
         self.root_path = "./"
         self.and_cmds = []
 
-    _logger: TheDevLogger = None
+    logger: TheDevLogger = None
 
-    @property
-    def logger(self):
-        if self._logger is None:
-            self._logger: TheDevLogger = get_dev_log(
-                f"data/log/os/{self.fun_name.split('/').pop()}"
-            )  # 用TheDev 主要是方便writer 重定向
-        return self._logger
+    def info(self, msg):
+        if self.logger is None:
+            return
+        self.logger.info(msg)
 
     def set_time_out(self, timeout):
         self.timeout = timeout
         return self
 
-    def set_venv(self, env_path):
+    def set_py_venv(self, env_path):
         local_exec = sys.executable.replace("\\", "/")
         if env_path in local_exec:
             return
@@ -44,7 +40,7 @@ class OsUtil:
             cmd = f"{env_path}/Scripts/Activate.ps1"
         else:
             cmd = f"source {env_path}/bin/activate"
-        logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
+        self.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
 
     def check_output(self, cmd: List[str], env=None):
         cmds = " ".join(cmd)
@@ -86,12 +82,12 @@ class OsUtil:
         if self.error_exit_flag:
             raise Exception(cmd, msg)
         else:
-            logger.info(msg[:20] + "..." + msg[-20:] + cmd)
+            self.info(msg[:20] + "..." + msg[-20:] + cmd)
 
     def set_logger(self, logger):
         if isinstance(logger, str):
             logger = get_dev_log(logger)
-        self._logger: TheDevLogger = logger
+        self.logger: TheDevLogger = logger
         return self
 
     def set_env(self, root):

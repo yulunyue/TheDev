@@ -34,7 +34,7 @@ class ProcessLock:
         name = System.find_process_info(pid)
         return name != ""
 
-    def start_unique(self, pid: int = None) -> bool:
+    def start_unique(self) -> int:
         if self.is_running():
             try:
                 System.kill(self.get_pid())
@@ -42,10 +42,10 @@ class ProcessLock:
                 self.clear()
         else:
             self.clear()
-        if pid is None:
-            pid = System.getpid()
-        self.set_pid(pid)
-        return True
+        return System.getpid()
+
+    def start(self):
+        self.set_pid(self.start_unique())
 
     def clear(self):
         if self.pid_file.exists():
@@ -53,7 +53,7 @@ class ProcessLock:
 
     def start_process(self, cmd: list, cwd: str = None, log_file: str = None) -> int:
         self.start_unique()
-        proc = System.popen(cmd)
+        proc = System.popen(cmd, cwd=cwd)
         self.set_pid(proc.pid)
         logger.info(
             f"ProcessLock[{self.name}] started: {System.find_process_info(proc.pid)}"

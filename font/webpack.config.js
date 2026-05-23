@@ -31,6 +31,9 @@ module.exports = {
     externals: {
 
     },
+    devServer:{
+        port: 48080
+    },
     // addition - add source-map support
     devtool: "source-map"
 }

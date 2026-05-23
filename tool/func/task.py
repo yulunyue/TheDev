@@ -10,9 +10,7 @@ class TaskTool(ToolBase):
         ret = []
         for type, values in mp.items():
             for v in values:
-                value = dict(
-                    title=f"{date_str}_{v}", category=type, content="AUTO_GEN"
-                )
+                value = dict(title=f"{date_str}_{v}", category=type, content="AUTO_GEN")
                 res = api.post(
                     "/app/todo/web_insert",
                     value,
@@ -21,13 +19,6 @@ class TaskTool(ToolBase):
                 ret.append(res)
                 logger.map(type=type, value=value, res=res)
         return ret
-
-    def test_zx(self):
-        logger.info(Api().set_endpoint("http://1.14.97.154:10000").post("/app"))
-
-    def do_task(self, name):
-        TaskConfig.set_resource("config/setting/task.json")
-        TaskConfig.get(name).run()
 
 
 if __name__ == "__main__":

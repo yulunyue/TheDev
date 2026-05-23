@@ -5,8 +5,7 @@ from common.tool.export import ProcessLock
 
 class QtTool(ToolBase):
     def main(self):
-        if not ProcessLock("qt").start_unique():
-            return
+        ProcessLock("qt").start()
         StealthBrowser().exec()
 
 
