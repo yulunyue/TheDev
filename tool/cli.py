@@ -82,6 +82,19 @@ class Cli(ToolBase):
     def dev(self):
         System.run(["python", "main.py", "dev"])
 
+    def frpc(self):
+        ProcessLock("frpc").start_process(
+            "/home/yly/frp/frpc_61_0", "-c", "/home/yly/frp/frpc.toml"
+        )
+
+    def npm_start(self):
+        System.run(["npm", "run", "start"], cwd="./font")
+
+    def agent(self):
+        ProcessLock("agent").start_process(
+            "python", "-m", "tool.service.agent_runner", "default"
+        )
+
 
 if __name__ == "__main__":
     Cli().run()

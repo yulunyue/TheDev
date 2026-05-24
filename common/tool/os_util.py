@@ -12,6 +12,7 @@ from common.util.export import (
 
 class OsUtil:
     time_out = 3600
+    process: subprocess.Popen = None
 
     def __init__(self, fun_name: str, error_exit_flag=True):
         self.fun_name = fun_name.replace("\\", "/")
@@ -100,35 +101,21 @@ class OsUtil:
             ret.extend([k, v])
         return ret
 
+    def popen(self, *args, **kw) -> subprocess.Popen:
+        cmd = self.get_cmd(args, kw)
+        kw.setdefault("stdout", subprocess.PIPE)
+        kw.setdefault("stderr", subprocess.STDOUT)
+        kw.setdefault("stdin", subprocess.PIPE)
+        kw.setdefault("text", True)
+        self.process = subprocess.Popen(cmd, **kw)
+        return self.process
+
     def popen_output(self, *args, timeout=60, env=None, **kw) -> str:
-        """
-        执行命令并返回 stdout 内容
-
-        参数：
-        - timeout: 超时时间（默认 60 秒）
-        - env: 环境变量
-
-        返回：stdout 内容（失败返回空字符串，或根据 error_exit_flag 抛异常）
-        """
-        proc = self.popen(*args, env=env, **kw)
-        try:
-            stdout, stderr = proc.communicate(timeout=timeout)
-            if proc.returncode == 0:
-                return stdout.strip()
-            else:
-                cmds = " ".join(self.get_cmd(args, kw))
-                error_msg = stderr.strip() or stdout.strip()
-                self.error(cmds, error_msg)
-                return ""
-        except subprocess.TimeoutExpired:
-            proc.kill()
-            cmds = " ".join(self.get_cmd(args, kw))
-            self.error(cmds, "timeout")
-            return ""
-        except Exception as e:
-            cmds = " ".join(self.get_cmd(args, kw))
-            self.error(cmds, str(e))
-            return ""
+        cmd = self.get_cmd(args, kw)
+        statu, stdout, stderror = self.check_output(cmd, env=env)
+        if statu:
+            return stdout.strip()
+        return ""
 
     def run(self, *args, env=None, **kw):
         return self.check_output(self.get_cmd(args, kw), env=env)
@@ -138,7 +125,8 @@ class OsUtil:
         return self
 
     def stop(self):
-        self.process.kill()
+        if self.process:
+            self.process.kill()
 
     def system(self, *args, **kw):
         cmd = " ".join(self.get_cmd(args, kw))

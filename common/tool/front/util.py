@@ -4,6 +4,10 @@ from common.util.export import Node
 class FontBase(Node):
     type = "pre"
 
+    def add_child(self, data):
+        data = to_web_view(data)
+        return super().add_child(data)
+
 
 def to_web_view(k, v=None):
     if isinstance(v, FontBase):

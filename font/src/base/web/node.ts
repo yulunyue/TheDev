@@ -18,6 +18,7 @@ export class Node {
     size: number = 0
     color: string = ""
     filter_key: string = ""
+    ok: any = null
 
     constructor(key?: string) {
         this.data = {}

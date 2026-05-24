@@ -96,6 +96,7 @@ class Constant {
     MSG_EXEC_STDOUT = "exec_stdout"
     MSG_EXEC_STDERR = "exec_stderr"
     MSG_EXEC_DONE = "exec_done"
+    MSG_EXEC_KILL = "exec_kill"
     CODE_200 = 200
     CODE_500 = 500
 }

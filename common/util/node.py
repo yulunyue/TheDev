@@ -17,6 +17,7 @@ class Node:
         value=None,
         data=None,
         children=None,
+        ok=None,
     ) -> None:
         self.code = code
         if type:
@@ -25,6 +26,7 @@ class Node:
         self.title = title
         self.value = value
         self.size = size
+        self.ok = ok
         self.data = data or dict()
         self.parent = None
         self.childs: List[Node] = []
@@ -84,6 +86,8 @@ class Node:
             children=self.childs,
             data=self.get_data(),
         )
+        if self.ok is not None:
+            ret["ok"] = self.ok
         ret.update(kw)
         return ret
 
@@ -103,19 +107,8 @@ class Node:
         return json.dumps(self.to_dict(), ensure_ascii=False)
 
     @classmethod
-    def from_dict(cls, d: dict):
-        return cls(
-            type=d.get("type", ""),
-            key=d.get("key", ""),
-            title=d.get("title", ""),
-            value=d.get("value"),
-            data=d.get("data"),
-            children=d.get("children"),
-        )
-
-    @classmethod
     def from_json_str(cls, s: str):
-        return cls.from_dict(json.loads(s))
+        return cls(**json.loads(s))
 
 
 def cls_util(tp, **kw):

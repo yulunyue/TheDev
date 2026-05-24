@@ -5,6 +5,7 @@ from ..log import logger, Logger, get_log
 from typing import Dict, List
 import time
 from ..tool import json_dumps
+from ..node import Node
 
 
 class Io:
@@ -12,6 +13,9 @@ class Io:
     childs: Dict[str, "Io"]
     _logger: Logger = None
     username = None
+    ip = None
+    port = None
+    last_heartbeat = None
 
     def set_addr(self, src_ip=None, src_port=None, dst_ip=None, dst_port=None):
         self.src_ip: str = src_ip
@@ -23,6 +27,9 @@ class Io:
     def set_logger(self, t):
         self._logger = t
         return self
+
+    def write_node(self, node: "Node"):
+        self.write(node.to_json_str())
 
     def set_sock(self, sock):
         self.sock = sock
@@ -42,6 +49,9 @@ class Io:
 
     def run(self):
         pass
+
+    def hander_msg(self, msg: "Node"):
+        raise NotImplementedError("todo")
 
     def write(self, data):
         if isinstance(data, dict):

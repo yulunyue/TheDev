@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..node import Node
     from ...constant import C
+    from .manage import Manage
 
 
 class AgentTcpServer(TcpServer):
@@ -12,11 +13,7 @@ class AgentTcpServer(TcpServer):
 
     def __init__(self, manage):
         super().__init__()
-        self.manage = manage
+        self.manage: Manage = manage
 
     def receive_msg(self, client: AgentTcpClient, msg: "Node"):
-        from ...constant import C
-        
-        if msg.type == C.MSG_REGISTER:
-            client.agent_id = msg.data.get("agent_id")
-        self.manage.handler_agent_msg(client, msg)
+        self.manage.handler_msg(client, msg)

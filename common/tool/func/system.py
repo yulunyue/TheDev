@@ -22,7 +22,7 @@ class System:
         return os.getpid()
 
     @classmethod
-    def kill(cls, pid, mode=9):
+    def kill(cls, pid, mode=15):
         return os.kill(pid, mode)
 
     @classmethod
@@ -102,4 +102,7 @@ class System:
 
     @classmethod
     def run(cls, cmd, cwd=None):
-        System.popen(["nohup"] + cmd + [">", "/dev/null", "2>&1", "&"], cwd=cwd)
+        kwargs = {}
+        kwargs["stdout"] = subprocess.DEVNULL
+        kwargs["stderr"] = subprocess.DEVNULL
+        System.popen(cmd, cwd=cwd, **kwargs)

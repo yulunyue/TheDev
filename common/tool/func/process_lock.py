@@ -24,7 +24,7 @@ class ProcessLock:
 
     def set_pid(self, pid: int):
         self.pid_file.write_file(str(pid))
-        logger.info(f"ProcessLock[{self.name}] set PID={pid}")
+        logger.info(f"ProcessLock[{self.name}] set PID={pid} success")
 
     def is_running(self) -> bool:
         """检查进程是否运行（跨平台）"""
@@ -35,13 +35,13 @@ class ProcessLock:
         return name != ""
 
     def start_unique(self) -> int:
-        if self.is_running():
-            try:
-                System.kill(self.get_pid())
-            except ProcessLookupError:
-                self.clear()
-        else:
+        old_pid = self.get_pid()
+        try:
+            System.kill(old_pid)
+            logger.info(f"kill {old_pid} success")
+        except Exception as e:
             self.clear()
+            logger.info(f"kill {old_pid} fail")
         return System.getpid()
 
     def start(self):
@@ -51,11 +51,8 @@ class ProcessLock:
         if self.pid_file.exists():
             self.pid_file.remove()
 
-    def start_process(self, cmd: list, cwd: str = None, log_file: str = None) -> int:
+    def start_process(self, *cmd, cwd: str = None) -> int:
         self.start_unique()
         proc = System.popen(cmd, cwd=cwd)
         self.set_pid(proc.pid)
-        logger.info(
-            f"ProcessLock[{self.name}] started: {System.find_process_info(proc.pid)}"
-        )
         return proc.pid

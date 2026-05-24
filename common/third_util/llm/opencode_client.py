@@ -82,7 +82,7 @@ class OpencodeClient:
             "--hostname",
             hostname,
         ]
-        pid = lock.start_process(cmd)
+        pid = lock.start_process(*cmd)
         for _ in range(wait_timeout):
             if System.get_pid_by_port(port):
                 logger.info(f"opencode server ready on port {port} (PID={pid})")

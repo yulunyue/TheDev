@@ -1,44 +1,57 @@
 import {
-    FlexRow, FlexColumn, Div, Constant, Node, web_dom,
-    Button, Input, Pre, Span, Label,
-    web_socket, Ct,
+    FlexRow, FlexColumn, Node, web_dom,
+    Input, Pre, Span, Button,
+    web_socket, Ct, Search,
 } from "../../base/components/export"
 
 export class AgentMain extends FlexColumn {
-    agent_list: FlexColumn
+    agent_search: Search
     command_input: Input
-    exec_btn: Button
-    clear_btn: Button
+    stop_btn: Button
     output_panel: Pre
     status_bar: Span
+    top_bar: FlexRow
     current_agent: string = ""
-    current_cmd_id: string = ""
     is_executing: boolean = false
 
+    init_node(): void {
+        this.agent_search = new Search().set_title("搜索 Agent")
+        this.command_input = new Input().set_placeholder("输入命令")
+        this.stop_btn = new Button().set_value("终止")
+        this.output_panel = new Pre()
+        this.status_bar = new Span()
+
+        this.top_bar = new FlexRow().add_children([
+            this.agent_search,
+            this.status_bar,
+            this.stop_btn,
+        ])
+
+        this.add_children([
+            this.top_bar,
+            this.output_panel.set_size(1),
+            this.command_input,
+        ])
+    }
+
     init_style(): void {
+        super.init_style()
         this.full()
         this.set_style({
             height: "100vh",
             overflow: "hidden"
         })
-        this.agent_list.set_style({
+        this.top_bar.set_style({
+            alignItems: "center",
+        })
+        this.agent_search.set_style({
             width: 200,
-            minWidth: 200,
-            borderRight: "1px solid #ccc",
-            overflowY: "auto"
         })
-        this.command_input.set_style({
-            flex: 1,
-            minWidth: 200
-        })
-        this.exec_btn.set_style({
-            minWidth: 60
-        })
-        this.clear_btn.set_style({
-            minWidth: 60
+        this.stop_btn.set_style({
+            cursor: "pointer",
+            fontSize: "13px",
         })
         this.output_panel.set_style({
-            flex: 1,
             overflow: "auto",
             whiteSpace: "pre-wrap",
             fontFamily: "monospace",
@@ -46,108 +59,75 @@ export class AgentMain extends FlexColumn {
         })
         this.status_bar.set_style({
             minWidth: 100,
-            flex: 1
+            flex: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+        })
+        this.command_input.set_style({
+            width: "100%",
         })
     }
 
-    init_node(): void {
-        this.agent_list = new FlexColumn()
-        this.command_input = new Input().set_placeholder("输入命令")
-        this.exec_btn = new Button().set_html("执行")
-        this.clear_btn = new Button().set_html("清空")
-        this.output_panel = new Pre()
-        this.status_bar = new Span()
-        
-        const header = new FlexRow().add_children([
-            this.command_input,
-            this.exec_btn,
-            this.clear_btn,
-            this.status_bar,
-        ])
-        
-        const left_panel = new FlexColumn().add_children([
-            new Span().set_html("Agent 列表"),
-            this.agent_list,
-        ])
-        
-        const right_panel = new FlexColumn().add_children([
-            header,
-            this.output_panel,
-        ])
-        
-        this.add_children([
-            new FlexRow().add_children([
-                left_panel,
-                right_panel.set_size(1),
-            ]).set_size(1),
-        ])
-    }
-
     init_event(): void {
-        this.exec_btn.on_click(() => this.exec_command())
-        this.clear_btn.on_click(() => this.output_panel.set_html(""))
+        this.agent_search.on_change((key: string, src: any, value: any) => {
+            this.switch_agent(value)
+        })
         this.command_input.on_key_down((e: KeyboardEvent) => {
             if (e.key === "Enter") {
                 this.exec_command()
             }
         })
-        this.load_agents()
-    }
-
-    load_agents(): void {
-        web_dom.post("/agent/list", {}, (data: Node) => {
-            this.render_agents(data.data.agents || [])
-        }, (err: any) => {
-            this.status_bar.set_html(`加载失败: ${err?.title || err}`)
+        this.stop_btn.on_click(() => {
+            web_dom.post("/agent/kill", { agent_id: this.current_agent }, (data: Node) => {
+                if (data.ok === false) {
+                    this.status_bar.set_html(data.title || "终止失败")
+                    return
+                }
+                this.is_executing = false
+                this.status_bar.set_html("已终止")
+            }, (err: any) => {
+                this.status_bar.set_html(`终止失败: ${err?.title || err}`)
+            })
         })
     }
 
-    render_agents(agents: any[]): void {
-        this.agent_list.clear_children()
-        if (agents.length === 0) {
-            this.agent_list.add_child(new Span().set_html("无在线 Agent"))
-            return
+    switch_agent(agent_id: string): void {
+        if (this.current_agent) {
+            web_socket.un_sub(`${Ct.TOPIC_AGENT_OUTPUT}.${this.current_agent}`)
         }
-        for (const agent of agents) {
-            const item = new Label()
-                .set_html(`${agent.agent_id} (${agent.platform || "unknown"})`)
-                .set_style({
-                    padding: "8px",
-                    cursor: "pointer",
-                    borderBottom: "1px solid #eee"
-                })
-            item.on_click(() => {
-                this.current_agent = agent.agent_id
-                this.status_bar.set_html(`选中: ${agent.agent_id}`)
-                this.highlight_agent_item(item)
-            })
-            this.agent_list.add_child(item)
-        }
+        this.current_agent = agent_id
+        this.status_bar.set_html(`选中: ${agent_id}`)
+        this.output_panel.set_html("")
+        this.is_executing = false
+        if (!agent_id) return
+
+        web_socket.sub(`${Ct.TOPIC_AGENT_OUTPUT}.${agent_id}`, (msg: any) => {
+            this.handle_output(msg)
+        })
+        this.load_history(agent_id)
     }
 
-    highlight_agent_item(item: Label): void {
-        for (const child of this.agent_list.childs) {
-            if (child instanceof Label) {
-                child.set_style({ background: "" })
+    load_history(agent_id: string): void {
+        web_dom.post("/agent/history", { agent_id, limit: 60 }, (data: Node) => {
+            const records = data.children || []
+            for (const r of records) {
+                const d = r.data
+                this.append_output(`$ ${d.command}\n`)
+                if (d.output) {
+                    this.append_output(d.output)
+                }
+                this.append_output(`exit_code: ${d.exit_code}  (${new Date(d.start_time * 1000).toLocaleTimeString()})\n\n`)
             }
-        }
-        item.set_style({ background: "#e0e0e0" })
-    }
-
-    set_loading(loading: boolean): void {
-        this.is_executing = loading
-        if (loading) {
-            this.exec_btn.set_html("执行中...")
-            this.exec_btn.el.disabled = true
-        } else {
-            this.exec_btn.set_html("执行")
-            this.exec_btn.el.disabled = false
-        }
+        }, () => { })
     }
 
     exec_command(): void {
-        if (this.is_executing) return
-        
+        if (this.is_executing) {
+            this.status_bar.set_html("正在执行中，请先停止")
+            return
+        }
+
         if (!this.current_agent) {
             this.status_bar.set_html("请先选择 Agent")
             return
@@ -157,27 +137,20 @@ export class AgentMain extends FlexColumn {
             this.status_bar.set_html("请输入命令")
             return
         }
-        
-        this.output_panel.set_html("")
-        this.set_loading(true)
+        this.is_executing = true
         web_dom.post("/agent/exec", {
             agent_id: this.current_agent,
             command: command,
             timeout: 60
-        }, (data: Node) => {
-            this.current_cmd_id = data.data.cmd_id
-            this.status_bar.set_html(`执行中: ${this.current_cmd_id}`)
-            this.subscribe_output(this.current_cmd_id)
-        }, (err: any) => {
-            this.set_loading(false)
-            this.status_bar.set_html(`错误: ${err?.title || err}`)
-        })
-    }
-
-    subscribe_output(cmd_id: string): void {
-        const topic = `${Ct.TOPIC_AGENT_OUTPUT}.${cmd_id}`
-        web_socket.sub(topic, (msg: any) => {
-            this.handle_output(msg)
+        }, (o: Node) => {
+            if (o.ok) {
+                this.append_output(`$ ${command}\n`)
+                this.command_input.set_value("")
+                this.status_bar.set_html("执行中")
+            } else {
+                this.is_executing = false
+                this.status_bar.set_html(`错误: ${o.title}`)
+            }
         })
     }
 
@@ -185,15 +158,16 @@ export class AgentMain extends FlexColumn {
         const msgType = msg.type
         const data = msg.data?.data || ""
         const exitCode = msg.data?.exit_code
-        
+
         if (msgType === Ct.MSG_EXEC_STDOUT) {
             this.append_output(data)
         } else if (msgType === Ct.MSG_EXEC_STDERR) {
             this.append_output(`[stderr] ${data}`)
         } else if (msgType === Ct.MSG_EXEC_DONE) {
-            this.set_loading(false)
-            this.status_bar.set_html(`完成: exit_code=${exitCode}`)
-            web_socket.un_sub(`${Ct.TOPIC_AGENT_OUTPUT}.${this.current_cmd_id}`)
+            this.is_executing = false
+            const timeStr = new Date().toLocaleTimeString()
+            this.status_bar.set_html(`完成: exit_code=${exitCode}  (${timeStr})`)
+            this.append_output(`exit_code: ${exitCode}\n\n`)
         }
     }
 
@@ -204,7 +178,7 @@ export class AgentMain extends FlexColumn {
     }
 
     render(): void {
-        this.load_agents()
+        this.agent_search.set_option({ url: "/agent/list", key: "agent_id", id: "agent_search" })
     }
 }
 

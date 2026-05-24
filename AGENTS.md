@@ -6,13 +6,7 @@
 ## 命令
 
 ### 服务器
-- `python main.py dev` — Tornado Web 服务器，端口由 `config/setting/{env}.json` 配置（dev 环境默认 9999）
-- `python main.py test` — 同上，使用 test 环境配置
-- 配置文件自动创建在 `config/setting/{env}.json`（若不存在）
-- 服务器将 PID 写入 `data/proc/{env}.pid`
-- 重启服务需先 `kill` 旧进程，然后用 `nohup python main.py dev > /dev/null 2>&1 &` 启动（避免 shell 超时后被杀死）
-- 前端 `npm start` 需用 `setsid sh -c 'cd font && npm start > data/tmp/frontend.log 2>&1 &'` 启动（`nohup` 对 npm 不可靠）
-- 重启前后端后需用 `lsof -i :<port>` 确认端口已监听
+- `python -m tool.cli dev` — 启动/重启 Tornado Web 服务器，端口由 `config/setting/{env}.json` 配置（dev 环境）；修改后端代码后需重启生效，直接执行此命令，不再预先 ps 检查进程状态
 
 ### 测试
 - `python -m pytest tests/` — 运行全部测试
@@ -22,7 +16,7 @@
 - `python tool/pytest.py cover` — 对 `common/` + `app/` 生成覆盖率报告，输出到 `data/coverage/`
 
 ### 前端
-- `cd font && npm start` — webpack 开发服务器，端口 8080
+- `cd font && nohup npm run start > ../data/tmp/font.log 2>&1 &` — webpack 开发服务器，端口 8080
 - `cd font && npm run build` — 生产构建
 - `cd font && npm test` — Vitest 运行测试（`vitest run`）
 - `cd font && npm run test:watch` — Vitest 监听模式
@@ -32,8 +26,6 @@
 - `cd rust/the_dev && cargo build` / `cargo run`
 - C++ 代码在 `cpp/` 目录下（仓库中无正式构建命令）
 
-### CLI 工具
-- `python tool/<name>.py <method>` — 通过 `ToolBase` 自动发现方法
 
 ### CI/CD 发布（Bolun 现网）
 - `python -m tool.service.cli bolun_cicd` — **一键发布现网**，依次执行：
@@ -98,9 +90,11 @@ from common.tool.export import (
 
 - 组件及子组件的构造（创建 DOM 节点）统一放在 `init_node` 函数中（**禁止**在其中调用 `set_style`）
 - 组件及子组件的样式统一放在 `init_style` 函数中（所有 `set_style` 调用集中于此）
+- **覆盖 `init_style` 时必须调用 `super.init_style()`**，确保父类基础样式（如 FlexDiv 的 `display: flex`）生效
 - 组件及子组件的事件绑定统一放在 `init_event` 函数中
 - 数据设置统一使用 `set_option(option: Node)` 方法，内部调用 `this.option.set_option(option)` 合并数据，然后调用 `this.render_option()`
 - 渲染更新统一放在 `render_option()` 方法中，从 `this.option` 读取数据更新 DOM
+- **路由组件**（在 `app.ts` 中注册，如 `AgentMain`、`TaskMain`）覆盖 `render()` 做挂载后的一次性初始化（`app.ts` 中 `mount().render()` 调用链）。**基础组件**（`Search`、`Input`、`Pre` 等）覆盖 `render_option()` 做数据驱动的响应式渲染，由 `set_option()` 自动触发。两者分工不同，互不替代
 - `set_option` 返回 `this` 以支持链式调用
 - 取值/设值使用 `get_value()` / `set_value()`，变化通知使用 `on_change(cb)` / `do_change(key, src, dst)`
 - `FlexColumn` 是垂直方向布局（`flexDirection: column`），`FlexRow` 是水平方向布局（`flexDirection: row`）
@@ -143,6 +137,8 @@ from common.tool.export import (
 - **组件渲染**：`DivFactory.new_div(option.type, option.key)` 创建对应组件
 - **纯数据**：`.get_value()` 获取标量，`.get_data()` 获取字典
 
+> **⚠️ 语言差异**：Python `Node` 构造函数接受关键字参数 `Node(key=value)`，TypeScript `Node` 构造函数只接受 `key?: string`。TS 端设置多个属性应链式调用 `.set_option({key1: val1, key2: val2})` 或在 `Div.set_option()` 中直接传入纯对象。
+
 ### 常见 type 值
 
 | 类别 | type 值 | 说明 |
@@ -151,6 +147,22 @@ from common.tool.export import (
 | 表单组件 | `"form"` / `"form_row"` / `"form_column"` | 表单布局 |
 | 数据组件 | `"table"` / `"input"` / `"select"` | 数据展示/输入 |
 | 布局组件 | `"row"` / `"column"` | Flex 布局容器 |
+
+### Node 顶层字段
+
+以下字段直接位于 `Node` 顶层（不嵌套在 `data` 中），前后端通用：
+
+| 字段 | 类型 | 说明 | 示例 |
+|------|------|------|------|
+| `ok` | `bool` / `None` | API 调用状态，成功为 `True`，失败为 `False` | `Node(ok=True)` / `Node(ok=False, title="...")` |
+| `title` | `str` | **前端元素显示文本/标签**，通用显示字段；`ok=False` 时可填充描述在前端展示 | `Node(ok=False, title="agent not found")` |
+| `type` | `str` | 数据类型标识 | `Node(type=C.MSG_EXEC)` |
+| `key` | `str` | 唯一标识 | `Node(key=uid(16))` |
+| `value` | `any` | 标量值 | `Node(value=result)` |
+| `data` | `dict` | 结构化数据 | `Node(data={"k": "v"})` |
+| `children` | `list` | 子节点列表 | `Node(children=[...])` |
+
+> **前端访问**：`web_dom.post` 回调收到的是 `JSON.parse` 后的纯对象，顶层字段直接通过 `data.ok`、`data.title` 访问。
 
 ### 常量定义文件
 
@@ -161,17 +173,15 @@ from common.tool.export import (
 
 - **临时文件统一使用 `data/tmp/`**（在项目工作区内，无需额外授权），禁止使用 `/tmp/`
 - 所有 shell 命令的输出重定向、临时缓存等均写入 `data/tmp/` 下
-- **进程管理使用 `ProcessLock` 类**（`common/tool/func/process_lock.py`）：
-  - 所有进程启动前必须检查并关闭同名的旧进程（使用 `ProcessLock(name).start_unique()`）
-  - PID 文件存放在 `data/proc/{name}.pid`
-  - **执行关闭进程操作前必须手动确认**，避免误杀其他进程（如 opencode 自身）
-  - 导入方式：`from common.tool.export import ProcessLock`
+
+- AI 生成前端代码时，必须按 AGENTS.md 规范检查生命周期方法顺序、属性命名、方法职责
 
 ## 注意事项
 
 - `ApiBase` 子类中的所有公有方法都会成为 API 端点 — 注意控制暴露范围
 - 测试查找顺序为 `tests/` → `app/` → `common/`；优先匹配第一个找到的
-- Gunicorn 测试（`test_gunicorn.py`）在 Windows 上跳过
 - `File` 工具类会规范化路径（`\` → `/`）并按路径缓存实例
 - `common/util/export.py` 是 **util 层内部**的枢纽模块，`common/tool/export.py` 是 **tool 层内部**的枢纽模块，互不交叉
 - Python 格式化：`black .`（配置在 `pyproject.toml`）
+
+
