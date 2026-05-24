@@ -4,7 +4,7 @@ import os as os_mod
 import uuid
 from threading import Thread, Timer, Lock
 from common.util.export import LengthPrefixedClient, Node, C, get_log
-from common.tool.export import OsUtil, StrModel, NumberModel, FileConfig
+from common.tool.export import OsUtil, StrModel, NumberModel, FileConfig, ProcessLock
 
 
 class AgentRunner:
@@ -89,6 +89,7 @@ class AgentRunner:
         if proc and proc.poll() is None:
             self.logger.info(f"killing process pid={proc.pid}")
             proc.kill()
+            proc.stdout.close()
             self.logger.info(f"process killed, return_code={proc.poll()}")
         else:
             self.logger.info(f"kill_exec: no running process")
@@ -118,6 +119,7 @@ class AgentRunner:
         if proc and proc.poll() is None:
             try:
                 proc.kill()
+                proc.stdout.close()
                 proc.wait()
             except Exception:
                 pass
@@ -134,7 +136,9 @@ class AgentRunner:
 
         exit_code_line = proc.stdout.readline().strip()
         if not exit_code_line:
-            self.logger.warning("stream ended without sentinel, process killed externally")
+            self.logger.warning(
+                "stream ended without sentinel, process killed externally"
+            )
         if exit_code_line:
             try:
                 return int(exit_code_line)
