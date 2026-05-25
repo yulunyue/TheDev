@@ -50,11 +50,9 @@ class System:
             )
             for line in result.stdout.split("\n"):
                 if f":{port}" in line:
-                    parts = line.strip().split()
-                    if parts:
-                        pid_info = parts[-1]
-                        if "/" in pid_info:
-                            return int(pid_info.split("/")[0])
+                    for part in line.strip().split():
+                        if "/" in part:
+                            return int(part.split("/")[0])
         except Exception as e:
             logger.error(f"get_pid_by_port_linux failed: {e}")
         return None
