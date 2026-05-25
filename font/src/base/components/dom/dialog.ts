@@ -13,7 +13,7 @@ export class Dialog extends Div {
     init_node() {
         this.header = this.add_child(new FlexRow())
         this.title_span = new Span().set_html("title")
-        this.close_btn = new Button().set_html("✕")
+        this.close_btn = new Button().set_html("关闭")
         this.header.add_children([
             this.title_span, this.close_btn
         ])
@@ -42,15 +42,7 @@ export class Dialog extends Div {
             backgroundColor: "#f5f5f5",
             borderBottom: "1px solid #ddd",
         })
-        this.close_btn.set_style({
-            cursor: "pointer",
-            border: "none",
-            background: "none",
-            fontSize: "18px",
-            fontWeight: "bold",
-            lineHeight: 1,
-            padding: "0 8px",
-        })
+
         this.body.set_style_center_by_position().set_style({
             backgroundColor: "#fff",
         })

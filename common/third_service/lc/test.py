@@ -1,10 +1,9 @@
 from common.util.export import File, Module
-from .lc_parser import LcContentParser
+from .config import CODE_DIR
+from .parser import LcContentParser
 
-CODE_DIR = "app/yly/algo/todo"
 
-
-class LcLocalTester:
+class LcTestService:
     CODE_DIR = CODE_DIR
 
     @classmethod

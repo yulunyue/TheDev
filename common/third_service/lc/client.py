@@ -1,27 +1,15 @@
 from common.third_util.io.api import Api
-from common.model.export import LcProblem, LcSubmissionDetail
-from common.util.export import File, Module, time
-from .lc_cache import LcCache, CACHE_DIR
-from .lc_parser import LcContentParser
-from .lc_tester import LcLocalTester, CODE_DIR
-
-CACHE_DIR = CACHE_DIR
-CODE_DIR = CODE_DIR
-LANG = "Python3"
+from common.model.export import LcSubmissionDetail
+from common.util.export import File
+from .config import LANG, CODE_DIR, CACHE_DIR
+from .error import LcError
 
 
-class LcError(Exception):
-    pass
-
-
-class LeetCode(Api):
+class LcClient(Api):
     CACHE_DIR = CACHE_DIR
     CODE_DIR = CODE_DIR
 
     def _refresh_auth(self):
-        """
-        401 时自动重新登录获取新的 session
-        """
         try:
             session = self.login()
             from common.third_util.io.api import API_CONFIG
@@ -90,9 +78,12 @@ class LeetCode(Api):
                 raise
             import subprocess
 
-            subprocess.Popen(cmd.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.Popen(
+                cmd.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
             print("Chrome 调试浏览器已启动（端口 9527）")
             import time
+
             time.sleep(2)
             s.load()
         s.driver.get(f"{self.get_endpoint()}/")
@@ -148,6 +139,12 @@ Return the LEETCODE_SESSION cookie value
         config.save_to_local()
         return session
 
+    def graphql(self, query: str, variables: dict, operationName: str = None) -> dict:
+        param = dict(query=query, variables=variables)
+        if operationName:
+            param["operationName"] = operationName
+        return self.post("/graphql", param)
+
     def get_daily(self) -> dict:
         query = """
 query questionOfToday {
@@ -165,7 +162,9 @@ query questionOfToday {
         data = self.graphql(query, {}, "questionOfToday")
         return data["data"]["todayRecord"][0]["question"]
 
-    def query_num(self, num: str) -> LcProblem:
+    def query_num(self, num: str):
+        from common.model.export import LcProblem
+
         query = """
 query searchQuestionList($limit: Int, $searchKeyword: String, $skip: Int) {
   problemsetQuestionListV2(limit: $limit, searchKeyword: $searchKeyword, skip: $skip) {
@@ -264,81 +263,3 @@ query submissionDetails($submissionId: ID!) {
 """
         data = self.graphql(query, dict(submissionId=submissionId), "submissionDetails")
         return LcSubmissionDetail().set_data(**data["data"]["submissionDetail"])
-
-    def submit(self, title_slug: str = None) -> str:
-        daily = self.get_daily()
-        if title_slug is None:
-            title_slug = daily["titleSlug"]
-
-        cache = LcCache.load(title_slug)
-        if not cache:
-            cache = self.prepare_submit(title_slug)
-
-        question_id = cache["question_id"]
-        code_path = f"{CODE_DIR}/lc_{question_id}.py"
-
-        if not File(code_path).exists():
-            raise LcError(f"Code file not found: {code_path}")
-
-        code = File(code_path).read_file()
-        data = self.post(
-            f"/problems/{title_slug}/submit",
-            dict(lang="python3", question_id=question_id, typed_code=code),
-        )
-        return data["submission_id"]
-
-    def graphql(self, query: str, variables: dict, operationName: str = None) -> dict:
-        param = dict(query=query, variables=variables)
-        if operationName:
-            param["operationName"] = operationName
-        return self.post("/graphql", param)
-
-    def prepare_submit(self, title_slug: str = None) -> dict:
-        daily = self.get_daily()
-        if title_slug is None:
-            title_slug = daily["titleSlug"]
-
-        cache = LcCache.load(title_slug)
-        if cache:
-            return cache
-
-        if title_slug == daily["titleSlug"]:
-            question_id = daily["questionFrontendId"]
-            title = daily["title"]
-            difficulty = daily["difficulty"]
-        else:
-            problem = self.query_num(title_slug.split("-")[-1])
-            question_id = problem.questionFrontendId
-            title = problem.title
-            difficulty = problem.difficulty
-
-        detail = self.query_detail(title_slug)
-        question_data = detail["data"]["question"]
-
-        test_cases = LcContentParser.build_test_cases(
-            question_data["content"], question_data["sampleTestCase"]
-        )
-
-        cache_data = {
-            "question_id": question_id,
-            "title_slug": title_slug,
-            "title": title,
-            "difficulty": difficulty,
-            "code_snippet": LcContentParser.get_code_snippet(
-                question_data["codeSnippets"]
-            ),
-            "test_cases": test_cases,
-            "content": question_data["content"],
-        }
-        return LcCache.save(title_slug, cache_data)
-
-    def test_local(self, title_slug: str = None) -> dict:
-        daily = self.get_daily()
-        if title_slug is None:
-            title_slug = daily["titleSlug"]
-
-        cache = LcCache.load(title_slug)
-        if not cache:
-            cache = self.prepare_submit(title_slug)
-
-        return LcLocalTester.test(cache)

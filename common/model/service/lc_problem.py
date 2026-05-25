@@ -1,5 +1,4 @@
 from ..base import BaseModel
-from common.third_service.get_service import get_lc_service
 from common.util.export import File, C, logger, Tuple
 import time
 
@@ -16,14 +15,19 @@ class LcProblem(BaseModel):
         return self
 
     def submit(self, code):
-        submissionId = get_lc_service().submit(self.titleSlug, self.id, code)
+        from common.third_service.lc import get_lc_service, LcProblemService
+        client = get_lc_service()
+        service = LcProblemService(client)
+        submissionId = service.submit(self.titleSlug, code)
         self.check(submissionId)
 
     def check(self, submissionId):
+        from common.third_service.lc import get_lc_service
         storge = self.get_storge()
+        client = get_lc_service()
 
         while True:
-            state = get_lc_service().check(submissionId)
+            state = client.check(submissionId)
             logger.map(
                 passedTestCaseCnt=state.passedTestCaseCnt,
                 totalTestCaseCnt=state.totalTestCaseCnt,
@@ -42,9 +46,11 @@ class LcProblem(BaseModel):
         )
 
     def get_code(self) -> str:
+        from common.third_service.lc import get_lc_service
         if self.code:
             return self.code
-        question = get_lc_service().query_detail(self.titleSlug)["data"]["question"]
+        client = get_lc_service()
+        question = client.query_detail(self.titleSlug)["data"]["question"]
         codeSnippets, sampleTestCase, content = (
             question["codeSnippets"],
             question["sampleTestCase"],
@@ -57,8 +63,9 @@ class LcProblem(BaseModel):
 
     @classmethod
     def make(cls, number):
-        lc = get_lc_service()
-        t = lc.query_num(number)
+        from common.third_service.lc import get_lc_service
+        client = get_lc_service()
+        t = client.query_num(number)
         code = t.get_code()
 
         t.f.write_if_not_exists(

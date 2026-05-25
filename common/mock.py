@@ -135,10 +135,11 @@ def oj_run(ins: "MockCf", case_name=None, with_thread=False):
         src_file = get_file_path_by_cls(ins.__class__)
     p = PyFile(src_file).compile_to_one_file()
     if flag:
-        from common.third_service.lc_util import LeetCode
+        from common.third_service.lc import get_lc_service, LcProblemService
 
         num_id = src_file.split("lc_").pop().replace(".py", "")
-        LeetCode().query_num(num_id).submit(p)
+        client = get_lc_service()
+        LcProblemService(client).submit(num_id)
 
 
 def execute_by_thread(ins: MockCf, case: dict):

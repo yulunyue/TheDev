@@ -1,0 +1,2 @@
+class LcError(Exception):
+    pass

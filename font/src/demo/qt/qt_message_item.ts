@@ -30,6 +30,7 @@ export class QtMessageItem extends FlexRow {
             borderRadius: 4,
             fontSize: 12,
             alignItems: "flex-start",
+            overflow: "hidden"
         })
         this.key_div.set_style({
             minWidth: 50,

@@ -1,6 +1,8 @@
 import json
 from common.util.export import File
 
+LANG = "Python3"
+CODE_DIR = "app/yly/algo/todo"
 CACHE_DIR = "data/lc"
 
 

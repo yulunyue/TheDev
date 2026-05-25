@@ -175,7 +175,6 @@ app/yly/zb/task/
 app/yly/zb/result
 Miniconda3-latest-Linux-x86_64.sh
 conda
-hwcloud_soar_script_sdk
 pytest.ini
 *.pkl
 app/yly/info/Information-632/code/

@@ -1,6 +1,7 @@
 from common.tool.export import ToolBase, PyFile
-from common.third_service.lc_util import LeetCode, LcProblem, Module
-from common.util.export import json, log, time, logger, LOG, sys
+from common.third_service.lc import get_lc_service
+from common.model.export import LcProblem
+from common.util.export import json, log, time, logger, LOG, sys, Module
 
 
 def parse_case(case: str):

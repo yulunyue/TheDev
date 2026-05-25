@@ -199,29 +199,22 @@ export class Div {
 
     parse_child_option(o: Node) { }
 
-    set_children(children: any, cls: any) {
-        let visible_keys = new Set(children.map(c => c.key))
-        for (let i = 0; i < children.length; i++) {
+    set_children(children: any[], cls: any) {
+        this.children_map = {}
+        let mx_idx = Math.max(children.length, this.children.length)
+        for (let i = 0; i < mx_idx; i++) {
             this.parse_child_option(children[i])
-            let key = children[i].key
-            let child = this.children_map[key]
-            if (!child) {
-                child = cls(children[i])
-                child.set_parent(this)
-                this.children.push(child)
-                this.children_map[key] = child
+            if (i < this.children.length && i < children.length) {
+                this.children[i].set_option(children[i])
+                this.children_map[children[i].key] = this.children[i]
+            } else if (i < children.length) {
+                let child = cls(children[i])
+                this.add_child(child)
+                this.children_map[children[i].key] = this.children[i]
+            } else {
+                this.children[i].hide()
             }
-            child.set_option(children[i]).show()
-            child.index = i
-            let refNode = this.el.childNodes[i]
-            if (child.el !== refNode) {
-                this.el.insertBefore(child.el, refNode || null)
-            }
-        }
-        for (let key in this.children_map) {
-            if (!visible_keys.has(key)) {
-                this.children_map[key].hide()
-            }
+
         }
         return this
     }

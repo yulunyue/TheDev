@@ -95,6 +95,7 @@ class System:
     def popen(cls, cmd, cwd=None, **kw):
         if os.name == "nt":
             kw["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+            kw["shell"] = True
         kw["start_new_session"] = True
         return subprocess.Popen(cmd, cwd=cwd, **kw)
 
