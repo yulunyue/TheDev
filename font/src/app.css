@@ -1,18 +1,16 @@
 * {
     margin: 0;
     padding: 0;
-    overflow: hidden;
     /* user-select: none; */
-    font-family: 'Times New Roman', serif
 }
-
 p {
     cursor: default;
 }
 body, html {
     margin: 0;
     padding: 0;
-    height: 100%;  /* 让 body 继承视口高度 */
+    height: 100%;
+    font-family: 'Times New Roman', serif
 }
 
 .load_gif {
