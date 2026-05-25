@@ -88,7 +88,10 @@ class Cli(ToolBase):
         )
 
     def npm_start(self):
-        System.run(["npm", "run", "start"], cwd="./font")
+        pid = System.get_pid_by_port(48080)
+        if pid:
+            System.kill(pid, 15)
+        ProcessLock("npm_start").start_process("npm", "run", "start", cwd="./font")
 
     def agent(self):
         ProcessLock("agent").start_process(

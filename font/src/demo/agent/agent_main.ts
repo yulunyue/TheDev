@@ -4,27 +4,34 @@ import {
     web_socket, Ct, Search,
 } from "../../base/components/export"
 
+const SCROLL_DELAY_MS = 200
+
 export class AgentMain extends FlexColumn {
     agent_search: Search
     command_input: Input
-    stop_btn: Button
+    reset_btn: Button
     output_panel: Pre
     status_bar: Span
     top_bar: FlexRow
     current_agent: string = ""
     is_executing: boolean = false
+    private _viewport_bound = false
+
+    private get _vv(): VisualViewport | null {
+        return (window as any).visualViewport
+    }
 
     init_node(): void {
         this.agent_search = new Search().set_title("搜索 Agent")
         this.command_input = new Input().set_placeholder("输入命令")
-        this.stop_btn = new Button().set_value("终止")
+        this.reset_btn = new Button().set_value("重置")
         this.output_panel = new Pre()
         this.status_bar = new Span()
 
         this.top_bar = new FlexRow().add_children([
             this.agent_search,
             this.status_bar,
-            this.stop_btn,
+            this.reset_btn,
         ])
 
         this.add_children([
@@ -47,7 +54,7 @@ export class AgentMain extends FlexColumn {
         this.agent_search.set_style({
             width: 200,
         })
-        this.stop_btn.set_style({
+        this.reset_btn.set_style({
             cursor: "pointer",
             fontSize: "13px",
         })
@@ -55,7 +62,8 @@ export class AgentMain extends FlexColumn {
             overflow: "auto",
             whiteSpace: "pre-wrap",
             fontFamily: "monospace",
-            fontSize: "12px"
+            fontSize: "12px",
+            minHeight: 0,
         })
         this.status_bar.set_style({
             minWidth: 100,
@@ -78,17 +86,16 @@ export class AgentMain extends FlexColumn {
                 this.exec_command()
             }
         })
-        this.stop_btn.on_click(() => {
-            web_dom.post("/agent/kill", { agent_id: this.current_agent }, (data: Node) => {
-                if (data.ok === false) {
-                    this.status_bar.set_html(data.title || "终止失败")
-                    return
-                }
-                this.is_executing = false
-                this.status_bar.set_html("已终止")
-            }, (err: any) => {
-                this.status_bar.set_html(`终止失败: ${err?.title || err}`)
-            })
+        this.command_input.on_click(() => {
+            this.scroll_input_into_view()
+        })
+        this.reset_btn.on_click(() => {
+            this.output_panel.set_html("")
+            this.is_executing = false
+            this.status_bar.set_html("已重置")
+            if (this.current_agent) {
+                web_dom.post("/agent/kill", { agent_id: this.current_agent })
+            }
         })
     }
 
@@ -172,13 +179,36 @@ export class AgentMain extends FlexColumn {
     }
 
     append_output(text: string): void {
-        const current = this.output_panel.el.textContent || ""
-        this.output_panel.set_html(current + text)
-        this.output_panel.el.scrollTop = this.output_panel.el.scrollHeight
+        const pre = this.output_panel.el
+        pre.insertAdjacentText("beforeend", text)
+        pre.scrollTop = pre.scrollHeight
+    }
+
+    scroll_input_into_view(): void {
+        setTimeout(() => {
+            const inputEl = this.command_input.el
+            const rect = inputEl.getBoundingClientRect()
+            const vv = this._vv
+            if (vv && rect.bottom > vv.height) {
+                window.scrollTo(0, window.scrollY + rect.bottom - vv.height + 10)
+            }
+        }, SCROLL_DELAY_MS)
     }
 
     render(): void {
         this.agent_search.set_option({ url: "/agent/list", key: "agent_id", id: "agent_search" })
+        const vv = this._vv
+        if (vv) {
+            this.set_style({ height: `${vv.height}px` })
+            if (this._viewport_bound) return
+            this._viewport_bound = true
+            vv.addEventListener("resize", () => {
+                this.set_style({ height: `${vv.height}px` })
+                if (document.activeElement === this.command_input.el) {
+                    this.scroll_input_into_view()
+                }
+            })
+        }
     }
 }
 
