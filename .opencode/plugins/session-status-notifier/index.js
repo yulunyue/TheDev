@@ -149,6 +149,7 @@ export async function server(input, options) {
             if (!enable) return;
             if (event.type !== "session.status") return;
             
+            await fileLog(`event.properties: ${JSON.stringify(event.properties)}`);
             eventQueue.push(event);
             await processQueue(input, config);
         },

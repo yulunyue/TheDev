@@ -1,6 +1,5 @@
 from common.tool.export import OsUtil, GC
-from common.util.export import logger, List, File, Dict
-import re
+from common.util.export import logger, List, File, Dict, re, json, sys
 import fnmatch
 
 
@@ -10,11 +9,6 @@ class GitUtil(OsUtil):
         super().__init__("git", error_exit_flag)
         if workdir:
             self.set_env(workdir)
-
-    def set_env(self, path):
-        super().set_env(path)
-        self.popen_output("fetch", "origin")
-        return self
 
     def run_git_output(self, *args) -> str:
         return self.popen_output(*args, timeout=60)
@@ -221,3 +215,53 @@ class GitUtil(OsUtil):
         except Exception as e:
             logger.error(f"extract_diff error: {e}")
             return {"success": False, "error": str(e)}
+
+    def get_review_suggestion(
+        self,
+        opencode_config: str,
+        base_branch: str,
+        target_branch: str,
+        suggestion_count: int = 5,
+    ) -> Dict:
+        from common.third_util.llm.export import OpencodeClient
+
+        client = OpencodeClient(opencode_config)
+        llm_cwd = client.config.cwd.get_value()
+        if not llm_cwd:
+            return {
+                "ok": False,
+                "error": f"工作目录不一致: {opencode_config}, llm={llm_cwd}",
+            }
+        self.set_env(llm_cwd)
+        self.run_git_output("fetch", "origin")
+        diff = self.run_git_output(
+            "diff", "--unified=0", f"origin/{base_branch}..origin/{target_branch}"
+        )
+        if not diff.strip():
+            return {"ok": False, "error": "无差异内容"}
+
+        prompt = f"""分析以下 git diff，提供 {suggestion_count} 个代码检视建议。
+仅返回 JSON 格式：
+{{"suggestions": [{{"file": "文件路径", "line": 行号, "severity": "high/medium/low", "type": "问题类型", "message": "问题描述", "suggestion": "改进建议"}}], "summary": "整体评价"}}
+
+diff:
+{diff[:8000]}"""
+
+        client.start_server()
+        response = client.do_prompt(prompt)
+
+        if response.startswith("```json"):
+            response = (
+                response.strip().replace("```json", "").replace("```", "").strip()
+            )
+        elif response.startswith("```"):
+            response = response.strip().replace("```", "").strip()
+
+        try:
+            result = json.loads(response)
+            result.update(
+                {"ok": True, "base_branch": base_branch, "target_branch": target_branch}
+            )
+            return result
+        except json.JSONDecodeError:
+            return {"ok": False, "error": "响应解析失败", "raw": response[:200]}

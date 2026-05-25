@@ -66,12 +66,13 @@ class OpencodeClient:
 
     def start_server(self):
         port = self._get_port_from_config()
-        lock = ProcessLock(f"opencode_{self.config_name}_{port}")
-        if lock.is_running():
+
+        if System.get_pid_by_port(self._get_port_from_config()):
             return self
         cmd = ["opencode", "serve", "--port", str(port)]
-        lock.start_process(*cmd, cwd=self.config.cwd.get_value())
+        start_pid = System.popen(*cmd, cwd=self.config.cwd.get_value())
         time.sleep(1)
+        logger.info(f"START_PID {cmd} {start_pid}")
         return self
 
 

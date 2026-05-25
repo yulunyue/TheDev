@@ -58,11 +58,6 @@ class TheDevLogger:
         elif isinstance(g, dict):
             PyGraphViz().load(self.fp.path + ".png").draw(**g)
 
-    def log_grid(self, n, m, f):
-        from ...tool.str_util import StrUtil
-
-        self.write(StrUtil().format_grid(n, m, f))
-
     def map(self, indent=" ", **kw):
         self.info(dict_to_str(**kw, indent=indent))
 

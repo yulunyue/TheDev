@@ -15,6 +15,17 @@ export class QtMessageList extends Div {
         })
     }
 
+    render_mock_data(): void {
+        const statuses = ["running", "completed", "failed", "blocked", "idle", "busy"]
+        for (let i = 0; i < 20; i++) {
+            this.add_message({
+                key: `mock_${i.toString().padStart(2, '0')}`,
+                title: `Mock Message Title ${i}`,
+                data: { status: statuses[i % statuses.length] }
+            })
+        }
+    }
+
     add_message(msg: any): void {
         let idx = this.child_items.findIndex(c => c.key === msg.key)
         if (idx >= 0) {

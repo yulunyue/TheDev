@@ -20,13 +20,6 @@ class OsUtil:
         self.root_path = "./"
         self.and_cmds = []
 
-    logger: TheDevLogger = None
-
-    def info(self, msg):
-        if self.logger is None:
-            return
-        self.logger.info(msg)
-
     def set_time_out(self, timeout):
         self.timeout = timeout
         return self
@@ -41,18 +34,14 @@ class OsUtil:
             cmd = f"{env_path}/Scripts/Activate.ps1"
         else:
             cmd = f"source {env_path}/bin/activate"
-        self.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
+        self.logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
 
     def check_output(self, cmd: List[str], env=None):
         cmds = " ".join(cmd)
         self.logger.info(f"{self.root_path}->{cmds}")
         param = dict()
-        param.update(
-            dict(
-                stderr=self.logger.get_writer(),
-                stdout=self.logger.get_writer(),
-            )
-        )
+        param.update(self.get_std())
+
         try:
             self.process = subprocess.Popen(
                 cmd,
@@ -85,11 +74,25 @@ class OsUtil:
         else:
             self.info(msg[:20] + "..." + msg[-20:] + cmd)
 
+    _logger: TheDevLogger = None
+
     def set_logger(self, logger):
         if isinstance(logger, str):
             logger = get_dev_log(logger)
-        self.logger: TheDevLogger = logger
+        self._logger: TheDevLogger = logger
         return self
+
+    @property
+    def logger(self):
+        if self._logger is None:
+            self._logger = get_dev_log(f"data/log/os/{self.fun_name}.log")
+        return self._logger
+
+    def get_std(self):
+        return dict(
+            stderr=self.logger.get_writer(),
+            stdout=self.logger.get_writer(),
+        )
 
     def set_env(self, root):
         self.root_path: str = root

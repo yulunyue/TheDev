@@ -1,5 +1,6 @@
 from common.third_util.io.api import Api
 from common.model.export import LcSubmissionDetail
+from .config import QUESTION_OF_TODAY, SEARCH_QUESTION_LIST, GET_QUESTION_DETAIL, SUBMISSION_DETAILS
 from .error import LcError
 
 
@@ -47,39 +48,14 @@ class LcClient(Api):
         return self.post("/graphql", param)
 
     def get_daily(self) -> dict:
-        query = """
-query questionOfToday {
-  todayRecord {
-    question {
-      questionFrontendId
-      title
-      titleSlug
-      difficulty
-    }
-    date
-  }
-}
-"""
-        data = self.graphql(query, {}, "questionOfToday")
+        data = self.graphql(QUESTION_OF_TODAY, {}, "questionOfToday")
         return data["data"]["todayRecord"][0]["question"]
 
     def query_num(self, num: str):
         from common.model.export import LcProblem
 
-        query = """
-query searchQuestionList($limit: Int, $searchKeyword: String, $skip: Int) {
-  problemsetQuestionListV2(limit: $limit, searchKeyword: $searchKeyword, skip: $skip) {
-    questions {
-      id titleSlug title translatedTitle questionFrontendId paidOnly difficulty
-      topicTags { name slug nameTranslated }
-      status isInMyFavorites frequency acRate contestPoint
-    }
-    totalLength finishedLength hasMore
-  }
-}
-"""
         data = self.graphql(
-            query, dict(searchKeyword=num, limit=1, skip=0), "searchQuestionList"
+            SEARCH_QUESTION_LIST, dict(searchKeyword=num, limit=1, skip=0), "searchQuestionList"
         )
         questions = data["data"]["problemsetQuestionListV2"]["questions"]
         if len(questions) != 1:
@@ -90,77 +66,8 @@ query searchQuestionList($limit: Int, $searchKeyword: String, $skip: Int) {
         return ret
 
     def query_detail(self, title_slug: str) -> dict:
-        query = """
-query getQuestionDetail($titleSlug: String!) {
-  question(titleSlug: $titleSlug) {
-    codeSnippets { lang code }
-    sampleTestCase
-    content
-  }
-}
-"""
-        return self.graphql(query, dict(titleSlug=title_slug), "getQuestionDetail")
+        return self.graphql(GET_QUESTION_DETAIL, dict(titleSlug=title_slug), "getQuestionDetail")
 
     def check(self, submissionId: str) -> LcSubmissionDetail:
-        query = """
-query submissionDetails($submissionId: ID!) {
-  submissionDetail(submissionId: $submissionId) {
-    code
-    timestamp
-    statusDisplay
-    isMine
-    runtimeDisplay: runtime
-    memoryDisplay: memory
-    memory: rawMemory
-    lang
-    langVerboseName
-    question {
-      questionId
-      titleSlug
-      hasFrontendPreview
-    }
-    user {
-      realName
-      userAvatar
-      userSlug
-    }
-    runtimePercentile
-    memoryPercentile
-    submissionComment {
-      flagType
-    }
-    passedTestCaseCnt
-    totalTestCaseCnt
-    fullCodeOutput
-    testDescriptions
-    testInfo
-    testBodies
-    stdOutput
-    aiJudgeMessage
-    isCompiledLang
-    aiRecheckSubmitted
-    ... on GeneralSubmissionNode {
-      outputDetail {
-        codeOutput
-        expectedOutput
-        input
-        compileError
-        runtimeError
-        lastTestcase
-      }
-    }
-    ... on ContestSubmissionNode {
-      outputDetail {
-        codeOutput
-        expectedOutput
-        input
-        compileError
-        runtimeError
-        lastTestcase
-      }
-    }
-  }
-}
-"""
-        data = self.graphql(query, dict(submissionId=submissionId), "submissionDetails")
+        data = self.graphql(SUBMISSION_DETAILS, dict(submissionId=submissionId), "submissionDetails")
         return LcSubmissionDetail().set_data(**data["data"]["submissionDetail"])

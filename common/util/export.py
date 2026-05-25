@@ -21,6 +21,7 @@ from common.exception import (
     GameError,
     FileError,
     ThreadError,
+    TimeoutError,
 )
 from .module import Module, get_function_info, get_file_path_by_cls, run_catch_error
 from .tool import (
@@ -56,6 +57,7 @@ from .api.apicall import ApiCall, ApiBase
 from .io.export import TcpServer, TcpClient, LengthPrefixedClient, AgentTcpServer, AgentTcpClient, TempFile
 from .io.manage import IO_MANAGE
 from .thread.thread_util import ThreadRecord
+from .thread_wait import ThreadWait
 from .re_util import ReUtil
 from .str_util import StrUtil
 from common.mock import MockCf, execute_by_thread, oj_run, exec_thread_recode_file

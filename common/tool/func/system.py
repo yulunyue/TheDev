@@ -97,7 +97,10 @@ class System:
             kw["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
             kw["shell"] = True
         kw["start_new_session"] = True
-        return subprocess.Popen(cmd, cwd=cwd, **kw)
+        try:
+            return subprocess.Popen(cmd, cwd=cwd, **kw)
+        except Exception as e:
+            raise Exception(cmd, cwd, kw)
 
     @classmethod
     def run(cls, cmd, cwd=None):

@@ -61,3 +61,8 @@ class FileError(TheDevException):
 class ThreadError(TheDevException):
     """线程/并发错误"""
     pass
+
+
+class TimeoutError(TheDevException):
+    """等待超时"""
+    pass

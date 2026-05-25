@@ -5,6 +5,104 @@ LANG = "Python3"
 CODE_DIR = "app/yly/algo/todo"
 CACHE_DIR = "data/lc"
 
+QUESTION_OF_TODAY = """
+query questionOfToday {
+  todayRecord {
+    question {
+      questionFrontendId
+      title
+      titleSlug
+      difficulty
+    }
+    date
+  }
+}
+"""
+
+SEARCH_QUESTION_LIST = """
+query searchQuestionList($limit: Int, $searchKeyword: String, $skip: Int) {
+  problemsetQuestionListV2(limit: $limit, searchKeyword: $searchKeyword, skip: $skip) {
+    questions {
+      id titleSlug title translatedTitle questionFrontendId paidOnly difficulty
+      topicTags { name slug nameTranslated }
+      status isInMyFavorites frequency acRate contestPoint
+    }
+    totalLength finishedLength hasMore
+  }
+}
+"""
+
+GET_QUESTION_DETAIL = """
+query getQuestionDetail($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    codeSnippets { lang code }
+    sampleTestCase
+    content
+  }
+}
+"""
+
+SUBMISSION_DETAILS = """
+query submissionDetails($submissionId: ID!) {
+  submissionDetail(submissionId: $submissionId) {
+    code
+    timestamp
+    statusDisplay
+    isMine
+    runtimeDisplay: runtime
+    memoryDisplay: memory
+    memory: rawMemory
+    lang
+    langVerboseName
+    question {
+      questionId
+      titleSlug
+      hasFrontendPreview
+    }
+    user {
+      realName
+      userAvatar
+      userSlug
+    }
+    runtimePercentile
+    memoryPercentile
+    submissionComment {
+      flagType
+    }
+    passedTestCaseCnt
+    totalTestCaseCnt
+    fullCodeOutput
+    testDescriptions
+    testInfo
+    testBodies
+    stdOutput
+    aiJudgeMessage
+    isCompiledLang
+    aiRecheckSubmitted
+    ... on GeneralSubmissionNode {
+      outputDetail {
+        codeOutput
+        expectedOutput
+        input
+        compileError
+        runtimeError
+        lastTestcase
+      }
+    }
+    ... on ContestSubmissionNode {
+      outputDetail {
+        codeOutput
+        expectedOutput
+        input
+        compileError
+        runtimeError
+        lastTestcase
+      }
+    }
+  }
+}
+"""
+
 
 class LcCache:
     DIR = CACHE_DIR

@@ -25,6 +25,8 @@ export class QtMessageItem extends FlexRow {
     init_style(): void {
         super.init_style()
         this.set_style({
+            minHeight: 14,
+            height: 14,
             padding: 8,
             marginBottom: 4,
             borderRadius: 4,
