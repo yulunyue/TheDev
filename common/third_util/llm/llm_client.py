@@ -31,7 +31,7 @@ class LlmClient:
         return self.config.model.get_value()
 
     def chat(
-        self, messages: List[Dict[str, str]], stream=False, **kwargs
+        self, messages: List[Dict[str, str]], stream=True, **kwargs
     ) -> Dict[str, Any]:
         payload = {
             "model": self.model,
@@ -52,7 +52,22 @@ class LlmClient:
                 f"\nurl=>{url} status_code:{resp.status_code}\npayload=>{payload}\nresp=>{error_data}"
             )
 
+        if stream:
+            return self._parse_stream(resp)
         return resp.json()
+
+    def _parse_stream(self, resp) -> Dict[str, Any]:
+        content = ""
+        for line in resp.iter_lines():
+            if line.startswith("data: "):
+                data = line[6:]
+                if data == "[DONE]":
+                    break
+                chunk = json.loads(data)
+                if chunk.get("choices"):
+                    delta = chunk["choices"][0].get("delta", {})
+                    content += delta.get("content", "")
+        return {"choices": [{"message": {"content": content}}]}
 
     def get_models(self) -> List[Dict[str, Any]]:
         url = f"{self.base_url}/models"

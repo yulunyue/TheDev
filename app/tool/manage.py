@@ -61,9 +61,10 @@ class Manage:
         return Node()
 
     def restart(self, config: str):
-        cmd = f"nohup python main.py {config} > /dev/null 2>&1 &"
-        status = os.system(cmd)
-        return Node(value=cmd, data=dict(status=status))
+        from tool.cli import Cli
+
+        Cli().dev()
+        return Node(value=config)
 
     def send_msg(self, topic: str, value: dict, **kw):
         """

@@ -42,16 +42,15 @@ class OsUtil:
         param = dict()
         param.update(self.get_std())
 
+        use_shell = os.name == "nt"
+
         try:
             self.process = subprocess.Popen(
                 cmd,
-                # check=True,
-                shell=False,
-                # capture_output=capture_output,
+                shell=use_shell,
                 text=True,
                 cwd=self.root_path,
-                # timeout=self.time_out,
-                env=env,  # 不能为空字典 [WinError 87] 参数错误。
+                env=env,
                 **param,
             )
 

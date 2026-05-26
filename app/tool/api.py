@@ -20,7 +20,7 @@ class ApiGlobal(ApiBase):
 
     def query_all_apis(self, **kw):
         return FontSearch().add_childs(
-            *[Node(value=k) for k in MainHandler.POST_API.fun_map.keys()]
+            *[Node(value=k, title=k) for k in MainHandler.POST_API.fun_map.keys()]
         )
 
     def get_api_call_info(self, key: str, **kw):

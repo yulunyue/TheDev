@@ -201,11 +201,12 @@ export class Div {
 
     set_children(children: any[], cls: any) {
         this.children_map = {}
+        console.log(children.length, this.children.length)
         let mx_idx = Math.max(children.length, this.children.length)
         for (let i = 0; i < mx_idx; i++) {
             this.parse_child_option(children[i])
             if (i < this.children.length && i < children.length) {
-                this.children[i].set_option(children[i])
+                this.children[i].set_option(children[i]).show()
                 this.children_map[children[i].key] = this.children[i]
             } else if (i < children.length) {
                 let child = cls(children[i])

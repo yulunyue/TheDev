@@ -9,8 +9,7 @@ UPLOAD_ZIP_PATH = "data/upload/the_dev.zip"
 
 class Cli(ToolBase):
     def _load(self, server="bolun"):
-        cfg = API_CONFIG.get(server)
-        self.api = Api("Api").set_endpoint(f"http://{cfg.endpoint.get_value()}")
+        self.api = Api(server)
 
     def npm_build(self):
         File("font/dist").remove()
@@ -65,7 +64,8 @@ class Cli(ToolBase):
     def install(self, server="bolun"):
         self.package()
         self._load(server)
-        self.api.post_files(f"/app/manage/post_file", THE_DEV_ZIP_PATH)
+        # self.api.post_files(f"/app/manage/post_file", THE_DEV_ZIP_PATH)
+        self.upload_base_64(server)
         res = self.api.post("/app/manage/unzip", data=dict(path=UPLOAD_ZIP_PATH))
         logger.map(res=res)
 
@@ -81,6 +81,12 @@ class Cli(ToolBase):
 
     def dev(self):
         ProcessLock("dev").start_process("python", "main.py", "dev")
+
+    def production(self):
+        ProcessLock("production").start_process("python", "main.py", "production")
+
+    def manage(self):
+        ProcessLock("manage").start_process("python", "main.py", "manage")
 
     def frpc(self):
         ProcessLock("frpc").start_process(

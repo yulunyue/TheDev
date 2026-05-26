@@ -50,7 +50,7 @@ export class Api extends FlexRow {
     }
     init_style(): void {
         this.left_main.set_style({
-            minWidth: 240,
+            width: 160,
         })
         this.right_main.set_size(1)
         this.result.set_size(1)

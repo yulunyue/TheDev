@@ -41,6 +41,13 @@ class FileConfig(ConfigBase):
                 logger.error(e, stack_info=True)
 
     @classmethod
+    def query(cls, key) -> Self:
+        try:
+            return cls.instance_map[key]
+        except Exception as e:
+            raise Exception(e, cls.resource_path)
+
+    @classmethod
     def save_to_local(cls):
         cls.fp.write_file(cls._config)
         return cls

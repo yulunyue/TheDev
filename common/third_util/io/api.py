@@ -26,7 +26,7 @@ class Api:
         return self._name
 
     def get_config(self, name, default_value=None):
-        return API_CONFIG.get(self.name).config.get(name, default_value)
+        return API_CONFIG.query(self.name).config.get(name, default_value)
 
     def set_cache(self, cache=None):
         if cache is None:
@@ -42,13 +42,13 @@ class Api:
     def get_endpoint(self):
         if self.end_point:
             return self.end_point
-        return API_CONFIG.get(self.name).endpoint.get_value()
+        return API_CONFIG.query(self.name).endpoint.get_value()
 
     def get_password(self):
-        return API_CONFIG.get(self.name).pass_word.get_value()
+        return API_CONFIG.query(self.name).pass_word.get_value()
 
     def get_username(self):
-        return API_CONFIG.get(self.name).user_name.get_value()
+        return API_CONFIG.query(self.name).user_name.get_value()
 
     def set_endpoint(self, s):
         self.end_point = s
@@ -106,10 +106,10 @@ class Api:
         return self.http("PUT", url, data, header)
 
     def get_headers(self):
-        return API_CONFIG.get(self.name).headers.get_value()
+        return API_CONFIG.query(self.name).headers.get_value()
 
     def get_proxy(self):
-        return API_CONFIG.get(self.name).proxy.get_value()
+        return API_CONFIG.query(self.name).proxy.get_value()
 
     def get_mock_data(self, uri, method, param):
         k = method + "|" + hash_any_str(uri) + "|" + hash_any_str(param)
@@ -118,7 +118,7 @@ class Api:
         return k, None
 
     def get_timeout(self):
-        return API_CONFIG.get(self.name).timeout.get_value()
+        return API_CONFIG.query(self.name).timeout.get_value()
 
     def log(
         self,
