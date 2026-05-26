@@ -53,6 +53,11 @@ class ProcessLock:
 
     def start_process(self, *cmd, cwd: str = None) -> int:
         self.start_unique()
-        proc = System.popen(cmd, cwd=cwd)
+        std = File(f"{self.PID_DIR}/{self.name}.log")
+
+        proc = System.popen(
+            *cmd, cwd=cwd, stdout=std.get_writer(), stderr=std.get_writer()
+        )
+        logger.map(std=std, pid=proc.pid)
         self.set_pid(proc.pid)
         return proc.pid

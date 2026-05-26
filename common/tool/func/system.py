@@ -92,19 +92,20 @@ class System:
         return ""
 
     @classmethod
-    def popen(cls, cmd, cwd=None, **kw):
+    def popen(
+        cls, *cmd, cwd=None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kw
+    ):
         if os.name == "nt":
-            kw["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
+            kw["creationflags"] = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
             kw["shell"] = True
-        kw["start_new_session"] = True
         try:
-            return subprocess.Popen(cmd, cwd=cwd, **kw)
+            return subprocess.Popen(
+                cmd,
+                cwd=cwd,
+                stdout=stdout,
+                stderr=stderr,
+                start_new_session=True,
+                **kw,
+            )
         except Exception as e:
             raise Exception(cmd, cwd, kw)
-
-    @classmethod
-    def run(cls, cmd, cwd=None):
-        kwargs = {}
-        kwargs["stdout"] = subprocess.DEVNULL
-        kwargs["stderr"] = subprocess.DEVNULL
-        System.popen(cmd, cwd=cwd, **kwargs)

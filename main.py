@@ -4,12 +4,11 @@ from common.util.tool import SYS_KW, THE_DEV_LOGGER_PREFIX
 SYS_KW[THE_DEV_LOGGER_PREFIX] = sys.argv[1] if len(sys.argv) > 1 else "dev"
 from common.third_util.http import run, TornadaWebSocketConnectHandler
 from common.util.export import File, logger, IO_MANAGE, time
-from common.tool.export import TASK_MANAGE, ProcessLock
+from common.tool.export import TASK_MANAGE
 
 
 def start():
     env = sys.argv[1] if len(sys.argv) > 1 else "dev"
-    ProcessLock(env).start()
     TornadaWebSocketConnectHandler.handler_msg = IO_MANAGE.handler_msg
     HTTP_CONF_FILE = File(f"config/setting/{env}.json").write_if_not_exists(
         dict(

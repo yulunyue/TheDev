@@ -7,6 +7,7 @@ const COLOR_MAP: any = {
     "blocked": { backgroundColor: "#e67e22", color: "#fff" },
     "idle": { backgroundColor: "#27ae60", color: "#fff" },
     "busy": { backgroundColor: "#3498db", color: "#fff" },
+    "ask": { backgroundColor: "#e74c3c", color: "#fff" },
 }
 
 export class QtMessageItem extends FlexRow {

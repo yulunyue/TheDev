@@ -80,7 +80,7 @@ class Cli(ToolBase):
         self.restart(server, config)
 
     def dev(self):
-        System.run(["python", "main.py", "dev"])
+        ProcessLock("dev").start_process("python", "main.py", "dev")
 
     def frpc(self):
         ProcessLock("frpc").start_process(
@@ -97,6 +97,9 @@ class Cli(ToolBase):
         ProcessLock("agent").start_process(
             "python", "-m", "tool.service.agent_runner", "default"
         )
+
+    def qt(self):
+        ProcessLock("qt").start_process("python", "-m", "tool.ui.qt", "main")
 
 
 if __name__ == "__main__":

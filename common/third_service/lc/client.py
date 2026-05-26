@@ -6,7 +6,7 @@ from .error import LcError
 
 class LcClient(Api):
     def login_with_selenium(self) -> str:
-        from common.third_util.tool.selenium_util import SeleniumUtil
+        from common.third_util.tool.selenium import SeleniumUtil
         from common.third_util.io.api import API_CONFIG
 
         s = SeleniumUtil(dev_port=9527)

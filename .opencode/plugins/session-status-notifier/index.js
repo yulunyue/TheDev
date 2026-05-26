@@ -46,21 +46,19 @@ async function loadDefaultConfig() {
     }
 }
 
-async function processEvent(input, event, config) {
-    const { sessionID, status } = event.properties;
-    const url = config?.url;
-    const user = config?.user;
-    const topic = config?.topic;
-
-    let title = "";
-    let userInstruction = "";
+async function getSessionTitle(input, sessionID) {
     try {
-        const result = await input.client.session.get({
-            path: { id: sessionID },
-        });
+        const result = await input.client.session.get({ path: { id: sessionID } });
         await fileLog(`session data: ${JSON.stringify(result?.data)}`);
-        title = result?.data?.title || "";
-        
+        return result?.data?.title || "";
+    } catch (e) {
+        await fileLog(`get session title error: ${e.message}`);
+        return "";
+    }
+}
+
+async function getUserInstruction(input, sessionID) {
+    try {
         const messagesResult = await input.client.session.messages({
             path: { id: sessionID },
             query: { limit: 10 }
@@ -69,50 +67,25 @@ async function processEvent(input, event, config) {
         const firstUserMessage = messages.find(msg => msg.info?.role === "user");
         if (firstUserMessage) {
             const textParts = firstUserMessage.parts?.filter(part => part.type === "text") || [];
-            userInstruction = textParts.map(part => part.text).join("\n");
+            let userInstruction = textParts.map(part => part.text).join("\n");
             if (userInstruction.length > 100) {
                 userInstruction = userInstruction.substring(0, 100) + "...";
             }
+            await fileLog(`user instruction: ${userInstruction}`);
+            return userInstruction;
         }
-        await fileLog(`user instruction: ${userInstruction}`);
     } catch (e) {
-        await fileLog(`get session/messages error: ${e.message}`);
+        await fileLog(`get user instruction error: ${e.message}`);
     }
+    return "";
+}
 
-    const now = Date.now();
-    const lastRecord = lastSentBySession.get(sessionID);
-    const lastStatus = lastRecord?.status;
-    
-    if (lastStatus === status.type) {
-        await fileLog(`session ${sessionID} (${title}) skipped (status unchanged: ${status.type})`);
-        return;
-    }
-    
-    lastSentBySession.set(sessionID, { status: status.type, time: now, title });
-    await fileLog(`session ${sessionID} (${title}) status changed: ${lastStatus || 'none'} → ${status.type}`);
-
-    if (status.type === "idle") {
-        lastSentBySession.delete(sessionID);
-        await fileLog(`session ${sessionID} ended, cleared state`);
-    }
-
-    const value = {
-        key: title,
-        title: userInstruction || title,
-        data: {
-            status: status.type,
-            user: user
-        }
-    };
-
-    if (status.type === "retry") {
-        value.attempt = status.attempt;
-        value.message = status.message;
-    }
-
+async function sendNotification(config, sessionID, value) {
+    const url = config?.url;
+    const topic = config?.topic;
+    const bodyStr = JSON.stringify({ topic, value });
+    await fileLog(`sending body: ${bodyStr}`);
     try {
-        const bodyStr = JSON.stringify({ topic, value });
-        await fileLog(`sending body: ${bodyStr}`);
         await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -123,6 +96,81 @@ async function processEvent(input, event, config) {
         console.error("[session-status-notifier] Failed to send status:", err);
         await fileLog(`session ${sessionID} send failed: ${err.message}`);
     }
+}
+
+function shouldSkip(sessionID, statusType) {
+    const lastRecord = lastSentBySession.get(sessionID);
+    return lastRecord?.status === statusType;
+}
+
+function updateLastStatus(sessionID, statusType, title) {
+    lastSentBySession.set(sessionID, { status: statusType, time: Date.now(), title });
+}
+
+function clearSessionState(sessionID) {
+    lastSentBySession.delete(sessionID);
+}
+
+async function processEvent(input, event, config) {
+    const sessionID = event.properties.sessionID;
+    const sessionTitle = await getSessionTitle(input, sessionID);
+    
+    await fileLog(`processEvent: ${event.type}, sessionID=${sessionID}, sessionTitle=${sessionTitle}`);
+    
+    let value = {
+        key: sessionTitle,
+        title: sessionTitle,
+        data: { status: "", user: config?.user }
+    };
+    
+    if (event.type === "session.status") {
+        const { status } = event.properties;
+        
+        if (shouldSkip(sessionID, status.type)) {
+            await fileLog(`session ${sessionID} (${sessionTitle}) skipped (status unchanged: ${status.type})`);
+            return;
+        }
+        
+        const lastRecord = lastSentBySession.get(sessionID);
+        const lastStatus = lastRecord?.status;
+        updateLastStatus(sessionID, status.type, sessionTitle);
+        await fileLog(`session ${sessionID} (${sessionTitle}) status changed: ${lastStatus || 'none'} → ${status.type}`);
+        
+        if (status.type === "idle") {
+            clearSessionState(sessionID);
+            await fileLog(`session ${sessionID} ended, cleared state`);
+        }
+        
+        const userInstruction = await getUserInstruction(input, sessionID);
+        value.title = userInstruction || sessionTitle;
+        value.data.status = status.type;
+        
+        if (status.type === "retry") {
+            value.attempt = status.attempt;
+            value.message = status.message;
+        }
+        
+    } else if (event.type === "question.asked" || event.type === "permission.asked") {
+        if (shouldSkip(sessionID, "ask")) {
+            await fileLog(`session ${sessionID} (${sessionTitle}) skipped (already in ask status)`);
+            return;
+        }
+        
+        const lastRecord = lastSentBySession.get(sessionID);
+        const lastStatus = lastRecord?.status;
+        updateLastStatus(sessionID, "ask", sessionTitle);
+        await fileLog(`session ${sessionID} (${sessionTitle}) status changed: ${lastStatus || 'none'} → ask`);
+        
+        value.data.status = "ask";
+        
+        if (event.type === "question.asked") {
+            await fileLog(`question.asked: ${JSON.stringify(event.properties.questions)}`);
+        } else {
+            await fileLog(`permission.asked: ${event.properties.permission}, ${event.properties.pattern}`);
+        }
+    }
+    
+    await sendNotification(config, sessionID, value);
 }
 
 async function processQueue(input, config) {
@@ -140,16 +188,18 @@ export async function server(input, options) {
     await clearLog();
     const defaultConfig = await loadDefaultConfig();
     const config = { ...options, ...defaultConfig };
-
+    
     const enable = config?.enable;
     await fileLog(`initial ${JSON.stringify(config)}`);
     
     return {
         event: async ({ event }) => {
             if (!enable) return;
-            if (event.type !== "session.status") return;
             
-            await fileLog(`event.properties: ${JSON.stringify(event.properties)}`);
+            const validTypes = ["session.status", "question.asked", "permission.asked"];
+            if (!validTypes.includes(event.type)) return;
+            
+            await fileLog(`event: ${JSON.stringify(event)}`);
             eventQueue.push(event);
             await processQueue(input, config);
         },

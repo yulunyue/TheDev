@@ -1,4 +1,4 @@
-from common.third_util.tool.selenium_util import SeleniumUtil, By, WebElement
+from common.third_util.tool.selenium import SeleniumUtil, By, WebElement
 from common.util.export import time, logger
 from common.tool.export import ToolBase
 import sys

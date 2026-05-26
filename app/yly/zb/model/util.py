@@ -9,7 +9,7 @@ from common.tool.export import (
     BoolModel,
 )
 from ..template.run_verification import CS, get_result
-from common.third_service.git_tool.git_util import GitUtil
+from common.third_service.git_tool.git_tool import GitTool
 from common.model.git.patch import Patch
 
 TARGETS = [
@@ -76,7 +76,7 @@ class Cg(ConfigBase):
     def get_git_util(self):
         repo = File(f"{REPO_BASE}/{self.repo.get_value()}").make_dir_if_not_exist()
         return (
-            GitUtil()
+            GitTool()
             .set_repo_url(self.pr_url.get_value().split("/pull")[0] + ".git")
             .clone()
         )
