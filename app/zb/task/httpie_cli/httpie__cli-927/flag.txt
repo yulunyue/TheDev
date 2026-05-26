@@ -1,0 +1,8 @@
+
+cd /testbed/cli
+git reset --hard 492687b0dafb7bec0d6281d019bb5f4f60439346
+pytest tests/test_uploads.py  --tb=short 
+git apply ../test.patch
+pytest tests/test_uploads.py --tb=short 
+git apply ../code.patch
+pytest tests/test_uploads.py --tb=short 

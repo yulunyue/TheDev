@@ -33,9 +33,7 @@ class WebDom extends HttpService {
         }
     }
     body_click(call_back: any) {
-        this.get_body().onclick = () => {
-            call_back()
-        }
+        this.get_body().addEventListener('click', call_back)
     }
 
     loop_task: { [key: string]: any } = {}
