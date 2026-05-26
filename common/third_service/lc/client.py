@@ -1,6 +1,11 @@
 from common.third_util.io.api import Api
 from common.model.export import LcSubmissionDetail
-from .config import QUESTION_OF_TODAY, SEARCH_QUESTION_LIST, GET_QUESTION_DETAIL, SUBMISSION_DETAILS
+from .config import (
+    QUESTION_OF_TODAY,
+    SEARCH_QUESTION_LIST,
+    GET_QUESTION_DETAIL,
+    SUBMISSION_DETAILS,
+)
 from .error import LcError
 
 
@@ -9,23 +14,7 @@ class LcClient(Api):
         from common.third_util.tool.selenium import SeleniumUtil
         from common.third_util.io.api import API_CONFIG
 
-        s = SeleniumUtil(dev_port=9527)
-        try:
-            s.load()
-        except Exception as e:
-            cmd = str(e).strip()
-            if not ("--remote-debugging-port" in cmd):
-                raise
-            import subprocess
-
-            subprocess.Popen(
-                cmd.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-            )
-            print("Chrome 调试浏览器已启动（端口 9527）")
-            import time
-
-            time.sleep(2)
-            s.load()
+        s = SeleniumUtil(mode=9527).load()
         s.driver.get(f"{self.get_endpoint()}/")
 
         print("请在浏览器中登录 leetcode.cn，完成后按 Enter 继续...")
@@ -55,7 +44,9 @@ class LcClient(Api):
         from common.model.export import LcProblem
 
         data = self.graphql(
-            SEARCH_QUESTION_LIST, dict(searchKeyword=num, limit=1, skip=0), "searchQuestionList"
+            SEARCH_QUESTION_LIST,
+            dict(searchKeyword=num, limit=1, skip=0),
+            "searchQuestionList",
         )
         questions = data["data"]["problemsetQuestionListV2"]["questions"]
         if len(questions) != 1:
@@ -66,8 +57,12 @@ class LcClient(Api):
         return ret
 
     def query_detail(self, title_slug: str) -> dict:
-        return self.graphql(GET_QUESTION_DETAIL, dict(titleSlug=title_slug), "getQuestionDetail")
+        return self.graphql(
+            GET_QUESTION_DETAIL, dict(titleSlug=title_slug), "getQuestionDetail"
+        )
 
     def check(self, submissionId: str) -> LcSubmissionDetail:
-        data = self.graphql(SUBMISSION_DETAILS, dict(submissionId=submissionId), "submissionDetails")
+        data = self.graphql(
+            SUBMISSION_DETAILS, dict(submissionId=submissionId), "submissionDetails"
+        )
         return LcSubmissionDetail().set_data(**data["data"]["submissionDetail"])

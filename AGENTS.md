@@ -115,9 +115,27 @@ from common.tool.export import (
 
 ## 代码规范
 
-- **一个文件最好只有一个类**（前后端均适用）
+### Python 规范（强制）
+
+- **必须**使用 Black 格式化：`python -m black <目录>`
+- **必须**一个文件只有一个类
+- **必须**类名与文件名一致
+- **必须**文件行数 ≤ 300 行，超过需拆分模块
+- **必须**函数行数 ≤ 50 行，超过需拆分子函数
+- **必须**函数参数 ≤ 5 个，超过需用 `**kwargs` 或配置对象
+- 行长度 88（配置见 `pyproject.toml`）
+
+### 检查命令
+
+```bash
+python -m black --check <目录>  # 检查格式化
+python -m pytest tests/         # 运行测试
+```
+
+### TypeScript 规范
+
+- 一个文件只有一个类
 - 类名与文件名保持一致（如 `class WebDom` 放在 `web_dom.ts`）
-- **Python 代码统一使用 Black 格式化**（配置见 `pyproject.toml`），行长度 88
 
 ## Node.type 字段使用指南
 

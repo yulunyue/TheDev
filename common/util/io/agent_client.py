@@ -11,6 +11,8 @@ class AgentTcpClient(LengthPrefixedClient):
         super().__init__()
         self.current_output = dict()
         self.history: List[dict] = []
+        self.chat_history: List[dict] = []
+        self.pending_command: str = None
 
     def exec_command(self, command, timeout=30):
         from ..node import Node
@@ -27,6 +29,7 @@ class AgentTcpClient(LengthPrefixedClient):
     def kill_exec(self):
         from ..node import Node
         from ...constant import C
+
         self.write_node(Node(type=C.MSG_EXEC_KILL))
 
     def _archive_output(self):

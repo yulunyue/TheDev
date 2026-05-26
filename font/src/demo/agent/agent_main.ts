@@ -8,13 +8,17 @@ const SCROLL_DELAY_MS = 200
 
 export class AgentMain extends FlexColumn {
     agent_search: Search
-    command_input: Input
-    reset_btn: Button
+    chat_input: Input
+    clear_btn: Button
+    confirm_btn: Button
+    cancel_btn: Button
+    stop_btn: Button
     output_panel: Pre
     status_bar: Span
     top_bar: FlexRow
     current_agent: string = ""
     is_executing: boolean = false
+    pending_command: string = ""
     private _viewport_bound = false
 
     private get _vv(): VisualViewport | null {
@@ -23,21 +27,27 @@ export class AgentMain extends FlexColumn {
 
     init_node(): void {
         this.agent_search = new Search().set_title("搜索 Agent")
-        this.command_input = new Input().set_placeholder("输入命令")
-        this.reset_btn = new Button().set_value("重置")
+        this.chat_input = new Input().set_placeholder("输入对话")
+        this.clear_btn = new Button().set_value("清空")
+        this.confirm_btn = new Button().set_value("确认执行")
+        this.cancel_btn = new Button().set_value("取消")
+        this.stop_btn = new Button().set_value("停止")
         this.output_panel = new Pre()
         this.status_bar = new Span()
 
         this.top_bar = new FlexRow().add_children([
             this.agent_search,
             this.status_bar,
-            this.reset_btn,
+            this.confirm_btn,
+            this.cancel_btn,
+            this.stop_btn,
+            this.clear_btn,
         ])
 
         this.add_children([
             this.top_bar,
             this.output_panel.set_size(1),
-            this.command_input,
+            this.chat_input,
         ])
     }
 
@@ -54,9 +64,24 @@ export class AgentMain extends FlexColumn {
         this.agent_search.set_style({
             width: 200,
         })
-        this.reset_btn.set_style({
+        this.clear_btn.set_style({
             cursor: "pointer",
             fontSize: "13px",
+        })
+        this.confirm_btn.set_style({
+            cursor: "pointer",
+            fontSize: "13px",
+            opacity: 0.5,
+        })
+        this.cancel_btn.set_style({
+            cursor: "pointer",
+            fontSize: "13px",
+            opacity: 0.5,
+        })
+        this.stop_btn.set_style({
+            cursor: "pointer",
+            fontSize: "13px",
+            opacity: 0.5,
         })
         this.output_panel.set_style({
             overflow: "auto",
@@ -72,7 +97,7 @@ export class AgentMain extends FlexColumn {
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
         })
-        this.command_input.set_style({
+        this.chat_input.set_style({
             width: "100%",
         })
     }
@@ -81,20 +106,83 @@ export class AgentMain extends FlexColumn {
         this.agent_search.on_change((key: string, src: any, value: any) => {
             this.switch_agent(value)
         })
-        this.command_input.on_key_down((e: KeyboardEvent) => {
+        this.chat_input.on_key_down((e: KeyboardEvent) => {
             if (e.key === "Enter") {
-                this.exec_command()
+                this.send_chat()
             }
         })
-        this.command_input.on_click(() => {
+        this.chat_input.on_click(() => {
             this.scroll_input_into_view()
         })
-        this.reset_btn.on_click(() => {
+        this.clear_btn.on_click(() => {
             this.output_panel.set_html("")
             this.is_executing = false
-            this.status_bar.set_html("已重置")
+            this.pending_command = ""
+            this.status_bar.set_html("已清空")
             if (this.current_agent) {
                 web_dom.post("/agent/kill", { agent_id: this.current_agent })
+                web_dom.post("/agent/clear_history", { agent_id: this.current_agent })
+            }
+            this.update_button_state()
+        })
+        this.confirm_btn.on_click(() => {
+            if (!this.pending_command) return
+            this.append_output(`$ ${this.pending_command}\n`)
+            this.is_executing = true
+            this.pending_command = ""
+            web_dom.post("/agent/confirm", { agent_id: this.current_agent })
+            this.status_bar.set_html("执行中")
+            this.update_button_state()
+        })
+        this.cancel_btn.on_click(() => {
+            web_dom.post("/agent/cancel", { agent_id: this.current_agent })
+            this.append_output("[已取消]\n")
+            this.pending_command = ""
+            this.update_button_state()
+        })
+        this.stop_btn.on_click(() => {
+            if (!this.current_agent || !this.is_executing) return
+            web_dom.post("/agent/kill", { agent_id: this.current_agent })
+            this.status_bar.set_html("已停止")
+            this.is_executing = false
+            this.update_button_state()
+        })
+    }
+
+    update_button_state(): void {
+        const has_pending = !!this.pending_command
+        const is_busy = this.is_executing
+        this.confirm_btn.set_style({ opacity: has_pending ? 1 : 0.5 })
+        this.cancel_btn.set_style({ opacity: has_pending ? 1 : 0.5 })
+        this.stop_btn.set_style({ opacity: is_busy ? 1 : 0.5 })
+    }
+
+    send_chat(): void {
+        if (!this.current_agent) {
+            this.status_bar.set_html("请先选择 Agent")
+            return
+        }
+        const message = this.chat_input.get_value()
+        if (!message) {
+            this.status_bar.set_html("请输入对话")
+            return
+        }
+        this.append_output(`👤 用户: ${message}\n`)
+        this.chat_input.set_value("")
+        web_dom.post("/agent/chat", {
+            agent_id: this.current_agent,
+            message: message
+        }, (resp: Node) => {
+            if (resp.ok) {
+                const data = resp.data
+                this.append_output(`🤖 LLM: ${data.response}\n`)
+                if (data.need_confirm) {
+                    this.pending_command = data.suggested_command
+                    this.append_output(`[待确认] ${this.pending_command}\n`)
+                    this.update_button_state()
+                }
+            } else {
+                this.status_bar.set_html(resp.title)
             }
         })
     }
@@ -107,6 +195,8 @@ export class AgentMain extends FlexColumn {
         this.status_bar.set_html(`选中: ${agent_id}`)
         this.output_panel.set_html("")
         this.is_executing = false
+        this.pending_command = ""
+        this.update_button_state()
         if (!agent_id) return
 
         web_socket.sub(`${Ct.TOPIC_AGENT_OUTPUT}.${agent_id}`, (msg: any) => {
@@ -129,38 +219,6 @@ export class AgentMain extends FlexColumn {
         }, () => { })
     }
 
-    exec_command(): void {
-        if (this.is_executing) {
-            this.status_bar.set_html("正在执行中，请先停止")
-            return
-        }
-
-        if (!this.current_agent) {
-            this.status_bar.set_html("请先选择 Agent")
-            return
-        }
-        const command = this.command_input.get_value()
-        if (!command) {
-            this.status_bar.set_html("请输入命令")
-            return
-        }
-        this.is_executing = true
-        web_dom.post("/agent/exec", {
-            agent_id: this.current_agent,
-            command: command,
-            timeout: 60
-        }, (o: Node) => {
-            if (o.ok) {
-                this.append_output(`$ ${command}\n`)
-                this.command_input.set_value("")
-                this.status_bar.set_html("执行中")
-            } else {
-                this.is_executing = false
-                this.status_bar.set_html(`错误: ${o.title}`)
-            }
-        })
-    }
-
     handle_output(msg: any): void {
         const msgType = msg.type
         const data = msg.data?.data || ""
@@ -175,6 +233,7 @@ export class AgentMain extends FlexColumn {
             const timeStr = new Date().toLocaleTimeString()
             this.status_bar.set_html(`完成: exit_code=${exitCode}  (${timeStr})`)
             this.append_output(`exit_code: ${exitCode}\n\n`)
+            this.update_button_state()
         }
     }
 
@@ -186,7 +245,7 @@ export class AgentMain extends FlexColumn {
 
     scroll_input_into_view(): void {
         setTimeout(() => {
-            const inputEl = this.command_input.el
+            const inputEl = this.chat_input.el
             const rect = inputEl.getBoundingClientRect()
             const vv = this._vv
             if (vv && rect.bottom > vv.height) {
@@ -204,7 +263,7 @@ export class AgentMain extends FlexColumn {
             this._viewport_bound = true
             vv.addEventListener("resize", () => {
                 this.set_style({ height: `${vv.height}px` })
-                if (document.activeElement === this.command_input.el) {
+                if (document.activeElement === this.chat_input.el) {
                     this.scroll_input_into_view()
                 }
             })

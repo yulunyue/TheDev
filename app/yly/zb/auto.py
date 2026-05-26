@@ -16,7 +16,7 @@ class WebTool:
     JOB_URL = None
 
     def __init__(self):
-        self.s = SeleniumUtil(dev_port="lc").load()
+        self.s = SeleniumUtil(mode="lc").load()
 
     def get_job_url(self, key):
         return f"{self.main_uri}/{self.job_map[key]}?businessType=WORK&from={self.fm}&projectId={self.projectId}"
@@ -94,9 +94,15 @@ class WebTool:
 
     def parse_job_table(self):
         for tr in self.get_all_tables():
-            task_id, data_batch, statu, data_source, rest_time, method, *args = (
-                tr.text.split(" ")
-            )
+            (
+                task_id,
+                data_batch,
+                statu,
+                data_source,
+                rest_time,
+                method,
+                *args,
+            ) = tr.text.split(" ")
             if task_id in self.store_task:
                 continue
             t = new_one(task_id)
@@ -108,7 +114,9 @@ class WebTool:
                 tr.find_element(By.TAG_NAME, "button").click()
                 self.s.switch_to_window()
                 t.set_uri(
-                    self.s.current_url, self.get_download_url(self.s.current_url), task_id
+                    self.s.current_url,
+                    self.get_download_url(self.s.current_url),
+                    task_id,
                 )
                 self.s.close_current_window()
                 self.s.switch_to_window(0)

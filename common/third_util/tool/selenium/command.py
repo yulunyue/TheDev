@@ -1,12 +1,27 @@
+from typing import Any, Optional, Dict, Union
+
+
 class SeleniumCommand:
-    def __init__(self, driver, page, element, script, cookie):
+    """命令模式封装，支持链式调用"""
+
+    def __init__(self, driver, page, element, script, window):
         self.driver = driver
         self.page = page
         self.element = element
         self.script = script
-        self.cookie = cookie
+        self.window = window
 
-    def do_cmd(self, method, *args):
+    def do_cmd(self, method: str, *args) -> Any:
+        """
+        执行单个命令。
+
+        Args:
+            method: 命令名称
+            args: 命令参数
+
+        Returns:
+            命令执行结果
+        """
         try:
             if method == "go":
                 return self.page.get(*args)
@@ -16,8 +31,8 @@ class SeleniumCommand:
                 return self.element.get_by_xpath(args[0]).click()
             elif method == "open":
                 self.element.get_by_xpath(args[0]).click()
-                self.driver.wait_for_window()
-                self.driver.switch_to_window()
+                self.window.wait_for_window()
+                self.window.switch_to_window()
                 return self.driver.current_url
             elif method == "reload":
                 return self.page.reload()
@@ -29,11 +44,12 @@ class SeleniumCommand:
                 return self.script.e_format(self.element.get_by_id(args[0]))
             elif method == "get_cookies":
                 name = None if len(args) == 0 else args[0]
-                return self.cookie.get_cookies(name=name)
+                return self.driver.get_cookies(name)
             return "todo"
         except Exception as e:
             return str(e)
 
-    def do_cmds(self, *args):
+    def do_cmds(self, *args) -> None:
+        """批量执行命令"""
         for a in args:
             self.do_cmd(a)

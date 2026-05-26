@@ -63,13 +63,17 @@ class SeleniumScript:
         except Exception:
             text = ""
 
-        ret.append("; ".join([
-            f"标签: <{tag_name}>",
-            f"ID: [{element_id}]",
-            f"title: [{title}]",
-            f"disabled: [{disabled}]",
-            f"type: [{element.get_attribute('type')}]",
-        ]))
+        ret.append(
+            "; ".join(
+                [
+                    f"标签: <{tag_name}>",
+                    f"ID: [{element_id}]",
+                    f"title: [{title}]",
+                    f"disabled: [{disabled}]",
+                    f"type: [{element.get_attribute('type')}]",
+                ]
+            )
+        )
         ret.append(f"   XPATH:{self.get_xpath_from_devtools(element)} ")
         if class_attr:
             ret.append(f"   类: {class_attr};")
@@ -84,4 +88,6 @@ class SeleniumScript:
         return "\n".join(ret)
 
     def wait_doc_ready(self, wait: WebDriverWait):
-        wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
+        wait.until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )

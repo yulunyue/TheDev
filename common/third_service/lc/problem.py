@@ -59,7 +59,7 @@ class LcProblemService:
             cache = self.prepare_submit(title_slug)
 
         question_id = cache["question_id"]
-        
+
         if code is None:
             code_path = f"{CODE_DIR}/lc_{question_id}.py"
             if not File(code_path).exists():

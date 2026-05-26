@@ -44,14 +44,22 @@ class SeleniumConfig:
         platform_name, chrome_name, driver_name = SeleniumConfig.get_platform()
 
         if not chrome_exe.exists():
-            uri = SeleniumConfig.ensure_platform_url(SeleniumConfig.chrome_bin_uri, platform_name)
+            uri = SeleniumConfig.ensure_platform_url(
+                SeleniumConfig.chrome_bin_uri, platform_name
+            )
             Api().download(uri).unzip(chrome_exe.path)
         if not chrome_driver.exists():
-            uri = SeleniumConfig.ensure_platform_url(SeleniumConfig.chrome_driver_uri, platform_name)
+            uri = SeleniumConfig.ensure_platform_url(
+                SeleniumConfig.chrome_driver_uri, platform_name
+            )
             Api().download(uri).unzip(chrome_driver.path)
         if not chrome_exe.exists() or not chrome_driver.exists():
-            raise Exception(f"Chrome or ChromeDriver 下载失败: {chrome_exe.path} {chrome_driver.path}")
+            raise Exception(
+                f"Chrome or ChromeDriver 下载失败: {chrome_exe.path} {chrome_driver.path}"
+            )
 
         chrome_exe_file = chrome_exe.child(f"chrome-{platform_name}/{chrome_name}")
-        chrome_driver_file = chrome_driver.child(f"chromedriver-{platform_name}/{driver_name}")
+        chrome_driver_file = chrome_driver.child(
+            f"chromedriver-{platform_name}/{driver_name}"
+        )
         return chrome_exe_file, chrome_driver_file

@@ -7,7 +7,7 @@ import sys
 class WebTool(ToolBase):
     def __init__(self) -> None:
         super().__init__()
-        self.s = SeleniumUtil(dev_port="lc").load()
+        self.s = SeleniumUtil(mode="lc").load()
 
     def do_cmd(self, *args):
         return self.s.do_cmd(*args)
