@@ -113,8 +113,6 @@ export class Search extends Div {
     render_option(): void {
         if (this.option.id) {
             web_dom.get_local_str(this.option.id, (v: any) => {
-
-                this.do_change(this.option.key, this.get_value(), v)
                 this.set_value(v)
             })
         }

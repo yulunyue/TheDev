@@ -19,18 +19,18 @@ class LcProblemService:
         if cache:
             return cache
 
+        detail = self.client.query_detail(title_slug)
+        question_data = detail["data"]["question"]
+
         if title_slug == daily["titleSlug"]:
             question_id = daily["questionFrontendId"]
             title = daily["title"]
             difficulty = daily["difficulty"]
         else:
-            problem = self.client.query_num(title_slug.split("-")[-1])
-            question_id = problem.questionFrontendId
-            title = problem.title
-            difficulty = problem.difficulty
-
-        detail = self.client.query_detail(title_slug)
-        question_data = detail["data"]["question"]
+            question_id = question_data.get("questionFrontendId", "")
+            info = self.client.query_num(question_id).kw
+            title = info.get("title", "")
+            difficulty = info.get("difficulty", "")
 
         test_cases = LcContentParser.build_test_cases(
             question_data["content"], question_data["sampleTestCase"]
