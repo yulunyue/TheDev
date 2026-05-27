@@ -39,7 +39,8 @@ class Cli(ToolBase):
     def upload_base_64(self, server="bolun", b64_pkg_num=8192 * 4):
         self._load(server)
         self.b64_pkg_num = b64_pkg_num
-        data = File(THE_DEV_ZIP_PATH).read_b64_data()
+        # data = File(THE_DEV_ZIP_PATH).read_b64_data()
+        data = File("app/zb/task/httpie__cli/httpie__cli-927.zip").read_b64_data()
         all_num = len(data) // self.b64_pkg_num
         for idx in range(0, all_num + 1):
             res = self.api.post(

@@ -5,12 +5,25 @@ from collections import defaultdict
 
 from .time_util import time_format, time_change, time_strptime
 from .crypto_util import (
-    is_base64_code, base64_decode, base64_encode, b64_code,
-    hash_any_str, md5, uid, ii, str_mid,
+    is_base64_code,
+    base64_decode,
+    base64_encode,
+    b64_code,
+    hash_any_str,
+    md5,
+    uid,
+    ii,
+    str_mid,
 )
 from .json_util import (
-    json_dumps, assert_dict, merge_dict, asset_exception,
-    json_get, json_has, json_set, cmd_parse_json,
+    json_dumps,
+    assert_dict,
+    merge_dict,
+    asset_exception,
+    json_get,
+    json_has,
+    json_set,
+    cmd_parse_json,
 )
 from common.exception import NotFoundError
 
@@ -64,3 +77,14 @@ def dict_to_str(indent=" ", **kw):
             v = "%.3f" % v
         ret.append(f"{k}={v}")
     return indent.join(ret)
+
+
+def dir_object(obj, type_class):
+    ret = []
+    for name in dir(obj):
+        if name.startswith("_"):
+            continue
+        v = getattr(obj, name)
+        if isinstance(v, type_class):
+            ret.append(v)
+    return ret

@@ -11,7 +11,10 @@ class FileZipMixin:
         import zipfile
 
         if dst is None:
-            dst = self.path + ".zip"
+            if not self.path.endswith(".zip"):
+                dst = self.path + ".zip"
+            else:
+                dst = self.path
         dst_file = self.__class__(dst).remove()
         with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as f:
             if targets is None:
@@ -20,7 +23,8 @@ class FileZipMixin:
                 if isinstance(c, str):
                     local_path, arc_name, c = self.path + "/" + c, c, self.child(c)
                 if c.is_file():
-                    local_path, arc_name = c.path, os.path.relpath(c.path, self.path)
+                    local_path, arc_name = c.path, c.file_name
+                    print(local_path, arc_name)
                     f.write(local_path, arcname=arc_name)
                 else:
                     for d in c.list_tree_file(ignores=ignores):

@@ -5,64 +5,86 @@ from typing import Optional
 import httpx
 from .llm_config import LlmConfig
 from common.tool.export import ProcessLock, System
-from common.util.export import logger
+from common.util.export import logger, Node
 import re
 import sys
 import time
 
 
 class OpencodeClient:
+    def __init__(self, cwd: str, base_url: str, timeout=15 * 60):
+        self.cwd = cwd
+        self.base_url = base_url
+        self.timeout = timeout
+        self.model_id = ""
+        self.provider_id = ""
+        self._client: Opencode = None
 
-    def __init__(self, config_name):
-        self.config_name = config_name
-        self.config = LlmConfig.get(config_name)
-        self._client = None
+    @classmethod
+    def new(cls, cwd, base_url):
+        return cls(cwd, base_url)
+
+    @classmethod
+    def load(cls, config_name):
+        config = LlmConfig.get(config_name)
+        return cls.new(config.cwd.get_value(), config.base_url.get_value())
 
     @property
     def client(self):
         if self._client is None:
             http_client = httpx.Client(trust_env=False)
             self._client = Opencode(
-                base_url=self.config.base_url.get_value(),
+                base_url=self.base_url,
                 http_client=http_client,
-                timeout=self.config.timeout.get_value(),
+                timeout=self.timeout,
             )
         return self._client
 
-    @property
-    def provider_id(self):
-        return self.config.provider_id.get_value()
-
-    @property
-    def model_id(self):
-        return self.config.model_id.get_value()
-
     def create_session(self, title="") -> Optional[Session]:
-        title = title or self.config_name
+        title = title or self.cwd.split("/").pop()
         return self.client.session.create(extra_body=dict(title=title))
 
-    def execute_task(self, session_id: str, prompt: str) -> str:
+    def execute_task(self, session_id: str, prompt: str) -> Node:
         text_part = TextPartInputParam(type="text", text=prompt)
-        result = self.client.session.chat(
+        self.client.session.chat(
             id=session_id,
             model_id=self.model_id,
             provider_id=self.provider_id,
             parts=[text_part],
         )
-        parts = (result.model_extra or {}).get("parts", [])
-        for part in reversed(parts):
-            if isinstance(part, dict) and part.get("type") == "text":
-                return part.get("text", "")
-        return ""
 
-    def do_prompt(self, prompt):
+        messages = self.client.session.messages(id=session_id)
+        text = ""
+        tool_parts = []
+
+        for msg in messages:
+            if msg.info.role != "assistant":
+                continue
+            for part in msg.parts:
+                part_dict = part.model_dump()
+                part_type = part_dict.get("type")
+                if part_type == "text":
+                    text = part_dict.get("text", "")
+                elif part_type == "tool":
+                    tool_parts.append(part_dict)
+
+        return Node(
+            ok=True,
+            value=text,
+            data={
+                "tool_parts": tool_parts,
+                "messages": [m.model_dump() for m in messages],
+            },
+        )
+
+    def do_prompt(self, prompt) -> Node:
         s = self.create_session()
-        return self.execute_task(s.id, prompt)
+        ret = self.execute_task(s.id, prompt)
+        return ret
 
     def _get_port_from_config(self):
-        base_url = self.config.base_url.get_value()
-        m = re.search(r":(\d+)", base_url)
-        return int(m.group(1)) if m else 4396
+        m = re.search(r":(\d+)", self.base_url)
+        return int(m.group(1))
 
     def start_server(self):
         port = self._get_port_from_config()
@@ -70,11 +92,7 @@ class OpencodeClient:
         if System.get_pid_by_port(self._get_port_from_config()):
             return self
         cmd = ["opencode", "serve", "--port", str(port)]
-        start_pid = System.popen(*cmd, cwd=self.config.cwd.get_value())
+        start_pid = System.popen(*cmd, cwd=self.cwd)
         time.sleep(1)
         logger.info(f"START_PID {cmd} {start_pid}")
         return self
-
-
-if __name__ == "__main__":
-    print(OpencodeClient(sys.argv[1]).start_server().do_prompt(sys.argv[2]))

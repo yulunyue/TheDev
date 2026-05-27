@@ -42,6 +42,9 @@ class File(FileZipMixin):
         dirs.pop()
         return File("/".join(dirs))
 
+    def extend(self, suf):
+        return File(self.path + suf)
+
     def get_m_time(self):
         return os.path.getmtime(self.path)
 
@@ -218,6 +221,12 @@ class File(FileZipMixin):
             elif check(f.path):
                 ret.append(f)
         return ret
+
+    def search_one(self, name: str):
+        ret = self.list_dir(depth=-1, mathchs=[name])
+        if len(ret) != 1:
+            raise Exception(ret, name)
+        return ret[0]
 
     def list_tree_file(self, with_dir=False, ignores=None):
         return self.list_dir(-1, with_dir=with_dir, ignores=ignores)
