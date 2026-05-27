@@ -115,7 +115,7 @@ export class HttpService {
                 if (data && data.code > 300) {
                     this.alert(data.code + '->' + data.title)
                 }
-                else if (data) {
+                else if (data && call_back) {
                     call_back(data)
                 }
             }

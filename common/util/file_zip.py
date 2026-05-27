@@ -5,6 +5,8 @@ from typing import List
 
 
 class FileZipMixin:
+    path: str
+
     def zip(self, dst=None, targets=None, ignores=None):
         import zipfile
 
@@ -36,7 +38,10 @@ class FileZipMixin:
             dst = self.path.replace(".zip", "")
         if isinstance(dst, str):
             dst = self.__class__(dst)
-        with zipfile.ZipFile(self.path) as zf:
-            for member in zf.namelist():
-                zf.extract(member, path=dst.path)
+        try:
+            with zipfile.ZipFile(self.path) as zf:
+                for member in zf.namelist():
+                    zf.extract(member, path=dst.path)
+        except Exception as e:
+            raise Exception(e, self.path)
         return dst

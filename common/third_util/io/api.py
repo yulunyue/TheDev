@@ -76,15 +76,27 @@ class Api:
         )
 
     def download(self, url: str, dst=None, data=None, timeout=3600):
+        import uuid
+
         if dst is None:
-            dst = f"/Thedev/data/download/{url.split('/').pop().split('?')[0]}"
+            dst = f"data/download/{url.split('/').pop().split('?')[0]}"
         f = File(dst).make_dir_if_not_exist()
         if f.exists():
             return f
-        self.http(
-            "GET", url, data, timeout=timeout, stream=True, writer=f.get_bin_writer()
-        )
-        return f
+        tmp = File(f"data/tmp/download_{uuid.uuid4().hex}")
+        writer = tmp.get_writer()
+        try:
+            self.http("GET", url, data, timeout=timeout, stream=True, writer=writer)
+            writer.close()
+            if tmp.path in File.WHITE_FILE_HANDLER:
+                del File.WHITE_FILE_HANDLER[tmp.path]
+            return tmp.copy_to(f, True)
+        except Exception:
+            writer.close()
+            if tmp.path in File.WHITE_FILE_HANDLER:
+                del File.WHITE_FILE_HANDLER[tmp.path]
+            tmp.remove()
+            raise
 
     def post(self, url, data=None, headers=None, cookies=None):
         return self.http("POST", url, data=data, headers=headers, cookies=cookies)[1]
@@ -163,6 +175,7 @@ class Api:
         param=None,
         timeout=None,
         stream=None,
+        writer=None,
     ):
         if headers is None:
             headers = self.get_headers()
@@ -215,6 +228,9 @@ class Api:
             if "请先注册/登录" in error_msg or "请先登录" in error_msg:
                 raise Exception(401, uri, error_msg)
             raise Exception(res.status_code, uri, error_msg[:128])
+        if stream and writer:
+            self.hander_stream(res, stream=True, writer=writer)
+            return res, None
         self.log(uri, res, method, data or param, headers, cookies, ret, proxies)
         return res, ret
 
@@ -229,6 +245,7 @@ class Api:
         param=None,
         timeout=None,
         stream=None,
+        writer=None,
         max_retry=None,
         retry_interval=None,
     ):
@@ -247,6 +264,7 @@ class Api:
                     param,
                     timeout,
                     stream,
+                    writer,
                 )
             except Exception as e:
                 status_code = self._extract_status_code(e)
@@ -284,9 +302,7 @@ class Api:
         if hasattr(self, "_refresh_auth"):
             self._refresh_auth()
             return
-        raise ApiError(
-            f"认证失败(401)，请更新 {self.name} 的认证信息", context={"path": path}
-        )
+        raise ApiError(f"认证失败(401)，请更新 {self.name} 的认证信息", context={"path": path})
 
     def hander_stream(self, res: requests.Response, stream=False, writer=None):
         res.raise_for_status()
