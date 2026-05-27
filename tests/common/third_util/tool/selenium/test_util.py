@@ -67,7 +67,7 @@ class TestSeleniumUtil(SeleniumTestBase):
         self.driver.get(url)
         hidden = self.wait.until(EC.presence_of_element_located((By.ID, "hidden-span")))
         assert hidden.is_displayed() is False
-        assert hidden.text == "Hidden Element"
+        assert hidden.get_attribute("textContent") == "Hidden Element"
 
     def test_disabled_button(self):
         url = self.get_page_url("index.html")
@@ -80,4 +80,4 @@ class TestSeleniumUtil(SeleniumTestBase):
         self.driver.get(url)
         current = self.driver.current_url
         assert "index.html" in current
-        assert current.startswith("file:///")
+        assert current.startswith("http://")
