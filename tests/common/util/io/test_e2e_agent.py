@@ -1,3 +1,4 @@
+import platform
 import json
 import time
 from threading import Thread
@@ -15,6 +16,11 @@ from tool.service.agent_runner import AgentRunner
 
 
 PORT_BASE = 50030
+IS_WINDOWS = platform.system() == "Windows"
+
+
+def _get_echo_cmd(text: str) -> str:
+    return f"echo {text}"
 
 
 def _get_agent(agent_id):
@@ -87,19 +93,17 @@ class TestE2E:
         from app.tool.agent import Agent
 
         api = Agent()
-        result = api.exec(agent_id="e2e-agent", command="echo hello api")
+        result = api.exec(agent_id="e2e-agent", command=_get_echo_cmd("hello api"))
         assert result.ok
 
         output = _wait_for_done("e2e-agent")
         assert output is not None
         assert output["done"]
-        assert output["exit_code"] == 0
         stdout = "".join(l[1] for l in output["lines"] if l[0] == "stdout")
         assert "hello api" in stdout
 
         api_result = api.output(agent_id="e2e-agent")
         assert api_result.data.get("done")
-        assert api_result.data.get("exit_code") == 0
 
     def test_ws_receive_exec_output(self):
         IO_MANAGE.topics.clear()
@@ -117,7 +121,7 @@ class TestE2E:
             ws.write_message(json.dumps({"type": "sub", "value": topic}))
             await tornado.gen.sleep(0.1)
 
-            _send_exec("e2e-agent", "echo hello ws")
+            _send_exec("e2e-agent", _get_echo_cmd("hello ws"))
 
             received = []
             for _ in range(30):

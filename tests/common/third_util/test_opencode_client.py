@@ -9,15 +9,15 @@ class TestOpencodeClientIntegration(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = OpencodeClient()
         try:
-            OpencodeClient.start_server(wait_timeout=10)
+            cls.client = OpencodeClient("default")
+            cls.client.start_server()
         except Exception as e:
-            raise SkipTest(f"Cannot start opencode server: {e}")
+            raise SkipTest(f"Cannot setup OpencodeClient: {e}")
 
     @classmethod
     def tearDownClass(cls):
-        OpencodeClient.stop_server()
+        pass
 
     def test_create_session(self):
         s = self.client.create_session(title="ut_create_session")
@@ -31,7 +31,7 @@ class TestOpencodeClientIntegration(unittest.TestCase):
         self.assertGreater(len(result), 0)
 
     def test_run(self):
-        result = self.client.run("say hi")
+        result = self.client.do_prompt("say hi")
         self.assertIsInstance(result, str)
         self.assertGreater(len(result), 0)
 

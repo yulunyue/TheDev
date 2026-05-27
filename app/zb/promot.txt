@@ -1,0 +1,1 @@
+通过base_commit可以在wsl的docker构建一个有issue_url问题的环境，帮我修复下呢，生成final.diff文件，仅仅是核心代码，不能从code.patch生成，需要你自己思考，然后再docker里帮我用run_verification.py 验证，其中不用code.patch用final.diff

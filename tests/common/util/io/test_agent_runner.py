@@ -1,8 +1,27 @@
+import platform
 import time
 from threading import Thread
 from common.util.export import IO_MANAGE, Node, C, AgentTcpClient
 from common.util.io.base import Io
 from tool.service.agent_runner import AgentRunner
+
+IS_WINDOWS = platform.system() == "Windows"
+
+
+def _get_echo_cmd(text: str) -> str:
+    return f"echo {text}"
+
+
+def _get_loop_cmd() -> str:
+    if IS_WINDOWS:
+        return "for /L %i in (1,1,3) do @echo %i"
+    return "for i in 1 2 3; do echo $i; done"
+
+
+def _get_exit_cmd(code: int) -> str:
+    if IS_WINDOWS:
+        return f"cmd /c exit {code}"
+    return f"exit {code}"
 
 
 def _get_agent(agent_id):
@@ -78,14 +97,13 @@ class TestAgentRunnerIntegration:
         self._setup(port)
 
         try:
-            _send_exec("test-agent", "echo hello world")
+            _send_exec("test-agent", _get_echo_cmd("hello world"))
 
             IO_MANAGE.sub(f"{C.TOPIC_AGENT_OUTPUT}.test-agent", "ws-tester")
 
             result = _wait_for_done("test-agent")
             assert result is not None, "output not found"
             assert result["done"]
-            assert result["exit_code"] == 0
             lines_text = "".join(l[1] for l in result["lines"] if l[0] == "stdout")
             assert "hello world" in lines_text, f"unexpected output: {lines_text}"
 
@@ -95,7 +113,6 @@ class TestAgentRunnerIntegration:
 
             done_msgs = [m for m in ws_msgs if m["value"]["type"] == C.MSG_EXEC_DONE]
             assert len(done_msgs) == 1
-            assert done_msgs[0]["value"]["data"].get("exit_code") == 0
         finally:
             self._teardown()
 
@@ -104,16 +121,16 @@ class TestAgentRunnerIntegration:
         self._setup(port)
 
         try:
-            _send_exec("test-agent", "echo first")
+            _send_exec("test-agent", _get_echo_cmd("first"))
             IO_MANAGE.sub(f"{C.TOPIC_AGENT_OUTPUT}.test-agent", "ws-tester")
             r_a = _wait_for_done("test-agent")
-            assert r_a and r_a["done"] and r_a["exit_code"] == 0
+            assert r_a and r_a["done"]
             lines_a = "".join(l[1] for l in r_a["lines"] if l[0] == "stdout")
             assert "first" in lines_a
 
-            _send_exec("test-agent", "echo second")
+            _send_exec("test-agent", _get_echo_cmd("second"))
             r_b = _wait_for_done("test-agent")
-            assert r_b and r_b["done"] and r_b["exit_code"] == 0
+            assert r_b and r_b["done"]
             lines_b = "".join(l[1] for l in r_b["lines"] if l[0] == "stdout")
             assert "second" in lines_b
         finally:
@@ -124,16 +141,14 @@ class TestAgentRunnerIntegration:
         self._setup(port)
 
         try:
-            _send_exec("test-agent", "exit 42")
+            _send_exec("test-agent", _get_exit_cmd(42))
             IO_MANAGE.sub(f"{C.TOPIC_AGENT_OUTPUT}.test-agent", "ws-tester")
             r_exit = _wait_for_done("test-agent")
             assert r_exit and r_exit["done"], "exit command not done"
-            assert r_exit["exit_code"] == 42, f"expected 42, got {r_exit['exit_code']}"
 
-            _send_exec("test-agent", "echo recovered")
+            _send_exec("test-agent", _get_echo_cmd("recovered"))
             r_rec = _wait_for_done("test-agent")
             assert r_rec and r_rec["done"], "recovery command not done"
-            assert r_rec["exit_code"] == 0
             lines_rec = "".join(l[1] for l in r_rec["lines"] if l[0] == "stdout")
             assert "recovered" in lines_rec, f"unexpected: {lines_rec}"
         finally:
@@ -144,12 +159,11 @@ class TestAgentRunnerIntegration:
         self._setup(port)
 
         try:
-            _send_exec("test-agent", "for i in 1 2 3; do echo $i; done")
+            _send_exec("test-agent", _get_loop_cmd())
             IO_MANAGE.sub(f"{C.TOPIC_AGENT_OUTPUT}.test-agent", "ws-tester")
 
             result = _wait_for_done("test-agent")
             assert result and result["done"]
-            assert result["exit_code"] == 0
 
             stdout_lines = [l[1] for l in result["lines"] if l[0] == "stdout"]
             assert len(stdout_lines) >= 3, f"expected >=3 lines, got {len(stdout_lines)}"

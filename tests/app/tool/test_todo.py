@@ -20,7 +20,9 @@ class TestTodo:
         asset_exception(self.t.web_edit, title="123", content="xx")
 
     def test_calc_score_empty(self):
-        assert TodoModel.calc_score() == 0
+        score, money = TodoModel.calc_score()
+        assert score == 0
+        assert money == TodoModel.INITIAL_MONEY
 
     def test_search_empty(self):
         score, money, todos = TodoModel.search("study", False)
