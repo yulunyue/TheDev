@@ -16,6 +16,7 @@ class Api:
         self._name = name or self.__class__.__name__
         self.log_enable = log_enable or self.__class__.LOG_ENABLE_DEFAULT
         self.cache = None
+        self._proxy = None
 
     @classmethod
     def enable_globel_log(cls):
@@ -54,6 +55,10 @@ class Api:
         self.end_point = s
         return self
 
+    def set_proxy(self, proxy):
+        self._proxy = proxy
+        return self
+
     def url(self, path):
         if isinstance(path, list):
             path = "/".join(path)
@@ -90,7 +95,9 @@ class Api:
             writer.close()
             if tmp.path in File.WHITE_FILE_HANDLER:
                 del File.WHITE_FILE_HANDLER[tmp.path]
-            return tmp.copy_to(f, True)
+            tmp.copy_to(f, True)
+            tmp.remove()
+            return f
         except Exception:
             writer.close()
             if tmp.path in File.WHITE_FILE_HANDLER:
@@ -121,6 +128,8 @@ class Api:
         return API_CONFIG.query(self.name).headers.get_value()
 
     def get_proxy(self):
+        if self._proxy is not None:
+            return self._proxy
         return API_CONFIG.query(self.name).proxy.get_value()
 
     def get_mock_data(self, uri, method, param):
@@ -222,7 +231,7 @@ class Api:
         else:
             ret = res.content
         if res.status_code > 300:
-            raise Exception(res.status_code, res.url, res.text[:128])
+            raise Exception(res.status_code, res.url, res.text[:256])
         if isinstance(ret, dict) and "errors" in ret:
             error_msg = ret["errors"][0].get("message", "") if ret["errors"] else ""
             if "请先注册/登录" in error_msg or "请先登录" in error_msg:

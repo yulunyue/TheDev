@@ -73,11 +73,19 @@ class TornadaWebSocketConnectHandler(WebSocketHandler):
         # logger.info(f"send_message {self.username} {data}")
         MAIN_IOLOOP.add_callback(self._safe_write_message, data)
 
+    def _convert_bytes(self, data):
+        if isinstance(data, bytes):
+            return data.decode("utf-8")
+        if isinstance(data, dict):
+            return {k: self._convert_bytes(v) for k, v in data.items()}
+        if isinstance(data, list):
+            return [self._convert_bytes(v) for v in data]
+        return data
+
     def _safe_write_message(self, data):
         if self.ws_connection and not self.ws_connection.is_closing():
             try:
-                # logger.info(f"write_msg {self.username} {data}")
-                self.write_message(data)
+                self.write_message(self._convert_bytes(data))
             except Exception as e:
                 logger.info(f"Failed to write message: {e}")
         else:
@@ -117,7 +125,11 @@ class MainHandler(RequestHandler):
             query_params = {}
             for k, v in request.query_arguments.items():
                 for single_v in v:
-                    vv = single_v.decode("utf-8") if isinstance(single_v, bytes) else single_v
+                    vv = (
+                        single_v.decode("utf-8")
+                        if isinstance(single_v, bytes)
+                        else single_v
+                    )
                     if k in query_params:
                         if not isinstance(query_params[k], list):
                             query_params[k] = [query_params[k]]

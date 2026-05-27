@@ -20,6 +20,7 @@ class Task:
 
     def set_resource(self, path):
         self.model.set_resource(path)
+        self.start()
         return self
 
     def loop(self):

@@ -5,9 +5,9 @@ from common.third_util.io.api import Api
 CHROME_DATA_DIR = "data/chrome"
 USER_DATA_DIR = "data/chrome/user-data"
 
-CHROME_DRIVER_PATH = "data/tmp/chrome-data"
+CHROME_DRIVER_PATH = "/thedev/data/"
 CHROME_DRIVER_URI = "https://storage.googleapis.com/chrome-for-testing-public/150.0.7842.0/linux64/chromedriver-linux64.zip"
-CHROME_BIN_PATH = "data/tmp/chrome-data"
+CHROME_BIN_PATH = "/thedev/data/"
 CHROME_BIN_URI = "https://storage.googleapis.com/chrome-for-testing-public/150.0.7842.0/linux64/chrome-linux64.zip"
 
 
@@ -48,6 +48,7 @@ class SeleniumConfig:
                 SeleniumConfig.chrome_bin_uri, platform_name
             )
             Api().download(uri).unzip(chrome_exe.path)
+
         if not chrome_driver.exists():
             uri = SeleniumConfig.ensure_platform_url(
                 SeleniumConfig.chrome_driver_uri, platform_name

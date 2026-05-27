@@ -1,5 +1,5 @@
 from common.tool.export import FormBase, TaskConfig, Task, TASK_MANAGE, FontSearch
-from common.util.export import C, Node, Type
+from common.util.export import C, Node, Type, Thread
 
 
 def test(*args):
@@ -29,5 +29,5 @@ class TaskManage(FormBase, Task):
 
     def exec_task(self, key: str, **kw):
         task = TaskConfig.get(key)
-        task.run()
+        Thread(target=task.run, daemon=True).start()
         return Node(value="ok")

@@ -6,7 +6,7 @@ from common.util.export import C, time_format, logger
 class TaskTool(ToolBase):
     def todo_every_day(self, uri, name, mp: dict, **kw):
         date_str = time_format(fmt="%Y-%m-%d")
-        api = Api().set_endpoint(uri)
+        api = Api().set_endpoint(uri).set_proxy({"http": None, "https": None})
         ret = []
         for type, values in mp.items():
             for v in values:
