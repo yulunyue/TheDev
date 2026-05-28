@@ -38,6 +38,7 @@ query getQuestionDetail($titleSlug: String!) {
     codeSnippets { lang code }
     sampleTestCase
     content
+    translatedContent
     questionFrontendId
   }
 }

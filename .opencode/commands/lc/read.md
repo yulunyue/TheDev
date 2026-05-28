@@ -13,7 +13,8 @@ description: 查看 LeetCode 题目描述和代码模板
 2. **加载题目详情**：调用 `LcProblemService(client).prepare_submit(titleSlug)` 获取完整题目数据（优先使用 `data/lc/<title_slug>.json` 缓存，缓存不存在或指定 `--fresh` 时从 LeetCode 拉取）
 3. **展示内容**：
    - 题号、标题、难度
-   - 题目描述（`content`，HTML 格式，可适当简化展示）
+   - 题目描述（`content`，HTML 格式，转化为纯文本后完整展示，包括所有 Example 和 Constraints，不可截断）
+   - **题目描述必须翻译成中文展示**
    - Python3 代码模板（`code_snippet`）
    - 本地代码文件路径：`app/yly/algo/todo/lc_$1.py`
 4. **检查本地文件**：若 `app/yly/algo/todo/lc_$1.py` 不存在，提示可调用 `make` 命令创建

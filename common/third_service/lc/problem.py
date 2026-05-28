@@ -46,6 +46,7 @@ class LcProblemService:
             ),
             "test_cases": test_cases,
             "content": question_data["content"],
+            "translatedContent": question_data.get("translatedContent", ""),
         }
         return LcCache.save(title_slug, cache_data)
 
