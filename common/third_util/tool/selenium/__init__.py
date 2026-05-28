@@ -2,12 +2,13 @@ from typing import Union, Optional, Dict, List, Callable, Any
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
-from .driver import SeleniumDriver
+from .driver import SeleniumDriver, Request
 from .element import SeleniumElement
 from .page import SeleniumPage, SeleniumWindow
 from .script import SeleniumScript
 from .command import SeleniumCommand
 from .config import SeleniumConfig
+from .browser_user import BrowerUser
 
 
 class SeleniumUtil(SeleniumDriver):
@@ -29,7 +30,7 @@ class SeleniumUtil(SeleniumDriver):
     def load(self) -> "SeleniumUtil":
         super().load()
         self._element = SeleniumElement(self.driver, self.wait)
-        self._page = SeleniumPage(self.driver, self.wait)
+        self._page = SeleniumPage(self, self.wait)
         self._window = SeleniumWindow(self.driver, self.wait)
         self._script = SeleniumScript(self.driver)
         self._command = SeleniumCommand(

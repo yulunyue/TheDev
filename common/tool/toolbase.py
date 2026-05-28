@@ -28,12 +28,10 @@ class ToolBase:
         pass
 
     def cli(self, name):
-        fi, fo = self.get_temp_file(f"{name}_inp.txt"), self.get_temp_file(
-            f"{name}_out.txt"
-        )
+        fi = self.get_temp_file(f"{name}_inp.txt")
+        fo = self.get_temp_file(f"{name}_out.txt")
         logger.map(fi=fi, fo=fo)
         fi.write_if_not_exists("")
-
         while True:
             time.sleep(0.5)
             flag, data = fi.read_fast_file()

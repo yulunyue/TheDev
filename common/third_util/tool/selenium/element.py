@@ -57,5 +57,6 @@ class SeleniumElement:
         if parents is None:
             parents = [e]
         for v in self.get_children(e):
-            call(v, paths=parents + [v])
-            self.dfs(v, parents + [v])
+            if callable(call):
+                call(v, paths=parents + [v])
+            self.dfs(v, call, parents + [v])

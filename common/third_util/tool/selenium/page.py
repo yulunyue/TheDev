@@ -7,8 +7,9 @@ from common.util.export import logger, time, url_parse
 class SeleniumPage:
     """页面导航和等待操作"""
 
-    def __init__(self, driver, wait: WebDriverWait):
-        self.driver = driver
+    def __init__(self, selenium_driver, wait: WebDriverWait):
+        self.selenium_driver = selenium_driver
+        self.driver = selenium_driver.driver
         self.wait = wait
         self.wait_result: Any = None
 
@@ -46,6 +47,7 @@ class SeleniumPage:
     ) -> Any:
         """
         轮询等待直到 func 返回非 None 值。
+        同时处理 URL 变化和请求拦截回调。
 
         Args:
             func: 轮询函数，返回非 None 时结束
@@ -57,8 +59,19 @@ class SeleniumPage:
         """
         self.wait_result = None
         elapsed = 0.0
+
         while elapsed < timeout and self.wait_result is None:
             try:
+                new_url, _, _ = url_parse(self.driver.current_url)
+                if self.selenium_driver.last_url != new_url:
+                    self.selenium_driver.on_url_change(self.selenium_driver.last_url, new_url)
+                    self.selenium_driver.last_url = new_url
+
+                requests = self.driver.requests
+                while self.selenium_driver.request_offset_size < len(requests):
+                    self.selenium_driver.on_new_request(requests[self.selenium_driver.request_offset_size])
+                    self.selenium_driver.request_offset_size += 1
+
                 if func is not None:
                     self.wait_result = func()
             except Exception as e:

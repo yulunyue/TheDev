@@ -5,7 +5,7 @@ from typing import Optional
 import httpx
 from .llm_config import LlmConfig
 from common.tool.export import ProcessLock, System
-from common.util.export import logger, Node
+from common.util.export import logger, Node, Dict
 import re
 import sys
 import time
@@ -20,9 +20,14 @@ class OpencodeClient:
         self.provider_id = ""
         self._client: Opencode = None
 
+    instacnce: Dict[str, "OpencodeClient"] = dict()
+
     @classmethod
     def new(cls, cwd, base_url):
-        return cls(cwd, base_url)
+        if cwd in cls.instacnce:
+            return cls.instacnce[cwd]
+        cls.instacnce[cwd] = cls(cwd, base_url)
+        return cls.instacnce[cwd]
 
     @classmethod
     def load(cls, config_name):

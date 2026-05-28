@@ -5,17 +5,25 @@ from common.third_util.io.api import Api
 CHROME_DATA_DIR = "data/chrome"
 USER_DATA_DIR = "data/chrome/user-data"
 
-CHROME_DRIVER_PATH = "/thedev/data/"
+WIN_CHROME_DRIVER_PATH = "D:/thedev/data/chrome_driver/"
+WIN_CHROME_BIN_PATH = "D:/thedev/data/chrome_bin/"
+LINUX_CHROME_DRIVER_PATH = "/thedev/data/"
+LINUX_CHROME_BIN_PATH = "/thedev/data/"
+
 CHROME_DRIVER_URI = "https://storage.googleapis.com/chrome-for-testing-public/150.0.7842.0/linux64/chromedriver-linux64.zip"
-CHROME_BIN_PATH = "/thedev/data/"
 CHROME_BIN_URI = "https://storage.googleapis.com/chrome-for-testing-public/150.0.7842.0/linux64/chrome-linux64.zip"
 
 
 class SeleniumConfig:
-    chrome_driver_path = CHROME_DRIVER_PATH
     chrome_driver_uri = CHROME_DRIVER_URI
-    chrome_bin_path = CHROME_BIN_PATH
     chrome_bin_uri = CHROME_BIN_URI
+
+    @staticmethod
+    def _get_base_paths() -> tuple:
+        if sys.platform.startswith("win"):
+            return WIN_CHROME_DRIVER_PATH, WIN_CHROME_BIN_PATH
+        else:
+            return LINUX_CHROME_DRIVER_PATH, LINUX_CHROME_BIN_PATH
 
     @staticmethod
     def get_platform() -> tuple:
@@ -30,17 +38,19 @@ class SeleniumConfig:
     @staticmethod
     def ensure_platform_url(uri: str, platform_name: str) -> str:
         parts = uri.split("/")
+        platform_suffixes = ["-win64", "-linux64", "-mac-arm64", "-mac-x64"]
         for i, p in enumerate(parts):
-            if p.endswith("-win64"):
-                parts[i] = p.replace("-win64", f"-{platform_name}")
-            elif p.endswith("-mac-arm64") or p.endswith("-linux64"):
-                pass
+            for suffix in platform_suffixes:
+                if suffix in p:
+                    parts[i] = p.replace(suffix, f"-{platform_name}")
+                    break
         return "/".join(parts)
 
     @staticmethod
     def ensure_chrome() -> tuple:
-        chrome_exe = File(SeleniumConfig.chrome_bin_path)
-        chrome_driver = File(SeleniumConfig.chrome_driver_path)
+        chrome_driver_path, chrome_bin_path = SeleniumConfig._get_base_paths()
+        chrome_exe = File(chrome_bin_path)
+        chrome_driver = File(chrome_driver_path)
         platform_name, chrome_name, driver_name = SeleniumConfig.get_platform()
 
         if not chrome_exe.exists():

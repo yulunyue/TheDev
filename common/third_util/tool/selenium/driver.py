@@ -1,6 +1,7 @@
 from typing import Union, Optional, Dict
-from selenium import webdriver
+from seleniumwire import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
+from seleniumwire.request import Request
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
@@ -21,7 +22,7 @@ class SeleniumDriver:
 
     def __init__(
         self,
-        mode: Union[int, str] = 9527,
+        mode: Union[int, str] = "headless",
         default_timeout: int = 6,
         bypass_proxy: bool = False,
     ):
@@ -31,6 +32,8 @@ class SeleniumDriver:
         self.driver: Optional[WebDriver] = None
         self.wait: Optional[WebDriverWait] = None
         self.options: Optional[Options] = None
+        self.last_url: Optional[str] = None
+        self.request_offset_size: int = 0
 
     def load(self) -> "SeleniumDriver":
         chrome_exe_file, chrome_driver_file = SeleniumConfig.ensure_chrome()
@@ -125,3 +128,11 @@ class SeleniumDriver:
         if name is not None:
             return ret.get(name)
         return ret
+
+    def on_url_change(self, from_url: str, to_url: str) -> None:
+        """URL 变化钩子，子类覆盖实现"""
+        pass
+
+    def on_new_request(self, request: Request) -> None:
+        """请求拦截钩子，子类覆盖实现"""
+        pass
