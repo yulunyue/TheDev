@@ -1,6 +1,7 @@
 from .task.manage import Task, TaskConfig, TASK_MANAGE
 from .os_util import OsUtil
 from .base_class.storage.file_config import FileConfig
+from .base_class.storage.sqlite_db_store import SqliteDbStore
 from .base_class.baseconfig import ConfigBase
 from .base_class.base_model import (
     StrModel,
