@@ -4,12 +4,11 @@ from typing import Any, Optional, Dict, Union
 class SeleniumCommand:
     """命令模式封装，支持链式调用"""
 
-    def __init__(self, driver, page, element, script, window):
+    def __init__(self, driver, page, element, script):
         self.driver = driver
         self.page = page
         self.element = element
         self.script = script
-        self.window = window
 
     def do_cmd(self, method: str, *args) -> Any:
         """
@@ -31,8 +30,8 @@ class SeleniumCommand:
                 return self.element.get_by_xpath(args[0]).click()
             elif method == "open":
                 self.element.get_by_xpath(args[0]).click()
-                self.window.wait_for_window()
-                self.window.switch_to_window()
+                self.page.wait_for_window()
+                self.page.switch_to_window()
                 return self.driver.current_url
             elif method == "reload":
                 return self.page.reload()

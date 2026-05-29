@@ -1,4 +1,5 @@
-from browser_use import Agent, Browser, ChatBrowserUse
+from browser_use import Agent, Browser
+from .browser_use_llm import BrowserUseLlm
 import asyncio
 
 
@@ -7,16 +8,11 @@ class BrowerUser:
         self.browser = Browser()
 
     async def main(self):
-        # 1. 启动浏览器
-
-        # 2. 创建一个 Agent，告诉它任务目标
         agent = Agent(
-            task="Find the number of stars of the browser-use repo",  # 任务：找到 browser-use 仓库的 star 数量
-            llm=ChatBrowserUse(),  # 使用官方优化过的 LLM
+            task="Find the number of stars of the browser-use repo",
+            llm=BrowserUseLlm("codeagent"),
             browser=self.browser,
         )
-
-        # 3. 运行 Agent，看它表演
         await agent.run()
 
     def start(self):

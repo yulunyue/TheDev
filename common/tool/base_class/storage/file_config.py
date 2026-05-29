@@ -30,13 +30,18 @@ class FileConfig(ConfigBase):
             cls._config = dict()
         if not has_update:
             return
-        cls.instance_map = dict()
-        items = list(cls._config.items())
-        for k, v in items:
+        if not hasattr(cls, "instance_map") or cls.instance_map is None:
+            cls.instance_map = dict()
+        existing_keys = set(cls.instance_map.keys())
+        new_keys = set(cls._config.keys())
+        for k in existing_keys - new_keys:
+            cls.instance_map.pop(k, None)
+        for k, v in cls._config.items():
             try:
-                if k not in cls._config:
-                    cls._config[k] = dict()
-                cls.insert(k, **v)
+                if k not in cls.instance_map:
+                    cls.insert(k, **v)
+                else:
+                    cls.instance_map[k].update(**v)
             except Exception as e:
                 logger.error(e, stack_info=True)
 

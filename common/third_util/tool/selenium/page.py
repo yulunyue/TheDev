@@ -1,17 +1,14 @@
-from typing import Optional, List, Callable, Any
+from typing import Optional, List
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from common.util.export import logger, time, url_parse
 
 
 class SeleniumPage:
-    """页面导航和等待操作"""
+    """页面导航和窗口管理操作"""
 
-    def __init__(self, selenium_driver, wait: WebDriverWait):
-        self.selenium_driver = selenium_driver
-        self.driver = selenium_driver.driver
+    def __init__(self, driver, wait: WebDriverWait):
+        self.driver = driver
         self.wait = wait
-        self.wait_result: Any = None
 
     def get(self, url: str) -> "SeleniumPage":
         """导航到指定 URL，如果相同则刷新"""
@@ -38,55 +35,6 @@ class SeleniumPage:
         """等待条件满足"""
         wait = self.wait if timeout is None else WebDriverWait(self.driver, timeout)
         wait.until(condition)
-
-    def wait_until(
-        self,
-        func: Optional[Callable[[], Any]] = None,
-        timeout: int = 120,
-        wait_time: float = 0.2,
-    ) -> Any:
-        """
-        轮询等待直到 func 返回非 None 值。
-        同时处理 URL 变化和请求拦截回调。
-
-        Args:
-            func: 轮询函数，返回非 None 时结束
-            timeout: 超时时间（秒）
-            wait_time: 轮询间隔（秒）
-
-        Returns:
-            func 的返回值，超时返回 None
-        """
-        self.wait_result = None
-        elapsed = 0.0
-
-        while elapsed < timeout and self.wait_result is None:
-            try:
-                new_url, _, _ = url_parse(self.driver.current_url)
-                if self.selenium_driver.last_url != new_url:
-                    self.selenium_driver.on_url_change(self.selenium_driver.last_url, new_url)
-                    self.selenium_driver.last_url = new_url
-
-                requests = self.driver.requests
-                while self.selenium_driver.request_offset_size < len(requests):
-                    self.selenium_driver.on_new_request(requests[self.selenium_driver.request_offset_size])
-                    self.selenium_driver.request_offset_size += 1
-
-                if func is not None:
-                    self.wait_result = func()
-            except Exception as e:
-                logger.debug(f"wait_until error: {e}")
-            time.sleep(wait_time)
-            elapsed += wait_time
-        return self.wait_result
-
-
-class SeleniumWindow:
-    """窗口管理操作"""
-
-    def __init__(self, driver, wait: WebDriverWait):
-        self.driver = driver
-        self.wait = wait
 
     def wait_for_window(self) -> Optional[str]:
         """

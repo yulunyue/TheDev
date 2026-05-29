@@ -2,13 +2,15 @@ from typing import Union, Optional, Dict, List, Callable, Any
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
+from common.util.export import logger, time, url_parse
 from .driver import SeleniumDriver, Request
 from .element import SeleniumElement
-from .page import SeleniumPage, SeleniumWindow
+from .page import SeleniumPage
 from .script import SeleniumScript
 from .command import SeleniumCommand
 from .config import SeleniumConfig
 from .browser_user import BrowerUser
+from .browser_use_llm import BrowserUseLlm
 
 
 class SeleniumUtil(SeleniumDriver):
@@ -23,18 +25,17 @@ class SeleniumUtil(SeleniumDriver):
 
     _element: SeleniumElement = None
     _page: SeleniumPage = None
-    _window: SeleniumWindow = None
     _script: SeleniumScript = None
     _command: SeleniumCommand = None
+    wait_result: Any = None
 
     def load(self) -> "SeleniumUtil":
         super().load()
         self._element = SeleniumElement(self.driver, self.wait)
-        self._page = SeleniumPage(self, self.wait)
-        self._window = SeleniumWindow(self.driver, self.wait)
+        self._page = SeleniumPage(self.driver, self.wait)
         self._script = SeleniumScript(self.driver)
         self._command = SeleniumCommand(
-            self.driver, self._page, self._element, self._script, self._window
+            self.driver, self._page, self._element, self._script
         )
         return self
 
@@ -45,10 +46,6 @@ class SeleniumUtil(SeleniumDriver):
     @property
     def page(self) -> SeleniumPage:
         return self._page
-
-    @property
-    def window(self) -> SeleniumWindow:
-        return self._window
 
     @property
     def script(self) -> SeleniumScript:
@@ -109,20 +106,40 @@ class SeleniumUtil(SeleniumDriver):
 
     def wait_until(
         self,
-        func: Optional[Callable[[], Any]] = None,
         timeout: int = 120,
         wait_time: float = 0.2,
     ) -> Any:
-        return self._page.wait_until(func, timeout, wait_time)
+        self.wait_result = None
+        elapsed = 0.0
+        while elapsed < timeout and self.wait_result is None:
+            try:
+                new_url, _, _ = url_parse(self.driver.current_url)
+                if self.last_url != new_url:
+                    self.on_url_change(self.last_url, new_url)
+                    self.last_url = new_url
+                requests = self.driver.requests
+                while self.request_offset_size < len(requests):
+                    self.on_new_request(requests[self.request_offset_size])
+                    self.request_offset_size += 1
+            except Exception as e:
+                logger.error(f"wait_until error: {e}", stack_info=True)
+                self.quit()
+                return
+            time.sleep(wait_time)
+            elapsed += wait_time
+        return self.wait_result
 
     def wait_for_window(self) -> Optional[str]:
-        return self._window.wait_for_window()
+        return self._page.wait_for_window()
 
     def switch_to_window(self, idx: int = -1) -> Optional[str]:
-        return self._window.switch_to_window(idx)
+        return self._page.switch_to_window(idx)
 
     def close_current_window(self) -> None:
-        self._window.close_current_window()
+        self._page.close_current_window()
+
+    def get_window_handles(self) -> List[str]:
+        return self._page.get_window_handles()
 
     def get_cookies(
         self, name: Optional[str] = None
@@ -158,9 +175,10 @@ __all__ = [
     "SeleniumConfig",
     "SeleniumElement",
     "SeleniumPage",
-    "SeleniumWindow",
     "SeleniumScript",
     "SeleniumCommand",
+    "BrowerUser",
+    "BrowserUseLlm",
     "By",
     "WebElement",
 ]

@@ -9,6 +9,9 @@ from common.model.export import LcProblem
 from common.util.export import json, log, time, logger, LOG, sys, Module, File
 import re
 import html
+import io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 
 def parse_case(case: str):

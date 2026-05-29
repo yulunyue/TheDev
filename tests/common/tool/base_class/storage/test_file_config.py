@@ -15,6 +15,7 @@ class TestFileConfigModel(FileConfig):
 
 class TestFileConfig:
 
+    @classmethod
     def setup_class(cls):
         cls.temp_dir = tempfile.mkdtemp()
         cls.test_file = os.path.join(cls.temp_dir, "test_file_config.json")
@@ -25,6 +26,7 @@ class TestFileConfig:
             os.remove(self.test_file)
         TestFileConfigModel.set_resource(self.test_file)
 
+    @classmethod
     def teardown_class(cls):
         if os.path.exists(cls.test_file):
             os.remove(cls.test_file)
@@ -184,3 +186,13 @@ class TestFileConfig:
         TestFileConfigModel.set_resource(self.test_file)
         assert hasattr(TestFileConfigModel, "fp")
         assert isinstance(TestFileConfigModel.fp, File)
+
+    def test_delete(self):
+        model = TestFileConfigModel.insert("delete_test", name="ToDelete")
+        model.save()
+        assert "delete_test" in TestFileConfigModel.instance_map
+        model.delete()
+        assert "delete_test" not in TestFileConfigModel.instance_map
+        TestFileConfigModel.save_to_local()
+        content = File(self.test_file).read_file()
+        assert "delete_test" not in content

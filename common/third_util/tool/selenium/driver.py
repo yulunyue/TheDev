@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from common.util.export import File, logger, time
 from common.tool.export import System, ProcessLock
 from .config import SeleniumConfig, USER_DATA_DIR
+import logging
 
 
 class SeleniumDriver:
@@ -99,8 +100,15 @@ class SeleniumDriver:
                 .make_dir_if_not_exist(True)
             )
             self.options.add_argument(f"--user-data-dir={user_data.get_abs_path()}")
-
-        self.driver = webdriver.Chrome(options=self.options, service=service)
+        logging.getLogger("seleniumwire").setLevel(logging.WARNING)
+        self.driver = webdriver.Chrome(
+            options=self.options,
+            service=service,
+            seleniumwire_options=dict(
+                log_level="ERROR",
+                disable_logging=True,
+            ),
+        )
         self.wait = WebDriverWait(self.driver, self.default_timeout)
 
     def quit(self) -> None:

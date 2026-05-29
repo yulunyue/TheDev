@@ -29,7 +29,16 @@ class TaskBuilder:
         os.makedirs(tmp_root.path, exist_ok=True)
         
         self._copy_task_files(src_root, tmp_root)
-        self._patch_dockerfile(tmp_root.child(Fp.Dockerfile), proxy_host)
+        
+        dockerfile = tmp_root.child(Fp.Dockerfile)
+        content = dockerfile.read_file(encoding="utf-8")
+        
+        if "mirrors.tools.huawei.com/pypi/simple" in content:
+            logger.info("Dockerfile already has Huawei PyPI mirror, skipping proxy patch")
+        else:
+            self._patch_dockerfile(dockerfile, proxy_host)
+        
+        self._patch_setup_env(tmp_root.child(Fp.setup_env_sh), proxy_host)
         
         image_name = name.split("/")[-1].replace("__", "-")
         self._docker_build(tmp_root, image_name)
@@ -73,6 +82,12 @@ RUN sed -i 's@archive.ubuntu.com@mirrors.tools.huawei.com@g' /etc/apt/sources.li
 RUN echo "http_proxy = {proxy_host}" >> ~/.wgetrc && \
     echo "https_proxy = {proxy_host}" >> ~/.wgetrc
 
+# pip 代理配置（创建 pip.conf）
+RUN mkdir -p ~/.config/pip && \
+    echo "[global]" > ~/.config/pip/pip.conf && \
+    echo "proxy = {proxy_host}" >> ~/.config/pip/pip.conf && \
+    echo "timeout = 120" >> ~/.config/pip/pip.conf
+
 '''
         
         lines = content.split('\n')
@@ -86,6 +101,39 @@ RUN echo "http_proxy = {proxy_host}" >> ~/.wgetrc && \
                 inserted = True
         
         dockerfile.write_file('\n'.join(new_lines), encoding="utf-8")
+
+    def _patch_setup_env(self, setup_env: File, proxy_host: str = None):
+        if proxy_host is None:
+            proxy_host = "http://proxy.huawei.com:8080"
+        
+        if not setup_env.exists():
+            return
+        
+        content = setup_env.read_file(encoding="utf-8")
+        
+        lines = content.split('\n')
+        new_lines = []
+        in_header = True
+        
+        for line in lines:
+            if in_header and line.strip() and not line.startswith('#'):
+                new_lines.append(f'export HTTP_PROXY="{proxy_host}"')
+                new_lines.append(f'export HTTPS_PROXY="{proxy_host}"')
+                new_lines.append(f'export http_proxy="{proxy_host}"')
+                new_lines.append(f'export https_proxy="{proxy_host}"')
+                new_lines.append(f'export GIT_SSL_NO_VERIFY=1')
+                in_header = False
+            new_lines.append(line)
+        
+        content = '\n'.join(new_lines)
+        
+        if "pip install" in content and "--proxy" not in content:
+            content = content.replace(
+                "pip install",
+                f"pip install --proxy {proxy_host} --timeout 120"
+            )
+        
+        setup_env.write_file(content, encoding="utf-8")
 
     def _docker_build(self, tmp_root: File, image_name: str):
         logger.info(f"Running: docker build -t {image_name}")
