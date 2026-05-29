@@ -188,3 +188,4 @@ output.txt
 app/zb/task/
 ~
 app/zb/mock
+app/zb/repo
