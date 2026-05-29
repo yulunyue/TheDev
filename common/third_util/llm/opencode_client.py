@@ -3,12 +3,13 @@ from opencode_ai.types.session import Session
 from opencode_ai.types.text_part_input_param import TextPartInputParam
 from typing import Optional
 import httpx
+import time
+
 from .llm_config import LlmConfig
+from .opencode_db import OpencodeDb
 from common.tool.export import ProcessLock, System
 from common.util.export import logger, Node, Dict
 import re
-import sys
-import time
 
 
 class OpencodeClient:
@@ -51,41 +52,52 @@ class OpencodeClient:
 
     def execute_task(self, session_id: str, prompt: str) -> Node:
         text_part = TextPartInputParam(type="text", text=prompt)
-        self.client.session.chat(
-            id=session_id,
-            model_id=self.model_id,
-            provider_id=self.provider_id,
-            parts=[text_part],
-        )
+        try:
+            self.client.session.chat(
+                id=session_id,
+                model_id=self.model_id,
+                provider_id=self.provider_id,
+                parts=[text_part],
+            )
+        except Exception as e:
+            logger.warning(f"chat 异常, session_id={session_id}: {e}")
+        return Node(ok=True, data={"session_id": session_id})
 
-        messages = self.client.session.messages(id=session_id)
-        text = ""
-        tool_parts = []
-
-        for msg in messages:
-            if msg.info.role != "assistant":
-                continue
-            for part in msg.parts:
-                part_dict = part.model_dump()
-                part_type = part_dict.get("type")
-                if part_type == "text":
-                    text = part_dict.get("text", "")
-                elif part_type == "tool":
-                    tool_parts.append(part_dict)
-
+    def wait_result(self, session_id: str, timeout=900) -> Node:
+        db = OpencodeDb()
+        messages = db.wait_for_data(session_id, timeout=timeout)
+        if not messages:
+            return Node(
+                ok=False,
+                title="等待 LLM 结果超时",
+                data={"session_id": session_id},
+            )
+        text, tool_parts = self._parse_messages(messages)
         return Node(
             ok=True,
             value=text,
-            data={
-                "tool_parts": tool_parts,
-                "messages": [m.model_dump() for m in messages],
-            },
+            data={"session_id": session_id, "tool_parts": tool_parts},
         )
 
     def do_prompt(self, prompt) -> Node:
         s = self.create_session()
         ret = self.execute_task(s.id, prompt)
         return ret
+
+    @staticmethod
+    def _parse_messages(messages):
+        text = ""
+        tool_parts = []
+        for msg in messages:
+            if msg["info"]["role"] != "assistant":
+                continue
+            for part in msg["parts"]:
+                part_type = part.get("type")
+                if part_type == "text":
+                    text = part.get("text", "")
+                elif part_type == "tool":
+                    tool_parts.append(part)
+        return text, tool_parts
 
     def _get_port_from_config(self):
         m = re.search(r":(\d+)", self.base_url)
@@ -94,13 +106,25 @@ class OpencodeClient:
     def get_pid(self):
         return System.get_pid_by_port(self._get_port_from_config())
 
-    def start_server(self):
+    def start_server(self, wait_timeout=30):
         pid = self.get_pid()
         if pid:
             return self
-        cmd = ["opencode", "serve", "--port", str(self._get_port_from_config())]
-        start_pid = System.popen(*cmd, cwd=self.cwd)
-        logger.info(f"START_PID {cmd} {start_pid}")
+        port = System.find_free_port()
+        cmd = ["opencode", "serve", "--port", str(port)]
+        System.popen(*cmd, cwd=self.cwd or None)
+        self.base_url = f"http://127.0.0.1:{port}"
+        self._client = None
+        import socket
+        deadline = time.time() + wait_timeout
+        while time.time() < deadline:
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=1):
+                    logger.info(f"START_PID opencode serve --port {port}")
+                    return self
+            except (ConnectionRefusedError, OSError):
+                time.sleep(0.5)
+        logger.warning(f"opencode serve 启动超时 port={port}")
         return self
 
     def stop(self):

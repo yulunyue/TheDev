@@ -49,8 +49,9 @@ class TaskBuilder:
         )
         result = o.do_prompt(promot)
         o.stop()
-        opencode_json = self.tmp_root.child("opencode.json")
-        logger.info(opencode_json.write_file(result.to_json()))
+        session_id = result.data["session_id"]
+        self.tmp_root.child(".opencode_session_id").write_file(session_id)
+        logger.info(f"session_id={session_id}")
         return result
 
     def build(self):

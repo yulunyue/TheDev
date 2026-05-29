@@ -92,11 +92,21 @@ class System:
         return ""
 
     @classmethod
+    def find_free_port(cls, host="127.0.0.1") -> int:
+        import socket
+
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((host, 0))
+            return s.getsockname()[1]
+
+    @classmethod
     def popen(
         cls, *cmd, cwd=None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, **kw
     ):
         if os.name == "nt":
-            kw["creationflags"] = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+            kw["creationflags"] = (
+                subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+            )
             kw["shell"] = True
         try:
             return subprocess.Popen(

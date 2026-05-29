@@ -2,8 +2,14 @@ import json
 import re
 
 from common.util.export import File, logger
+from common.third_util.llm.opencode_db import OpencodeDb
 
-from .constants import Fp, OPENCODE_JSON_FILE_NAME, CODING_AGENT_SYSTEM_PROMPT_FILE, TOOLS_SCHEMA
+from .constants import (
+    Fp,
+    OPENCODE_JSON_FILE_NAME,
+    CODING_AGENT_SYSTEM_PROMPT_FILE,
+    TOOLS_SCHEMA,
+)
 
 
 class TrajectoryBuilder:
@@ -122,9 +128,7 @@ class TrajectoryBuilder:
         tool_state = part.get("state", {})
         tool_input = tool_state.get("input", {})
         tool_output = tool_state.get("output", "")
-        tool_ts = (
-            int(part["state"]["time"]["end"]) if "time" in tool_state else ts
-        )
+        tool_ts = int(part["state"]["time"]["end"]) if "time" in tool_state else ts
 
         tool_use_id = tool_id.replace("tool-", "tooluse_")
         return {
@@ -167,10 +171,25 @@ class TrajectoryBuilder:
         matches = re.findall(pattern, diff_content, re.MULTILINE)
         return matches
 
+    def _load_opencode_data(self, root):
+        session_id_file = root.child(".opencode_session_id")
+        if session_id_file.exists():
+            session_id = session_id_file.read_file().strip()
+            if session_id:
+                db = OpencodeDb()
+                messages = db.get_messages(session_id)
+                if messages:
+                    logger.info(f"从 DB 读取 session_id={session_id}")
+                    return {"data": {"messages": messages}}
+        opencode_json = root.child(OPENCODE_JSON_FILE_NAME)
+        if opencode_json.exists():
+            logger.info(f"从 JSON 文件读取: {opencode_json.path}")
+            return opencode_json.read_file()
+        return None
+
     def build_from_root(self, root):
         instance_id = root.name
         instance_json = root.child(f"{instance_id}.json")
-        opencode_json = root.child(OPENCODE_JSON_FILE_NAME)
         trajectory_json = root.child(Fp.trajectory_json)
         final_diff = root.child("final.diff")
 
@@ -178,8 +197,9 @@ class TrajectoryBuilder:
             logger.info(f"trajectory.json already exists: {trajectory_json.path}")
             return None
 
-        if not opencode_json.exists():
-            logger.warning(f"opencode.json not found: {opencode_json.path}")
+        opencode_data = self._load_opencode_data(root)
+        if not opencode_data:
+            logger.warning(f"opencode data not found at {root.path}")
             return None
 
         if not instance_json.exists():
@@ -191,11 +211,8 @@ class TrajectoryBuilder:
             return None
 
         task_data = instance_json.read_file()
-        opencode_data = opencode_json.read_file()
 
-        trajectory = self.build(
-            opencode_data, task_data, final_diff.read_file(), root
-        )
+        trajectory = self.build(opencode_data, task_data, final_diff.read_file(), root)
 
         trajectory_json.write_file(trajectory)
         logger.info(f"Generated trajectory.json: {trajectory_json.path}")
