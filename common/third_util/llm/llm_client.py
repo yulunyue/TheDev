@@ -74,7 +74,7 @@ class LlmClient:
                 chunk = json.loads(data)
                 if chunk.get("choices"):
                     delta = chunk["choices"][0].get("delta", {})
-                    content += delta.get("content", "")
+                    content += delta.get("content") or ""
         return {"choices": [{"message": {"content": content}}]}
 
     def get_models(self) -> List[Dict[str, Any]]:
