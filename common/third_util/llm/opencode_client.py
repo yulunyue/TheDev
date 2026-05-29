@@ -91,13 +91,21 @@ class OpencodeClient:
         m = re.search(r":(\d+)", self.base_url)
         return int(m.group(1))
 
-    def start_server(self):
-        port = self._get_port_from_config()
+    def get_pid(self):
+        return System.get_pid_by_port(self._get_port_from_config())
 
-        if System.get_pid_by_port(self._get_port_from_config()):
+    def start_server(self):
+        pid = self.get_pid()
+        if pid:
             return self
-        cmd = ["opencode", "serve", "--port", str(port)]
+        cmd = ["opencode", "serve", "--port", str(self._get_port_from_config())]
         start_pid = System.popen(*cmd, cwd=self.cwd)
-        time.sleep(1)
         logger.info(f"START_PID {cmd} {start_pid}")
+        return self
+
+    def stop(self):
+        pid = self.get_pid()
+        if pid:
+            System.kill(pid)
+            logger.info(f"kill {self.cwd} {pid} {self._get_port_from_config()}")
         return self

@@ -11,12 +11,11 @@ class ZbTool(ToolBase):
         self.packager = TaskPackager()
         self.trajectory_builder = TrajectoryBuilder()
 
-    def build(self, name):
-        root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()
-        self.builder.build(root)
+    def llm(self, name):
+        self.builder.set_env(name).llm()
 
-    def build_docker(self, name, proxy_host=None):
-        self.builder.build_docker(name, proxy_host)
+    def build(self, name):
+        self.builder.set_env(name).build()
 
     def package(self, name):
         root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()

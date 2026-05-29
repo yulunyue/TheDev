@@ -6,7 +6,10 @@ MODEL_ROOT = File("app/zb/model")
 
 CODING_AGENT_SYSTEM_PROMPT_FILE = MODEL_ROOT.child("coding_agent_system_prompt.txt")
 
-PROMOT_TEMPLATE = """通过base_commit可以在wsl的docker构建一个有issue_url问题的环境，帮我修复下呢，生成final.diff文件，仅仅是核心代码，不能从code.patch生成，需要你自己思考，然后再docker里帮我用run_verification.py 验证，其中不用code.patch用final.diff"""
+
+def get_promot(base_commit, issue_url, test_batch, diff_path):
+    return f"将代码仓库切换到{base_commit} 并分析{issue_url}的问题，根据test.path:\n{test_batch}\n的错误用例，修成这个问题，并将关键代码输出到{diff_path}, 注意，有任何错误你不应该自己处理，退出让我分析处理"
+
 
 TOOLS_SCHEMA = [
     {"type": "function", "function": {"name": "bash"}},
@@ -36,3 +39,19 @@ class Fp:
     setup_repo_sh = "setup_repo.sh"
     test_patch = "test.patch"
     final_diff = "final.diff"
+
+    @classmethod
+    def docker_build(self):
+        return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, Fp.entrypoint_sh]
+
+    @classmethod
+    def pre_check(self):
+        return [Fp.test_patch, Fp.code_patch, Fp.run_verification_py]
+
+    @classmethod
+    def llm_check(self):
+        return []
+
+    @classmethod
+    def package(cls):
+        pass
