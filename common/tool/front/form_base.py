@@ -1,10 +1,10 @@
-from common.tool.export import FrontTable, Form, ConfigBase, FileConfig
+from common.tool.export import FrontTable, Form, ConfigBase
 
 from common.util.export import Node, C, ApiBase, Type
 
 
 class FormBase(ApiBase):
-    model: Type[FileConfig]
+    model: Type[ConfigBase]
 
     def get(self, key, **kw):
         return Node(value=self.__class__.model.get(key))

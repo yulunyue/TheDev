@@ -1,5 +1,8 @@
+import os
+import json
+
 from common.tool.export import (
-    FileConfig,
+    SqliteDbStore,
     StrModel,
     SearchModel,
     NumberModel,
@@ -9,10 +12,10 @@ from common.tool.export import (
     FormRow,
 )
 
-from common.util.export import Node, C, Type, List
+from common.util.export import Node, C, Type, List, File, logger
 
 
-class TodoModel(FileConfig):
+class TodoModel(SqliteDbStore):
     INITIAL_MONEY = 342700
 
     title = StrModel().not_null().set_title("项目")
@@ -66,5 +69,27 @@ class TodoModel(FileConfig):
         score, money = cls.calc_score()
         return int(score), int(money), todos
 
+    @classmethod
+    def init_resource(cls):
+        ret = super().init_resource()
+        cls._migrate_from_json()
+        return ret
 
-TodoModel.set_resource("config/setting/todo.json")
+    @classmethod
+    def _migrate_from_json(cls):
+        json_path = "config/setting/todo.json"
+        if not os.path.exists(json_path):
+            return
+        logger.info(f"migrating todo data from {json_path} to SQLite")
+        fp = File(json_path)
+        has_update, data = fp.read_fast_file()
+        if not has_update or not data:
+            return
+        for idx, values in data.items():
+            if not cls.exist(idx):
+                cls.insert(idx, **values)
+        os.rename(json_path, json_path + ".migrated")
+        logger.info(f"migrated {len(data)} todo items")
+
+
+TodoModel.set_resource("data/db/todo.db")

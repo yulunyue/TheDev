@@ -30,6 +30,14 @@ class LlmClient:
     def model(self):
         return self.config.model.get_value()
 
+    @property
+    def headers(self) -> Dict[str, str]:
+        headers = {}
+        api_key = self.config.api_key.get_value()
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+        return headers
+
     def chat(
         self, messages: List[Dict[str, str]], stream=True, **kwargs
     ) -> Dict[str, Any]:
@@ -40,7 +48,7 @@ class LlmClient:
             **kwargs,
         }
         url = f"{self.base_url}/chat/completions"
-        resp = self.http_client.post(url, json=payload)
+        resp = self.http_client.post(url, json=payload, headers=self.headers)
 
         if resp.status_code != 200:
             error_data = (
@@ -71,7 +79,7 @@ class LlmClient:
 
     def get_models(self) -> List[Dict[str, Any]]:
         url = f"{self.base_url}/models"
-        resp = self.http_client.get(url)
+        resp = self.http_client.get(url, headers=self.headers)
         if resp.status_code != 200:
             raise Exception(f"API Error {resp.status_code}: {resp.text}")
         return resp.json().get("data", [])
