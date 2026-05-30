@@ -11,11 +11,11 @@ class ZbTool(ToolBase):
         self.packager = TaskPackager()
         self.trajectory_builder = TrajectoryBuilder()
 
-def llm(self, name, manual=False):
-    self.builder.set_env(name).llm(manual=manual)
+    def llm_build(self, name, manual=True):
+        self.builder.set_env(name).llm_build(manual=manual)
 
-    def build(self, name):
-        self.builder.set_env(name).build()
+    def docker_build(self, name):
+        self.builder.set_env(name).docker_build()
 
     def pre_check(self, name):
         self.builder.set_env(name).pre_check()

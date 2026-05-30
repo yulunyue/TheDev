@@ -34,7 +34,7 @@ class TaskBuilder:
     def issue_url(self):
         return self.instance_json.get("issue_url")
 
-    def llm(self, manual=False):
+    def llm_build(self, manual=False):
         git = GitUtil(workdir=self.repo_root.path)
         git.git_clean()
         git.git_reset(self.base_commit)
@@ -73,7 +73,7 @@ class TaskBuilder:
         self.src_root.child(Fp.opencode_json).set("session_id", session_id)
         logger.info(f"LLM 完成, session_id={session_id}")
    
-    def build(self):
+    def docker_build(self):
         image_name = self.env
         self._docker_build(self.tmp_root, image_name)
         logger.info(f"Docker build completed: {image_name}")
