@@ -225,18 +225,11 @@ class TaskBuilder:
         return None
 
     def pre_check(self):
-        self._copy_task_files([
-            Fp.code_patch,
-            Fp.run_verification_py,
-            Fp.test_patch,
-        ])
+        self._copy_task_files(Fp.pre_check())
         self.check()
 
     def llm_check(self):
-        self._copy_task_files([
-            Fp.final_diff,
-            Fp.run_verification_py,
-            Fp.test_patch,
-        ])
-        self.tmp_root.child(Fp.run_verification_py).replace()
+        self._copy_task_files(Fp.llm_check())
+        code_patch = self.tmp_root.child(Fp.code_patch)
+        self.tmp_root.child(Fp.final_diff).move_to(code_patch)
         self.check()

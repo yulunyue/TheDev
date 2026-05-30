@@ -91,7 +91,11 @@ class Fp:
 
     @classmethod
     def llm_check(self):
-        return []
+        return [
+            Fp.final_diff,
+            Fp.run_verification_py,
+            Fp.test_patch
+        ]
 
     @classmethod
     def package(cls):
