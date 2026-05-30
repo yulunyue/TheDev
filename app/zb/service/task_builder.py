@@ -70,7 +70,7 @@ class TaskBuilder:
         else:
             logger.warning("git diff 为空，LLM 未修改代码")
         
-        self.src_root.child(Fp.opencode_json).set("session_id", session_id)
+        self.src_root.child(Fp.opencode_json).set("session_id", value=session_id)
         logger.info(f"LLM 完成, session_id={session_id}")
    
     def docker_build(self):
@@ -207,11 +207,9 @@ class TaskBuilder:
         DockerUtil().build(image_name, tmp_root.get_abs_path())
         logger.info(f"Docker build success: {image_name}")
 
-    def check(self, fps):
-        self._copy_task_files(fps)
+    def check(self):
         image_name = self.env
         abs_path = self.tmp_root.get_abs_path()
-
         DockerUtil().run_container(
             image=image_name,
             detach=False,
@@ -227,19 +225,18 @@ class TaskBuilder:
         return None
 
     def pre_check(self):
-        self.check(
-            [
-                Fp.code_patch,
-                Fp.run_verification_py,
-                Fp.test_patch,
-            ]
-        )
+        self._copy_task_files([
+            Fp.code_patch,
+            Fp.run_verification_py,
+            Fp.test_patch,
+        ])
+        self.check()
 
     def llm_check(self):
-        self.check(
-            [
-                Fp.final_diff,
-                Fp.run_verification_py,
-                Fp.test_patch,
-            ]
-        )
+        self._copy_task_files([
+            Fp.final_diff,
+            Fp.run_verification_py,
+            Fp.test_patch,
+        ])
+        self.tmp_root.child(Fp.run_verification_py).replace()
+        self.check()
