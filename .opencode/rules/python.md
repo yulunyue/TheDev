@@ -11,6 +11,25 @@
    - 文件行数 ≤ 300 行，超过需拆分模块
    - 函数行数 ≤ 50 行，超过需拆分子函数
 5. **参数限制**：函数参数 ≤ 5 个，超过需用 `**kwargs` 或配置对象
+6. **`**kwargs` 使用限制**：
+   - 丢失类型安全、隐藏签名、调试困难
+   - **公共 API / 核心逻辑禁止使用**
+   - 内部转发层（装饰器/代理）可适当用
+   - 使用时配合 TypedDict / dataclass 做显式白名单校验
+7. **行长度**：88 字符（配置见 `pyproject.toml`）
+
+## 关键导入
+
+```python
+from common.util.export import (
+    File, logger, get_log, get_dev_log,
+    ApiBase, TestBase, Module,
+    assert_dict, Node, C
+)
+from common.tool.export import (
+    ToolBase, PyUtil, System, FrontTable, GC, ProcessLock
+)
+```
 
 ## 检查命令
 

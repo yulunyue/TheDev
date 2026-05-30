@@ -57,25 +57,7 @@
 
 ## 关键导入
 
-```python
-from common.util.export import (
-    File, logger, get_log, get_dev_log,
-    ApiBase, TestBase, Module,
-    assert_dict, Node, C
-)
-from common.tool.export import (
-    ToolBase, PyUtil, System, FrontTable, GC, ProcessLock
-)
-```
-
-## 两个 export 的分工
-
-| 文件 | 作用域 | 典型导出 |
-|---|---|---|
-| `common/util/export.py` | **util 层内部**（底层工具） | `File`, `logger`, `Node`, `ApiBase`, `C`, `TestBase`, `Module` 等 |
-| `common/tool/export.py` | **tool 层内部**（上层工具） | `GC`, `OsUtil`, `ToolBase`, `System`, `ProcessLock`, `PyUtil`, `FrontTable` 等 |
-
-`util/export.py` 不导出 `tool` 层的类（如 `GC`），反之亦然。需要哪个层的类就从对应的 `export` 导入。
+详见 `.opencode/rules/python.md` → 关键导入
 
 ## 前端规范
 
@@ -115,22 +97,9 @@ from common.tool.export import (
 
 ## 代码规范
 
-### Python 规范（强制）
+### Python 规范
 
-- **必须**使用 Black 格式化：`python -m black <目录>`
-- **必须**一个文件只有一个类
-- **必须**类名与文件名一致
-- **必须**文件行数 ≤ 300 行，超过需拆分模块
-- **必须**函数行数 ≤ 50 行，超过需拆分子函数
-- **必须**函数参数 ≤ 5 个，超过需用 `**kwargs` 或配置对象
-- 行长度 88（配置见 `pyproject.toml`）
-
-### 检查命令
-
-```bash
-python -m black --check <目录>  # 检查格式化
-python -m pytest tests/         # 运行测试
-```
+详见 `.opencode/rules/python.md`
 
 ### TypeScript 规范
 

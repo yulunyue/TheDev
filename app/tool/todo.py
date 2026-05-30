@@ -29,6 +29,21 @@ class Todo(FormBase):
         score, money, todos = TodoModel.search(category, done)
         return Node(children=todos, title=f"分数: {score}.{money}")
 
+    def web_batch_insert(self, items: list, **kw):
+        ret = []
+        user_id = getattr(self, "username", None)
+        for item in items:
+            item.setdefault("create_time", time.time())
+            if user_id:
+                item.setdefault("user_id", user_id)
+            _id = self.model.get_id_any(**item)
+            if self.model.exist(_id):
+                ret.append(False)
+                continue
+            self.model.insert(_id, **item).save()
+            ret.append(True)
+        return Node(children=ret)
+
     def _handler_insert(self, _id, value):
         value.update(create_time=time.time(), user_id=self.username)
         return value

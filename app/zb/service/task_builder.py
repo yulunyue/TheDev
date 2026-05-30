@@ -71,44 +71,50 @@ class TaskBuilder:
             return mock
         return src
 
-    def _patch_setup_repo(self, dst_file: File):
-        instance_json = self.src_root.child(f"{self.src_root.name}.json")
-        config = instance_json.read_file()
-        base_commit = config.get("base_commit", "")
+    def _patch_network_config(self, tmp_root: File):
+        from common.tool.export import GC
 
-        src_setup_repo = self.src_root.child(Fp.setup_repo_sh)
-        extra_deps = (
-            self._extract_deps(src_setup_repo) if src_setup_repo.exists() else ""
-        )
+        dockerfile = tmp_root.child("Dockerfile")
+        if dockerfile.exists() and GC.zb_docker_env:
+            content = dockerfile.read_file()
+            content = re.sub(
+                r'^FROM\s+(\S+)',
+                lambda m: f"FROM {GC.zb_docker_env}/library/{m.group(1)}"
+                if "/" not in m.group(1)
+                else f"FROM {GC.zb_docker_env}/{m.group(1)}",
+                content,
+                flags=re.MULTILINE,
+            )
+            dockerfile.write_file(content)
 
-        mock_setup_repo = self.mock_root.child(Fp.setup_repo_sh)
-        template = mock_setup_repo.read_file()
+        setup_env = tmp_root.child("setup_env.sh")
+        if setup_env.exists():
+            content = setup_env.read_file()
 
-        content = template.replace("{{base_commit}}", base_commit)
-        if extra_deps:
-            content = content.replace("{{extra_deps}}", extra_deps)
-        else:
-            content = content.replace("{{extra_deps}}", "")
+            content = re.sub(
+                r"conda create\s+",
+                "CONDA_SOLVER=classic conda create ",
+                content,
+            )
 
-        dst_file.write_file(content)
+            if GC.git_proxy_prefix:
+                content = re.sub(
+                    r"git clone https://github\.com/",
+                    f"git clone https://{GC.git_proxy_prefix}/github.com/",
+                    content,
+                )
 
-    def _extract_deps(self, setup_repo: File) -> str:
-        content = setup_repo.read_file()
-        uv_match = re.search(r"uv pip install\s+([^\s]+(?:\s+[^\s]+)*?)\s+-e", content)
-        if uv_match:
-            deps_str = uv_match.group(1)
-            deps = [d.strip('"') for d in deps_str.split() if not d.startswith("-e")]
-            return " ".join(f'"{d}"' for d in deps if d)
-        pip_match = re.search(r"pip install\s+([^\s]+(?:\s+[^\s]+)*?)", content)
-        if pip_match:
-            deps_str = pip_match.group(1)
-            deps = [d.strip('"') for d in deps_str.split()]
-            return " ".join(f'"{d}"' for d in deps if d)
-        return ""
+            content = content.replace(
+                "https://repo.anaconda.com/miniconda/Miniconda3-py311_23.11.0-2-Linux-x86_64.sh",
+                "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py311_23.11.0-2-Linux-x86_64.sh",
+            )
+
+            setup_env.write_file(content)
 
     def _docker_build(self, tmp_root: File, image_name: str):
         logger.info(f"Running: docker build -t {image_name}")
         self._copy_task_files(Fp.docker_build())
+        self._patch_network_config(tmp_root)
         DockerUtil().build(image_name, tmp_root.get_abs_path())
         logger.info(f"Docker build success: {image_name}")
 
