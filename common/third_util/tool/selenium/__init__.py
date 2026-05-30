@@ -106,6 +106,7 @@ class SeleniumUtil(SeleniumDriver):
 
     def wait_until(
         self,
+        condition: Optional[Callable[[], Any]] = None,
         timeout: int = 120,
         wait_time: float = 0.2,
     ) -> Any:
@@ -121,6 +122,8 @@ class SeleniumUtil(SeleniumDriver):
                 while self.request_offset_size < len(requests):
                     self.on_new_request(requests[self.request_offset_size])
                     self.request_offset_size += 1
+                if condition:
+                    self.wait_result = condition()
             except Exception as e:
                 logger.error(f"wait_until error: {e}", stack_info=True)
                 self.quit()

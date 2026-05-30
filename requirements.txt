@@ -8,3 +8,4 @@ sortedcontainers
 pyyaml
 pymysql
 pdfplumber
+elasticsearch>=7.16.0  # ES 8.x 推荐; ES 7.x OSS 需降级 NumPy 或禁用版本检查

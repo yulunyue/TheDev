@@ -9,7 +9,8 @@ from typing import Optional
 class OpencodeDb:
     DB_PATH = "~/.local/share/opencode/opencode.db"
 
-    _conn: sqlite3.Connection
+    _instance: Optional["OpencodeDb"] = None
+    _path: str
 
     _CAMEL_TO_SNAKE = {
         "sessionID": "session_id",
@@ -19,9 +20,16 @@ class OpencodeDb:
         "providerID": "provider_id",
     }
 
+    @classmethod
+    def get_instance(cls, db_path: Optional[str] = None) -> "OpencodeDb":
+        path = db_path or os.path.expanduser(cls.DB_PATH)
+        if cls._instance is None or cls._instance._path != path:
+            cls._instance = cls(db_path)
+        return cls._instance
+
     def __init__(self, db_path: Optional[str] = None):
-        path = db_path or os.path.expanduser(self.DB_PATH)
-        self._conn = sqlite3.connect(path)
+        self._path = db_path or os.path.expanduser(self.DB_PATH)
+        self._conn = sqlite3.connect(self._path)
         self._conn.row_factory = sqlite3.Row
 
     def get_session(self, session_id: str) -> Optional[dict]:
@@ -80,6 +88,13 @@ class OpencodeDb:
         ).fetchone()
         return row["cnt"] > 0
 
+    def is_session_complete(self, session_id: str) -> bool:
+        row = self._conn.execute(
+            "SELECT COUNT(*) as cnt FROM message WHERE session_id = ? AND json_extract(data, '$.finish') = 'stop'",
+            (session_id,),
+        ).fetchone()
+        return row["cnt"] > 0
+
     def get_session_duration(self, session_id: str) -> Optional[int]:
         rows = self._conn.execute(
             "SELECT MIN(time_created) as t1, MAX(time_created) as t2 FROM part WHERE session_id = ?",
@@ -104,11 +119,11 @@ class OpencodeDb:
         return row["cnt"]
 
     def wait_for_data(
-        self, session_id: str, timeout: int = 900, interval: float = 1.0
+        self, session_id: str, timeout: int = 300, interval: float = 1.0
     ) -> list[dict]:
         start = time.time()
         while time.time() - start < timeout:
-            if self.has_assistant_messages(session_id):
+            if self.is_session_complete(session_id):
                 return self.get_messages(session_id)
             time.sleep(interval)
         return []

@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>余伦跃 · 全栈开发工程师 / 物联网软件专家</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
-        rel="stylesheet">
+    <title>余伦跃 · AI Agent 开发工程师 / 全栈架构</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -18,13 +16,12 @@
 
         body {
             background: #eef2f5;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: #1e2a3e;
             line-height: 1.45;
             padding: 40px 24px;
         }
 
-        /* 主容器：优雅卡片 */
         .resume {
             max-width: 1200px;
             margin: 0 auto;
@@ -35,13 +32,11 @@
             transition: all 0.2s ease;
         }
 
-        /* 两栏布局: 左栏底色略深，右栏纯白 */
         .resume-inner {
             display: grid;
             grid-template-columns: 34% 66%;
         }
 
-        /* ========= 左侧样式 ========= */
         .sidebar {
             background: #1f2f3c;
             color: #e9f0f5;
@@ -140,6 +135,11 @@
             color: #eef2ff;
         }
 
+        .skill-tags .highlight-skill {
+            background: rgba(108, 158, 191, 0.3);
+            border: 1px solid #8db5d6;
+        }
+
         .lang-item {
             display: flex;
             justify-content: space-between;
@@ -152,7 +152,6 @@
             margin: 12px 0;
         }
 
-        /* ========= 右侧样式 ========= */
         .main {
             padding: 2rem 2.2rem;
             background: white;
@@ -209,6 +208,15 @@
             margin: 4px 0 8px 0;
         }
 
+        .item-sub .badge {
+            background: #2c6e9e;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
         .desc-list {
             padding-left: 1.2rem;
             list-style: none;
@@ -246,6 +254,11 @@
             font-weight: 500;
         }
 
+        .tech-badge .ai-tech {
+            background: #e8f4e8;
+            color: #1a5f1a;
+        }
+
         .highlight {
             background: #ebf4ff;
             border-left: 3px solid #2c5a7a;
@@ -253,6 +266,16 @@
             margin: 0.8rem 0;
             border-radius: 12px;
             font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7a8b9f;
+            margin-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
         }
 
         @media (max-width: 780px) {
@@ -266,6 +289,30 @@
 
             .sidebar {
                 padding: 1.8rem;
+            }
+
+            .item-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px 8px;
+            }
+
+            .main {
+                padding: 1.5rem 1rem;
+            }
+
+            .sidebar h1 {
+                font-size: 1.5rem;
+            }
+
+            .right-title {
+                font-size: 1rem;
             }
         }
 
@@ -281,19 +328,28 @@
             }
 
             .sidebar {
-                background: #1f2f3c;
+                background: #1f2f3c !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-        }
 
-        .footer-note {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #7a8b9f;
-            margin-top: 1rem;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 1rem;
+            .skill-tags span {
+                background: rgba(255, 255, 255, 0.12) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .tech-badge span {
+                background: #eef2fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .highlight {
+                background: #ebf4ff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
@@ -301,236 +357,301 @@
 <body>
     <div class="resume">
         <div class="resume-inner">
-            <!-- 左侧：个人信息 + 技能 + 核心优势 -->
-            <div class="sidebar">
+            <aside class="sidebar" id="sidebar"></aside>
+            <main class="main" id="main"></main>
+        </div>
+    </div>
+
+    <script>
+        const resumeData = {
+            basics: {
+                name: "余伦跃",
+                title: "AI Agent 开发工程师 · 全栈架构",
+                phone: "+86 184 2833 0472",
+                email: "1285411603@qq.com",
+                github: "github.com/yulunyue",
+                location: "中国 · 成都"
+            },
+            skills: {
+                tech_stack: [
+                    "Python", "Go", "TypeScript", "C/C++",
+                    "Tornado/FastAPI", "Vue/React", "PyQt/Qt",
+                    "LLM集成", "Agent架构", "WebSocket", "Prompt设计",
+                    "MQTT/Modbus", "SQLite/MySQL", "Docker/Git",
+                    "状态机设计", "嵌入式Linux"
+                ],
+                philosophy: [
+                    "Agent架构设计：服务端-客户端分离、心跳维持、输出流推送",
+                    "LLM集成经验：OpenAI兼容API、流式输出、意图解析、Prompt工程",
+                    "统一数据模型：Node结构实现前后端一致交互协议",
+                    "代码生成 + 元编程提效10倍，DSL沉淀企业资产"
+                ]
+            },
+            languages: [
+                { name: "英语 CET-6", level: "读写/技术文档" },
+                { name: "普通话", level: "二级甲等" }
+            ],
+            certificates: ["阿里云IoT认证", "PMP基础", "敏捷开发"],
+            experience: [
+                {
+                    title: "Python开发工程师 · 新华三 / 移动核心网",
+                    date: "2021.09 – 至今",
+                    highlights: [
+                        "负责移动核心网网管系统后端开发，基于Python微服务架构，实现设备配置下发、性能数据聚合与告警分析。",
+                        "设计代码生成工具（Excel驱动），自动生成Netconf/RESTful接口及前端交互代码，减少70%重复工作量。",
+                        "重构命令行测试框架，基于Hook注册机制自动生成测试用例，提升整体交付质量。",
+                        "探索AI Agent在网管系统中的应用，设计辅助开发Agent提升自动化程度。"
+                    ],
+                    tech: ["Python", "Netconf/YANG", "RESTful", "Jinja2", "LLM"]
+                },
+                {
+                    title: "上层软件工程师 · 成都芯蚁科技",
+                    date: "2018.09 – 2021.09",
+                    highlights: [
+                        "主导基站电池管理系统、玻璃机PC软件、物联网终端系统等多个项目前后端研发，交付嵌入式设备配套管理平台。",
+                        "设计基于状态机的设备控制模型，实现热更新机制，支撑4种差异化电池组自动化逻辑。",
+                        "基于PyQt5开发工业检测工具，结合Modbus TCP与实时曲线，完成数据采集&导出报表系统。",
+                        "使用C扩展优化MQTT解析性能，设备资源读写时延降低40%。"
+                    ],
+                    tech: ["Python/Web.py", "PyQt5", "MQTT", "状态机", "Vue", "C扩展"]
+                }
+            ],
+            projects: [
+                {
+                    name: "TheDev - AI Agent 远程管控平台",
+                    date: "2024.01 – 至今",
+                    subtitle: "开源项目 | Agent架构 | LLM集成",
+                    highlights: [
+                        "设计跨平台Agent架构（AgentRunner/AgentTcpServer），实现多机器远程连接管理、命令执行、实时输出流推送。",
+                        "集成LLM实现AI对话辅助命令生成：用户输入意图 → LLM建议Shell命令 → 确认执行，提升运维效率。",
+                        "基于Tornado WebSocket实现发布/订阅消息推送，支持Agent输出实时订阅、自动重连、心跳维持。",
+                        "实现可配置任务调度器，支持定时执行、动态函数加载、WebSocket状态推送。",
+                        "设计统一Node数据模型，前后端一致的数据交互协议，支持组件渲染、API返回、WebSocket消息。"
+                    ],
+                    tech: ["Python/Tornado", "WebSocket", "LLM/OpenAI", "Agent架构", "TypeScript"]
+                },
+                {
+                    name: "Browser-Use 浏览器自动化Agent",
+                    date: "2025.01 – 2025.05",
+                    subtitle: "LLM驱动 | 浏览器自动化",
+                    highlights: [
+                        "封装LlmClient为browser-use框架兼容接口，实现LLM驱动的浏览器自动化Agent。",
+                        "Agent自动解析用户任务意图，操控浏览器完成表单填写、页面导航、数据提取等操作。",
+                        "设计Prompt模板引导Agent行为，实现多步骤任务链式执行。",
+                        "集成Selenium实现跨浏览器兼容，支持Chrome/Edge自动化测试场景。"
+                    ],
+                    tech: ["Python", "browser-use", "LLM", "Selenium", "Prompt工程"]
+                },
+                {
+                    name: "企业级代码生成引擎",
+                    date: "2021.07 – 2021.11",
+                    subtitle: "基于Excel + Jinja2，实现前后端零代码增量",
+                    highlights: [
+                        "设计Excel序列化方案，生成Netconf/RESTful接口描述、平台命令行及HTML/JS管理界面，统一多语言接口规范。",
+                        "利用爬虫收集帮助信息自动填充2000+表格，开发Python命令行基库，简化CLI开发测试流程。",
+                        "重构前端框架，使得新增业务无需二次开发，项目维护成本降低80%。",
+                        "探索LLM辅助代码生成，提升模板设计智能化程度。"
+                    ],
+                    tech: ["Python/Jinja2", "LLM", "netconf", "自动化测试"]
+                },
+                {
+                    name: "基站电池管理系统",
+                    date: "2018.04 – 2018.09",
+                    subtitle: "成都芯蚁科技 · 备用电池组智能调控",
+                    highlights: [
+                        "实现4种设备的状态机模型及热更新（Python eval/exec），管理不同电池组合的充放电策略。",
+                        "搭建Web管理系统及微信小程序，完成设备远程升级（Bootload）与实时数据监控。",
+                        "优化通信协议扁平化设计，解决粘包问题，提高帧传输效率。"
+                    ],
+                    tech: ["Web.py", "jQuery", "Vue", "MQTT", "状态机"]
+                },
+                {
+                    name: "智能物联网终端系统",
+                    date: "2019.01 – 2019.08",
+                    subtitle: "ARM终端 + 云端一体化",
+                    highlights: [
+                        "设计「通道-任务-报警-联动」四层抽象模型，提供统一CRUD接口，实现灵活外设配置与自动化规则。",
+                        "基于阿里云MQTT SDK集成设备属性上报（定时/变化/告警）及联动触发引擎。",
+                        "开发终端嵌入式Web配置页，支持网络参数、MQTT主题、设备重启等远程运维。"
+                    ],
+                    tech: ["Python", "C", "MQTT", "阿里云IoT", "嵌入式Linux"]
+                },
+                {
+                    name: "象棋Alpha-Beta引擎 · 跨语言实现",
+                    date: "2018.07 – 2021.11",
+                    subtitle: "开源项目 17k+ Star | 算法 & 协议",
+                    highlights: [
+                        "基于极大极小剪枝算法，分别用Python/Go/C++/TS/JS实现象棋计算服务，对比分析各语言性能。",
+                        "使用D3.js绘制交互界面，Proto生成多语言gRPC接口，设计决策树评估模型。",
+                        "主导开源社区协作，后期机器凭借决策树深度完胜人类，积累高并发AI设计经验。"
+                    ],
+                    tech: ["Alpha-Beta", "D3.js", "protobuf", "算法"]
+                },
+                {
+                    name: "玻璃机智能制造系统",
+                    date: "2020.01 – 2021.09",
+                    subtitle: "PyQt5 + Modbus TCP + 实时曲线",
+                    highlights: [
+                        "开发Windows平台数据采集软件，开启Modbus TCP服务端与设备通信，采集加工参数并存储至SQLite。",
+                        "动态计算最大值/最小值/平均值，使用QCustomPlot实现实时曲线绘制。",
+                        "支持数据导出CSV/PDF，为工艺优化提供数据基础；修复PyQt内存泄漏，重构业务层提升稳定性。"
+                    ],
+                    tech: ["PyQt5", "SQLite", "Modbus TCP", "QCustomPlot"]
+                }
+            ],
+            education: {
+                school: "成都信息工程大学",
+                date: "2014.09 – 2018.09",
+                major: "自动化 本科 · 学士学位",
+                courses: ["嵌入式系统", "现代控制理论", "计算机控制"]
+            },
+            summary: "具备完整的AI Agent开发经验，主导设计跨平台Agent架构并集成LLM实现智能命令生成与浏览器自动化；擅长WebSocket实时通信、统一数据模型设计、任务调度系统构建。在物联网领域积累深厚，状态机+MQTT架构、代码生成工具均有成熟落地。坚持「重构优于堆积」，通过DSL与元编程沉淀企业资产，后续深耕Agent+LLM融合应用，探索多Agent协作与自主决策场景。"
+        };
+
+        function renderSidebar(data) {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.innerHTML = `
                 <div class="avatar">
                     <div class="avatar-circle">
-                        <i class="fas fa-code"></i>
+                        <i class="fas fa-robot"></i>
                     </div>
-                    <h1>余伦跃</h1>
-                    <div class="title">资深全栈·物联网专家</div>
+                    <h1>${data.basics.name}</h1>
+                    <div class="title">${data.basics.title}</div>
                 </div>
                 <div class="contact-info">
-                    <div class="contact-item"><i class="fas fa-phone-alt"></i> <span>+86 184 2833 0472</span></div>
-                    <div class="contact-item"><i class="fas fa-envelope"></i> <span>1285411603@qq.com</span></div>
-                    <div class="contact-item"><i class="fab fa-github"></i> <span>github.com/yulunyue</span></div>
-                    <div class="contact-item"><i class="fas fa-map-marker-alt"></i> <span>中国 · 成都</span></div>
+                    <div class="contact-item"><i class="fas fa-phone-alt"></i> <span>${data.basics.phone}</span></div>
+                    <div class="contact-item"><i class="fas fa-envelope"></i> <span>${data.basics.email}</span></div>
+                    <div class="contact-item"><i class="fab fa-github"></i> <span>${data.basics.github}</span></div>
+                    <div class="contact-item"><i class="fas fa-map-marker-alt"></i> <span>${data.basics.location}</span></div>
                 </div>
+                ${renderSection('核心技术栈', 'cogs', renderSkillTags(data.skills.tech_stack))}
+                ${renderSection('Agent开发理念', 'brain', renderPhilosophy(data.skills.philosophy))}
+                ${renderSection('语言/证书', 'language', renderLanguages(data.languages, data.certificates))}
+            `;
+        }
 
-                <div class="section-title"><i class="fas fa-cogs"></i> 核心技术栈</div>
-                <div class="skill-tags">
-                    <span>Python</span><span>Go</span><span>C/C++</span><span>JavaScript/TS</span>
-                    <span>Vue/React</span><span>PyQt/Qt</span><span>MQTT</span><span>Modbus</span>
-                    <span>Web.py</span><span>RESTful/Netconf</span><span>SQLite/MySQL</span>
-                    <span>Docker/Git</span><span>状态机设计</span><span>嵌入式Linux</span>
-                </div>
+        function renderSection(title, icon, content) {
+            return `
+                <div class="section-title"><i class="fas fa-${icon}"></i> ${title}</div>
+                ${content}
+            `;
+        }
 
-                <div class="section-title"><i class="fas fa-star-of-life"></i> 技术理念</div>
-                <div class="desc-list" style="list-style: none; padding-left: 0;">
-                    <li>📌 善于利用工具，坚持代码重构</li>
-                    <li>📌 设备资源扁平化设计 & MQTT主题解耦</li>
-                    <li>📌 状态机编程模式提升复杂设备管理效率</li>
-                    <li>📌 跨语言接口生成 + 元编程提效10倍</li>
-                </div>
+        function renderSkillTags(skills) {
+            const aiKeywords = ['LLM', 'Agent', 'WebSocket', 'Prompt', 'Tornado', 'TypeScript'];
+            return `<div class="skill-tags">${skills.map(s => {
+                const isAi = aiKeywords.some(k => s.includes(k));
+                return `<span class="${isAi ? 'highlight-skill' : ''}">${s}</span>`;
+            }).join('')}</div>`;
+        }
 
-                <div class="section-title"><i class="fas fa-language"></i> 语言/证书</div>
-                <div class="lang-item"><span>英语 CET-6</span><span>读写/技术文档</span></div>
-                <div class="lang-item"><span>普通话</span><span>二级甲等</span></div>
-                <hr>
-                <div class="skill-tags">
-                    <span>阿里云IoT认证</span><span>PMP基础</span><span>敏捷开发</span>
-                </div>
-            </div>
+        function renderPhilosophy(items) {
+            return `<ul class="desc-list" style="list-style: none; padding-left: 0;">
+                ${items.map(item => `<li>📌 ${item}</li>`).join('')}
+            </ul>`;
+        }
 
-            <!-- 右侧：工作经历 + 项目经历 + 教育 -->
-            <div class="main">
-                <!-- 工作经历 -->
-                <div class="right-section">
-                    <div class="right-title">工作经验</div>
-                    <div class="job-item">
-                        <div class="item-header">
-                            <span class="item-title">Python开发工程师 · 新华三 / 移动核心网</span>
-                            <span class="item-date">2021.09 – 至今</span>
-                        </div>
-                        <ul class="desc-list">
-                            <li>负责移动核心网网管系统后端开发，基于Python微服务架构，实现设备配置下发、性能数据聚合与告警分析。</li>
-                            <li>设计代码生成工具 (excel驱动)，自动生成netconf/restful接口及前端交互代码，减少70%重复工作量。</li>
-                            <li>重构命令行测试框架，基于hook注册机制自动生成测试用例，提升整体交付质量。</li>
-                        </ul>
-                        <div class="tech-badge">
-                            <span>Python</span><span>Netconf/YANG</span><span>RESTful</span><span>Jinja2</span><span>爬虫</span>
-                        </div>
-                    </div>
+        function renderLanguages(languages, certificates) {
+            const langHtml = languages.map(l =>
+                `<div class="lang-item"><span>${l.name}</span><span>${l.level}</span></div>`
+            ).join('');
+            const certHtml = `<hr><div class="skill-tags">${certificates.map(c => `<span>${c}</span>`).join('')}</div>`;
+            return langHtml + certHtml;
+        }
 
-                    <div class="job-item">
-                        <div class="item-header">
-                            <span class="item-title">上层软件工程师 · 成都芯蚁科技</span>
-                            <span class="item-date">2018.09 – 2021.09</span>
-                        </div>
-                        <ul class="desc-list">
-                            <li>主导基站电池管理系统、玻璃机PC软件、物联网终端系统等多个项目前后端研发，交付嵌入式设备配套管理平台。</li>
-                            <li>设计基于状态机的设备控制模型，实现热更新机制，支撑4种差异化电池组自动化逻辑。</li>
-                            <li>基于PyQt5开发工业检测工具，结合Modbus TCP与实时曲线，完成数据采集&导出报表系统。</li>
-                            <li>使用C扩展优化MQTT解析性能，设备资源读写时延降低40%。</li>
-                        </ul>
-                        <div class="tech-badge">
-                            <span>Python/Web.py</span><span>PyQt5</span><span>MQTT</span><span>状态机</span><span>Vue</span><span>C扩展</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 核心项目（精选六个关键项目）-->
-                <div class="right-section">
-                    <div class="right-title">代表项目</div>
-
-                    <!-- 项目1：基站电池管理系统 -->
-                    <div class="project-item">
-                        <div class="item-header">
-                            <span class="item-title">基站电池管理系统</span>
-                            <span class="item-date">2018.04 – 2018.09</span>
-                        </div>
-                        <div class="item-sub">成都芯蚁科技 · 备用电池组智能调控</div>
-                        <ul class="desc-list">
-                            <li>实现4种设备的状态机模型及热更新(python eval/exec)，管理不同电池组合的充放电策略。</li>
-                            <li>搭建web管理系统及微信小程序，完成设备远程升级(bootload)与实时数据监控。</li>
-                            <li>优化通信协议扁平化设计，解决粘包问题，提高帧传输效率。</li>
-                        </ul>
-                        <div class="tech-badge">
-                            <span>Web.py</span><span>jQuery</span><span>Vue</span><span>MQTT</span><span>状态机</span>
-                        </div>
-                    </div>
-
-                    <!-- 项目2：智能物联网终端系统 -->
-                    <div class="project-item">
-                        <div class="item-header">
-                            <span class="item-title">智能物联网终端系统</span>
-                            <span class="item-date">2019.01 – 2019.08</span>
-                        </div>
-                        <div class="item-sub">ARM终端 + 云端一体化</div>
-                        <ul class="desc-list">
-                            <li>设计“通道-任务-报警-联动”四层抽象模型，提供统一CRUD接口，实现灵活外设配置与自动化规则。</li>
-                            <li>基于阿里云MQTT SDK集成设备属性上报（定时/变化/告警）及联动触发引擎。</li>
-                            <li>开发终端嵌入式Web配置页，支持网络参数、MQTT主题、设备重启等远程运维。</li>
-                        </ul>
-                        <div class="tech-badge">
-                            <span>Python</span><span>C</span><span>MQTT</span><span>阿里云IoT</span><span>嵌入式Linux</span>
-                        </div>
-                    </div>
-
-                    <!-- 项目3：爆炸物气体分析仪 (Qt/C++) -->
-                    <div class="project-item">
-                        <div class="item-header">
-                            <span class="item-title">爆炸物气体分析仪</span>
-                            <span class="item-date">2019.01 – 2019.08</span>
-                        </div>
-                        <div class="item-sub">ARM平台 + 图像识别 + 串口控制</div>
-                        <ul class="desc-list">
-                            <li>基于Qt5/C++实现UI交互与硬件控制，通过Modbus串口协议驱动步进电机、泵阀、照明及采样流程。</li>
-                            <li>对接FPGA识别模组，动态调整识别参数，获取检测结果并实时展示仪器动画。</li>
-                            <li>实现HTTP远程升级与命令执行，SQLite存储检测历史，提升现场维护效率。</li>
-                        </ul>
-                        <div class="tech-badge"><span>C++/Qt</span><span>Modbus
-                                RTU</span><span>串口通信</span><span>HTTP</span></div>
-                    </div>
-
-                    <!-- 项目4：玻璃机PC上位机 -->
-                    <div class="project-item">
-                        <div class="item-header">
-                            <span class="item-title">玻璃机智能制造系统</span>
-                            <span class="item-date">2020.01 – 2021.09</span>
-                        </div>
-                        <div class="item-sub">PyQt5 + Modbus TCP + 实时曲线</div>
-                        <ul class="desc-list">
-                            <li>开发Windows平台数据采集软件，开启Modbus TCP服务端与设备通信，采集加工参数并存储至SQLite。</li>
-                            <li>动态计算最大值/最小值/平均值，使用QCustomPlot实现实时曲线绘制。</li>
-                            <li>支持数据导出CSV/PDF，为工艺优化提供数据基础；修复PyQt内存泄漏，重构业务层提升稳定性。</li>
-                        </ul>
-                        <div class="tech-badge"><span>PyQt5</span><span>SQLite</span><span>Modbus
-                                TCP</span><span>QCustomPlot</span></div>
-                    </div>
-
-                    <!-- 项目5：浙江加多美垃圾管理系统 -->
-                    <div class="project-item">
-                        <div class="item-header">
-                            <span class="item-title">垃圾清运数据平台</span>
-                            <span class="item-date">2017.06 – 2018.03</span>
-                        </div>
-                        <div class="item-sub">高德轨迹 + 数据报表</div>
-                        <ul class="desc-list">
-                            <li>构建6级地域用户模块、设备实时轨迹监控（高德地图）、垃圾重量/种类统计分析。</li>
-                            <li>实现可视化图表报表，按时间/区域分类汇总，支撑运营决策。</li>
-                            <li>优化数据表索引设计，使千万级数据查询从分钟级降至秒级。</li>
-                        </ul>
-                        <div class="tech-badge">
-                            <span>Web.py</span><span>jQuery</span><span>高德API</span><span>MySQL</span>
-                        </div>
-                    </div>
-
-                    <!-- 项目6：开源象棋AI & 代码生成平台 -->
-                    <div class="project-item">
-                        <div class="item-header">
-                            <span class="item-title">象棋Alpha-Beta引擎 · 跨语言实现</span>
-                            <span class="item-date">2018.07 – 2021.11</span>
-                        </div>
-                        <div class="item-sub">开源项目 17k+ Star | 算法 & 协议</div>
-                        <ul class="desc-list">
-                            <li>基于极大极小剪枝算法，分别用Python/Go/C++/TS/JS实现象棋计算服务，对比分析各语言性能。</li>
-                            <li>使用D3.js绘制交互界面，proto生成多语言gRPC接口，设计决策树评估模型。</li>
-                            <li>主导开源社区协作，后期机器凭借决策树深度完胜人类，积累高并发AI设计经验。</li>
-                        </ul>
-                        <div class="tech-badge">
-                            <span>Alpha-Beta</span><span>D3.js</span><span>protobuf</span><span>算法</span>
-                        </div>
-                    </div>
-
-                    <!-- 额外亮点：自动化代码生成器项目 -->
-                    <div class="project-item">
-                        <div class="item-header">
-                            <span class="item-title">企业级代码生成引擎</span>
-                            <span class="item-date">2021.07 – 2021.11</span>
-                        </div>
-                        <div class="item-sub">基于Excel + Jinja2，实现前后端零代码增量</div>
-                        <ul class="desc-list">
-                            <li>设计Excel序列化方案，生成netconf/restful接口描述、平台命令行及HTML/JS管理界面，统一多语言接口规范。</li>
-                            <li>利用爬虫收集帮助信息自动填充2000+表格，开发Python命令行基库，简化CLI开发测试流程。</li>
-                            <li>重构前端框架，使得新增业务无需二次开发，项目维护成本降低80%。</li>
-                        </ul>
-                        <div class="tech-badge">
-                            <span>Python/Jinja2</span><span>Lxml</span><span>netconf</span><span>自动化测试</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 教育+亮点模块 -->
-                <div class="right-section">
-                    <div class="right-title">教育背景</div>
-                    <div class="edu-item">
-                        <div class="item-header">
-                            <span class="item-title">成都信息工程大学</span>
-                            <span class="item-date">2014.09 – 2018.09</span>
-                        </div>
-                        <div>自动化 本科 · 学士学位</div>
-                        <div class="tech-badge" style="margin-top: 6px;">
-                            <span>嵌入式系统</span><span>现代控制理论</span><span>计算机控制</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 核心总结/自我评价 -->
-                <div class="highlight">
-                    <i class="fas fa-microphone-alt" style="margin-right: 8px; color: #2c5a7a;"></i>
-                    <strong>技术沉淀与洞见</strong><br />
-                    拥有完整的物联网端到端开发经验，善于运用状态机+MQTT主题隔离架构提升设备管理健壮性；
-                    热衷元编程和代码生成，通过DSL沉淀企业资产，曾主导重构老项目将维护性提升2个量级。
-                    坚持“重构优于堆积”，在性能优化(C扩展/多线程/索引设计)、实时图形化监控、嵌入式资源约束场景均有成熟落地。
-                    后续关注边缘计算与AIoT融合，持续创造高价值软件产品。
-                </div>
+        function renderMain(data) {
+            const main = document.getElementById('main');
+            main.innerHTML = `
+                ${renderExperience(data.experience)}
+                ${renderProjects(data.projects)}
+                ${renderEducation(data.education)}
+                ${renderSummary(data.summary)}
                 <div class="footer-note">
                     <i class="far fa-calendar-alt"></i> 持续更新 · 开放沟通 · 详细项目成果可提供技术文档或演示
                 </div>
-            </div>
-        </div>
-    </div>
+            `;
+        }
+
+        function renderExperience(experience) {
+            return `
+                <section class="right-section">
+                    <div class="right-title">工作经验</div>
+                    ${experience.map(job => `
+                        <div class="job-item">
+                            <div class="item-header">
+                                <span class="item-title">${job.title}</span>
+                                <span class="item-date">${job.date}</span>
+                            </div>
+                            <ul class="desc-list">
+                                ${job.highlights.map(h => `<li>${h}</li>`).join('')}
+                            </ul>
+                            ${renderTechBadge(job.tech)}
+                        </div>
+                    `).join('')}
+                </section>
+            `;
+        }
+
+        function renderProjects(projects) {
+            const aiKeywords = ['Agent', 'LLM', 'browser-use', 'Prompt', 'WebSocket'];
+            return `
+                <section class="right-section">
+                    <div class="right-title">代表项目</div>
+                    ${projects.map(p => `
+                        <div class="project-item">
+                            <div class="item-header">
+                                <span class="item-title">${p.name}</span>
+                                <span class="item-date">${p.date}</span>
+                            </div>
+                            <div class="item-sub">${p.subtitle}</div>
+                            <ul class="desc-list">
+                                ${p.highlights.map(h => `<li>${h}</li>`).join('')}
+                            </ul>
+                            ${renderTechBadge(p.tech, aiKeywords)}
+                        </div>
+                    `).join('')}
+                </section>
+            `;
+        }
+
+        function renderTechBadge(techs, aiKeywords = []) {
+            return `<div class="tech-badge">${techs.map(t => {
+                const isAi = aiKeywords.some(k => t.includes(k));
+                return `<span class="${isAi ? 'ai-tech' : ''}">${t}</span>`;
+            }).join('')}</div>`;
+        }
+
+        function renderEducation(education) {
+            return `
+                <section class="right-section">
+                    <div class="right-title">教育背景</div>
+                    <div class="edu-item">
+                        <div class="item-header">
+                            <span class="item-title">${education.school}</span>
+                            <span class="item-date">${education.date}</span>
+                        </div>
+                        <div>${education.major}</div>
+                        <div class="tech-badge" style="margin-top: 6px;">
+                            ${education.courses.map(c => `<span>${c}</span>`).join('')}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderSummary(summary) {
+            return `
+                <div class="highlight">
+                    <i class="fas fa-lightbulb" style="margin-right: 8px; color: #2c5a7a;"></i>
+                    <strong>技术沉淀与洞见</strong><br />
+                    ${summary}
+                </div>
+            `;
+        }
+
+        renderSidebar(resumeData);
+        renderMain(resumeData);
+    </script>
 </body>
 
 </html>

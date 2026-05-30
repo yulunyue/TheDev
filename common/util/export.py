@@ -22,6 +22,7 @@ from common.exception import (
     FileError,
     ThreadError,
     TimeoutError,
+    EsError,
 )
 from .module import Module, get_function_info, get_file_path_by_cls, run_catch_error
 from .tool import (

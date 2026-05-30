@@ -172,19 +172,18 @@ class TrajectoryBuilder:
         return matches
 
     def _load_opencode_data(self, root):
-        session_id_file = root.child(".opencode_session_id")
-        if session_id_file.exists():
-            session_id = session_id_file.read_file().strip()
+        opencode_json = root.child(OPENCODE_JSON_FILE_NAME)
+        if opencode_json.exists():
+            opencode_data = opencode_json.read_file()
+            session_id = opencode_data.get("session_id") if isinstance(opencode_data, dict) else None
             if session_id:
                 db = OpencodeDb()
                 messages = db.get_messages(session_id)
                 if messages:
                     logger.info(f"从 DB 读取 session_id={session_id}")
                     return {"data": {"messages": messages}}
-        opencode_json = root.child(OPENCODE_JSON_FILE_NAME)
-        if opencode_json.exists():
             logger.info(f"从 JSON 文件读取: {opencode_json.path}")
-            return opencode_json.read_file()
+            return opencode_data
         return None
 
     def build_from_root(self, root):

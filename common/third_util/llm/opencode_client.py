@@ -13,7 +13,7 @@ import re
 
 
 class OpencodeClient:
-    def __init__(self, cwd: str, base_url: str, timeout=15 * 60):
+    def __init__(self, cwd: str, base_url: str = None, timeout: int = 5 * 60):
         self.cwd = cwd
         self.base_url = base_url
         self.timeout = timeout
@@ -24,7 +24,7 @@ class OpencodeClient:
     instacnce: Dict[str, "OpencodeClient"] = dict()
 
     @classmethod
-    def new(cls, cwd, base_url):
+    def new(cls, cwd, base_url=None):
         if cwd in cls.instacnce:
             return cls.instacnce[cwd]
         cls.instacnce[cwd] = cls(cwd, base_url)
@@ -50,21 +50,26 @@ class OpencodeClient:
         title = title or self.cwd.split("/").pop()
         return self.client.session.create(extra_body=dict(title=title))
 
-    def execute_task(self, session_id: str, prompt: str) -> Node:
+    def execute_task(self, session_id: str, prompt: str, wait_func=None, timeout: int = 5 * 60) -> Node:
         text_part = TextPartInputParam(type="text", text=prompt)
         try:
-            self.client.session.chat(
+            result = self.client.session.chat(
                 id=session_id,
                 model_id=self.model_id,
                 provider_id=self.provider_id,
                 parts=[text_part],
+                timeout=timeout,
             )
+            data = result.model_dump()
+            text = self._extract_text(data)
+            tool_parts = [p for p in data.get("parts", []) if p.get("type") == "tool"]
+            return Node(ok=True, value=text, data={"session_id": session_id, "tool_parts": tool_parts})
         except Exception as e:
             logger.warning(f"chat 异常, session_id={session_id}: {e}")
-        return Node(ok=True, data={"session_id": session_id})
+            return Node(ok=False, title=str(e), data={"session_id": session_id})
 
-    def wait_result(self, session_id: str, timeout=900) -> Node:
-        db = OpencodeDb()
+    def wait_result(self, session_id: str, timeout: int = 300) -> Node:
+        db = OpencodeDb.get_instance()
         messages = db.wait_for_data(session_id, timeout=timeout)
         if not messages:
             return Node(
@@ -79,10 +84,13 @@ class OpencodeClient:
             data={"session_id": session_id, "tool_parts": tool_parts},
         )
 
-    def do_prompt(self, prompt) -> Node:
-        s = self.create_session()
-        ret = self.execute_task(s.id, prompt)
-        return ret
+
+    @staticmethod
+    def _extract_text(result: dict) -> str:
+        for part in result.get("parts", []):
+            if part.get("type") == "text":
+                return part.get("text", "")
+        return ""
 
     @staticmethod
     def _parse_messages(messages):
@@ -107,13 +115,16 @@ class OpencodeClient:
         return System.get_pid_by_port(self._get_port_from_config())
 
     def start_server(self, wait_timeout=30):
+        if self.base_url is None:
+            port = System.find_free_port()
+            self.base_url = f"http://127.0.0.1:{port}"
+        else:
+            port = self._get_port_from_config()
         pid = self.get_pid()
         if pid:
             return self
-        port = System.find_free_port()
         cmd = ["opencode", "serve", "--port", str(port)]
         System.popen(*cmd, cwd=self.cwd or None)
-        self.base_url = f"http://127.0.0.1:{port}"
         self._client = None
         import socket
         deadline = time.time() + wait_timeout

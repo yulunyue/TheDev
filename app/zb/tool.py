@@ -17,6 +17,12 @@ class ZbTool(ToolBase):
     def build(self, name):
         self.builder.set_env(name).build()
 
+    def pre_check(self, name):
+        self.builder.set_env(name).pre_check()
+
+    def llm_check(self, name):
+        self.builder.set_env(name).llm_check()
+
     def package(self, name):
         root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()
         instance_json = root.child(f"{root.name}.json")

@@ -2,6 +2,7 @@ import re
 from common.third_util.llm.opencode_client import OpencodeClient, logger
 from common.util.export import File
 from common.third_service.docker.docker_util import DockerUtil
+from common.third_service.git_tool.git_util import GitUtil
 
 from ..model.constants import Fp, ROOT, get_promot, REPO_ROOT
 
@@ -34,24 +35,30 @@ class TaskBuilder:
         return self.instance_json.get("issue_url")
 
     def llm(self):
+        git = GitUtil(workdir=self.repo_root.path)
+        git.git_clean()
+        git.git_reset(self.base_commit)
+        git.git_apply(self.src_test_pattch.path)
+        logger.info(f"Git reset to {self.base_commit}, applied test.patch")
         o = self.client.new(
-            self.repo_root.path, "http://127.0.0.1:45799"
+            self.repo_root.path
         ).start_server()
+        
         promot = get_promot(
-            self.base_commit,
             self.issue_url,
             self.src_test_pattch.read_file(),
-            self.src_final_diff,
+            self.src_final_diff.path,
+            fail_to_pass=self.instance_json.get("FAIL_TO_PASS"),
+            problem_statement=self.instance_json.get("problem_statement"),
         )
+        
         result = o.do_prompt(promot)
-        o.stop()
         session_id = result.data["session_id"]
-        self.tmp_root.child(".opencode_session_id").write_file(session_id)
-        logger.info(f"session_id={session_id}")
-        return result
+        self.src_root.child(Fp.opencode_json).set("session_id",session_id)
+        logger.info(f"LLM 完成, session_id={session_id}")
+        o.stop()
 
     def build(self):
-        self.mock_root = File(f"app/zb/mock/{self.env}").make_dir_if_not_exist(True)
         image_name = self.env
         self._docker_build(self.tmp_root, image_name)
         logger.info(f"Docker build completed: {image_name}")
@@ -60,36 +67,108 @@ class TaskBuilder:
     def _copy_task_files(self, files_to_copy):
         for f in files_to_copy:
             src_file = self.src_root.child(f)
-            mock_file = self.mock_root.child(f)
             dst_file = self.tmp_root.child(f)
-            mock_data = "" if not mock_file.exists() else mock_file.read_file()
-            data = self.hander_file(f, src_file.read_file(), mock_data)
-            dst_file.write_file(data)
-
-    def hander_file(self, file_name, src, mock):
-        if mock:
-            return mock
-        return src
+            dst_file.write_file(src_file.read_file())
 
     def _patch_network_config(self, tmp_root: File):
         from common.tool.export import GC
 
+        def _str(val):
+            return str(val) if val else ""
+
         dockerfile = tmp_root.child("Dockerfile")
-        if dockerfile.exists() and GC.zb_docker_env:
+        if dockerfile.exists():
             content = dockerfile.read_file()
-            content = re.sub(
-                r'^FROM\s+(\S+)',
-                lambda m: f"FROM {GC.zb_docker_env}/library/{m.group(1)}"
-                if "/" not in m.group(1)
-                else f"FROM {GC.zb_docker_env}/{m.group(1)}",
-                content,
-                flags=re.MULTILINE,
-            )
+
+            if GC.zb_docker_env:
+                zb_env = _str(GC.zb_docker_env)
+                content = re.sub(
+                    r'^FROM\s+(\S+)',
+                    lambda m: f"FROM {zb_env}/library/{m.group(1)}"
+                    if "/" not in m.group(1)
+                    else f"FROM {zb_env}/{m.group(1)}",
+                    content,
+                    flags=re.MULTILINE,
+                )
+
+            if GC.apt_mirror_prefix:
+                apt_mirror = _str(GC.apt_mirror_prefix)
+                content = re.sub(
+                    r"sed -i 's@archive\.ubuntu\.com@(\S+)@g'",
+                    f"sed -i 's@archive.ubuntu.com@{apt_mirror}@g'",
+                    content,
+                )
+                content = re.sub(
+                    r"sed -i 's@security\.ubuntu\.com@(\S+)@g'",
+                    f"sed -i 's@security.ubuntu.com@{apt_mirror}@g'",
+                    content,
+                )
+
+            if GC.pip_global_index_url:
+                pip_url = _str(GC.pip_global_index_url)
+                content = re.sub(
+                    r'pip config set global\.index-url\s+\S+',
+                    f'pip config set global.index-url {pip_url}',
+                    content,
+                )
+            if GC.pip_trusted_host:
+                pip_host = _str(GC.pip_trusted_host)
+                content = re.sub(
+                    r'pip config set global\.trusted-host\s+\S+',
+                    f'pip config set global.trusted-host {pip_host}',
+                    content,
+                )
+
+            if GC.miniconda_mirror:
+                miniconda = _str(GC.miniconda_mirror)
+                content = re.sub(
+                    r"https://repo\.anaconda\.com/miniconda/",
+                    miniconda,
+                    content,
+                )
+
+            if GC.conda_channel_prefix:
+                conda_channel = _str(GC.conda_channel_prefix)
+                content = re.sub(
+                    r"conda config --add channels\s+(\S+)",
+                    f"conda config --add channels {conda_channel}",
+                    content,
+                )
+
             dockerfile.write_file(content)
 
-        setup_env = tmp_root.child("setup_env.sh")
-        if setup_env.exists():
-            content = setup_env.read_file()
+        for script_name in ["setup_env.sh", "setup_repo.sh"]:
+            script = tmp_root.child(script_name)
+            if not script.exists():
+                continue
+
+            content = script.read_file()
+
+            if GC.http_proxy:
+                http_proxy = _str(GC.http_proxy)
+                proxy_block = f"export HTTP_PROXY={http_proxy}\nexport HTTPS_PROXY={http_proxy}\nexport GIT_SSL_NO_VERIFY=1\n"
+                if not re.search(r'export HTTP_PROXY', content):
+                    content = re.sub(
+                        r'^(#!.*\n)',
+                        f'$1\n{proxy_block}',
+                        content,
+                    )
+
+            if GC.git_proxy_prefix:
+                git_proxy = _str(GC.git_proxy_prefix)
+                content = re.sub(
+                    r"git clone https://github\.com/",
+                    f"git clone https://{git_proxy}/github.com/",
+                    content,
+                )
+
+            if GC.pip_global_index_url:
+                pip_url = _str(GC.pip_global_index_url)
+                content = re.sub(
+                    r'-i\s+https://[^\s]+',
+                    f'-i {pip_url}',
+                    content,
+                )
 
             content = re.sub(
                 r"conda create\s+",
@@ -97,19 +176,14 @@ class TaskBuilder:
                 content,
             )
 
-            if GC.git_proxy_prefix:
-                content = re.sub(
-                    r"git clone https://github\.com/",
-                    f"git clone https://{GC.git_proxy_prefix}/github.com/",
-                    content,
+            if GC.miniconda_mirror:
+                miniconda = _str(GC.miniconda_mirror)
+                content = content.replace(
+                    "https://repo.anaconda.com/miniconda/",
+                    miniconda,
                 )
 
-            content = content.replace(
-                "https://repo.anaconda.com/miniconda/Miniconda3-py311_23.11.0-2-Linux-x86_64.sh",
-                "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py311_23.11.0-2-Linux-x86_64.sh",
-            )
-
-            setup_env.write_file(content)
+            script.write_file(content)
 
     def _docker_build(self, tmp_root: File, image_name: str):
         logger.info(f"Running: docker build -t {image_name}")

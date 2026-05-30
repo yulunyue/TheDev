@@ -4,9 +4,6 @@
         ".opencode/rules/general.md",
         ".opencode/rules/git-safety.md",
         ".opencode/rules/test.md"
-    ],
-    "plugin": [
-        "./.opencode/plugins/session-status-notifier",
     ]
 }
 

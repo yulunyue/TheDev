@@ -7,8 +7,16 @@ MODEL_ROOT = File("app/zb/model")
 CODING_AGENT_SYSTEM_PROMPT_FILE = MODEL_ROOT.child("coding_agent_system_prompt.txt")
 
 
-def get_promot(base_commit, issue_url, test_batch, diff_path):
-    return f"将代码仓库切换到{base_commit} 并分析{issue_url}的问题，根据test.path:\n{test_batch}\n的错误用例，修成这个问题，并将关键代码输出到{diff_path}, 注意，有任何错误你不应该自己处理，退出让我分析处理"
+def get_promot(issue_url, test_patch_content, diff_path, fail_to_pass=None, problem_statement=None):
+    fail_str = ""
+    if fail_to_pass:
+        fail_str = "\n\n需要修复的测试（FAIL_TO_PASS，修复后应通过）:\n" + "\n".join(f"- {t}" for t in fail_to_pass)
+    
+    problem_str = ""
+    if problem_statement:
+        problem_str = f"\n\n问题描述:\n{problem_statement}"
+    
+    return f"分析 {issue_url} 的问题。{problem_str}{fail_str}\n\n根据 test.patch 内容:\n{test_patch_content}\n\n修复这个问题，并将修复的代码补丁输出到 {diff_path}。\n\n注意:\n- 任何错误请停止并说明原因，不要自行处理\n- 确保修复后 FAIL_TO_PASS 测试全部通过"
 
 
 TOOLS_SCHEMA = [
@@ -39,7 +47,8 @@ class Fp:
     setup_repo_sh = "setup_repo.sh"
     test_patch = "test.patch"
     final_diff = "final.diff"
-
+    opencode_json = "opencode.json"
+    
     @classmethod
     def docker_build(self):
         return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, Fp.entrypoint_sh]

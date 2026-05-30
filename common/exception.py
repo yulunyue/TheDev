@@ -66,3 +66,8 @@ class ThreadError(TheDevException):
 class TimeoutError(TheDevException):
     """等待超时"""
     pass
+
+
+class EsError(TheDevException):
+    """Elasticsearch 操作错误"""
+    pass
