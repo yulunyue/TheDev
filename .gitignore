@@ -189,4 +189,3 @@ app/zb/task/
 ~
 app/zb/mock
 app/zb/repo
-app/zb/repo/httpie__cli

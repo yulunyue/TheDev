@@ -48,7 +48,7 @@ class Fp:
     test_patch = "test.patch"
     final_diff = "final.diff"
     opencode_json = "opencode.json"
-    
+    promot_txt = "promot.txt"
     @classmethod
     def docker_build(self):
         return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, Fp.entrypoint_sh]

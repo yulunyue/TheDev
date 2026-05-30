@@ -39,11 +39,7 @@ class TaskBuilder:
         git.git_clean()
         git.git_reset(self.base_commit)
         git.git_apply(self.src_test_pattch.path)
-        logger.info(f"Git reset to {self.base_commit}, applied test.patch")
-        o = self.client.new(
-            self.repo_root.path
-        ).start_server()
-        
+        logger.info(f"Git reset to {self.base_commit}, applied test.patch {self.repo_root}")
         promot = get_promot(
             self.issue_url,
             self.src_test_pattch.read_file(),
@@ -51,12 +47,17 @@ class TaskBuilder:
             fail_to_pass=self.instance_json.get("FAIL_TO_PASS"),
             problem_statement=self.instance_json.get("problem_statement"),
         )
-        
-        result = o.do_prompt(promot)
-        session_id = result.data["session_id"]
+        logger.info(self.src_root.child(Fp.promot_txt).write_file(promot))
+        session_id = input("session_id")
+        # o = self.client.new(
+        #     self.repo_root.path
+        # ).start_server()
+        # result = o.do_prompt(promot)
+        # session_id = result.data["session_id"]
+        # o.stop()
         self.src_root.child(Fp.opencode_json).set("session_id",session_id)
         logger.info(f"LLM 完成, session_id={session_id}")
-        o.stop()
+        
 
     def build(self):
         image_name = self.env
