@@ -173,6 +173,29 @@ class Room(ApiBase):
                       "target": l.target.get_value(), "content": l.content.get_value()} for l in logs],
         })
     
+    def finish_night_action(self, room_id: str, **kw):
+        room = RoomModel.get(room_id)
+        if not room:
+            return Node(ok=False, title="房间不存在")
+        
+        if room.phase.get_value() != Phase.NIGHT.value:
+            return Node(ok=False, title="当前不是夜晚阶段")
+        
+        player = PlayerModel.get_player_by_room_username(room_id, self.username)
+        if not player:
+            return Node(ok=False, title="您不在该房间")
+        
+        if not player.is_alive.get_value():
+            return Node(ok=False, title="您已死亡")
+        
+        if player.is_ai.get_value():
+            return Node(ok=False, title="AI玩家无需手动完成")
+        
+        engine = GameEngine(room_id)
+        engine.finish_night_action(self.username)
+        
+        return Node(ok=True, title="夜晚行动已完成")
+    
     def _broadcast_room(self, room_id: str, msg_type: str, data: dict):
         topic = f"{C.TOPIC_WEREWOLF_ROOM}_{room_id}"
         IO_MANAGE.send(topic, {"type": msg_type, **data})

@@ -8,15 +8,19 @@ from .constants import (
     Fp,
     OPENCODE_JSON_FILE_NAME,
     CODING_AGENT_SYSTEM_PROMPT_FILE,
-    TOOLS_SCHEMA,
+    REPO_ROOT,
 )
 
 
 class TrajectoryBuilder:
     def build(self, opencode_data, task_data, final_diff_content, root):
+        trajectory = self._convert_messages(opencode_data)
+        turn_count = sum(
+            1 for m in trajectory if m.get("role") == "assistant"
+        )
         return {
             "instance_id": task_data["instance_id"],
-            "instruction": self._build_instruction(task_data),
+            "instruction": f"修复 {task_data.get('issue_url', '')} 的问题。",
             "language": "python",
             "metadata": self._build_metadata(task_data),
             "metrics": {
@@ -24,35 +28,55 @@ class TrajectoryBuilder:
                 "prompt_tokens": 0,
                 "total_tokens": 0,
                 "cost": 0.0,
+                "turn_count": turn_count,
             },
             "task_category": "bug_fix",
             "task_id": task_data["instance_id"],
-            "trajectory": self._convert_messages(opencode_data),
+            "trajectory": trajectory,
             "instance": self._build_instance(task_data, final_diff_content, root),
         }
-
-    def _build_instruction(self, task_data):
-        return f"""<task>
-我当前目录下是一个Python语言的项目{task_data['repo']}，这是一个issue修复任务。
-
-问题陈述：
-{task_data['problem_statement']}
-
-请分析问题，定位相关代码，并提供修复方案。
-</task>"""
 
     def _build_metadata(self, task_data):
         coding_agent_prompt = CODING_AGENT_SYSTEM_PROMPT_FILE.read_file()
         return {
-            "agent": "build",
-            "model": "codeagent/maas-glm-5-aliyun-codeagent",
-            "thinking_mode": True,
-            "tools": TOOLS_SCHEMA,
+            "agent": "opencode",
+            "model": "unknown",
+            "thinking_mode": "enabled",
+            "tools": self._build_tools_spec(),
             "coding_agent_system_prompt": coding_agent_prompt,
             "data_source": "opencode",
-            "eval_output_dir": "",
+            "eval_output_dir": ".",
             "source": task_data["instance_id"],
         }
+
+    def _build_tools_spec(self):
+        tool_defs = [
+            ("bash", "Execute shell commands", {"command": "The command string to execute"}, ["command"]),
+            ("read", "Read file contents", {"filePath": "Absolute path to the file"}, ["filePath"]),
+            ("edit", "Edit file contents", {"filePath": "File path", "oldString": "Text to replace", "newString": "Replacement text"}, ["filePath", "oldString", "newString"]),
+            ("glob", "Find files by pattern", {"pattern": "Glob pattern to match"}, ["pattern"]),
+            ("grep", "Search file contents", {"pattern": "Regex pattern to search"}, ["pattern"]),
+            ("webfetch", "Fetch web content", {"url": "URL to fetch"}, ["url"]),
+            ("task", "Launch sub-agent tasks", {"prompt": "Task description for the agent"}, ["prompt"]),
+            ("todowrite", "Manage todo list", {"todos": "List of todo items"}, ["todos"]),
+            ("question", "Ask user questions", {"question": "Question to ask", "options": "Available options", "task_progress": "Task progress checklist"}, ["question"]),
+            ("skill", "Load specialized skills", {"name": "Skill name to load"}, ["name"]),
+        ]
+        tools = []
+        for name, desc, props, required in tool_defs:
+            properties = {}
+            for k, v in props.items():
+                properties[k] = {"type": "string", "description": v}
+            tools.append({
+                "name": name,
+                "description": desc,
+                "input_schema": {
+                    "type": "object",
+                    "properties": properties,
+                    "required": required,
+                },
+            })
+        return tools
 
     def _convert_messages(self, opencode_data):
         messages = opencode_data["data"]["messages"]
@@ -144,11 +168,14 @@ class TrajectoryBuilder:
         }
 
     def _build_instance(self, task_data, final_diff_content, root):
+        repo_root = REPO_ROOT.child(task_data["instance_id"].split("-")[0])
+        clean_diff = self._clean_final_diff(final_diff_content)
         return {
             "repo": task_data["repo"],
             "base_commit": task_data["base_commit"],
             "git_context": {
-                "initial_state": self._get_initial_state(root, final_diff_content)
+                "initial_state": self._get_initial_state(repo_root, clean_diff),
+                "final_diff": clean_diff,
             },
             "patch": task_data["patch"],
             "test_patch": task_data["test_patch"],
@@ -157,11 +184,11 @@ class TrajectoryBuilder:
             "problem_statement": task_data["problem_statement"],
         }
 
-    def _get_initial_state(self, root, final_diff_content):
+    def _get_initial_state(self, repo_root, final_diff_content):
         files = self._parse_diff_files(final_diff_content)
         initial_state = {}
         for f in files:
-            file_path = root.search_one(f)
+            file_path = repo_root.search_one(f)
             if file_path and file_path.exists():
                 initial_state[f] = file_path.read_file()
         return initial_state
@@ -170,6 +197,16 @@ class TrajectoryBuilder:
         pattern = r"^diff --git a/(.*?) b/"
         matches = re.findall(pattern, diff_content, re.MULTILINE)
         return matches
+
+    def _clean_final_diff(self, diff_content):
+        lines = diff_content.splitlines()
+        clean_lines = []
+        for line in lines:
+            if line.startswith("diff --git "):
+                clean_lines.append(line)
+            elif clean_lines:
+                clean_lines.append(line)
+        return ("\n".join(clean_lines) + "\n") if clean_lines else diff_content
 
     def _load_opencode_data(self, root):
         opencode_json = root.child(OPENCODE_JSON_FILE_NAME)
@@ -191,10 +228,6 @@ class TrajectoryBuilder:
         instance_json = root.child(f"{instance_id}.json")
         trajectory_json = root.child(Fp.trajectory_json)
         final_diff = root.child("final.diff")
-
-        if trajectory_json.exists():
-            logger.info(f"trajectory.json already exists: {trajectory_json.path}")
-            return None
 
         opencode_data = self._load_opencode_data(root)
         if not opencode_data:

@@ -45,6 +45,8 @@ class GameEngine:
         
         self._broadcast_room(C.MSG_NIGHT_BEGIN, {"round": 1})
         
+        self._process_ai_night_actions()
+        
         logger.info(f"Game started in room {self.room_id}")
     
     def next_speaker(self):
@@ -236,7 +238,36 @@ class GameEngine:
                 if target:
                     self.night_action(ai.seat.get_value(), Role.GUARD.value, "protect", target)
         
-        self._end_night()
+        night_actions = self.room.night_actions.get_value() or {}
+        night_actions["ai_done"] = True
+        self.room.night_actions.set_value(night_actions)
+        RoomModel.save_to_local()
+        
+        self._check_night_complete()
+    
+    def finish_night_action(self, username: str):
+        night_actions = self.room.night_actions.get_value() or {}
+        done_players = night_actions.get("human_done", [])
+        if username not in done_players:
+            done_players.append(username)
+        night_actions["human_done"] = done_players
+        self.room.night_actions.set_value(night_actions)
+        RoomModel.save_to_local()
+        
+        self._check_night_complete()
+    
+    def _check_night_complete(self):
+        players = PlayerModel.get_players_by_room(self.room_id)
+        human_players = [p for p in players if not p.is_ai.get_value() and p.is_alive.get_value()]
+        
+        night_actions = self.room.night_actions.get_value() or {}
+        human_done = night_actions.get("human_done", [])
+        ai_done = night_actions.get("ai_done", False)
+        
+        all_human_done = len(human_done) >= len(human_players)
+        
+        if all_human_done and ai_done:
+            self._end_night()
     
     def _end_night(self):
         night_actions = self.room.night_actions.get_value() or {}

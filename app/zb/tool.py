@@ -11,7 +11,7 @@ class ZbTool(ToolBase):
         self.packager = TaskPackager()
         self.trajectory_builder = TrajectoryBuilder()
 
-    def llm_build(self, name, manual=True):
+    def llm_build(self, name, manual=False):
         self.builder.set_env(name).llm_build(manual=manual)
 
     def docker_build(self, name):
@@ -26,6 +26,7 @@ class ZbTool(ToolBase):
     def package(self, name):
         root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()
         instance_json = root.child(f"{root.name}.json")
+        self.packager.fix_files(root)
         self.trajectory_builder.build_from_root(root)
         self.packager.package(root, instance_json)
 

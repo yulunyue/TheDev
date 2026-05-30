@@ -51,39 +51,24 @@ def get_promot(issue_url, issue_content=None, fail_to_pass=None):
 4. 不要执行任何 pip install、pytest 或其他环境操作"""
 
 
-TOOLS_SCHEMA = [
-    {"type": "function", "function": {"name": "bash"}},
-    {"type": "function", "function": {"name": "edit"}},
-    {"type": "function", "function": {"name": "glob"}},
-    {"type": "function", "function": {"name": "grep"}},
-    {"type": "function", "function": {"name": "read"}},
-    {"type": "function", "function": {"name": "write"}},
-    {"type": "function", "function": {"name": "webfetch"}},
-    {"type": "function", "function": {"name": "task"}},
-    {"type": "function", "function": {"name": "question"}},
-    {"type": "function", "function": {"name": "todowrite"}},
-    {"type": "function", "function": {"name": "skill"}},
-]
+
 
 OPENCODE_JSON_FILE_NAME = "opencode.json"
-
+PROMOT_TXT = "promot.txt"
 
 class Fp:
     run_verification_py = "run_verification.py"
     trajectory_json = "trajectory.json"
     code_patch = "code.patch"
     Dockerfile = "Dockerfile"
-    entrypoint_sh = "entrypoint.sh"
-    flag_txt = "flag.txt"
     setup_env_sh = "setup_env.sh"
     setup_repo_sh = "setup_repo.sh"
     test_patch = "test.patch"
     final_diff = "final.diff"
-    opencode_json = "opencode.json"
-    promot_txt = "promot.txt"
+
     @classmethod
     def docker_build(self):
-        return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, Fp.entrypoint_sh]
+        return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, "entrypoint.sh"]
 
     @classmethod
     def pre_check(self):
@@ -97,6 +82,4 @@ class Fp:
             Fp.test_patch
         ]
 
-    @classmethod
-    def package(cls):
-        pass
+

@@ -1,2 +1,2 @@
-from .constants import Fp, ROOT, REPO_ROOT, TOOLS_SCHEMA
+from .constants import Fp, ROOT, REPO_ROOT
 from .trajectory import TrajectoryBuilder

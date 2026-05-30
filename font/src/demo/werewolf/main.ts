@@ -14,11 +14,17 @@ export class WerewolfGame extends FlexColumn {
     logs: any[] = []
     current_view: ViewState = "lobby"
     is_host: boolean = false
+    lobby_collapsed: boolean = false
+    
+    main_container: FlexRow
+    left_panel: FlexColumn
+    right_panel: FlexColumn
     
     lobby_panel: FlexColumn
     waiting_panel: FlexColumn
     gaming_panel: FlexColumn
     
+    collapse_btn: Button
     room_name_input: Input
     create_room_btn: Button
     refresh_btn: Button
@@ -35,6 +41,7 @@ export class WerewolfGame extends FlexColumn {
     game_state_span: Span
     round_span: Span
     phase_span: Span
+    role_info_span: Span
     players_container: FlexColumn
     log_container: Pre
     action_panel: FlexColumn
@@ -44,6 +51,7 @@ export class WerewolfGame extends FlexColumn {
     vote_input: Input
     vote_btn: Button
     night_action_panel: FlexColumn
+    finish_night_btn: Button
     
     current_speaker: number = 0
     can_speech: boolean = false
@@ -55,7 +63,22 @@ export class WerewolfGame extends FlexColumn {
         this.waiting_panel = this._create_waiting_panel()
         this.gaming_panel = this._create_gaming_panel()
         
-        this.add_child(this.lobby_panel)
+        this.collapse_btn = new Button().set_value("◀ 折叠")
+        
+        this.left_panel = new FlexColumn().add_children([
+            this.collapse_btn,
+            this.lobby_panel,
+        ])
+        
+        this.right_panel = new FlexColumn()
+        this.right_panel.add_child(new Span().set_html("请选择房间或创建房间"))
+        
+        this.main_container = new FlexRow().add_children([
+            this.left_panel,
+            this.right_panel,
+        ])
+        
+        this.add_child(this.main_container)
     }
 
     init_style(): void {
@@ -65,9 +88,29 @@ export class WerewolfGame extends FlexColumn {
             padding: "20px",
             height: "100vh",
         })
+        this.main_container.set_style({
+            width: "100%",
+            height: "100%",
+        })
+        this.left_panel.set_style({
+            width: "40%",
+            minWidth: "300px",
+            borderRight: "1px solid #ccc",
+            paddingRight: "15px",
+        })
+        this.right_panel.set_style({
+            flex: 1,
+            paddingLeft: "15px",
+            overflow: "auto",
+        })
+        this.collapse_btn.set_style({
+            marginBottom: "10px",
+            fontSize: "12px",
+        })
     }
 
     init_event(): void {
+        this.collapse_btn.on_click(() => this._toggle_lobby())
         this.create_room_btn.on_click(() => this._create_room())
         this.refresh_btn.on_click(() => this._load_rooms())
         this.ready_btn.on_click(() => this._toggle_ready())
@@ -76,6 +119,7 @@ export class WerewolfGame extends FlexColumn {
         this.add_ai_btn.on_click(() => this._add_ai_player())
         this.speech_btn.on_click(() => this._send_speech())
         this.vote_btn.on_click(() => this._send_vote())
+        this.finish_night_btn.on_click(() => this._finish_night())
     }
 
     render(): void {
@@ -98,11 +142,6 @@ export class WerewolfGame extends FlexColumn {
     _get_room_id(): string {
         const urlParams = new URLSearchParams(window.location.search)
         return urlParams.get("room_id") || ""
-    }
-
-    _get_route(): string {
-        const urlParams = new URLSearchParams(window.location.search)
-        return urlParams.get("route") || ""
     }
 
     _create_lobby_panel(): FlexColumn {
@@ -130,7 +169,7 @@ export class WerewolfGame extends FlexColumn {
         ])
         
         top_bar.set_style({ alignItems: "center" })
-        this.room_name_input.set_style({ width: "200px" })
+        this.room_name_input.set_style({ width: "150px" })
         this.create_room_btn.set_style({ cursor: "pointer", marginLeft: "10px" })
         this.refresh_btn.set_style({ cursor: "pointer", marginLeft: "10px" })
         this.lobby_room_list.set_style({ marginTop: "20px", minHeight: "300px" })
@@ -180,26 +219,30 @@ export class WerewolfGame extends FlexColumn {
         this.game_state_span = new Span()
         this.round_span = new Span()
         this.phase_span = new Span()
+        this.role_info_span = new Span()
         this.players_container = new FlexColumn()
         this.log_container = new Pre()
         this.speech_input = new TextArea()
-        this.speech_btn = new Button().set_value("发言")
-        this.vote_input = new Input().set_placeholder("投票座位号")
+        this.speech_btn = new Button().set_value("发送发言")
+        this.vote_input = new Input().set_placeholder("投票座位号(1-9)")
         this.vote_btn = new Button().set_value("投票")
         this.vote_panel = new FlexRow().add_children([this.vote_input, this.vote_btn])
         this.night_action_panel = new FlexColumn()
+        this.finish_night_btn = new Button().set_value("完成夜晚行动")
         
         this.action_panel = new FlexColumn().add_children([
             this.speech_input,
             this.speech_btn,
             this.vote_panel,
             this.night_action_panel,
+            this.finish_night_btn,
         ])
         
         this.gaming_header = new FlexRow().add_children([
             this.game_state_span,
             this.round_span,
             this.phase_span,
+            this.role_info_span,
         ])
         
         const content_row = new FlexRow().add_children([
@@ -214,26 +257,41 @@ export class WerewolfGame extends FlexColumn {
         ])
         
         this.gaming_header.set_style({ marginBottom: "10px" })
+        this.role_info_span.set_style({ marginLeft: "20px", fontWeight: "bold" })
         this.players_container.set_style({ minWidth: "300px", borderRight: "1px solid #ccc" })
         this.log_container.set_style({ minHeight: "400px", padding: "10px", overflow: "auto" })
         this.action_panel.set_style({ marginTop: "10px", borderTop: "1px solid #ccc", padding: "10px" })
         this.speech_input.set_style({ width: "400px", height: "100px" })
         this.vote_panel.set_style({ display: "none", marginTop: "10px" })
         this.night_action_panel.set_style({ display: "none", marginTop: "10px" })
+        this.finish_night_btn.set_style({ display: "none", marginTop: "10px" })
         
         return panel
     }
 
+    _toggle_lobby(): void {
+        this.lobby_collapsed = !this.lobby_collapsed
+        if (this.lobby_collapsed) {
+            this.left_panel.set_style({ width: "50px", minWidth: "50px" })
+            this.lobby_panel.set_style({ display: "none" })
+            this.collapse_btn.set_value("▶ 展开")
+        } else {
+            this.left_panel.set_style({ width: "40%", minWidth: "300px" })
+            this.lobby_panel.set_style({ display: "flex" })
+            this.collapse_btn.set_value("◀ 折叠")
+        }
+    }
+
     _switch_view(view: ViewState): void {
         this.current_view = view
-        this.clear()
+        this.right_panel.clear()
         
         if (view === "lobby") {
-            this.add_child(this.lobby_panel)
+            this.right_panel.add_child(new Span().set_html("请选择房间或创建房间"))
         } else if (view === "waiting") {
-            this.add_child(this.waiting_panel)
+            this.right_panel.add_child(this.waiting_panel)
         } else if (view === "gaming") {
-            this.add_child(this.gaming_panel)
+            this.right_panel.add_child(this.gaming_panel)
         }
     }
 
@@ -336,16 +394,13 @@ export class WerewolfGame extends FlexColumn {
             this._handle_room_message(msg)
         })
         
-        if (this.my_info?.username) {
-            const personal_topic = `${topic}_${this.my_info.username}`
+        const current_username = web_dom.get_local_data(Ct.username)
+        if (current_username) {
+            const personal_topic = `${topic}_${current_username}`
             web_socket.sub(personal_topic, (msg: any) => {
                 if (msg.type === Ct.MSG_ROLE_INFO) {
-                    this.my_info = { ...this.my_info, role: msg.role, wolves: msg.wolves }
-                    if (this.current_view === "waiting") {
-                        this._render_waiting_players()
-                    } else if (this.current_view === "gaming") {
-                        this._render_gaming_players()
-                    }
+                    this.my_info = { ...this.my_info, role: msg.role, seat: msg.seat, wolves: msg.wolves }
+                    this._render_gaming_state()
                 }
             })
         }
@@ -475,6 +530,13 @@ export class WerewolfGame extends FlexColumn {
         this.round_span.set_html(`阶段: ${this.room_info?.phase || ""}`)
         this.phase_span.set_html(`状态: ${this.room_info?.state || ""}`)
         
+        if (this.my_info?.role) {
+            this.role_info_span.set_html(`你的身份: ${this.my_info.role}`)
+            this.role_info_span.set_style({ color: this.my_info.role === "wolf" ? "red" : "blue" })
+        } else {
+            this.role_info_span.set_html("")
+        }
+        
         this._render_gaming_players()
         this._render_gaming_logs()
         this._update_action_panel()
@@ -514,12 +576,14 @@ export class WerewolfGame extends FlexColumn {
             this.speech_btn.set_style({ display: "none" })
             this.vote_panel.set_style({ display: "none" })
             this.night_action_panel.set_style({ display: "none" })
+            this.finish_night_btn.set_style({ display: "none" })
             return
         }
         
         if (phase === "day") {
             this.vote_panel.set_style({ display: "none" })
             this.night_action_panel.set_style({ display: "none" })
+            this.finish_night_btn.set_style({ display: "none" })
             
             if (is_alive && this.my_info?.seat === this.current_speaker) {
                 this.can_speech = true
@@ -531,6 +595,7 @@ export class WerewolfGame extends FlexColumn {
         } else if (phase === "vote") {
             this.speech_btn.set_style({ display: "none" })
             this.night_action_panel.set_style({ display: "none" })
+            this.finish_night_btn.set_style({ display: "none" })
             
             if (is_alive) {
                 this.can_vote = true
@@ -543,16 +608,24 @@ export class WerewolfGame extends FlexColumn {
             this.speech_btn.set_style({ display: "none" })
             this.vote_panel.set_style({ display: "none" })
             
-            if (is_alive && this.my_info?.role) {
+            if (is_alive && this.my_info?.role && this.my_info.role !== "villager" && this.my_info.role !== "hunter") {
                 this.can_night_action = true
                 this._render_night_actions()
+                this.finish_night_btn.set_style({ display: "inline-block" })
+            } else if (is_alive) {
+                this.night_action_panel.set_style({ display: "flex" })
+                this.night_action_panel.clear()
+                this.night_action_panel.add_child(new Span().set_html("你是村民/猎人，等待夜晚结束..."))
+                this.finish_night_btn.set_style({ display: "inline-block" })
             } else {
                 this.night_action_panel.set_style({ display: "none" })
+                this.finish_night_btn.set_style({ display: "none" })
             }
         } else {
             this.speech_btn.set_style({ display: "none" })
             this.vote_panel.set_style({ display: "none" })
             this.night_action_panel.set_style({ display: "none" })
+            this.finish_night_btn.set_style({ display: "none" })
         }
     }
 
@@ -615,8 +688,6 @@ export class WerewolfGame extends FlexColumn {
                 target_input,
                 protect_btn,
             ])
-        } else {
-            this.night_action_panel.add_child(new Span().set_html("等待夜晚结束..."))
         }
     }
 
@@ -641,11 +712,11 @@ export class WerewolfGame extends FlexColumn {
             this._append_log(`[死亡公告] ${msg.seat}号(${msg.username})死亡，原因: ${msg.reason}`)
             this._render_gaming_players()
         } else if (msgType === Ct.MSG_NIGHT_BEGIN) {
-            this._append_log(`\n=== 第${msg.round}回合 夜晚开始 ===`)
+            this._append_log(`\n=== 第${msg.round}回合 天黑请闭眼 ===`)
             this.room_info = { ...this.room_info, phase: "night", round_num: msg.round }
             this._update_action_panel()
         } else if (msgType === Ct.MSG_NIGHT_END) {
-            this._append_log(`=== 夜晚结束 ===`)
+            this._append_log(`=== 天亮了 ===`)
             if (msg.deaths && msg.deaths.length > 0) {
                 this._append_log(`昨夜死亡: ${msg.deaths.join(",")}号`)
             } else {
@@ -717,6 +788,16 @@ export class WerewolfGame extends FlexColumn {
             room_id: this.room_id,
             action_type,
             target_seat,
+        }, (resp: Node) => {
+            if (!resp.ok) {
+                alert(resp.title)
+            }
+        })
+    }
+
+    _finish_night(): void {
+        web_dom.post("/werewolf/room/finish_night_action", {
+            room_id: this.room_id,
         }, (resp: Node) => {
             if (!resp.ok) {
                 alert(resp.title)
