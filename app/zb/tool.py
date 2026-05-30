@@ -11,8 +11,8 @@ class ZbTool(ToolBase):
         self.packager = TaskPackager()
         self.trajectory_builder = TrajectoryBuilder()
 
-    def llm(self, name):
-        self.builder.set_env(name).llm()
+def llm(self, name, manual=False):
+    self.builder.set_env(name).llm(manual=manual)
 
     def build(self, name):
         self.builder.set_env(name).build()

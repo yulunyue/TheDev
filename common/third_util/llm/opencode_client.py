@@ -1,9 +1,10 @@
 from opencode_ai import Opencode
 from opencode_ai.types.session import Session
 from opencode_ai.types.text_part_input_param import TextPartInputParam
-from typing import Optional
+from typing import Optional, Callable
 import httpx
 import time
+import threading
 
 from .llm_config import LlmConfig
 from .opencode_db import OpencodeDb
@@ -50,47 +51,57 @@ class OpencodeClient:
         title = title or self.cwd.split("/").pop()
         return self.client.session.create(extra_body=dict(title=title))
 
-    def execute_task(self, session_id: str, prompt: str, wait_func=None, timeout: int = 5 * 60) -> Node:
+    def execute_task(self, session_id: str, prompt: str, timeout: int = 300) -> str:
         text_part = TextPartInputParam(type="text", text=prompt)
-        try:
-            result = self.client.session.chat(
-                id=session_id,
-                model_id=self.model_id,
-                provider_id=self.provider_id,
-                parts=[text_part],
-                timeout=timeout,
-            )
-            data = result.model_dump()
-            text = self._extract_text(data)
-            tool_parts = [p for p in data.get("parts", []) if p.get("type") == "tool"]
-            return Node(ok=True, value=text, data={"session_id": session_id, "tool_parts": tool_parts})
-        except Exception as e:
-            logger.warning(f"chat 异常, session_id={session_id}: {e}")
-            return Node(ok=False, title=str(e), data={"session_id": session_id})
 
-    def wait_result(self, session_id: str, timeout: int = 300) -> Node:
+        def _chat_thread():
+            try:
+                self.client.session.chat(
+                    id=session_id,
+                    model_id=self.model_id,
+                    provider_id=self.provider_id,
+                    parts=[text_part],
+                    timeout=timeout,
+                )
+            except Exception as e:
+                logger.warning(f"chat 异常, session_id={session_id}: {e}")
+
+        thread = threading.Thread(target=_chat_thread, daemon=True)
+        thread.start()
+
+        return session_id
+
+    def wait_result(
+        self,
+        session_id: str,
+        timeout: int = 300,
+        wait_call: Optional[Callable[[str], bool]] = None,
+    ) -> Node:
         db = OpencodeDb.get_instance()
-        messages = db.wait_for_data(session_id, timeout=timeout)
-        if not messages:
-            return Node(
-                ok=False,
-                title="等待 LLM 结果超时",
-                data={"session_id": session_id},
-            )
-        text, tool_parts = self._parse_messages(messages)
+        checker = wait_call or db.is_session_complete
+
+        start = time.time()
+        while time.time() - start < timeout:
+            if checker(session_id):
+                messages = db.get_messages(session_id)
+                text, tool_parts = self._parse_messages(messages)
+                return Node(
+                    ok=True,
+                    value=text,
+                    data={"session_id": session_id, "tool_parts": tool_parts},
+                )
+            time.sleep(1.0)
+
         return Node(
-            ok=True,
-            value=text,
-            data={"session_id": session_id, "tool_parts": tool_parts},
+            ok=False,
+            title="等待 LLM 结果超时",
+            data={"session_id": session_id},
         )
 
+    def do_prompt(self, prompt: str) -> str:
+        s = self.create_session()
+        return self.execute_task(s.id, prompt)
 
-    @staticmethod
-    def _extract_text(result: dict) -> str:
-        for part in result.get("parts", []):
-            if part.get("type") == "text":
-                return part.get("text", "")
-        return ""
 
     @staticmethod
     def _parse_messages(messages):

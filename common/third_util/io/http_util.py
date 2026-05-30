@@ -6,11 +6,16 @@ import ssl
 ssl_context = ssl._create_unverified_context()
 
 
-def requests_get(uri, verify=False, timeout=10, headers=None, **kw):
-    req = urllib.request.Request(uri, headers=headers)
-    res: HTTPResponse = urllib.request.urlopen(
-        req, timeout=timeout, context=ssl_context
-    )
+def requests_get(uri, verify=False, timeout=10, headers=None, proxy=None, **kw):
+    req = urllib.request.Request(uri, headers=headers or {})
+    
+    if proxy:
+        proxy_handler = urllib.request.ProxyHandler({"http": proxy, "https": proxy})
+        opener = urllib.request.build_opener(proxy_handler, urllib.request.HTTPSHandler(context=ssl_context))
+        res: HTTPResponse = opener.open(req, timeout=timeout)
+    else:
+        res: HTTPResponse = urllib.request.urlopen(req, timeout=timeout, context=ssl_context)
+    
     return res.status, res.read()
 
 

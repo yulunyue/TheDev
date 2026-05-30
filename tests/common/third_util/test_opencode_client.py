@@ -130,11 +130,9 @@ class TestOpencodeClientIntegration(unittest.TestCase):
 
     def test_execute_task_returns_session_id(self):
         s = self.client.create_session(title="ut_exec")
-        result = self.client.execute_task(s.id, "say hello")
-        self.assertIsInstance(result, Node)
-        self.assertTrue(result.ok)
-        self.assertIn("session_id", result.data)
-        self.assertEqual(result.data["session_id"], s.id)
+        session_id = self.client.execute_task(s.id, "say hello")
+        self.assertIsInstance(session_id, str)
+        self.assertEqual(session_id, s.id)
 
     def test_wait_result(self):
         s = self.client.create_session(title="ut_wait")
@@ -145,18 +143,25 @@ class TestOpencodeClientIntegration(unittest.TestCase):
         self.assertIsInstance(result.get_value(), str)
         self.assertGreater(len(result.get_value()), 0)
 
-    def test_do_prompt(self):
-        result = self.client.do_prompt("say hi")
-        self.assertIsInstance(result, Node)
+    def test_wait_result_with_custom_wait_call(self):
+        s = self.client.create_session(title="ut_wait_call")
+        self.client.execute_task(s.id, "say hello")
+        db = OpencodeDb.get_instance()
+        result = self.client.wait_result(s.id, timeout=120, wait_call=db.is_session_complete)
         self.assertTrue(result.ok)
-        self.assertIn("session_id", result.data)
+
+    def test_do_prompt(self):
+        session_id = self.client.do_prompt("say hi")
+        self.assertIsInstance(session_id, str)
+        result = self.client.wait_result(session_id, timeout=120)
+        self.assertTrue(result.ok)
 
     def test_opencodedb_read(self):
         s = self.client.create_session(title="ut_db_read")
         self.client.execute_task(s.id, "say hello")
         result = self.client.wait_result(s.id, timeout=120)
         self.assertTrue(result.ok)
-        db = OpencodeDb()
+        db = OpencodeDb.get_instance()
         messages = db.get_messages(s.id)
         self.assertGreater(len(messages), 0)
         for msg in messages:

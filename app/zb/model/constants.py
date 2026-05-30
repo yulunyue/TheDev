@@ -1,4 +1,7 @@
 from common.util.export import File, dir_object
+from common.third_util.io.http_util import requests_get
+from common.tool.export import GC
+import json
 
 ROOT = File("app/zb/task")
 REPO_ROOT = File("app/zb/repo")
@@ -7,16 +10,45 @@ MODEL_ROOT = File("app/zb/model")
 CODING_AGENT_SYSTEM_PROMPT_FILE = MODEL_ROOT.child("coding_agent_system_prompt.txt")
 
 
-def get_promot(issue_url, test_patch_content, diff_path, fail_to_pass=None, problem_statement=None):
+def fetch_github_issue(issue_url):
+    if not issue_url or "github.com" not in issue_url:
+        return None
+    
+    api_url = issue_url.replace("github.com", "api.github.com/repos")
+    headers = {"Accept": "application/vnd.github.v3+json"}
+    if GC.github_token:
+        headers["Authorization"] = f"token {GC.github_token}"
+    
+    proxy = str(GC.http_proxy) if GC.http_proxy else None
+    
+    try:
+        _, body = requests_get(api_url, headers=headers, timeout=10, proxy=proxy)
+        data = json.loads(body.decode("utf-8", errors="ignore"))
+        title = data.get("title", "")
+        body_text = data.get("body", "")
+        return f"# {title}\n\n{body_text}"
+    except Exception as e:
+        return None
+
+
+def get_promot(issue_url, issue_content=None, fail_to_pass=None):
     fail_str = ""
     if fail_to_pass:
         fail_str = "\n\n需要修复的测试（FAIL_TO_PASS，修复后应通过）:\n" + "\n".join(f"- {t}" for t in fail_to_pass)
     
-    problem_str = ""
-    if problem_statement:
-        problem_str = f"\n\n问题描述:\n{problem_statement}"
+    issue_str = ""
+    if issue_content:
+        issue_str = f"\n\nIssue 内容:\n{issue_content}"
     
-    return f"分析 {issue_url} 的问题。{problem_str}{fail_str}\n\n根据 test.patch 内容:\n{test_patch_content}\n\n修复这个问题，并将修复的代码补丁输出到 {diff_path}。\n\n注意:\n- 任何错误请停止并说明原因，不要自行处理\n- 确保修复后 FAIL_TO_PASS 测试全部通过"
+    return f"""分析 {issue_url} 的问题。{issue_str}{fail_str}
+
+已为你应用了 test.patch，请阅读测试代码理解测试预期。
+
+要求：
+1. 仅分析代码并修复问题，不要安装依赖或运行测试
+2. 使用 edit 工具直接修改代码文件
+3. 修复完成后告诉我，我会自动生成 diff 补丁
+4. 不要执行任何 pip install、pytest 或其他环境操作"""
 
 
 TOOLS_SCHEMA = [

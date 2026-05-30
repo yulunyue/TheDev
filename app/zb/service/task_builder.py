@@ -4,7 +4,7 @@ from common.util.export import File
 from common.third_service.docker.docker_util import DockerUtil
 from common.third_service.git_tool.git_util import GitUtil
 
-from ..model.constants import Fp, ROOT, get_promot, REPO_ROOT
+from ..model.constants import Fp, ROOT, get_promot, fetch_github_issue, REPO_ROOT
 
 
 class TaskBuilder:
@@ -34,31 +34,45 @@ class TaskBuilder:
     def issue_url(self):
         return self.instance_json.get("issue_url")
 
-    def llm(self):
+    def llm(self, manual=False):
         git = GitUtil(workdir=self.repo_root.path)
         git.git_clean()
         git.git_reset(self.base_commit)
         git.git_apply(self.src_test_pattch.path)
         logger.info(f"Git reset to {self.base_commit}, applied test.patch {self.repo_root}")
+        
+        issue_content = fetch_github_issue(self.issue_url)
+        
         promot = get_promot(
             self.issue_url,
-            self.src_test_pattch.read_file(),
-            self.src_final_diff.path,
+            issue_content=issue_content,
             fail_to_pass=self.instance_json.get("FAIL_TO_PASS"),
-            problem_statement=self.instance_json.get("problem_statement"),
         )
         logger.info(self.src_root.child(Fp.promot_txt).write_file(promot))
-        session_id = input("session_id")
-        # o = self.client.new(
-        #     self.repo_root.path
-        # ).start_server()
-        # result = o.do_prompt(promot)
-        # session_id = result.data["session_id"]
-        # o.stop()
-        self.src_root.child(Fp.opencode_json).set("session_id",session_id)
-        logger.info(f"LLM 完成, session_id={session_id}")
         
-
+        if manual:
+            session_id = input("session_id")
+        else:
+            o = self.client.new(self.repo_root.path).start_server()
+            result = o.do_prompt(promot)
+            session_id = result.data["session_id"]
+            final_result = o.wait_result(session_id, timeout=1800)
+            o.stop()
+            if not final_result.ok:
+                logger.error(f"LLM 任务失败: {final_result.title}")
+                self.src_root.child(Fp.opencode_json).set("session_id", session_id)
+                return final_result
+        
+        diff_content = git.git_diff()
+        if diff_content and diff_content.strip():
+            self.src_final_diff.write_file(diff_content)
+            logger.info(f"生成 final.diff: {self.src_final_diff.path}")
+        else:
+            logger.warning("git diff 为空，LLM 未修改代码")
+        
+        self.src_root.child(Fp.opencode_json).set("session_id", session_id)
+        logger.info(f"LLM 完成, session_id={session_id}")
+   
     def build(self):
         image_name = self.env
         self._docker_build(self.tmp_root, image_name)
