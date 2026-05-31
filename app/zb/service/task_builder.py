@@ -99,12 +99,16 @@ class TaskBuilder:
 
         test_patch_content = self.src_test_pattch.read_file() if self.src_test_pattch.exists() else None
 
+        promot_mock_file = self.src_root.child("promot_mock.txt")
+        mock_content = promot_mock_file.read_file() if promot_mock_file.exists() else None
+
         promot = get_promot(
             self.issue_url,
             issue_content=issue_content,
             fail_to_pass=self.instance_json.get("FAIL_TO_PASS"),
             pass_to_pass=self.instance_json.get("PASS_TO_PASS"),
             test_patch_content=test_patch_content,
+            mock_prompt=mock_content,
         )
         logger.info(self.src_root.child(PROMOT_TXT).write_file(promot))
 

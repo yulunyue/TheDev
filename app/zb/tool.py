@@ -6,20 +6,16 @@ from .model.constants import OPENCODE_JSON_FILE_NAME
 from .service import TaskBuilder, TaskPackager
 from .service.task_packager import OUTPUT_DIR
 
-STEPS = ["docker_build", "pre_check", "llm_build", "llm_check", "package", "quality_check"]
+STEPS = [
+    "docker_build",
+    "pre_check",
+    "llm_build",
+    "llm_check",
+    "package",
+    "quality_check",
+]
 
 _ERROR_MAX_LEN = 500
-
-
-def _clean_error(e: Exception) -> str:
-    msg = str(e)
-    msg = msg.replace("\x00", "")
-    msg = msg.replace("\\x00", "")
-    import re
-    msg = re.sub(r"\x1b\[[0-9;]*[a-zA-Z]", "", msg)
-    if len(msg) > _ERROR_MAX_LEN:
-        msg = msg[:_ERROR_MAX_LEN] + "..."
-    return msg
 
 
 class ZbTool(ToolBase):
@@ -97,7 +93,9 @@ class ZbTool(ToolBase):
             zip_file.unzip(dst=project_dir)
 
         report_path = OUTPUT_DIR.child(f"{root.name}_qc_report.json").path
-        passed = run_checks(StdPath(project_dir.get_abs_path()), image_name, report_path)
+        passed = run_checks(
+            StdPath(project_dir.get_abs_path()), image_name, report_path
+        )
         if not passed:
             raise Exception("quality_check 未通过")
 

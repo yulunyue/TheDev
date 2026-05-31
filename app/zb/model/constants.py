@@ -37,6 +37,7 @@ def get_promot(
     fail_to_pass=None,
     pass_to_pass=None,
     test_patch_content=None,
+    mock_prompt=None,
 ):
     fail_str = ""
     if fail_to_pass:
@@ -60,7 +61,11 @@ def get_promot(
             f"\n\ntest.patch 内容（已应用到代码中）:\n```\n{test_patch_content}\n```"
         )
 
-    return f"""分析以下问题。{issue_str}{fail_str}{pass_str}{test_patch_str}
+    mock_str = ""
+    if mock_prompt:
+        mock_str = f"\n\n{mock_prompt}"
+
+    return f"""分析以下问题。{issue_str}{fail_str}{pass_str}{test_patch_str}{mock_str}
 
 请先阅读测试断言理解预期行为，再定位并修复代码。
 

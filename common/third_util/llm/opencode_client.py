@@ -18,6 +18,7 @@ class OpencodeClient:
         self.cwd = cwd
         self.base_url = base_url
         self.timeout = timeout
+        self.task_timeout = 1800
         self.model_id = ""
         self.provider_id = ""
         self._client: Opencode = None
@@ -51,7 +52,7 @@ class OpencodeClient:
         title = title or self.cwd.split("/").pop()
         return self.client.session.create(extra_body=dict(title=title))
 
-    def execute_task(self, session_id: str, prompt: str, timeout: int = 300) -> str:
+    def execute_task(self, session_id: str, prompt: str) -> str:
         text_part = TextPartInputParam(type="text", text=prompt)
 
         def _chat_thread():
@@ -61,7 +62,7 @@ class OpencodeClient:
                     model_id=self.model_id,
                     provider_id=self.provider_id,
                     parts=[text_part],
-                    timeout=timeout,
+                    timeout=self.task_timeout,
                 )
             except Exception as e:
                 logger.warning(f"chat 异常, session_id={session_id}: {e}")
