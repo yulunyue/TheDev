@@ -9,24 +9,7 @@ from common.util.export import File, logger, IO_MANAGE, Module
 def start():
     env = sys.argv[1] if len(sys.argv) > 1 else "dev"
     TornadaWebSocketConnectHandler.handler_msg = IO_MANAGE.handler_msg
-    HTTP_CONF_FILE = File(f"config/setting/{env}.json").write_if_not_exists(
-        dict(
-            py_modules=[
-                dict(
-                    path="./",
-                    modules={
-                        "/app/agent": "app.tool.agent::Agent",
-                        "/app/manage": "app.tool.manage::Manage",
-                        "/app/user": "app.tool.user::User",
-                        "/app/todo": "app.tool.todo::Todo",
-                        "/app/api": "app.tool.api::ApiGlobal",
-                    },
-                )
-            ],
-            port=9999,
-        )
-    )
-
+    HTTP_CONF_FILE = File(f"config/setting/http/{env}.json")
     logger.info(HTTP_CONF_FILE)
     conf = HTTP_CONF_FILE.read_file()
     plugins = conf.get("plugins", [])

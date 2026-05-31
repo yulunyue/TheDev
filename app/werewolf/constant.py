@@ -64,6 +64,8 @@ class Constant:
     NIGHT_ACTION_TIME_LIMIT = 20
     
     AI_NAME_PREFIX = "AI_"
+    
+    WEREWOLF_DB = "data/werewolf/werewolf.db"
 
 
 C = Constant()

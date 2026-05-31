@@ -46,14 +46,27 @@ async function loadDefaultConfig() {
     }
 }
 
-async function getSessionTitle(input, sessionID) {
+async function getSessionData(input, sessionID) {
     try {
         const result = await input.client.session.get({ path: { id: sessionID } });
         await fileLog(`session data: ${JSON.stringify(result?.data)}`);
-        return result?.data?.title || "";
+        return result?.data || {};
     } catch (e) {
-        await fileLog(`get session title error: ${e.message}`);
-        return "";
+        await fileLog(`get session data error: ${e.message}`);
+        return {};
+    }
+}
+
+async function getParentSessionTitle(input, parentID) {
+    if (!parentID) return null;
+    try {
+        const result = await input.client.session.get({ path: { id: parentID } });
+        const title = result?.data?.title;
+        await fileLog(`parent session title: ${title}`);
+        return title || null;
+    } catch (e) {
+        await fileLog(`get parent session title error: ${e.message}`);
+        return null;
     }
 }
 
@@ -113,9 +126,14 @@ function clearSessionState(sessionID) {
 
 async function processEvent(input, event, config) {
     const sessionID = event.properties.sessionID;
-    const sessionTitle = await getSessionTitle(input, sessionID);
+    const sessionData = await getSessionData(input, sessionID);
+    const parentID = sessionData?.parentID;
     
-    await fileLog(`processEvent: ${event.type}, sessionID=${sessionID}, sessionTitle=${sessionTitle}`);
+    const sessionTitle = parentID 
+        ? (await getParentSessionTitle(input, parentID)) || sessionData?.title 
+        : sessionData?.title;
+    
+    await fileLog(`processEvent: ${event.type}, sessionID=${sessionID}, sessionTitle=${sessionTitle}, parentID=${parentID || 'none'}`);
     
     let value = {
         key: sessionTitle,

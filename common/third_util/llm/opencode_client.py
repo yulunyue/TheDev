@@ -75,12 +75,16 @@ class OpencodeClient:
         self,
         session_id: str,
         timeout: int = 300,
+        stall_timeout: int = 300,
         wait_call: Optional[Callable[[str], bool]] = None,
     ) -> Node:
         db = OpencodeDb.get_instance()
         checker = wait_call or db.is_session_complete
 
         start = time.time()
+        last_part_count = 0
+        last_active_time = start
+
         while time.time() - start < timeout:
             if checker(session_id):
                 messages = db.get_messages(session_id)
@@ -90,7 +94,22 @@ class OpencodeClient:
                     value=text,
                     data={"session_id": session_id, "tool_parts": tool_parts},
                 )
-            time.sleep(1.0)
+
+            current_count = db._conn.execute(
+                "SELECT COUNT(*) as cnt FROM part WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()["cnt"]
+            if current_count > last_part_count:
+                last_part_count = current_count
+                last_active_time = time.time()
+            elif time.time() - last_active_time > stall_timeout:
+                return Node(
+                    ok=False,
+                    title=f"LLM 会话卡住，{stall_timeout}秒无新消息",
+                    data={"session_id": session_id},
+                )
+
+            time.sleep(3.0)
 
         return Node(
             ok=False,

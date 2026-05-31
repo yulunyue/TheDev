@@ -1,5 +1,5 @@
 from common.util.export import ApiBase, Node, IO_MANAGE, json, random, time, logger
-from .model import RoomModel, PlayerModel, GameLogModel, AIMemoryModel
+from .models import RoomModel, PlayerModel, GameLogModel, AIMemoryModel
 from .constant import Role, Phase, GameState, C
 from .engine import GameEngine
 
@@ -8,9 +8,10 @@ class Room(ApiBase):
     ROUTE_PATH = "/werewolf/room"
     
     def start_game(self, room_id: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         if room.host.get_value() != self.username:
             return Node(ok=False, title="只有房主可以开始游戏")
@@ -29,9 +30,10 @@ class Room(ApiBase):
         return Node(ok=True, title="游戏已开始")
     
     def speech(self, room_id: str, content: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         if room.phase.get_value() != Phase.DAY.value:
             return Node(ok=False, title="当前不是发言阶段")
@@ -67,9 +69,10 @@ class Room(ApiBase):
         return Node(ok=True)
     
     def vote(self, room_id: str, target_seat: int, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         if room.phase.get_value() != Phase.VOTE.value:
             return Node(ok=False, title="当前不是投票阶段")
@@ -110,9 +113,10 @@ class Room(ApiBase):
         return Node(ok=True)
     
     def night_action(self, room_id: str, action_type: str, target_seat: int = 0, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         if room.phase.get_value() != Phase.NIGHT.value:
             return Node(ok=False, title="当前不是夜晚阶段")
@@ -132,9 +136,10 @@ class Room(ApiBase):
         return Node(ok=result.get("ok", True), title=result.get("title", ""))
     
     def hunter_shot(self, room_id: str, target_seat: int, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         player = PlayerModel.get_player_by_room_username(room_id, self.username)
         if not player:
@@ -156,14 +161,17 @@ class Room(ApiBase):
         return Node(ok=True, title="猎人开枪成功")
     
     def get_game_state(self, room_id: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         player = PlayerModel.get_player_by_room_username(room_id, self.username)
         
         players = PlayerModel.get_players_by_room(room_id)
         logs = GameLogModel.get_logs_by_room(room_id, room.round_num.get_value())
+        
+        confirmed_roles = GameEngine.get_confirmed_roles(room_id, room, player, players)
         
         return Node(ok=True, data={
             "room": room.to_public_dict(),
@@ -171,12 +179,14 @@ class Room(ApiBase):
             "my_info": player.to_private_dict() if player else None,
             "logs": [{"type": l.event_type.get_value(), "actor": l.actor.get_value(), 
                       "target": l.target.get_value(), "content": l.content.get_value()} for l in logs],
+            "confirmed_roles": confirmed_roles,
         })
     
     def finish_night_action(self, room_id: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         if room.phase.get_value() != Phase.NIGHT.value:
             return Node(ok=False, title="当前不是夜晚阶段")

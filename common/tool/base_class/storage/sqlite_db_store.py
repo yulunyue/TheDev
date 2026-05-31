@@ -6,6 +6,9 @@ from ..base_model import BaseModel
 from common.util.export import logger, List, Dict, Self, json, re
 
 
+_shared_connections: Dict[str, sqlite3.Connection] = {}
+
+
 class SqliteDbStore(ConfigBase):
     _conn = None
     _config = None
@@ -86,11 +89,25 @@ class SqliteDbStore(ConfigBase):
     def init_resource(cls):
         cls._config = dict()
         os.makedirs(os.path.dirname(cls.resource_path), exist_ok=True)
-        cls._conn = sqlite3.connect(cls.resource_path, check_same_thread=False)
+        db_path = cls.resource_path
+        if db_path in _shared_connections:
+            cls._conn = _shared_connections[db_path]
+        else:
+            cls._conn = sqlite3.connect(db_path, check_same_thread=False)
+            _shared_connections[db_path] = cls._conn
         cls._table_name = cls._get_table_name()
         cls._create_table()
         cls.load_data_from_db()
         return cls.instance_map
+
+    @classmethod
+    def close_resource(cls):
+        if cls._conn:
+            db_path = cls.resource_path
+            if db_path in _shared_connections:
+                _shared_connections.pop(db_path)
+            cls._conn.close()
+            cls._conn = None
 
     @classmethod
     def load_data_from_db(cls):

@@ -31,24 +31,33 @@ def fetch_github_issue(issue_url):
         return None
 
 
-def get_promot(issue_url, issue_content=None, fail_to_pass=None):
+def get_promot(issue_url, issue_content=None, fail_to_pass=None, pass_to_pass=None, test_patch_content=None):
     fail_str = ""
     if fail_to_pass:
         fail_str = "\n\n需要修复的测试（FAIL_TO_PASS，修复后应通过）:\n" + "\n".join(f"- {t}" for t in fail_to_pass)
     
+    pass_str = ""
+    if pass_to_pass:
+        pass_str = "\n\n已通过的测试（PASS_TO_PASS，修复不应破坏这些）:\n" + "\n".join(f"- {t}" for t in pass_to_pass)
+    
     issue_str = ""
     if issue_content:
-        issue_str = f"\n\nIssue 内容:\n{issue_content}"
+        issue_str = f"\n\n问题描述:\n{issue_content}"
     
-    return f"""分析 {issue_url} 的问题。{issue_str}{fail_str}
+    test_patch_str = ""
+    if test_patch_content:
+        test_patch_str = f"\n\ntest.patch 内容（已应用到代码中）:\n```\n{test_patch_content}\n```"
+    
+    return f"""分析以下问题。{issue_str}{fail_str}{pass_str}{test_patch_str}
 
-已为你应用了 test.patch，请阅读测试代码理解测试预期。
+请先阅读测试断言理解预期行为，再定位并修复代码。
 
 要求：
 1. 仅分析代码并修复问题，不要安装依赖或运行测试
 2. 使用 edit 工具直接修改代码文件
 3. 修复完成后告诉我，我会自动生成 diff 补丁
-4. 不要执行任何 pip install、pytest 或其他环境操作"""
+4. 不要执行任何 pip install、pytest 或其他环境操作
+5. 禁止使用 task 工具派子任务，必须直接分析和修改代码"""
 
 
 

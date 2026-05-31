@@ -12,9 +12,16 @@ class TaskBuilder:
         self.client = opencode_client or OpencodeClient
 
     def set_env(self, name: str):
-        self.src_root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()
+        self.src_run_verification_py = ROOT.search_one(f"{name}/{Fp.run_verification_py}")
+        self.src_root = self.src_run_verification_py.parent()
         self.name = self.src_root.name
         self.env = self.name.split("-")[0]
+        
+        # 修改 run_verification.py，将 code.patch 替换为 final.diff
+        content = self.src_run_verification_py.read_file()
+        content = content.replace('"code.patch"', '"final.diff"')
+        self.src_run_verification_py.write_file(content)
+        
         self.src_test_pattch = self.src_root.child(Fp.test_patch)
         self.tmp_root = (
             File(f"data/tmp/docker_build/{self.name}")
@@ -52,12 +59,16 @@ class TaskBuilder:
         git.git_add(".")
         logger.info(f"Git reset to {self.base_commit}, applied test.patch {self.repo_root}")
         
-        issue_content = fetch_github_issue(self.issue_url)
+        issue_content = self.instance_json.get("problem_statement")
+        
+        test_patch_content = self.src_test_pattch.read_file() if self.src_test_pattch.exists() else None
         
         promot = get_promot(
             self.issue_url,
             issue_content=issue_content,
             fail_to_pass=self.instance_json.get("FAIL_TO_PASS"),
+            pass_to_pass=self.instance_json.get("PASS_TO_PASS"),
+            test_patch_content=test_patch_content,
         )
         logger.info(self.src_root.child(PROMOT_TXT).write_file(promot))
         
@@ -248,14 +259,17 @@ class TaskBuilder:
     def check(self):
         image_name = f"{self.env}:{self.name.split('-')[-1]}"
         abs_path = self.tmp_root.get_abs_path()
-        DockerUtil().run_container(
-            image=image_name,
-            detach=False,
-            rm=True,
-            network="none",
-            volumes={abs_path: "/testbed/verification"},
-            cmd="export PATH=/opt/miniconda3/envs/testbed/bin:$PATH && python /testbed/verification/run_verification.py",
-        )
+        try:
+            DockerUtil().run_container(
+                image=image_name,
+                detach=False,
+                rm=True,
+                network="none",
+                volumes={abs_path: "/testbed/verification"},
+                cmd="export PATH=/opt/miniconda3/envs/testbed/bin:$PATH && python /testbed/verification/run_verification.py",
+            )
+        except Exception:
+            pass
 
         results_json = self.tmp_root.child("results.json")
         if results_json.exists():
@@ -267,8 +281,21 @@ class TaskBuilder:
         code_patch = self.tmp_root.child(Fp.code_patch)
         if code_patch.exists():
             code_patch.move_to(self.tmp_root.child(Fp.final_diff))
-        self.check()
+        result = self.check()
+        self._assert_check_passed(result, "pre_check")
 
     def llm_check(self):
         self._copy_task_files(Fp.llm_check())
-        self.check()
+        result = self.check()
+        self._assert_check_passed(result, "llm_check")
+
+    def _assert_check_passed(self, result, step_name):
+        if result is None:
+            raise Exception(f"{step_name} 失败: results.json 未生成")
+        if isinstance(result, dict):
+            inner = result.get(self.name, result)
+            if isinstance(inner, dict) and not inner.get("resolved", True):
+                fail_fail = inner.get("tests_status", {}).get("FAIL_TO_FAIL", {})
+                fail_count = len(fail_fail.get("failure", []))
+                raise Exception(f"{step_name} 失败: {fail_count} 个测试未修复")
+        logger.info(f"{step_name} 通过")

@@ -1,7 +1,8 @@
 from common.util.export import ApiBase, Node, IO_MANAGE, json, random, time, logger
 from common.util.api.apicall import ApiCall
-from .model import RoomModel, PlayerModel
+from .models import RoomModel, PlayerModel
 from .constant import Role, Phase, GameState, C
+from .engine import GameEngine
 
 
 class Lobby(ApiBase):
@@ -32,16 +33,18 @@ class Lobby(ApiBase):
         return Node(ok=True, data={"room_id": room_id, "room": room.to_public_dict()})
     
     def join_room(self, room_id: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
         
-        if room.state.get_value() != GameState.WAITING.value:
-            return Node(ok=False, title="游戏已开始，无法加入")
+        room = RoomModel.get(room_id)
         
         existing = PlayerModel.get_player_by_room_username(room_id, self.username)
         if existing:
+            self._subscribe_room(room_id)
             return Node(ok=True, data={"room_id": room_id, "room": room.to_public_dict()})
+        
+        if room.state.get_value() != GameState.WAITING.value:
+            return Node(ok=False, title="游戏已开始，无法加入")
         
         players = PlayerModel.get_players_by_room(room_id)
         if len(players) >= C.TOTAL_PLAYERS:
@@ -58,9 +61,10 @@ class Lobby(ApiBase):
         return Node(ok=True, data={"room_id": room_id, "room": room.to_public_dict()})
     
     def leave_room(self, room_id: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         player = PlayerModel.get_player_by_room_username(room_id, self.username)
         if not player:
@@ -87,12 +91,17 @@ class Lobby(ApiBase):
         return Node(ok=True)
     
     def get_room_info(self, room_id: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         players = PlayerModel.get_players_by_room(room_id)
         player = PlayerModel.get_player_by_room_username(room_id, self.username)
+        
+        confirmed_roles = {}
+        if room.state.get_value() in (GameState.GAMING.value, GameState.ENDED.value) and player:
+            confirmed_roles = GameEngine.get_confirmed_roles(room_id, room, player, players)
         
         return Node(ok=True, data={
             "room": room.to_public_dict(),
@@ -100,6 +109,7 @@ class Lobby(ApiBase):
             "my_seat": player.seat.get_value() if player else 0,
             "is_in_room": player is not None,
             "my_info": player.to_public_dict() if player else None,
+            "confirmed_roles": confirmed_roles,
         })
     
     def set_ready(self, room_id: str, ready: bool, **kw):
@@ -115,9 +125,10 @@ class Lobby(ApiBase):
         return Node(ok=True)
     
     def add_ai_player(self, room_id: str, ai_persona: str = "", **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         if room.host.get_value() != self.username:
             return Node(ok=False, title="只有房主可以添加AI")
@@ -146,9 +157,10 @@ class Lobby(ApiBase):
         return Node(ok=True, data={"ai_username": ai_username, "seat": seat})
     
     def remove_ai_player(self, room_id: str, ai_username: str, **kw):
-        room = RoomModel.get(room_id)
-        if not room:
+        if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
+        
+        room = RoomModel.get(room_id)
         
         if room.host.get_value() != self.username:
             return Node(ok=False, title="只有房主可以移除AI")

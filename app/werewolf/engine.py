@@ -1,5 +1,5 @@
 from common.util.export import IO_MANAGE, Node, json, random, time, logger
-from .model import RoomModel, PlayerModel, GameLogModel, AIMemoryModel
+from .models import RoomModel, PlayerModel, GameLogModel, AIMemoryModel
 from .constant import Role, Phase, GameState, C
 
 
@@ -7,6 +7,37 @@ class GameEngine:
     def __init__(self, room_id: str):
         self.room_id = room_id
         self.room = RoomModel.get(room_id)
+    
+    @staticmethod
+    def get_confirmed_roles(room_id: str, room, player, players: list) -> dict:
+        if not player:
+            return {}
+        
+        confirmed = {}
+        
+        if room.state.get_value() == GameState.ENDED.value:
+            for p in players:
+                role = p.role.get_value()
+                if role and role != Role.UNSET.value:
+                    confirmed[p.seat.get_value()] = role
+            return confirmed
+        
+        my_role = player.role.get_value()
+        if my_role and my_role != Role.UNSET.value:
+            confirmed[player.seat.get_value()] = my_role
+        
+        if my_role == Role.WOLF.value:
+            for p in players:
+                if p.role.get_value() == Role.WOLF.value and p.username.get_value() != player.username.get_value():
+                    confirmed[p.seat.get_value()] = Role.WOLF.value
+        
+        hunter_logs = GameLogModel.get_logs_by_room(room_id)
+        for log in hunter_logs:
+            if log.event_type.get_value() == "hunter_shot":
+                actor_seat = int(log.actor.get_value())
+                confirmed[actor_seat] = Role.HUNTER.value
+        
+        return confirmed
     
     def start_game(self):
         players = PlayerModel.get_players_by_room(self.room_id)

@@ -57,6 +57,7 @@ export class WerewolfGame extends FlexColumn {
     can_speech: boolean = false
     can_vote: boolean = false
     can_night_action: boolean = false
+    confirmed_roles: Map<number, string> = new Map()
 
     init_node(): void {
         this.lobby_panel = this._create_lobby_panel()
@@ -372,6 +373,10 @@ export class WerewolfGame extends FlexColumn {
                 
                 this.is_host = this.room_info?.host === this.my_info?.username
                 
+                if (resp.data.confirmed_roles) {
+                    this.confirmed_roles = new Map(Object.entries(resp.data.confirmed_roles).map(([k, v]) => [Number(k), v as string]))
+                }
+                
                 if (this.room_info?.state === "waiting") {
                     this._switch_view("waiting")
                     this._render_waiting_players()
@@ -400,6 +405,12 @@ export class WerewolfGame extends FlexColumn {
             web_socket.sub(personal_topic, (msg: any) => {
                 if (msg.type === Ct.MSG_ROLE_INFO) {
                     this.my_info = { ...this.my_info, role: msg.role, seat: msg.seat, wolves: msg.wolves }
+                    this.confirmed_roles.set(msg.seat, msg.role)
+                    if (msg.wolves && msg.wolves.length > 0) {
+                        for (const wolfSeat of msg.wolves) {
+                            this.confirmed_roles.set(wolfSeat, "wolf")
+                        }
+                    }
                     this._render_gaming_state()
                 }
             })
@@ -451,9 +462,14 @@ export class WerewolfGame extends FlexColumn {
                 row.add_child(new Span().set_html(player.is_alive ? "存活" : "死亡")
                     .set_style({ color: alive_color, marginLeft: "10px" }))
                 
-                if (is_me && this.my_info?.role) {
-                    row.add_child(new Span().set_html(`[${this.my_info.role}]`)
-                        .set_style({ color: "blue", marginLeft: "10px" }))
+                const confirmed_role = this.confirmed_roles.get(player.seat)
+                if (confirmed_role) {
+                    const role_color = confirmed_role === "wolf" ? "red" : "blue"
+                    row.add_child(new Span().set_html(`[${confirmed_role}]`)
+                        .set_style({ color: role_color, marginLeft: "10px" }))
+                } else {
+                    row.add_child(new Span().set_html("[??]")
+                        .set_style({ color: "gray", marginLeft: "10px" }))
                 }
             } else {
                 const ready_color = player.is_ready ? "green" : "gray"
@@ -501,6 +517,7 @@ export class WerewolfGame extends FlexColumn {
                 this.room_info = null
                 this.my_info = null
                 this.players = []
+                this.confirmed_roles.clear()
                 this._switch_view("lobby")
                 this._load_rooms()
             } else {
@@ -729,11 +746,14 @@ export class WerewolfGame extends FlexColumn {
             this._update_action_panel()
         } else if (msgType === Ct.MSG_DAY_END) {
             this._append_log(`=== 白天结束 ===`)
+        } else if (msgType === "hunter_can_shot") {
+            this.confirmed_roles.set(msg.seat, "hunter")
         } else if (msgType === Ct.MSG_GAME_END) {
             this._append_log(`\n=== 游戏结束 ===`)
             this._append_log(`结果: ${msg.result === "good_win" ? "好人胜利" : "狼人胜利"}`)
             for (const p of msg.players) {
                 this._append_log(`${p.seat}号 ${p.username}: ${p.role}`)
+                this.confirmed_roles.set(p.seat, p.role)
             }
             this.room_info = { ...this.room_info, state: "ended" }
             this._update_action_panel()

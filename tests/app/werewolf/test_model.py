@@ -2,26 +2,44 @@ import os
 import sys
 import tempfile
 from common.util.export import TestBase, assert_dict
-from app.werewolf.model import RoomModel, PlayerModel, GameLogModel, AIMemoryModel
+from app.werewolf.models import RoomModel, PlayerModel, GameLogModel, AIMemoryModel
 from app.werewolf.constant import Role, Phase, GameState
+
+_DB_PATH = None
+_TMP_DIR = None
+
+
+def _setup_shared_db():
+    global _DB_PATH, _TMP_DIR
+    if _DB_PATH is None:
+        _TMP_DIR = tempfile.mkdtemp(prefix="werewolf_test_")
+        _DB_PATH = os.path.join(_TMP_DIR, "werewolf.db")
+        RoomModel.set_resource(_DB_PATH)
+        PlayerModel.set_resource(_DB_PATH)
+        GameLogModel.set_resource(_DB_PATH)
+        AIMemoryModel.set_resource(_DB_PATH)
+
+
+def _teardown_shared_db():
+    global _DB_PATH, _TMP_DIR
+    if _DB_PATH:
+        RoomModel.close_resource()
+        if _TMP_DIR and os.path.exists(_TMP_DIR):
+            import shutil
+            shutil.rmtree(_TMP_DIR)
+        _DB_PATH = None
+        _TMP_DIR = None
 
 
 class TestRoomModel(TestBase):
-    test_db_path = None
-    
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_test_")
-        RoomModel.set_resource(os.path.join(cls.test_db_path, "room.db"))
+        _setup_shared_db()
         RoomModel.init_resource()
-    
+
     @classmethod
     def teardown_class(cls):
-        if hasattr(RoomModel, '_conn') and RoomModel._conn:
-            RoomModel._conn.close()
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_shared_db()
     
     def setup_method(self):
         RoomModel._config = {}
@@ -71,21 +89,14 @@ class TestRoomModel(TestBase):
 
 
 class TestPlayerModel(TestBase):
-    test_db_path = None
-    
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_test_player_")
-        PlayerModel.set_resource(os.path.join(cls.test_db_path, "player.db"))
+        _setup_shared_db()
         PlayerModel.init_resource()
-    
+
     @classmethod
     def teardown_class(cls):
-        if hasattr(PlayerModel, '_conn') and PlayerModel._conn:
-            PlayerModel._conn.close()
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_shared_db()
     
     def setup_method(self):
         PlayerModel._config = {}
@@ -180,21 +191,14 @@ class TestPlayerModel(TestBase):
 
 
 class TestGameLogModel(TestBase):
-    test_db_path = None
-    
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_test_log_")
-        GameLogModel.set_resource(os.path.join(cls.test_db_path, "game_log.db"))
+        _setup_shared_db()
         GameLogModel.init_resource()
-    
+
     @classmethod
     def teardown_class(cls):
-        if hasattr(GameLogModel, '_conn') and GameLogModel._conn:
-            GameLogModel._conn.close()
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_shared_db()
     
     def setup_method(self):
         GameLogModel._config = {}
@@ -245,21 +249,14 @@ class TestGameLogModel(TestBase):
 
 
 class TestAIMemoryModel(TestBase):
-    test_db_path = None
-    
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_test_memory_")
-        AIMemoryModel.set_resource(os.path.join(cls.test_db_path, "ai_memory.db"))
+        _setup_shared_db()
         AIMemoryModel.init_resource()
-    
+
     @classmethod
     def teardown_class(cls):
-        if hasattr(AIMemoryModel, '_conn') and AIMemoryModel._conn:
-            AIMemoryModel._conn.close()
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_shared_db()
     
     def setup_method(self):
         AIMemoryModel._config = {}

@@ -2,9 +2,27 @@ import os
 import sys
 import tempfile
 from common.util.export import TestBase, assert_dict, json, random
-from app.werewolf.model import RoomModel, PlayerModel, GameLogModel
+from app.werewolf.models import RoomModel, PlayerModel, GameLogModel
 from app.werewolf.constant import Role, Phase, GameState, C
 from app.werewolf.engine import GameEngine
+
+
+def _setup_test_db(cls, prefix):
+    cls.test_db_path = tempfile.mkdtemp(prefix=prefix)
+    db_path = os.path.join(cls.test_db_path, "werewolf.db")
+    RoomModel.set_resource(db_path)
+    PlayerModel.set_resource(db_path)
+    GameLogModel.set_resource(db_path)
+    RoomModel.init_resource()
+    PlayerModel.init_resource()
+    GameLogModel.init_resource()
+
+
+def _teardown_test_db(cls):
+    if cls.test_db_path and os.path.exists(cls.test_db_path):
+        RoomModel.close_resource()
+        import shutil
+        shutil.rmtree(cls.test_db_path)
 
 
 class TestGameEngine(TestBase):
@@ -12,19 +30,11 @@ class TestGameEngine(TestBase):
     
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_engine_test_")
-        RoomModel.set_resource(os.path.join(cls.test_db_path, "room.db"))
-        PlayerModel.set_resource(os.path.join(cls.test_db_path, "player.db"))
-        GameLogModel.set_resource(os.path.join(cls.test_db_path, "game_log.db"))
-        RoomModel.init_resource()
-        PlayerModel.init_resource()
-        GameLogModel.init_resource()
+        _setup_test_db(cls, "werewolf_engine_test_")
     
     @classmethod
     def teardown_class(cls):
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_test_db(cls)
     
     def setup_method(self):
         RoomModel._config = {}
@@ -122,7 +132,7 @@ class TestGameEngine(TestBase):
         room = RoomModel.get(room_id)
         night_actions = room.night_actions.get_value()
         self.expect("wolf_kill" in night_actions, True)
-        self.expect(night_actions["wolf_kill"][0]["target"], 5)
+        self.expect(night_actions["wolf_kill"][-1]["target"], 5)
     
     def test_night_action_seer_check_wolf(self):
         room_id = self._create_full_room("test_seer_check")
@@ -282,15 +292,11 @@ class TestRoleUnset(TestBase):
     
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_unset_test_")
-        PlayerModel.set_resource(os.path.join(cls.test_db_path, "player.db"))
-        PlayerModel.init_resource()
+        _setup_test_db(cls, "werewolf_unset_test_")
     
     @classmethod
     def teardown_class(cls):
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_test_db(cls)
     
     def setup_method(self):
         PlayerModel._config = {}

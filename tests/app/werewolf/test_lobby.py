@@ -2,9 +2,25 @@ import os
 import sys
 import tempfile
 from common.util.export import TestBase, assert_dict, json
-from app.werewolf.model import RoomModel, PlayerModel
+from app.werewolf.models import RoomModel, PlayerModel
 from app.werewolf.constant import Role, Phase, GameState, C
 from app.werewolf.lobby import Lobby
+
+
+def _setup_test_db(cls, prefix):
+    cls.test_db_path = tempfile.mkdtemp(prefix=prefix)
+    db_path = os.path.join(cls.test_db_path, "werewolf.db")
+    RoomModel.set_resource(db_path)
+    PlayerModel.set_resource(db_path)
+    RoomModel.init_resource()
+    PlayerModel.init_resource()
+
+
+def _teardown_test_db(cls):
+    if cls.test_db_path and os.path.exists(cls.test_db_path):
+        RoomModel.close_resource()
+        import shutil
+        shutil.rmtree(cls.test_db_path)
 
 
 class TestLobby(TestBase):
@@ -12,17 +28,11 @@ class TestLobby(TestBase):
     
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_lobby_test_")
-        RoomModel.set_resource(os.path.join(cls.test_db_path, "room.db"))
-        PlayerModel.set_resource(os.path.join(cls.test_db_path, "player.db"))
-        RoomModel.init_resource()
-        PlayerModel.init_resource()
+        _setup_test_db(cls, "werewolf_lobby_test_")
     
     @classmethod
     def teardown_class(cls):
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_test_db(cls)
     
     def setup_method(self):
         RoomModel._config = {}
@@ -258,17 +268,11 @@ class TestLobbyWithStartedGame(TestBase):
     
     @classmethod
     def setup_class(cls):
-        cls.test_db_path = tempfile.mkdtemp(prefix="werewolf_lobby_game_test_")
-        RoomModel.set_resource(os.path.join(cls.test_db_path, "room.db"))
-        PlayerModel.set_resource(os.path.join(cls.test_db_path, "player.db"))
-        RoomModel.init_resource()
-        PlayerModel.init_resource()
+        _setup_test_db(cls, "werewolf_lobby_game_test_")
     
     @classmethod
     def teardown_class(cls):
-        if cls.test_db_path and os.path.exists(cls.test_db_path):
-            import shutil
-            shutil.rmtree(cls.test_db_path)
+        _teardown_test_db(cls)
     
     def setup_method(self):
         RoomModel._config = {}
