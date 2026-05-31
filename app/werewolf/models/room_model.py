@@ -56,6 +56,7 @@ class RoomModel(SqliteDbStore):
             "state": self.state.get_value(),
             "phase": self.phase.get_value(),
             "round_num": self.round_num.get_value(),
+            "current_speaker": self.current_speaker.get_value(),
             "player_count": len(PlayerModel.get_players_by_room(self._id)),
         }
 

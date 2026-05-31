@@ -32,27 +32,48 @@ class Lobby(ApiBase):
         
         return Node(ok=True, data={"room_id": room_id, "room": room.to_public_dict()})
     
-    def join_room(self, room_id: str, **kw):
+    def join_room(self, room_id: str, seat: int = 0, **kw):
         if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
         
         room = RoomModel.get(room_id)
         
-        existing = PlayerModel.get_player_by_room_username(room_id, self.username)
-        if existing:
-            self._subscribe_room(room_id)
-            return Node(ok=True, data={"room_id": room_id, "room": room.to_public_dict()})
-        
         if room.state.get_value() != GameState.WAITING.value:
             return Node(ok=False, title="游戏已开始，无法加入")
         
+        existing = PlayerModel.get_player_by_room_username(room_id, self.username)
         players = PlayerModel.get_players_by_room(room_id)
-        if len(players) >= C.TOTAL_PLAYERS:
-            return Node(ok=False, title="房间已满")
         
-        seat = max([p.seat.get_value() for p in players], default=0) + 1
-        player_id = f"{room_id}_{self.username}"
-        PlayerModel.create_player(player_id, room_id, self.username, seat=seat, is_ai=False)
+        if seat > 0:
+            if seat < 1 or seat > C.TOTAL_PLAYERS:
+                return Node(ok=False, title=f"座位号必须在 1-{C.TOTAL_PLAYERS} 之间")
+            
+            if existing and existing.seat.get_value() == seat:
+                self._subscribe_room(room_id)
+                return Node(ok=True, data={"room_id": room_id, "room": room.to_public_dict()})
+            
+            others = [p for p in players if p.username.get_value() != self.username]
+            for p in sorted(others, key=lambda p: p.seat.get_value(), reverse=True):
+                s = p.seat.get_value()
+                if s >= seat:
+                    new_seat = s + 1
+                    if new_seat > C.TOTAL_PLAYERS:
+                        p.delete()
+                    else:
+                        p.seat.set_value(new_seat)
+            PlayerModel.save_to_local()
+        else:
+            if len(players) >= C.TOTAL_PLAYERS:
+                return Node(ok=False, title="房间已满")
+            seat = max([p.seat.get_value() for p in players], default=0) + 1
+        
+        if existing:
+            existing.seat.set_value(seat)
+            existing.is_ready.set_value(False)
+            PlayerModel.save_to_local()
+        else:
+            player_id = f"{room_id}_{self.username}"
+            PlayerModel.create_player(player_id, room_id, self.username, seat=seat, is_ai=False)
         
         self._subscribe_room(room_id)
         self._broadcast_room(room_id, C.MSG_PLAYER_JOIN, {"username": self.username, "seat": seat})
@@ -124,7 +145,7 @@ class Lobby(ApiBase):
         
         return Node(ok=True)
     
-    def add_ai_player(self, room_id: str, ai_persona: str = "", **kw):
+    def add_ai_player(self, room_id: str, ai_persona: str = "", seat: int = 0, **kw):
         if not RoomModel.exist(room_id):
             return Node(ok=False, title="房间不存在")
         
@@ -137,10 +158,28 @@ class Lobby(ApiBase):
             return Node(ok=False, title="游戏已开始")
         
         players = PlayerModel.get_players_by_room(room_id)
-        if len(players) >= C.TOTAL_PLAYERS:
-            return Node(ok=False, title="房间已满")
         
-        seat = max([p.seat.get_value() for p in players], default=0) + 1
+        if seat > 0:
+            if seat < 1 or seat > C.TOTAL_PLAYERS:
+                return Node(ok=False, title=f"座位号必须在 1-{C.TOTAL_PLAYERS} 之间")
+            others = [p for p in players if p.username.get_value() != self.username]
+            for p in sorted(others, key=lambda p: p.seat.get_value(), reverse=True):
+                s = p.seat.get_value()
+                if s >= seat:
+                    new_seat = s + 1
+                    if new_seat > C.TOTAL_PLAYERS:
+                        p.delete()
+                    else:
+                        p.seat.set_value(new_seat)
+            PlayerModel.save_to_local()
+        else:
+            taken = {int(p.seat.get_value()) for p in players}
+            for s in range(1, C.TOTAL_PLAYERS + 1):
+                if s not in taken:
+                    seat = s
+                    break
+            if not seat:
+                return Node(ok=False, title="房间已满")
         ai_id = f"AI_{seat}"
         ai_username = f"{C.AI_NAME_PREFIX}{int(time.time() * 1000)}_{seat}"
         player_id = f"{room_id}_{ai_username}"

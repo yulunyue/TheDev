@@ -1,5 +1,6 @@
 import re
 from common.third_util.llm.opencode_client import OpencodeClient, logger
+from common.third_util.llm.opencode_db import OpencodeDb
 from common.util.export import File
 from common.third_service.docker.docker_util import DockerUtil
 from common.third_service.git_tool.git_util import GitUtil
@@ -71,11 +72,20 @@ class TaskBuilder:
         git.git_apply(self.src_test_pattch.path)
         git.git_add(".")
         logger.info(f"Git reset to {self.base_commit}, applied test.patch {self.repo_root}")
-        
+
+        opencode_json = self.src_root.child(OPENCODE_JSON_FILE_NAME)
+        opencode_data = opencode_json.read_file() if opencode_json.exists() else {}
+        existing_session_id = opencode_data.get("session_id")
+        db = OpencodeDb.get_instance()
+
+        if existing_session_id and db.is_session_complete(existing_session_id):
+            logger.info(f"[跳过 LLM] session {existing_session_id} 已完成")
+            return existing_session_id
+
         issue_content = self.instance_json.get("problem_statement")
-        
+
         test_patch_content = self.src_test_pattch.read_file() if self.src_test_pattch.exists() else None
-        
+
         promot = get_promot(
             self.issue_url,
             issue_content=issue_content,
@@ -84,17 +94,28 @@ class TaskBuilder:
             test_patch_content=test_patch_content,
         )
         logger.info(self.src_root.child(PROMOT_TXT).write_file(promot))
-        
+
         if manual:
             session_id = input("session_id")
         else:
             o = self.client.new(self.repo_root.path).start_server()
-            session_id = o.do_prompt(promot)
+
+            if existing_session_id and db.has_data(existing_session_id):
+                session_id = existing_session_id
+                logger.info(f"[继续] session {session_id} 进行中")
+            else:
+                s = o.create_session()
+                session_id = s.id
+                opencode_json.write_file({"session_id": session_id})
+                o.execute_task(session_id, promot)
+                logger.info(f"[新建] session {session_id}")
+
             final_result = o.wait_result(session_id, timeout=1800)
             o.stop()
             if not final_result.ok:
                 logger.error(f"LLM 任务失败: {final_result.title}")
-        self.src_root.child(OPENCODE_JSON_FILE_NAME).write_file({"session_id": session_id})
+
+        opencode_json.write_file({"session_id": session_id})
         diff_content = git.git_diff()
         if diff_content and diff_content.strip():
             self.src_final_diff.write_file(diff_content)

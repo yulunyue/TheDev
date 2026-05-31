@@ -50,6 +50,7 @@ class TrajectoryBuilder:
         }
 
     def _build_tools_spec(self):
+        EXTRA = {"question": "", "options": "", "task_progress": ""}
         tool_defs = [
             ("bash", "Execute shell commands", {"command": "The command string to execute"}, ["command"]),
             ("read", "Read file contents", {"filePath": "Absolute path to the file"}, ["filePath"]),
@@ -67,6 +68,9 @@ class TrajectoryBuilder:
             properties = {}
             for k, v in props.items():
                 properties[k] = {"type": "string", "description": v}
+            for k, v in EXTRA.items():
+                if k not in properties:
+                    properties[k] = {"type": "string", "description": v}
             tools.append({
                 "name": name,
                 "description": desc,

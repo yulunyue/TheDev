@@ -74,10 +74,10 @@ class Fp:
     setup_repo_sh = "setup_repo.sh"
     test_patch = "test.patch"
     final_diff = "final.diff"
-
+    entrypoint_sh="entrypoint.sh"
     @classmethod
     def docker_build(self):
-        return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, "entrypoint.sh"]
+        return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, Fp.entrypoint_sh]
 
     @classmethod
     def pre_check(self):

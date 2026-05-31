@@ -117,11 +117,6 @@ class OpencodeClient:
             data={"session_id": session_id},
         )
 
-    def do_prompt(self, prompt: str) -> str:
-        s = self.create_session()
-        return self.execute_task(s.id, prompt)
-
-
     @staticmethod
     def _parse_messages(messages):
         text = ""

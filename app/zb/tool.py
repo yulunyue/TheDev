@@ -85,18 +85,19 @@ class ZbTool(ToolBase):
 
         from .check.quality_check import run_checks
 
-        env = name.split("-")[0]
-        pr_id = name.split("-")[-1]
+        root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()
+        env = root.name.split("-")[0]
+        pr_id = root.name.split("-")[-1]
         image_name = f"{env}:{pr_id}"
 
-        zip_file = OUTPUT_DIR.child(f"{name}.zip")
-        project_dir = OUTPUT_DIR.child(name)
+        zip_file = OUTPUT_DIR.child(f"{root.name}.zip")
+        project_dir = OUTPUT_DIR.child(root.name)
 
         if not project_dir.exists() and zip_file.exists():
             zip_file.unzip(dst=project_dir)
 
-        report_path = OUTPUT_DIR.child(f"{name}_qc_report.json").path
-        passed = run_checks(StdPath(project_dir.path), image_name, report_path)
+        report_path = OUTPUT_DIR.child(f"{root.name}_qc_report.json").path
+        passed = run_checks(StdPath(project_dir.get_abs_path()), image_name, report_path)
         if not passed:
             raise Exception("quality_check 未通过")
 
@@ -117,4 +118,4 @@ class ZbTool(ToolBase):
 
 
 if __name__ == "__main__":
-    ZbTool().run()
+    ToolBase.run(ZbTool())

@@ -150,10 +150,10 @@ class TestOpencodeClientIntegration(unittest.TestCase):
         result = self.client.wait_result(s.id, timeout=120, wait_call=db.is_session_complete)
         self.assertTrue(result.ok)
 
-    def test_do_prompt(self):
-        session_id = self.client.do_prompt("say hi")
-        self.assertIsInstance(session_id, str)
-        result = self.client.wait_result(session_id, timeout=120)
+    def test_create_and_execute(self):
+        s = self.client.create_session(title="ut_create_exec")
+        self.client.execute_task(s.id, "say hi")
+        result = self.client.wait_result(s.id, timeout=120)
         self.assertTrue(result.ok)
 
     def test_opencodedb_read(self):

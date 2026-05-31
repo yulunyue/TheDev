@@ -210,7 +210,12 @@ diff:
 {diff[:8000]}"""
 
         client.start_server()
-        response = client.do_prompt(prompt)
+        s = client.create_session()
+        client.execute_task(s.id, prompt)
+        result_node = client.wait_result(s.id, timeout=client.timeout)
+        if not result_node.ok:
+            return {"ok": False, "error": result_node.title}
+        response = result_node.get_value()
 
         if response.startswith("```json"):
             response = (
