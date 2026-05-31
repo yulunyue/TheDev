@@ -32,6 +32,19 @@ class TaskBuilder:
         self.src_final_diff = self.src_root.child(Fp.final_diff)
         self.instance_json = self.src_root.child(f"{self.src_root.name}.json")
         self.repo_root = REPO_ROOT.child(self.env)
+
+        # entrypoint.sh 非交付件，删除以免 M1 质检报多余文件
+        entrypoint = self.src_root.child("entrypoint.sh")
+        if entrypoint.exists():
+            entrypoint.remove()
+
+        # 清理 Dockerfile 中对 entrypoint.sh 的引用
+        dockerfile = self.src_root.child(Fp.Dockerfile)
+        content = dockerfile.read_file()
+        if content and "entrypoint.sh" in content:
+            content = "\n".join(line for line in content.splitlines() if "entrypoint.sh" not in line)
+            dockerfile.write_file(content)
+
         return self
 
     @property
