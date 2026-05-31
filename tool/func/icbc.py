@@ -111,10 +111,10 @@ class IcbcTool(ToolBase):
 
     def _parse_transactions_via_llm(self, llm, text):
         prompt = f"""你是一个银行流水解析助手。从以下工商银行流水PDF文本中提取所有交易记录，返回JSON数组，格式：
-[{{"title": "日期_摘要", "money": 金额, "content": "备注"}}]
+[{{"title": "YYYY-MM-DD HH:MM:SS_摘要", "money": 金额, "content": "备注"}}]
 
 要求：
-- title 需唯一标识该笔交易
+- title 格式：交易日期时间_交易摘要（如 2026-05-20 14:30:00_工资），包含时分秒确保唯一
 - money 为数字正数（收入）或负数（支出）
 - 只返回纯JSON，不要其他文字
 

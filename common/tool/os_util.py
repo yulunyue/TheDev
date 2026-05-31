@@ -36,13 +36,18 @@ class OsUtil:
             cmd = f"source {env_path}/bin/activate"
         self.logger.info(f"请用  {cmd} 进入虚拟环境执行 {local_exec}")
 
-    def check_output(self, cmd: List[str], env=None):
+    def check_output(self, cmd: List[str], env=None, capture_output=False):
         cmds = " ".join(cmd)
         self.logger.info(f"{self.root_path}->{cmds}")
-        param = dict()
-        param.update(self.get_std())
 
         use_shell = os.name == "nt"
+
+        if capture_output:
+            popen_kw = dict(stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        else:
+            param = dict()
+            param.update(self.get_std())
+            popen_kw = param
 
         try:
             self.process = subprocess.Popen(
@@ -51,11 +56,17 @@ class OsUtil:
                 text=True,
                 cwd=self.root_path,
                 env=env,
-                **param,
+                **popen_kw,
             )
 
-            self.process.wait(self.time_out)
-            data = self.logger.fp.read_file()
+            if capture_output:
+                stdout, _ = self.process.communicate(timeout=self.time_out)
+                data = stdout or ""
+                self.logger.info(data)
+            else:
+                self.process.wait(self.time_out)
+                data = self.logger.fp.read_file()
+
             statu, stdout, stderror = self.process.returncode == 0, data, data
         except subprocess.CalledProcessError as e:
             statu, stdout, stderror = False, e.stdout, e.stderr
@@ -112,15 +123,15 @@ class OsUtil:
         self.process = subprocess.Popen(cmd, **kw)
         return self.process
 
-    def popen_output(self, *args, timeout=60, env=None, **kw) -> str:
+    def popen_output(self, *args, timeout=60, env=None, capture_output=False, **kw) -> str:
         cmd = self.get_cmd(args, kw)
-        statu, stdout, stderror = self.check_output(cmd, env=env)
+        statu, stdout, stderror = self.check_output(cmd, env=env, capture_output=capture_output)
         if statu:
             return stdout.strip()
         return ""
 
-    def run(self, *args, env=None, **kw):
-        return self.check_output(self.get_cmd(args, kw), env=env)
+    def run(self, *args, env=None, capture_output=False, **kw):
+        return self.check_output(self.get_cmd(args, kw), env=env, capture_output=capture_output)
 
     def start(self, *args, **kw):
         Thread(target=self.run, args=args, kwargs=kw).start()

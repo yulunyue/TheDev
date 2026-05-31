@@ -1,4 +1,4 @@
-from common.tool.export import OsUtil
+from common.tool.export import OsUtil, GC
 from common.util.export import List
 
 
@@ -9,8 +9,8 @@ class GitUtil(OsUtil):
         if workdir:
             self.set_env(workdir)
 
-    def run_git_output(self, *args) -> str:
-        return self.popen_output(*args, timeout=60)
+    def run_git_output(self, *args, **kw) -> str:
+        return self.popen_output(*args, timeout=60, **kw)
 
     def git_fetch(self, remote="origin") -> str:
         return self.run_git_output("fetch", remote)
@@ -49,7 +49,9 @@ class GitUtil(OsUtil):
         return self.run_git_output("status", *args)
 
     def git_diff(self, *args) -> str:
-        return self.run_git_output("diff", *args)
+        cmd = self.get_cmd(["diff"] + list(args), {})
+        _, stdout, _ = self.check_output(cmd, capture_output=True)
+        return stdout
 
     def git_show(self, ref) -> str:
         return self.run_git_output("show", ref)
@@ -72,3 +74,18 @@ class GitUtil(OsUtil):
 
     def get_file_content(self, branch: str, file: str) -> str:
         return self.git_show(f"{branch}:{file}")
+
+    def git_clone(self, url, dest=None, depth=None):
+        http_proxy = GC.http_proxy.get_value()
+        env = {"GIT_SSL_NO_VERIFY": "1"}
+        if http_proxy:
+            env["HTTP_PROXY"] = str(http_proxy)
+            env["HTTPS_PROXY"] = str(http_proxy)
+
+        args = ["clone", url]
+        if dest:
+            args.append(dest)
+        if depth:
+            args.extend(["--depth", str(depth)])
+
+        return self.run(*args, env=env or None)

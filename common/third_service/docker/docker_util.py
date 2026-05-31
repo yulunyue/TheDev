@@ -56,7 +56,10 @@ class DockerUtil(OsUtil):
             args.extend(["--network", network])
         args.append(image)
         if cmd:
-            args.extend(cmd.split())
+            if any(c in cmd for c in "|;&$><()'"):
+                args.extend(["sh", "-c", cmd])
+            else:
+                args.extend(cmd.split())
         return self.run(*args)
 
     def stop(self, container: str):
@@ -105,10 +108,12 @@ class DockerUtil(OsUtil):
     def compose_down(self, file: Optional[str] = None, project: Optional[str] = None):
         return self.compose("down", file=file, project=project)
 
-    def build(self, tag: str, path=".", file: Optional[str] = None):
+    def build(self, tag: str, path=".", file: Optional[str] = None, network: Optional[str] = None):
         args = ["build", "-t", tag]
         if file:
             args.extend(["-f", file])
+        if network:
+            args.extend(["--network", network])
         args.append(path)
         return self.run(*args)
 

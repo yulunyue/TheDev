@@ -21,7 +21,7 @@ class GlobalConfig(JsonConfig):
     )  # https://googlechromelabs.github.io/chrome-for-testing/
     git_proxy_prefix = StrModel("")
     BROWSER_USE_API_KEY = StrModel()
-    pip_global_index_url = StrModel()
+    pip_global_index_url = StrModel("")
     pip_trusted_host = StrModel()
     zb_docker_env = StrModel()
     github_token = StrModel()
@@ -29,6 +29,7 @@ class GlobalConfig(JsonConfig):
     apt_mirror_prefix = StrModel("")
     http_proxy = StrModel("")
     miniconda_mirror = StrModel("")
+    conda_mirror = StrModel("")
     conda_channel_prefix = StrModel("")
 
 
