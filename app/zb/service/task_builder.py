@@ -50,6 +50,19 @@ class TaskBuilder:
         parent.make_dir_if_not_exist(is_dir=True)
         GitUtil(workdir=parent.path).git_clone(clone_url, self.repo_root.name)
 
+    def _save_initial_state(self, git, diff_content):
+        files = re.findall(r"^diff --git a/(.*?) b/", diff_content, re.MULTILINE)
+        initial_state = {}
+        for f in files:
+            content = git.git_show(f"{self.base_commit}:{f}")
+            if content:
+                initial_state[f] = content
+        opencode_json = self.src_root.child(OPENCODE_JSON_FILE_NAME)
+        data = opencode_json.read_file() if opencode_json.exists() else {}
+        data["initial_state"] = initial_state
+        opencode_json.write_file(data)
+        logger.info(f"保存 initial_state: {list(initial_state.keys())}")
+
     def llm_build(self, manual=False):
         self._ensure_repo()
         git = GitUtil(workdir=self.repo_root.path)
@@ -86,6 +99,7 @@ class TaskBuilder:
         if diff_content and diff_content.strip():
             self.src_final_diff.write_file(diff_content)
             logger.info(f"生成 final.diff: {self.src_final_diff.path}")
+            self._save_initial_state(git, diff_content)
         else:
             logger.warning("git diff 为空，LLM 未修改代码")
         git.git_reset(self.base_commit)

@@ -54,7 +54,9 @@ class GitUtil(OsUtil):
         return stdout
 
     def git_show(self, ref) -> str:
-        return self.run_git_output("show", ref)
+        cmd = self.get_cmd(["show", ref], {})
+        _, stdout, _ = self.check_output(cmd, capture_output=True)
+        return stdout
 
     def git_rm(self, file) -> str:
         return self.run_git_output("rm", "--", file)

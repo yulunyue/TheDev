@@ -13,7 +13,7 @@ from .constants import (
 
 
 class TrajectoryBuilder:
-    def build(self, opencode_data, task_data, final_diff_content, root):
+    def build(self, opencode_data, task_data, final_diff_content, root, initial_state_data=None):
         trajectory = self._convert_messages(opencode_data)
         turn_count = sum(
             1 for m in trajectory if m.get("role") == "assistant"
@@ -33,7 +33,7 @@ class TrajectoryBuilder:
             "task_category": "bug_fix",
             "task_id": task_data["instance_id"],
             "trajectory": trajectory,
-            "instance": self._build_instance(task_data, final_diff_content, root),
+            "instance": self._build_instance(task_data, final_diff_content, root, initial_state_data),
         }
 
     def _build_metadata(self, task_data):
@@ -167,14 +167,14 @@ class TrajectoryBuilder:
             "ts": tool_ts,
         }
 
-    def _build_instance(self, task_data, final_diff_content, root):
+    def _build_instance(self, task_data, final_diff_content, root, initial_state_data=None):
         repo_root = REPO_ROOT.child(task_data["instance_id"].split("-")[0])
         clean_diff = self._clean_final_diff(final_diff_content)
         return {
             "repo": task_data["repo"],
             "base_commit": task_data["base_commit"],
             "git_context": {
-                "initial_state": self._get_initial_state(repo_root, clean_diff),
+                "initial_state": self._get_initial_state(repo_root, clean_diff, initial_state_data),
                 "final_diff": clean_diff,
             },
             "patch": task_data["patch"],
@@ -184,7 +184,9 @@ class TrajectoryBuilder:
             "problem_statement": task_data["problem_statement"],
         }
 
-    def _get_initial_state(self, repo_root, final_diff_content):
+    def _get_initial_state(self, repo_root, final_diff_content, initial_state_data=None):
+        if initial_state_data and isinstance(initial_state_data, dict):
+            return initial_state_data
         files = self._parse_diff_files(final_diff_content)
         initial_state = {}
         for f in files:
@@ -244,7 +246,14 @@ class TrajectoryBuilder:
 
         task_data = instance_json.read_file()
 
-        trajectory = self.build(opencode_data, task_data, final_diff.read_file(), root)
+        initial_state_data = None
+        opencode_json = root.child(OPENCODE_JSON_FILE_NAME)
+        if opencode_json.exists():
+            json_data = opencode_json.read_file()
+            if isinstance(json_data, dict):
+                initial_state_data = json_data.get("initial_state")
+
+        trajectory = self.build(opencode_data, task_data, final_diff.read_file(), root, initial_state_data)
 
         trajectory_json.write_file(trajectory)
         logger.info(f"Generated trajectory.json: {trajectory_json.path}")
