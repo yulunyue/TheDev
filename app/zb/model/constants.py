@@ -13,14 +13,14 @@ CODING_AGENT_SYSTEM_PROMPT_FILE = MODEL_ROOT.child("coding_agent_system_prompt.t
 def fetch_github_issue(issue_url):
     if not issue_url or "github.com" not in issue_url:
         return None
-    
+
     api_url = issue_url.replace("github.com", "api.github.com/repos")
     headers = {"Accept": "application/vnd.github.v3+json"}
     if GC.github_token:
         headers["Authorization"] = f"token {GC.github_token}"
-    
+
     proxy = str(GC.http_proxy) if GC.http_proxy else None
-    
+
     try:
         _, body = requests_get(api_url, headers=headers, timeout=10, proxy=proxy)
         data = json.loads(body.decode("utf-8", errors="ignore"))
@@ -31,23 +31,35 @@ def fetch_github_issue(issue_url):
         return None
 
 
-def get_promot(issue_url, issue_content=None, fail_to_pass=None, pass_to_pass=None, test_patch_content=None):
+def get_promot(
+    issue_url,
+    issue_content=None,
+    fail_to_pass=None,
+    pass_to_pass=None,
+    test_patch_content=None,
+):
     fail_str = ""
     if fail_to_pass:
-        fail_str = "\n\n需要修复的测试（FAIL_TO_PASS，修复后应通过）:\n" + "\n".join(f"- {t}" for t in fail_to_pass)
-    
+        fail_str = "\n\n需要修复的测试（FAIL_TO_PASS，修复后应通过）:\n" + "\n".join(
+            f"- {t}" for t in fail_to_pass
+        )
+
     pass_str = ""
     if pass_to_pass:
-        pass_str = "\n\n已通过的测试（PASS_TO_PASS，修复不应破坏这些）:\n" + "\n".join(f"- {t}" for t in pass_to_pass)
-    
+        pass_str = "\n\n已通过的测试（PASS_TO_PASS，修复不应破坏这些）:\n" + "\n".join(
+            f"- {t}" for t in pass_to_pass
+        )
+
     issue_str = ""
     if issue_content:
         issue_str = f"\n\n问题描述:\n{issue_content}"
-    
+
     test_patch_str = ""
     if test_patch_content:
-        test_patch_str = f"\n\ntest.patch 内容（已应用到代码中）:\n```\n{test_patch_content}\n```"
-    
+        test_patch_str = (
+            f"\n\ntest.patch 内容（已应用到代码中）:\n```\n{test_patch_content}\n```"
+        )
+
     return f"""分析以下问题。{issue_str}{fail_str}{pass_str}{test_patch_str}
 
 请先阅读测试断言理解预期行为，再定位并修复代码。
@@ -60,10 +72,9 @@ def get_promot(issue_url, issue_content=None, fail_to_pass=None, pass_to_pass=No
 5. 禁止使用 task 工具派子任务，必须直接分析和修改代码"""
 
 
-
-
 OPENCODE_JSON_FILE_NAME = "opencode.json"
 PROMOT_TXT = "promot.txt"
+
 
 class Fp:
     run_verification_py = "run_verification.py"
@@ -74,10 +85,10 @@ class Fp:
     setup_repo_sh = "setup_repo.sh"
     test_patch = "test.patch"
     final_diff = "final.diff"
-    entrypoint_sh="entrypoint.sh"
+
     @classmethod
     def docker_build(self):
-        return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh, Fp.entrypoint_sh]
+        return [Fp.Dockerfile, Fp.setup_env_sh, Fp.setup_repo_sh]
 
     @classmethod
     def pre_check(self):
@@ -85,10 +96,4 @@ class Fp:
 
     @classmethod
     def llm_check(self):
-        return [
-            Fp.final_diff,
-            Fp.run_verification_py,
-            Fp.test_patch
-        ]
-
-
+        return [Fp.final_diff, Fp.run_verification_py, Fp.test_patch]
