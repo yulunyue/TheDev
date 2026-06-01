@@ -3,7 +3,7 @@ from common.util.export import File, logger
 
 from .model import Fp, ROOT, TrajectoryBuilder
 from .model.constants import OPENCODE_JSON_FILE_NAME
-from .service import TaskBuilder, TaskPackager
+from .service import FeishuSync, TaskBuilder, TaskPackager
 from .service.task_packager import OUTPUT_DIR
 
 STEPS = [
@@ -13,6 +13,7 @@ STEPS = [
     "llm_check",
     "package",
     "quality_check",
+    "feishu_sync",
 ]
 
 _ERROR_MAX_LEN = 500
@@ -68,6 +69,8 @@ class ZbTool(ToolBase):
             self._do_package(name)
         elif step == "quality_check":
             self._do_quality_check(name)
+        elif step == "feishu_sync":
+            FeishuSync().sync(name)
 
     def _do_package(self, name):
         root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()
@@ -79,6 +82,7 @@ class ZbTool(ToolBase):
     def _do_quality_check(self, name):
         from pathlib import Path as StdPath
 
+        from .check import quality_check
         from .check.quality_check import run_checks
 
         root = ROOT.search_one(f"{name}/{Fp.run_verification_py}").parent()
@@ -92,10 +96,12 @@ class ZbTool(ToolBase):
         if not project_dir.exists() and zip_file.exists():
             zip_file.unzip(dst=project_dir)
 
-        report_path = OUTPUT_DIR.child(f"{root.name}_qc_report.json").path
+        report_path = root.child(f"{root.name}_qc_report.json").path
+        quality_check.SAVE_JSON_REPORT = True
         passed = run_checks(
             StdPath(project_dir.get_abs_path()), image_name, report_path
         )
+        quality_check.SAVE_JSON_REPORT = False
         if not passed:
             raise Exception("quality_check 未通过")
 

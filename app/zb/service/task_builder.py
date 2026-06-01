@@ -127,7 +127,7 @@ class TaskBuilder:
                 o.execute_task(session_id, promot)
                 logger.info(f"[新建] session {session_id}")
 
-            final_result = o.wait_result(session_id, timeout=1800)
+            final_result = o.wait_result(session_id, timeout=1800, stall_timeout=900)
             o.stop()
             if not final_result.ok:
                 logger.error(f"LLM 任务失败: {final_result.title}")

@@ -56,6 +56,18 @@ def upload_media(file_path, parent_node, parent_type="sheet_image", extra=None, 
     return data.get("data", {}).get("file_token")
 
 
+def download_file(file_token: str, user_token: str = None) -> bytes:
+    token = user_token or get_valid_user_token()
+    resp = httpx.get(
+        f"{API_BASE}/open-apis/drive/v1/files/{file_token}/download",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    if resp.status_code != 200:
+        data = resp.json()
+        raise RuntimeError(f"download_file failed: {resp.status_code} msg={data.get('msg')}")
+    return resp.content
+
+
 def make_attachment(file_token, file_name, mime_type="application/octet-stream", size=0):
     return [{
         "fileToken": file_token,
