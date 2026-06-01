@@ -26,7 +26,7 @@ class Cli(ToolBase):
                 "app/yly",
                 "tool",
                 "main.py",
-                "config/setting/production.json",
+                "config/setting/http.json",
             ],
             ignores=[".*__pycache__"],
         )

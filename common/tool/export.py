@@ -33,3 +33,4 @@ from .front.search import FontSearch
 from .front.form import Form, FormRow
 from .front.form_base import FormBase
 from .front.array_arrow import ArrayWithArrow
+from .http_config import HttpConfig

@@ -151,10 +151,12 @@ class Module:
         module_name = module_name.replace("/", ".")
         try:
             md = self.load_module(module_name, path=path)
-            if len(names) == 1:
-                return getattr(md, names[0])
-            elif len(names) == 2:
-                return getattr(getattr(md, names[0])(), names[1])
+            if not names:
+                return md
+            obj = getattr(md, names[0])
+            for name in names[1:]:
+                obj = getattr(obj, name)
+            return obj
         except Exception as e:
             raise ModuleLoadError("Failed to load module object", context={"error": e, "src": src, "path": path, "module": module_name})
         raise ModuleLoadError("Invalid module path format", context={"src": src})
